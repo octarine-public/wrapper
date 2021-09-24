@@ -61,7 +61,7 @@ function _parse(buf: Uint8Array | BinaryStream, map = new Map<string, any>()): R
 			buf.buffer,
 			buf.byteOffset,
 			buf.byteLength,
-		))
+		), 0, true)
 		: buf
 	let laststr = "",
 		lasttok = "",

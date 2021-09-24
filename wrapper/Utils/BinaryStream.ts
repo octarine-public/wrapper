@@ -1,5 +1,6 @@
 export default class BinaryStream {
 	public is_utf16 = false
+	public is_utf16_be = false
 	constructor(
 		public readonly view: DataView,
 		public pos = 0,
@@ -14,13 +15,18 @@ export default class BinaryStream {
 				this.is_utf16 = true
 				return
 			}
+			if (ch1 === 0xFE && ch2 === 0xFF) {
+				this.is_utf16 = true
+				this.is_utf16_be = true
+				return
+			}
 			this.RelativeSeek(-2)
 		}
 		if (this.Remaining >= 3) {
 			const ch1 = this.ReadUint8(),
 				ch2 = this.ReadUint8(),
 				ch3 = this.ReadUint8()
-			if (ch1 === 0xFF && ch2 === 0xBB && ch3 === 0xBF) {
+			if (ch1 === 0xEF && ch2 === 0xBB && ch3 === 0xBF) {
 				this.is_utf16 = false
 				return
 			}
@@ -190,8 +196,8 @@ export default class BinaryStream {
 								nPart,
 		)
 	}
-	public ReadUtf16Char(littleEndian = true): string {
-		return String.fromCharCode(this.ReadUint16(littleEndian))
+	public ReadUtf16Char(): string {
+		return String.fromCharCode(this.ReadUint16(!this.is_utf16_be))
 	}
 	public ReadChar(): string {
 		return this.is_utf16
