@@ -64,6 +64,8 @@ export default class AbilityData {
 	public readonly SecretShop: boolean
 	public readonly ItemRequirements: string[][] = []
 	public readonly ItemResult: Nullable<string>
+	public readonly ItemStockTime: number
+
 	private readonly SpecialValueCache = new Map<string, [number[], string, string, EDOTASpecialBonusOperation]>()
 	private readonly CastRangeCache: number[]
 	private readonly GetManaCostCache: number[]
@@ -160,6 +162,9 @@ export default class AbilityData {
 			map.forEach(str => this.ItemRequirements.push(str.split(";")))
 		}
 		this.ItemResult = m_Storage.get("ItemResult") as Nullable<string>
+		this.ItemStockTime = m_Storage.has("ItemStockTime")
+			? parseInt(m_Storage.get("ItemStockTime") as string)
+			: 0
 	}
 
 	public GetSpecialValue(name: string, level = this.MaxTalentLevel): number {
