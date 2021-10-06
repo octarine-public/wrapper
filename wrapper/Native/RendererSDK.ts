@@ -292,6 +292,7 @@ class CRendererSDK {
 		this.commandCache.byteLength,
 	))
 	private commandCacheSize = 0
+	private smallCommandCacheFrames = 0
 	private font_cache = new Map</* name */string, Map</* weight */number, Map</* width */number, Map</* italic */boolean, /* font_id */number>>>>()
 	private texture_cache = new Map</* path */string, number>()
 	private clear_texture_cache = false
@@ -663,10 +664,17 @@ class CRendererSDK {
 	}
 	public EmitDraw() {
 		Renderer.ExecuteCommandBuffer(this.commandCache.subarray(0, this.commandCacheSize))
-		if (this.commandCacheSize < this.commandCache.byteLength / 3) {
-			this.commandCache = new Uint8Array(this.commandCache.byteLength / 3)
-			this.OnCommandCacheChanged()
-		}
+		const shrink_factor = 3,
+			shrink_mul = 2,
+			shrink_frames = 5
+		if (this.commandCacheSize * shrink_factor < this.commandCache.byteLength) {
+			if (this.smallCommandCacheFrames++ > shrink_frames) {
+				this.commandCache = new Uint8Array(this.commandCacheSize * shrink_mul)
+				this.OnCommandCacheChanged()
+				this.smallCommandCacheFrames = 0
+			}
+		} else
+			this.smallCommandCacheFrames = 0
 		this.commandStream.pos = 0
 		this.commandCacheSize = 0
 	}
