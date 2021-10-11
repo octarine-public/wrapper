@@ -233,8 +233,11 @@ export default class ExecuteOrder {
 			this.Execute()
 			return
 		}
-		if (ExecuteOrder.disable_humanizer)
+		if (ExecuteOrder.disable_humanizer) {
+			if (this.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET)
+				this.Execute()
 			return
+		}
 		let set_z = false
 		switch (this.OrderType) {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
