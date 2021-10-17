@@ -3,7 +3,7 @@ import Ability from "../../Base/Ability"
 
 @WrapperClass("enigma_black_hole")
 export default class enigma_black_hole extends Ability {
-	public GetAOERadiusForLevel(level: number): number {
-		return this.GetSpecialValue("pull_radius", level)
+	public get Speed(): number {
+		return this.GetSpecialValue("pull_speed")
 	}
 }
