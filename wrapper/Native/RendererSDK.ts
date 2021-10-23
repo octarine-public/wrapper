@@ -265,10 +265,7 @@ export class GradientSweep extends Gradient {
 type Matrix = number[]
 type RenderColor = Color | Matrix | Gradient
 class CRendererSDK {
-	/**
-	 * Default Size of Text = Size 18
-	 * @param font Size as X | default: 18
-	 */
+	public readonly DefaultFontName = "Calibri"
 	public readonly DefaultTextSize = 18
 	/**
 	 * Default Size of Shape = Width 32 x Height 32
@@ -575,12 +572,10 @@ class CRendererSDK {
 		return this.tex2size.get(this.GetTexture(path))!
 	}
 	/**
-	 * @param font_size Size | default: 14
-	 * @param font_name default: "Calibri"
 	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
 	 * @param flags default: FontFlags_t.OUTLINE
 	 */
-	public Text(text: string, vecPos = new Vector2(), color: RenderColor = Color.White, font_name = "Calibri", font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
+	public Text(text: string, vecPos = new Vector2(), color: RenderColor = Color.White, font_name = this.DefaultFontName, font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
 		if (text === "")
 			return
 
@@ -616,7 +611,7 @@ class CRendererSDK {
 	/**
 	 * @returns text size defined as new Vector3(width, height, under_line)
 	 */
-	public GetTextSize(text: string, font_name = "Calibri", font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): Vector3 {
+	public GetTextSize(text: string, font_name = this.DefaultFontName, font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): Vector3 {
 		if (text === "")
 			return new Vector3()
 
@@ -633,13 +628,11 @@ class CRendererSDK {
 	}
 	/**
 	 * @param color default: Yellow
-	 * @param font_name default: "Calibri"
-	 * @param font_size default: 30
 	 * @param font_weight default: 0
 	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
 	 * @param flags default: FontFlags_t.ANTIALIAS
 	 */
-	public TextAroundMouse(text: string, vec?: Vector2 | false, color: RenderColor = Color.Yellow, font_name = "Calibri", font_size = 30, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
+	public TextAroundMouse(text: string, vec?: Vector2 | false, color: RenderColor = Color.Yellow, font_name = this.DefaultFontName, font_size = 30, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
 		let vecMouse = Input.CursorOnScreen.AddScalarX(30).AddScalarY(15)
 
 		if (vec !== undefined && vec !== false)
