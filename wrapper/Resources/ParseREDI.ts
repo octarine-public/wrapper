@@ -1,96 +1,141 @@
 import BinaryStream from "../Utils/BinaryStream"
+import { parseKVBlock } from "./ParseKV"
+import { GetMapNumberProperty, GetMapStringProperty } from "./ParseUtils"
 
 class AdditionalRelatedFile {
-	public readonly relative_filename: string
-	public readonly search_path: string
-	constructor(stream: BinaryStream) {
+	public relative_filename = ""
+	public search_path = ""
+
+	public ReadV1(stream: BinaryStream): void {
 		this.relative_filename = stream.ReadOffsetString()
 		this.search_path = stream.ReadOffsetString()
+	}
+	public ReadV2(map: RecursiveMap): this {
+		return this
 	}
 }
 
 class ChildResourceReference {
-	public readonly id: bigint
-	public readonly name: string
-	constructor(stream: BinaryStream) {
+	public id = 0n
+	public name = ""
+
+	public ReadV1(stream: BinaryStream): void {
 		this.id = stream.ReadUint64()
 		this.name = stream.ReadOffsetString()
 		stream.RelativeSeek(4) // unknown
 	}
+	public ReadV2(map: RecursiveMap): this {
+		return this
+	}
 }
 
 class ArgumentDependency {
-	public readonly name: string
-	public readonly type: string
-	public readonly fingerprint: number
-	public readonly fingerprint_default: number
-	constructor(stream: BinaryStream) {
+	public name = ""
+	public type = ""
+	public fingerprint = 0
+	public fingerprint_default = 0
+
+	public ReadV1(stream: BinaryStream): void {
 		this.name = stream.ReadOffsetString()
 		this.type = stream.ReadOffsetString()
 		this.fingerprint = stream.ReadUint32()
 		this.fingerprint_default = stream.ReadUint32()
 	}
+	public ReadV2(map: RecursiveMap): this {
+		return this
+	}
 }
 
 class ExtraFloatData {
-	public readonly name: string
-	public readonly value: number
-	constructor(stream: BinaryStream) {
+	public name = ""
+	public value = 0
+
+	public ReadV1(stream: BinaryStream): void {
 		this.name = stream.ReadOffsetString()
 		this.value = stream.ReadFloat32()
+	}
+	public ReadV2(map: RecursiveMap): this {
+		return this
 	}
 }
 
 class ExtraIntData {
-	public readonly name: string
-	public readonly value: number
-	constructor(stream: BinaryStream) {
+	public name = ""
+	public value = 0
+
+	public ReadV1(stream: BinaryStream): void {
 		this.name = stream.ReadOffsetString()
 		this.value = stream.ReadInt32()
+	}
+	public ReadV2(map: RecursiveMap): this {
+		return this
 	}
 }
 
 class ExtraStringData {
-	public readonly name: string
-	public readonly value: string
-	constructor(stream: BinaryStream) {
+	public name = ""
+	public value = ""
+
+	public ReadV1(stream: BinaryStream): void {
 		this.name = stream.ReadOffsetString()
 		this.value = stream.ReadOffsetString()
+	}
+	public ReadV2(map: RecursiveMap): this {
+		return this
 	}
 }
 
 class InputDependency {
-	public readonly relative_filename: string
-	public readonly search_path: string
-	public readonly crc: number
-	public readonly flags: number
-	constructor(stream: BinaryStream) {
+	public relative_filename = ""
+	public search_path = ""
+	public crc = 0
+	public flags = 0
+
+	public ReadV1(stream: BinaryStream): void {
 		this.relative_filename = stream.ReadOffsetString()
 		this.search_path = stream.ReadOffsetString()
 		this.crc = stream.ReadUint32()
 		this.flags = stream.ReadUint32()
 	}
+	public ReadV2(map: RecursiveMap): this {
+		return this
+	}
 }
 
 class SpecialDependency {
-	public readonly str: string
-	public readonly compiler_identifier: string
-	public readonly fingerprint: number
-	public readonly user_data: number
-	constructor(stream: BinaryStream) {
+	public str = ""
+	public compiler_identifier = ""
+	public fingerprint = 0
+	public user_data = 0
+
+	public ReadV1(stream: BinaryStream): void {
 		this.str = stream.ReadOffsetString()
 		this.compiler_identifier = stream.ReadOffsetString()
 		this.fingerprint = stream.ReadUint32()
 		this.user_data = stream.ReadUint32()
 	}
+	public ReadV2(map: RecursiveMap): this {
+		this.str = GetMapStringProperty(map, "m_String")
+		this.compiler_identifier = GetMapStringProperty(map, "m_CompilerIdentifier")
+		this.fingerprint = GetMapNumberProperty(map, "m_nFingerprint")
+		this.user_data = GetMapNumberProperty(map, "m_nUserData")
+		return this
+	}
 }
 
 class CustomDependency {
-	constructor(_: BinaryStream) {
+	public ReadV1(_: BinaryStream): void {
+		throw "CustomDependency is not handled at the moment"
+	}
+	public ReadV2(map: RecursiveMap): this {
 		throw "CustomDependency is not handled at the moment"
 	}
 }
 
+interface REDIBlock {
+	ReadV1(stream: BinaryStream): void
+	ReadV2(map: RecursiveMap): this
+}
 class ResourceEditInfo {
 	public readonly InputDependencies: InputDependency[] = []
 	public readonly AdditionalInputDependencies: InputDependency[] = []
@@ -103,7 +148,7 @@ class ResourceEditInfo {
 	public readonly ExtraFloatDataList: ExtraFloatData[] = []
 	public readonly ExtraStringDataList: ExtraStringData[] = []
 
-	constructor(stream: BinaryStream) {
+	public ReadV1(stream: BinaryStream): void {
 		this.ReadBlocks(stream, this.InputDependencies, InputDependency)
 		this.ReadBlocks(stream, this.AdditionalInputDependencies, InputDependency)
 		this.ReadBlocks(stream, this.ArgumentDependencies, ArgumentDependency)
@@ -115,21 +160,46 @@ class ResourceEditInfo {
 		this.ReadBlocks(stream, this.ExtraFloatDataList, ExtraFloatData)
 		this.ReadBlocks(stream, this.ExtraStringDataList, ExtraStringData)
 	}
-	private ReadBlocks<T>(stream: BinaryStream, ar: T[], block: Constructor<T>): void {
+	public ReadV2(map: Nullable<RecursiveMap>): void {
+		if (map === undefined)
+			return
+		const specialDependencies = map.get("m_SpecialDependencies")
+		if (Array.isArray(specialDependencies))
+			specialDependencies.forEach(el => {
+				if (el instanceof Map)
+					this.SpecialDependencies.push(new SpecialDependency().ReadV2(el))
+			})
+	}
+	private ReadBlocks<T extends REDIBlock>(stream: BinaryStream, ar: T[], block: Constructor<T>): void {
 		const blocks_pos = stream.pos + stream.ReadUint32(),
 			count = stream.ReadUint32()
 		const prev_pos = stream.pos
 		stream.pos = blocks_pos
-		for (let i = 0; i < count; i++)
-			ar.push(new block(stream))
+		for (let i = 0; i < count; i++) {
+			const el = new block()
+			el.ReadV1(stream)
+			ar.push(el)
+		}
 		stream.pos = prev_pos
 	}
 }
 
-export function ParseREDI(buf: Uint8Array): ResourceEditInfo {
-	return new ResourceEditInfo(new BinaryStream(new DataView(
+export function ParseREDI(buf: Nullable<Uint8Array>): Nullable<ResourceEditInfo> {
+	if (buf === undefined)
+		return undefined
+	const REDI = new ResourceEditInfo()
+	REDI.ReadV1(new BinaryStream(new DataView(
 		buf.buffer,
 		buf.byteOffset,
 		buf.byteLength,
 	)))
+	return REDI
+}
+
+export function ParseRED2(buf: Nullable<Uint8Array>): Nullable<ResourceEditInfo> {
+	if (buf === undefined)
+		return undefined
+	const REDI = new ResourceEditInfo()
+	REDI.ReadV2(parseKVBlock(buf))
+	return REDI
 }

@@ -3,7 +3,7 @@ import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { MaterialFlags } from "../Resources/ParseMaterial"
-import { ParseREDI } from "../Resources/ParseREDI"
+import { ParseRED2, ParseREDI } from "../Resources/ParseREDI"
 import { ParseResourceLayout } from "../Resources/ParseResource"
 import { DegreesToRadian } from "../Utils/Math"
 import readFile from "../Utils/readFile"
@@ -367,14 +367,13 @@ export function ParseImage(buf: Uint8Array): [Uint8Array, Vector2] {
 	// TODO: add check that's real VTEX file (lookup https://github.com/SteamDatabase/ValveResourceFormat/blob/master/ValveResourceFormat/Resource/Resource.cs)
 	if (new Uint16Array(data_block.buffer, data_block.byteOffset, 2)[0] !== 1)
 		throw `Image conversion failed: unknown VTex version`
-	const redi_block = layout[0].get("REDI")
 	let is_YCoCg = false,
 		normalize = false,
 		is_inverted = false,
 		hemi_oct = false,
 		hemi_oct_RB = false
-	if (redi_block !== undefined) {
-		const REDI = ParseREDI(redi_block)
+	const REDI = ParseRED2(layout[0].get("RED2")) ?? ParseREDI(layout[0].get("REDI"))
+	if (REDI !== undefined) {
 		is_YCoCg = REDI.SpecialDependencies.some(dep => (
 			dep.compiler_identifier === "CompileTexture"
 			&& dep.str === "Texture Compiler Version Image YCoCg Conversion"
