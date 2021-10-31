@@ -78,8 +78,9 @@ export default class KeyBind extends Base {
 		})
 	}
 
-	public Update(recursive = false, assign_key_str = true): void {
-		super.Update(recursive)
+	public async Update(recursive = false, assign_key_str = true): Promise<boolean> {
+		if (!(await super.Update(recursive)))
+			return false
 		KeyBind.callbacks.forEach((keybinds, key) => {
 			if (arrayRemove(keybinds, this) && keybinds.length === 0)
 				KeyBind.callbacks.delete(key)
@@ -106,6 +107,7 @@ export default class KeyBind extends Base {
 			+ KeyBind.text_keybind_gap
 			+ KeyBind.keybind_offset.x
 			+ this.keybind_size.x
+		return true
 	}
 	public async Render(): Promise<void> {
 		await super.Render()

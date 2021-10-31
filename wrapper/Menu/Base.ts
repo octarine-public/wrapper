@@ -2,7 +2,6 @@ import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import { FontFlags_t } from "../Enums/FontFlags_t"
 import GUIInfo from "../GUI/GUIInfo"
 import EventsSDK from "../Managers/EventsSDK"
 import InputManager from "../Managers/InputManager"
@@ -45,6 +44,7 @@ export default class Base {
 
 	private static readonly background_inactive_path = "menu/background_inactive.svg"
 	private static readonly background_active_path = "menu/background_active.svg"
+	private static readonly tooltip_path = "menu/tooltip.svg"
 	private static readonly bar_inactive_path = "menu/bar_inactive.svg"
 	private static readonly bar_active_path = "menu/bar_active.svg"
 	private static bar_width = 0
@@ -66,11 +66,10 @@ export default class Base {
 	public FontName = "PT Sans"
 	public FontColor = Color.White
 	public FontWeight = 400
-	public FontWidth = 5
-	public FontFlags = FontFlags_t.NONE
 	public TooltipIcon = "menu/icons/info.svg"
 	public TooltipIconColor = new Color(104, 4, 255)
 	public Priority = 0
+	public QueuedUpdate = false
 	public readonly OnValueChangedCBs: ((caller: Base) => any)[] = []
 
 	public readonly Position = new Vector2()
@@ -139,11 +138,15 @@ export default class Base {
 		return this
 	}
 
-	public Update(_recursive = false): void {
+	public async Update(_recursive = false): Promise<boolean> {
+		if (!RendererSDK.IsInDraw) {
+			this.QueuedUpdate = true
+			return false
+		}
 		this.OriginalSize.CopyFrom(Base.OriginalSize)
 		this.GetTextSizeDefault(this.Name).CopyTo(this.name_size)
 		if (this.Tooltip === "")
-			return
+			return true
 		Vector2.FromVector3(this.GetTextSizeDefault(this.Tooltip).CopyTo(this.TooltipTextSize))
 			.CopyTo(this.TooltipSize)
 			.AddScalarX(
@@ -158,6 +161,7 @@ export default class Base {
 			this.TooltipSize.y,
 			Base.tooltip_icon_size.y + Base.tooltip_icon_offset.y * 2,
 		)
+		return true
 	}
 
 	public async Render(draw_bar = true): Promise<void> {
@@ -208,9 +212,7 @@ export default class Base {
 			this.FontName,
 			GUIInfo.ScaleHeight(this.FontSize),
 			this.FontWeight,
-			this.FontWidth,
 			false,
-			this.FontFlags,
 		)
 	}
 	protected RenderTextDefault(text: string, position: Vector2): void {
@@ -221,9 +223,8 @@ export default class Base {
 			this.FontName,
 			GUIInfo.ScaleHeight(this.FontSize),
 			this.FontWeight,
-			this.FontWidth,
 			false,
-			this.FontFlags,
+			false,
 		)
 	}
 	protected async TriggerOnValueChangedCBs(): Promise<void> {
@@ -241,7 +242,7 @@ export default class Base {
 			.FloorForThis()
 
 		RendererSDK.Image(
-			Base.background_active_path,
+			Base.tooltip_path,
 			Position,
 			-1,
 			this.TooltipSize,

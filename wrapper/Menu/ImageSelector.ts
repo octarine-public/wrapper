@@ -68,8 +68,9 @@ export default class ImageSelector extends Base {
 		})
 	}
 
-	public async Update(): Promise<void> {
-		await super.Update()
+	public async Update(): Promise<boolean> {
+		if (!(await super.Update()))
+			return false
 		this.values.forEach(value => {
 			if (!this.enabled_values.has(value))
 				this.enabled_values.set(value, false)
@@ -103,6 +104,7 @@ export default class ImageSelector extends Base {
 			* (this.image_size.y + ImageSelector.image_border_width * 2 + ImageSelector.image_gap)
 			+ ImageSelector.random_height_value
 		)
+		return true
 	}
 
 	public IsEnabled(value: string): boolean {

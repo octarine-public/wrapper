@@ -32,7 +32,6 @@ export { DOTA_CHAT_MESSAGE } from "./Enums/DOTA_CHAT_MESSAGE"
 export { DOTA_GameMode } from "./Enums/DOTA_GameMode"
 export { DOTA_GameState } from "./Enums/DOTA_GameState"
 export { Flow_t } from "./Enums/Flow_t"
-export { FontFlags_t } from "./Enums/FontFlags_t"
 export { GameActivity_t } from "./Enums/GameActivity_t"
 export { GridNavCellFlags } from "./Enums/GridNavCellFlags"
 export { LaneSelectionFlags_t } from "./Enums/LaneSelectionFlags_t"
@@ -112,12 +111,7 @@ export { default as CTurboHeroPickRules, TurboHeroPickRules } from "./Objects/Ba
 export { default as CCustomHeroPickRules, CustomHeroPickRules } from "./Objects/Base/CustomPickRules"
 export { default as DOTAGameMode, GameMode } from "./Objects/Base/DOTAGameMode"
 
-export {
-	default as RendererSDK,
-	GradientLinear,
-	GradientRadial,
-	GradientSweep,
-} from "./Native/RendererSDK"
+export { default as RendererSDK } from "./Native/RendererSDK"
 export { default as SoundSDK } from "./Native/SoundSDK"
 export { GetPositionHeight } from "./Native/WASM"
 export { default as Workers } from "./Native/Workers"

@@ -22,7 +22,7 @@ import Shop from "../Objects/Base/Shop"
 import TempTree from "../Objects/Base/TempTree"
 import Tree from "../Objects/Base/Tree"
 import Unit from "../Objects/Base/Unit"
-import { arrayRemoveCallback, orderBy } from "../Utils/ArrayExtensions"
+import { arrayRemoveCallback, orderByFirst } from "../Utils/ArrayExtensions"
 import GameState from "../Utils/GameState"
 import RendererSDK from "./RendererSDK"
 import UserCmd from "./UserCmd"
@@ -906,12 +906,12 @@ function MoveCamera(
 	current_time: number,
 ): [Vector2, boolean] {
 	if (target_pos.Distance2D(camera_vec) > 1500) {
-		const nearest = orderBy(EntityManager.GetEntitiesByClass(Unit).filter(ent => (
+		const nearest = orderByFirst(EntityManager.GetEntitiesByClass(Unit).filter(ent => (
 			ent.IsControllable
 			&& ent.RootOwner === LocalPlayer
 			&& ent.IsAlive
 			&& !ent.IsEnemy()
-		)), ent => ent.Distance(target_pos))[0]
+		)), ent => ent.Distance(target_pos))
 		if (nearest !== undefined && nearest.Distance(target_pos) < 1000) {
 			const eye_vector = WASM.GetEyeVector(default_camera_angles)
 			const lookatpos = nearest.Position.Clone()
@@ -1154,10 +1154,10 @@ function ProcessUserCmd(): void {
 		(order !== undefined || ExecuteOrder.hold_orders > 0)
 		&& last_order_target instanceof Unit
 		&& intersected_units.includes(last_order_target)
-	) ? last_order_target : orderBy(
+	) ? last_order_target : orderByFirst(
 		intersected_units,
 		ent => ent.Distance(latest_usercmd.VectorUnderCursor),
-	)[0]
+	)
 
 	if (usercmd_cache_last_wrote < current_time - usercmd_cache_delay) {
 		usercmd_cache.push(latest_usercmd.Clone())

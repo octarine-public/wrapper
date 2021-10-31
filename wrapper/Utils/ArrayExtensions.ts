@@ -60,6 +60,22 @@ export function arrayRemoveCallback<T>(ar: T[], cb: (value: T, index: number, ob
 	return true
 }
 
+/**
+ * Similar to orderBy(ar, cb)[0]
+ */
+export function orderByFirst<T>(ar: T[], cb: (obj: T) => number): Nullable<T> {
+	let lowest_score = Infinity,
+		lowest_scored: Nullable<T>
+	for (const el of ar) {
+		const score = cb(el)
+		if (score < lowest_score) {
+			lowest_score = score
+			lowest_scored = el
+		}
+	}
+	return lowest_scored
+}
+
 export function orderBy<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return ar.sort((a, b) => (cb(a) as number) - (cb(b) as number))
 }

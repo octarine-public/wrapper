@@ -26,20 +26,18 @@ class MinimapIcon {
 		pos: Vector2,
 		size = new Vector2(-1, -1),
 		color = Color.White,
-		minimap_block_rect_pos1: Vector2,
-		minimap_block_rect_size: Vector2,
 	): void {
-		RendererSDK.ImagePart(
+		RendererSDK.Image(
 			this.path,
 			pos,
 			-1,
-			this.pos,
-			this.size,
 			size,
 			color,
 			0,
-			minimap_block_rect_pos1,
-			minimap_block_rect_size,
+			GUIInfo.Minimap.Minimap,
+			false,
+			this.pos,
+			this.size,
 		)
 	}
 }
@@ -89,7 +87,7 @@ class MinimapIconRenderer {
 		private readonly is_ping: boolean,
 		private readonly is_hero_icon: boolean,
 	) { }
-	public Draw(minimap_block_rect_pos1: Vector2, minimap_block_rect_size: Vector2): void {
+	public Draw(): void {
 		const additional_alpha = this.is_ping && this.end_time >= GameState.RawGameTime
 			? Math.min((this.end_time - GameState.RawGameTime) / 3, 1)
 			: 1
@@ -117,8 +115,6 @@ class MinimapIconRenderer {
 			minimap_icon_pos,
 			minimap_icon_size,
 			color,
-			minimap_block_rect_pos1,
-			minimap_block_rect_size,
 		)
 	}
 }
@@ -178,13 +174,10 @@ EventsSDK.on("Draw", () => {
 	if (!GameRules?.IsInGame || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	hero_icon_scale = MinimapIconRenderer.GetSizeMultiplier(ConVars.GetInt("dota_minimap_hero_size"))
-	const minimap_block_rect = GUIInfo.Minimap.Minimap
-	const minimap_block_rect_pos1 = minimap_block_rect.pos1,
-		minimap_block_rect_size = minimap_block_rect.Size
 	ArrayExtensions.orderBy(
 		[...minimap_icons_active.values()],
 		icon => icon.priority,
-	).forEach(icon => icon.Draw(minimap_block_rect_pos1, minimap_block_rect_size))
+	).forEach(icon => icon.Draw())
 	const icons_keys_to_be_removed: any[] = []
 	minimap_icons_active.forEach((icon, key) => {
 		if (icon.end_time < GameState.RawGameTime)

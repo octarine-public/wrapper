@@ -100,7 +100,7 @@ class MenuManager {
 			Base.SaveConfigASAP = true
 		}
 		if (Base.SaveConfigASAP) {
-			writeConfig("default.json", StringToUTF8(JSON.stringify(this.ConfigValue)).buffer)
+			writeConfig("default.json", StringToUTF8(JSON.stringify(this.ConfigValue)))
 			Base.SaveConfigASAP = false
 		}
 		if (!this.is_open)
@@ -108,6 +108,10 @@ class MenuManager {
 		const max_width = this.EntriesSizeX
 		this.header.TotalSize.x = max_width
 		this.header.TotalSize.y = this.header.OriginalSize.y
+		if (this.header.QueuedUpdate) {
+			this.header.QueuedUpdate = false
+			await this.header.Update()
+		}
 		await this.header.Render()
 		const position = this.header.Position.Clone().AddScalarY(this.header.TotalSize.y)
 		for (const node of this.entries)
@@ -115,6 +119,10 @@ class MenuManager {
 				position.CopyTo(node.Position)
 				node.TotalSize.x = max_width
 				node.TotalSize.y = node.OriginalSize.y
+				if (node.QueuedUpdate) {
+					node.QueuedUpdate = false
+					await node.Update()
+				}
 				await node.Render()
 				position.AddScalarY(node.TotalSize.y)
 			}
@@ -122,7 +130,7 @@ class MenuManager {
 			if (node.IsVisible)
 				await node.PostRender()
 	}
-	public OnWindowSizeChanged(): void {
+	public Update(): void {
 		this.entries.forEach(entry => entry.Update(true))
 	}
 
@@ -197,7 +205,8 @@ Events.after("Draw", async () => {
 	RendererSDK.EmitDraw()
 })
 
-EventsSDK.on("WindowSizeChanged", () => Menu.OnWindowSizeChanged())
+EventsSDK.on("WindowSizeChanged", () => Menu.Update())
+EventsSDK.on("UnitAbilityDataUpdated", () => Menu.Update())
 
 InputEventSDK.on("MouseKeyDown", async key => {
 	if (key === VMouseKeys.MK_LBUTTON)

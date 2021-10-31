@@ -1,9 +1,9 @@
 import Color from "../Base/Color"
 import Matrix4x4 from "../Base/Matrix4x4"
 import QAngle from "../Base/QAngle"
+import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import { FontFlags_t } from "../Enums/FontFlags_t"
 import EntityManager from "../Managers/EntityManager"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
@@ -16,256 +16,59 @@ import { CMeshDrawCall, ParseMesh } from "../Resources/ParseMesh"
 import { ParseModel } from "../Resources/ParseModel"
 import { GetMapNumberProperty, GetMapStringProperty, MapToMatrix4x4, MapToNumberArray, MapToStringArray } from "../Resources/ParseUtils"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
+import { orderByFirst } from "../Utils/ArrayExtensions"
 import BinaryStream from "../Utils/BinaryStream"
-import { HasBit } from "../Utils/BitsExtensions"
+import { HasBit, HasMask } from "../Utils/BitsExtensions"
 import GameState from "../Utils/GameState"
 import { DegreesToRadian } from "../Utils/Math"
-import readFile from "../Utils/readFile"
+import readFile, { tryFindFile } from "../Utils/readFile"
 import * as WASM from "./WASM"
 import Workers from "./Workers"
 
 enum CommandID {
-	// state related
-	TRANSLATE = 0,
-	SCALE,
-	SKEW,
-	ROTATE,
-	CLIP_RECT,
-	CLIP_ROUND_RECT,
-	CLIP_PATH,
+	BEGIN_CLIP = 0,
+	END_CLIP,
 
-	// PAINT_*
-	PAINT_SET_COLOR,
-	PAINT_SET_COLOR_FILTER,
-	PAINT_SET_STYLE,
-	PAINT_SET_STROKE_WIDTH,
-	PAINT_SET_STROKE_MITER,
-	PAINT_SET_STROKE_CAP,
-	PAINT_SET_STROKE_JOIN,
-	PAINT_SET_PATH_EFFECT,
-	PAINT_SET_SHADER,
+	TRANSLATE,
+	ROTATE,
+	SET_SCISSOR,
 
 	// PATH_*
-	PATH_RESET,
-	PATH_SET_FILL_TYPE,
 	PATH_MOVE_TO,
 	PATH_LINE_TO,
 	PATH_ADD_RECT,
 	PATH_ADD_ROUND_RECT,
-	PATH_ADD_OVAL,
+	PATH_ADD_ELLIPSE,
 	PATH_ADD_ARC,
-	PATH_QUAD_TO,
-	PATH_CONIC_TO,
 	PATH_CUBIC_TO,
+	PATH_QUAD_TO,
 	PATH_CLOSE,
-	PATH_OFFSET,
 
 	// DRAW
-	IMAGE,
 	TEXT,
+	SVG,
 	PATH,
 }
-enum ColorFilterType {
-	NONE = 0,
-	BLEND,
-	MATRIX,
-}
-enum BlendMode {
-	Clear, // replaces destination with zero: fully transparent
-	Src, // replaces destination
-	Dst, // preserves destination
-	SrcOver, // source over destination
-	DstOver, // destination over source
-	SrcIn, // source trimmed inside destination
-	DstIn, // destination trimmed by source
-	SrcOut, // source trimmed outside destination
-	DstOut, // destination trimmed outside source
-	SrcATop, // source inside destination blended with destination
-	DstATop, // destination inside source blended with source
-	Xor, // each of source and destination trimmed outside the other
-	Plus, // sum of colors
-	Modulate, // product of premultiplied colors; darkens destination
-	Screen, // multiply inverse of pixels, inverting result; brightens destination
 
-	Overlay, // multiply or screen, depending on destination
-	Darken, // darker of source and destination
-	Lighten, // lighter of source and destination
-	ColorDodge, // brighten destination to reflect source
-	ColorBurn, // darken destination to reflect source
-	HardLight, // multiply or screen, depending on source
-	SoftLight, // lighten or darken, depending on source
-	Difference, // subtract darker from lighter with higher contrast
-	Exclusion, // subtract darker from lighter with lower contrast
-	Multiply, // multiply source with destination, darkening image
-
-	Hue, // hue of source with saturation and luminosity of destination
-	Saturation, // saturation of source with hue and luminosity of destination
-	Color, // hue and saturation of source with luminosity of destination
-	Luminosity, // luminosity of source with hue and saturation of destination
-}
-// @ts-ignore
-// TODO
-enum PathEffectType {
-	NONE = 0,
-	DISCRETE,
-	DASH,
-}
-// @ts-ignore
-// TODO
-enum ShaderType {
-	NONE = 0,
-	GRADIENT_LINEAR,
-	GRADIENT_RADIAL,
-	GRADIENT_SWEEP,
-}
-enum PaintType {
-	FILL = 0,
-	STROKE,
-	STROKE_AND_FILL,
+enum PathFlags {
+	GRAYSCALE = 1 << 0,
+	IMAGE_SHADER = 1 << 1,
+	CUBIC_RESAMPLER = 1 << 2,
+	FILL = 1 << 6,
+	STROKE = 1 << 7,
+	STROKE_AND_FILL = FILL | STROKE,
 }
 
-abstract class Gradient {
-	public apply(): void {
-		// to be implemented in child classes
-	}
-}
-
-export class GradientLinear extends Gradient {
+class Font {
 	constructor(
-		public startPos: Vector2,
-		public endPos: Vector2,
-		public premul: boolean,
-		public colors: Color[],
-		public positions?: number[],
-	) {
-		super()
-	}
-	public apply(): void {
-		const have_positions = this.positions !== undefined
-		const color_count = this.colors.length
-		if (color_count < 2)
-			throw "Number of colors should be >=2"
-		if (color_count > 255)
-			throw "Number of colors should be <255"
-		if (have_positions && this.positions!.length !== color_count)
-			throw "Positions should be either undefined or match color count"
-
-		const commandStream = RendererSDK.AllocateCommandSpace_(
-			CommandID.PAINT_SET_SHADER,
-			1 + (4 * 4) + 1 + 1 + 1 + (color_count * 4)
-			+ (have_positions ? color_count * 4 : 0),
-		)
-		commandStream.WriteUint8(ShaderType.GRADIENT_LINEAR)
-		commandStream.WriteFloat32(this.startPos.x)
-		commandStream.WriteFloat32(this.startPos.y)
-		commandStream.WriteFloat32(this.endPos.x)
-		commandStream.WriteFloat32(this.endPos.y)
-		commandStream.WriteUint8(this.premul ? 1 : 0)
-		commandStream.WriteUint8(color_count)
-		commandStream.WriteUint8(have_positions ? 1 : 0)
-		this.colors.forEach(color => {
-			commandStream.WriteUint8(color.r)
-			commandStream.WriteUint8(color.g)
-			commandStream.WriteUint8(color.b)
-			commandStream.WriteUint8(color.a)
-		})
-		if (have_positions)
-			this.positions!.forEach(position => commandStream.WriteFloat32(position / 100))
-	}
+		public readonly FontID: number,
+		public readonly Weight: number,
+		public readonly Italic: boolean,
+	) { }
 }
 
-export class GradientRadial extends Gradient {
-	constructor(
-		public centerPos: Vector2,
-		public radius: number,
-		public premul: boolean,
-		public colors: Color[],
-		public positions?: number[],
-	) {
-		super()
-	}
-	public apply(): void {
-		const have_positions = this.positions !== undefined
-		const color_count = this.colors.length
-		if (color_count < 2)
-			throw "Number of colors should be >=2"
-		if (color_count > 255)
-			throw "Number of colors should be <255"
-		if (have_positions && this.positions!.length !== color_count)
-			throw "Positions should be either undefined or match color count"
-
-		const commandStream = RendererSDK.AllocateCommandSpace_(
-			CommandID.PAINT_SET_SHADER,
-			1 + (3 * 4) + 1 + 1 + 1 + (color_count * 4)
-			+ (have_positions ? color_count * 4 : 0),
-		)
-		commandStream.WriteUint8(ShaderType.GRADIENT_RADIAL)
-		commandStream.WriteFloat32(this.centerPos.x)
-		commandStream.WriteFloat32(this.centerPos.y)
-		commandStream.WriteFloat32(this.radius)
-		commandStream.WriteUint8(this.premul ? 1 : 0)
-		commandStream.WriteUint8(color_count)
-		commandStream.WriteUint8(have_positions ? 1 : 0)
-		this.colors.forEach(color => {
-			commandStream.WriteUint8(color.r)
-			commandStream.WriteUint8(color.g)
-			commandStream.WriteUint8(color.b)
-			commandStream.WriteUint8(color.a)
-		})
-		if (have_positions)
-			this.positions!.forEach(position => commandStream.WriteFloat32(position / 100))
-	}
-}
-
-export class GradientSweep extends Gradient {
-	constructor(
-		public centerPos: Vector2,
-		public startAngle: number,
-		public endAngle: number,
-		public premul: boolean,
-		public colors: Color[],
-		public positions?: number[],
-	) {
-		super()
-	}
-	public apply(): void {
-		const have_positions = this.positions !== undefined
-		const color_count = this.colors.length
-		if (color_count < 2)
-			throw "Number of colors should be >=2"
-		if (color_count > 255)
-			throw "Number of colors should be <255"
-		if (have_positions && this.positions!.length !== color_count)
-			throw "Positions should be either undefined or match color count"
-
-		const commandStream = RendererSDK.AllocateCommandSpace_(
-			CommandID.PAINT_SET_SHADER,
-			1 + (4 * 4) + 1 + 1 + 1 + (color_count * 4)
-			+ (have_positions ? color_count * 4 : 0),
-		)
-		commandStream.WriteUint8(ShaderType.GRADIENT_SWEEP)
-		commandStream.WriteFloat32(this.centerPos.x)
-		commandStream.WriteFloat32(this.centerPos.y)
-		commandStream.WriteFloat32(this.startAngle)
-		commandStream.WriteFloat32(this.endAngle)
-		commandStream.WriteUint8(this.premul ? 1 : 0)
-		commandStream.WriteUint8(color_count)
-		commandStream.WriteUint8(have_positions ? 1 : 0)
-		this.colors.forEach(color => {
-			commandStream.WriteUint8(color.r)
-			commandStream.WriteUint8(color.g)
-			commandStream.WriteUint8(color.b)
-			commandStream.WriteUint8(color.a)
-		})
-		if (have_positions)
-			this.positions!.forEach(position => commandStream.WriteFloat32(position / 100))
-	}
-}
-
-type Matrix = number[]
-type RenderColor = Color | Matrix | Gradient
 class CRendererSDK {
-	public readonly DefaultFontName = "Calibri"
+	public readonly DefaultFontName = "Roboto"
 	public readonly DefaultTextSize = 18
 	/**
 	 * Default Size of Shape = Width 32 x Height 32
@@ -275,12 +78,6 @@ class CRendererSDK {
 	public readonly DefaultShapeSize: Vector2 = new Vector2(32, 32)
 
 	public readonly WindowSize = new Vector2()
-	public readonly GrayScale: Matrix = [
-		0.2126, 0.7152, 0.0722, 0, 0,
-		0.2126, 0.7152, 0.0722, 0, 0,
-		0.2126, 0.7152, 0.0722, 0, 0,
-		0, 0, 0, 1, 0,
-	]
 
 	private commandCache = new Uint8Array()
 	private commandStream = new BinaryStream(new DataView(
@@ -290,11 +87,17 @@ class CRendererSDK {
 	))
 	private commandCacheSize = 0
 	private smallCommandCacheFrames = 0
-	private font_cache = new Map</* name */string, Map</* weight */number, Map</* width */number, Map</* italic */boolean, /* font_id */number>>>>()
-	private texture_cache = new Map</* path */string, number>()
+	private readonly font_cache = new Map<string, Font[]>()
+	private readonly texture_cache = new Map</* path */string, [number, boolean]>()
+	private empty_texture: Nullable<[number, boolean]>
 	private clear_texture_cache = false
-	private tex2size = new Map</* texture_id */number, Vector2>()
+	private readonly tex2size = new Map</* texture_id */number, Vector2>()
+	private readonly queued_fonts: [string, string, number, boolean, string][] = []
+	private in_draw = false
 
+	public get IsInDraw(): boolean {
+		return this.in_draw
+	}
 	/**
 	 * @param pos world position that needs to be turned to screen position
 	 * @returns screen position, or undefined
@@ -379,16 +182,16 @@ class CRendererSDK {
 	public FilledCircle(
 		vecPos: Vector2,
 		vecSize: Vector2,
-		color: RenderColor = Color.White,
+		color = Color.White,
 		rotation_deg = 0,
-		custom_clip_pos?: Vector2,
-		custom_clip_size?: Vector2,
+		custom_scissor?: Rectangle,
+		grayscale = false,
 	): void {
+		if (custom_scissor !== undefined)
+			this.SetScissor(custom_scissor)
 		this.Translate(vecPos)
-		if (custom_clip_pos !== undefined && custom_clip_size !== undefined)
-			this.SetClipRect(custom_clip_pos.Subtract(vecPos), custom_clip_size)
 		this.Rotate(rotation_deg)
-		this.Oval(vecSize, 1, color)
+		this.Ellipse(vecSize, 0, PathFlags.FILL, color, grayscale)
 	}
 	/**
 	 *
@@ -396,17 +199,17 @@ class CRendererSDK {
 	public OutlinedCircle(
 		vecPos: Vector2,
 		vecSize: Vector2,
-		color: RenderColor = Color.White,
+		color = Color.White,
+		width = 5,
 		rotation_deg = 0,
-		custom_clip_pos?: Vector2,
-		custom_clip_size?: Vector2,
+		custom_scissor?: Rectangle,
+		grayscale = false,
 	): void {
+		if (custom_scissor !== undefined)
+			this.SetScissor(custom_scissor)
 		this.Translate(vecPos)
-		if (custom_clip_pos !== undefined && custom_clip_size !== undefined)
-			this.SetClipRect(custom_clip_pos.Subtract(vecPos), custom_clip_size)
 		this.Rotate(rotation_deg)
-		this.SetFillType(PaintType.STROKE)
-		this.Oval(vecSize, 1, color)
+		this.Ellipse(vecSize, width, PathFlags.STROKE, color, grayscale)
 	}
 	/**
 	 * @param vecSize default Width 5 x Height 5
@@ -416,20 +219,20 @@ class CRendererSDK {
 	public Line(
 		start: Vector2 = new Vector2(),
 		end = start.Add(this.DefaultShapeSize),
-		color: RenderColor = Color.White,
+		fillColor = Color.White,
 		width = 5,
 		rotation_deg = 0,
-		custom_clip_pos?: Vector2,
-		custom_clip_size?: Vector2,
+		custom_scissor?: Rectangle,
+		strokeColor = fillColor,
+		grayscale = false,
 	): void {
+		if (custom_scissor !== undefined)
+			this.SetScissor(custom_scissor)
 		this.Translate(start)
-		if (custom_clip_pos !== undefined && custom_clip_size !== undefined)
-			this.SetClipRect(custom_clip_pos.Subtract(start), custom_clip_size)
 		this.Rotate(rotation_deg)
 		this.PathMoveTo(0, 0)
 		this.PathLineTo(end.x - start.x, end.y - start.y)
-		this.SetFillType(PaintType.STROKE_AND_FILL)
-		this.Path(width, color)
+		this.Path(width, fillColor, strokeColor, PathFlags.STROKE_AND_FILL, grayscale)
 	}
 	/**
 	 * @param vecSize default Width 5 x Height 5
@@ -439,21 +242,16 @@ class CRendererSDK {
 	public FilledRect(
 		vecPos = new Vector2(),
 		vecSize = this.DefaultShapeSize,
-		color: RenderColor = Color.White,
+		color = Color.White,
 		rotation_deg = 0,
-		custom_clip_pos?: Vector2,
-		custom_clip_size?: Vector2,
+		custom_scissor?: Rectangle,
+		grayscale = false,
 	): void {
+		if (custom_scissor !== undefined)
+			this.SetScissor(custom_scissor)
 		this.Translate(vecPos)
-		if (custom_clip_pos !== undefined && custom_clip_size !== undefined)
-			this.SetClipRect(custom_clip_pos.Subtract(vecPos), custom_clip_size)
 		this.Rotate(rotation_deg)
-		this.AllocateCommandSpace(CommandID.PATH_ADD_RECT, 4 * 4)
-		this.commandStream.WriteFloat32(0)
-		this.commandStream.WriteFloat32(0)
-		this.commandStream.WriteFloat32(vecSize.x)
-		this.commandStream.WriteFloat32(vecSize.y)
-		this.Path(1, color)
+		this.Rect(vecSize, 0, PathFlags.FILL, color, grayscale)
 	}
 	/**
 	 * @param vecSize default Width 5 x Height 5
@@ -464,25 +262,16 @@ class CRendererSDK {
 		vecPos = new Vector2(),
 		vecSize = this.DefaultShapeSize,
 		width = 1,
-		color: RenderColor = Color.White,
+		color = Color.White,
 		rotation_deg = 0,
+		custom_scissor?: Rectangle,
+		grayscale = false,
 	): void {
-		// TODO: rewrite it without using negative values
-		const tmpVecSize = new Vector2()
-		tmpVecSize.x = vecSize.x
-		tmpVecSize.y = width
-		this.FilledRect(vecPos, tmpVecSize, color, rotation_deg)
-		tmpVecSize.x = width
-		tmpVecSize.y = vecSize.y
-		this.FilledRect(vecPos, tmpVecSize, color, rotation_deg)
-
-		const vecPos2 = vecPos.Add(vecSize)
-		tmpVecSize.x = -vecSize.x
-		tmpVecSize.y = -width
-		this.FilledRect(vecPos2, tmpVecSize, color, rotation_deg)
-		tmpVecSize.x = -width
-		tmpVecSize.y = -vecSize.y
-		this.FilledRect(vecPos2, tmpVecSize, color, rotation_deg)
+		if (custom_scissor !== undefined)
+			this.SetScissor(custom_scissor)
+		this.Translate(vecPos)
+		this.Rotate(rotation_deg)
+		this.Rect(vecSize, width, PathFlags.STROKE, color, grayscale)
 	}
 	/**
 	 * @param path must end with "_c" (without double-quotes), if that's vtex_c
@@ -492,102 +281,108 @@ class CRendererSDK {
 		vecPos: Vector2,
 		round = -1,
 		vecSize = new Vector2(-1, -1),
-		color: RenderColor = Color.White,
+		color = Color.White,
 		rotation_deg = 0,
-		custom_clip_pos?: Vector2,
-		custom_clip_size?: Vector2,
+		custom_scissor?: Rectangle,
+		grayscale = false,
+		subtexOffset?: Vector2,
+		subtexSize?: Vector2,
 	): void {
-		this.Translate(vecPos)
-		if (custom_clip_pos !== undefined && custom_clip_size !== undefined)
-			this.SetClipRect(custom_clip_pos.Subtract(vecPos), custom_clip_size)
-		this.Rotate(rotation_deg)
-		this.SetColorFilter(color, BlendMode.Modulate)
-
 		const texture_id = this.GetTexture(path) // better put it BEFORE new command
-		if (vecSize.x <= 0 || vecSize.y <= 0) {
-			const size = this.tex2size.get(texture_id)!
-			if (vecSize.x <= 0)
-				vecSize.x = size.x
-			if (vecSize.y <= 0)
-				vecSize.y = size.y
-		}
-		if (round >= 0)
-			this.SetClipOval(
-				new Vector2().AddScalarForThis(round / 2),
-				vecSize.SubtractScalar(round / 2),
-			)
+		const orig_size = this.tex2size.get(texture_id[0])!
+		const half_round = round / 2
+		if (vecSize.x <= 0)
+			vecSize.x = subtexSize?.x ?? orig_size.x
+		if (vecSize.y <= 0)
+			vecSize.y = subtexSize?.y ?? orig_size.y
+		if (texture_id[1]) {
+			if (round >= 0) {
+				this.BeginClip(false)
+				this.FilledCircle(
+					vecPos.AddScalar(half_round),
+					vecSize.SubtractScalar(half_round),
+					Color.White,
+					rotation_deg,
+					custom_scissor,
+				)
+				this.EndClip()
+			}
 
-		this.AllocateCommandSpace(CommandID.IMAGE, 3 * 4)
-		this.commandStream.WriteFloat32(vecSize.x)
-		this.commandStream.WriteFloat32(vecSize.y)
-		this.commandStream.WriteUint32(texture_id)
-	}
-	/**
-	 * @param path must end with "_c" (without double-quotes), if that's vtex_c
-	 */
-	public ImagePart(
-		path: string,
-		vecPos: Vector2,
-		round = -1,
-		imagePos = new Vector2(),
-		imageSize = new Vector2(-1, -1),
-		vecSize = new Vector2(-1, -1),
-		color: RenderColor = Color.White,
-		rotation_deg = 0,
-		custom_clip_pos?: Vector2,
-		custom_clip_size?: Vector2,
-	): void {
-		const texture_id = this.GetTexture(path)
-		const tex_size = this.tex2size.get(texture_id)!
-		if (imageSize.x === -1)
-			imageSize.x = tex_size.x
-		if (imageSize.y === -1)
-			imageSize.y = tex_size.y
-		if (vecSize.x === -1)
-			vecSize.x = imageSize.x
-		if (vecSize.y === -1)
-			vecSize.y = imageSize.y
-		const size = tex_size.Multiply(vecSize).DivideForThis(imageSize)
-		this.Translate(vecPos)
-		if (custom_clip_pos !== undefined && custom_clip_size !== undefined)
-			this.SetClipRect(custom_clip_pos.Subtract(vecPos), custom_clip_size)
-		this.Rotate(rotation_deg)
-		if (round >= 0)
-			this.SetClipOval(
-				new Vector2().AddScalar(round / 2),
-				vecSize.SubtractScalar(round / 2),
+			if (custom_scissor !== undefined)
+				this.SetScissor(custom_scissor)
+			this.Translate(vecPos)
+			this.Rotate(rotation_deg)
+			this.AllocateCommandSpace(CommandID.SVG, 4 * 4 + 1)
+			this.commandStream.WriteUint32(texture_id[0])
+			this.commandStream.WriteFloat32(vecSize.x)
+			this.commandStream.WriteFloat32(vecSize.y)
+			this.commandStream.WriteColor(color)
+			this.commandStream.WriteBoolean(grayscale)
+		} else {
+			if (custom_scissor !== undefined)
+				this.SetScissor(custom_scissor)
+			this.Translate(vecPos)
+			this.Rotate(rotation_deg)
+			if (round >= 0) {
+				this.AllocateCommandSpace(CommandID.PATH_ADD_ELLIPSE, 4 * 4)
+				this.commandStream.WriteFloat32(half_round)
+				this.commandStream.WriteFloat32(half_round)
+				this.commandStream.WriteFloat32(vecSize.x - half_round)
+				this.commandStream.WriteFloat32(vecSize.y - half_round)
+			} else {
+				this.AllocateCommandSpace(CommandID.PATH_ADD_RECT, 4 * 4)
+				this.commandStream.WriteFloat32(0)
+				this.commandStream.WriteFloat32(0)
+				this.commandStream.WriteFloat32(vecSize.x)
+				this.commandStream.WriteFloat32(vecSize.y)
+			}
+			const flags = PathFlags.FILL | PathFlags.IMAGE_SHADER
+			// if (orig_size.x !== vecSize.x || orig_size.y !== vecSize.y)
+			// 	flags |= PathFlags.CUBIC_RESAMPLER
+			const size_x = subtexSize?.x ?? orig_size.x,
+				size_y = subtexSize?.y ?? orig_size.y
+			this.Path(
+				1,
+				color,
+				color,
+				flags,
+				grayscale,
+				texture_id[0],
+				(subtexOffset?.x ?? 0) * (vecSize.x / size_x),
+				(subtexOffset?.y ?? 0) * (vecSize.x / size_y),
+				vecSize.x * (orig_size.x / size_x),
+				vecSize.y * (orig_size.y / size_y),
 			)
-		else
-			this.SetClipRect(new Vector2(), vecSize)
-		this.Image(
-			path,
-			imagePos.Multiply(vecSize).DivideForThis(imageSize).Negate(),
-			-1,
-			size,
-			color,
-			0,
-		)
+		}
 	}
 	public GetImageSize(path: string): Vector2 {
-		return this.tex2size.get(this.GetTexture(path))!
+		return this.tex2size.get(this.GetTexture(path)[0])!
 	}
-	/**
-	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
-	 * @param flags default: FontFlags_t.OUTLINE
-	 */
-	public Text(text: string, vecPos = new Vector2(), color: RenderColor = Color.White, font_name = this.DefaultFontName, font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
+	public Text(text: string, vecPos = new Vector2(), color = Color.White, font_name = this.DefaultFontName, font_size = this.DefaultTextSize, weight = 400, italic = false, outlined = true): void {
 		if (text === "")
 			return
 
+		if (outlined)
+			this.Text(
+				text,
+				vecPos.Clone().SubtractScalarX(1).AddScalarY(1),
+				Color.Black,
+				font_name,
+				font_size,
+				weight,
+				italic,
+				false,
+			)
+
+		const font_id = this.GetFont(font_name, weight, italic)
+		if (font_id === -1)
+			return
+
 		this.Translate(vecPos)
-		this.SetColor(color)
-		const font_id = this.GetFont(font_name, weight, width, italic)
-		this.AllocateCommandSpace(CommandID.TEXT, 5 * 4 + 2)
-		this.commandStream.WriteUint32(font_id)
-		this.commandStream.WriteFloat32(font_size)
-		this.commandStream.WriteFloat32(scaleX)
-		this.commandStream.WriteFloat32(skewX)
-		this.commandStream.WriteUint16(flags)
+		this.AllocateCommandSpace(CommandID.TEXT, 2 * 2 + 2 * 4)
+		this.commandStream.WriteUint16(font_id)
+		this.commandStream.WriteUint16(Math.round(font_size + 2))
+		this.commandStream.WriteColor(color)
 		const length_pos = this.commandStream.pos
 		this.commandStream.WriteUint32(0)
 		{
@@ -611,15 +406,17 @@ class CRendererSDK {
 	/**
 	 * @returns text size defined as new Vector3(width, height, under_line)
 	 */
-	public GetTextSize(text: string, font_name = this.DefaultFontName, font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): Vector3 {
+	public GetTextSize(text: string, font_name = this.DefaultFontName, font_size = this.DefaultTextSize, weight = 400, italic = false): Vector3 {
+		if (!this.in_draw)
+			console.error("Unsafe GetTextSize usage outside of Draw event", new Error().stack)
+
 		if (text === "")
 			return new Vector3()
 
-		const font = this.GetFont(font_name, weight, width, italic)
-		IOBuffer[0] = font_size
-		IOBuffer[1] = scaleX
-		IOBuffer[2] = skewX
-		Renderer.GetTextSize(text, font)
+		const font_id = this.GetFont(font_name, weight, italic)
+		if (font_id === -1)
+			return new Vector3()
+		Renderer.GetTextSize(text, font_id, Math.round(font_size + 2))
 		return new Vector3(
 			IOBuffer[0],
 			IOBuffer[1],
@@ -632,16 +429,17 @@ class CRendererSDK {
 	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
 	 * @param flags default: FontFlags_t.ANTIALIAS
 	 */
-	public TextAroundMouse(text: string, vec?: Vector2 | false, color: RenderColor = Color.Yellow, font_name = this.DefaultFontName, font_size = 30, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
+	public TextAroundMouse(text: string, vec?: Vector2 | false, color = Color.Yellow, font_name = this.DefaultFontName, font_size = 30, weight = 400, italic = false, outlined = true): void {
 		let vecMouse = Input.CursorOnScreen.AddScalarX(30).AddScalarY(15)
 
 		if (vec !== undefined && vec !== false)
 			vecMouse = vecMouse.Add(vec)
 
-		this.Text(text, vecMouse, color, font_name, font_size, weight, width, italic, flags, scaleX, skewX)
+		this.Text(text, vecMouse, color, font_name, font_size, weight, italic, outlined)
 	}
 
 	public async BeforeDraw() {
+		this.in_draw = true
 		WASM.CloneWorldToProjection(IOBuffer.slice(0, 16))
 		const prev_width = this.WindowSize.x,
 			prev_height = this.WindowSize.y
@@ -650,10 +448,22 @@ class CRendererSDK {
 		if (this.WindowSize.x !== prev_width || this.WindowSize.y !== prev_height)
 			await EventsSDK.emit("WindowSizeChanged", false)
 		if (this.clear_texture_cache) {
-			this.texture_cache.forEach(id => this.FreeTexture(id))
+			this.texture_cache.forEach(tex => {
+				if (tex !== this.empty_texture)
+					this.FreeTexture(tex[0])
+			})
+			if (this.empty_texture !== undefined)
+				this.FreeTexture(this.empty_texture[0])
 			this.texture_cache.clear()
+			this.tex2size.clear()
+			this.empty_texture = undefined
 			this.clear_texture_cache = false
 		}
+
+		this.queued_fonts.forEach(([name, path, weight, italic, stack]) =>
+			this.CreateFont(name, path, weight, italic, stack),
+		)
+		this.queued_fonts.splice(0)
 	}
 	public EmitDraw() {
 		Renderer.ExecuteCommandBuffer(this.commandCache.subarray(0, this.commandCacheSize))
@@ -670,6 +480,7 @@ class CRendererSDK {
 			this.smallCommandCacheFrames = 0
 		this.commandStream.pos = 0
 		this.commandCacheSize = 0
+		this.in_draw = false
 	}
 	public GetAspectRatio(window_size = this.WindowSize) {
 		const res = window_size.x / window_size.y
@@ -688,14 +499,15 @@ class CRendererSDK {
 		percent: number,
 		vecPos: Vector2,
 		vecSize: Vector2,
-		color: RenderColor = Color.White,
+		fillColor = Color.White,
 		rotation_deg = 0,
-		custom_clip_pos?: Vector2,
-		custom_clip_size?: Vector2,
+		custom_scissor?: Rectangle,
+		strokeColor = fillColor,
+		grayscale = false,
 	): void {
+		if (custom_scissor !== undefined)
+			this.SetScissor(custom_scissor)
 		this.Translate(vecPos)
-		if (custom_clip_pos !== undefined && custom_clip_size !== undefined)
-			this.SetClipRect(custom_clip_pos.Subtract(vecPos), custom_clip_size)
 		this.Rotate(rotation_deg)
 		percent = Math.min(percent, 100)
 
@@ -724,7 +536,7 @@ class CRendererSDK {
 			const pt = this.PointOnBounds(startAngle + angle, vecSize)
 			this.PathLineTo(pt.x, pt.y)
 		}
-		this.Path(1, color)
+		this.Path(1, fillColor, strokeColor, PathFlags.STROKE_AND_FILL, grayscale)
 	}
 	public Arc(
 		baseAngle: number,
@@ -733,21 +545,32 @@ class CRendererSDK {
 		vecSize: Vector2,
 		fill = false,
 		width = 5,
-		color: RenderColor = Color.White,
+		color = Color.White,
 		rotation_deg = 0,
-		custom_clip_pos?: Vector2,
-		custom_clip_size?: Vector2,
+		custom_scissor?: Rectangle,
+		grayscale = false,
 	): void {
-		this.Translate(vecPos)
-		if (custom_clip_pos !== undefined && custom_clip_size !== undefined)
-			this.SetClipRect(custom_clip_pos.Subtract(vecPos), custom_clip_size)
-		this.Rotate(rotation_deg)
 		if (Number.isNaN(baseAngle) || !Number.isFinite(baseAngle))
 			baseAngle = 0
 		if (Number.isNaN(percent) || !Number.isFinite(percent))
 			percent = 100
 		percent = Math.min(Math.max(percent / 100, 0), 1)
-		this.SetFillType(fill ? PaintType.STROKE_AND_FILL : PaintType.STROKE)
+
+		if (percent >= 1) {
+			if (fill)
+				this.FilledCircle(vecPos, vecSize, color, rotation_deg, custom_scissor)
+			else
+				this.OutlinedCircle(vecPos, vecSize, color, width, rotation_deg, custom_scissor)
+			return
+		}
+
+		if (custom_scissor !== undefined)
+			this.SetScissor(custom_scissor)
+		this.Translate(vecPos)
+		this.Rotate(rotation_deg)
+
+		baseAngle = DegreesToRadian(baseAngle)
+		const sweepAngle = DegreesToRadian(360 * percent * Math.sign(baseAngle))
 
 		this.AllocateCommandSpace(CommandID.PATH_ADD_ARC, 6 * 4 + 1)
 		this.commandStream.WriteFloat32(0)
@@ -755,9 +578,17 @@ class CRendererSDK {
 		this.commandStream.WriteFloat32(vecSize.x)
 		this.commandStream.WriteFloat32(vecSize.y)
 		this.commandStream.WriteFloat32(baseAngle)
-		this.commandStream.WriteFloat32(360 * percent * Math.sign(baseAngle))
-		this.commandStream.WriteUint8(fill ? 1 : 0)
-		this.Path(width, color)
+		this.commandStream.WriteFloat32(sweepAngle)
+		this.commandStream.WriteBoolean(fill)
+		this.Path(
+			width,
+			color,
+			color,
+			fill
+				? PathFlags.FILL
+				: PathFlags.STROKE,
+			grayscale,
+		)
 	}
 	public AllocateCommandSpace_(commandID: CommandID, bytes: number): BinaryStream {
 		this.AllocateCommandSpace(commandID, bytes)
@@ -766,19 +597,72 @@ class CRendererSDK {
 	public FreeTextureCache(): void {
 		this.clear_texture_cache = true
 	}
-	private Oval(vecSize: Vector2, width: number, color: RenderColor): void {
-		this.AllocateCommandSpace(CommandID.PATH_ADD_OVAL, 4 * 4)
+	public CreateFont(name: string, path: string, weight: number, italic: boolean, stack = new Error().stack!): void {
+		const realPath = tryFindFile(path, 1)
+		if (realPath === undefined) {
+			console.error(`Reading font "${name}" with path "${path}" failed`, stack)
+			return
+		}
+
+		if (!this.in_draw) {
+			this.queued_fonts.push([name, realPath, weight, italic, stack])
+			return
+		}
+
+		const data = fread(realPath)
+		if (data === undefined) {
+			console.error(`Reading font "${name}" with path "${path}" failed`, stack)
+			return
+		}
+
+		const font_id = Renderer.CreateFont(data)
+		if (font_id === -1) {
+			console.error(`Loading font "${name}" with path "${path}" failed`, stack)
+			return
+		}
+
+		let font_ar = this.font_cache.get(name)
+		if (font_ar === undefined) {
+			font_ar = []
+			this.font_cache.set(name, font_ar)
+		}
+		font_ar.push(new Font(font_id, weight, italic))
+	}
+	private Rect(
+		vecSize: Vector2,
+		width: number,
+		pathFlags: PathFlags,
+		color: Color,
+		grayscale: boolean,
+	): void {
+		this.AllocateCommandSpace(CommandID.PATH_ADD_RECT, 4 * 4)
 		this.commandStream.WriteFloat32(0)
 		this.commandStream.WriteFloat32(0)
 		this.commandStream.WriteFloat32(vecSize.x)
 		this.commandStream.WriteFloat32(vecSize.y)
-		this.Path(width, color)
+		this.Path(width, color, color, pathFlags, grayscale)
+	}
+	private Ellipse(
+		vecSize: Vector2,
+		width: number,
+		pathFlags: PathFlags,
+		color: Color,
+		grayscale: boolean,
+	): void {
+		this.AllocateCommandSpace(CommandID.PATH_ADD_ELLIPSE, 4 * 4)
+		this.commandStream.WriteFloat32(0)
+		this.commandStream.WriteFloat32(0)
+		this.commandStream.WriteFloat32(vecSize.x)
+		this.commandStream.WriteFloat32(vecSize.y)
+		this.Path(width, color, color, pathFlags, grayscale)
 	}
 	private MakeTexture(rgba: Uint8Array, size: Vector2): number {
 		if (rgba.byteLength !== size.x * size.y * 4)
 			throw "Invalid RGBA buffer or size"
 		size.toIOBuffer()
 		const texture_id = Renderer.CreateTexture(rgba)
+		if (texture_id === -1)
+			throw "MakeTexture failed"
 		this.tex2size.set(texture_id, size)
 		return texture_id
 	}
@@ -787,10 +671,12 @@ class CRendererSDK {
 	}
 	private MakeTextureSVG(buf: Uint8Array): number {
 		const texture_id = Renderer.CreateTextureSVG(buf)
+		if (texture_id === -1)
+			throw "MakeTextureSVG failed"
 		this.tex2size.set(texture_id, Vector2.fromIOBuffer())
 		return texture_id
 	}
-	private GetTexture(path: string): number {
+	private GetTexture(path: string): [number, boolean] {
 		if (this.texture_cache.has(path))
 			return this.texture_cache.get(path)!
 		let read_path = path
@@ -809,42 +695,32 @@ class CRendererSDK {
 		const read = readFile(read_path, 2) // 1 for ourselves, 1 for caller [Image]
 		if (read === undefined) {
 			// 1 white pixel for any rendering API to be happy
-			const texture_id = this.MakeTexture(
+			this.empty_texture ??= [this.MakeTexture(
 				new Uint8Array(new Array(4).fill(0xFF)),
 				new Vector2(1, 1),
-			)
-			this.texture_cache.set(path, texture_id)
-			return texture_id
+			), false]
+			this.texture_cache.set(path, this.empty_texture)
+			return this.empty_texture
 		} else {
-			const texture_id = read_path.endsWith(".svg")
-				? this.MakeTextureSVG(read)
-				: this.MakeTexture(...WASM.ParseImage(read))
-			this.texture_cache.set(path, texture_id)
-			return texture_id
+			const is_svg = read_path.endsWith(".svg")
+			const texture = [
+				is_svg
+					? this.MakeTextureSVG(read)
+					: this.MakeTexture(...WASM.ParseImage(read)),
+				is_svg,
+			] as [number, boolean]
+			this.texture_cache.set(path, texture)
+			return texture
 		}
 	}
-	private GetFont(font_name: string, weight: number, width: number, italic: boolean): number {
-		let weight_map = this.font_cache.get(font_name)
-		if (weight_map === undefined) {
-			weight_map = new Map()
-			this.font_cache.set(font_name, weight_map)
-		}
-		let width_map = weight_map.get(weight)
-		if (width_map === undefined) {
-			width_map = new Map()
-			weight_map.set(weight, width_map)
-		}
-		let italic_map = width_map.get(width)
-		if (italic_map === undefined) {
-			italic_map = new Map()
-			width_map.set(width, italic_map)
-		}
-		let font_id = italic_map.get(italic)
-		if (font_id === undefined) {
-			font_id = Renderer.CreateFont(font_name, weight, width, italic)
-			italic_map.set(italic, font_id)
-		}
-		return font_id
+	private GetFont(font_name: string, weight: number, italic: boolean): number {
+		const font_ar = this.font_cache.get(font_name)
+		if (font_ar === undefined)
+			return -1
+		return orderByFirst(
+			font_ar,
+			font => Math.abs(font.Weight - weight) - (font.Italic === italic ? 10000 : 0),
+		)?.FontID ?? -1
 	}
 
 	private OnCommandCacheChanged() {
@@ -870,84 +746,19 @@ class CRendererSDK {
 		this.ResizeCommandCache()
 		this.commandStream.WriteUint8(commandID)
 	}
-	private SetColor(color: RenderColor): void {
-		if (color instanceof Gradient) {
-			color.apply()
-			return
-		}
-		if (!(color instanceof Color)) {
-			this.SetMatrixColorFilter(color)
-			return
-		}
-		this.AllocateCommandSpace(CommandID.PAINT_SET_COLOR, 4)
-		this.commandStream.WriteUint8(Math.min(color.r, 255))
-		this.commandStream.WriteUint8(Math.min(color.g, 255))
-		this.commandStream.WriteUint8(Math.min(color.b, 255))
-		this.commandStream.WriteUint8(Math.min(color.a, 255))
+	private BeginClip(diff_op: boolean): void {
+		this.AllocateCommandSpace(CommandID.BEGIN_CLIP, 1)
+		this.commandStream.WriteBoolean(diff_op)
 	}
-	private SetFillType(fillType: PaintType): void {
-		this.AllocateCommandSpace(CommandID.PAINT_SET_STYLE, 1)
-		this.commandStream.WriteUint8(fillType)
+	private EndClip(): void {
+		this.AllocateCommandSpace(CommandID.END_CLIP, 0)
 	}
-	private SetWidth(width: number): void {
-		this.AllocateCommandSpace(CommandID.PAINT_SET_STROKE_WIDTH, 4)
-		this.commandStream.WriteFloat32(width)
-	}
-	private SetMatrixColorFilter(mat: Matrix): void {
-		this.AllocateCommandSpace(CommandID.PAINT_SET_COLOR_FILTER, 1 + 20 * 4)
-		this.commandStream.WriteUint8(ColorFilterType.MATRIX)
-		for (let i = 0; i < 20; i++)
-			this.commandStream.WriteFloat32(mat[i] ?? 0)
-	}
-	private SetColorFilter(color: RenderColor, blendMode: BlendMode): void {
-		if (color instanceof Gradient) {
-			color.apply()
-			return
-		}
-		if (!(color instanceof Color)) {
-			this.SetMatrixColorFilter(color)
-			return
-		}
-		this.AllocateCommandSpace(CommandID.PAINT_SET_COLOR_FILTER, 6)
-		this.commandStream.WriteUint8(ColorFilterType.BLEND)
-		this.commandStream.WriteUint8(Math.min(color.r, 255))
-		this.commandStream.WriteUint8(Math.min(color.g, 255))
-		this.commandStream.WriteUint8(Math.min(color.b, 255))
-		this.commandStream.WriteUint8(Math.min(color.a, 255))
-		this.commandStream.WriteUint8(blendMode)
-	}
-	private SetClipOval(vecPos: Vector2, vecSize: Vector2): void {
-		{
-			this.AllocateCommandSpace(CommandID.PATH_ADD_OVAL, 4 * 4)
-			this.commandStream.WriteFloat32(vecPos.x)
-			this.commandStream.WriteFloat32(vecPos.y)
-			this.commandStream.WriteFloat32(vecPos.x + vecSize.x)
-			this.commandStream.WriteFloat32(vecPos.y + vecSize.y)
-		}
-		{
-			this.AllocateCommandSpace(CommandID.CLIP_PATH, 2)
-			this.commandStream.WriteUint8(1) // do_antialias
-			this.commandStream.WriteUint8(0) // diff_op
-		}
-		this.PathReset()
-	}
-	private SetClipRect(vecPos: Vector2, vecSize: Vector2): void {
-		{
-			this.AllocateCommandSpace(CommandID.PATH_ADD_RECT, 4 * 4)
-			this.commandStream.WriteFloat32(vecPos.x)
-			this.commandStream.WriteFloat32(vecPos.y)
-			this.commandStream.WriteFloat32(vecPos.x + vecSize.x)
-			this.commandStream.WriteFloat32(vecPos.y + vecSize.y)
-		}
-		{
-			this.AllocateCommandSpace(CommandID.CLIP_PATH, 2)
-			this.commandStream.WriteUint8(1) // do_antialias
-			this.commandStream.WriteUint8(0) // diff_op
-		}
-		this.PathReset()
-	}
-	private PathReset(): void {
-		this.AllocateCommandSpace(CommandID.PATH_RESET, 0)
+	private SetScissor(rect: Rectangle): void {
+		this.AllocateCommandSpace(CommandID.SET_SCISSOR, 4 * 4)
+		this.commandStream.WriteFloat32(rect.pos1.x)
+		this.commandStream.WriteFloat32(rect.pos1.y)
+		this.commandStream.WriteFloat32(rect.pos2.x)
+		this.commandStream.WriteFloat32(rect.pos2.y)
 	}
 	/*private PathClose(): void {
 		this.AllocateCommandSpace(CommandID.PATH_CLOSE, 0)
@@ -966,16 +777,44 @@ class CRendererSDK {
 		this.AllocateCommandSpace(CommandID.PATH_SET_FILL_TYPE, 1)
 		this.commandStream.WriteUint8(style)
 	}*/
-	private Path(width = 5, color: RenderColor = Color.White): void {
-		this.SetColor(color)
-		this.SetWidth(width)
-		this.AllocateCommandSpace(CommandID.PATH, 0)
+	private Path(
+		width: number,
+		fillColor: Color,
+		strokeColor: Color,
+		flags: PathFlags,
+		grayscale: boolean,
+		tex_id?: number,
+		tex_offset_x?: number,
+		tex_offset_y?: number,
+		tex_w?: number,
+		tex_h?: number,
+	): void {
+		if (grayscale)
+			flags |= PathFlags.GRAYSCALE
+		const has_image = HasMask(flags, PathFlags.IMAGE_SHADER)
+		this.AllocateCommandSpace(
+			CommandID.PATH,
+			3 * 4 + 1 + (has_image ? 5 * 4 : 0),
+		)
+		this.commandStream.WriteColor(fillColor)
+		this.commandStream.WriteColor(strokeColor)
+		this.commandStream.WriteFloat32(width / 2)
+		this.commandStream.WriteUint8(flags)
+		if (has_image) {
+			this.commandStream.WriteUint32(tex_id!)
+			this.commandStream.WriteFloat32(-tex_offset_x!)
+			this.commandStream.WriteFloat32(-tex_offset_y!)
+			this.commandStream.WriteFloat32(tex_w!)
+			this.commandStream.WriteFloat32(tex_h!)
+		}
 	}
 	private Rotate(ang: number): void {
+		while (ang >= 360)
+			ang -= 360
 		if (ang === 0)
 			return
 		this.AllocateCommandSpace(CommandID.ROTATE, 4)
-		this.commandStream.WriteFloat32(ang)
+		this.commandStream.WriteFloat32(DegreesToRadian(ang))
 	}
 	private Translate(vecPos: Vector2): void {
 		if (vecPos.IsZero())
@@ -1158,6 +997,7 @@ EventsSDK.on("ServerInfo", async info => {
 	entity_lump_succeeded = false
 	await TryLoadMapFiles()
 })
+EventsSDK.on("UnitAbilityDataUpdated", () => RendererSDK.FreeTextureCache())
 
 Events.on("PostAddSearchPath", async () => TryLoadMapFiles())
 

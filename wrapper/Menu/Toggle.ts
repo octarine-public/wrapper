@@ -52,14 +52,16 @@ export default class Toggle extends Base {
 		return new Rectangle(base_pos.Subtract(Toggle.toggle_background_size), base_pos)
 	}
 
-	public Update() {
-		super.Update()
+	public async Update(): Promise<boolean> {
+		if (!(await super.Update()))
+			return false
 		this.OriginalSize.x =
 			this.text_offset.x
 			+ this.name_size.x
 			+ Toggle.text_toggle_gap
 			+ Toggle.toggle_background_size.x
 			+ Toggle.toggle_background_offset.x
+		return true
 	}
 
 	public OnActivate(func: (caller: this) => any) {

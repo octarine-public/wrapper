@@ -93,14 +93,11 @@ declare interface Particles {
 
 // must be called only in onDraw!
 declare interface Renderer {
-	CreateFont(name: string, weight: number, width: number, italic: boolean): number
-	CreateFontFromData(buf: ArrayBuffer): number
-	FreeFont(font_id: number): void
+	CreateFont(buf: Uint8Array): number
 	/**
-	 * Pass size: number at IOBuffer offset 0, scaleX: number at IOBuffer offset 1, skewX: number at IOBuffer offset 2
 	 * @returns size: Vector2 to IOBuffer at offset 0
 	 */
-	GetTextSize(text: string, font_id: number): void
+	GetTextSize(text: string, font_id: number, size: number): void
 	/**
 	 * Pass size: Vector2 at IOBuffer offset 0
 	 * @returns texture_id
@@ -112,7 +109,6 @@ declare interface Renderer {
 	 */
 	CreateTextureSVG(svg: Uint8Array): number
 	FreeTexture(texture_id: number): void
-	GetTextSize(text: string, font_id: number): boolean // returns Vector2 to IOBuffer offset 0
 	ExecuteCommandBuffer(buf: Uint8Array): void
 }
 
@@ -133,7 +129,7 @@ declare function requestPlayerData(player_id: number): Promise<string>
  * @param path pass empty to read from confings/../settings.json
  */
 declare function readConfig(path: string): Promise<ArrayBuffer>
-declare function writeConfig(path: string, data: ArrayBuffer): void
+declare function writeConfig(path: string, data: Uint8Array): void
 declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer offset 0
 	OrderType: number,
 	Target?: number,

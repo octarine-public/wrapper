@@ -97,8 +97,9 @@ export default class Dropdown extends Base {
 		super.ApplyLocalization()
 	}
 
-	public Update(): void {
-		super.Update()
+	public async Update(): Promise<boolean> {
+		if (!(await super.Update()))
+			return false
 		this.ValuesSizes = this.ValuesNames.map(value => this.GetTextSizeDefault(value))
 		this.ValuesSizes.reduce((prev, cur) => {
 			prev.x = Math.max(prev.x, cur.x)
@@ -120,6 +121,7 @@ export default class Dropdown extends Base {
 			+ (Dropdown.dropdown_text_offset.y * 2)
 			+ this.longest_value_size.y
 			+ Dropdown.dropdown_offset.y
+		return true
 	}
 
 	public GetArrowRect(dropdown_rect: Rectangle): Rectangle {

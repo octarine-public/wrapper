@@ -118,8 +118,9 @@ export default class Node extends Base {
 		this.entries.forEach(entry => entry.ApplyLocalization())
 		super.ApplyLocalization()
 	}
-	public Update(recursive = false) {
-		super.Update()
+	public async Update(recursive = false): Promise<boolean> {
+		if (!(await super.Update()))
+			return false
 		this.OriginalSize.x =
 			this.name_size.x
 			+ Node.arrow_size.x
@@ -131,6 +132,7 @@ export default class Node extends Base {
 			this.OriginalSize.AddScalarX(this.text_offset.x)
 		if (recursive)
 			this.entries.forEach(entry => entry.Update(true))
+		return true
 	}
 
 	public async Render(): Promise<void> {
@@ -160,6 +162,10 @@ export default class Node extends Base {
 				position.CopyTo(entry.Position)
 				entry.TotalSize.x = max_width
 				entry.TotalSize.y = entry.OriginalSize.y
+				if (entry.QueuedUpdate) {
+					entry.QueuedUpdate = false
+					await entry.Update()
+				}
 				await entry.Render()
 				position.AddScalarY(entry.TotalSize.y)
 			}

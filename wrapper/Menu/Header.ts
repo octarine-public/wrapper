@@ -1,6 +1,5 @@
 import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
-import { FontFlags_t } from "../Enums/FontFlags_t"
 import GUIInfo from "../GUI/GUIInfo"
 import EventsSDK from "../Managers/EventsSDK"
 import RendererSDK from "../Native/RendererSDK"
@@ -20,7 +19,6 @@ export default class Header extends Base {
 	}
 	private static readonly image_path = "menu/header.svg"
 	private static readonly logo_path = "menu/logo.svg"
-	private static readonly FontFlags = FontFlags_t.NONE
 	private static readonly TextOffset = new Vector2()
 	private static readonly LogoOffset = new Vector2()
 	private static readonly OriginalLogoSize = RendererSDK.GetImageSize(Header.logo_path)
@@ -77,9 +75,8 @@ export default class Header extends Base {
 			this.FontName,
 			Header.FontSize,
 			this.FontWeight,
-			this.FontWidth,
 			false,
-			Header.FontFlags,
+			false,
 		)
 	}
 

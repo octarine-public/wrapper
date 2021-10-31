@@ -31,8 +31,9 @@ export default class Button extends Base {
 				.AddScalarX(2), // because text_button_gap includes bar size
 		)
 	}
-	public Update(): void {
-		super.Update()
+	public async Update(): Promise<boolean> {
+		if (!(await super.Update()))
+			return false
 		Button.button_offset
 			.MultiplyScalar(2)
 			.SubtractScalarX(2) // because text_button_gap includes bar size
@@ -40,6 +41,7 @@ export default class Button extends Base {
 			.AddScalarX(Button.text_button_gap * 2)
 			.AddScalarY(Button.text_vertical_button_gap * 2)
 			.CopyTo(this.OriginalSize)
+		return true
 	}
 	public async Render(): Promise<void> {
 		await super.Render()

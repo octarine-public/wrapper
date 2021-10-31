@@ -53,8 +53,9 @@ export default class Slider extends Base {
 		)
 	}
 
-	public Update() {
-		super.Update()
+	public async Update(): Promise<boolean> {
+		if (!(await super.Update()))
+			return false
 		const max_value_size = this.GetTextSizeDefault(
 			this.max.toFixed(this.precision),
 		).Max(this.GetTextSizeDefault(
@@ -71,6 +72,7 @@ export default class Slider extends Base {
 			+ Slider.text_slider_vertical_gap
 			+ Slider.slider_background_offset.y
 			+ Slider.slider_background_height
+		return true
 	}
 
 	public async Render(): Promise<void> {

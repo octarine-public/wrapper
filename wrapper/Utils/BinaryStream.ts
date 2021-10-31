@@ -1,3 +1,5 @@
+import Color from "../Base/Color"
+
 export default class BinaryStream {
 	public is_utf16 = false
 	public is_utf16_be = false
@@ -46,6 +48,20 @@ export default class BinaryStream {
 	}
 	public WriteUint8(val: number): void {
 		this.view.setUint8(this.pos++, val)
+	}
+	public WriteColor(val: Color): void {
+		this.WriteUint8(Math.max(Math.min(val.r, 255), 0))
+		this.WriteUint8(Math.max(Math.min(val.g, 255), 0))
+		this.WriteUint8(Math.max(Math.min(val.b, 255), 0))
+		this.WriteUint8(Math.max(Math.min(val.a, 255), 0))
+	}
+	public ReadColor(): Color {
+		return new Color(
+			this.ReadUint8(),
+			this.ReadUint8(),
+			this.ReadUint8(),
+			this.ReadUint8(),
+		)
 	}
 	public ReadInt8(): number {
 		return this.view.getInt8(this.pos++)
@@ -164,7 +180,7 @@ export default class BinaryStream {
 	public ReadBoolean(): boolean {
 		return this.ReadUint8() !== 0
 	}
-	public WriteBoolean(val: number): void {
+	public WriteBoolean(val: boolean): void {
 		this.WriteUint8(val ? 1 : 0)
 	}
 	// returns reference to original buffer instead of creating new one

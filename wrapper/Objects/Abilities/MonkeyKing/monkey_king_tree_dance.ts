@@ -131,7 +131,7 @@ EventsSDK.on("Tick", dt => {
 		if (!owner.IsVisible)
 			return
 		const hero_angle = owner.NetworkedRotationRad - DegreesToRadian(owner.RotationDifference)
-		const best_predicted_pos = ArrayExtensions.orderBy(
+		const best_predicted_pos = ArrayExtensions.orderByFirst(
 			abil.PredictedPositionsPerTree.filter(ar =>
 				ar[2] === 0
 				&& Math.abs(
@@ -139,7 +139,7 @@ EventsSDK.on("Tick", dt => {
 				) < 0.05, // 0.05rad = 2.8deg
 			),
 			ar => owner.NetworkedPosition.Distance(ar[0]),
-		)[0]
+		)
 		if (best_predicted_pos !== undefined)
 			abil.TargetTree = best_predicted_pos[1]
 	})

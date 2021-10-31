@@ -108,14 +108,16 @@ export default class ColorPicker extends Base {
 		return colorpicker_rect
 	}
 
-	public Update() {
-		super.Update()
+	public async Update(): Promise<boolean> {
+		if (!(await super.Update()))
+			return false
 		this.OriginalSize.x =
 			this.text_offset.x
 			+ this.name_size.x
 			+ ColorPicker.text_color_gap
 			+ ColorPicker.selected_color_size.x
 			+ ColorPicker.color_offset.x
+		return true
 	}
 
 	public async Render(): Promise<void> {
