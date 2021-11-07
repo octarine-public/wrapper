@@ -8,14 +8,19 @@ export class CBone {
 	public Parent: Nullable<CBone>
 	public readonly Child: CBone[] = []
 	public readonly BindPose: Matrix4x4
+	public readonly InverseBindPose: Matrix4x4
 	constructor(
 		public readonly Name: string,
 		public readonly SkinIndices: number[],
 		Position: Vector3,
 		Angle: Vector4,
 	) {
-		this.BindPose = Matrix4x4.CreateTranslation(Position)
-			.Multiply(Matrix4x4.CreateFromVector4(Angle))
+		this.BindPose = Matrix4x4.CreateFromVector4(Angle)
+			.Multiply(Matrix4x4.CreateTranslation(Position))
+		this.InverseBindPose = this.BindPose.Clone().Invert()
+	}
+	public get CombinedInverseBindPose(): Matrix4x4 {
+		return this.InverseBindPose.Clone().Multiply(this.Parent?.CombinedInverseBindPose ?? Matrix4x4.Identity)
 	}
 	public SetParent(parent: CBone): void {
 		this.Parent = parent
@@ -26,7 +31,7 @@ export class CBone {
 }
 
 export class CSkeleton {
-	public readonly Bones: CBone[] = []
+	public readonly Bones = new Map<string, CBone>()
 	public readonly Roots: CBone[] = []
 	public readonly AnimationTextureSize: number
 	constructor(modelSkeleton: RecursiveMap, remapTable: Map<number, number[]>) {
@@ -46,7 +51,7 @@ export class CSkeleton {
 		if (!(bonePositionsMap instanceof Map || Array.isArray(bonePositionsMap)))
 			throw "Skeleton without bonePositions"
 		const bonePositions = MapToVector3Array(bonePositionsMap)
-		const boneRotationsMap = modelSkeleton.get("m_bonePosParent")
+		const boneRotationsMap = modelSkeleton.get("m_boneRotParent")
 		if (!(boneRotationsMap instanceof Map || Array.isArray(boneRotationsMap)))
 			throw "Skeleton without boneRotations"
 		const boneRotations = MapToVector4Array(boneRotationsMap)
@@ -64,17 +69,21 @@ export class CSkeleton {
 				bonePositions[i] ?? new Vector3(),
 				boneRotations[i] ?? new Vector4(),
 			)
-			this.Bones.push(bone)
+			this.Bones.set(bone.Name, bone)
 		}
 		for (let i = 0; i < boneNames.length; i++) {
 			if (boneParents[i] === -1 || !HasBit(boneFlags[i], 10))
 				continue
-			const bone = this.Bones[i]
-			const parent = this.Bones[boneParents[i]]
-			if (bone === undefined || parent === undefined)
+			const child_name = boneNames[i]
+			const parent_name = boneNames[boneParents[i]]
+			if (child_name === undefined || parent_name === undefined)
 				continue
-			bone.SetParent(parent)
-			parent.AddChild(bone)
+			const child = this.Bones.get(child_name),
+				parent = this.Bones.get(parent_name)
+			if (child === undefined || parent === undefined)
+				continue
+			child.SetParent(parent)
+			parent.AddChild(child)
 		}
 		this.FindRoots()
 	}

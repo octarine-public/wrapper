@@ -59,15 +59,12 @@ EventsSDK.on("EntityDestroyed", ent => {
 	GameState.RawGameTime = 0
 })
 
-/*
-m_pEntity.m_flags
-
-1 << 2 is EF_IN_STAGING_LIST
-1 << 4 is EF_DELETE_IN_PROGRESS
-*/
+const activity2name = new Map<GameActivity_t, string>(
+	Object.entries(GameActivity_t)
+		.map(([k, v]) => [v as GameActivity_t, k]),
+)
 @WrapperClass("CBaseEntity")
 export default class Entity {
-	public static LoadModels = true
 	public IsValid = true
 	public Name_ = ""
 	@NetworkedBasicField("m_flCreateTime")
@@ -82,6 +79,10 @@ export default class Entity {
 	public ClassName = ""
 	public BecameDormantTime = 0
 	public ModelName = ""
+	@NetworkedBasicField("m_flScale")
+	public ModelScale = 1
+	@NetworkedBasicField("m_flPlaybackRate")
+	public PlaybackRate = 1
 	public Agility = 0
 	public Intellect = 0
 	public Strength = 0
@@ -310,7 +311,7 @@ export default class Entity {
 		return this.Team !== team
 	}
 
-	public OnModelUpdated(): void {
+	public async OnModelUpdated(): Promise<void> {
 		const initial_radius = this.RingRadius !== 0
 			? this.RingRadius
 			: 50
@@ -322,14 +323,13 @@ export default class Entity {
 		max.x = initial_radius
 		max.y = initial_radius
 		max.z = initial_radius
-		if (!Entity.LoadModels)
-			return
 		let promise = ModelDataCache.get(this.ModelName)
 		if (promise === undefined) {
 			promise = ComputeAttachmentsAndBoundsAsync(this.ModelName)
 			ModelDataCache.set(this.ModelName, promise)
 		}
-		promise.then(ar => {
+		try {
+			const ar = await promise
 			this.Attachments = ar[0]
 			this.BoundingBox.MinOffset.CopyFrom(ar[1])
 			this.BoundingBox.MaxOffset.CopyFrom(ar[2])
@@ -340,14 +340,42 @@ export default class Entity {
 			min.y = -this.RingRadius
 			max.x = this.RingRadius
 			max.y = this.RingRadius
-		}, console.error)
+		} catch (err) {
+			console.error(err)
+		}
+	}
+	public CalculateActivityModifiers(activity: GameActivity_t, ar: string[]): void {
+		// to be implemented in child classes
+	}
+	public GetAttachments(activity = GameActivity_t.ACT_DOTA_IDLE): Nullable<Map<string, ComputedAttachment>> {
+		if (this.Attachments === undefined)
+			return undefined
+		const modifiers: string[] = []
+		const activity_name = activity2name.get(activity)
+		if (activity_name !== undefined)
+			modifiers.push(activity_name)
+		this.CalculateActivityModifiers(activity, modifiers)
+		let highest_score = 0,
+			highest_scored: Nullable<Map<string, ComputedAttachment>>
+		for (const ar of this.Attachments) {
+			const score = modifiers.reduce((prev, name) => prev + (ar[0].get(name) ?? 0), 0) / ar[0].size
+			if (score > highest_score) {
+				highest_score = score
+				highest_scored = ar[1]
+			}
+		}
+		if (highest_scored === undefined) {
+			const default_ar = this.Attachments.find(ar => ar[0].has("ACT_DOTA_CONSTANT_LAYER"))
+			if (default_ar !== undefined)
+				highest_scored = default_ar[1]
+		}
+		return highest_scored
 	}
 	public GetAttachment(
 		name: string,
 		activity = GameActivity_t.ACT_DOTA_IDLE,
 	): Nullable<ComputedAttachment> {
-		// return this.Attachments?.get(activity)?.find(attach => attach.Name === name)
-		return undefined
+		return this.GetAttachments(activity)?.get(name)
 	}
 	public ForwardNativeProperties(
 		m_fAttackRange: number,

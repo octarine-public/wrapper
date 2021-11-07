@@ -1,64 +1,59 @@
 import Matrix4x4 from "../Base/Matrix4x4"
 import Vector3 from "../Base/Vector3"
-import Vector4 from "../Base/Vector4"
-import { GameActivity_t } from "../Enums/GameActivity_t"
 import Workers from "../Native/Workers"
 import { CAnimationFrame } from "./ParseAnimation"
 import { CMeshAttachment } from "./ParseMesh"
 import { ParseModel } from "./ParseModel"
-import { CSkeleton } from "./Skeleton"
+import { CBone, CSkeleton } from "./Skeleton"
 
 export class ComputedAttachment {
-	public readonly MatrixesCompressed: Float32Array
+	public readonly PositionsCompressed: Float32Array
 	constructor(
-		public readonly Name: string,
 		public readonly FPS: number,
 		public readonly FrameCount: number,
 	) {
-		this.MatrixesCompressed = new Float32Array(FrameCount * 4 * 16)
+		// using SharedArrayBuffer here makes 0-copy transfer while doing async stuff
+		this.PositionsCompressed = new Float32Array(new SharedArrayBuffer(FrameCount * 3 * 4))
 	}
-	public SetMatrix(frameNum: number, mat: Matrix4x4): void {
-		const start = frameNum * 4 * 16
-		this.MatrixesCompressed.set(mat.toArray(), start)
+	public SetPosition(frameNum: number, pos: Vector3): void {
+		const start = frameNum * 3
+		this.PositionsCompressed.set(pos.toArray(), start)
 	}
-	public GetMatrix(frameNum: number): Matrix4x4 {
-		const start = frameNum * 4 * 16
-		return new Matrix4x4(this.MatrixesCompressed.subarray(start, start + 4 * 16))
+	public GetPositionAtFrame(frameNum: number): Vector3 {
+		const start = frameNum * 3
+		return new Vector3(
+			this.PositionsCompressed[start + 0],
+			this.PositionsCompressed[start + 1],
+			this.PositionsCompressed[start + 2],
+		)
 	}
-	public GetPosition(real_time: number, angle: number): Vector3 {
-		const anim_time = real_time % (this.FrameCount / this.FPS)
-		const frameNum = Math.floor(anim_time * this.FPS)
-		const frameNext = frameNum !== this.FrameCount - 1
-			? frameNum + 1
-			: 0
-		const frame1 = this.GetMatrix(frameNum).Decompose().Position.Rotated(angle),
-			frame2 = this.GetMatrix(frameNext).Decompose().Position.Rotated(angle)
-		return frame1.AddForThis(frame2.Subtract(frame1).MultiplyScalarForThis(
-			(anim_time * this.FPS) % 1,
-		))
+	public GetPosition(time: number, angle: number, model_scale: number): Vector3 {
+		while (time < 0)
+			time += this.FrameCount / this.FPS
+		const frameCur = Math.floor(time * this.FPS) % this.FrameCount
+		const frameNext = (frameCur + 1) % this.FrameCount
+		const frame1 = this.GetPositionAtFrame(frameCur),
+			frame2 = this.GetPositionAtFrame(frameNext)
+		return frame2.SubtractForThis(frame1).MultiplyScalarForThis(
+			((time * this.FPS) - frameCur) % 1,
+		).AddForThis(frame1).Rotated(angle).MultiplyScalarForThis(model_scale)
 	}
 }
-export type ComputedAttachments = Map<GameActivity_t, ComputedAttachment[]>
+export type ComputedAttachments = [Map<string, number>, Map<string, ComputedAttachment>][]
 
-function ComputeBoneMatrix(
-	name: string,
+function ComputeBoneInverseBindPose(
+	bone: CBone,
 	skeleton: CSkeleton,
 	frame?: CAnimationFrame,
-): Nullable<Matrix4x4> {
-	const bone = skeleton.Bones.find(bone_ => bone_.Name === name)
-	if (bone === undefined)
-		return undefined
-	let parent_mat = Matrix4x4.Identity
-	if (bone.Parent !== undefined)
-		parent_mat = ComputeBoneMatrix(bone.Parent.Name, skeleton, frame)!
-	const frame_pos = frame?.BonesPositions?.get(name)
-	const frame_ang = frame?.BonesAngles?.get(name) ?? new Vector4()
-	const transformed = frame_pos !== undefined
-		? Matrix4x4.CreateTranslation(frame_pos)
-			.Multiply(Matrix4x4.CreateFromVector4(frame_ang))
-		: bone.BindPose.Clone()
-	transformed.Multiply(parent_mat)
-	return transformed
+): Matrix4x4 {
+	const invBindPose = bone.Parent !== undefined
+		? ComputeBoneInverseBindPose(bone.Parent, skeleton, frame)
+		: Matrix4x4.Identity
+	if (frame !== undefined)
+		invBindPose.Multiply(frame.GetBoneInverseBindPose(bone.Name))
+	else
+		invBindPose.Multiply(bone.InverseBindPose)
+	return invBindPose
 }
 
 function ComputeAttachmentPosition(
@@ -68,85 +63,91 @@ function ComputeAttachmentPosition(
 	frameNum = 0,
 	frame?: CAnimationFrame,
 ): void {
-	const bone_name = attachmentData.InfluenceNames[0] ?? ""
-	const bone_offset = attachmentData.InfluenceOffsets[0]
-	const bone_rotation = attachmentData.InfluenceRotations[0] ?? new Vector4()
-	const bone_mat = ComputeBoneMatrix(bone_name, skeleton, frame) ?? Matrix4x4.Identity
-	if (bone_offset !== undefined)
-		bone_mat.Multiply(
-			Matrix4x4.CreateTranslation(bone_offset)
-				.Multiply(Matrix4x4.CreateFromVector4(bone_rotation)),
-		)
-	attachment.SetMatrix(frameNum, bone_mat)
+	let bindPose = attachmentData.InfluenceBindPoses[0]?.Clone()
+	if (bindPose === undefined)
+		bindPose = Matrix4x4.Identity
+	const bone = skeleton.Bones.get(attachmentData.InfluenceNames[0] ?? "")
+	if (bone !== undefined)
+		bindPose.Multiply(ComputeBoneInverseBindPose(bone, skeleton, frame).Invert())
+	attachment.SetPosition(frameNum, bindPose.Translation)
 }
 
 export function ComputeAttachmentsAndBounds(model_name: string): [ComputedAttachments, Vector3, Vector3] {
-	const map: ComputedAttachments = new Map()
+	const ar: ComputedAttachments = []
 	if (model_name.length === 0)
-		return [map, new Vector3(), new Vector3()]
+		return [ar, new Vector3(), new Vector3()]
 	if (!model_name.endsWith("_c"))
 		model_name += "_c"
 	const buf = fread(model_name)
 	if (buf === undefined)
-		return [map, new Vector3(), new Vector3()]
+		return [ar, new Vector3(), new Vector3()]
 	const model = ParseModel(buf)
 	const mesh = model.Meshes[0]
 	if (mesh === undefined)
-		return [map, new Vector3(), new Vector3()]
+		return [ar, new Vector3(), new Vector3()]
 	const skeleton = model.Skeletons[0]
 	if (skeleton === undefined)
-		return [map, model.MinBounds, model.MaxBounds]
+		return [ar, model.MinBounds, model.MaxBounds]
 	model.Animations.forEach(anim => {
-		if (anim.Activities.length === 0)
+		if (
+			(anim.Activities.length === 0 && anim.Movements.length === 0)
+			|| anim.Name.includes("showcase") // workaround for radiant towers
+		)
 			return
-		const attachments: ComputedAttachment[] = []
-		mesh.Attachments.forEach((_, name) => attachments.push(new ComputedAttachment(
-			name,
-			anim.FPS,
-			anim.FrameCount,
-		)))
+		const attachments = new Map<string, ComputedAttachment>()
+		mesh.Attachments.forEach(mesh_attachment => attachments.set(
+			mesh_attachment.Name,
+			new ComputedAttachment(
+				anim.FPS,
+				anim.FrameCount,
+			),
+		))
 		for (let i = 0; i < anim.FrameCount; i++) {
 			const frame = anim.ReadFrame(i)
-			attachments.forEach(attachment => ComputeAttachmentPosition(
+			attachments.forEach((attachment, name) => ComputeAttachmentPosition(
 				skeleton,
-				mesh.Attachments.get(attachment.Name)!,
+				mesh.Attachments.get(name)!,
 				attachment,
 				i,
 				frame,
 			))
 		}
-		anim.Activities.forEach(activity => {
-			const key = (GameActivity_t as any)[activity.Name]
-			if (key !== undefined)
-				map.set(key, attachments)
-		})
+		const activity2weight = new Map(anim.Activities.map(activity => [activity.Name, activity.Weight]))
+		if (anim.Movements.length !== 0 && !activity2weight.has("ACT_DOTA_RUN"))
+			activity2weight.set("ACT_DOTA_RUN", Number.EPSILON)
+		ar.push([activity2weight, attachments])
 	})
-	if (!map.has(GameActivity_t.ACT_DOTA_IDLE)) {
-		const empty_attachments: ComputedAttachment[] = []
-		mesh.Attachments.forEach((attachmentData, name) => {
-			const attachment = new ComputedAttachment(name, 1, 1)
+	if (!ar.some(el => el[0].has("ACT_DOTA_CONSTANT_LAYER"))) {
+		const empty_attachments = new Map<string, ComputedAttachment>()
+		mesh.Attachments.forEach(mesh_attachment => {
+			const attachment = new ComputedAttachment(1, 1)
 			ComputeAttachmentPosition(
 				skeleton,
-				attachmentData,
+				mesh_attachment,
 				attachment,
 			)
-			empty_attachments.push(attachment)
+			empty_attachments.set(mesh_attachment.Name, attachment)
 		})
-		map.set(GameActivity_t.ACT_DOTA_IDLE, empty_attachments)
+		ar.push([new Map([["ACT_DOTA_CONSTANT_LAYER", 1]]), empty_attachments])
 	}
-	return [map, model.MinBounds, model.MaxBounds]
+	return [ar, model.MinBounds, model.MaxBounds]
 }
 
 Workers.RegisterRPCEndPoint("ComputeAttachmentsAndBounds", data => {
 	if (typeof data !== "string")
 		throw "Data should be a string"
 	const res = ComputeAttachmentsAndBounds(data)
-	const serialized_map = new Map<GameActivity_t, [ArrayBuffer, string, number, number][]>()
-	res[0].forEach((v, k) => serialized_map.set(
-		k,
-		v.map(el => [el.MatrixesCompressed.buffer, el.Name, el.FPS, el.FrameCount]) as [ArrayBuffer, string, number, number][],
-	))
-	return [serialized_map, res[1].toArray(), res[2].toArray()]
+	const serialized_ar: [[string, number][], [ArrayBuffer, string, number, number][]][] = []
+	res[0].forEach(anim => serialized_ar.push([
+		[...anim[0].entries()],
+		[...anim[1].entries()].map(([name, el]) => [
+			el.PositionsCompressed.buffer,
+			name,
+			el.FPS,
+			el.FrameCount,
+		] as [ArrayBuffer, string, number, number]),
+	]))
+	return [serialized_ar, res[1].toArray(), res[2].toArray()]
 })
 
 export async function ComputeAttachmentsAndBoundsAsync(
@@ -158,36 +159,38 @@ export async function ComputeAttachmentsAndBoundsAsync(
 	)
 	if (!Array.isArray(data))
 		throw "!Array.isArray(data)"
-	const serialized_map = data[0],
+	const serialized_ar = data[0],
 		MinBounds = data[1],
 		MaxBounds = data[2]
-	if (!(serialized_map instanceof Map))
-		throw "!(serialized_map instanceof Map)"
+	if (!Array.isArray(serialized_ar))
+		throw "!Array.isArray(serialized_ar)"
 	if (!Array.isArray(MinBounds))
 		throw "!Array.isArray(MinBounds)"
 	if (!Array.isArray(MaxBounds))
 		throw "!Array.isArray(MaxBounds)"
-	const map = new Map<GameActivity_t, ComputedAttachment[]>()
-	serialized_map.forEach((v, k) => {
-		if (typeof k !== "number")
-			throw "typeof k !== \"number\""
-		if (!Array.isArray(v))
-			throw "!Array.isArray(v)"
-		const ar = v as [ArrayBuffer, string, number, number][]
-		const deserialized_ar: ComputedAttachment[] = []
-		ar.forEach(([buf, name, fps, frame_count]) => {
+	const ar: ComputedAttachments = []
+	serialized_ar.forEach(anim => {
+		if (!Array.isArray(anim))
+			throw "!Array.isArray(anim)"
+		const activities = anim[0] as [string, number][]
+		if (!Array.isArray(activities))
+			throw "!Array.isArray(activities)"
+		const attachments = anim[1] as [ArrayBuffer, string, number, number][]
+		if (!Array.isArray(attachments))
+			throw "!Array.isArray(attachments)"
+		const deserialized_map = new Map<string, ComputedAttachment>()
+		attachments.forEach(([buf, name, fps, frame_count]) => {
 			const attachment = new ComputedAttachment(
-				name,
 				fps,
 				frame_count,
 			)
-			attachment.MatrixesCompressed.set(new Float32Array(buf))
-			deserialized_ar.push(attachment)
+			attachment.PositionsCompressed.set(new Float32Array(buf))
+			deserialized_map.set(name, attachment)
 		})
-		map.set(k, deserialized_ar)
+		ar.push([new Map(activities), deserialized_map])
 	})
 	return [
-		map,
+		ar,
 		Vector3.fromArray(MinBounds as number[]),
 		Vector3.fromArray(MaxBounds as number[]),
 	]

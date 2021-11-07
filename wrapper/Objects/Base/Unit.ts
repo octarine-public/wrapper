@@ -392,12 +392,12 @@ export default class Unit extends Entity {
 	}
 
 	public get HullRadius(): number {
-		return this.UnitData.BoundsHull
+		return this.UnitData.HullRadius
 	}
 	public get ProjectileCollisionSize(): number {
-		let ProjectileCollisionSize = this.HullRadius
+		let ProjectileCollisionSize = this.UnitData.ProjectileCollisionSize
 		if (ProjectileCollisionSize === 0)
-			ProjectileCollisionSize = this.UnitData.ProjectileCollisionSize
+			ProjectileCollisionSize = this.HullRadius
 		return ProjectileCollisionSize
 	}
 
@@ -957,6 +957,28 @@ export default class Unit extends Entity {
 		mult *= (1 + damageAmplifier)
 
 		return damage * mult
+	}
+	public CalculateActivityModifiers(activity: GameActivity_t, ar: string[]): void {
+		super.CalculateActivityModifiers(activity, ar)
+		if (this.IsIllusion)
+			ar.push("illusion")
+		if (this.HPPercent <= 25 && !this.HasBuffByName("modifier_skeleton_king_reincarnation_scepter_active"))
+			ar.push("injured")
+		if (!this.HasBuffByName("modifier_marci_unleash_flurry_cooldown")) {
+			const buff = this.GetBuffByName("modifier_marci_unleash_flurry")
+			if (buff !== undefined) {
+				if (buff.StackCount === 1)
+					ar.push("flurry_pulse_attack")
+				else if ((buff.StackCount % 2) === 0)
+					ar.push("flurry_attack_a")
+				else
+					ar.push("flurry_attack_b")
+			}
+		} else
+			ar.push("unleash")
+	}
+	public GetAttachments(activity = this.NetworkActivity): Nullable<Map<string, ComputedAttachment>> {
+		return super.GetAttachments(activity)
 	}
 	public GetAttachment(
 		name: string,

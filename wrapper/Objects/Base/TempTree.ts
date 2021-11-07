@@ -22,8 +22,8 @@ export default class TempTree extends Entity {
 	public get RingRadius(): number {
 		return 128
 	}
-	public OnModelUpdated(): void {
-		super.OnModelUpdated()
+	public async OnModelUpdated(): Promise<void> {
+		await super.OnModelUpdated()
 		this.BoundingBox.MaxOffset.z = this.BoundingBox.MinOffset.z + 300
 	}
 }

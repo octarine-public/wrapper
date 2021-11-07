@@ -4,7 +4,7 @@ export default class Vector3 {
 	public static fromIOBuffer(offset = 0): Vector3 {
 		return new Vector3(IOBuffer[offset + 0], IOBuffer[offset + 1], IOBuffer[offset + 2])
 	}
-	public static fromArray(array: number[]): Vector3 {
+	public static fromArray(array: ArrayLike<number>): Vector3 {
 		return new Vector3(array[0] ?? 0, array[1] ?? 0, array[2] ?? 0)
 	}
 	public static FromAngle(angle: number): Vector3 {
@@ -199,7 +199,7 @@ export default class Vector3 {
 		)
 	}
 	public Ceil(count: number = 0): Vector3 {
-		const pow = Math.pow(10, count)
+		const pow = 10 ** count
 		return new Vector3(
 			Math.ceil(this.x * pow) / pow,
 			Math.ceil(this.y * pow) / pow,
@@ -207,7 +207,7 @@ export default class Vector3 {
 		)
 	}
 	public CeilForThis(count: number = 0): Vector3 {
-		const pow = Math.pow(10, count)
+		const pow = 10 ** count
 
 		this.x = Math.ceil(this.x * pow) / pow
 		this.y = Math.ceil(this.y * pow) / pow
@@ -216,7 +216,7 @@ export default class Vector3 {
 		return this
 	}
 	public Round(count: number = 0): Vector3 {
-		const pow = Math.pow(10, count)
+		const pow = 10 ** count
 		return new Vector3(
 			Math.round(this.x * pow) / pow,
 			Math.round(this.y * pow) / pow,
@@ -224,7 +224,7 @@ export default class Vector3 {
 		)
 	}
 	public RoundForThis(count: number = 0): Vector3 {
-		const pow = Math.pow(10, count)
+		const pow = 10 ** count
 
 		this.x = Math.round(this.x * pow) / pow
 		this.y = Math.round(this.y * pow) / pow
@@ -233,7 +233,7 @@ export default class Vector3 {
 		return this
 	}
 	public Floor(count = 0): Vector3 {
-		const pow = Math.pow(10, count)
+		const pow = 10 ** count
 		return new Vector3(
 			Math.floor(this.x * pow) / pow,
 			Math.floor(this.y * pow) / pow,
@@ -241,7 +241,7 @@ export default class Vector3 {
 		)
 	}
 	public FloorForThis(count = 0): Vector3 {
-		const pow = Math.pow(10, count)
+		const pow = 10 ** count
 
 		this.x = Math.floor(this.x * pow) / pow
 		this.y = Math.floor(this.y * pow) / pow

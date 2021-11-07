@@ -1,5 +1,5 @@
 import Vector3 from "../Base/Vector3"
-import { CAnimation } from "./ParseAnimation"
+import { CAnimation, ParseAnimationGroup, ParseEmbeddedAnimation } from "./ParseAnimation"
 import { parseKV, parseKVBlock } from "./ParseKV"
 import { CMesh, ParseEmbeddedMesh, ParseMesh } from "./ParseMesh"
 import { ParseResourceLayout } from "./ParseResource"
@@ -31,11 +31,11 @@ export class CModel {
 		this.DefaultMeshGroupsMask = this.LoadLODGroupMasks(kv)
 		this.LoadMaterialGroups(kv)
 		this.LoadRefMeshes(kv)
-		// this.LoadRefAnimations(kv)
+		this.LoadRefAnimations(kv)
 
 		const CTRL = parseKVBlock(layout[0].get("CTRL")) ?? new Map()
 		this.LoadEmbeddedMeshes(CTRL, layout[1])
-		// this.LoadEmbeddedAnimation(CTRL, layout[1])
+		this.LoadEmbeddedAnimation(CTRL, layout[1], parseKVBlock(layout[0].get("ASEQ")) ?? new Map())
 
 		const first_mesh = this.Meshes[0]
 		if (first_mesh !== undefined) {
@@ -138,27 +138,27 @@ export class CModel {
 			this.Meshes.push(ParseEmbeddedMesh(blocks[data_block], blocks[vbib_block]))
 		})
 	}
-	// private LoadRefAnimations(kv: RecursiveMap): void {
-	// 	const refAnimGroups = kv.get("m_refAnimGroups")
-	// 	if (refAnimGroups instanceof Map || Array.isArray(refAnimGroups))
-	// 		refAnimGroups.forEach((animation_group_path: RecursiveMapValue) => {
-	// 			if (typeof animation_group_path !== "string")
-	// 				return
-	// 			if (!animation_group_path.endsWith("_c"))
-	// 				animation_group_path += "_c"
-	// 			const buf = fread(animation_group_path)
-	// 			if (buf !== undefined)
-	// 				this.Animations.push(...ParseAnimationGroup(buf))
-	// 		})
-	// }
-	// private LoadEmbeddedAnimation(kv: RecursiveMap, blocks: Uint8Array[]): void {
-	// 	const embedded_animation = kv.get("embedded_animation")
-	// 	if (!(embedded_animation instanceof Map))
-	// 		return
-	// 	const group_data_block = GetMapNumberProperty(embedded_animation, "group_data_block"),
-	// 		anim_data_block = GetMapNumberProperty(embedded_animation, "anim_data_block")
-	// 	this.Animations.push(...ParseEmbeddedAnimation(blocks[group_data_block], blocks[anim_data_block]))
-	// }
+	private LoadRefAnimations(kv: RecursiveMap): void {
+		const refAnimGroups = kv.get("m_refAnimGroups")
+		if (refAnimGroups instanceof Map || Array.isArray(refAnimGroups))
+			refAnimGroups.forEach((animation_group_path: RecursiveMapValue) => {
+				if (typeof animation_group_path !== "string")
+					return
+				if (!animation_group_path.endsWith("_c"))
+					animation_group_path += "_c"
+				const buf = fread(animation_group_path)
+				if (buf !== undefined)
+					this.Animations.push(...ParseAnimationGroup(buf))
+			})
+	}
+	private LoadEmbeddedAnimation(kv: RecursiveMap, blocks: Uint8Array[], hseq: RecursiveMap): void {
+		const embedded_animation = kv.get("embedded_animation")
+		if (!(embedded_animation instanceof Map))
+			return
+		const group_data_block = GetMapNumberProperty(embedded_animation, "group_data_block"),
+			anim_data_block = GetMapNumberProperty(embedded_animation, "anim_data_block")
+		this.Animations.push(...ParseEmbeddedAnimation(blocks[group_data_block], blocks[anim_data_block], hseq))
+	}
 }
 
 export function ParseModel(buf: Uint8Array): CModel {

@@ -182,14 +182,14 @@ export default class Vector2 {
 		)
 	}
 	public Ceil(count: number = 0): Vector2 {
-		const pow = Math.pow(10, count)
+		const pow = 10 ** count
 		return new Vector2(
 			Math.ceil(this.x * pow) / pow,
 			Math.ceil(this.y * pow) / pow,
 		)
 	}
 	public CeilForThis(count: number = 0): Vector2 {
-		const pow = Math.pow(10, count)
+		const pow = 10 ** count
 
 		this.x = Math.ceil(this.x * pow) / pow
 		this.y = Math.ceil(this.y * pow) / pow
@@ -197,14 +197,14 @@ export default class Vector2 {
 		return this
 	}
 	public Round(count = 0): Vector2 {
-		const pow = Math.pow(10, count)
+		const pow = 10 ** count
 		return new Vector2(
 			Math.round(this.x * pow) / pow,
 			Math.round(this.y * pow) / pow,
 		)
 	}
 	public RoundForThis(count = 0): Vector2 {
-		const pow = Math.pow(10, count)
+		const pow = 10 ** count
 
 		this.x = Math.round(this.x * pow) / pow
 		this.y = Math.round(this.y * pow) / pow
@@ -212,14 +212,14 @@ export default class Vector2 {
 		return this
 	}
 	public Floor(count: number = 0): Vector2 {
-		const pow = Math.pow(10, count)
+		const pow = 10 ** count
 		return new Vector2(
 			Math.floor(this.x * pow) / pow,
 			Math.floor(this.y * pow) / pow,
 		)
 	}
 	public FloorForThis(count: number = 0): Vector2 {
-		const pow = Math.pow(10, count)
+		const pow = 10 ** count
 
 		this.x = Math.floor(this.x * pow) / pow
 		this.y = Math.floor(this.y * pow) / pow

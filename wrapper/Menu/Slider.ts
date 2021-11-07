@@ -119,7 +119,7 @@ export default class Slider extends Base {
 		return false
 	}
 	private Round(num: number): number {
-		const pow = Math.pow(10, this.precision)
+		const pow = 10 ** this.precision
 		return Math.round(num * pow) / pow
 	}
 }

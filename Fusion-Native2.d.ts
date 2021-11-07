@@ -5,9 +5,9 @@ type WorkerIPCType = (
 	| WorkerIPCType[]
 	| WebAssembly.Module
 	| WebAssembly.Memory
-	| SharedArrayBuffer
-	| Uint8Array
-	| ArrayBuffer
+	| SharedArrayBuffer // is 0-copy
+	| Uint8Array // won't maintain byteOffset/buffer (so won't be 0-copy) unless underlying buffer is SharedArrayBuffer
+	| ArrayBuffer // is not 0-copy
 	| string
 	| bigint
 	| number

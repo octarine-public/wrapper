@@ -88,7 +88,8 @@ export default class UnitData {
 	public readonly ProjectileSpeed: number
 	public readonly AttackDamageType: AttackDamageType
 	public readonly ArmorType: ArmorType
-	public readonly BoundsHull: DOTAHullSize
+	public readonly HullRadius: number
+	public readonly CollisionPadding: number
 	public readonly ProjectileCollisionSize: number
 	public readonly RingRadius: number
 	public readonly MinimapIcon: string
@@ -121,12 +122,51 @@ export default class UnitData {
 		this.ArmorType = m_Storage.has("CombatClassDefend")
 			? FixCombatClassDefend(parseEnumString(DOTA_COMBAT_CLASS_DEFEND, m_Storage.get("CombatClassDefend") as string))
 			: ArmorType.Basic
-		this.BoundsHull = m_Storage.has("BoundsHullName")
+		const BoundsHull = m_Storage.has("BoundsHullName")
 			? parseEnumString(DOTAHullSize, m_Storage.get("BoundsHullName") as string)
 			: DOTAHullSize.DOTA_HULL_SIZE_HERO
+		switch (BoundsHull) {
+			case DOTAHullSize.DOTA_HULL_SIZE_SMALL:
+				this.HullRadius = 8
+				this.CollisionPadding = 10
+				break
+			case DOTAHullSize.DOTA_HULL_SIZE_REGULAR:
+				this.HullRadius = 16
+				this.CollisionPadding = 20
+				break
+			case DOTAHullSize.DOTA_HULL_SIZE_SIEGE:
+				this.HullRadius = 16
+				this.CollisionPadding = 24
+				break
+			default:
+			case DOTAHullSize.DOTA_HULL_SIZE_HERO:
+				this.HullRadius = 24
+				this.CollisionPadding = 3
+				break
+			case DOTAHullSize.DOTA_HULL_SIZE_HUGE:
+				this.HullRadius = 80
+				this.CollisionPadding = 0
+				break
+			case DOTAHullSize.DOTA_HULL_SIZE_BUILDING:
+				this.HullRadius = 0
+				this.CollisionPadding = 16
+				break
+			case DOTAHullSize.DOTA_HULL_SIZE_FILLER:
+				this.HullRadius = 96
+				this.CollisionPadding = 16
+				break
+			case DOTAHullSize.DOTA_HULL_SIZE_BARRACKS:
+				this.HullRadius = 144
+				this.CollisionPadding = 16
+				break
+			case DOTAHullSize.DOTA_HULL_SIZE_TOWER:
+				this.HullRadius = 144
+				this.CollisionPadding = 0
+				break
+		}
 		this.ProjectileCollisionSize = m_Storage.has("ProjectileCollisionSize")
 			? parseInt(m_Storage.get("ProjectileCollisionSize") as string)
-			: 70
+			: 0
 		this.RingRadius = m_Storage.has("RingRadius")
 			? parseInt(m_Storage.get("RingRadius") as string)
 			: 70

@@ -1,10 +1,8 @@
 import Color from "../Base/Color"
 import Vector3 from "../Base/Vector3"
-import { GameActivity_t } from "../Enums/GameActivity_t"
 import { GetPositionHeight } from "../Native/WASM"
 import Entity from "../Objects/Base/Entity"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
-import Unit from "../Objects/Base/Unit"
 import { arrayRemove } from "../Utils/ArrayExtensions"
 import GameState from "../Utils/GameState"
 import { CMsgVector2DToVector2, CMsgVectorToVector3, NumberToColor, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf, ServerHandleToIndex } from "../Utils/Protobuf"
@@ -31,7 +29,8 @@ EventsSDK.on("GameEnded", () => {
 })
 
 async function TrackingProjectileCreated(projectile: TrackingProjectile) {
-	projectile.Position.Extend(projectile.TargetLoc, (GameState.CurrentServerTick - projectile.LaunchTick) / 30 * projectile.Speed).CopyTo(projectile.Position)
+	// TODO
+	// projectile.Position.Extend(projectile.TargetLoc, (GameState.CurrentServerTick - projectile.LaunchTick) / 30 * projectile.Speed).CopyTo(projectile.Position)
 	await EventsSDK.emit("TrackingProjectileCreated", false, projectile)
 	ProjectileManager.AllTrackingProjectiles.push(projectile)
 	ProjectileManager.AllTrackingProjectilesMap.set(projectile.ID, projectile)
@@ -62,35 +61,42 @@ EventsSDK.on("Tick", async () => {
 			proj.LastUpdate = cur_time
 			const source = proj.Source
 			if (source instanceof Entity && proj.SourceAttachment !== "") {
-				const attachment = source.GetAttachment(
-					proj.SourceAttachment,
-					source instanceof Unit ? source.NetworkActivity : GameActivity_t.ACT_DOTA_IDLE,
-				) ?? source.GetAttachment(proj.SourceAttachment)
+				const attachment = source.GetAttachment(proj.SourceAttachment)
 				if (attachment !== undefined)
 					proj.Position.AddForThis(attachment.GetPosition(
-						source.AnimationTime,
+						(attachment.FrameCount / attachment.FPS) / 2,
 						source.RotationRad,
+						source.ModelScale,
 					))
 			}
-			continue
 		}
 		const dt = cur_time - proj.LastUpdate
 		if (!proj.Position.IsValid)
-			if (proj.Target instanceof Entity && proj.Source instanceof Entity && !proj.IsDodged)
-				proj.Source.Position
+			if (proj.Target instanceof Entity && proj.Source instanceof Entity && !proj.IsDodged) {
+				proj.Position.CopyFrom(proj.Source.Position)
+				const attachment = proj.SourceAttachment !== ""
+					? proj.Source.GetAttachment(proj.SourceAttachment)
+					: undefined
+				if (attachment !== undefined)
+					proj.Position.AddForThis(attachment.GetPosition(
+						(attachment.FrameCount / attachment.FPS) / 2,
+						proj.Source.RotationRad,
+						proj.Source.ModelScale,
+					))
+				proj.Position
 					.Extend(proj.TargetLoc, (GameState.CurrentServerTick - proj.LaunchTick) * dt * proj.Speed)
 					.CopyTo(proj.Position)
-			else
+			} else
 				continue
 		const dist = proj.Position.Distance(proj.TargetLoc)
 		const velocity = proj.Position.GetDirectionTo(proj.TargetLoc).MultiplyScalarForThis(proj.Speed * dt)
 		proj.Position.AddForThis(velocity)
 		proj.LastUpdate = cur_time
-		const collision_size = proj.Target instanceof Entity ? proj.Target.ProjectileCollisionSize : 0
-		if (collision_size !== 0) {
-			if (proj.Position.DistanceSqr(proj.TargetLoc) < collision_size ** 2)
-				await DestroyTrackingProjectile(proj)
-		} else if (dist < velocity.Length)
+		const collision_size = proj.Target instanceof Entity ? proj.Target.ProjectileCollisionSize ** 2 : 0
+		if (
+			(collision_size !== 0 && proj.Position.DistanceSqr(proj.TargetLoc) < collision_size)
+			|| (dist < velocity.Length)
+		)
 			await DestroyTrackingProjectile(proj)
 	}
 })

@@ -1,3 +1,4 @@
+import Matrix4x4 from "../Base/Matrix4x4"
 import Vector3 from "../Base/Vector3"
 import Vector4 from "../Base/Vector4"
 import { parseKVBlock } from "./ParseKV"
@@ -9,25 +10,35 @@ import { ParseVBIB, ParseVBIBFromKV, VBIB, VBIBBufferData } from "./ParseVBIB"
 export class CMeshAttachment {
 	public readonly Name: string
 	public readonly InfluenceNames: string[] = []
-	public readonly InfluenceOffsets: Vector3[] = []
-	public readonly InfluenceRotations: Vector4[] = []
+	public readonly InfluenceBindPoses: Matrix4x4[] = []
 	public readonly InfluenceWeights: number[] = []
 	public readonly InfluenceRootTransforms: boolean[] = []
 	public readonly IgnoreRotation: boolean
 	constructor(kv: RecursiveMap) {
 		this.Name = GetMapStringProperty(kv, "m_name")
 		this.LoadInfluenceNames(kv)
-		this.LoadInfluenceOffsets(kv)
-		this.LoadInfluenceRotations(kv)
+		let InfluenceRotations = this.LoadInfluenceRotations(kv)
+		let InfluenceOffsets = this.LoadInfluenceOffsets(kv)
 		this.LoadInfluenceWeights(kv)
 		this.LoadInfluenceRootTransforms(kv)
 
 		const Influences = GetMapNumberProperty(kv, "m_nInfluences")
 		this.InfluenceNames = this.InfluenceNames.slice(0, Influences)
-		this.InfluenceOffsets = this.InfluenceOffsets.slice(0, Influences)
-		this.InfluenceRotations = this.InfluenceRotations.slice(0, Influences)
+		InfluenceOffsets = InfluenceOffsets.slice(0, Influences)
+		InfluenceRotations = InfluenceRotations.slice(0, Influences)
 		this.InfluenceWeights = this.InfluenceWeights.slice(0, Influences)
 		this.InfluenceRootTransforms = this.InfluenceRootTransforms.slice(0, Influences)
+
+		for (let i = 0; i < Influences; i++) {
+			const bindPose = Matrix4x4.Identity,
+				rotation = InfluenceRotations[i],
+				offset = InfluenceOffsets[i]
+			if (rotation !== undefined)
+				bindPose.Multiply(Matrix4x4.CreateFromVector4(rotation))
+			if (offset !== undefined)
+				bindPose.Multiply(Matrix4x4.CreateTranslation(offset))
+			this.InfluenceBindPoses.push(bindPose)
+		}
 
 		const m_bIgnoreRotation = kv.get("m_bIgnoreRotation")
 		this.IgnoreRotation = typeof m_bIgnoreRotation === "boolean"
@@ -40,15 +51,19 @@ export class CMeshAttachment {
 		if (influenceNames instanceof Map || Array.isArray(influenceNames))
 			this.InfluenceNames.push(...MapToStringArray(influenceNames))
 	}
-	private LoadInfluenceOffsets(kv: RecursiveMap): void {
+	private LoadInfluenceOffsets(kv: RecursiveMap): Vector3[] {
+		const ar: Vector3[] = []
 		const influenceOffsets = kv.get("m_vInfluenceOffsets")
 		if (influenceOffsets instanceof Map || Array.isArray(influenceOffsets))
-			this.InfluenceOffsets.push(...MapToVector3Array(influenceOffsets))
+			ar.push(...MapToVector3Array(influenceOffsets))
+		return ar
 	}
-	private LoadInfluenceRotations(kv: RecursiveMap): void {
+	private LoadInfluenceRotations(kv: RecursiveMap): Vector4[] {
+		const ar: Vector4[] = []
 		const influenceRotations = kv.get("m_vInfluenceRotations")
 		if (influenceRotations instanceof Map || Array.isArray(influenceRotations))
-			this.InfluenceRotations.push(...MapToVector4Array(influenceRotations))
+			ar.push(...MapToVector4Array(influenceRotations))
+		return ar
 	}
 	private LoadInfluenceWeights(kv: RecursiveMap): void {
 		const influenceWeights = kv.get("m_influenceWeights")

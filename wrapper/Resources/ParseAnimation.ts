@@ -1,8 +1,9 @@
+import Matrix4x4 from "../Base/Matrix4x4"
 import Vector3 from "../Base/Vector3"
 import Vector4 from "../Base/Vector4"
 import BinaryStream from "../Utils/BinaryStream"
 import { parseKV, parseKVBlock, parseKVFile } from "./ParseKV"
-import { GetMapNumberProperty, GetMapStringProperty, MapToNumberArray, MapToStringArray } from "./ParseUtils"
+import { GetMapNumberProperty, GetMapStringProperty, MapToNumberArray, MapToStringArray, MapToVector3 } from "./ParseUtils"
 
 enum AnimDecoderType {
 	Unknown,
@@ -41,8 +42,10 @@ enum AnimDecoderType {
 }
 
 export class CAnimationFrame {
-	public readonly BonesPositions = new Map<string, Vector3>()
-	public readonly BonesAngles = new Map<string, Vector4>()
+	private readonly BonesPositions = new Map<string, Vector3>()
+	private readonly BonesAngles = new Map<string, Vector4>()
+	private readonly BonesInverseBindPoses = new Map<string, Matrix4x4>()
+
 	public SetAttribute(bone: string, attribute: string, data: Vector3 | Vector4) {
 		switch (attribute) {
 			case "Position":
@@ -56,6 +59,21 @@ export class CAnimationFrame {
 				break
 		}
 	}
+	public GetBoneInverseBindPose(name: string): Matrix4x4 {
+		const found = this.BonesInverseBindPoses.get(name)
+		if (found !== undefined)
+			return found
+		const invBindPose = Matrix4x4.Identity,
+			angles = this.BonesAngles.get(name),
+			position = this.BonesPositions.get(name)
+		if (angles !== undefined)
+			invBindPose.Multiply(Matrix4x4.CreateFromVector4(angles))
+		if (position !== undefined)
+			invBindPose.Multiply(Matrix4x4.CreateTranslation(position))
+		invBindPose.Invert()
+		this.BonesInverseBindPoses.set(name, invBindPose)
+		return invBindPose
+	}
 }
 
 export class CAnimationActivity {
@@ -68,6 +86,33 @@ export class CAnimationActivity {
 		this.Activity = GetMapNumberProperty(kv, "m_nActivity")
 		this.Flags = GetMapNumberProperty(kv, "m_nFlags")
 		this.Weight = GetMapNumberProperty(kv, "m_nWeight")
+	}
+}
+
+export class CAnimationMovement {
+	public readonly EndFrame: string
+	public readonly ActionFlags: number
+	public readonly V0: number
+	public readonly V1: number
+	public readonly Angle: number
+	public readonly Vector: Vector3
+	public readonly Position: Vector3
+	constructor(kv: RecursiveMap) {
+		this.EndFrame = GetMapStringProperty(kv, "endframe")
+		this.ActionFlags = GetMapNumberProperty(kv, "motionflags")
+		this.V0 = GetMapNumberProperty(kv, "v0")
+		this.V1 = GetMapNumberProperty(kv, "v1")
+		this.Angle = GetMapNumberProperty(kv, "angle")
+
+		const vector = kv.get("vector")
+		this.Vector = vector instanceof Map || Array.isArray(vector)
+			? MapToVector3(vector)
+			: new Vector3()
+
+		const position = kv.get("position")
+		this.Position = position instanceof Map || Array.isArray(position)
+			? MapToVector3(position)
+			: new Vector3()
 	}
 }
 
@@ -96,54 +141,72 @@ export class CAnimation {
 	public readonly Name: string
 	public readonly FPS: number
 	public readonly Looping: boolean
-	public readonly Activities: CAnimationActivity[] = []
+	public readonly Activities: CAnimationActivity[]
+	public readonly Movements: CAnimationMovement[] = []
 	public readonly Events: CAnimationEvent[] = []
 	public readonly FrameCount: number
 	private readonly FrameBlockArray: [number, number, number[]][] = []
-	private readonly SegmentArray: [Uint8Array, string[], number[], string][] = []
+	private readonly DataChannelArray: Nullable<[string[], number[], string]>[]
 	private readonly BoneCount: number
+	private readonly SegmentArray: Nullable<[number, BinaryStream]>[]
 	constructor(
 		animationDesc: RecursiveMap,
 		DecodeKey: RecursiveMap,
 		private readonly DecoderArray: AnimDecoderType[],
-		segmentArray: RecursiveMap[],
+		SegmentArray: RecursiveMap[],
+		hseq: Map<string, CAnimationActivity[]>,
 	) {
 		this.Name = GetMapStringProperty(animationDesc, "m_name")
 		this.FPS = GetMapNumberProperty(animationDesc, "fps")
 		this.Looping = this.ComputeIsLooping(animationDesc)
 
-		this.LoadActivities(animationDesc)
+		this.Activities = hseq.get(this.Name.substring(1))
+			?? this.LoadActivities(animationDesc)
+		this.LoadMovements(animationDesc)
 		this.LoadEvents(animationDesc)
 
 		this.FrameCount = this.LoadFrameData(animationDesc)
 		const dataChannelMap = DecodeKey.get("m_dataChannelArray")
 		if (!(dataChannelMap instanceof Map || Array.isArray(dataChannelMap)))
 			throw "decodeKey without dataChannelArray"
-		const dataChannelArray = dataChannelMap instanceof Map
-			? [...dataChannelMap.values()]
-			: dataChannelMap
-		segmentArray.forEach(segment => {
-			const localChannel = GetMapNumberProperty(segment, "m_nLocalChannel")
-			const dataChannel = dataChannelArray[localChannel]
+		this.BoneCount = GetMapNumberProperty(DecodeKey, "m_nChannelElements")
+		this.DataChannelArray = (
+			dataChannelMap instanceof Map
+				? [...dataChannelMap.values()]
+				: dataChannelMap
+		).map(dataChannel => {
 			if (!(dataChannel instanceof Map))
-				return
+				return undefined
 			const boneNamesMap = dataChannel.get("m_szElementNameArray")
 			if (!(boneNamesMap instanceof Map || Array.isArray(boneNamesMap)))
-				return
+				return undefined
 			const elementIndexArrayMap = dataChannel.get("m_nElementIndexArray")
 			if (!(elementIndexArrayMap instanceof Map || Array.isArray(elementIndexArrayMap)))
-				return
+				return undefined
+			const boneNames = MapToStringArray(boneNamesMap),
+				elementIndexArray = MapToNumberArray(elementIndexArrayMap),
+				channelAttribute = GetMapStringProperty(dataChannel, "m_szVariableName")
+			const elementBones: number[] = []
+			for (let i = 0; i < this.BoneCount; i++)
+				elementBones.push(0)
+			elementIndexArray.forEach((elementIndex, i) => elementBones[elementIndex] = i)
+			return [boneNames, elementBones, channelAttribute]
+		})
+		this.SegmentArray = SegmentArray.map(segment => {
 			let container = segment.get("m_container")
 			if (container instanceof Map || Array.isArray(container))
 				container = new Uint8Array(MapToNumberArray(container))
 			if (!(container instanceof Uint8Array))
-				return
-			const boneNames = MapToStringArray(boneNamesMap),
-				elementIndexArray = MapToNumberArray(elementIndexArrayMap),
-				channelAttribute = GetMapStringProperty(dataChannel, "m_szVariableName")
-			this.SegmentArray.push([container, boneNames, elementIndexArray, channelAttribute])
+				return undefined
+			return [
+				GetMapNumberProperty(segment, "m_nLocalChannel"),
+				new BinaryStream(new DataView(
+					container.buffer,
+					container.byteOffset,
+					container.byteLength,
+				)),
+			]
 		})
-		this.BoneCount = GetMapNumberProperty(DecodeKey, "m_nChannelElements")
 	}
 
 	public ReadFrame(frameNum: number): Nullable<CAnimationFrame> {
@@ -156,10 +219,22 @@ export class CAnimation {
 			segmentIndexArray.forEach(segmentIndex => this.ReadSegment(
 				Math.max(Math.min(frameNum - startFrame, this.FrameCount - 1), 0),
 				frame,
-				this.SegmentArray[segmentIndex],
+				this.GetSegment(segmentIndex)!,
 			))
 		})
 		return frame
+	}
+
+	private GetSegment(id: number): Nullable<[BinaryStream, string[], number[], string]> {
+		const segmentData = this.SegmentArray[id]
+		if (segmentData === undefined)
+			return undefined
+		const [localChannel, container] = segmentData
+		const dataChannel = this.DataChannelArray[localChannel]
+		if (dataChannel === undefined)
+			return undefined
+		const [boneNames, elementBones, channelAttribute] = dataChannel
+		return [container, boneNames, elementBones, channelAttribute]
 	}
 
 	private ComputeIsLooping(animationDesc: RecursiveMap): boolean {
@@ -171,12 +246,22 @@ export class CAnimation {
 			? looping
 			: false
 	}
-	private LoadActivities(animationDesc: RecursiveMap): void {
+	private LoadActivities(animationDesc: RecursiveMap): CAnimationActivity[] {
+		const ar: CAnimationActivity[] = []
 		const activityArray = animationDesc.get("m_activityArray")
 		if (activityArray instanceof Map || Array.isArray(activityArray))
 			activityArray.forEach((activity: RecursiveMapValue) => {
 				if (activity instanceof Map)
-					this.Activities.push(new CAnimationActivity(activity))
+					ar.push(new CAnimationActivity(activity))
+			})
+		return ar
+	}
+	private LoadMovements(animationDesc: RecursiveMap): void {
+		const movementArray = animationDesc.get("m_movementArray")
+		if (movementArray instanceof Map || Array.isArray(movementArray))
+			movementArray.forEach((movement: RecursiveMapValue) => {
+				if (movement instanceof Map)
+					this.Movements.push(new CAnimationMovement(movement))
 			})
 	}
 	private LoadEvents(animationDesc: RecursiveMap): void {
@@ -229,29 +314,24 @@ export class CAnimation {
 	private ReadSegment(
 		frameNum: number,
 		frame: CAnimationFrame,
-		segment: [Uint8Array, string[], number[], string],
+		segment: [BinaryStream, string[], number[], string],
 	): void {
-		const [container, boneNames, elementIndexArray, channelAttribute] = segment
-		const stream = new BinaryStream(new DataView(
-			container.buffer,
-			container.byteOffset,
-			container.byteLength,
-		))
+		const [stream, boneNames, elementBones, channelAttribute] = segment
+		stream.pos = 0
 		const decoder = this.DecoderArray[stream.ReadUint16()]
 		stream.RelativeSeek(2) // cardinality?
 		const numBones = stream.ReadUint16()
 		stream.RelativeSeek(2) // totalLength?
-		const bones: string[] = []
-		const elementBones = new Array<number>(this.BoneCount).fill(0)
-		elementIndexArray.forEach((elementIndex, i) => elementBones[elementIndex] = i)
+		const bones: number[] = []
 		for (let i = 0; i < numBones; i++) {
 			const id = stream.ReadUint16()
-			bones.push(boneNames[elementBones[id]] ?? "")
+			bones.push(elementBones[id])
 		}
 		stream.RelativeSeek(this.GetAnimDecoderTypeSize(decoder) * frameNum * numBones)
 		if (stream.Empty())
 			return
-		bones.forEach(bone => {
+		bones.forEach(id => {
+			const bone = boneNames[id] ?? ""
 			switch (decoder) {
 				case AnimDecoderType.CCompressedStaticFullVector3:
 				case AnimDecoderType.CCompressedFullVector3:
@@ -359,6 +439,7 @@ function MakeDecoderArray(map: RecursiveMap | RecursiveMapValue[]): AnimDecoderT
 export function ParseAnimationsFromData(
 	animationData: RecursiveMap,
 	decodeKey: RecursiveMap,
+	hseq_data: RecursiveMap,
 ): CAnimation[] {
 	const ar: CAnimation[] = []
 	const decoderArrayMap = animationData.get("m_decoderArray")
@@ -373,6 +454,22 @@ export function ParseAnimationsFromData(
 			if (segment instanceof Map)
 				segmentArray.push(segment)
 		})
+	const hseq = new Map<string, CAnimationActivity[]>()
+	const m_localS1SeqDescArray = hseq_data.get("m_localS1SeqDescArray")
+	if (m_localS1SeqDescArray instanceof Map || Array.isArray(m_localS1SeqDescArray))
+		m_localS1SeqDescArray.forEach((el: RecursiveMapValue) => {
+			if (!(el instanceof Map))
+				return
+			const name = GetMapStringProperty(el, "m_sName")
+			const activityArray = el.get("m_activityArray")
+			const activities: CAnimationActivity[] = []
+			if (activityArray instanceof Map || Array.isArray(activityArray))
+				activityArray.forEach((activity: RecursiveMapValue) => {
+					if (activity instanceof Map)
+						activities.push(new CAnimationActivity(activity))
+				})
+			hseq.set(name, activities)
+		})
 	if (animArrayMap instanceof Map || Array.isArray(animArrayMap))
 		animArrayMap.forEach((animationDesc: RecursiveMapValue) => {
 			if (animationDesc instanceof Map)
@@ -381,6 +478,7 @@ export function ParseAnimationsFromData(
 					decodeKey,
 					decoderArray,
 					segmentArray,
+					hseq,
 				))
 		})
 	return ar
@@ -389,6 +487,7 @@ export function ParseAnimationsFromData(
 export function ParseEmbeddedAnimation(
 	group_data_block: Nullable<Uint8Array>,
 	anim_data_block: Nullable<Uint8Array>,
+	hseq: RecursiveMap,
 ): CAnimation[] {
 	const groupData = parseKVBlock(group_data_block)
 	if (groupData === undefined)
@@ -399,7 +498,7 @@ export function ParseEmbeddedAnimation(
 	const decodeKey = groupData.get("m_decodeKey")
 	if (!(decodeKey instanceof Map))
 		throw "Animation without decodeKey"
-	return ParseAnimationsFromData(animationData, decodeKey)
+	return ParseAnimationsFromData(animationData, decodeKey, hseq)
 }
 
 export function ParseAnimationGroup(buf: Uint8Array): CAnimation[] {
@@ -411,12 +510,18 @@ export function ParseAnimationGroup(buf: Uint8Array): CAnimation[] {
 	const decodeKey = kv.get("m_decodeKey")
 	if (!(decodeKey instanceof Map))
 		throw "Animation group without decodeKey"
+	let hseq_path = GetMapStringProperty(kv, "m_directHSeqGroup")
+	if (hseq_path.length !== 0 && !hseq_path.endsWith("_c"))
+		hseq_path += "_c"
+	const hseq = hseq_path.length !== 0
+		? parseKVFile(hseq_path)
+		: new Map()
 	animArrayMap.forEach((path: RecursiveMapValue) => {
 		if (typeof path !== "string")
 			return
 		if (!path.endsWith("_c"))
 			path += "_c"
-		ar.push(...ParseAnimationsFromData(parseKVFile(path), decodeKey))
+		ar.push(...ParseAnimationsFromData(parseKVFile(path), decodeKey, hseq))
 	})
 	return ar
 }

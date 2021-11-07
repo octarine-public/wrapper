@@ -115,6 +115,7 @@ export class TrackingProjectile extends Projectile {
 			const attachment_off = attachment?.GetPosition(
 				target.AnimationTime,
 				target.RotationRad,
+				target.ModelScale,
 			)
 			const attachment_pos = attachment_off !== undefined
 				? target.Position.Add(attachment_off)

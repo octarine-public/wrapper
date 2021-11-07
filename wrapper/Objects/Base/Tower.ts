@@ -1,4 +1,5 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { Team } from "../../Enums/Team"
 import EntityManager from "../../Managers/EntityManager"
 import Building from "./Building"
 import Unit from "./Unit"
@@ -13,5 +14,21 @@ export default class Tower extends Building {
 	}
 	public get IsDeniable(): boolean {
 		return super.IsDeniable || this.HPPercent <= 10
+	}
+	public get Rotation(): number {
+		let ang = super.Rotation
+		if (this.Team === Team.Radiant)
+			ang += 45 // probably hardcoded somewhere in dota
+		if (ang >= 180)
+			return ang - 360
+		return ang
+	}
+	public get NetworkedRotation(): number {
+		let ang = super.Rotation
+		if (this.Team === Team.Radiant)
+			ang += 45 // probably hardcoded somewhere in dota
+		if (ang >= 180)
+			return ang - 360
+		return ang
 	}
 }
