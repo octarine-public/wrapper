@@ -1,14 +1,21 @@
+import Matrix4x4 from "../Base/Matrix4x4"
 import Vector3 from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { Team } from "../Enums/Team"
 import { Localization } from "../Menu/Imports"
+import * as WASM from "../Native/WASM"
+import Workers from "../Native/Workers"
 import Entity, { LocalPlayer } from "../Objects/Base/Entity"
 import { PlayerResource } from "../Objects/Base/PlayerResource"
 import Unit from "../Objects/Base/Unit"
 import AbilityData, { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
 import UnitData, { ReloadGlobalUnitStorage } from "../Objects/DataBook/UnitData"
+import { DefaultWorldLayers, ParseEntityLump, ResetEntityLump } from "../Resources/ParseEntityLump"
+import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
 import { parseKVFile } from "../Resources/ParseKV"
+import { GetMapNumberProperty, GetMapStringProperty, MapToMatrix4x4, MapToNumberArray, MapToStringArray } from "../Resources/ParseUtils"
 import BinaryStream from "../Utils/BinaryStream"
+import { HasBit } from "../Utils/BitsExtensions"
 import GameState from "../Utils/GameState"
 import { CMsgVectorToVector3, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf, ServerHandleToIndex } from "../Utils/Protobuf"
 import { createMapFromMergedIterators } from "../Utils/Utils"
@@ -896,7 +903,169 @@ EventsSDK.on("InputCaptured", is_captured => GameState.IsInputCaptured = is_capt
 EventsSDK.on("ServerTick", tick => GameState.CurrentServerTick = tick)
 Events.on("UIStateChanged", new_state => GameState.UIState = new_state)
 
-Events.on("NewConnection", async () => {
+let current_world_promise: Nullable<Promise<WorkerIPCType>>
+function TryLoadWorld(world_kv: RecursiveMap): void {
+	const worldNodes = world_kv.get("m_worldNodes")
+	if (!(worldNodes instanceof Map || Array.isArray(worldNodes)))
+		return
+	const meshes: [string, number[]][] = [],
+		models: [string, number[]][] = []
+	worldNodes.forEach((node: RecursiveMapValue) => {
+		if (!(node instanceof Map))
+			return
+		const path = GetMapStringProperty(node, "m_worldNodePrefix")
+		const node_kv = parseKVFile(`${path}.vwnod_c`)
+
+		const layerNames: string[] = []
+		const layerNamesMap = node_kv.get("m_layerNames")
+		if (layerNamesMap instanceof Map || Array.isArray(layerNamesMap))
+			layerNames.push(...MapToStringArray(layerNamesMap))
+
+		const sceneObjectLayers: string[] = []
+		const sceneObjectLayerIndicesMap = node_kv.get("m_sceneObjectLayerIndices")
+		if (sceneObjectLayerIndicesMap instanceof Map || Array.isArray(sceneObjectLayerIndicesMap))
+			sceneObjectLayers.push(
+				...MapToNumberArray(sceneObjectLayerIndicesMap)
+					.map(index => layerNames[index]),
+			)
+
+		const sceneObjects = node_kv.get("m_sceneObjects")
+		if (!(sceneObjects instanceof Map || Array.isArray(sceneObjects)))
+			return
+		let i = 0
+		sceneObjects.forEach((sceneObject: RecursiveMapValue) => {
+			if (!(sceneObject instanceof Map))
+				return
+			const layerName = sceneObjectLayers[i++] ?? "world_layer_base"
+			if (!DefaultWorldLayers.includes(layerName))
+				return
+			const transformMap = sceneObject.get("m_vTransform")
+			const transform = transformMap instanceof Map || Array.isArray(transformMap)
+				? MapToMatrix4x4(transformMap)
+				: Matrix4x4.Identity
+			const model_path = GetMapStringProperty(sceneObject, "m_renderableModel"),
+				mesh_path = GetMapStringProperty(sceneObject, "m_renderable"),
+				objectTypeFlags = GetMapNumberProperty(sceneObject, "m_nObjectTypeFlags")
+			// visual only, doesn't affect height calculations/etc
+			if (HasBit(objectTypeFlags, 7))
+				return
+			if (model_path !== "")
+				models.push([model_path, [...transform.values]])
+			if (mesh_path !== "")
+				meshes.push([mesh_path, [...transform.values]])
+		})
+	})
+	const world_promise = current_world_promise = Workers.CallRPCEndPoint(
+		"LoadAndOptimizeWorld",
+		[models, meshes],
+		false,
+		{
+			forward_events: false,
+			forward_server_messages: false,
+			display_name: "LoadAndOptimizeWorld",
+		},
+	)
+	world_promise.then(data => {
+		if (world_promise !== current_world_promise || !Array.isArray(data))
+			return
+		current_world_promise = undefined
+		const [VB, IB, BVH1, BVH2] = data
+		if (!(
+			VB instanceof Uint8Array
+			&& IB instanceof Uint8Array
+			&& BVH1 instanceof Uint8Array
+			&& BVH2 instanceof Uint8Array
+		))
+			return
+		WASM.LoadWorldModel(VB, 4 * 4, IB, 4, Matrix4x4.Identity.values, -1)
+		WASM.FinishWorldCached([BVH1, BVH2])
+	}, console.error)
+}
+async function TryLoadMapFiles(): Promise<void> {
+	const map_name = GameState.MapName
+	{
+		const buf = fread(`maps/${map_name}.vhcg`)
+		if (buf !== undefined) {
+			WASM.ParseVHCG(buf)
+			await EventsSDK.emit("MapDataLoaded", false)
+		} else
+			WASM.ResetVHCG()
+	}
+	{
+		const buf = fread(`maps/${map_name}.gnv`)
+		if (buf !== undefined) {
+			ParseGNV(buf)
+			await EventsSDK.emit("MapDataLoaded", false)
+		} else
+			ResetGNV()
+	}
+	{
+		ResetEntityLump()
+		WASM.ResetWorld()
+		const world_kv = parseKVFile(`maps/${map_name}/world.vwrld_c`)
+		const m_entityLumps = world_kv.get("m_entityLumps")
+		if (m_entityLumps instanceof Map || Array.isArray(m_entityLumps))
+			m_entityLumps.forEach((path: RecursiveMapValue) => {
+				if (typeof path !== "string")
+					return
+				const buf = fread(`${path}_c`)
+				if (buf === undefined)
+					return
+				ParseEntityLump(buf)
+			})
+		if (IS_MAIN_WORKER)
+			TryLoadWorld(world_kv)
+		await EventsSDK.emit("MapDataLoaded", false)
+	}
+}
+
+const last_search_paths_worker: (string | bigint)[] = []
+Workers.RegisterRPCEndPoint("SetSearchPaths", paths => {
+	if (!Array.isArray(paths))
+		throw "!Array.isArray(paths)"
+	last_search_paths_worker.forEach(path => RemoveSearchPath(path))
+	last_search_paths_worker.splice(0)
+	for (const path of paths)
+		if (typeof path === "string" || typeof path === "bigint") {
+			last_search_paths_worker.push(path)
+			AddSearchPath(path)
+		}
+})
+
+const last_search_paths: (string | bigint)[] = []
+EventsSDK.on("ServerInfo", async info => {
+	let map_name = (info.get("map_name") as string) ?? "<empty>"
+	if (map_name === undefined)
+		return
+	if (map_name === "start")
+		map_name = "dota"
+	GameState.MapName = map_name
+	const addon_name = (info.get("addon_name") as string) ?? ""
+	GameState.AddonName = addon_name
+	last_search_paths.forEach(path => RemoveSearchPath(path))
+	last_search_paths.splice(0)
+	last_search_paths.push("content/core")
+	last_search_paths.push("game/dota")
+	last_search_paths.push("content/dota")
+	last_search_paths.push("game/dota_addons")
+	last_search_paths.push("content/dota_addons")
+	if (addon_name !== "")
+		try {
+			const addon_id = BigInt(addon_name) // throws if addon_name is not a number
+			if (addon_id !== 0n) {
+				if (addon_id < 0n)
+					throw "Addon ID should be unsigned"
+				last_search_paths.push(addon_id)
+			}
+		} catch {
+			last_search_paths.push(`game/dota_addons/${addon_name}`)
+			last_search_paths.push(`content/dota_addons/${addon_name}`)
+		}
+	last_search_paths.push(`maps/${map_name}.vpk`)
+	Workers.Propagate("SetSearchPaths", last_search_paths)
+	last_search_paths.forEach(path => AddSearchPath(path))
+	await TryLoadMapFiles()
+
 	await ReloadGlobalUnitStorage()
 	await ReloadGlobalAbilityStorage()
 	UnitData.global_storage.then(unit_data_global_storage => {

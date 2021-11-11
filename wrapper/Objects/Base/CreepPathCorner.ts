@@ -4,7 +4,6 @@ import Vector3 from "../../Base/Vector3"
 import { RenderMode_t } from "../../Enums/RenderMode_t"
 import { Team } from "../../Enums/Team"
 import EntityManager, { CreateEntityInternal, DeleteEntity } from "../../Managers/EntityManager"
-import Events from "../../Managers/Events"
 import EventsSDK from "../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../Native/WASM"
 import { EntityDataLump } from "../../Resources/ParseEntityLump"
@@ -78,20 +77,10 @@ async function LoadCreepPathCorners(): Promise<void> {
 		await EventsSDK.emit("EntityCreated", false, ent)
 }
 
-let succeeded = false
-async function TryLoadMapFiles(): Promise<void> {
-	if (succeeded)
-		return
+EventsSDK.after("ServerInfo", async () => {
 	try {
-		LoadCreepPathCorners()
-		succeeded = true
+		await LoadCreepPathCorners()
 	} catch (e) {
 		console.log("Error in CreepPathCorners init: " + e)
 	}
-}
-
-EventsSDK.after("ServerInfo", async () => {
-	succeeded = false
-	await TryLoadMapFiles()
 })
-Events.on("PostAddSearchPath", TryLoadMapFiles)

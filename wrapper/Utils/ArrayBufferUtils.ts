@@ -40,6 +40,8 @@ export function StringToUTF8Cb(str: string, writeByte: (b: number) => void): voi
 			writeByte(0x80 | (charcode & 0x3f))
 		} else { // surrogate pair
 			i++
+			if (i >= str.length)
+				return
 			// UTF-16 encodes 0x10000-0x10FFFF by
 			// subtracting 0x10000 and splitting the
 			// 20 bits of 0x0-0xFFFFF into two halves
@@ -58,11 +60,11 @@ export function StringToUTF8(str: string): Uint8Array {
 	return new Uint8Array(ar)
 }
 
-export function StringToUTF16(str: string): Uint8Array {
+export function StringToUTF16(str: string): Uint16Array {
 	const buf = new Uint16Array(str.length)
 	for (let i = str.length; i--;)
 		buf[i] = str.charCodeAt(i)
-	return new Uint8Array(buf.buffer)
+	return buf
 }
 
 export function ArrayBuffersEqual(ab1: ArrayBuffer, ab2: ArrayBuffer): boolean {

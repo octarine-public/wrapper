@@ -4,6 +4,7 @@ import { StringToUTF8, Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
 import BinaryStream from "../Utils/BinaryStream"
 import { ParseExternalReferences, readJSON } from "../Utils/Utils"
 import Events from "./Events"
+import EventsSDK from "./EventsSDK"
 
 const Manifest = new (class CManifest {
 	public readonly Directories: string[] = []
@@ -152,7 +153,8 @@ Events.on("NewConnection", () => {
 	Manifest.Paths.clear()
 	Manifest.PathHash32To64.clear()
 	Manifest.SoundHashToString.clear()
-
+})
+EventsSDK.after("ServerInfo", () => {
 	// strings present in dota, but not present in stringtokendatabase for some reason
 	const known_strings = readJSON("known_strings.json") as string[]
 	known_strings.forEach(str => Manifest.SaveStringToken(str))

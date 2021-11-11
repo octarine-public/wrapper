@@ -8,17 +8,13 @@ import EntityManager from "../Managers/EntityManager"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import { default as Input } from "../Managers/InputManager"
-import { DefaultWorldLayers, ParseEntityLump, ResetEntityLump } from "../Resources/ParseEntityLump"
-import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
-import { parseKVFile } from "../Resources/ParseKV"
 import { ParseMaterial } from "../Resources/ParseMaterial"
 import { CMeshDrawCall, ParseMesh } from "../Resources/ParseMesh"
 import { ParseModel } from "../Resources/ParseModel"
-import { GetMapNumberProperty, GetMapStringProperty, MapToMatrix4x4, MapToNumberArray, MapToStringArray } from "../Resources/ParseUtils"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
 import { orderByFirst } from "../Utils/ArrayExtensions"
 import BinaryStream from "../Utils/BinaryStream"
-import { HasBit, HasMask } from "../Utils/BitsExtensions"
+import { HasMask } from "../Utils/BitsExtensions"
 import GameState from "../Utils/GameState"
 import { DegreesToRadian } from "../Utils/Math"
 import readFile, { tryFindFile } from "../Utils/readFile"
@@ -53,7 +49,6 @@ enum CommandID {
 enum PathFlags {
 	GRAYSCALE = 1 << 0,
 	IMAGE_SHADER = 1 << 1,
-	CUBIC_RESAMPLER = 1 << 2,
 	FILL = 1 << 6,
 	STROKE = 1 << 7,
 	STROKE_AND_FILL = FILL | STROKE,
@@ -337,8 +332,6 @@ class CRendererSDK {
 				this.commandStream.WriteFloat32(vecSize.y)
 			}
 			const flags = PathFlags.FILL | PathFlags.IMAGE_SHADER
-			// if (orig_size.x !== vecSize.x || orig_size.y !== vecSize.y)
-			// 	flags |= PathFlags.CUBIC_RESAMPLER
 			const size_x = subtexSize?.x ?? orig_size.x,
 				size_y = subtexSize?.y ?? orig_size.y
 			this.Path(
@@ -861,145 +854,7 @@ class CRendererSDK {
 	}
 }
 const RendererSDK = new CRendererSDK()
-
-let vhcg_succeeded = false,
-	gnv_succeeded = false,
-	entity_lump_succeeded = false,
-	current_world_promise: Nullable<Promise<WorkerIPCType>>
-function TryLoadWorld(world_kv: RecursiveMap): void {
-	const worldNodes = world_kv.get("m_worldNodes")
-	if (!(worldNodes instanceof Map || Array.isArray(worldNodes)))
-		return
-	const meshes: [string, number[]][] = [],
-		models: [string, number[]][] = []
-	worldNodes.forEach((node: RecursiveMapValue) => {
-		if (!(node instanceof Map))
-			return
-		const path = GetMapStringProperty(node, "m_worldNodePrefix")
-		const node_kv = parseKVFile(`${path}.vwnod_c`)
-
-		const layerNames: string[] = []
-		const layerNamesMap = node_kv.get("m_layerNames")
-		if (layerNamesMap instanceof Map || Array.isArray(layerNamesMap))
-			layerNames.push(...MapToStringArray(layerNamesMap))
-
-		const sceneObjectLayers: string[] = []
-		const sceneObjectLayerIndicesMap = node_kv.get("m_sceneObjectLayerIndices")
-		if (sceneObjectLayerIndicesMap instanceof Map || Array.isArray(sceneObjectLayerIndicesMap))
-			sceneObjectLayers.push(
-				...MapToNumberArray(sceneObjectLayerIndicesMap)
-					.map(index => layerNames[index]),
-			)
-
-		const sceneObjects = node_kv.get("m_sceneObjects")
-		if (!(sceneObjects instanceof Map || Array.isArray(sceneObjects)))
-			return
-		let i = 0
-		sceneObjects.forEach((sceneObject: RecursiveMapValue) => {
-			if (!(sceneObject instanceof Map))
-				return
-			const layerName = sceneObjectLayers[i++] ?? "world_layer_base"
-			if (!DefaultWorldLayers.includes(layerName))
-				return
-			const transformMap = sceneObject.get("m_vTransform")
-			const transform = transformMap instanceof Map || Array.isArray(transformMap)
-				? MapToMatrix4x4(transformMap)
-				: Matrix4x4.Identity
-			const model_path = GetMapStringProperty(sceneObject, "m_renderableModel"),
-				mesh_path = GetMapStringProperty(sceneObject, "m_renderable"),
-				objectTypeFlags = GetMapNumberProperty(sceneObject, "m_nObjectTypeFlags")
-			// visual only, doesn't affect height calculations/etc
-			if (HasBit(objectTypeFlags, 7))
-				return
-			if (model_path !== "")
-				models.push([model_path, [...transform.values]])
-			if (mesh_path !== "")
-				meshes.push([mesh_path, [...transform.values]])
-		})
-	})
-	const world_promise = current_world_promise = Workers.CallRPCEndPoint(
-		"LoadAndOptimizeWorld",
-		[models, meshes],
-		false,
-		{
-			forward_events: false,
-			forward_server_messages: false,
-		},
-	)
-	world_promise.then(data => {
-		if (world_promise !== current_world_promise || !Array.isArray(data))
-			return
-		current_world_promise = undefined
-		const [VB, IB, BVH1, BVH2] = data
-		if (!(
-			VB instanceof Uint8Array
-			&& IB instanceof Uint8Array
-			&& BVH1 instanceof Uint8Array
-			&& BVH2 instanceof Uint8Array
-		))
-			return
-		WASM.LoadWorldModel(VB, 4 * 4, IB, 4, Matrix4x4.Identity.values, -1)
-		WASM.FinishWorldCached([BVH1, BVH2])
-	}, console.error)
-}
-async function TryLoadMapFiles(): Promise<void> {
-	const map_name = GameState.MapName
-	if (!vhcg_succeeded) {
-		const buf = fread(`maps/${map_name}.vhcg`)
-		if (buf !== undefined) {
-			vhcg_succeeded = true
-			WASM.ParseVHCG(buf)
-			await EventsSDK.emit("MapDataLoaded", false)
-		} else
-			WASM.ResetVHCG()
-	}
-	if (!gnv_succeeded) {
-		const buf = fread(`maps/${map_name}.gnv`)
-		if (buf !== undefined) {
-			gnv_succeeded = true
-			ParseGNV(buf)
-			await EventsSDK.emit("MapDataLoaded", false)
-		} else
-			ResetGNV()
-	}
-	if (!entity_lump_succeeded) {
-		ResetEntityLump()
-		WASM.ResetWorld()
-		const world_kv = parseKVFile(`maps/${map_name}/world.vwrld_c`)
-		const m_entityLumps = world_kv.get("m_entityLumps")
-		if (m_entityLumps instanceof Map || Array.isArray(m_entityLumps))
-			m_entityLumps.forEach((path: RecursiveMapValue) => {
-				if (typeof path !== "string")
-					return
-				const buf = fread(`${path}_c`)
-				if (buf === undefined)
-					return
-				entity_lump_succeeded = true
-				ParseEntityLump(buf)
-			})
-		if (entity_lump_succeeded) {
-			if (IS_MAIN_WORKER)
-				TryLoadWorld(world_kv)
-			await EventsSDK.emit("MapDataLoaded", false)
-		}
-	}
-}
-
-EventsSDK.on("ServerInfo", async info => {
-	let map_name = (info.get("map_name") as string) ?? "<empty>"
-	if (map_name === undefined)
-		return
-	if (map_name === "start")
-		map_name = "dota"
-	GameState.MapName = map_name
-	vhcg_succeeded = false
-	gnv_succeeded = false
-	entity_lump_succeeded = false
-	await TryLoadMapFiles()
-})
 EventsSDK.on("UnitAbilityDataUpdated", () => RendererSDK.FreeTextureCache())
-
-Events.on("PostAddSearchPath", async () => TryLoadMapFiles())
 
 Events.on("Draw", async visual_data => {
 	await RendererSDK.BeforeDraw()

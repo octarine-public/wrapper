@@ -13,6 +13,7 @@ type WorkerIPCType = (
 	| number
 	| boolean
 	| undefined
+	| void
 )
 interface WorkerOptions {
 	forward_events?: boolean // forward events [except several user-driven ones and /ServerMessages] to worker
@@ -150,8 +151,8 @@ declare function setFireEvent(
 ): void
 declare function require(absolute_path: string): any
 declare function hrtime(): number
-declare function AddSearchPath(path: string): void
-declare function RemoveSearchPath(path: string): void
+declare function AddSearchPath(path: string | bigint): void
+declare function RemoveSearchPath(path: string | bigint): void
 declare function SetTreeModel(model_name: string, scale: number): void
 declare function EmitStartSoundEvent( // pass location: Vector2 at IOBuffer offset 0
 	soundevent_hash: number,

@@ -85,10 +85,6 @@ declare interface Events extends EventEmitter {
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
 	on(name: "SharedObjectChanged", listener: (id: number, reason: SOType, msg: ArrayBuffer) => void): EventEmitter
 	on(name: "NewConnection", listener: () => void): EventEmitter
-	on(name: "AddSearchPath", listener: (path: string) => boolean): EventEmitter
-	on(name: "PostAddSearchPath", listener: (path: string) => void): EventEmitter
-	on(name: "RemoveSearchPath", listener: (path: string) => boolean): EventEmitter
-	on(name: "PostRemoveSearchPath", listener: (path: string) => void): EventEmitter
 	on(name: "ServerMessage", listener: (msg_id: number, buf: ArrayBuffer) => void): EventEmitter
 	on(name: "GCPingResponse", listener: () => boolean): EventEmitter
 	on(name: "MatchmakingStatsUpdated", listener: (msg: ArrayBuffer) => void): EventEmitter

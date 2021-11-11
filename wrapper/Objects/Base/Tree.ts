@@ -5,7 +5,6 @@ import { WrapperClass } from "../../Decorators"
 import { RenderMode_t } from "../../Enums/RenderMode_t"
 import { Team } from "../../Enums/Team"
 import EntityManager, { CreateEntityInternal, DeleteEntity } from "../../Managers/EntityManager"
-import Events from "../../Managers/Events"
 import EventsSDK from "../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../Native/WASM"
 import { EntityDataLump } from "../../Resources/ParseEntityLump"
@@ -102,23 +101,12 @@ async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 	}
 }
 
-let trm_succeeded = false
-async function TryLoadMapFiles(): Promise<void> {
-	if (trm_succeeded)
-		return
+EventsSDK.after("ServerInfo", async () => {
 	try {
 		const buf = fread(`maps/${GameState.MapName}.trm`)
-		if (buf !== undefined) {
-			trm_succeeded = true
+		if (buf !== undefined)
 			await LoadTreeMap(buf)
-		}
 	} catch (e) {
 		console.log("Error in TreeMap init: " + e)
 	}
-}
-
-EventsSDK.after("ServerInfo", async () => {
-	trm_succeeded = false
-	await TryLoadMapFiles()
 })
-Events.on("PostAddSearchPath", TryLoadMapFiles)

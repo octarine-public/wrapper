@@ -13,6 +13,7 @@ type WorkerType = [
 export default new (class Workers {
 	private readonly workers: WorkerType[] = []
 	private readonly endpoints = new Map<string, RPCEndPoint>()
+	private readonly propagated_data = new Map<string, WorkerIPCType>()
 	private queued_tasks: [string, WorkerIPCType, PromiseResolver][] = []
 	constructor() {
 		if (IS_MAIN_WORKER) {
@@ -24,34 +25,39 @@ export default new (class Workers {
 				})
 		}
 		Events.on("IPCMessage", async (source_worker_uid, name, data) => {
-			if (name !== "RPCCall" || !Array.isArray(data))
+			if ((name !== "RPCCall" && name !== "Propagate") || !Array.isArray(data))
 				return
 			const [endpoint_name, real_data] = data
 			if (typeof endpoint_name !== "string")
 				return
 			const endpoint = this.endpoints.get(endpoint_name)
 			if (endpoint === undefined) {
-				SendIPCMessage(
-					source_worker_uid,
-					"RPCCallResponse",
-					[false, "Remote RPC Endpoint name not found", endpoint_name],
-				)
+				if (name === "RPCCall")
+					SendIPCMessage(
+						source_worker_uid,
+						"RPCCallResponse",
+						[false, "Remote RPC Endpoint name not found", endpoint_name],
+					)
 				return
 			}
 			try {
 				const res = await endpoint(real_data)
-				SendIPCMessage(
-					source_worker_uid,
-					"RPCCallResponse",
-					[true, res],
-				)
+				if (name === "RPCCall")
+					SendIPCMessage(
+						source_worker_uid,
+						"RPCCallResponse",
+						[true, res],
+					)
 			} catch (e: any) {
-				const err = e instanceof Error ? e : new Error(e)
-				SendIPCMessage(
-					source_worker_uid,
-					"RPCCallResponse",
-					[false, err.message, err.stack ?? ""],
-				)
+				if (name === "RPCCall") {
+					const err = e instanceof Error ? e : new Error(e)
+					SendIPCMessage(
+						source_worker_uid,
+						"RPCCallResponse",
+						[false, err.message, err.stack ?? ""],
+					)
+				} else
+					console.error(e)
 			}
 		})
 		Events.on("IPCMessage", (source_worker_uid, name, data) => {
@@ -76,6 +82,14 @@ export default new (class Workers {
 		if (this.endpoints.has(name))
 			throw `Tried to register "${name}" RPC endpoint more than once`
 		this.endpoints.set(name, endpoint)
+	}
+	public Propagate(name: string, data: WorkerIPCType): void {
+		this.workers.forEach(worker => SendIPCMessage(
+			worker[0],
+			"Propagate",
+			[name, data],
+		))
+		this.propagated_data.set(name, data)
 	}
 	public CallRPCEndPoint(
 		name: string,
@@ -149,6 +163,11 @@ export default new (class Workers {
 				if (worker_uid !== ar[0])
 					return
 				Events.removeListener("WorkerSpawned", spawn_cb)
+				this.propagated_data.forEach((data, name) => SendIPCMessage(
+					worker_uid,
+					"Propagate",
+					[name, data],
+				))
 				ar[3] = true
 				this.queued_tasks.forEach(([name, data, promise]) => this.CallRPCEndPoint(
 					name,
