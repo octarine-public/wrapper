@@ -25,9 +25,9 @@ const GUIInfo = new (class CGUIInfo {
 	public OpenShopLarge = undefined as any as COpenShop
 	public TopBar = undefined as any as CTopBar
 	public PreGame = undefined as any as CPreGame
-	public LowerHUD = [] as CLowerHUD[][][]
 	public Scoreboard = undefined as any as CScoreboard
 	public HUDFlipped = false
+	private LowerHUD_ = new Map<boolean, Map<number, Map<number, CLowerHUD>>>()
 
 	// Looks like it's hardcoded
 	// Do not change it unless anything breaks.
@@ -56,19 +56,8 @@ const GUIInfo = new (class CGUIInfo {
 			this.PreGame = new CPreGame(screen_size)
 		if (everything_changed || this.Scoreboard === undefined || this.Scoreboard.HasChanged())
 			this.Scoreboard = new CScoreboard(screen_size)
-		if (everything_changed || this.LowerHUD.length === 0) {
-			this.LowerHUD.splice(0)
-			for (let i = 0; i < 2; i++) {
-				const ar: CLowerHUD[][] = []
-				for (let j = 0; j < 24; j++) {
-					const ar2: CLowerHUD[] = []
-					for (let k = 0; k < 24; k++)
-						ar2.push(new CLowerHUD(screen_size, i !== 0, j, k, hud_flipped))
-					ar.push(ar2)
-				}
-				this.LowerHUD.push(ar)
-			}
-		}
+		if (everything_changed)
+			this.LowerHUD_.clear()
 		if (this.debug_draw)
 			this.DebugDraw()
 	}
@@ -92,7 +81,29 @@ const GUIInfo = new (class CGUIInfo {
 				!abil.AbilityBehavior.includes(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_HIDDEN)
 			)).length
 			: 4
-		return this.LowerHUD[unit?.IsHero ? 1 : 0][abils_count][base_abils_count]
+		const is_hero = unit?.IsHero ?? false
+		let hero_map = this.LowerHUD_.get(is_hero)
+		if (hero_map === undefined) {
+			hero_map = new Map()
+			this.LowerHUD_.set(is_hero, hero_map)
+		}
+		let abils_map = hero_map.get(abils_count)
+		if (abils_map === undefined) {
+			abils_map = new Map()
+			hero_map.set(abils_count, abils_map)
+		}
+		let hud = abils_map.get(base_abils_count)
+		if (hud === undefined) {
+			hud = new CLowerHUD(
+				latest_screen_size,
+				is_hero,
+				abils_count,
+				base_abils_count,
+				this.HUDFlipped,
+			)
+			abils_map.set(base_abils_count, hud)
+		}
+		return hud
 	}
 	public DebugDraw(): void {
 		if (GameRules?.GameState !== DOTA_GameState.DOTA_GAMERULES_STATE_HERO_SELECTION) {
