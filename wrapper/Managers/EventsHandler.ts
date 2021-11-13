@@ -23,7 +23,7 @@ import * as VBKV from "../Utils/VBKV"
 import EntityManager from "./EntityManager"
 import Events from "./Events"
 import EventsSDK from "./EventsSDK"
-import Manifest from "./Manifest"
+import Manifest, { LoadManifest } from "./Manifest"
 
 enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_CREATE = 0,
@@ -1064,6 +1064,7 @@ EventsSDK.on("ServerInfo", async info => {
 	last_search_paths.push(`maps/${map_name}.vpk`)
 	Workers.Propagate("SetSearchPaths", last_search_paths)
 	last_search_paths.forEach(path => AddSearchPath(path))
+	LoadManifest()
 	await TryLoadMapFiles()
 
 	await ReloadGlobalUnitStorage()

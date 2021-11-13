@@ -154,11 +154,11 @@ Events.on("NewConnection", () => {
 	Manifest.PathHash32To64.clear()
 	Manifest.SoundHashToString.clear()
 })
-EventsSDK.after("ServerInfo", () => {
+export function LoadManifest() {
 	// strings present in dota, but not present in stringtokendatabase for some reason
 	const known_strings = readJSON("known_strings.json") as string[]
 	known_strings.forEach(str => Manifest.SaveStringToken(str))
 
 	ReadStringTokenDatabase()
 	ReadSoundManifest()
-})
+}
