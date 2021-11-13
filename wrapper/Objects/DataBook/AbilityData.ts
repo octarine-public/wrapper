@@ -94,7 +94,7 @@ export default class AbilityData {
 		this.AbilityBehavior = m_Storage.has("AbilityBehavior")
 			? parseEnumString(DOTA_ABILITY_BEHAVIOR, m_Storage.get("AbilityBehavior") as string)
 			: DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NONE
-		this.TexturePath = m_Storage.get("AbilityTexturePath") as string
+		this.TexturePath = (m_Storage.get("AbilityTexturePath") as string) ?? ""
 		this.TargetFlags = m_Storage.has("AbilityUnitTargetFlags")
 			? parseEnumString(DOTA_UNIT_TARGET_FLAGS, m_Storage.get("AbilityUnitTargetFlags") as string)
 			: DOTA_UNIT_TARGET_FLAGS.DOTA_UNIT_TARGET_FLAG_NONE
