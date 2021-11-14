@@ -56,6 +56,7 @@ export { DOTAScriptInventorySlot_t } from "./Enums/DOTAScriptInventorySlot_t"
 export { DOTAUnitAttackCapability_t } from "./Enums/DOTAUnitAttackCapability_t"
 export { DOTAUnitMoveCapability_t } from "./Enums/DOTAUnitMoveCapability_t"
 
+export * as Protobuf from "./Utils/Protobuf"
 export * as ArrayExtensions from "./Utils/ArrayExtensions"
 export * as BitsExtensions from "./Utils/BitsExtensions"
 export * as MapExtensions from "./Utils/MapExtensions"
