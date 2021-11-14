@@ -621,6 +621,13 @@ class CRendererSDK {
 		}
 		font_ar.push(new Font(font_id, weight, italic))
 	}
+	public BeginClip(diff_op: boolean): void {
+		this.AllocateCommandSpace(CommandID.BEGIN_CLIP, 1)
+		this.commandStream.WriteBoolean(diff_op)
+	}
+	public EndClip(): void {
+		this.AllocateCommandSpace(CommandID.END_CLIP, 0)
+	}
 	private Rect(
 		vecSize: Vector2,
 		width: number,
@@ -738,13 +745,6 @@ class CRendererSDK {
 		this.commandCacheSize += bytes
 		this.ResizeCommandCache()
 		this.commandStream.WriteUint8(commandID)
-	}
-	private BeginClip(diff_op: boolean): void {
-		this.AllocateCommandSpace(CommandID.BEGIN_CLIP, 1)
-		this.commandStream.WriteBoolean(diff_op)
-	}
-	private EndClip(): void {
-		this.AllocateCommandSpace(CommandID.END_CLIP, 0)
 	}
 	private SetScissor(rect: Rectangle): void {
 		this.AllocateCommandSpace(CommandID.SET_SCISSOR, 4 * 4)
