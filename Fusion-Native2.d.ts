@@ -125,7 +125,7 @@ declare interface Camera {
 declare function SendToConsole(command: string): void
 declare function fread(path: string): Uint8Array | undefined
 declare function fexists(path: string): boolean
-declare function requestPlayerData(player_id: number): Promise<string>
+declare function requestPlayerData(player_id: number, hero_id: number): Promise<string>
 /**
  * @param path pass empty to read from confings/../settings.json
  */
