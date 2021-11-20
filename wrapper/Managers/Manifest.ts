@@ -4,7 +4,6 @@ import { StringToUTF8, Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
 import BinaryStream from "../Utils/BinaryStream"
 import { ParseExternalReferences, readJSON } from "../Utils/Utils"
 import Events from "./Events"
-import EventsSDK from "./EventsSDK"
 
 const Manifest = new (class CManifest {
 	public readonly Directories: string[] = []
