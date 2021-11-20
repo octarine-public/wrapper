@@ -986,6 +986,15 @@ export default class Unit extends Entity {
 	): Nullable<ComputedAttachment> {
 		return super.GetAttachment(name, activity)
 	}
+	/**
+	 * @returns attachment position mid-animation
+	 */
+	public GetAttachmentPosition(
+		name: string,
+		activity = this.NetworkActivity,
+	): Nullable<Vector3> {
+		return super.GetAttachmentPosition(name, activity)
+	}
 	public GetAdditionalAttackDamage(source: Unit): number {
 		return 0
 	}

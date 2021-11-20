@@ -377,6 +377,22 @@ export default class Entity {
 	): Nullable<ComputedAttachment> {
 		return this.GetAttachments(activity)?.get(name)
 	}
+	/**
+	 * @returns attachment position mid-animation
+	 */
+	public GetAttachmentPosition(
+		name: string,
+		activity = GameActivity_t.ACT_DOTA_IDLE,
+	): Nullable<Vector3> {
+		const attachment = this.GetAttachment(name, activity)
+		if (attachment === undefined)
+			return undefined
+		return attachment.GetPosition(
+			(attachment.FrameCount / attachment.FPS) / 2,
+			this.RotationRad,
+			this.ModelScale,
+		)
+	}
 	public ForwardNativeProperties(
 		m_fAttackRange: number,
 		m_fAttackSpeed: number,
