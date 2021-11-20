@@ -97,6 +97,7 @@ export default class Color {
 		color.r = this.r
 		color.g = this.g
 		color.b = this.b
+		color.a = this.a
 		return color
 	}
 
