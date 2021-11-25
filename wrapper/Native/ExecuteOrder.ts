@@ -154,6 +154,9 @@ export default class ExecuteOrder {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK:
 				break
 			default:
 				if (ctrl_down && ConVars.GetInt("dota_player_multipler_orders") !== 0)
