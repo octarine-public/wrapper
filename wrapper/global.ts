@@ -19,7 +19,7 @@ import * as _WASM from "./Native/WASM"
 import _Workers from "./Native/Workers"
 import { GameRules as _GameRules, LocalPlayer as _LocalPlayer } from "./Objects/Base/Entity"
 import { PlayerResource as _PlayerResource } from "./Objects/Base/PlayerResource"
-import { GetSDKClasses } from "./Objects/NativeToSDK"
+import { SDKClasses } from "./Objects/NativeToSDK"
 import { EntityDataLump as _EntityDataLump } from "./Resources/ParseEntityLump"
 import { GridNav as _GridNav } from "./Resources/ParseGNV"
 import _GameState from "./Utils/GameState"
@@ -92,9 +92,8 @@ globalThis.GUIInfo = _GUIInfo
 
 globalThis.Menu = _Menu
 globalThis.GetEntityClassByName = (name: string) => {
-	const classes = GetSDKClasses()
-	for (const [class_, name_] of classes)
-		if (name_ === name)
+	for (const [class_] of SDKClasses)
+		if (class_.name === name)
 			return class_
 	return undefined
 }

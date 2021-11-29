@@ -19,9 +19,9 @@ export default class npc_dota_hero_morphling extends Hero {
 	}
 }
 
+const morphlings = EntityManager.GetEntitiesByClass(npc_dota_hero_morphling)
 EventsSDK.on("PostDataUpdate", () => {
-	EntityManager.GetEntitiesByClass(npc_dota_hero_morphling).forEach(hero => {
+	for (const hero of morphlings)
 		if (!hero.IsGuaranteedReal && !hero.IsIllusion)
 			hero.IsGuaranteedReal = true
-	})
 })

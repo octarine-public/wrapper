@@ -7,8 +7,8 @@ import * as ArrayExtensions from "../../../Utils/ArrayExtensions"
 import GameState from "../../../Utils/GameState"
 import { DegreesToRadian } from "../../../Utils/Math"
 import Ability from "../../Base/Ability"
-import TempTree from "../../Base/TempTree"
-import Tree from "../../Base/Tree"
+import TempTree, { TempTrees } from "../../Base/TempTree"
+import Tree, { Trees } from "../../Base/Tree"
 import Unit from "../../Base/Unit"
 
 @WrapperClass("monkey_king_tree_dance")
@@ -57,8 +57,8 @@ EventsSDK.on("ParticleUpdatedEnt", (id, cp, ent, _attach, _attachment, pos) => {
 	abil.TargetTree = undefined
 	const cast_range = abil.CastRange
 	abil.PredictedPositionsPerTree = [
-		...FilterValidTrees(EntityManager.GetEntitiesByClass(Tree), pos, cast_range),
-		...FilterValidTrees(EntityManager.GetEntitiesByClass(TempTree), pos, cast_range),
+		...FilterValidTrees(Trees, pos, cast_range),
+		...FilterValidTrees(TempTrees, pos, cast_range),
 	]
 })
 
@@ -71,12 +71,13 @@ EventsSDK.on("ParticleDestroyed", id => {
 	trails.delete(id)
 })
 
+const abils = EntityManager.GetEntitiesByClass(monkey_king_tree_dance)
 EventsSDK.on("Tick", dt => {
-	EntityManager.GetEntitiesByClass(monkey_king_tree_dance).forEach(abil => {
+	for (const abil of abils) {
 		const owner = abil.Owner
 		if (owner === undefined || !owner.IsAlive) {
 			abil.TargetTree = undefined
-			return
+			continue
 		}
 
 		if (
@@ -84,22 +85,22 @@ EventsSDK.on("Tick", dt => {
 			|| !abil.IsJumpingToTree
 			|| GameState.RawGameTime === abil.StartedJumpingTime
 		)
-			return
+			continue
 
 		const start_pos = abil.StartPosition
 		if (!start_pos.IsValid)
-			return
+			continue
 		if (owner.IsVisible && owner.HasBuffByName("modifier_monkey_king_arc_to_ground")) {
 			abil.TargetTree = undefined
 			abil.PredictedPositionsPerTree = []
-			return
+			continue
 		}
 		const finished_jumping = !abil.IsJumping && Math.abs(GameState.RawGameTime - abil.EndedJumpingTime) < 0.01,
 			finished_jumping_trees: (Tree | TempTree)[] = []
-		abil.PredictedPositionsPerTree.forEach(predicted_ar => {
+		for (const predicted_ar of abil.PredictedPositionsPerTree) {
 			const [current_pos, tree, time_finished] = predicted_ar
 			if (time_finished !== 0)
-				return
+				continue
 			const target_pos = tree.Position
 			{ // update horizontal motion
 				const leap_speed = 700 + abil.StartPosition.Distance2D(target_pos) * 0.4
@@ -120,16 +121,16 @@ EventsSDK.on("Tick", dt => {
 				if (current_pos.z < ground_height)
 					current_pos.z = ground_height
 			}
-		})
+		}
 		if (finished_jumping_trees.length === 1)
 			abil.TargetTree = finished_jumping_trees[0]
 
 		if (!abil.IsJumping)
-			return
+			continue
 
 		// further code relies on owner visibility, so we should skip it if owner isn't visible
 		if (!owner.IsVisible)
-			return
+			continue
 		const hero_angle = owner.NetworkedRotationRad - DegreesToRadian(owner.RotationDifference)
 		const best_predicted_pos = ArrayExtensions.orderByFirst(
 			abil.PredictedPositionsPerTree.filter(ar =>
@@ -142,5 +143,5 @@ EventsSDK.on("Tick", dt => {
 		)
 		if (best_predicted_pos !== undefined)
 			abil.TargetTree = best_predicted_pos[1]
-	})
+	}
 })

@@ -60,6 +60,7 @@ export default class Hero extends Unit {
 		return super.SpellAmplification + (this.TotalIntellect * DamageAmplifyPerIntellectPrecent / 100)
 	}
 }
+export const Heroes = EntityManager.GetEntitiesByClass(Hero)
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", (ent, new_val) => {

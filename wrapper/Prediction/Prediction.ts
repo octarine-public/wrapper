@@ -1,14 +1,11 @@
 import Vector2 from "../Base/Vector2"
-import EntityManager from "../Managers/EntityManager"
-import Creep from "../Objects/Base/Creep"
+import { Creeps } from "../Objects/Base/Creep"
 import Entity from "../Objects/Base/Entity"
-import Hero from "../Objects/Base/Hero"
+import { Heroes } from "../Objects/Base/Hero"
 import Unit from "../Objects/Base/Unit"
 import MovingObstacle from "./NavMesh/MovingObstacle"
 import NavMeshPathfinding from "./NavMesh/NavMeshPathfinding"
 import Obstacle from "./NavMesh/Obstacle"
-
-// import Unit from "../Objects/Base/Unit"
 
 export default class Prediction {
 	// private readonly Pathfinder = new NavMeshPathfinding()
@@ -22,7 +19,7 @@ export default class Prediction {
 		obstacles?: Entity[],
 	): Entity[] {
 		if (obstacles === undefined) {
-			const ents = [...EntityManager.GetEntitiesByClass(Creep), ...EntityManager.GetEntitiesByClass(Hero)]
+			const ents = [...Creeps, ...Heroes]
 			obstacles = ents.filter(ent => ent !== this.Owner && ent.IsInRange(this.Owner, radius * 2) && ent.IsAlive && ent.IsVisible && (!(ent instanceof Unit) || !ent.IsInvulnerable))
 		}
 		const obs2ent = new Map<Obstacle, Entity>()
@@ -47,7 +44,7 @@ export default class Prediction {
 		obstacles?: Entity[],
 	): Nullable<[Entity, number]> {
 		if (obstacles === undefined) {
-			const ents = [...EntityManager.GetEntitiesByClass(Creep), ...EntityManager.GetEntitiesByClass(Hero)]
+			const ents = [...Creeps, ...Heroes]
 			obstacles = ents.filter(ent => ent !== this.Owner && ent.IsInRange(this.Owner, radius * 2) && ent.IsAlive && ent.IsVisible && (!(ent instanceof Unit) || !ent.IsInvulnerable))
 		}
 		const obs2ent = new Map<Obstacle, Entity>()
@@ -76,7 +73,7 @@ export default class Prediction {
 		obstacles?: Entity[],
 	): Nullable<[number, number]> {
 		if (obstacles === undefined) {
-			const ents = [...EntityManager.GetEntitiesByClass(Creep), ...EntityManager.GetEntitiesByClass(Hero)]
+			const ents = [...Creeps, ...Heroes]
 			obstacles = ents.filter(ent => ent !== this.Owner && ent.IsInRange(this.Owner, radius * 2) && ent.IsAlive && ent.IsVisible && (!(ent instanceof Unit) || !ent.IsInvulnerable))
 		}
 		const ent2obs = new Map<Entity, Obstacle>()

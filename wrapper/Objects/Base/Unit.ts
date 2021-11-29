@@ -1,4 +1,3 @@
-import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { ArmorPerAgility } from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
@@ -29,7 +28,6 @@ import ModifiersBook from "../DataBook/ModifiersBook"
 import UnitData from "../DataBook/UnitData"
 import Ability from "./Ability"
 import Entity, { LocalPlayer } from "./Entity"
-import GameRules from "./GameRules"
 import Item from "./Item"
 import Modifier from "./Modifier"
 import NeutralSpawner from "./NeutralSpawner"
@@ -151,8 +149,12 @@ export default class Unit extends Entity {
 	public GoldBountyMax = 0
 	public LastActivity = 0
 	public LastActivityEndTime = 0
+	/**
+	 * It's not required to be inside any NeutralSpawner#SpawnBox, that's simply Position on EntityCreated
+	 */
 	public readonly SpawnPosition = new Vector3()
 	public Spawner: Nullable<NeutralSpawner>
+	public Spawner_ = 0
 	public AttackRange = 0
 	public AttackSpeed = 0
 	public IncreasedAttackSpeed = 0
@@ -1157,6 +1159,7 @@ export default class Unit extends Entity {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_CANCELED, issuers: [this], position, queue, showEffects })
 	}
 }
+export const Units = EntityManager.GetEntitiesByClass(Unit)
 
 async function UnitNameChanged(unit: Unit) {
 	unit.UnitData = (await UnitData.global_storage).get(unit.Name) ?? UnitData.empty
@@ -1188,9 +1191,8 @@ RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", async (unit, new_value) =
 		await EventsSDK.emit("TeamVisibilityChanged", false, unit)
 })
 EventsSDK.on("LocalTeamChanged", () => {
-	EntityManager.GetEntitiesByClass(Unit).forEach(unit => {
+	for (const unit of Units)
 		unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
-	})
 })
 RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", async (unit, new_value) => {
 	unit.IsControllableByPlayerMask = new_value as bigint
@@ -1248,23 +1250,20 @@ RegisterFieldHandler(Unit, "m_anglediff", (unit, new_value) => {
 	unit.RotationDifference = new_value as number
 	unit.NetworkedAngles.AddScalarY(unit.RotationDifference)
 })
+RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, new_value) => {
+	unit.Spawner_ = (new_value as number) & 0x3FFF
+	const ent = EntityManager.EntityByIndex(unit.Spawner_)
+	if (ent instanceof NeutralSpawner)
+		unit.Spawner = ent
+})
 
 EventsSDK.on("PreEntityCreated", async ent => {
-	if (ent instanceof Unit) {
+	if (ent instanceof Unit)
 		ent.SpawnPosition.CopyFrom(ent.Position)
-		if (ent.IsNeutral) {
-			const pos_2d = Vector2.FromVector3(ent.SpawnPosition)
-			ent.Spawner = EntityManager.GetEntitiesByClass(NeutralSpawner).find(spawner => spawner.SpawnBox?.Includes2D(pos_2d))
-		}
-	}
-	if (ent instanceof NeutralSpawner || ent instanceof GameRules) {
-		EntityManager.GetEntitiesByClass(Unit).forEach(unit => {
-			if (!unit.IsNeutral || unit.Spawner !== undefined)
-				return
-			const pos_2d = Vector2.FromVector3(unit.SpawnPosition)
-			unit.Spawner = EntityManager.GetEntitiesByClass(NeutralSpawner).find(spawner => spawner.SpawnBox?.Includes2D(pos_2d))
-		})
-	}
+	if (ent instanceof NeutralSpawner)
+		for (const unit of Units)
+			if (unit.Spawner_ === ent.Index)
+				unit.Spawner = ent
 
 	const owner = ent.Owner
 	if (!(owner instanceof Unit))
@@ -1339,7 +1338,7 @@ EventsSDK.on("ParticleCreated", (_id, path, _particleSystemHandle, _attach, targ
 })
 
 EventsSDK.on("Tick", dt => {
-	EntityManager.GetEntitiesByClass(Unit).forEach(unit => {
+	for (const unit of Units) {
 		unit.HPRegenCounter += unit.HPRegen * Math.min(dt, 0.1)
 		const regen_amount_floor = Math.floor(unit.HPRegenCounter)
 		unit.HPRegenCounter -= regen_amount_floor
@@ -1348,5 +1347,5 @@ EventsSDK.on("Tick", dt => {
 			unit.Mana = Math.max(Math.min(unit.MaxMana, unit.Mana + unit.ManaRegen * Math.min(dt, 0.1)), 0)
 		}
 		// TODO: interpolate DeltaZ from OnModifierUpdated
-	})
+	}
 })

@@ -44,6 +44,7 @@ export default class Player extends Entity {
 		return ExecuteOrder.Scan(position, queue, showEffects)
 	}
 }
+const Players = EntityManager.GetEntitiesByClass(Player)
 
 import { RegisterFieldHandler } from "../NativeToSDK"
 RegisterFieldHandler(Player, "m_hAssignedHero", (player, new_value) => {
@@ -55,17 +56,15 @@ RegisterFieldHandler(Player, "m_hAssignedHero", (player, new_value) => {
 EventsSDK.on("PreEntityCreated", ent => {
 	if (!(ent instanceof Hero) || !ent.CanBeMainHero)
 		return
-	EntityManager.GetEntitiesByClass(Player).forEach(player => {
+	for (const player of Players)
 		if (ent.Index === player.Hero_)
 			player.Hero = ent
-	})
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
 	if (!(ent instanceof Hero))
 		return
-	EntityManager.GetEntitiesByClass(Player).forEach(player => {
+	for (const player of Players)
 		if (player.Hero === ent)
 			player.Hero = undefined
-	})
 })

@@ -37,6 +37,7 @@ export default class Tree extends Entity {
 		this.BoundingBox.MaxOffset.z = this.BoundingBox.MinOffset.z + 320
 	}
 }
+export const Trees = EntityManager.GetEntitiesByClass(Tree)
 
 export let TempTreeIDOffset = 0
 export let cur_local_id = 0x4000

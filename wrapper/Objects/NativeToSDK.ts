@@ -2,24 +2,27 @@ import { EntityPropertyType } from "../Managers/EntityManager"
 import Entity from "./Base/Entity"
 
 export type FieldHandler = (entity: Entity, new_value: EntityPropertyType) => any
-const constructors = new Map<string, Constructor<Entity>>(),
-	field_handlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>(),
-	sdk_classes: [Constructor<Entity>, string][] = []
+export const ClassToEntities = new Map<Constructor<any>, Entity[]>(),
+	SDKClasses: [Constructor<Entity>, Entity[]][] = [],
+	FieldHandlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>()
+const constructors = new Map<string, Constructor<Entity>>()
 
 function RegisterClassInternal(constructor: Constructor<Entity>) {
-	sdk_classes.push([constructor, constructor.name])
+	if (!ClassToEntities.has(constructor))
+		ClassToEntities.set(constructor, [])
+	SDKClasses.push([constructor, ClassToEntities.get(constructor)!])
 	const map = new Map<string, FieldHandler>()
 	const prototype = constructor.prototype
-	for (const [constructor_, map_] of field_handlers)
+	for (const [constructor_, map_] of FieldHandlers)
 		if (prototype instanceof constructor_)
 			for (const [k, v] of map_)
 				map.set(k, v)
-	field_handlers.set(constructor, map)
+	FieldHandlers.set(constructor, map)
 }
 
 export function RegisterClass(name: string, constructor: Constructor<Entity>) {
 	constructors.set(name, constructor)
-	if (!field_handlers.has(constructor))
+	if (!FieldHandlers.has(constructor))
 		RegisterClassInternal(constructor)
 }
 
@@ -34,9 +37,9 @@ export function RegisterFieldHandler<T extends Entity>(
 	field_name: string,
 	handler: (entity: T, new_value: EntityPropertyType) => any,
 ) {
-	if (!field_handlers.has(constructor))
+	if (!FieldHandlers.has(constructor))
 		RegisterClassInternal(constructor)
-	const map = field_handlers.get(constructor)!
+	const map = FieldHandlers.get(constructor)!
 	let handler_ = handler as FieldHandler
 	if (map.has(field_name))
 		handler_ = GenerateChainedFieldHandler(map.get(field_name)!, handler_)
@@ -47,14 +50,7 @@ export function ReplaceFieldHandler<T extends Entity>(
 	field_name: string,
 	handler: (entity: T, new_value: EntityPropertyType) => any,
 ) {
-	field_handlers.get(constructor)!.set(field_name, handler as FieldHandler)
-}
-
-export function GetSDKClasses(): [Constructor<Entity>, string][] {
-	return sdk_classes
-}
-export function GetFieldHandlers(): Map<Constructor<Entity>, Map<string, FieldHandler>> {
-	return field_handlers
+	FieldHandlers.get(constructor)!.set(field_name, handler as FieldHandler)
 }
 
 function FixClassNameForMap<T>(constructor_name: string, map: Map<string, T>): Nullable<string> {

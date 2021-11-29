@@ -1,4 +1,5 @@
 import { WrapperClass } from "../../Decorators"
+import EntityManager from "../../Managers/EntityManager"
 import Unit from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Creep")
@@ -34,3 +35,4 @@ export default class Creep extends Unit {
 		return multiplier
 	}
 }
+export const Creeps = EntityManager.GetEntitiesByClass(Creep)

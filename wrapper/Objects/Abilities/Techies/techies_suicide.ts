@@ -16,22 +16,23 @@ export default class techies_suicide extends Ability {
 	public LastKnownOwnerPositionTime_ = 0
 }
 
+const abils = EntityManager.GetEntitiesByClass(techies_suicide)
 EventsSDK.on("Tick", () => {
 	if (LocalPlayer === undefined || LocalPlayer.Hero === undefined)
 		return
 
-	EntityManager.GetEntitiesByClass(techies_suicide).forEach(abil => {
+	for (const abil of abils) {
 		if (abil.TargetPosition.IsValid)
-			return
+			continue
 
 		const owner = abil.Owner
 		if (owner === undefined)
-			return
+			continue
 
 		const buff = owner.GetBuffByName("modifier_techies_suicide_leap")
 		const buff_end_time = 0.72
 		if (buff === undefined || buff.Duration !== -1 || buff.ElapsedTime > buff_end_time)
-			return
+			continue
 		if (abil.LastKnownOwnerPosition_.IsValid) {
 			if (abil.LastKnownOwnerPositionTime_ > GameState.RawGameTime - 0.04) {
 				const velocity_3d = owner.Position.Subtract(abil.LastKnownOwnerPosition_)
@@ -49,7 +50,7 @@ EventsSDK.on("Tick", () => {
 			owner.Position.CopyTo(abil.LastKnownOwnerPosition_)
 			abil.LastKnownOwnerPositionTime_ = GameState.RawGameTime
 		}
-	})
+	}
 })
 
 EventsSDK.on("ModifierRemoved", buff => {

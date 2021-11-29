@@ -1,10 +1,9 @@
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import Vector4 from "../Base/Vector4"
-import { DOTA_UNIT_TARGET_TEAM } from "../Enums/DOTA_UNIT_TARGET_TEAM"
 import { EPropertyType, PropertyType } from "../Enums/PropertyType"
 import Entity from "../Objects/Base/Entity"
-import GetConstructorByName, { FieldHandler, GetFieldHandlers, GetSDKClasses } from "../Objects/NativeToSDK"
+import GetConstructorByName, { ClassToEntities, FieldHandler, FieldHandlers, SDKClasses } from "../Objects/NativeToSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import BinaryStream from "../Utils/BinaryStream"
 import GameState from "../Utils/GameState"
@@ -14,11 +13,8 @@ import Events from "./Events"
 import EventsSDK from "./EventsSDK"
 import * as StringTables from "./StringTables"
 
-export type EntityClassMap = Map<Constructor<any>, Entity[]>
-
 const AllEntities: Entity[] = []
 const AllEntitiesAsMap = new Map<number, Entity>()
-const ClassToEntities: EntityClassMap = new Map()
 
 // that's MUCH more efficient than Map<number, boolean>
 class bitset {
@@ -60,21 +56,11 @@ class CEntityManager {
 		return AllEntitiesAsMap.get(index)
 	}
 
-	public GetEntitiesByClass<T>(class_: Constructor<T>, flags: DOTA_UNIT_TARGET_TEAM = DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH): T[] {
-		if (class_ === undefined || !ClassToEntities.has(class_))
-			return []
-		switch (flags) {
-			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY:
-				return ClassToEntities.get(class_)!.filter(e => !e.IsEnemy()) as []
-			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY:
-				return ClassToEntities.get(class_)!.filter(e => e.IsEnemy()) as []
-			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH:
-				return ClassToEntities.get(class_) as []
-			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_CUSTOM:
-			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_NONE:
-			default:
-				return []
-		}
+	public GetEntitiesByClass<T>(class_: Constructor<T>): T[] {
+		const ar = ClassToEntities.get(class_)
+		if (ar === undefined)
+			throw "Invalid entity class"
+		return ar as []
 	}
 	public IsTreeActive(binary_id: number): boolean {
 		return TreeActiveMask.get(binary_id)
@@ -97,21 +83,12 @@ function ClassFromNative(id: number, constructor_name: string, ent_name: Nullabl
 	return new constructor(id, ent_name)
 }
 
-export function AddEntityToClassMap(map: EntityClassMap, ent: Entity): void {
-	GetSDKClasses().forEach(([class_]) => {
-		if (!(ent instanceof class_))
-			return
-
-		if (!map.has(class_))
-			map.set(class_, [])
-		map.get(class_)!.push(ent)
-	})
-}
-
 export function CreateEntityInternal(ent: Entity, id = ent.Index): void {
 	AllEntitiesAsMap.set(id, ent)
 	AllEntities.push(ent)
-	AddEntityToClassMap(ClassToEntities, ent)
+	for (const [class_, class_entities] of SDKClasses)
+		if (ent instanceof class_)
+			class_entities.push(ent)
 }
 
 async function CreateEntity(
@@ -139,16 +116,9 @@ export async function DeleteEntity(id: number): Promise<void> {
 	await EventsSDK.emit("EntityDestroyed", false, entity)
 	entity.IsVisible = false
 	AllEntitiesAsMap.delete(id)
-	GetSDKClasses().forEach(([class_]) => {
-		if (!(entity instanceof class_))
-			return
-
-		const classToEnt = ClassToEntities.get(class_)
-		if (classToEnt === undefined)
-			return
-
-		ArrayExtensions.arrayRemove(classToEnt, entity)
-	})
+	for (const [class_, class_entities] of SDKClasses)
+		if (entity instanceof class_)
+			ArrayExtensions.arrayRemove(class_entities, entity)
 }
 
 const enum EntityPVS {
@@ -559,7 +529,7 @@ declare class ${name} {
 `)
 			}
 			entities_symbols = msg.get("symbols") as string[]
-			for (const [construct, map] of GetFieldHandlers()) {
+			for (const [construct, map] of FieldHandlers) {
 				const map2 = new Map<number, FieldHandler>()
 				for (const [field_name, field_handler] of map) {
 					const id = entities_symbols.indexOf(field_name)

@@ -1,5 +1,6 @@
 import Vector3 from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import EntityManager from "../../Managers/EntityManager"
 import Entity from "./Entity"
 import { TempTreeIDOffset } from "./Tree"
 
@@ -27,3 +28,4 @@ export default class TempTree extends Entity {
 		this.BoundingBox.MaxOffset.z = this.BoundingBox.MinOffset.z + 300
 	}
 }
+export const TempTrees = EntityManager.GetEntitiesByClass(TempTree)

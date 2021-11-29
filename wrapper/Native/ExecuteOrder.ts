@@ -21,7 +21,7 @@ import Entity, { GameRules, LocalPlayer } from "../Objects/Base/Entity"
 import Shop from "../Objects/Base/Shop"
 import TempTree from "../Objects/Base/TempTree"
 import Tree from "../Objects/Base/Tree"
-import Unit from "../Objects/Base/Unit"
+import Unit, { Units } from "../Objects/Base/Unit"
 import { arrayRemoveCallback, orderByFirst } from "../Utils/ArrayExtensions"
 import GameState from "../Utils/GameState"
 import RendererSDK from "./RendererSDK"
@@ -160,7 +160,7 @@ export default class ExecuteOrder {
 				break
 			default:
 				if (ctrl_down && ConVars.GetInt("dota_player_multipler_orders") !== 0)
-					issuers = [...new Set([...issuers, ...EntityManager.GetEntitiesByClass(Unit).filter(ent => (
+					issuers = [...new Set([...issuers, ...Units.filter(ent => (
 						ent.IsControllable
 						&& ent.RootOwner === LocalPlayer
 						&& ent.IsAlive
@@ -552,7 +552,7 @@ function CanOrderBeSkipped(order: ExecuteOrder): boolean {
 	}
 	switch (order.OrderType) {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
-			return EntityManager.GetEntitiesByClass(Unit).some(ent => (
+			return Units.some(ent => (
 				ent.IsGloballyTargetable
 				&& order.Position.Distance2D(ent.Position) < 200
 			))
@@ -909,7 +909,7 @@ function MoveCamera(
 	current_time: number,
 ): [Vector2, boolean] {
 	if (target_pos.Distance2D(camera_vec) > 1500) {
-		const nearest = orderByFirst(EntityManager.GetEntitiesByClass(Unit).filter(ent => (
+		const nearest = orderByFirst(Units.filter(ent => (
 			ent.IsControllable
 			&& ent.RootOwner === LocalPlayer
 			&& ent.IsAlive
@@ -1150,7 +1150,7 @@ function ProcessUserCmd(): void {
 		camera_vec,
 		default_camera_dist,
 	)[0]))
-	const units = EntityManager.GetEntitiesByClass(Unit).filter(ent => ent.IsVisible && ent.IsSpawned)
+	const units = Units.filter(ent => ent.IsVisible && ent.IsSpawned)
 	const intersected_units_mask = EntityHitBoxesIntersect(units, camera_vec, latest_usercmd.MousePosition)
 	const intersected_units = units.filter((_, i) => intersected_units_mask[i])
 	latest_usercmd.WeaponSelect = (

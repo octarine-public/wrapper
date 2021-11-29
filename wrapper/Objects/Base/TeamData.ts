@@ -5,7 +5,7 @@ import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
 import { GridNav } from "../../Resources/ParseGNV"
 import Entity from "./Entity"
-import Tree from "./Tree"
+import { Trees } from "./Tree"
 
 @WrapperClass("CDOTA_DataNonSpectator")
 export default class TeamData extends Entity {
@@ -55,14 +55,18 @@ export default class TeamData extends Entity {
 }
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
+
 RegisterFieldHandler(TeamData, "m_vecDataTeam", (data, new_val) => {
 	data.DataTeam = (new_val as EntityPropertiesNode[]).map(map => new DataTeamPlayer(map))
 })
+
 RegisterFieldHandler(TeamData, "m_vecWorldTreeModelReplacements", (data, new_val) => {
 	data.WorldTreeModelReplacements = (new_val as EntityPropertiesNode[]).map(map => new TreeModelReplacement(map))
 })
+
 RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, new_value) => {
 	EntityManager.SetWorldTreeState(new_value as bigint[])
 	if (GridNav !== undefined)
-		EntityManager.GetEntitiesByClass(Tree).forEach(tree => GridNav!.UpdateTreeState(tree))
+		for (const tree of Trees)
+			GridNav.UpdateTreeState(tree)
 })

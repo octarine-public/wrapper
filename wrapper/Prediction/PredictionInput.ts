@@ -1,5 +1,4 @@
-import EntityManager from "../Managers/EntityManager"
-import Hero from "../Objects/Base/Hero"
+import { Heroes } from "../Objects/Base/Hero"
 import Unit from "../Objects/Base/Unit"
 import { PredictionSkillshotType } from "./PredictionSkillshotType"
 
@@ -17,7 +16,7 @@ export class PredictionInput {
 		public AreaOfEffectHitMainTarget = true,
 	) {
 		if (AreaOfEffect && AreaOfEffectTargets.length === 0)
-			AreaOfEffectTargets = EntityManager.GetEntitiesByClass(Hero).filter(hero => hero.IsEnemy(Target_) && hero.IsInRange(Target_, Range + (Radius / 2)))
+			AreaOfEffectTargets = Heroes.filter(hero => hero.IsEnemy(Target_) && hero.IsInRange(Target_, Range + (Radius / 2)))
 	}
 
 	public get Target() {
