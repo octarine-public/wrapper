@@ -30,7 +30,8 @@ export async function SetGameInProgress(new_val: boolean) {
 		await EventsSDK.emit("GameStarted", false)
 	else if (gameInProgress && !new_val) {
 		await EventsSDK.emit("GameEnded", false)
-		Particles.DeleteAll()
+		if (IS_MAIN_WORKER)
+			Particles.DeleteAll()
 		RendererSDK.FreeTextureCache()
 	}
 	gameInProgress = new_val
