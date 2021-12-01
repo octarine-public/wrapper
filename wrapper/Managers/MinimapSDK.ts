@@ -41,35 +41,6 @@ class MinimapIcon {
 		)
 	}
 }
-const minimap_icon_storage = new Map<string, MinimapIcon>()
-Events.on("NewConnection", () => {
-	minimap_icon_storage.clear()
-	const TextureData = (
-		parseKVFile("scripts/mod_textures.txt").get("sprites/640_hud") as RecursiveMap
-	)?.get("TextureData") as RecursiveMap
-	if (TextureData === undefined)
-		return
-	TextureData.forEach((v, k) => {
-		if (!(v instanceof Map) || !k.startsWith("minimap_"))
-			return
-		try {
-			minimap_icon_storage.set(k.slice(8), new MinimapIcon(
-				`${v.get("file") as string}_c`,
-				new Vector2(
-					parseInt((v.get("x") as string) ?? "0"),
-					parseInt((v.get("y") as string) ?? "0"),
-				),
-				new Vector2(
-					parseInt((v.get("width") as string) ?? "0"),
-					parseInt((v.get("height") as string) ?? "0"),
-				),
-			))
-		} catch (e) {
-			console.error(e)
-		}
-	})
-})
-
 let hero_icon_scale = 1
 class MinimapIconRenderer {
 	public static GetSizeMultiplier(size: number): number {
@@ -149,7 +120,7 @@ function ParseMinimapOverview(): void {
 	)
 }
 
-EventsSDK.on("MapDataLoaded", () => {
+function LoadMinimapBoundsData() {
 	const minimapBoundsData = EntityDataLump
 		.filter(data =>
 			data.get("classname") === "dota_minimap_boundary"
@@ -168,7 +139,38 @@ EventsSDK.on("MapDataLoaded", () => {
 		MinimapSDK.MinimapBounds
 			.Subtract(Vector2.FromVector3(minimapBoundsData[0]))
 			.Add(overview.pos)
-})
+}
+EventsSDK.on("MapDataLoaded", LoadMinimapBoundsData)
+
+const minimap_icon_storage = new Map<string, MinimapIcon>()
+function LoadIcons(): void {
+	minimap_icon_storage.clear()
+	const TextureData = (
+		parseKVFile("scripts/mod_textures.txt").get("sprites/640_hud") as RecursiveMap
+	)?.get("TextureData") as RecursiveMap
+	if (TextureData === undefined)
+		return
+	TextureData.forEach((v, k) => {
+		if (!(v instanceof Map) || !k.startsWith("minimap_"))
+			return
+		try {
+			minimap_icon_storage.set(k.slice(8), new MinimapIcon(
+				`${v.get("file") as string}_c`,
+				new Vector2(
+					parseInt((v.get("x") as string) ?? "0"),
+					parseInt((v.get("y") as string) ?? "0"),
+				),
+				new Vector2(
+					parseInt((v.get("width") as string) ?? "0"),
+					parseInt((v.get("height") as string) ?? "0"),
+				),
+			))
+		} catch (e) {
+			console.error(e)
+		}
+	})
+}
+EventsSDK.after("ServerInfo", LoadIcons)
 
 EventsSDK.on("Draw", () => {
 	if (!GameRules?.IsInGame || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
