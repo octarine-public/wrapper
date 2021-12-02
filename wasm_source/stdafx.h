@@ -8,13 +8,13 @@
 #include <array>
 #include <stdlib.h> // for malloc
 #include <assert.h> // for assert
-#include <emscripten.h> // for EMSCRIPTEN_KEEPALIVE
 
-#define EXPORT_JS /* avoid C++ mangling */ extern "C" /* export and don't inline */ EMSCRIPTEN_KEEPALIVE
 #ifdef _MSC_VER
 #define FORCEINLINE __forceinline
+#define WASM_EXPORT(name)
 #else
 #define FORCEINLINE __attribute__((always_inline)) inline
+#define WASM_EXPORT(name) __attribute__((export_name(#name)))
 #endif
 
 constexpr double PId = 3.1415;

@@ -12,7 +12,6 @@ import { EntityDataLump } from "../Resources/ParseEntityLump"
 import { parseKVFile } from "../Resources/ParseKV"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import GameState from "../Utils/GameState"
-import Events from "./Events"
 import EventsSDK from "./EventsSDK"
 
 class MinimapIcon {

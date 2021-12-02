@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <alloca.h>
 #define Assert assert
 
 struct BGRA8888_t {

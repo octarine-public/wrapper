@@ -79,6 +79,9 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 			view.setUint32(argvBufSize, 0)
 			return WASI_ESUCCESS
 		},
+		fd_read: () => {
+			throw new Error("fd_read is unimplemented")
+		},
 		fd_write: () => {
 			throw new Error("fd_write is unimplemented")
 		},
@@ -87,6 +90,12 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 		},
 		fd_close: () => {
 			throw new Error("fd_close is unimplemented")
+		},
+		environ_sizes_get: () => {
+			throw new Error("environ_sizes_get is unimplemented")
+		},
+		environ_get: () => {
+			throw new Error("environ_get is unimplemented")
 		},
 	},
 }).exports as any as {
@@ -100,8 +109,8 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	GetLocationAverageHeight: () => void,
 	GetCursorRay: () => void,
 	ScreenToWorldFar: () => void,
-	my_malloc: (size: number) => number,
-	my_free: (ptr: number) => void,
+	malloc: (size: number) => number,
+	free: (ptr: number) => void,
 	ParsePNG: (data: number, size: number) => number,
 	ParseVTex: (
 		data: number,
@@ -192,28 +201,20 @@ export function GetCameraPosition(
 export function GetCursorRay(
 	screen: Vector2,
 	window_size: Vector2,
-	camera_position: Vector3,
-	camera_distance: number,
 	camera_angles: QAngle,
 	fov: number,
 ): Vector3 {
 	WASMIOBuffer[0] = window_size.x
 	WASMIOBuffer[1] = window_size.y
 
-	WASMIOBuffer[2] = camera_position.x
-	WASMIOBuffer[3] = camera_position.y
-	WASMIOBuffer[4] = camera_position.z
+	WASMIOBuffer[2] = camera_angles.x
+	WASMIOBuffer[3] = camera_angles.y
+	WASMIOBuffer[4] = camera_angles.z
 
-	WASMIOBuffer[5] = camera_angles.x
-	WASMIOBuffer[6] = camera_angles.y
-	WASMIOBuffer[7] = camera_angles.z
+	WASMIOBuffer[5] = fov
 
-	WASMIOBuffer[8] = camera_distance
-
-	WASMIOBuffer[9] = fov
-
-	WASMIOBuffer[10] = screen.x
-	WASMIOBuffer[11] = screen.y
+	WASMIOBuffer[6] = screen.x
+	WASMIOBuffer[7] = screen.y
 
 	wasm.GetCursorRay()
 	return new Vector3(
@@ -337,7 +338,7 @@ export function ScreenToWorld(
 }
 
 function ParsePNG(buf: Uint8Array): [Uint8Array, Vector2] {
-	let addr = wasm.my_malloc(buf.byteLength)
+	let addr = wasm.malloc(buf.byteLength)
 	new Uint8Array(wasm.memory.buffer, addr).set(buf)
 
 	addr = wasm.ParsePNG(addr, buf.byteLength)
@@ -346,7 +347,7 @@ function ParsePNG(buf: Uint8Array): [Uint8Array, Vector2] {
 	const image_size = new Vector2(WASMIOBufferU32[0], WASMIOBufferU32[1])
 	const copy = new Uint8Array(image_size.x * image_size.y * 4)
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
-	wasm.my_free(addr)
+	wasm.free(addr)
 
 	return [copy, image_size]
 }
@@ -397,7 +398,7 @@ export function ParseImage(buf: Uint8Array): [Uint8Array, Vector2] {
 	}
 
 	const data_size = buf.byteLength - data_block.byteOffset
-	let addr = wasm.my_malloc(data_size)
+	let addr = wasm.malloc(data_size)
 	new Uint8Array(wasm.memory.buffer, addr).set(buf.subarray(data_block.byteOffset))
 
 	addr = wasm.ParseVTex(
@@ -415,14 +416,14 @@ export function ParseImage(buf: Uint8Array): [Uint8Array, Vector2] {
 	const image_size = new Vector2(WASMIOBufferU32[0], WASMIOBufferU32[1])
 	const copy = new Uint8Array(image_size.x * image_size.y * 4)
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
-	wasm.my_free(addr)
+	wasm.free(addr)
 
 	return [copy, image_size]
 }
 
 export function ParseVHCG(buf: Uint8Array): void {
 	try {
-		const addr = wasm.my_malloc(buf.byteLength)
+		const addr = wasm.malloc(buf.byteLength)
 		if (addr === 0)
 			throw "Memory allocation for VHCG raw data failed"
 		const memory = new Uint8Array(wasm.memory.buffer, addr)
@@ -476,7 +477,7 @@ export function GetLocationAverageHeight(
 }
 
 export function MurmurHash2(buf: Uint8Array, seed = 0x31415926): number {
-	const buf_addr = wasm.my_malloc(buf.byteLength)
+	const buf_addr = wasm.malloc(buf.byteLength)
 	if (buf_addr === 0)
 		throw "Memory allocation for MurmurHash2 raw data failed"
 	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
@@ -485,7 +486,7 @@ export function MurmurHash2(buf: Uint8Array, seed = 0x31415926): number {
 }
 
 export function MurmurHash64(buf: Uint8Array, seed = 0xEDABCDEF): bigint {
-	const buf_addr = wasm.my_malloc(buf.byteLength)
+	const buf_addr = wasm.malloc(buf.byteLength)
 	if (buf_addr === 0)
 		throw "Memory allocation for MurmurHash64 raw data failed"
 	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
@@ -495,7 +496,7 @@ export function MurmurHash64(buf: Uint8Array, seed = 0xEDABCDEF): bigint {
 }
 
 export function CRC32(buf: Uint8Array): number {
-	const buf_addr = wasm.my_malloc(buf.byteLength)
+	const buf_addr = wasm.malloc(buf.byteLength)
 	if (buf_addr === 0)
 		throw "Memory allocation for MurmurHash2 raw data failed"
 	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
@@ -504,7 +505,7 @@ export function CRC32(buf: Uint8Array): number {
 }
 
 export function DecompressLZ4(buf: Uint8Array, dst_len: number): Uint8Array {
-	let addr = wasm.my_malloc(buf.byteLength)
+	let addr = wasm.malloc(buf.byteLength)
 	new Uint8Array(wasm.memory.buffer, addr).set(buf)
 
 	addr = wasm.DecompressLZ4(addr, buf.byteLength, dst_len)
@@ -512,7 +513,7 @@ export function DecompressLZ4(buf: Uint8Array, dst_len: number): Uint8Array {
 		throw "LZ4 decompression failed"
 	const copy = new Uint8Array(dst_len)
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
-	wasm.my_free(addr)
+	wasm.free(addr)
 
 	return copy
 }
@@ -520,19 +521,19 @@ export function DecompressLZ4(buf: Uint8Array, dst_len: number): Uint8Array {
 export function DecompressZstd(buf: Uint8Array): Uint8Array {
 	if (buf.byteLength < 12)
 		throw `Zstd decompression failed: buf.byteLength < 12`
-	const addr = wasm.my_malloc(buf.byteLength)
+	const addr = wasm.malloc(buf.byteLength)
 	new Uint8Array(wasm.memory.buffer, addr).set(buf)
 
 	const decompressed_addr = wasm.DecompressZstd(addr, buf.byteLength)
 	const size = new Uint32Array(wasm.memory.buffer, addr)[0],
 		error = new Uint32Array(wasm.memory.buffer, addr)[1],
 		additional_data = new Uint32Array(wasm.memory.buffer, addr)[2]
-	wasm.my_free(addr)
+	wasm.free(addr)
 	if (error !== 0 || decompressed_addr === 0)
 		throw `Zstd decompression failed: ${size} ${error} ${additional_data}`
 	const copy = new Uint8Array(size)
 	copy.set(new Uint8Array(wasm.memory.buffer, decompressed_addr, copy.byteLength))
-	wasm.my_free(decompressed_addr)
+	wasm.free(decompressed_addr)
 
 	return copy
 }
@@ -545,11 +546,11 @@ export function DecompressLZ4Chained(
 	if (input_sizes.length !== output_sizes.length)
 		throw "Input and output count should match"
 	const count = input_sizes.length
-	let addr = wasm.my_malloc(buf.byteLength)
+	let addr = wasm.malloc(buf.byteLength)
 	new Uint8Array(wasm.memory.buffer, addr).set(buf)
-	const inputs_addr = wasm.my_malloc(count * 4)
+	const inputs_addr = wasm.malloc(count * 4)
 	new Uint32Array(wasm.memory.buffer, inputs_addr).set(input_sizes)
-	const outputs_addr = wasm.my_malloc(count * 4)
+	const outputs_addr = wasm.malloc(count * 4)
 	new Uint32Array(wasm.memory.buffer, outputs_addr).set(output_sizes)
 
 	addr = wasm.DecompressLZ4Chained(addr, inputs_addr, outputs_addr, count)
@@ -557,7 +558,7 @@ export function DecompressLZ4Chained(
 		throw "LZ4 decompression failed"
 	const copy = new Uint8Array(output_sizes.reduce((prev, cur) => prev + cur, 0))
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
-	wasm.my_free(addr)
+	wasm.free(addr)
 
 	return copy
 }
@@ -588,7 +589,7 @@ export function DecompressVertexBuffer(
 	elem_count: number,
 	elem_size: number,
 ): Uint8Array {
-	const buf_addr = wasm.my_malloc(buf.byteLength)
+	const buf_addr = wasm.malloc(buf.byteLength)
 	if (buf_addr === 0)
 		throw "Memory allocation for DecompressVertexBuffer raw data failed"
 	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
@@ -596,7 +597,7 @@ export function DecompressVertexBuffer(
 	const addr = wasm.DecompressVertexBuffer(buf_addr, buf.byteLength, elem_count, elem_size)
 	const copy = new Uint8Array(elem_count * elem_size)
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
-	wasm.my_free(addr)
+	wasm.free(addr)
 
 	return copy
 }
@@ -606,7 +607,7 @@ export function DecompressIndexBuffer(
 	elem_count: number,
 	elem_size: number,
 ): Uint8Array {
-	const buf_addr = wasm.my_malloc(buf.byteLength)
+	const buf_addr = wasm.malloc(buf.byteLength)
 	if (buf_addr === 0)
 		throw "Memory allocation for DecompressIndexBuffer raw data failed"
 	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
@@ -614,7 +615,7 @@ export function DecompressIndexBuffer(
 	const addr = wasm.DecompressIndexBuffer(buf_addr, buf.byteLength, elem_count, elem_size)
 	const copy = new Uint8Array(elem_count * elem_size)
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
-	wasm.my_free(addr)
+	wasm.free(addr)
 
 	return copy
 }
@@ -634,7 +635,7 @@ export function LoadWorldModel(
 	if (vertexSize < 3 * 4)
 		return
 	const vertexCount = vertexBuffer.byteLength / vertexSize
-	const vertex_addr = wasm.my_malloc(vertexCount * 4 * 4)
+	const vertex_addr = wasm.malloc(vertexCount * 4 * 4)
 	if (vertex_addr === 0)
 		throw "Memory allocation for LoadWorldModel vertexBuffer raw data failed"
 	if (flags !== -1 || vertexSize !== 4 * 4) {
@@ -651,7 +652,7 @@ export function LoadWorldModel(
 	} else
 		new Uint8Array(wasm.memory.buffer, vertex_addr, vertexBuffer.byteLength).set(vertexBuffer)
 
-	const index_addr = wasm.my_malloc(indexBuffer.byteLength)
+	const index_addr = wasm.malloc(indexBuffer.byteLength)
 	if (index_addr === 0)
 		throw "Memory allocation for LoadWorldModel indexBuffer raw data failed"
 	new Uint8Array(wasm.memory.buffer, index_addr, indexBuffer.byteLength).set(indexBuffer)
@@ -668,12 +669,12 @@ export function FinishWorld(): void {
 }
 
 export function FinishWorldCached(cached_bvh: [Uint8Array, Uint8Array]): void {
-	const cached_bvh1_addr = wasm.my_malloc(cached_bvh[0].byteLength)
+	const cached_bvh1_addr = wasm.malloc(cached_bvh[0].byteLength)
 	if (cached_bvh1_addr === 0)
 		throw "Memory allocation for FinishWorldCached cached_bvh[0] raw data failed"
 	new Uint8Array(wasm.memory.buffer, cached_bvh1_addr, cached_bvh[0].byteLength).set(cached_bvh[0])
 
-	const cached_bvh2_addr = wasm.my_malloc(cached_bvh[1].byteLength)
+	const cached_bvh2_addr = wasm.malloc(cached_bvh[1].byteLength)
 	if (cached_bvh2_addr === 0)
 		throw "Memory allocation for FinishWorldCached cached_bvh[1] raw data failed"
 	new Uint8Array(wasm.memory.buffer, cached_bvh2_addr, cached_bvh[1].byteLength).set(cached_bvh[1])

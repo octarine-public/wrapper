@@ -94,11 +94,11 @@ FORCEINLINE Vector& UnwrapVector3(int offset = 0) {
 	return *(Vector*)&JSIOBuffer[offset];
 }
 
-EXPORT_JS float* GetIOBuffer() {
+WASM_EXPORT(GetIOBuffer) float* GetIOBuffer() {
 	return &JSIOBuffer[0];
 }
 
-EXPORT_JS bool WorldToScreen() {
+WASM_EXPORT(WorldToScreen) bool WorldToScreen() {
 	auto world_vec = UnwrapVector3();
 	auto camera_pos = UnwrapVector3(3);
 	auto camera_ang = UnwrapVector3(6);
@@ -115,7 +115,7 @@ EXPORT_JS bool WorldToScreen() {
 		return false;
 }
 
-EXPORT_JS void ScreenToWorld() {
+WASM_EXPORT(ScreenToWorld) void ScreenToWorld() {
 	auto screen = UnwrapVector2();
 	auto camera_pos = UnwrapVector3(2);
 	auto camera_ang = UnwrapVector3(5);
@@ -164,7 +164,7 @@ FORCEINLINE Vector2D GetFarSize(Vector2D window_size, float fov) {
 
 HeightMap height_map;
 bool height_map_initialized = false;
-EXPORT_JS int ParseVHCG(uint8_t* data, size_t data_size) {
+WASM_EXPORT(ParseVHCG) int ParseVHCG(uint8_t* data, size_t data_size) {
 	height_map_initialized = false;
 	height_map = {};
 	auto ret = height_map.Parse(data, data_size);
@@ -190,12 +190,12 @@ float GetHeightForLocation(Vector2D loc, uint32_t flags) {
 		? height_map.GetHeightForLocation(loc)
 		: -16384.f;
 }
-EXPORT_JS void GetHeightForLocation() {
+WASM_EXPORT(GetHeightForLocation) void GetHeightForLocation() {
 	auto flags = *(uint32_t*)&JSIOBuffer[2];
 	JSIOBuffer[0] = GetHeightForLocation(UnwrapVector2(), flags);
 }
 
-EXPORT_JS void GetLocationAverageHeight() {
+WASM_EXPORT(GetLocationAverageHeight) void GetLocationAverageHeight() {
 	auto pos = UnwrapVector2();
 	auto flags = *(uint32_t*)&JSIOBuffer[2];
 	auto count = (int)JSIOBuffer[3];
@@ -220,13 +220,11 @@ EXPORT_JS void GetLocationAverageHeight() {
 		: -16384.f;
 }
 
-EXPORT_JS void GetCursorRay() {
+WASM_EXPORT(GetCursorRay) void GetCursorRay() {
 	auto window_size = UnwrapVector2();
-	auto camera_position = UnwrapVector3(2);
-	auto camera_angles = UnwrapVector3(5);
-	auto camera_distance = JSIOBuffer[8];
-	auto fov = JSIOBuffer[9];
-	auto screen = UnwrapVector2(10);
+	auto camera_angles = UnwrapVector3(2);
+	auto fov = JSIOBuffer[5];
+	auto screen = UnwrapVector2(6);
 	
 	Vector vForward, vRight, vUp;
 	CameraAngleVectors(*(QAngle*)&camera_angles, &vForward, &vRight, &vUp);
@@ -240,7 +238,7 @@ EXPORT_JS void GetCursorRay() {
 	memcpy(JSIOBuffer, &res, sizeof(res));
 }
 
-EXPORT_JS void ScreenToWorldFar() {
+WASM_EXPORT(ScreenToWorldFar) void ScreenToWorldFar() {
 	auto window_size = UnwrapVector2();
 	auto camera_position = UnwrapVector3(2);
 	auto camera_angles = UnwrapVector3(5);
@@ -289,16 +287,16 @@ EXPORT_JS void ScreenToWorldFar() {
 	delete[] screens_results;
 }
 
-EXPORT_JS void* my_malloc(size_t data_size) {
+WASM_EXPORT(malloc) void* my_malloc(size_t data_size) {
 	return malloc(data_size);
 }
 
-EXPORT_JS void my_free(void* ptr) {
+WASM_EXPORT(free) void my_free(void* ptr) {
 	return free(ptr);
 }
 
 char* ParsePNGInternal(char* data, size_t data_size, int& w, int& h);
-EXPORT_JS char* ParsePNG(char* data, size_t data_size) {
+WASM_EXPORT(ParsePNG) char* ParsePNG(char* data, size_t data_size) {
 	int w, h;
 	auto res = ParsePNGInternal(data, data_size, w, h);
 	*(uint32_t*)&JSIOBuffer[0] = w;
@@ -319,7 +317,7 @@ char* ParseVTexInternal(
 	bool hemi_oct,
 	bool hemi_oct_RB
 );
-EXPORT_JS char* ParseVTex(
+WASM_EXPORT(ParseVTex) char* ParseVTex(
 	char* data,
 	size_t data_size,
 	char* image_data,
@@ -350,7 +348,7 @@ EXPORT_JS char* ParseVTex(
 
 // https://github.com/ValveSoftware/source-sdk-2013/blob/0d8dceea4310fde5706b3ce1c70609d72a38efdf/sp/src/tier1/generichash.cpp#L313
 // someone please port it to JS >_<
-EXPORT_JS uint32_t MurmurHash2(void* key, int len, uint32_t seed) {
+WASM_EXPORT(MurmurHash2) uint32_t MurmurHash2(void* key, int len, uint32_t seed) {
 	// 'm' and 'r' are mixing constants generated offline.
 	// They're not really 'magic', they just happen to work well.
 	const uint32_t m = 0x5bd1e995;
@@ -399,7 +397,7 @@ EXPORT_JS uint32_t MurmurHash2(void* key, int len, uint32_t seed) {
 
 // https://github.com/ValveSoftware/source-sdk-2013/blob/0d8dceea4310fde5706b3ce1c70609d72a38efdf/sp/src/tier1/generichash.cpp#L380
 // someone please port it to JS >_<
-EXPORT_JS void MurmurHash64(void* key, int len, uint32_t seed) {
+WASM_EXPORT(MurmurHash64) void MurmurHash64(void* key, int len, uint32_t seed) {
 	// 'm' and 'r' are mixing constants generated offline.
 	// They're not really 'magic', they just happen to work well.
 	const uint32_t m = 0x5bd1e995;
@@ -451,13 +449,13 @@ EXPORT_JS void MurmurHash64(void* key, int len, uint32_t seed) {
 	*(uint64_t*)JSIOBuffer = (((uint64_t)h1) << 32) | h2;
 }
 
-EXPORT_JS uint32_t CRC32(void* data, int len) {
+WASM_EXPORT(CRC32) uint32_t CRC32(void* data, int len) {
 	auto ret = crc32((const char*)data, (size_t)len);
 	free(data);
 	return ret;
 }
 
-EXPORT_JS void* DecompressLZ4(void* data, size_t size, size_t dst_len) {
+WASM_EXPORT(DecompressLZ4) void* DecompressLZ4(void* data, size_t size, size_t dst_len) {
 	auto dst = malloc(dst_len);
 	LZ4_decompress_safe((char*)data, (char*)dst, (int)size, (int)dst_len);
 	free(data);
@@ -467,7 +465,7 @@ EXPORT_JS void* DecompressLZ4(void* data, size_t size, size_t dst_len) {
 extern "C" {
 	unsigned long long ZSTD_decompressBound(const void* src, size_t srcSize);
 }
-EXPORT_JS void* DecompressZstd(void* data, size_t size) {
+WASM_EXPORT(DecompressZstd) void* DecompressZstd(void* data, size_t size) {
 	if (size < 12)
 		return nullptr;
 	auto dst_len = ZSTD_decompressBound(data, size);
@@ -485,7 +483,7 @@ EXPORT_JS void* DecompressZstd(void* data, size_t size) {
 	return dst;
 }
 
-EXPORT_JS void* DecompressLZ4Chained(void* data, uint32_t* input_sizes, uint32_t* output_sizes, uint32_t count) {
+WASM_EXPORT(DecompressLZ4Chained) void* DecompressLZ4Chained(void* data, uint32_t* input_sizes, uint32_t* output_sizes, uint32_t count) {
 	size_t dst_len = 0;
 	for (uint32_t i = 0; i < count; i++)
 		dst_len += output_sizes[i];
@@ -507,10 +505,10 @@ EXPORT_JS void* DecompressLZ4Chained(void* data, uint32_t* input_sizes, uint32_t
 }
 
 VMatrix SavedWorldToProjection;
-EXPORT_JS void CloneWorldToProjection() {
+WASM_EXPORT(CloneWorldToProjection) void CloneWorldToProjection() {
 	memcpy(SavedWorldToProjection.m, JSIOBuffer, sizeof(SavedWorldToProjection.m));
 }
-EXPORT_JS bool WorldToScreenNew() {
+WASM_EXPORT(WorldToScreenNew) bool WorldToScreenNew() {
 	auto world_vec = UnwrapVector3();
 	auto window_size = UnwrapVector2(3);
 	int x, y;
@@ -522,7 +520,7 @@ EXPORT_JS bool WorldToScreenNew() {
 		return false;
 }
 
-EXPORT_JS void* DecompressVertexBuffer(
+WASM_EXPORT(DecompressVertexBuffer) void* DecompressVertexBuffer(
 	uint8_t* data,
 	size_t size,
 	size_t out_elem_count,
@@ -534,7 +532,7 @@ EXPORT_JS void* DecompressVertexBuffer(
 	return out;
 }
 
-EXPORT_JS void* DecompressIndexBuffer(
+WASM_EXPORT(DecompressIndexBuffer) void* DecompressIndexBuffer(
 	uint8_t* data,
 	size_t size,
 	size_t out_elem_count,
@@ -550,7 +548,7 @@ EXPORT_JS void* DecompressIndexBuffer(
 }
 
 extern void ResetWorldInternal();
-EXPORT_JS void ResetWorld() {
+WASM_EXPORT(ResetWorld) void ResetWorld() {
 	ResetWorldInternal();
 }
 
@@ -559,7 +557,7 @@ extern void LoadWorldModelInternal(
 	std::string_view index_data, size_t index_size,
 	VMatrix transform
 );
-EXPORT_JS void LoadWorldModel(
+WASM_EXPORT(LoadWorldModel) void LoadWorldModel(
 	void* vertex_ptr, size_t vertex_size,
 	void* index_ptr, size_t index_size, size_t index_elem_size
 ) {
@@ -573,11 +571,11 @@ EXPORT_JS void LoadWorldModel(
 }
 
 extern void FinishWorldInternal();
-EXPORT_JS void FinishWorld() {
+WASM_EXPORT(FinishWorld) void FinishWorld() {
 	FinishWorldInternal();
 }
 extern void FinishWorldCachedInternal(std::string_view cached_nodes, std::string_view cached_indices);
-EXPORT_JS void FinishWorldCached(
+WASM_EXPORT(FinishWorldCached) void FinishWorldCached(
 	void* nodes_ptr, size_t nodes_size,
 	void* indices_ptr, size_t indices_size
 ) {
@@ -591,7 +589,7 @@ EXPORT_JS void FinishWorldCached(
 
 extern std::pair<std::string_view, std::string_view> ExtractWorldVBIBInternal();
 extern std::pair<std::string_view, std::string_view> ExtractWorldBVHInternal();
-EXPORT_JS void ExtractWorld() {
+WASM_EXPORT(ExtractWorld) void ExtractWorld() {
 	auto [vb, ib] = ExtractWorldVBIBInternal();
 	static_assert(sizeof(uint32_t) == sizeof(void*));
 	*(uint32_t*)&JSIOBuffer[0] = (uint32_t)vb.data();
@@ -655,7 +653,7 @@ bool CheckLineBox(
 	);
 }
 
-EXPORT_JS void BatchCheckLineBox() {
+WASM_EXPORT(BatchCheckLineBox) void BatchCheckLineBox() {
 	auto start_pos = UnwrapVector3();
 	auto end_pos = UnwrapVector3(3);
 	auto count = (uint16_t)JSIOBuffer[6];

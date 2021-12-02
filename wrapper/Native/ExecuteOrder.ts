@@ -604,8 +604,6 @@ function EntityHitBoxesIntersect(
 	const target = camera_vec.Add(WASM.GetCursorRay(
 		cursor_vec,
 		RendererSDK.WindowSize,
-		camera_vec,
-		default_camera_dist,
 		default_camera_angles,
 		-1,
 	).MultiplyScalarForThis(max_dist))

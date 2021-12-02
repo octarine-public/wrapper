@@ -208,7 +208,6 @@ char* ParseVTexInternal(
 
 	void* copy = nullptr;
 	size_t out_image_size = (size_t)vtex_header->width * (size_t)vtex_header->height * 4ll;
-	auto convert_failed = "Failed to convert image data to the proper format.\n";
 	switch (vtex_header->format) {
 		case VTexFormat::DXT1: {
 			copy = malloc(out_image_size);
