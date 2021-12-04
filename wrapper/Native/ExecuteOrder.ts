@@ -454,17 +454,17 @@ function UpdateCameraBounds(camera_vec_2d: Vector2) {
 	]
 
 	latest_camera_green_zone_poly_world.Points = RendererSDK.ScreenToWorldFar(
-		latest_camera_green_zone_poly_screen.Points.map(point => point),
+		latest_camera_green_zone_poly_screen.Points,
 		camera_vec,
 		default_camera_dist,
 	)
 	latest_camera_yellow_zone_poly_world.Points = RendererSDK.ScreenToWorldFar(
-		latest_camera_yellow_zone_poly_screen.Points.map(point => point),
+		latest_camera_yellow_zone_poly_screen.Points,
 		camera_vec,
 		default_camera_dist,
 	)
 	latest_camera_red_zone_poly_world.Points = RendererSDK.ScreenToWorldFar(
-		latest_camera_red_zone_poly_screen.Points.map(point => point),
+		latest_camera_red_zone_poly_screen.Points,
 		camera_vec,
 		default_camera_dist,
 	)
@@ -593,7 +593,6 @@ function EntityHitBoxesIntersect(
 	ents: Entity[],
 	camera_vec: Vector3 | Vector2,
 	cursor_vec: Vector2,
-	max_dist = 1e6,
 ): boolean[] {
 	if (camera_vec instanceof Vector2)
 		camera_vec = WASM.GetCameraPosition(
@@ -601,13 +600,13 @@ function EntityHitBoxesIntersect(
 			default_camera_dist,
 			default_camera_angles,
 		)
-	const target = camera_vec.Add(WASM.GetCursorRay(
+	const ray = WASM.GetCursorRay(
 		cursor_vec,
 		RendererSDK.WindowSize,
 		default_camera_angles,
 		-1,
-	).MultiplyScalarForThis(max_dist))
-	return WASM.BatchCheckLineBox(camera_vec, target, ents.map(ent => ent.BoundingBox))
+	)
+	return WASM.BatchCheckRayBox(camera_vec, ray, ents.map(ent => ent.BoundingBox))
 }
 
 function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | Vector2 {

@@ -38,3 +38,14 @@ template<typename T = void, typename X = T> FORCEINLINE T* GetPointer(X* base, i
 #include "vhcg.h"
 #include "vmatrix.h"
 #include "crc32.h"
+#include <bvh/bvh.hpp>
+
+struct MeshData {
+	std::string_view triangles{}, cached_nodes{}, cached_indices{};
+	uint32_t flags = 0, path_id = 0;
+};
+
+struct RayTraceResult {
+	Vector pos{};
+	uint32_t flags = 0, path_id = 0;
+};

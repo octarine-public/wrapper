@@ -2,10 +2,10 @@ project(wasm_source CXX)
 
 set(LZ4_PATH "C:/git/lz4")
 include_directories(${LZ4_PATH}/lib)
-include_directories(nanort)
 include_directories(zstd/lib)
 include_directories(meshoptimizer/src)
 include_directories(${PROJECT_SOURCE_DIR})
+add_subdirectory(bvh)
 
 ################################################################################
 # Source groups
@@ -32,11 +32,6 @@ file(GLOB Source_Files__Third_party__zstd
 )
 source_group("Source Files\\zstd" FILES ${Source_Files__Third_party__zstd})
 
-set(Source_Files__Third_party__nanort
-	nanort/nanort.cc
-)
-source_group("Source Files\\Third party\\nanort" FILES ${Source_Files__Third_party__nanort})
-
 set(Source_Files__Third_party__lodepng
 	lodepng/lodepng.cpp
 )
@@ -61,7 +56,6 @@ set(ALL_FILES
 	${Header_Files}
 	${Source_Files__Third_party__LZ4}
 	${Source_Files__Third_party__zstd}
-	${Source_Files__Third_party__nanort}
 	${Source_Files__Third_party__lodepng}
 	${Source_Files__Third_party__meshoptimizer}
 	${Source_Files}
@@ -150,7 +144,9 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 set(DEFAULT_LINKER_OPTIONS_RELEASE
 	# -Wl,--import-memory;
 	# -Wl,--shared-memory;
+	# -s; USE_PTHREADS;
 	-s; ALLOW_MEMORY_GROWTH=1;
+	-g0;
 )
 target_link_options(${PROJECT_NAME} PRIVATE
 	$<$<CONFIG:NoSIMD>:
@@ -165,6 +161,7 @@ target_link_options(${PROJECT_NAME} PRIVATE
 # Dependencies
 ################################################################################
 set(DEFAULT_LIBS
+	"bvh;"
 )
 string(CONCAT ADDITIONAL_LIBRARY_DEPENDENCIES
 	"$<$<CONFIG:NoSIMD>:"

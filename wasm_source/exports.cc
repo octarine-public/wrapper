@@ -4,6 +4,9 @@
 #include <zstd.h>
 #include "lz4.h"
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb/stb_image_write.h>
+
 void ComputeViewMatrix(VMatrix* pViewMatrix, const Vector& origin, const QAngle& angles) {
 	static VMatrix baseRotation;
 	static bool bDidInit;
@@ -178,13 +181,13 @@ WASM_EXPORT(ParseVHCG) int ParseVHCG(uint8_t* data, size_t data_size) {
 }
 
 extern bool RayTraceInitialized();
-extern std::optional<Vector> TryRayTrace(Vector camera_position, Vector ray_direction, uint32_t flags);
+extern std::optional<RayTraceResult> TryRayTrace(Vector camera_position, Vector ray_direction, uint32_t flags);
 float GetHeightForLocation(Vector2D loc, uint32_t flags) {
 	if (RayTraceInitialized()) {
 		Vector camera_position{ loc.x, loc.y, 10000 };
 		Vector ray_direction{ 0.f, 0.f, -1.f };
 		auto res = TryRayTrace(camera_position, ray_direction, flags);
-		return res ? res->z : -16384.f;
+		return res ? res->pos.z : -16384.f;
 	}
 	return height_map_initialized
 		? height_map.GetHeightForLocation(loc)
@@ -193,6 +196,32 @@ float GetHeightForLocation(Vector2D loc, uint32_t flags) {
 WASM_EXPORT(GetHeightForLocation) void GetHeightForLocation() {
 	auto flags = *(uint32_t*)&JSIOBuffer[2];
 	JSIOBuffer[0] = GetHeightForLocation(UnwrapVector2(), flags);
+}
+
+WASM_EXPORT(SampleWorldHeight) void SampleWorldHeight() {
+	auto min_coords = UnwrapVector2();
+	auto world_size = UnwrapVector2(2);
+	auto step = JSIOBuffer[4];
+	auto flags = *(uint32_t*)&JSIOBuffer[5];
+
+	auto w = (uint32_t)std::ceil(world_size.x / step),
+		h = (uint32_t)std::ceil(world_size.y / step);
+	auto mem = (uint8_t*)malloc(w * h);
+	auto vec = min_coords;
+	for (uint32_t y = 0; y < h; y++) {
+		for (uint32_t x = 0; x < w; x++) {
+			mem[y * w + x] = (uint8_t)(std::max(std::min(GetHeightForLocation(vec, flags) / 512.f, 1.f), 0.f) * 255.f);
+			vec.x += step;
+		}
+		vec.y += step;
+		vec.x = min_coords.x;
+	}
+
+	int len = 0;
+	unsigned char* png = stbi_write_png_to_mem((const unsigned char*)mem, 0, w, h, 1, &len);
+	free(mem);
+	*(uint32_t*)&JSIOBuffer[0] = (uint32_t)png;
+	*(uint32_t*)&JSIOBuffer[1] = (uint32_t)len;
 }
 
 WASM_EXPORT(GetLocationAverageHeight) void GetLocationAverageHeight() {
@@ -276,9 +305,9 @@ WASM_EXPORT(ScreenToWorldFar) void ScreenToWorldFar() {
 			} else
 				cur_pos.Invalidate();
 		} else {
-			auto pos = TryRayTrace(camera_position, ray, flags);
-			if (pos)
-				cur_pos = *pos;
+			auto res = TryRayTrace(camera_position, ray, flags);
+			if (res)
+				cur_pos = res->pos;
 			else
 				cur_pos.Invalidate();
 		}
@@ -552,34 +581,71 @@ WASM_EXPORT(ResetWorld) void ResetWorld() {
 	ResetWorldInternal();
 }
 
-extern void LoadWorldModelInternal(
-	std::string_view vertex_data,
-	std::string_view index_data, size_t index_size,
-	VMatrix transform
+extern void LoadWorldMeshInternal(
+	uint32_t id,
+	std::string_view vertex_data, size_t vertex_elem_size,
+	std::string_view index_data, size_t index_elem_size,
+	uint32_t flags,
+	uint32_t path_id
 );
-WASM_EXPORT(LoadWorldModel) void LoadWorldModel(
-	void* vertex_ptr, size_t vertex_size,
-	void* index_ptr, size_t index_size, size_t index_elem_size
+WASM_EXPORT(LoadWorldMesh) void LoadWorldMesh(
+	uint32_t id,
+	void* vertex_ptr, size_t vertex_size, size_t vertex_elem_size,
+	void* index_ptr, size_t index_size, size_t index_elem_size,
+	uint32_t flags,
+	uint32_t path_id
 ) {
-	LoadWorldModelInternal(
-		{ (const char*)vertex_ptr, vertex_size },
+	LoadWorldMeshInternal(
+		id,
+		{ (const char*)vertex_ptr, vertex_size }, vertex_elem_size,
 		{ (const char*)index_ptr, index_size }, index_elem_size,
-		*(VMatrix*)JSIOBuffer
+		flags,
+		path_id
 	);
 	free(vertex_ptr);
 	free(index_ptr);
 }
 
-extern void FinishWorldInternal();
-WASM_EXPORT(FinishWorld) void FinishWorld() {
-	FinishWorldInternal();
+extern void LoadWorldMeshCachedInternal(
+	uint32_t id,
+	std::string_view triangles_data,
+	std::string_view cached_nodes,
+	std::string_view cached_indices,
+	uint32_t flags,
+	uint32_t path_id
+);
+WASM_EXPORT(LoadWorldMeshCached) void LoadWorldMeshCached(
+	uint32_t id,
+	void* triangles_ptr, size_t triangles_size,
+	void* nodes_ptr, size_t nodes_size,
+	void* indices_ptr, size_t indices_size,
+	uint32_t flags,
+	uint32_t path_id
+) {
+	LoadWorldMeshCachedInternal(
+		id,
+		{ (const char*)triangles_ptr, triangles_size },
+		{ (const char*)nodes_ptr, nodes_size },
+		{ (const char*)indices_ptr, indices_size },
+		flags,
+		path_id
+	);
+	free(triangles_ptr);
+	free(nodes_ptr);
+	free(indices_ptr);
 }
-extern void FinishWorldCachedInternal(std::string_view cached_nodes, std::string_view cached_indices);
-WASM_EXPORT(FinishWorldCached) void FinishWorldCached(
+
+extern void SpawnWorldMeshInternal(uint32_t id, const VMatrix& transform);
+WASM_EXPORT(SpawnWorldMesh) void SpawnWorldMesh(uint32_t id) {
+	SpawnWorldMeshInternal(id, *(const VMatrix*)JSIOBuffer);
+}
+
+extern void FinishWorldInternal(std::string_view cached_nodes, std::string_view cached_indices);
+WASM_EXPORT(FinishWorld) void FinishWorld(
 	void* nodes_ptr, size_t nodes_size,
 	void* indices_ptr, size_t indices_size
 ) {
-	FinishWorldCachedInternal(
+	FinishWorldInternal(
 		{ (const char*)nodes_ptr, nodes_size },
 		{ (const char*)indices_ptr, indices_size }
 	);
@@ -587,84 +653,93 @@ WASM_EXPORT(FinishWorldCached) void FinishWorldCached(
 	free(indices_ptr);
 }
 
-extern std::pair<std::string_view, std::string_view> ExtractWorldVBIBInternal();
 extern std::pair<std::string_view, std::string_view> ExtractWorldBVHInternal();
-WASM_EXPORT(ExtractWorld) void ExtractWorld() {
-	auto [vb, ib] = ExtractWorldVBIBInternal();
+WASM_EXPORT(ExtractWorldBVH) void ExtractWorldBVH() {
 	static_assert(sizeof(uint32_t) == sizeof(void*));
-	*(uint32_t*)&JSIOBuffer[0] = (uint32_t)vb.data();
-	*(uint32_t*)&JSIOBuffer[1] = (uint32_t)vb.size();
-	*(uint32_t*)&JSIOBuffer[2] = (uint32_t)ib.data();
-	*(uint32_t*)&JSIOBuffer[3] = (uint32_t)ib.size();
-	auto [bvh1, bvh2] = ExtractWorldBVHInternal();
-	*(uint32_t*)&JSIOBuffer[4] = (uint32_t)bvh1.data();
-	*(uint32_t*)&JSIOBuffer[5] = (uint32_t)bvh1.size();
-	*(uint32_t*)&JSIOBuffer[6] = (uint32_t)bvh2.data();
-	*(uint32_t*)&JSIOBuffer[7] = (uint32_t)bvh2.size();
+	auto [cached_nodes, cached_indices] = ExtractWorldBVHInternal();
+	*(uint32_t*)&JSIOBuffer[0] = (uint32_t)cached_nodes.data();
+	*(uint32_t*)&JSIOBuffer[1] = (uint32_t)cached_nodes.size();
+	*(uint32_t*)&JSIOBuffer[2] = (uint32_t)cached_indices.data();
+	*(uint32_t*)&JSIOBuffer[3] = (uint32_t)cached_indices.size();
 }
 
-FORCEINLINE bool IsIntersectionInBox(
-	float fDst1,
-	float fDst2,
-	const Vector& P1,
-	const Vector& P2,
-	const Vector& B1,
-	const Vector& B2,
-	int Axis
+extern MeshData ExtractMeshDataInternal(uint32_t id);
+WASM_EXPORT(ExtractMeshData) void ExtractMeshData(uint32_t id) {
+	static_assert(sizeof(uint32_t) == sizeof(void*));
+	auto data = ExtractMeshDataInternal(id);
+	*(uint32_t*)&JSIOBuffer[0] = (uint32_t)data.triangles.data();
+	*(uint32_t*)&JSIOBuffer[1] = (uint32_t)data.triangles.size();
+	*(uint32_t*)&JSIOBuffer[2] = (uint32_t)data.cached_nodes.data();
+	*(uint32_t*)&JSIOBuffer[3] = (uint32_t)data.cached_nodes.size();
+	*(uint32_t*)&JSIOBuffer[4] = (uint32_t)data.cached_indices.data();
+	*(uint32_t*)&JSIOBuffer[5] = (uint32_t)data.cached_indices.size();
+	*(uint32_t*)&JSIOBuffer[6] = data.flags;
+	*(uint32_t*)&JSIOBuffer[7] = data.path_id;
+}
+
+inline bool IntersectRayAABB(
+	float min_t, float max_t,
+	const float* bmin, const float* bmax,
+	const float* ray_org,
+	const float* ray_inv_dir,
+	bool ray_dir_sign[3]
 ) {
-	if ((fDst1 * fDst2) >= 0 || fDst1 == fDst2)
-		return false;
-	auto Hit = P1 + (P2 - P1) * (-fDst1 / (fDst2 - fDst1));
-	return (
-		(Axis == 1 && Hit.z > B1.z && Hit.z < B2.z && Hit.y > B1.y && Hit.y < B2.y)
-		|| (Axis == 2 && Hit.z > B1.z && Hit.z < B2.z && Hit.x > B1.x && Hit.x < B2.x)
-		|| (Axis == 3 && Hit.x > B1.x && Hit.x < B2.x && Hit.y > B1.y && Hit.y < B2.y)
-	);
+	const float min_x = ray_dir_sign[0] ? bmax[0] : bmin[0];
+	const float min_y = ray_dir_sign[1] ? bmax[1] : bmin[1];
+	const float min_z = ray_dir_sign[2] ? bmax[2] : bmin[2];
+	const float max_x = ray_dir_sign[0] ? bmin[0] : bmax[0];
+	const float max_y = ray_dir_sign[1] ? bmin[1] : bmax[1];
+	const float max_z = ray_dir_sign[2] ? bmin[2] : bmax[2];
+
+	// X
+	const float tmin_x = (min_x - ray_org[0]) * ray_inv_dir[0];
+	// MaxMult robust BVH traversal(up to 4 ulp).
+	// 1.0000000000000004 for double precision.
+	const float tmax_x = (max_x - ray_org[0]) * ray_inv_dir[0] * 1.00000024f;
+
+	// Y
+	const float tmin_y = (min_y - ray_org[1]) * ray_inv_dir[1];
+	const float tmax_y = (max_y - ray_org[1]) * ray_inv_dir[1] * 1.00000024f;
+
+	// Z
+	const float tmin_z = (min_z - ray_org[2]) * ray_inv_dir[2];
+	const float tmax_z = (max_z - ray_org[2]) * ray_inv_dir[2] * 1.00000024f;
+
+	const float tmin = std::max(tmin_z, std::max(tmin_y, std::max(tmin_x, min_t)));
+	const float tmax = std::min(tmax_z, std::min(tmax_y, std::min(tmax_x, max_t)));
+	return tmin <= tmax;
 }
 
-bool CheckLineBox(
-	const Vector& B1,
-	const Vector& B2,
-	const Vector& L1,
-	const Vector& L2
-) {
-	if (
-		(L2.x < B1.x && L1.x < B1.x)
-		|| (L2.x > B2.x && L1.x > B2.x)
-		|| (L2.y < B1.y && L1.y < B1.y)
-		|| (L2.y > B2.y && L1.y > B2.y)
-		|| (L2.z < B1.z && L1.z < B1.z)
-		|| (L2.z > B2.z && L1.z > B2.z)
-	)
-		return false;
-	if (
-		L1.x > B1.x && L1.x < B2.x
-		&& L1.y > B1.y && L1.y < B2.y
-		&& L1.z > B1.z && L1.z < B2.z
-	)
-		return true;
-	return (
-		IsIntersectionInBox(L1.x - B1.x, L2.x - B1.x, L1, L2, B1, B2, 1)
-		|| IsIntersectionInBox(L1.y - B1.y, L2.y - B1.y, L1, L2, B1, B2, 2)
-		|| IsIntersectionInBox(L1.z - B1.z, L2.z - B1.z, L1, L2, B1, B2, 3)
-		|| IsIntersectionInBox(L1.x - B2.x, L2.x - B2.x, L1, L2, B1, B2, 1)
-		|| IsIntersectionInBox(L1.y - B2.y, L2.y - B2.y, L1, L2, B1, B2, 2)
-		|| IsIntersectionInBox(L1.z - B2.z, L2.z - B2.z, L1, L2, B1, B2, 3)
-	);
-}
+WASM_EXPORT(BatchCheckRayBox) void BatchCheckRayBox() {
+	auto ray_org = &JSIOBuffer[0];
+	auto ray_dir = &JSIOBuffer[3];
 
-WASM_EXPORT(BatchCheckLineBox) void BatchCheckLineBox() {
-	auto start_pos = UnwrapVector3();
-	auto end_pos = UnwrapVector3(3);
+	float ray_inv_dir[3]{
+		1.f / ray_dir[0],
+		1.f / ray_dir[1],
+		1.f / ray_dir[2]
+	};
+	bool dir_sign[3]{
+		ray_inv_dir[0] < 0.f,
+		ray_inv_dir[1] < 0.f,
+		ray_inv_dir[2] < 0.f
+	};
+
 	auto count = (uint16_t)JSIOBuffer[6];
-	auto res = new bool[count];
 	for (int i = 0; i < count; i++) {
-		auto& min = UnwrapVector3(7 + i * 3 * 2 + 0);
-		auto& max = UnwrapVector3(7 + i * 3 * 2 + 3);
-		res[i] = CheckLineBox(min, max, start_pos, end_pos);
+		auto bmin = &JSIOBuffer[7 + i * 3 * 2 + 0];
+		auto bmax = &JSIOBuffer[7 + i * 3 * 2 + 3];
+		constexpr float ray_min = 0.f, ray_max = 1.0e+30f;
+		*GetPointer<bool>(JSIOBuffer, i) = IntersectRayAABB(
+			ray_min,
+			ray_max,
+			bmin,
+			bmax,
+			ray_org,
+			ray_inv_dir,
+			dir_sign
+		);
 	}
-	memcpy(JSIOBuffer, res, count * sizeof(*res));
-	delete[] res;
 }
 
 int main() {

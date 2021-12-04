@@ -105,6 +105,7 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	ScreenToWorld: () => void,
 	WorldToScreen: () => boolean,
 	ParseVHCG: (ptr: number, size: number) => HeightMapParseError,
+	SampleWorldHeight: () => void,
 	GetHeightForLocation: () => void,
 	GetLocationAverageHeight: () => void,
 	GetCursorRay: () => void,
@@ -133,17 +134,29 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	DecompressVertexBuffer: (ptr: number, size: number, elem_count: number, elem_size: number) => number,
 	DecompressIndexBuffer: (ptr: number, size: number, elem_count: number, elem_size: number) => number,
 	ResetWorld: () => void,
-	LoadWorldModel: (
-		vertex_ptr: number, vertex_size: number,
+	LoadWorldMesh: (
+		id: number,
+		vertex_ptr: number, vertex_size: number, vertex_elem_size: number,
 		index_ptr: number, index_size: number, index_elem_size: number,
+		flags: number,
+		path_id: number,
 	) => void,
-	FinishWorld: () => void,
-	FinishWorldCached: (
+	LoadWorldMeshCached: (
+		id: number,
+		triangles_ptr: number, triangles_size: number,
+		nodes_ptr: number, nodes_size: number,
+		indices_ptr: number, indices_size: number,
+		flags: number,
+		path_id: number,
+	) => void,
+	SpawnWorldMesh: (id: number) => void,
+	FinishWorld: (
 		nodes_ptr: number, nodes_size: number,
 		indices_ptr: number, indices_size: number,
 	) => void,
-	ExtractWorld: () => void,
-	BatchCheckLineBox: () => void,
+	ExtractWorldBVH: () => void,
+	ExtractMeshData: (id: number) => void,
+	BatchCheckRayBox: () => void,
 }
 declare global {
 	var wasm_: typeof wasm
@@ -448,6 +461,28 @@ export function ResetVHCG(): void {
 	HeightMap = undefined
 }
 
+export function SampleWorldHeight(
+	min_coords: Vector2,
+	world_size: Vector2,
+	step: number,
+	flags = MaterialFlags.Nonsolid | MaterialFlags.Water,
+): Uint8Array {
+	WASMIOBuffer[0] = min_coords.x
+	WASMIOBuffer[1] = min_coords.y
+	WASMIOBuffer[2] = world_size.x
+	WASMIOBuffer[3] = world_size.y
+	WASMIOBuffer[4] = step
+	WASMIOBufferU32[5] = flags
+	wasm.SampleWorldHeight()
+
+	const addr = WASMIOBufferU32[0]
+	const copy = new Uint8Array(WASMIOBufferU32[1])
+	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
+	wasm.free(addr)
+
+	return copy
+}
+
 export function GetPositionHeight(
 	loc: Vector2 | Vector3,
 	flags = MaterialFlags.Nonsolid | MaterialFlags.Water,
@@ -624,89 +659,126 @@ export function ResetWorld(): void {
 	wasm.ResetWorld()
 }
 
-export function LoadWorldModel(
+export function LoadWorldMesh(
+	id: number,
 	vertexBuffer: Uint8Array,
 	vertexSize: number,
 	indexBuffer: Uint8Array,
 	indexSize: number,
-	transform: ArrayLike<number>,
 	flags: number,
+	path_id: number,
 ): void {
-	if (vertexSize < 3 * 4)
-		return
-	const vertexCount = vertexBuffer.byteLength / vertexSize
-	const vertex_addr = wasm.malloc(vertexCount * 4 * 4)
+	const vertex_addr = wasm.malloc(vertexBuffer.byteLength)
 	if (vertex_addr === 0)
-		throw "Memory allocation for LoadWorldModel vertexBuffer raw data failed"
-	if (flags !== -1 || vertexSize !== 4 * 4) {
-		const wasmView = new DataView(wasm.memory.buffer, vertex_addr, vertexCount * 4 * 4),
-			origView = new DataView(vertexBuffer.buffer, vertexBuffer.byteOffset, vertexBuffer.byteLength)
-		for (let i = 0; i < vertexCount; i++) {
-			const wasmPos = i * 4 * 4,
-				origPos = i * vertexSize
-			wasmView.setFloat32(wasmPos + 0, origView.getFloat32(origPos + 0, true), true)
-			wasmView.setFloat32(wasmPos + 4, origView.getFloat32(origPos + 4, true), true)
-			wasmView.setFloat32(wasmPos + 8, origView.getFloat32(origPos + 8, true), true)
-			wasmView.setUint32(wasmPos + 12, flags, true)
-		}
-	} else
-		new Uint8Array(wasm.memory.buffer, vertex_addr, vertexBuffer.byteLength).set(vertexBuffer)
+		throw "Memory allocation for LoadWorldMesh vertexBuffer raw data failed"
+	new Uint8Array(wasm.memory.buffer, vertex_addr, vertexBuffer.byteLength).set(vertexBuffer)
 
 	const index_addr = wasm.malloc(indexBuffer.byteLength)
 	if (index_addr === 0)
-		throw "Memory allocation for LoadWorldModel indexBuffer raw data failed"
+		throw "Memory allocation for LoadWorldMesh indexBuffer raw data failed"
 	new Uint8Array(wasm.memory.buffer, index_addr, indexBuffer.byteLength).set(indexBuffer)
 
-	WASMIOBuffer.set(transform)
-	wasm.LoadWorldModel(
-		vertex_addr, vertexCount * 4 * 4,
+	wasm.LoadWorldMesh(
+		id,
+		vertex_addr, vertexBuffer.byteLength, vertexSize,
 		index_addr, indexBuffer.byteLength, indexSize,
+		flags,
+		path_id,
 	)
 }
 
-export function FinishWorld(): void {
-	wasm.FinishWorld()
-}
+export function LoadWorldMeshCached(
+	id: number,
+	triangles: Uint8Array,
+	nodes: Uint8Array,
+	indices: Uint8Array,
+	flags: number,
+	path_id: number,
+): void {
+	const triangles_addr = wasm.malloc(triangles.byteLength)
+	if (triangles_addr === 0)
+		throw "Memory allocation for LoadWorldMeshCached triangles raw data failed"
+	new Uint8Array(wasm.memory.buffer, triangles_addr, triangles.byteLength).set(triangles)
 
-export function FinishWorldCached(cached_bvh: [Uint8Array, Uint8Array]): void {
-	const cached_bvh1_addr = wasm.malloc(cached_bvh[0].byteLength)
-	if (cached_bvh1_addr === 0)
-		throw "Memory allocation for FinishWorldCached cached_bvh[0] raw data failed"
-	new Uint8Array(wasm.memory.buffer, cached_bvh1_addr, cached_bvh[0].byteLength).set(cached_bvh[0])
+	const nodes_addr = wasm.malloc(nodes.byteLength)
+	if (nodes_addr === 0)
+		throw "Memory allocation for LoadWorldMeshCached nodes raw data failed"
+	new Uint8Array(wasm.memory.buffer, nodes_addr, nodes.byteLength).set(nodes)
 
-	const cached_bvh2_addr = wasm.malloc(cached_bvh[1].byteLength)
-	if (cached_bvh2_addr === 0)
-		throw "Memory allocation for FinishWorldCached cached_bvh[1] raw data failed"
-	new Uint8Array(wasm.memory.buffer, cached_bvh2_addr, cached_bvh[1].byteLength).set(cached_bvh[1])
+	const indices_addr = wasm.malloc(indices.byteLength)
+	if (indices_addr === 0)
+		throw "Memory allocation for LoadWorldMeshCached indices raw data failed"
+	new Uint8Array(wasm.memory.buffer, indices_addr, indices.byteLength).set(indices)
 
-	wasm.FinishWorldCached(
-		cached_bvh1_addr, cached_bvh[0].byteLength,
-		cached_bvh2_addr, cached_bvh[1].byteLength,
+	wasm.LoadWorldMeshCached(
+		id,
+		triangles_addr, triangles.byteLength,
+		nodes_addr, nodes.byteLength,
+		indices_addr, indices.byteLength,
+		flags,
+		path_id,
 	)
 }
 
-export function ExtractWorld(): [Uint8Array, Uint8Array, Uint8Array, Uint8Array] {
-	wasm.ExtractWorld()
+export function SpawnWorldMesh(id: number, transform: ArrayLike<number>): void {
+	WASMIOBuffer.set(transform)
+	wasm.SpawnWorldMesh(id)
+}
+
+export function FinishWorld(cached_bvh?: Nullable<[Uint8Array, Uint8Array]>): void {
+	if (cached_bvh !== undefined) {
+		const cached_bvh1_addr = wasm.malloc(cached_bvh[0].byteLength)
+		if (cached_bvh1_addr === 0)
+			throw "Memory allocation for FinishWorld cached_bvh[0] raw data failed"
+		new Uint8Array(wasm.memory.buffer, cached_bvh1_addr, cached_bvh[0].byteLength).set(cached_bvh[0])
+
+		const cached_bvh2_addr = wasm.malloc(cached_bvh[1].byteLength)
+		if (cached_bvh2_addr === 0)
+			throw "Memory allocation for FinishWorld cached_bvh[1] raw data failed"
+		new Uint8Array(wasm.memory.buffer, cached_bvh2_addr, cached_bvh[1].byteLength).set(cached_bvh[1])
+
+		wasm.FinishWorld(
+			cached_bvh1_addr, cached_bvh[0].byteLength,
+			cached_bvh2_addr, cached_bvh[1].byteLength,
+		)
+	} else
+		wasm.FinishWorld(0, 0, 0, 0)
+}
+
+export function ExtractWorldBVH(): [Uint8Array, Uint8Array] {
+	wasm.ExtractWorldBVH()
 	return [
 		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[0], WASMIOBufferU32[1]),
 		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[2], WASMIOBufferU32[3]),
+	]
+}
+
+export function ExtractMeshData(id: number): Nullable<[number, Uint8Array, Uint8Array, Uint8Array, number, number]> {
+	wasm.ExtractMeshData(id)
+	if (WASMIOBufferU32[1] === 0 || WASMIOBufferU32[3] === 0 || WASMIOBufferU32[5] === 0)
+		return undefined
+	return [
+		id,
+		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[0], WASMIOBufferU32[1]),
+		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[2], WASMIOBufferU32[3]),
 		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[4], WASMIOBufferU32[5]),
-		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[6], WASMIOBufferU32[7]),
+		WASMIOBufferU32[6],
+		WASMIOBufferU32[7],
 	]
 }
 
 const max_hitboxes = (IOBufferSize - 7) / (3 * 2)
-export function BatchCheckLineBox(
+export function BatchCheckRayBox(
 	start_pos: Vector3,
-	end_pos: Vector3,
+	ray: Vector3,
 	hitboxes: AABB[],
 ): boolean[] {
 	if (hitboxes.length > max_hitboxes) {
 		let res: boolean[] = []
 		for (let i = 0; i < hitboxes.length; i += max_hitboxes) {
-			res = [...res, ...BatchCheckLineBox(
+			res = [...res, ...BatchCheckRayBox(
 				start_pos,
-				end_pos,
+				ray,
 				hitboxes.slice(i, i + max_hitboxes),
 			)]
 		}
@@ -716,9 +788,9 @@ export function BatchCheckLineBox(
 	WASMIOBuffer[1] = start_pos.y
 	WASMIOBuffer[2] = start_pos.z
 
-	WASMIOBuffer[3] = end_pos.x
-	WASMIOBuffer[4] = end_pos.y
-	WASMIOBuffer[5] = end_pos.z
+	WASMIOBuffer[3] = ray.x
+	WASMIOBuffer[4] = ray.y
+	WASMIOBuffer[5] = ray.z
 
 	WASMIOBuffer[6] = hitboxes.length
 
@@ -731,6 +803,6 @@ export function BatchCheckLineBox(
 		WASMIOBuffer[7 + i * 3 * 2 + 5] = hitbox.Base.z + hitbox.MaxOffset.z + hitbox.DeltaZ
 	})
 
-	wasm.BatchCheckLineBox()
+	wasm.BatchCheckRayBox()
 	return hitboxes.map((_, i) => WASMIOBufferView.getUint8(i) !== 0)
 }

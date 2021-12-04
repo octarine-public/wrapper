@@ -908,8 +908,7 @@ function TryLoadWorld(world_kv: RecursiveMap): void {
 	const worldNodes = world_kv.get("m_worldNodes")
 	if (!(worldNodes instanceof Map || Array.isArray(worldNodes)))
 		return
-	const meshes: [string, number[]][] = [],
-		models: [string, number[]][] = []
+	const objects: [string, number[]][] = []
 	worldNodes.forEach((node: RecursiveMapValue) => {
 		if (!(node instanceof Map))
 			return
@@ -941,8 +940,8 @@ function TryLoadWorld(world_kv: RecursiveMap): void {
 				return
 			const transformMap = sceneObject.get("m_vTransform")
 			const transform = transformMap instanceof Map || Array.isArray(transformMap)
-				? MapToMatrix4x4(transformMap)
-				: Matrix4x4.Identity
+				? [...MapToMatrix4x4(transformMap).values]
+				: [...Matrix4x4.Identity.values]
 			const model_path = GetMapStringProperty(sceneObject, "m_renderableModel"),
 				mesh_path = GetMapStringProperty(sceneObject, "m_renderable"),
 				objectTypeFlags = GetMapNumberProperty(sceneObject, "m_nObjectTypeFlags")
@@ -950,14 +949,14 @@ function TryLoadWorld(world_kv: RecursiveMap): void {
 			if (HasBit(objectTypeFlags, 7))
 				return
 			if (model_path !== "")
-				models.push([model_path, [...transform.values]])
+				objects.push([model_path, transform])
 			if (mesh_path !== "")
-				meshes.push([mesh_path, [...transform.values]])
+				objects.push([mesh_path, transform])
 		})
 	})
 	const world_promise = current_world_promise = Workers.CallRPCEndPoint(
 		"LoadAndOptimizeWorld",
-		[models, meshes],
+		objects,
 		false,
 		{
 			forward_events: false,
@@ -966,19 +965,44 @@ function TryLoadWorld(world_kv: RecursiveMap): void {
 		},
 	)
 	world_promise.then(data => {
-		if (world_promise !== current_world_promise || !Array.isArray(data))
+		if (
+			world_promise !== current_world_promise
+			|| !Array.isArray(data)
+			|| !Array.isArray(data[0])
+			|| !Array.isArray(data[1])
+			|| !Array.isArray(data[2])
+		)
 			return
 		current_world_promise = undefined
-		const [VB, IB, BVH1, BVH2] = data
-		if (!(
-			VB instanceof Uint8Array
-			&& IB instanceof Uint8Array
-			&& BVH1 instanceof Uint8Array
-			&& BVH2 instanceof Uint8Array
-		))
-			return
-		WASM.LoadWorldModel(VB, 4 * 4, IB, 4, Matrix4x4.Identity.values, -1)
-		WASM.FinishWorldCached([BVH1, BVH2])
+		const world_bvh = data[0] as [Uint8Array, Uint8Array],
+			paths_data = data[1] as [string, [number, Uint8Array, Uint8Array, Uint8Array, number, number][]][],
+			paths = data[2] as string[],
+			path2meshes = new Map<string, number[]>()
+		paths_data.forEach(([path, meshes_data]) => {
+			const meshes: number[] = []
+			for (const mesh_data of meshes_data) {
+				WASM.LoadWorldMeshCached(
+					mesh_data[0],
+					mesh_data[1],
+					mesh_data[2],
+					mesh_data[3],
+					mesh_data[4],
+					mesh_data[5],
+				)
+				meshes.push(mesh_data[0])
+			}
+			path2meshes.set(path, meshes)
+		})
+		objects.forEach(([path, transform]) => {
+			const meshes = path2meshes.get(path)
+			if (meshes !== undefined)
+				for (const mesh of meshes)
+					WASM.SpawnWorldMesh(mesh, transform)
+		})
+		const plate_mesh_id = path2meshes.get("")
+		if (plate_mesh_id !== undefined && plate_mesh_id.length !== 0)
+			WASM.SpawnWorldMesh(plate_mesh_id[0], Matrix4x4.Identity.values)
+		WASM.FinishWorld(world_bvh)
 	}, console.error)
 }
 async function TryLoadMapFiles(): Promise<void> {

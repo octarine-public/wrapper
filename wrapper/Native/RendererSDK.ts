@@ -882,68 +882,86 @@ Events.on("Draw", async visual_data => {
 export default RendererSDK
 
 Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
-	if (!Array.isArray(data) || !Array.isArray(data[0]) || !Array.isArray(data[1]))
-		throw "Data should be [models, meshes]"
-	const models = data[0] as [string, number[]][],
-		meshes = data[1] as [string, number[]][],
-		draw_calls_cache = new Map<string, CMeshDrawCall[]>()
+	if (!Array.isArray(data))
+		throw "Data should be objects"
+	const objects = data as [string, number[]][],
+		path2meshes = new Map<string, number[]>(),
+		paths: string[] = [""]
+	let next_mesh_id = 0
 	WASM.ResetWorld()
-	const draw_calls: [CMeshDrawCall, number[]][] = []
-	models.forEach(([model_path, transform]) => {
-		if (draw_calls_cache.has(model_path)) {
-			draw_calls_cache.get(model_path)!
-				.forEach(drawCall => draw_calls.push([drawCall, transform]))
-			return
-		}
-		const buf = fread(`${model_path}_c`)
+	for (const [path] of objects) {
+		if (path2meshes.has(path))
+			continue
+		const buf = fread(`${path}_c`)
 		if (buf === undefined)
-			return
-		const model = ParseModel(buf)
-		const mesh = model.Meshes[0]
-		const mesh_draw_calls = mesh?.DrawCalls ?? []
-		mesh_draw_calls.forEach(drawCall => draw_calls.push([drawCall, transform]))
-		draw_calls_cache.set(model_path, mesh_draw_calls)
-	})
-	meshes.forEach(([mesh_path, transform]) => {
-		if (draw_calls_cache.has(mesh_path)) {
-			draw_calls_cache.get(mesh_path)!
-				.forEach(drawCall => draw_calls.push([drawCall, transform]))
-			return
+			continue
+		let draw_calls: CMeshDrawCall[] = []
+		if (path.endsWith(".vmdl")) {
+			const model = ParseModel(buf)
+			const mesh = model.Meshes[0]
+			if (mesh !== undefined)
+				draw_calls = mesh.DrawCalls
+		} else if (path.endsWith(".vmesh"))
+			draw_calls = ParseMesh(buf).DrawCalls
+		else
+			throw `Invalid path ${path}`
+		const path_meshes: number[] = []
+		path2meshes.set(path, path_meshes)
+		const path_id = paths.length
+		paths.push(path)
+		for (const draw_call of draw_calls) {
+			const mesh_id = next_mesh_id++
+			WASM.LoadWorldMesh(
+				mesh_id,
+				draw_call.VertexBuffer.Data,
+				draw_call.VertexBuffer.ElementSize,
+				draw_call.IndexBuffer.Data,
+				draw_call.IndexBuffer.ElementSize,
+				draw_call.Flags,
+				path_id,
+			)
+			path_meshes.push(mesh_id)
 		}
-		const buf = fread(`${mesh_path}_c`)
-		const mesh_draw_calls = buf !== undefined
-			? ParseMesh(buf).DrawCalls
-			: []
-		mesh_draw_calls.forEach(drawCall => draw_calls.push([drawCall, transform]))
-		draw_calls_cache.set(mesh_path, mesh_draw_calls)
+	}
+	objects.forEach(([path, transform]) => {
+		const meshes = path2meshes.get(path)
+		if (meshes !== undefined)
+			for (const mesh of meshes)
+				WASM.SpawnWorldMesh(mesh, transform)
 	})
-	draw_calls.forEach(([drawCall, transform]) => WASM.LoadWorldModel(
-		drawCall.VertexBuffer.Data,
-		drawCall.VertexBuffer.ElementSize,
-		drawCall.IndexBuffer.Data,
-		drawCall.IndexBuffer.ElementSize,
-		transform,
-		drawCall.Flags,
-	))
-	{ // big plate underneath the world to make any valid tracing actually end
+	{
 		const VB = new Uint8Array(new Float32Array([
-			-10000000, -10000000, -16384,
-			10000000, -10000000, -16384,
-			-10000000, 10000000, -16384,
-			10000000, 10000000, -16384,
+			-100000, -100000, -16384,
+			100000, -100000, -16384,
+			-100000, 100000, -16384,
+			100000, 100000, -16384,
 		]).buffer)
 		const IB = new Uint8Array([
 			0, 1, 2, 1, 2, 3,
 		])
-		WASM.LoadWorldModel(
+		const plate_mesh_id = next_mesh_id++
+		WASM.LoadWorldMesh(
+			plate_mesh_id,
 			VB,
 			3 * 4,
 			IB,
 			1,
-			Matrix4x4.Identity.values,
+			0,
 			0,
 		)
+		path2meshes.set("", [plate_mesh_id])
+		WASM.SpawnWorldMesh(plate_mesh_id, Matrix4x4.Identity.values)
 	}
 	WASM.FinishWorld()
-	return WASM.ExtractWorld()
+	const paths_data: [string, [number, Uint8Array, Uint8Array, Uint8Array, number, number][]][] = []
+	for (const [path, meshes] of path2meshes) {
+		const meshes_data: [number, Uint8Array, Uint8Array, Uint8Array, number, number][] = []
+		for (const mesh_id of meshes) {
+			const mesh_data = WASM.ExtractMeshData(mesh_id)
+			if (mesh_data !== undefined)
+				meshes_data.push(mesh_data)
+		}
+		paths_data.push([path, meshes_data])
+	}
+	return [WASM.ExtractWorldBVH(), paths_data, paths]
 })

@@ -6,12 +6,6 @@ project(wrapper)
 # Set target arch type if empty. Visual studio solution generator provides it.
 ################################################################################
 set(CMAKE_EXECUTABLE_SUFFIX "")
-set(CMAKE_GENERATOR_PLATFORM x86)
-message("${CMAKE_GENERATOR_PLATFORM} architecture in use")
-
-if(NOT ("${CMAKE_GENERATOR_PLATFORM}" STREQUAL "x86"))
-	message(FATAL_ERROR "${CMAKE_GENERATOR_PLATFORM} arch is not supported!")
-endif()
 
 ################################################################################
 # Global configuration types

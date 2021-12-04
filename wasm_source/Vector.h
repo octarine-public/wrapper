@@ -6,14 +6,6 @@ class Vector;
 
 using vec_t = float;
 
-FORCEINLINE float FastSqrt(float x) {
-	return sqrt(x);
-}
-
-FORCEINLINE float FastRSqrt(float x) {
-	return 1.f / sqrt(x);
-}
-
 class Vector {
 public:
 	// Members
@@ -153,7 +145,7 @@ public:
 		auto len_sqr = LengthSqr();
 		if (len_sqr == 0.f)
 			return 0.f;
-		return FastSqrt(len_sqr);
+		return sqrt(len_sqr);
 	}
 
 	// Get the vector's magnitude squared.
@@ -164,7 +156,7 @@ public:
 	// Get one over the vector's length
 	// via fast hardware approximation
 	FORCEINLINE vec_t LengthRecipFast() {
-		return FastRSqrt(LengthSqr());
+		return 1.f / sqrt(LengthSqr());
 	}
 
 	// return true if this vector is (0,0,0) within tolerance
@@ -234,7 +226,7 @@ public:
 	}
 
 	FORCEINLINE vec_t Length2D() const {
-		return (vec_t)FastSqrt(Length2DSqr());
+		return (vec_t)sqrt(Length2DSqr());
 	}
 
 	// Returns the squared distance between the this and another vector
@@ -250,7 +242,7 @@ public:
 
 	// Returns the distance between the this and another vector
 	FORCEINLINE vec_t Distance(const Vector& vOther) const {
-		return FastSqrt(this->DistanceSqr(vOther));
+		return sqrt(this->DistanceSqr(vOther));
 	}
 
 	// get the component of this vector parallel to some other given vector
@@ -379,7 +371,7 @@ public:
 	}
 
 	float Length() const {
-		return FastSqrt(pitch * pitch + yaw * yaw + roll * roll);
+		return sqrt(pitch * pitch + yaw * yaw + roll * roll);
 	}
 	float LengthSqr() const {
 		return (pitch * pitch + yaw * yaw + roll * roll);
@@ -475,7 +467,7 @@ public:
 		auto len_sqr = LengthSqr();
 		if (len_sqr == 0.f)
 			return 0.f;
-		return FastSqrt(len_sqr);
+		return sqrt(len_sqr);
 	}
 
 	// Get the vector's magnitude squared.
