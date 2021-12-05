@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../Decorators"
 import { GameActivity_t } from "../../Enums/GameActivity_t"
-import { pudge_meat_hook } from "../../Imports"
+import pudge_meat_hook from "../Abilities/Pudge/pudge_meat_hook"
 import Hero from "../Base/Hero"
 
 @WrapperClass("CDOTA_Unit_Hero_Pudge")
