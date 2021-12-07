@@ -71,6 +71,7 @@ declare var Particles: Particles
 declare var Renderer: Renderer
 declare var Camera: Camera
 declare const IS_MAIN_WORKER: boolean
+declare const IS_MINIMAL_CORE: boolean
 
 declare interface ConVars {
 	GetInt(convar_name: string): number
@@ -141,7 +142,6 @@ declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer 
 }): void
 declare function GetLatency(flow: number): number
 declare function GetAvgLatency(flow: number): number
-declare function ChatWheelAbuse(str: string): void
 declare function StartFindingMatch(): void
 declare function SendGCPingResponse(): void
 declare function AcceptMatch(): void
