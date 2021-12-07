@@ -31,7 +31,6 @@ export default class Header extends Base {
 	public readonly TotalSize = this.OriginalSize.Clone()
 	protected dragging = false
 	protected readonly dragging_offset = new Vector2()
-	protected readonly disable_tooltips = true
 
 	constructor(parent: IMenu) {
 		super(parent, "", "")

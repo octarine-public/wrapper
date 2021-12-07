@@ -49,7 +49,6 @@ export default class Node extends Base {
 	protected config_storage = Object.create(null)
 	protected active_element?: Base
 	protected is_open_ = false
-	protected readonly disable_tooltips = true
 	protected readonly text_offset = Node.text_offset_
 
 	constructor(parent: IMenu, name: string, private icon_path_ = "", tooltip = "") {

@@ -17,7 +17,7 @@ export default class techies_suicide extends Ability {
 }
 
 const abils = EntityManager.GetEntitiesByClass(techies_suicide)
-EventsSDK.on("Tick", () => {
+EventsSDK.on("PostDataUpdate", () => {
 	if (LocalPlayer === undefined || LocalPlayer.Hero === undefined)
 		return
 

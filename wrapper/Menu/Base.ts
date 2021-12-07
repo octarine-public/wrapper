@@ -84,7 +84,6 @@ export default class Base {
 	protected readonly name_size = new Vector3()
 
 	protected readonly execute_on_add: boolean = true
-	protected readonly disable_tooltips: boolean = false
 
 	constructor(public parent: IMenu, public readonly InternalName: string = "", public readonly InternalTooltipName: string) {
 		this.Name = this.InternalName
@@ -177,7 +176,7 @@ export default class Base {
 			else
 				RendererSDK.Image(Base.bar_inactive_path, this.Position, -1, bar_size)
 		}
-		if (!this.disable_tooltips && is_hovered)
+		if (is_hovered)
 			this.RenderTooltip()
 	}
 	public async PostRender(): Promise<void> {
