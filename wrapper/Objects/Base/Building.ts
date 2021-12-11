@@ -1,4 +1,5 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import EntityManager from "../../Managers/EntityManager"
 import Unit from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Building")
@@ -12,3 +13,4 @@ export default class Building extends Unit {
 		return 64
 	}
 }
+export const Buildings = EntityManager.GetEntitiesByClass(Building)

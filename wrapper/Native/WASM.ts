@@ -453,7 +453,7 @@ export function ParseVHCG(buf: Uint8Array): void {
 			new Vector2(WASMIOBuffer[2], WASMIOBuffer[3]),
 		)
 	} catch (e) {
-		console.log("Error in HeightMap init: " + e)
+		console.error("Error in HeightMap init", e)
 		HeightMap = undefined
 	}
 }

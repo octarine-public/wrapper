@@ -1,99 +1,96 @@
-// https://github.com/EnsageSharp/Ensage.SDK/blob/master/Helpers/Map.cs
+import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { Team } from "../Enums/Team"
-import { WorldPolygon } from "../Geometry/WorldPolygon"
-import Creep from "../Objects/Base/Creep"
-import { Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
-import readFile from "../Utils/readFile"
+import { GetPositionHeight } from "../Native/WASM"
+import { Buildings } from "../Objects/Base/Building"
+import CreepPathCorner, { CreepPathCorners } from "../Objects/Base/CreepPathCorner"
+import { Fountains } from "../Objects/Base/Fountain"
+import { MaterialFlags } from "../Resources/ParseMaterial"
+import { orderBy, orderByFirst } from "../Utils/ArrayExtensions"
 import { MapArea } from "./MapArea"
 
-export class DotaMap {
-	private static Load(name: string): Vector3[] {
-		const file = readFile(`Map/${name}.json`)
-		if (file === undefined)
-			return []
-
-		const ar: [number, number, number][] = JSON.parse(Utf8ArrayToStr(file))
-		return ar.map(([x, y, z]) => new Vector3(x, y, z))
+export default new (class DotaMap {
+	public IsRiver(pos: Vector3 | Vector2): boolean {
+		const main_height = GetPositionHeight(pos)
+		return GetPositionHeight(pos, MaterialFlags.None) > main_height
 	}
-	private static LoadPoly(name: string): WorldPolygon {
-		return new WorldPolygon(...DotaMap.Load(name))
+	public GetPathCornerNearestTeam(corner: CreepPathCorner): Team {
+		return orderByFirst(Buildings, building => corner.Distance2D(building))?.Team ?? Team.None
 	}
-	public readonly Top = DotaMap.LoadPoly("Top")
-	public readonly Middle = DotaMap.LoadPoly("Middle")
-	public readonly Bottom = DotaMap.LoadPoly("Bottom")
-	public readonly DireBase = DotaMap.LoadPoly("DireBase")
-	public readonly RadiantBase = DotaMap.LoadPoly("RadiantBase")
-	public readonly RiverTop = DotaMap.LoadPoly("RiverTop")
-	public readonly RiverMiddle = DotaMap.LoadPoly("RiverMiddle")
-	public readonly RiverBottom = DotaMap.LoadPoly("RiverBottom")
-	public readonly Roshan = DotaMap.LoadPoly("Roshan")
-	public readonly DireBottomJungle = DotaMap.LoadPoly("DireBottomJungle")
-	public readonly DireTopJungle = DotaMap.LoadPoly("DireTopJungle")
-	public readonly RadiantBottomJungle = DotaMap.LoadPoly("RadiantBottomJungle")
-	public readonly RadiantTopJungle = DotaMap.LoadPoly("RadiantTopJungle")
-
-	public readonly RadiantTopRoute = DotaMap.Load("RadiantTopRoute")
-	public readonly RadiantMiddleRoute = DotaMap.Load("RadiantMiddleRoute")
-	public readonly RadiantBottomRoute = DotaMap.Load("RadiantBottomRoute")
-	public readonly DireTopRoute = DotaMap.Load("DireTopRoute")
-	public readonly DireMiddleRoute = DotaMap.Load("DireMiddleRoute")
-	public readonly DireBottomRoute = DotaMap.Load("DireBottomRoute")
-
-	public GetLane(pos: Vector3): MapArea {
-		if (this.Top.IsInside(pos))
-			return MapArea.Top
-		if (this.Middle.IsInside(pos))
-			return MapArea.Middle
-		if (this.Bottom.IsInside(pos))
-			return MapArea.Bottom
-		if (this.RadiantBase.IsInside(pos))
-			return MapArea.RadiantBase
-		if (this.DireBase.IsInside(pos))
-			return MapArea.DireBase
-		if (this.Roshan.IsInside(pos))
-			return MapArea.RoshanPit
-		if (this.RiverTop.IsInside(pos))
-			return MapArea.RiverTop
-		if (this.RiverMiddle.IsInside(pos))
-			return MapArea.RiverMiddle
-		if (this.RiverBottom.IsInside(pos))
-			return MapArea.RiverBottom
-		if (this.DireBottomJungle.IsInside(pos))
-			return MapArea.DireBottomJungle
-		if (this.DireTopJungle.IsInside(pos))
-			return MapArea.DireTopJungle
-		if (this.RadiantBottomJungle.IsInside(pos))
-			return MapArea.RadiantBottomJungle
-		if (this.RadiantTopJungle.IsInside(pos))
-			return MapArea.RadiantTopJungle
-		return MapArea.Unknown
+	public GetMapArea(pos: Vector3 | Vector2, ignore_bases = false): [MapArea, Team] {
+		if (!ignore_bases)
+			for (const fountain of Fountains)
+				if (fountain.Distance2D(pos) < 4500)
+					return [MapArea.Base, fountain.Team]
+		// TODO: MapArea.RoshanPit
+		const nearest_corners = orderBy(
+			CreepPathCorners.filter(corner => corner.Spawner !== undefined),
+			corner => corner.Distance2D(pos),
+		)
+		if (nearest_corners.length === 0)
+			return [MapArea.Unknown, Team.None]
+		const nearest_corner = nearest_corners[0]
+		if (this.IsRiver(pos))
+			switch (nearest_corner.Spawner!.Lane) {
+				case MapArea.Top:
+					return [MapArea.RiverTop, Team.Neutral]
+				case MapArea.Middle:
+					return [MapArea.RiverMiddle, Team.Neutral]
+				case MapArea.Bottom:
+					return [MapArea.RiverBottom, Team.Neutral]
+			}
+		if (nearest_corner.Distance2D(pos) < 1550)
+			return [nearest_corner.Spawner!.Lane, this.GetPathCornerNearestTeam(nearest_corner)]
+		const corner1 = nearest_corner,
+			corner2 = nearest_corners.find(corner => corner.Spawner !== corner1.Spawner)
+		if (corner2 === undefined)
+			return [MapArea.Unknown, Team.None]
+		const lane1 = corner1.Spawner!.Lane,
+			lane2 = corner2.Spawner!.Lane,
+			team = this.GetPathCornerNearestTeam(corner1)
+		if (
+			(lane1 === MapArea.Top && lane2 === MapArea.Middle)
+			|| (lane2 === MapArea.Top && lane1 === MapArea.Middle)
+		)
+			return [MapArea.TopJungle, team]
+		if (
+			(lane1 === MapArea.Bottom && lane2 === MapArea.Middle)
+			|| (lane2 === MapArea.Bottom && lane1 === MapArea.Middle)
+		)
+			return [MapArea.BottomJungle, team]
+		if (lane1 === MapArea.Top || lane2 === MapArea.Top)
+			return [MapArea.TopJungle, team]
+		if (lane1 === MapArea.Bottom || lane2 === MapArea.Bottom)
+			return [MapArea.BottomJungle, team]
+		return [MapArea.Unknown, Team.None]
 	}
-	public GetCreepRoute(unit: Creep, lane: MapArea): Vector3[] {
-		switch (unit.Team) {
-			case Team.Dire:
-				switch (lane) {
-					case MapArea.Top:
-						return this.DireTopRoute
-					case MapArea.Middle:
-						return this.DireMiddleRoute
-					case MapArea.Bottom:
-						return this.DireBottomRoute
-
-					default: return []
-				}
-			case Team.Radiant:
-				switch (lane) {
-					case MapArea.Top:
-						return this.RadiantTopRoute
-					case MapArea.Middle:
-						return this.RadiantMiddleRoute
-					case MapArea.Bottom:
-						return this.RadiantBottomRoute
-
-					default: return []
-				}
-			default: return []
+	public GetCreepCurrentTarget(position: Vector3 | Vector2, team: Team, lane = MapArea.Unknown): Nullable<CreepPathCorner> {
+		const nearest_corner = orderByFirst(
+			CreepPathCorners.filter(corner => (
+				corner.Team === team
+				&& (lane === MapArea.Unknown || corner.Spawner?.Lane === lane)
+			)),
+			corner => corner.Distance2D(position),
+		)
+		if (
+			nearest_corner === undefined
+			|| nearest_corner.Referencing.size === 0
+		)
+			return nearest_corner?.Target
+		if (nearest_corner.Target === undefined)
+			return nearest_corner
+		const next_corner = nearest_corner.Target,
+			next_delta = Math.abs((
+				nearest_corner.Distance2D(position)
+				+ next_corner.Distance2D(position)
+			) - nearest_corner.Distance2D(next_corner))
+		for (const prev_corner of nearest_corner.Referencing) {
+			if (Math.abs((
+				nearest_corner.Distance2D(position)
+				+ prev_corner.Distance2D(position)
+			) - nearest_corner.Distance2D(prev_corner)) < next_delta)
+				return nearest_corner
 		}
+		return next_corner
 	}
-}
+})()

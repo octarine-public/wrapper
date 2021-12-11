@@ -80,7 +80,7 @@ export * as Menu from "./Menu/Imports"
 
 export { default as GUIInfo } from "./GUI/GUIInfo"
 
-export { DotaMap } from "./Helpers/DotaMap"
+export { default as DotaMap } from "./Helpers/DotaMap"
 export { MapArea } from "./Helpers/MapArea"
 export { Sleeper, GameSleeper, TickSleeper } from "./Helpers/Sleeper"
 
@@ -1432,6 +1432,7 @@ export { default as PhysicalItem } from "./Objects/Base/PhysicalItem"
 export { default as Rune } from "./Objects/Base/Rune"
 export { default as Tree } from "./Objects/Base/Tree"
 export { default as CreepPathCorner } from "./Objects/Base/CreepPathCorner"
+export { default as LaneCreepSpawner } from "./Objects/Base/LaneCreepSpawner"
 export { default as TempTree } from "./Objects/Base/TempTree"
 export { default as TechiesMines } from "./Objects/Base/TechiesMines"
 

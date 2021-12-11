@@ -6,6 +6,7 @@ import _Vector2 from "./Base/Vector2"
 import _Vector3 from "./Base/Vector3"
 import _Vector4 from "./Base/Vector4"
 import { default as _GUIInfo } from "./GUI/GUIInfo"
+import { default as _DotaMap } from "./Helpers/DotaMap"
 import _EntityManager from "./Managers/EntityManager"
 import _Events from "./Managers/Events"
 import _EventsSDK from "./Managers/EventsSDK"
@@ -31,6 +32,7 @@ globalThis.Vector2 = _Vector2
 globalThis.Vector3 = _Vector3
 globalThis.Vector4 = _Vector4
 globalThis.AABB = _AABB
+globalThis.DotaMap = _DotaMap
 
 Object.defineProperty(globalThis, "LocalPlayer", {
 	get: () => {

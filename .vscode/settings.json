@@ -3,4 +3,7 @@
     "editor.insertSpaces": false,
     "typescript.format.semicolons": "remove",
     "typescript.tsdk": "node_modules\\typescript\\lib",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.tslint": true
+    }
 }

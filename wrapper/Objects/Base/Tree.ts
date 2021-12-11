@@ -59,7 +59,7 @@ async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 			continue
 		let id = cur_local_id++
 		while (EntityManager.EntityByIndex(id, true) !== undefined)
-			id++
+			id = cur_local_id++
 		const entity = new Tree(id)
 		await entity.AsyncCreate()
 		entity.Name_ = "ent_dota_tree"
@@ -108,6 +108,6 @@ EventsSDK.after("ServerInfo", async () => {
 		if (buf !== undefined)
 			await LoadTreeMap(buf)
 	} catch (e) {
-		console.log("Error in TreeMap init: " + e)
+		console.error("Error in TreeMap init", e)
 	}
 })

@@ -65,7 +65,6 @@ export default class Unit extends Entity {
 	public readonly Inventory = new Inventory(this)
 	public readonly ModifiersBook = new ModifiersBook(this)
 
-	//public readonly DotaMap: DotaMap
 	public IsVisibleForEnemies = Unit.IsVisibleForEnemies(this)
 	public IsTrueSightedForEnemies = false
 	public HasScepterModifier = false
@@ -544,7 +543,7 @@ export default class Unit extends Entity {
 	/**
 	 * @param fromCenterToCenter include HullRadiuses (for Units)
 	 */
-	public Distance2D(vec: Vector3 | Entity, fromCenterToCenter = false): number {
+	public Distance2D(vec: Vector3 | Vector2 | Entity, fromCenterToCenter = false): number {
 		let dist = super.Distance2D(vec)
 		if (fromCenterToCenter && vec instanceof Entity)
 			dist -= this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0)
@@ -1168,6 +1167,7 @@ async function UnitNameChanged(unit: Unit) {
 }
 
 import { RegisterFieldHandler, ReplaceFieldHandler } from "wrapper/Objects/NativeToSDK"
+import Vector2 from "../../Base/Vector2"
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", async (unit, new_value) => {
 	const old_name = unit.Name
 	unit.UnitName_ = new_value >= 0 ? (await UnitData.GetUnitNameByNameIndex(new_value as number) ?? "") : ""
@@ -1220,6 +1220,7 @@ RegisterFieldHandler(Unit, "m_NetworkActivity", async (unit, new_value) => {
 		await EventsSDK.emit("NetworkActivityChanged", false, unit)
 })
 RegisterFieldHandler(Unit, "m_hAbilities", async (unit, new_value) => {
+	const prevSpells = [...unit.Spells]
 	const ar = new_value as number[]
 	for (let i = 0; i < ar.length; i++) {
 		unit.Spells_[i] = ar[i] & 0x3FFF
@@ -1230,9 +1231,11 @@ RegisterFieldHandler(Unit, "m_hAbilities", async (unit, new_value) => {
 		unit.Spells_[i] = 0
 		unit.Spells[i] = undefined
 	}
-	await EventsSDK.emit("UnitAbilitiesChanged", false, unit)
+	if (unit.Spells.some((abil, i) => prevSpells[i] !== abil))
+		await EventsSDK.emit("UnitAbilitiesChanged", false, unit)
 })
 RegisterFieldHandler(Unit, "m_hItems", async (unit, new_value) => {
+	const prevTotalItems = [...unit.TotalItems]
 	const ar = new_value as number[]
 	for (let i = 0; i < ar.length; i++) {
 		unit.TotalItems_[i] = ar[i] & 0x3FFF
@@ -1243,7 +1246,8 @@ RegisterFieldHandler(Unit, "m_hItems", async (unit, new_value) => {
 		unit.TotalItems_[i] = 0
 		unit.TotalItems[i] = undefined
 	}
-	await EventsSDK.emit("UnitItemsChanged", false, unit)
+	if (unit.TotalItems.some((item, i) => prevTotalItems[i] !== item))
+		await EventsSDK.emit("UnitItemsChanged", false, unit)
 })
 RegisterFieldHandler(Unit, "m_anglediff", (unit, new_value) => {
 	unit.NetworkedAngles.SubtractScalarY(unit.RotationDifference)
