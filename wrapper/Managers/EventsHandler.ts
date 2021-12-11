@@ -565,9 +565,9 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			switch (msg.get("type") as PARTICLE_MESSAGE) {
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE: {
 					const submsg = msg.get("create_particle") as RecursiveProtobuf
-					const particleSystemHandle = submsg.get("particle_name_index") as bigint
-					const ent = EntityManager.EntityByIndex(submsg.get("entity_handle") as number),
-						path = Manifest.GetPathByHash(particleSystemHandle ?? 0n)
+					const particleSystemHandle = submsg.get("particle_name_index") as bigint,
+						entID = submsg.get("entity_handle") as number
+					const path = Manifest.GetPathByHash(particleSystemHandle ?? 0n)
 					if (path === undefined)
 						break
 					await EventsSDK.emit(
@@ -576,7 +576,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 						path,
 						particleSystemHandle,
 						submsg.get("attach_type") as number,
-						ent,
+						EntityManager.EntityByIndex(entID) ?? entID,
 					)
 					break
 				}
@@ -607,12 +607,12 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 				// }
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENT: {
 					const submsg = msg.get("update_particle_ent") as RecursiveProtobuf
-					const ent = EntityManager.EntityByIndex(submsg.get("entity_handle") as number)
+					const entID = submsg.get("entity_handle") as number
 					await EventsSDK.emit(
 						"ParticleUpdatedEnt", false,
 						index,
 						submsg.get("control_point") as number,
-						ent,
+						EntityManager.EntityByIndex(entID) ?? entID,
 						submsg.get("attach_type") as number,
 						submsg.get("attachment") as number,
 						CMsgVectorToVector3(submsg.get("fallback_position") as RecursiveProtobuf),
