@@ -5,7 +5,7 @@ import Entity from "../Objects/Base/Entity"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import { arrayRemove } from "../Utils/ArrayExtensions"
 import GameState from "../Utils/GameState"
-import { CMsgVector2DToVector2, CMsgVectorToVector3, NumberToColor, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf, ServerHandleToIndex } from "../Utils/Protobuf"
+import { CMsgVector2DToVector2, CMsgVectorToVector3, NumberToColor, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
 import EntityManager from "./EntityManager"
 import Events from "./Events"
 import EventsSDK from "./EventsSDK"
@@ -208,7 +208,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_DodgeTrackingProjectiles")
 			const handle = msg.get("entindex") as number
 			const ent = EntityManager.EntityByIndex(handle)
-			await EventsSDK.emit("TrackingProjectilesDodged", false, ent ?? ServerHandleToIndex(handle))
+			await EventsSDK.emit("TrackingProjectilesDodged", false, ent ?? handle)
 			if (ent === undefined)
 				break
 			const attacks_only = msg.get("attacks_only") as boolean

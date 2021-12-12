@@ -11,7 +11,7 @@ export default class TempTree extends Entity {
 	public BinaryID: number
 
 	constructor(index: number) {
-		super(index)
+		super(index, 0)
 		this.BinaryID = TempTreeIDOffset + index
 		this.ModelName = "models/props_tree/tree_oak_00.vmdl"
 		this.OnModelUpdated()

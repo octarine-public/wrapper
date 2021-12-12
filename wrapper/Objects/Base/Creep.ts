@@ -1,7 +1,7 @@
 import Vector3 from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
+import { MapArea } from "../../Enums/MapArea"
 import DotaMap from "../../Helpers/DotaMap"
-import { MapArea } from "../../Helpers/MapArea"
 import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../Native/WASM"

@@ -55,6 +55,7 @@ export { DOTAHullSize } from "./Enums/DOTAHullSize"
 export { DOTAScriptInventorySlot_t } from "./Enums/DOTAScriptInventorySlot_t"
 export { DOTAUnitAttackCapability_t } from "./Enums/DOTAUnitAttackCapability_t"
 export { DOTAUnitMoveCapability_t } from "./Enums/DOTAUnitMoveCapability_t"
+export { MapArea } from "./Enums/MapArea"
 
 export * as Protobuf from "./Utils/Protobuf"
 export * as ArrayExtensions from "./Utils/ArrayExtensions"
@@ -81,7 +82,6 @@ export * as Menu from "./Menu/Imports"
 export { default as GUIInfo } from "./GUI/GUIInfo"
 
 export { default as DotaMap } from "./Helpers/DotaMap"
-export { MapArea } from "./Helpers/MapArea"
 export { Sleeper, GameSleeper, TickSleeper } from "./Helpers/Sleeper"
 
 export { default as Particle } from "./Base/Particle"

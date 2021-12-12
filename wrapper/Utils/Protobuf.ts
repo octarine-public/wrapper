@@ -478,12 +478,3 @@ export function NumberToColor(num: Nullable<number>): Color {
 		return new Color()
 	return new Color((num >> 24) & 0xFF, (num >> 16) & 0xFF, (num >> 8) & 0xFF, num & 0xFF)
 }
-
-export function ServerHandleToIndex(handle: Nullable<number>): number {
-	if (handle === undefined)
-		return -1
-	handle &= 0x3FFF
-	if (handle === 0x3FFF || handle === 0)
-		return -1
-	return handle
-}

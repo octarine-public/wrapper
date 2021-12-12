@@ -1223,7 +1223,7 @@ RegisterFieldHandler(Unit, "m_hAbilities", async (unit, new_value) => {
 	const prevSpells = [...unit.Spells]
 	const ar = new_value as number[]
 	for (let i = 0; i < ar.length; i++) {
-		unit.Spells_[i] = ar[i] & 0x3FFF
+		unit.Spells_[i] = ar[i]
 		const ent = EntityManager.EntityByIndex(ar[i])
 		unit.Spells[i] = ent instanceof Ability ? ent : undefined
 	}
@@ -1238,7 +1238,7 @@ RegisterFieldHandler(Unit, "m_hItems", async (unit, new_value) => {
 	const prevTotalItems = [...unit.TotalItems]
 	const ar = new_value as number[]
 	for (let i = 0; i < ar.length; i++) {
-		unit.TotalItems_[i] = ar[i] & 0x3FFF
+		unit.TotalItems_[i] = ar[i]
 		const ent = EntityManager.EntityByIndex(ar[i])
 		unit.TotalItems[i] = ent instanceof Item ? ent : undefined
 	}
@@ -1255,7 +1255,7 @@ RegisterFieldHandler(Unit, "m_anglediff", (unit, new_value) => {
 	unit.NetworkedAngles.AddScalarY(unit.RotationDifference)
 })
 RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, new_value) => {
-	unit.Spawner_ = (new_value as number) & 0x3FFF
+	unit.Spawner_ = new_value as number
 	const ent = EntityManager.EntityByIndex(unit.Spawner_)
 	if (ent instanceof NeutralSpawner)
 		unit.Spawner = ent
@@ -1266,7 +1266,7 @@ EventsSDK.on("PreEntityCreated", async ent => {
 		ent.SpawnPosition.CopyFrom(ent.Position)
 	if (ent instanceof NeutralSpawner)
 		for (const unit of Units)
-			if (unit.Spawner_ === ent.Index)
+			if (ent.HandleMatches(unit.Spawner_))
 				unit.Spawner = ent
 
 	const owner = ent.Owner
@@ -1274,14 +1274,14 @@ EventsSDK.on("PreEntityCreated", async ent => {
 		return
 	if (ent instanceof Item) {
 		for (let i = 0, end = owner.TotalItems_.length; i < end; i++)
-			if (owner.TotalItems_[i] === ent.Index) {
+			if (ent.HandleMatches(owner.TotalItems_[i])) {
 				owner.TotalItems[i] = ent
 				await EventsSDK.emit("UnitItemsChanged", false, owner)
 				break
 			}
 	} else if (ent instanceof Ability) {
 		for (let i = 0, end = owner.Spells_.length; i < end; i++)
-			if (owner.Spells_[i] === ent.Index) {
+			if (ent.HandleMatches(owner.Spells_[i])) {
 				owner.Spells[i] = ent
 				await EventsSDK.emit("UnitAbilitiesChanged", false, owner)
 				break
@@ -1295,14 +1295,14 @@ EventsSDK.on("EntityDestroyed", async ent => {
 		return
 	if (ent instanceof Item) {
 		for (let i = 0, end = owner.TotalItems_.length; i < end; i++)
-			if (owner.TotalItems_[i] === ent.Index) {
+			if (ent.HandleMatches(owner.TotalItems_[i])) {
 				owner.TotalItems[i] = undefined
 				await EventsSDK.emit("UnitItemsChanged", false, owner)
 				break
 			}
 	} else if (ent instanceof Ability) {
 		for (let i = 0, end = owner.Spells_.length; i < end; i++)
-			if (owner.Spells_[i] === ent.Index) {
+			if (ent.HandleMatches(owner.Spells_[i])) {
 				owner.Spells[i] = undefined
 				await EventsSDK.emit("UnitAbilitiesChanged", false, owner)
 				break

@@ -43,17 +43,24 @@ class bitset {
 export type EntityPropertyType = EntityPropertiesNode | EntityPropertyType[] | string | Vector4 | Vector3 | Vector2 | bigint | number | boolean
 const TreeActiveMask = new bitset(0x4000)
 class CEntityManager {
+	public readonly INDEX_BITS = 14
+	public readonly INDEX_MASK = (1 << this.INDEX_BITS) - 1
+	public readonly SERIAL_BITS = 17
+	public readonly SERIAL_MASK = (1 << this.SERIAL_BITS) - 1
 	public get AllEntities(): Entity[] {
 		return AllEntities
 	}
 	public EntityByIndex(handle: Nullable<number>, include_local = false): Nullable<Entity> {
-		const mask = include_local ? 0x7FFF : 0x3FFF
-		if (handle === undefined || handle === 0)
+		if (handle === 0 || handle === undefined)
 			return undefined
-		const index = handle & mask
-		if (index === mask || index === 0)
+		const index = handle & this.INDEX_MASK,
+			serial = (handle >> this.INDEX_BITS) & this.SERIAL_MASK
+		if (!include_local && (index >> (this.INDEX_BITS - 1)) === 1)
 			return undefined
-		return AllEntitiesAsMap.get(index)
+		const ent = AllEntitiesAsMap.get(index)
+		return ent?.SerialMatches(serial)
+			? ent
+			: undefined
 	}
 
 	public GetEntitiesByClass<T>(class_: Constructor<T>): T[] {
@@ -73,18 +80,23 @@ class CEntityManager {
 const EntityManager = new CEntityManager()
 export default EntityManager
 
-function ClassFromNative(id: number, constructor_name: string, ent_name: Nullable<string>): Entity {
+function ClassFromNative(
+	id: number,
+	serial: number,
+	constructor_name: string,
+	ent_name: Nullable<string>,
+): Entity {
 	let constructor = GetConstructorByName(constructor_name, ent_name)
 	if (constructor === undefined) {
 		console.error(`Can't find constructor for entity class ${constructor_name}, Entity#Name === ${ent_name}`)
 		constructor = Entity
 	}
 
-	return new constructor(id, ent_name)
+	return new constructor(id, serial, ent_name)
 }
 
-export function CreateEntityInternal(ent: Entity, id = ent.Index): void {
-	AllEntitiesAsMap.set(id, ent)
+export function CreateEntityInternal(ent: Entity): void {
+	AllEntitiesAsMap.set(ent.Index, ent)
 	AllEntities.push(ent)
 	for (const [class_, class_entities] of SDKClasses)
 		if (ent instanceof class_)
@@ -93,14 +105,15 @@ export function CreateEntityInternal(ent: Entity, id = ent.Index): void {
 
 async function CreateEntity(
 	id: number,
+	serial: number,
 	class_name: string,
 	entity_name: Nullable<string>,
 ): Promise<Entity> {
-	const entity = ClassFromNative(id, class_name, entity_name)
+	const entity = ClassFromNative(id, serial, class_name, entity_name)
 	entity.FieldHandlers_ = cached_field_handlers.get(entity.constructor as Constructor<Entity>)
 	await entity.AsyncCreate()
 	entity.ClassName = class_name
-	CreateEntityInternal(entity, id)
+	CreateEntityInternal(entity)
 	return entity
 }
 
@@ -244,6 +257,7 @@ async function ParseEntityUpdate(
 	created_entities: Entity[],
 	is_create = false,
 ): Promise<void> {
+	const ent_serial = is_create ? stream.ReadUint32() : 0
 	const m_nameStringableIndex = is_create ? stream.ReadInt32() : -1
 	const ent_class = entities_symbols[stream.ReadUint16()]
 	let ent_was_created = false
@@ -251,6 +265,7 @@ async function ParseEntityUpdate(
 	if (ent === undefined && is_create) {
 		ent = await CreateEntity(
 			ent_id,
+			ent_serial,
 			ent_class,
 			StringTables.GetString("EntityNames", m_nameStringableIndex),
 		)

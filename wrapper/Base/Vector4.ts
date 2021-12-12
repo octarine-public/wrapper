@@ -71,12 +71,6 @@ export default class Vector4 {
 	}
 
 	/**
-	 * @return x y z w
-	 */
-	public toString(): string {
-		return `${this.x} ${this.y} ${this.z} ${this.w})`
-	}
-	/**
 	 * @return [x, y, z, w]
 	 */
 	public toArray(): [number, number, number, number] {

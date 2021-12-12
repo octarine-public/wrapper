@@ -838,12 +838,6 @@ export default class Vector3 {
 	}
 
 	/**
-	 * @return x y z
-	 */
-	public toString(): string {
-		return `${this.x} ${this.y} ${this.z}`
-	}
-	/**
 	 * @return [x, y, z]
 	 */
 	public toArray(): [number, number, number] {

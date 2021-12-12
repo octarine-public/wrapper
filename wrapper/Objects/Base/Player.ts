@@ -48,7 +48,7 @@ const Players = EntityManager.GetEntitiesByClass(Player)
 
 import { RegisterFieldHandler } from "../NativeToSDK"
 RegisterFieldHandler(Player, "m_hAssignedHero", (player, new_value) => {
-	player.Hero_ = (new_value as number) & 0x3FFF
+	player.Hero_ = new_value as number
 	const ent = EntityManager.EntityByIndex(player.Hero_)
 	player.Hero = ent instanceof Hero ? ent : undefined
 })
@@ -57,7 +57,7 @@ EventsSDK.on("PreEntityCreated", ent => {
 	if (!(ent instanceof Hero) || !ent.CanBeMainHero)
 		return
 	for (const player of Players)
-		if (ent.Index === player.Hero_)
+		if (ent.HandleMatches(player.Hero_))
 			player.Hero = ent
 })
 
@@ -65,6 +65,6 @@ EventsSDK.on("EntityDestroyed", ent => {
 	if (!(ent instanceof Hero))
 		return
 	for (const player of Players)
-		if (player.Hero === ent)
+		if (ent.HandleMatches(player.Hero_))
 			player.Hero = undefined
 })

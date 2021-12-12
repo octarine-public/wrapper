@@ -55,8 +55,8 @@ export default class Ability extends Entity {
 	@NetworkedBasicField("m_iDirtyButtons")
 	public DirtyButtons = 0
 
-	constructor(Index: number, name: string) {
-		super(Index)
+	constructor(Index: number, Serial: number, name: string) {
+		super(Index, Serial)
 		this.Name_ = name
 	}
 

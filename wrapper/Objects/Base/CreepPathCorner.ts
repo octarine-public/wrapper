@@ -2,9 +2,9 @@ import Color from "../../Base/Color"
 import QAngle from "../../Base/QAngle"
 import Vector3 from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
+import { MapArea } from "../../Enums/MapArea"
 import { RenderMode_t } from "../../Enums/RenderMode_t"
 import { Team } from "../../Enums/Team"
-import { MapArea } from "../../Helpers/MapArea"
 import EntityManager, { CreateEntityInternal, DeleteEntity } from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../Native/WASM"
@@ -56,7 +56,7 @@ async function LoadCreepSpawnersAndPathCorners(): Promise<void> {
 		let id = cur_local_id++
 		while (EntityManager.EntityByIndex(id, true) !== undefined)
 			id = cur_local_id++
-		const entity = new CreepPathCorner(id)
+		const entity = new CreepPathCorner(id, 0)
 		await entity.AsyncCreate()
 		if (typeof target === "string")
 			ent2target.set(entity, target)
@@ -122,7 +122,7 @@ async function LoadCreepSpawnersAndPathCorners(): Promise<void> {
 		let id = cur_local_id++
 		while (EntityManager.EntityByIndex(id, true) !== undefined)
 			id = cur_local_id++
-		const entity = new LaneCreepSpawner(id)
+		const entity = new LaneCreepSpawner(id, 0)
 		await entity.AsyncCreate()
 		entity.Name_ = "npc_dota_spawner"
 		entity.Team = team

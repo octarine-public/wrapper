@@ -115,14 +115,6 @@ export default class Color {
 	}
 
 	/**
-	 * Color to String Color
-	 * @return Color(r,g,b,a)
-	 */
-	public toString(): string {
-		return "Color(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")"
-	}
-
-	/**
 	 * @return [r, g, b, a]
 	 */
 	public toArray(): [number, number, number, number] {

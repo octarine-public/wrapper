@@ -189,29 +189,4 @@ export default class Modifier {
 			: undefined
 		this.DDAbilityName = DDAbilityName ?? "ability_base"
 	}
-	public toString(): string {
-		return this.Name
-	}
-	public toJSON() {
-		return {
-			IsValid: this.IsValid,
-			Index: this.Index,
-			SerialNumber: this.SerialNumber,
-			AbilityLevel: this.AbilityLevel,
-			IsAura: this.IsAura,
-			CreationTime: this.CreationTime,
-			DieTime: this.DieTime,
-			Duration: this.Duration,
-			ElapsedTime: this.ElapsedTime,
-			Parent: this.Parent?.Index,
-			Ability: this.Ability?.Index,
-			Caster: this.Caster?.Index,
-			AuraOwner: this.AuraOwner?.Index,
-			RemainingTime: this.RemainingTime,
-			StackCount: this.StackCount,
-			Name: this.Name,
-			vStart: this.vStart.toJSON(),
-			vEnd: this.vEnd.toJSON(),
-		}
-	}
 }

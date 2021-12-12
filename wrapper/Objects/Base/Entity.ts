@@ -109,7 +109,10 @@ export default class Entity {
 	private CustomDrawColor_: Nullable<[Color, RenderMode_t]>
 	private RingRadius_ = 30
 
-	constructor(public readonly Index: number) { }
+	constructor(
+		public readonly Index: number,
+		private readonly Serial: number,
+	) { }
 
 	public get CustomGlowColor(): Nullable<Color> {
 		return this.CustomGlowColor_
@@ -222,6 +225,14 @@ export default class Entity {
 
 	public async AsyncCreate(): Promise<void> {
 		// TBD in child classes
+	}
+	public SerialMatches(serial: number): boolean {
+		return serial === 0 || this.Serial === 0 || serial === this.Serial
+	}
+	public HandleMatches(handle: number): boolean {
+		const index = handle & EntityManager.INDEX_MASK
+		const serial = (handle >> EntityManager.INDEX_BITS) & EntityManager.SERIAL_MASK
+		return this.Index === index && this.SerialMatches(serial)
 	}
 	public Distance(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
@@ -455,14 +466,14 @@ RegisterFieldHandler(Entity, "m_nameStringableIndex", async (ent, new_val) => {
 })
 
 RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, new_val) => {
-	ent.Owner_ = (new_val as number) & 0x3FFF
+	ent.Owner_ = new_val as number
 	ent.OwnerEntity = EntityManager.EntityByIndex(ent.Owner_)
 })
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent.Index === 0)
 		return
 	EntityManager.AllEntities.forEach(iter => {
-		if (iter.Owner_ === ent.Index)
+		if (ent.HandleMatches(iter.Owner_))
 			iter.OwnerEntity = ent
 	})
 })
@@ -470,7 +481,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 	if (ent.Index === 0)
 		return
 	EntityManager.AllEntities.forEach(iter => {
-		if (iter.Owner_ === ent.Index)
+		if (ent.HandleMatches(iter.Owner_))
 			iter.OwnerEntity = undefined
 	})
 })

@@ -35,15 +35,13 @@ export default class Hero extends Unit {
 	public TotalIntellect = 0
 	@NetworkedBasicField("m_flStrengthTotal")
 	public TotalStrength = 0
-	public m_hReplicatingOtherHeroModel = 0x3FFF
+	public m_hReplicatingOtherHeroModel = 0
 
 	public get IsHero(): boolean {
 		return true
 	}
 	public get ReplicatingOtherHeroModel_(): Entity | number {
 		const id = this.m_hReplicatingOtherHeroModel
-		if (id === 0x3FFF)
-			return 0
 		return EntityManager.EntityByIndex(id) ?? id
 	}
 	public get HeroID(): number {
@@ -64,5 +62,8 @@ export const Heroes = EntityManager.GetEntitiesByClass(Hero)
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", (ent, new_val) => {
-	ent.m_hReplicatingOtherHeroModel = (new_val as number) & 0x3FFF
+	const id = new_val as number
+	ent.m_hReplicatingOtherHeroModel = (id & EntityManager.INDEX_MASK) !== EntityManager.INDEX_MASK
+		? id
+		: 0
 })

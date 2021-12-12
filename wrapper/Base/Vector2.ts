@@ -741,12 +741,6 @@ export default class Vector2 {
 	}
 
 	/**
-	 * @return x y
-	 */
-	public toString(): string {
-		return `${this.x} ${this.y}`
-	}
-	/**
 	 * @return [x, y, z]
 	 */
 	public toArray(): [number, number] {

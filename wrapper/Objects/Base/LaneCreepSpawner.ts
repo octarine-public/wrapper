@@ -1,7 +1,7 @@
 import Color from "../../Base/Color"
 import { WrapperClass } from "../../Decorators"
+import { MapArea } from "../../Enums/MapArea"
 import { RenderMode_t } from "../../Enums/RenderMode_t"
-import { MapArea } from "../../Helpers/MapArea"
 import CreepPathCorner from "./CreepPathCorner"
 import Entity from "./Entity"
 

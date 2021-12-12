@@ -60,7 +60,7 @@ async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 		let id = cur_local_id++
 		while (EntityManager.EntityByIndex(id, true) !== undefined)
 			id = cur_local_id++
-		const entity = new Tree(id)
+		const entity = new Tree(id, 0)
 		await entity.AsyncCreate()
 		entity.Name_ = "ent_dota_tree"
 		entity.ClassName = "C_DOTA_MapTree"

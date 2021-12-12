@@ -17,7 +17,7 @@ import { GetMapNumberProperty, GetMapStringProperty, MapToMatrix4x4, MapToNumber
 import BinaryStream from "../Utils/BinaryStream"
 import { HasBit } from "../Utils/BitsExtensions"
 import GameState from "../Utils/GameState"
-import { CMsgVectorToVector3, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf, ServerHandleToIndex } from "../Utils/Protobuf"
+import { CMsgVectorToVector3, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
 import { createMapFromMergedIterators } from "../Utils/Utils"
 import * as VBKV from "../Utils/VBKV"
 import EntityManager from "./EntityManager"
@@ -710,7 +710,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 				seed = (msg.get("seed") as number) ?? 0,
 				start_time = (msg.get("start_time") as number) ?? -1,
 				packed_params = msg.get("packed_params") as Nullable<Uint8Array>
-			const ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? ServerHandleToIndex(handle),
+			const ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? handle,
 				position = new Vector3()
 			if (packed_params !== undefined && packed_params.byteLength >= 19) {
 				const stream = new BinaryStream(new DataView(
@@ -736,7 +736,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 		case 488: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_UnitEvent")
 			const handle = msg.get("entity_index") as number
-			const ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? ServerHandleToIndex(handle)
+			const ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? handle
 			if (ent instanceof Entity && !(ent instanceof Unit))
 				break
 			switch (msg.get("msg_type") as EDotaEntityMessages) {

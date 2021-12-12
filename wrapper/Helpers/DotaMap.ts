@@ -1,5 +1,6 @@
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
+import { MapArea } from "../Enums/MapArea"
 import { Team } from "../Enums/Team"
 import { GetPositionHeight } from "../Native/WASM"
 import { Buildings } from "../Objects/Base/Building"
@@ -7,7 +8,6 @@ import CreepPathCorner, { CreepPathCorners } from "../Objects/Base/CreepPathCorn
 import { Fountains } from "../Objects/Base/Fountain"
 import { MaterialFlags } from "../Resources/ParseMaterial"
 import { orderBy, orderByFirst } from "../Utils/ArrayExtensions"
-import { MapArea } from "./MapArea"
 
 export default new (class DotaMap {
 	public IsRiver(pos: Vector3 | Vector2): boolean {
