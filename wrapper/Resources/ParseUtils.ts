@@ -64,7 +64,7 @@ export function MapToVector4Array(map: RecursiveMap | RecursiveMapValue[]): Vect
 	return ar
 }
 
-export function GetMapNumberProperty(map: RecursiveMap, key: string): number {
+export function GetMapNumberProperty(map: RecursiveMap, key: string, default_value = 0): number {
 	let value = map.get(key)
 	if (typeof value === "bigint")
 		value = Number(value)
@@ -72,7 +72,7 @@ export function GetMapNumberProperty(map: RecursiveMap, key: string): number {
 		value = parseFloat(value)
 	return typeof value === "number"
 		? value
-		: 0
+		: default_value
 }
 
 export function GetMapStringProperty(map: RecursiveMap, key: string): string {

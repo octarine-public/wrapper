@@ -12,14 +12,14 @@ export default class spirit_breaker_charge_of_darkness extends Ability {
 	public CurrentProjectile: Nullable<TrackingProjectile>
 }
 
-EventsSDK.on("ParticleCreated", (id, path, _particleSystemHandle, _attach, target) => {
+EventsSDK.on("ParticleCreated", par => {
 	if (
-		path !== "particles/units/heroes/hero_spirit_breaker/spirit_breaker_charge_start.vpcf"
-		|| !(target instanceof Unit)
+		par.Path !== "particles/units/heroes/hero_spirit_breaker/spirit_breaker_charge_start.vpcf"
+		|| !(par.AttachedTo instanceof Unit)
 	)
 		return
 
-	const abil = target.GetAbilityByClass(spirit_breaker_charge_of_darkness)
+	const abil = par.AttachedTo.GetAbilityByClass(spirit_breaker_charge_of_darkness)
 	if (abil === undefined)
 		return
 

@@ -1,4 +1,5 @@
 import Matrix4x4 from "../Base/Matrix4x4"
+import NetworkedParticle from "../Base/NetworkedParticle"
 import Vector3 from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { Team } from "../Enums/Team"
@@ -47,6 +48,9 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_SET_CONTROL_POINT_MODEL = 18,
 	GAME_PARTICLE_MANAGER_EVENT_SET_CONTROL_POINT_SNAPSHOT = 19,
 	GAME_PARTICLE_MANAGER_EVENT_SET_TEXTURE_ATTRIBUTE = 20,
+	GAME_PARTICLE_MANAGER_EVENT_SET_SCENE_OBJECT_GENERIC_FLAG = 21,
+	GAME_PARTICLE_MANAGER_EVENT_SET_SCENE_OBJECT_TINT_AND_DESAT = 22,
+	GAME_PARTICLE_MANAGER_EVENT_DESTROY_NAMED = 23,
 }
 enum EDotaEntityMessages {
 	DOTA_UNIT_SPEECH = 0,
@@ -131,6 +135,9 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_SET_CONTROL_POINT_MODEL = 18;
 	GAME_PARTICLE_MANAGER_EVENT_SET_CONTROL_POINT_SNAPSHOT = 19;
 	GAME_PARTICLE_MANAGER_EVENT_SET_TEXTURE_ATTRIBUTE = 20;
+	GAME_PARTICLE_MANAGER_EVENT_SET_SCENE_OBJECT_GENERIC_FLAG = 21;
+	GAME_PARTICLE_MANAGER_EVENT_SET_SCENE_OBJECT_TINT_AND_DESAT = 22;
+	GAME_PARTICLE_MANAGER_EVENT_DESTROY_NAMED = 23;
 }
 
 enum DOTA_CHAT_MESSAGE {
@@ -250,6 +257,7 @@ message CUserMsg_ParticleManager {
 		optional int32 entity_handle_for_modifiers = 4;
 		optional bool apply_voice_ban_rules = 5;
 		optional int32 team_behavior = 6;
+		optional string control_point_configuration = 7;
 	}
 
 	message DestroyParticle {
@@ -259,6 +267,13 @@ message CUserMsg_ParticleManager {
 	message DestroyParticleInvolving {
 		optional bool destroy_immediately = 1;
 		optional int32 entity_handle = 3;
+	}
+
+	message DestroyParticleNamed {
+		optional fixed64 particle_name_index = 1;
+		optional int32 entity_handle = 2;
+		optional bool destroy_immediately = 3;
+		optional bool play_endcap = 4;
 	}
 
 	message UpdateParticle {
@@ -274,7 +289,7 @@ message CUserMsg_ParticleManager {
 	message UpdateParticleOrient {
 		optional int32 control_point = 1;
 		optional .CMsgVector forward = 2;
-		optional .CMsgVector right = 3 [deprecated = true];
+		optional .CMsgVector deprecated_right = 3;
 		optional .CMsgVector up = 4;
 		optional .CMsgVector left = 5;
 	}
@@ -347,6 +362,15 @@ message CUserMsg_ParticleManager {
 		optional string texture_name = 2;
 	}
 
+	message SetSceneObjectGenericFlag {
+		optional bool flag_value = 1;
+	}
+
+	message SetSceneObjectTintAndDesat {
+		optional fixed32 tint = 1;
+		optional float desat = 2;
+	}
+
 	required .PARTICLE_MESSAGE type = 1 [default = GAME_PARTICLE_MANAGER_EVENT_CREATE];
 	required uint32 index = 2;
 	optional .CUserMsg_ParticleManager.ReleaseParticleIndex release_particle_index = 3;
@@ -369,6 +393,9 @@ message CUserMsg_ParticleManager {
 	optional .CUserMsg_ParticleManager.SetControlPointModel set_control_point_model = 21;
 	optional .CUserMsg_ParticleManager.SetControlPointSnapshot set_control_point_snapshot = 22;
 	optional .CUserMsg_ParticleManager.SetTextureAttribute set_texture_attribute = 23;
+	optional .CUserMsg_ParticleManager.SetSceneObjectGenericFlag set_scene_object_generic_flag = 24;
+	optional .CUserMsg_ParticleManager.SetSceneObjectTintAndDesat set_scene_object_tint_and_desat = 25;
+	optional .CUserMsg_ParticleManager.DestroyParticleNamed destroy_particle_named = 26;
 }
 
 enum EDotaEntityMessages {
@@ -527,6 +554,238 @@ message CUserMsg_CustomGameEvent {
 }
 `)
 
+async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
+	const index = msg.get("index") as number
+	const par = NetworkedParticle.Instances.get(index)
+	const msg_type = msg.get("type") as PARTICLE_MESSAGE
+	if (par === undefined) {
+		if (msg_type === PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE) {
+			const submsg = msg.get("create_particle") as RecursiveProtobuf
+			const particleSystemHandle = submsg.get("particle_name_index") as bigint,
+				entID = submsg.get("entity_handle") as number
+			const path = Manifest.GetPathByHash(particleSystemHandle ?? 0n)
+			if (path !== undefined)
+				await EventsSDK.emit(
+					"ParticleCreated",
+					false,
+					new NetworkedParticle(
+						index,
+						path,
+						particleSystemHandle,
+						submsg.get("attach_type") as number,
+						EntityManager.EntityByIndex(entID) ?? entID,
+					),
+				)
+			else
+				console.log(
+					GameState.RawGameTime,
+					`Received unknown particleSystemHandle ${particleSystemHandle} for particle ${index}`,
+				)
+		}
+		return
+	}
+	switch (msg_type) {
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY: {
+			const submsg = msg.get("destroy_particle") as RecursiveProtobuf
+			const destroy_immediately = submsg.get("destroy_immediately") as boolean
+			if (destroy_immediately || par.EndTime === -1)
+				await par.Destroy()
+			else
+				par.Released = true
+			return
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY_INVOLVING: {
+			const submsg = msg.get("destroy_particle_involving") as RecursiveProtobuf
+			const destroy_immediately = submsg.get("destroy_immediately") as boolean
+			// TODO: entity_handle?
+			if (destroy_immediately || par.EndTime === -1)
+				await par.Destroy()
+			else
+				par.Released = true
+			return
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_RELEASE: {
+			if (par.EndTime === -1)
+				await par.Destroy()
+			else
+				par.Released = true
+			return
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE: {
+			const submsg = msg.get("update_particle") as RecursiveProtobuf
+			par.ControlPoints.set(
+				submsg.get("control_point") as number,
+				CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf),
+			)
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_FORWARD: {
+			const submsg = msg.get("update_particle_fwd") as RecursiveProtobuf
+			par.ControlPointsForward.set(
+				submsg.get("control_point") as number,
+				CMsgVectorToVector3(submsg.get("forward") as RecursiveProtobuf),
+			)
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ORIENTATION: {
+			const submsg = msg.get("update_particle_orient") as RecursiveProtobuf
+			par.ControlPointsOrient.set(
+				submsg.get("control_point") as number,
+				[
+					CMsgVectorToVector3(submsg.get("forward") as RecursiveProtobuf),
+					CMsgVectorToVector3(submsg.get("up") as RecursiveProtobuf),
+					CMsgVectorToVector3(submsg.get("left") as RecursiveProtobuf),
+				],
+			)
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_FALLBACK: {
+			const submsg = msg.get("update_particle_fallback") as RecursiveProtobuf,
+				cp = submsg.get("control_point") as number,
+				position = CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf)
+			par.ControlPointsFallback.set(cp, position)
+			const cpEnt = par.ControlPointsEnt.get(cp)
+			if (cpEnt !== undefined && cpEnt[0] instanceof Unit) {
+				cpEnt[0].LastRealPredictedPositionUpdate = GameState.RawGameTime
+				cpEnt[0].LastPredictedPositionUpdate = GameState.RawGameTime
+				cpEnt[0].PredictedPosition.CopyFrom(position)
+			}
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENT: {
+			const submsg = msg.get("update_particle_ent") as RecursiveProtobuf
+			const entID = submsg.get("entity_handle") as number,
+				cp = submsg.get("control_point") as number,
+				position = CMsgVectorToVector3(submsg.get("fallback_position") as RecursiveProtobuf)
+			const ent = EntityManager.EntityByIndex(entID) ?? entID
+			par.ControlPointsEnt.set(
+				cp,
+				[
+					ent,
+					submsg.get("attach_type") as number,
+					submsg.get("attachment") as number,
+					submsg.get("include_wearables") as boolean,
+				],
+			)
+			par.ControlPointsFallback.set(cp, position)
+			if (ent instanceof Unit) {
+				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
+				ent.LastPredictedPositionUpdate = GameState.RawGameTime
+				ent.PredictedPosition.CopyFrom(position)
+			}
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_OFFSET: {
+			const submsg = msg.get("update_particle_offset") as RecursiveProtobuf
+			par.ControlPointsOffset.set(
+				(submsg.get("control_point") as number) ?? 0,
+				[
+					CMsgVectorToVector3(submsg.get("origin_offset") as RecursiveProtobuf),
+					CMsgVectorToVector3(submsg.get("angle_offset") as RecursiveProtobuf),
+				],
+			)
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SHOULD_DRAW: {
+			const submsg = msg.get("update_particle_should_draw") as RecursiveProtobuf
+			par.ShouldDraw = submsg.get("should_draw") as boolean
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_FROZEN: {
+			const submsg = msg.get("update_particle_set_frozen") as RecursiveProtobuf
+			if (submsg.get("set_frozen") as boolean) {
+				if (par.FrozenAt === -1)
+					par.FrozenAt = GameState.RawGameTime
+			} else
+				par.FrozenAt = -1
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CHANGE_CONTROL_POINT_ATTACHMENT: {
+			const submsg = msg.get("change_control_point_attachment") as RecursiveProtobuf
+			const attachmentOld = (submsg.get("attachment_old") as number) ?? 0,
+				attachmentNew = (submsg.get("attachment_new") as number) ?? 0,
+				entID = submsg.get("entity_handle") as number
+			let changed_anything = false
+			for (const data of par.ControlPointsEnt.values())
+				if (
+					data[2] === attachmentOld
+					&& (
+						(typeof data[0] === "number" && data[0] === entID)
+						|| (data[0] instanceof Entity && data[0].HandleMatches(entID))
+					)
+				) {
+					data[2] = attachmentNew
+					changed_anything = true
+				}
+			if (!changed_anything)
+				return
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENTITY_POSITION: {
+			const submsg = msg.get("update_entity_position") as RecursiveProtobuf
+			const position = CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf),
+				entID = submsg.get("entity_handle") as number
+			let changed_anything = false
+			for (const [cp, data] of par.ControlPointsEnt)
+				if (
+					(typeof data[0] === "number" && data[0] === entID)
+					|| (data[0] instanceof Entity && data[0].HandleMatches(entID))
+				) {
+					par.ControlPointsFallback.set(cp, position)
+					if (data[0] instanceof Unit) {
+						data[0].LastRealPredictedPositionUpdate = GameState.RawGameTime
+						data[0].LastPredictedPositionUpdate = GameState.RawGameTime
+						data[0].PredictedPosition.CopyFrom(position)
+					}
+					changed_anything = true
+				}
+			if (!changed_anything)
+				return
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_TEXT: {
+			const submsg = msg.get("set_particle_text") as RecursiveProtobuf
+			par.Text = (submsg.get("text") as string) ?? ""
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_CONTROL_POINT_MODEL: {
+			const submsg = msg.get("set_control_point_model") as RecursiveProtobuf
+			par.ControlPointsModel.set(
+				(submsg.get("control_point") as number) ?? 0,
+				(submsg.get("model_name") as string) ?? "",
+			)
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_CONTROL_POINT_SNAPSHOT: {
+			const submsg = msg.get("set_control_point_snapshot") as RecursiveProtobuf
+			par.ControlPointsSnapshot.set(
+				(submsg.get("control_point") as number) ?? 0,
+				(submsg.get("snapshot_name") as string) ?? "",
+			)
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_TEXTURE_ATTRIBUTE: {
+			const submsg = msg.get("set_texture_attribute") as RecursiveProtobuf
+			par.TextureAttributes.set(
+				(submsg.get("attribute_name") as string) ?? "",
+				(submsg.get("texture_name") as string) ?? "",
+			)
+			break
+		}
+		default:
+			console.log(
+				GameState.RawGameTime,
+				`Received unknown PARTICLE_MESSAGE ${msg_type} for particle ${index}`,
+			)
+			return
+	}
+	await EventsSDK.emit(
+		"ParticleUpdated",
+		false,
+		par,
+	)
+}
+
 Events.on("ServerMessage", async (msg_id, buf_) => {
 	const buf = new Uint8Array(buf_)
 	switch (msg_id) {
@@ -559,132 +818,9 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 		case 51:
 			await EventsSDK.emit("RemoveAllStringTables", false)
 			break
-		case 145: {
-			const msg = ParseProtobufNamed(buf, "CUserMsg_ParticleManager")
-			const index = msg.get("index") as number
-			switch (msg.get("type") as PARTICLE_MESSAGE) {
-				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE: {
-					const submsg = msg.get("create_particle") as RecursiveProtobuf
-					const particleSystemHandle = submsg.get("particle_name_index") as bigint,
-						entID = submsg.get("entity_handle") as number
-					const path = Manifest.GetPathByHash(particleSystemHandle ?? 0n)
-					if (path === undefined)
-						break
-					await EventsSDK.emit(
-						"ParticleCreated", false,
-						index,
-						path,
-						particleSystemHandle,
-						submsg.get("attach_type") as number,
-						EntityManager.EntityByIndex(entID) ?? entID,
-					)
-					break
-				}
-				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE: {
-					const submsg = msg.get("update_particle") as RecursiveProtobuf
-					await EventsSDK.emit(
-						"ParticleUpdated", false,
-						index,
-						submsg.get("control_point") as number,
-						CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf),
-					)
-					break
-				}
-				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_FORWARD: {
-				// 	let submsg = msg.get("update_particle_fwd") as RecursiveProtobuf
-
-				// 	break
-				// }
-				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ORIENTATION: {
-				// 	let submsg = msg.get("update_particle_orient") as RecursiveProtobuf
-
-				// 	break
-				// }
-				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_FALLBACK: {
-				// 	let submsg = msg.get("update_particle_fallback") as RecursiveProtobuf
-
-				// 	break
-				// }
-				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENT: {
-					const submsg = msg.get("update_particle_ent") as RecursiveProtobuf
-					const entID = submsg.get("entity_handle") as number
-					await EventsSDK.emit(
-						"ParticleUpdatedEnt", false,
-						index,
-						submsg.get("control_point") as number,
-						EntityManager.EntityByIndex(entID) ?? entID,
-						submsg.get("attach_type") as number,
-						submsg.get("attachment") as number,
-						CMsgVectorToVector3(submsg.get("fallback_position") as RecursiveProtobuf),
-						submsg.get("include_wearables") as boolean,
-					)
-					break
-				}
-				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_OFFSET: {
-				// 	let submsg = msg.get("update_particle_offset") as RecursiveProtobuf
-
-				// 	break
-				// }
-				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY: {
-					const submsg = msg.get("destroy_particle") as RecursiveProtobuf
-					await EventsSDK.emit(
-						"ParticleDestroyed", false,
-						index,
-						submsg.get("destroy_immediately") as boolean,
-					)
-					break
-				}
-				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY_INVOLVING: {
-				// 	let submsg = msg.get("destroy_particle_involving") as RecursiveProtobuf
-
-				// 	break
-				// }
-				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_RELEASE:
-					await EventsSDK.emit("ParticleReleased", false, index)
-					break
-				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SHOULD_DRAW: {
-				// 	let submsg = msg.get("update_particle_should_draw") as RecursiveProtobuf
-
-				// 	break
-				// }
-				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_FROZEN: {
-				// 	let submsg = msg.get("update_particle_set_frozen") as RecursiveProtobuf
-
-				// 	break
-				// }
-				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CHANGE_CONTROL_POINT_ATTACHMENT: {
-				// 	let submsg = msg.get("change_control_point_attachment") as RecursiveProtobuf
-
-				// 	break
-				// }
-				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENTITY_POSITION: {
-				// 	let submsg = msg.get("update_entity_position") as RecursiveProtobuf
-
-				// 	break
-				// }
-				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_TEXT: {
-				// 	let submsg = msg.get("set_particle_text") as RecursiveProtobuf
-
-				// 	break
-				// }
-				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_CONTROL_POINT_MODEL: {
-				// 	let submsg = msg.get("set_control_point_model") as RecursiveProtobuf
-
-				// 	break
-				// }
-				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_CONTROL_POINT_SNAPSHOT: {
-				// 	let submsg = msg.get("set_control_point_snapshot") as RecursiveProtobuf
-
-				// 	break
-				// }
-				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_TEXTURE_ATTRIBUTE: {
-				// 	let submsg = msg.get("set_texture_attribute") as RecursiveProtobuf
-
-				// 	break
-				// }
-			}
+		case 145:
+			await HandleParticleMsg(ParseProtobufNamed(buf, "CUserMsg_ParticleManager"))
 			break
-		}
 		case 148: {
 			const msg = ParseProtobufNamed(buf, "CUserMsg_CustomGameEvent")
 			const event_name = (msg.get("event_name") as Nullable<string>) ?? ""

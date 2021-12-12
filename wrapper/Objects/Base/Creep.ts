@@ -5,12 +5,12 @@ import DotaMap from "../../Helpers/DotaMap"
 import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../Native/WASM"
+import GameState from "../../Utils/GameState"
 import { GameRules } from "./Entity"
 import Unit from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Creep")
 export default class Creep extends Unit {
-	public readonly PredictedPosition = new Vector3().Invalidate()
 	public PredictedIsWaitingToSpawn = true
 	public Lane = MapArea.Unknown
 
@@ -28,7 +28,7 @@ export default class Creep extends Unit {
 	}
 	public get Position(): Vector3 {
 		if (this.IsVisible || (this.PredictedIsWaitingToSpawn && this.IsWaitingToSpawn))
-			return super.Position
+			return this.RealPosition
 		return this.PredictedPosition
 	}
 	public GetAdditionalAttackDamage(source: Unit): number {
@@ -67,10 +67,8 @@ export default class Creep extends Unit {
 export const Creeps = EntityManager.GetEntitiesByClass(Creep)
 
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent instanceof Creep) {
+	if (ent instanceof Creep)
 		ent.TryAssignLane()
-		ent.PredictedPosition.CopyFrom(ent.NetworkedPosition)
-	}
 })
 EventsSDK.on("Tick", dt => {
 	const wave_time = ((GameRules?.GameTime ?? 0) % 30)
@@ -80,22 +78,23 @@ EventsSDK.on("Tick", dt => {
 		if (creep.PredictedIsWaitingToSpawn)
 			creep.PredictedIsWaitingToSpawn = creep.IsWaitingToSpawn
 		if (
-			creep.Lane !== MapArea.Unknown
-			&& creep.IsAlive
-			&& !creep.IsVisible
-		) {
-			if (spawn_creeps)
-				creep.PredictedIsWaitingToSpawn = false
-			else if (!creep.IsSpawned && creep.PredictedIsWaitingToSpawn)
-				return
-			const next_pos = DotaMap.GetCreepCurrentTarget(creep.Position, creep.Team, creep.Lane)?.Position
-			if (next_pos === undefined)
-				return
-			creep.PredictedPosition
-				.Extend(next_pos, creep.IdealSpeed * dt)
-				.CopyTo(creep.PredictedPosition)
-			creep.PredictedPosition.SetZ(GetPositionHeight(creep.PredictedPosition))
-		} else
-			creep.PredictedPosition.CopyFrom(creep.NetworkedPosition)
+			// we should handle all those cases except creep.Lane in Unit
+			creep.Lane === MapArea.Unknown
+			|| creep.IsAlive
+			|| creep.IsVisible
+		)
+			return
+		if (spawn_creeps)
+			creep.PredictedIsWaitingToSpawn = false
+		else if (!creep.IsSpawned && creep.PredictedIsWaitingToSpawn)
+			return
+		const next_pos = DotaMap.GetCreepCurrentTarget(creep.Position, creep.Team, creep.Lane)?.Position
+		if (next_pos === undefined)
+			return
+		creep.PredictedPosition
+			.Extend(next_pos, creep.IdealSpeed * dt)
+			.CopyTo(creep.PredictedPosition)
+		creep.PredictedPosition.SetZ(GetPositionHeight(creep.PredictedPosition))
+		creep.LastPredictedPositionUpdate = GameState.RawGameTime
 	})
 })

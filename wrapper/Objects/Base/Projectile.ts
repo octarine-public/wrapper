@@ -12,16 +12,11 @@ export class Projectile {
 		public readonly ID: number,
 		protected path: string,
 		protected particleSystemHandle: bigint,
-		protected SourceUnit: Nullable<Entity | number>,
+		public Source: Entity | number,
 		public readonly ColorGemColor: Color,
 		protected speed: number,
 	) { }
 
-	public get Source(): Nullable<Entity | number> {
-		if (this.SourceUnit instanceof Entity)
-			return this.SourceUnit
-		return EntityManager.EntityByIndex(this.SourceUnit as number) ?? this.SourceUnit
-	}
 	public get ParticlePath(): string { return this.path }
 	public get ParticleSystemHandle(): string { return this.ParticleSystemHandle }
 	public get Speed(): number { return this.speed }
@@ -34,7 +29,7 @@ export class LinearProjectile extends Projectile {
 
 	constructor(
 		projID: number,
-		ent: Nullable<Entity | number>,
+		ent: Entity | number,
 		path: string,
 		particleSystemHandle: bigint,
 		public readonly MaxSpeed: number,
@@ -58,7 +53,7 @@ export class TrackingProjectile extends Projectile {
 
 	constructor(
 		projID: number,
-		source: Nullable<Entity | number>,
+		source: Entity | number,
 		private TargetEntity: Nullable<Entity | number>,
 		speed: number,
 		public readonly SourceAttachment: string,

@@ -1,6 +1,7 @@
 // @ts-nocheck
 import _AABB from "./Base/AABB"
 import _Color from "./Base/Color"
+import _NetworkedParticle from "./Base/NetworkedParticle"
 import _QAngle from "./Base/QAngle"
 import _Vector2 from "./Base/Vector2"
 import _Vector3 from "./Base/Vector3"
@@ -33,6 +34,7 @@ globalThis.Vector3 = _Vector3
 globalThis.Vector4 = _Vector4
 globalThis.AABB = _AABB
 globalThis.DotaMap = _DotaMap
+globalThis.NetworkedParticle = _NetworkedParticle
 
 Object.defineProperty(globalThis, "LocalPlayer", {
 	get: () => {

@@ -1,3 +1,4 @@
+import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { ArmorPerAgility } from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
@@ -12,6 +13,7 @@ import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
 import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
 import { DOTA_SHOP_TYPE } from "../../Enums/DOTA_SHOP_TYPE"
 import { GameActivity_t } from "../../Enums/GameActivity_t"
+import { GridNavCellFlags } from "../../Enums/GridNavCellFlags"
 import { modifierstate } from "../../Enums/modifierstate"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { Team } from "../../Enums/Team"
@@ -20,7 +22,8 @@ import EventsSDK from "../../Managers/EventsSDK"
 import * as StringTables from "../../Managers/StringTables"
 import ExecuteOrder from "../../Native/ExecuteOrder"
 import { ComputedAttachment } from "../../Resources/ComputeAttachments"
-import { HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
+import { GridNav } from "../../Resources/ParseGNV"
+import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
 import GameState from "../../Utils/GameState"
 import { DamageIgnoreBuffs } from "../../Utils/Utils"
 import Inventory from "../DataBook/Inventory"
@@ -64,6 +67,7 @@ export default class Unit extends Entity {
 
 	public readonly Inventory = new Inventory(this)
 	public readonly ModifiersBook = new ModifiersBook(this)
+	public readonly PredictedPosition = new Vector3().Invalidate()
 
 	public IsVisibleForEnemies = Unit.IsVisibleForEnemies(this)
 	public IsTrueSightedForEnemies = false
@@ -148,10 +152,6 @@ export default class Unit extends Entity {
 	public GoldBountyMax = 0
 	public LastActivity = 0
 	public LastActivityEndTime = 0
-	/**
-	 * It's not required to be inside any NeutralSpawner#SpawnBox, that's simply Position on EntityCreated
-	 */
-	public readonly SpawnPosition = new Vector3()
 	public Spawner: Nullable<NeutralSpawner>
 	public Spawner_ = 0
 	public AttackRange = 0
@@ -161,6 +161,8 @@ export default class Unit extends Entity {
 	public BaseAttackTime = 0
 	public MoveCapabilities = DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE
 	public BonusArmor = 0
+	public LastRealPredictedPositionUpdate = 0
+	public LastPredictedPositionUpdate = 0
 	private IdealSpeed_: Nullable<number>
 	private HealthBarOffset_: Nullable<number>
 	private MagicDamageResist_: Nullable<number>
@@ -459,6 +461,11 @@ export default class Unit extends Entity {
 	}
 	public get Name(): string {
 		return this.UnitName_
+	}
+	public get Position(): Vector3 {
+		if (this.IsVisible || this.IsWaitingToSpawn)
+			return this.RealPosition
+		return this.PredictedPosition
 	}
 	public get HasFlyingVision(): boolean {
 		return this.HasMoveCapability(DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_FLY) || this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FLYING)
@@ -1023,6 +1030,37 @@ export default class Unit extends Entity {
 		)
 	}
 
+	public ExtendUntilWall(start: Vector3, direction: Vector3, distance: number): Vector3 {
+		if (GridNav === undefined)
+			return start.Add(direction.MultiplyScalar(distance))
+		if (distance < 0)
+			direction = direction.Clone().Negate()
+		distance = Math.abs(distance)
+
+		const step = GridNav.EdgeSize / 2,
+			step_vec = direction.MultiplyScalar(step),
+			testPoint = start.Clone(),
+			orig_distance = distance,
+			flying = this.HasFlyingVision
+		while (distance > 0) {
+			const flags = GridNav.GetCellFlagsForPos(testPoint)
+			if (
+				(!flying && (
+					(!HasBit(flags, GridNavCellFlags.Walkable))
+					|| HasBit(flags, GridNavCellFlags.Tree)
+				))
+				|| HasBit(flags, GridNavCellFlags.MovementBlocker)
+			)
+				break
+			if (distance < step)
+				return start.Add(direction.MultiplyScalar(orig_distance))
+			testPoint.AddForThis(step_vec)
+			distance -= step
+		}
+
+		return testPoint
+	}
+
 	/* ================================ ORDERS ================================ */
 	public UseSmartAbility(ability: Ability, target?: Vector3 | Entity, checkAutoCast = false, checkToggled = false, queue?: boolean, showEffects?: boolean) {
 		if (checkAutoCast && ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_AUTOCAST) && !ability.IsAutoCastEnabled)
@@ -1045,8 +1083,6 @@ export default class Unit extends Entity {
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET))
 			return this.CastTarget(ability, target as Entity, showEffects)
 	}
-
-	/* ORDERS */
 
 	public MoveTo(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, issuers: [this], position, queue, showEffects })
@@ -1167,7 +1203,6 @@ async function UnitNameChanged(unit: Unit) {
 }
 
 import { RegisterFieldHandler, ReplaceFieldHandler } from "wrapper/Objects/NativeToSDK"
-import Vector2 from "../../Base/Vector2"
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", async (unit, new_value) => {
 	const old_name = unit.Name
 	unit.UnitName_ = new_value >= 0 ? (await UnitData.GetUnitNameByNameIndex(new_value as number) ?? "") : ""
@@ -1262,8 +1297,11 @@ RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, new_value) => {
 })
 
 EventsSDK.on("PreEntityCreated", async ent => {
-	if (ent instanceof Unit)
-		ent.SpawnPosition.CopyFrom(ent.Position)
+	if (ent instanceof Unit) {
+		ent.PredictedPosition.CopyFrom(ent.NetworkedPosition)
+		ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
+		ent.LastPredictedPositionUpdate = GameState.RawGameTime
+	}
 	if (ent instanceof NeutralSpawner)
 		for (const unit of Units)
 			if (ent.HandleMatches(unit.Spawner_))
@@ -1331,14 +1369,14 @@ EventsSDK.on("ModifierCreated", OnModifierUpdated)
 EventsSDK.on("ModifierChanged", OnModifierUpdated)
 EventsSDK.on("ModifierRemoved", OnModifierUpdated)
 
-EventsSDK.on("ParticleCreated", (_id, path, _particleSystemHandle, _attach, target) => {
+EventsSDK.on("ParticleCreated", par => {
 	if (
-		path === "particles/generic_hero_status/hero_levelup.vpcf"
-		&& target instanceof Unit
-		&& !target.IsVisible
-		&& !target.IsIllusion
+		par.Path === "particles/generic_hero_status/hero_levelup.vpcf"
+		&& par.AttachedTo instanceof Unit
+		&& !par.AttachedTo.IsVisible
+		&& !par.AttachedTo.IsIllusion
 	)
-		target.Level++
+		par.AttachedTo.Level++
 })
 
 EventsSDK.on("Tick", dt => {
@@ -1349,6 +1387,11 @@ EventsSDK.on("Tick", dt => {
 		if (!unit.IsVisible) {
 			unit.HP = Math.max(Math.min(unit.MaxHP, unit.HP + regen_amount_floor), 0)
 			unit.Mana = Math.max(Math.min(unit.MaxMana, unit.Mana + unit.ManaRegen * Math.min(dt, 0.1)), 0)
+		}
+		if (!unit.IsAlive || unit.IsVisible || !unit.IsSpawned) {
+			unit.PredictedPosition.CopyFrom(unit.NetworkedPosition)
+			unit.LastRealPredictedPositionUpdate = GameState.RawGameTime
+			unit.LastPredictedPositionUpdate = GameState.RawGameTime
 		}
 		// TODO: interpolate DeltaZ from OnModifierUpdated
 	}

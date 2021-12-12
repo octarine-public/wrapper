@@ -43,6 +43,23 @@ async function DestroyTrackingProjectile(proj: TrackingProjectile) {
 	proj.IsValid = false
 }
 
+EventsSDK.on("EntityCreated", ent => {
+	for (const proj of ProjectileManager.AllTrackingProjectiles)
+		if (typeof proj.Source === "number" && ent.HandleMatches(proj.Source))
+			proj.Source = ent
+	for (const proj of ProjectileManager.AllLinearProjectiles)
+		if (typeof proj.Source === "number" && ent.HandleMatches(proj.Source))
+			proj.Source = ent
+})
+EventsSDK.on("EntityDestroyed", ent => {
+	for (const proj of ProjectileManager.AllTrackingProjectiles)
+		if (proj.Source === ent)
+			proj.Source = 0
+	for (const proj of ProjectileManager.AllLinearProjectiles)
+		if (proj.Source === ent)
+			proj.Source = 0
+})
+
 EventsSDK.on("PostDataUpdate", () => ProjectileManager.AllTrackingProjectiles.forEach(proj => proj.UpdateTargetLoc()))
 EventsSDK.on("Tick", async () => {
 	const cur_time = GameState.RawGameTime
@@ -174,10 +191,11 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 	switch (msg_id) {
 		case 471: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_CreateLinearProjectile")
-			const particle_system_handle = msg.get("particle_index") as bigint
+			const particle_system_handle = msg.get("particle_index") as bigint,
+				hSource = msg.get("entindex") as number
 			const projectile = new LinearProjectile(
 				msg.get("handle") as number,
-				EntityManager.EntityByIndex(msg.get("entindex") as number),
+				EntityManager.EntityByIndex(hSource) ?? hSource,
 				(particle_system_handle !== undefined ? Manifest.GetPathByHash(particle_system_handle) : undefined)!,
 				particle_system_handle ?? 0n,
 				msg.get("max_speed") as number,
@@ -261,7 +279,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			if (projectile === undefined) {
 				projectile = new TrackingProjectile(
 					handle,
-					undefined,
+					0,
 					target,
 					move_speed,
 					"",

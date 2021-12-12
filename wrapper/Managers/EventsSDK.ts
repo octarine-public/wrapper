@@ -1,6 +1,6 @@
+import NetworkedParticle from "../Base/NetworkedParticle"
 import Vector3 from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
-import { ParticleAttachment_t } from "../Enums/ParticleAttachment_t"
 import { SOType } from "../Enums/SOType"
 import ExecuteOrder from "../Native/ExecuteOrder"
 import Entity from "../Objects/Base/Entity"
@@ -63,19 +63,9 @@ interface EventsSDK extends EventEmitter {
 	on(name: "HasScepterChanged", callback: (npc: Unit) => void): EventsSDK
 	on(name: "PreDraw", callback: () => void): EventsSDK
 	on(name: "Draw", callback: () => void): EventsSDK
-	on(name: "ParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: Entity | number) => void): EventsSDK
-	on(name: "ParticleUpdated", callback: (id: number, controlPoint: number, position: Vector3) => void): EventsSDK
-	on(name: "ParticleUpdatedEnt", callback: (
-		id: number,
-		controlPoint: number,
-		ent: Entity | number,
-		attach: ParticleAttachment_t,
-		attachment: number,
-		fallbackPosition: Vector3,
-		includeWearables: boolean,
-	) => void): EventsSDK
-	on(name: "ParticleDestroyed", listener: (id: number, destroy_immediately: boolean) => void): EventsSDK
-	on(name: "ParticleReleased", listener: (id: number) => void): EventsSDK
+	on(name: "ParticleCreated", callback: (particle: NetworkedParticle) => void): EventsSDK
+	on(name: "ParticleUpdated", callback: (particle: NetworkedParticle) => void): EventsSDK
+	on(name: "ParticleDestroyed", listener: (particle: NetworkedParticle) => void): EventsSDK
 	on(name: "BloodImpact", callback: (target: Entity | number, scale: number, xnormal: number, ynormal: number) => void): EventsSDK
 	on(name: "PrepareUnitOrders", callback: (order: ExecuteOrder) => false | any): EventsSDK
 	on(name: "LinearProjectileCreated", callback: (proj: LinearProjectile) => void): EventsSDK

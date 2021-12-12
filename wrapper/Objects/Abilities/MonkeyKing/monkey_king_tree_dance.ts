@@ -32,23 +32,23 @@ function FilterValidTrees(ar: (Tree | TempTree)[], pos: Vector3, cast_range: num
 		.map(tree => [pos.Clone(), tree, 0])
 }
 
-const trails = new Map<number, Nullable<monkey_king_tree_dance>>()
-EventsSDK.on("ParticleCreated", (id, path) => {
-	if (path === "particles/units/heroes/hero_monkey_king/monkey_king_jump_trail.vpcf")
-		trails.set(id, undefined)
-})
-EventsSDK.on("ParticleUpdatedEnt", (id, cp, ent, _attach, _attachment, pos) => {
-	if (cp !== 1 || !trails.has(id))
+EventsSDK.on("ParticleUpdated", par => {
+	if (par.Path !== "particles/units/heroes/hero_monkey_king/monkey_king_jump_trail.vpcf")
 		return
 
-	if (!(ent instanceof Unit))
+	const cpEnt = par.ControlPointsEnt.get(1)
+	if (cpEnt === undefined)
+		return
+
+	const ent = cpEnt[0],
+		pos = par.ControlPointsFallback.get(1)
+	if (pos === undefined || !(ent instanceof Unit))
 		return
 	const abil = ent.GetAbilityByClass(monkey_king_tree_dance)
 	if (abil === undefined)
 		return
 	abil.StartedJumpingTime = GameState.RawGameTime
 	pos.CopyTo(abil.StartPosition)
-	trails.set(id, abil)
 	abil.IsJumping = true
 	abil.IsJumpingToTree = (
 		ent.LastActivity === ent.GetActivityForAbilityClass(monkey_king_tree_dance)
@@ -62,13 +62,21 @@ EventsSDK.on("ParticleUpdatedEnt", (id, cp, ent, _attach, _attachment, pos) => {
 	]
 })
 
-EventsSDK.on("ParticleDestroyed", id => {
-	const abil = trails.get(id)
-	if (abil !== undefined) {
-		abil.IsJumping = false
-		abil.EndedJumpingTime = GameState.RawGameTime + (1 / 30)
-	}
-	trails.delete(id)
+EventsSDK.on("ParticleDestroyed", par => {
+	if (par.Path !== "particles/units/heroes/hero_monkey_king/monkey_king_jump_trail.vpcf")
+		return
+	const cpEnt = par.ControlPointsEnt.get(1)
+	if (cpEnt === undefined)
+		return
+
+	const ent = cpEnt[0]
+	if (!(ent instanceof Unit))
+		return
+	const abil = ent.GetAbilityByClass(monkey_king_tree_dance)
+	if (abil === undefined)
+		return
+	abil.IsJumping = false
+	abil.EndedJumpingTime = GameState.RawGameTime + (1 / 30)
 })
 
 const abils = EntityManager.GetEntitiesByClass(monkey_king_tree_dance)

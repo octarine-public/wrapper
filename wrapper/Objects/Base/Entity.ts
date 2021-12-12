@@ -104,6 +104,7 @@ export default class Entity {
 	public readonly VisualAngles = new QAngle()
 	public readonly NetworkedAngles = new QAngle()
 	public readonly BoundingBox = new AABB(this.VisualPosition)
+	public readonly SpawnPosition = new Vector3()
 	public Attachments: Nullable<ComputedAttachments>
 	private CustomGlowColor_: Nullable<Color>
 	private CustomDrawColor_: Nullable<[Color, RenderMode_t]>
@@ -150,6 +151,9 @@ export default class Entity {
 		return owner
 	}
 	public get Position(): Vector3 {
+		return this.RealPosition
+	}
+	public get RealPosition(): Vector3 {
 		return GameState.IsInDraw
 			? this.VisualPosition
 			: this.NetworkedPosition
@@ -470,6 +474,7 @@ RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, new_val) => {
 	ent.OwnerEntity = EntityManager.EntityByIndex(ent.Owner_)
 })
 EventsSDK.on("PreEntityCreated", ent => {
+	ent.SpawnPosition.CopyFrom(ent.NetworkedPosition)
 	if (ent.Index === 0)
 		return
 	EntityManager.AllEntities.forEach(iter => {
