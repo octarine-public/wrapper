@@ -32,8 +32,7 @@ export class Sleeper {
 		return endTime
 	}
 	public Sleeping(key: any): boolean {
-		const endTime = this.SleepDB.get(key)
-		return endTime !== undefined && this.TickCount < endTime
+		return this.RemainingSleepTime(key) > 0
 	}
 	public FullReset(): this {
 		this.SleepDB.clear()
