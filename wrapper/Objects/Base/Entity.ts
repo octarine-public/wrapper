@@ -528,13 +528,26 @@ RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => {
 	)
 })
 
-EventsSDK.on("GameEvent", (name, obj) => {
-	if (name !== "entity_hurt")
-		return
-	const ent = EntityManager.EntityByIndex(obj.entindex_killed)
-	if (ent === undefined || !ent.IsAlive)
-		return
-	ent.HP = Math.max(Math.round(ent.HP - obj.damage), 1)
+EventsSDK.on("GameEvent", async (name, obj) => {
+	switch (name) {
+		case "entity_hurt": {
+			const ent = EntityManager.EntityByIndex(obj.entindex_killed)
+			if (ent !== undefined && ent.IsAlive)
+				ent.HP = Math.max(Math.round(ent.HP - obj.damage), 1)
+			break
+		}
+		case "entity_killed": {
+			const ent = EntityManager.EntityByIndex(obj.entindex_killed)
+			if (ent !== undefined && !ent.IsVisible && ent.LifeState !== LifeState_t.LIFE_DEAD) {
+				ent.LifeState = LifeState_t.LIFE_DEAD
+				ent.HP = 0
+				await EventsSDK.emit("LifeStateChanged", false, ent)
+			}
+			break
+		}
+		default:
+			break
+	}
 })
 
 const last_glow_ents = new Set<Entity>()

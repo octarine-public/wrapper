@@ -29,33 +29,29 @@ function GetHPChangedByMinute(minute: number): number {
 	return minute * hp_changed
 }
 
-let last_event_ent = -1,
-	last_minute = 0
+let last_minute = 0
+EventsSDK.on("ParticleCreated", par => {
+	if (par.Path !== "particles/neutral_fx/roshan_spawn.vpcf")
+		return
+	Roshan.Instance = typeof par.AttachedTo === "number"
+		? par.AttachedTo & EntityManager.INDEX_MASK
+		: par.AttachedTo
+	if (GameRules === undefined)
+		return
+	last_minute = Math.max(0, Math.floor(GameRules.GameTime / 60))
+	Roshan.HP = 6000 + GetHPChangedByMinute(last_minute)
+	Roshan.MaxHP = Roshan.HP
+})
 EventsSDK.on("GameEvent", (name, obj) => {
-	if (name === "npc_spawned")
-		last_event_ent = obj.entindex
-	else if (name === "dota_item_spawned" && obj.player_id === -1 && last_event_ent !== -1 && Roshan.Instance === undefined) {
-		Roshan.Instance = last_event_ent
-		if (GameRules !== undefined) {
-			last_minute = Math.max(0, Math.floor(GameRules.GameTime / 60))
-			Roshan.HP = 6000 + GetHPChangedByMinute(last_minute)
-			Roshan.MaxHP = Roshan.HP
-		}
-	} else
-		last_event_ent = -1
-
-	if (name === "entity_hurt") {
-		const ent = EntityManager.EntityByIndex(obj.entindex_killed) ?? obj.entindex_killed
-		if (ent === Roshan.Instance)
-			Roshan.HP = Math.max(Math.round(Roshan.HP - obj.damage), 0)
-	} else if (name === "entity_killed") {
-		const ent = EntityManager.EntityByIndex(obj.entindex_killed) ?? obj.entindex_killed
-		if (ent === Roshan.Instance) {
-			Roshan.HP = 0
-			Roshan.MaxHP = 0
-			Roshan.Instance = undefined
-		}
-	}
+	if (name !== "entity_hurt")
+		return
+	const ent = EntityManager.EntityByIndex(obj.entindex_killed) ?? (obj.entindex_killed & EntityManager.INDEX_MASK)
+	if (ent === Roshan.Instance)
+		Roshan.HP = Math.max(Math.round(Roshan.HP - obj.damage), 0)
+})
+EventsSDK.on("LifeStateChanged", ent => {
+	if (Roshan.Instance === ent)
+		Roshan.HP = 0
 })
 
 EventsSDK.on("PreEntityCreated", ent => {
