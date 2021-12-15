@@ -558,6 +558,34 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 	const index = msg.get("index") as number
 	const par = NetworkedParticle.Instances.get(index)
 	const msg_type = msg.get("type") as PARTICLE_MESSAGE
+	switch (msg_type) {
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENTITY_POSITION: {
+			const submsg = msg.get("update_entity_position") as RecursiveProtobuf
+			const position = CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf),
+				entID = submsg.get("entity_handle") as number
+			const ent = EntityManager.EntityByIndex(entID)
+			if (ent instanceof Unit) {
+				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
+				ent.LastPredictedPositionUpdate = GameState.RawGameTime
+				ent.PredictedPosition.CopyFrom(position)
+			}
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENT: {
+			const submsg = msg.get("update_particle_ent") as RecursiveProtobuf
+			const entID = submsg.get("entity_handle") as number,
+				position = CMsgVectorToVector3(submsg.get("fallback_position") as RecursiveProtobuf)
+			const ent = EntityManager.EntityByIndex(entID)
+			if (ent instanceof Unit) {
+				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
+				ent.LastPredictedPositionUpdate = GameState.RawGameTime
+				ent.PredictedPosition.CopyFrom(position)
+			}
+			break
+		}
+		default:
+			break
+	}
 	if (par === undefined) {
 		if (msg_type === PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE) {
 			const submsg = msg.get("create_particle") as RecursiveProtobuf
@@ -668,11 +696,6 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 				],
 			)
 			par.ControlPointsFallback.set(cp, position)
-			if (ent instanceof Unit) {
-				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
-				ent.LastPredictedPositionUpdate = GameState.RawGameTime
-				ent.PredictedPosition.CopyFrom(position)
-			}
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_OFFSET: {
@@ -705,15 +728,10 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			const attachmentOld = (submsg.get("attachment_old") as number) ?? 0,
 				attachmentNew = (submsg.get("attachment_new") as number) ?? 0,
 				entID = submsg.get("entity_handle") as number
+			const ent = EntityManager.EntityByIndex(entID) ?? entID
 			let changed_anything = false
 			for (const data of par.ControlPointsEnt.values())
-				if (
-					data[2] === attachmentOld
-					&& (
-						(typeof data[0] === "number" && data[0] === entID)
-						|| (data[0] instanceof Entity && data[0].HandleMatches(entID))
-					)
-				) {
+				if (data[2] === attachmentOld && data[0] === ent) {
 					data[2] = attachmentNew
 					changed_anything = true
 				}
@@ -725,18 +743,11 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			const submsg = msg.get("update_entity_position") as RecursiveProtobuf
 			const position = CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf),
 				entID = submsg.get("entity_handle") as number
+			const ent = EntityManager.EntityByIndex(entID) ?? entID
 			let changed_anything = false
 			for (const [cp, data] of par.ControlPointsEnt)
-				if (
-					(typeof data[0] === "number" && data[0] === entID)
-					|| (data[0] instanceof Entity && data[0].HandleMatches(entID))
-				) {
+				if (data[0] === ent) {
 					par.ControlPointsFallback.set(cp, position)
-					if (data[0] instanceof Unit) {
-						data[0].LastRealPredictedPositionUpdate = GameState.RawGameTime
-						data[0].LastPredictedPositionUpdate = GameState.RawGameTime
-						data[0].PredictedPosition.CopyFrom(position)
-					}
 					changed_anything = true
 				}
 			if (!changed_anything)
