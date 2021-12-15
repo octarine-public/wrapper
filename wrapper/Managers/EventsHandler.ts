@@ -616,27 +616,42 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY: {
 			const submsg = msg.get("destroy_particle") as RecursiveProtobuf
 			const destroy_immediately = submsg.get("destroy_immediately") as boolean
-			if (destroy_immediately || par.EndTime === -1)
-				await par.Destroy()
-			else
+			if (!destroy_immediately && par.EndTime !== -1) {
 				par.Released = true
+				await EventsSDK.emit(
+					"ParticleReleased",
+					false,
+					par,
+				)
+			} else
+				await par.Destroy()
 			return
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY_INVOLVING: {
 			const submsg = msg.get("destroy_particle_involving") as RecursiveProtobuf
 			const destroy_immediately = submsg.get("destroy_immediately") as boolean
 			// TODO: entity_handle?
-			if (destroy_immediately || par.EndTime === -1)
-				await par.Destroy()
-			else
+			if (!destroy_immediately && par.EndTime !== -1) {
 				par.Released = true
+				await EventsSDK.emit(
+					"ParticleReleased",
+					false,
+					par,
+				)
+			} else
+				await par.Destroy()
 			return
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_RELEASE: {
-			if (par.EndTime === -1)
-				await par.Destroy()
-			else
+			if (par.EndTime !== -1) {
 				par.Released = true
+				await EventsSDK.emit(
+					"ParticleReleased",
+					false,
+					par,
+				)
+			} else
+				await par.Destroy()
 			return
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE: {
