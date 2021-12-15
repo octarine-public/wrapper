@@ -769,9 +769,17 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 				return
 			break
 		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_FOW_PROPERTIES: {
+			// const submsg = msg.get("set_particle_fow_properties") as RecursiveProtobuf
+			break
+		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_TEXT: {
 			const submsg = msg.get("set_particle_text") as RecursiveProtobuf
 			par.Text = (submsg.get("text") as string) ?? ""
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_SHOULD_CHECK_FOW: {
+			// const submsg = msg.get("set_particle_should_check_fow") as RecursiveProtobuf
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_CONTROL_POINT_MODEL: {
@@ -796,6 +804,18 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 				(submsg.get("attribute_name") as string) ?? "",
 				(submsg.get("texture_name") as string) ?? "",
 			)
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_SCENE_OBJECT_GENERIC_FLAG: {
+			// const submsg = msg.get("set_scene_object_generic_flag") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_SCENE_OBJECT_TINT_AND_DESAT: {
+			// const submsg = msg.get("set_scene_object_tint_and_desat") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY_NAMED: {
+			// const submsg = msg.get("destroy_particle_named") as RecursiveProtobuf
 			break
 		}
 		default:
