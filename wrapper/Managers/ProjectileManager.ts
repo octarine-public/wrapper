@@ -119,6 +119,11 @@ EventsSDK.on("Tick", async () => {
 })
 
 ParseProtobufDesc(`
+message CDOTAUserMsg_ProjectileParticleCPData {
+	optional int32 control_point = 1;
+	optional .CMsgVector vector = 2;
+}
+
 message CDOTAUserMsg_CreateLinearProjectile {
 	optional .CMsgVector origin = 1;
 	optional .CMsgVector2D velocity = 2;
@@ -131,6 +136,7 @@ message CDOTAUserMsg_CreateLinearProjectile {
 	optional bool sticky_fow_reveal = 10;
 	optional float distance = 11;
 	optional fixed32 colorgemcolor = 12;
+	repeated .CDOTAUserMsg_ProjectileParticleCPData particle_cp_data = 13;
 }
 
 message CDOTAUserMsg_DestroyLinearProjectile {
@@ -172,6 +178,7 @@ message CDOTAUserMsg_TE_ProjectileLoc {
 	optional int32 handle = 13;
 	optional int32 hSource = 14;
 	optional int32 sourceAttachment = 15;
+	repeated .CDOTAUserMsg_ProjectileParticleCPData particle_cp_data = 16;
 }
 
 message CDOTAUserMsg_TE_DestroyProjectile {
@@ -207,6 +214,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 				CMsgVector2DToVector2(msg.get("acceleration") as RecursiveProtobuf),
 				NumberToColor(msg.get("colorgemcolor") as number),
 			)
+			// TODO: do we need particle_cp_data?
 			await EventsSDK.emit("LinearProjectileCreated", false, projectile)
 			ProjectileManager.AllLinearProjectiles.push(projectile)
 			ProjectileManager.AllLinearProjectilesMap.set(projectile.ID, projectile)
@@ -293,6 +301,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 					TargetLoc,
 					Color.fromIOBuffer(6),
 				)
+				// TODO: do we need particle_cp_data?
 				projectile.Position.CopyFrom(CMsgVectorToVector3(msg.get("vSourceLoc") as RecursiveProtobuf))
 
 				await TrackingProjectileCreated(projectile)

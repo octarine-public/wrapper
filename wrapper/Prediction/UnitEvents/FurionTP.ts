@@ -1,9 +1,10 @@
 import NetworkedParticle from "../../Base/NetworkedParticle"
+import FakeUnit, { GetPredictionTarget } from "../../Objects/Base/FakeUnit"
 import Unit from "../../Objects/Base/Unit"
 import { arrayRemove, arrayRemoveCallback } from "../../Utils/ArrayExtensions"
 import GameState from "../../Utils/GameState"
 
-const lastTeleports: [NetworkedParticle, Unit][] = [],
+const lastTeleports: [NetworkedParticle, Unit | FakeUnit][] = [],
 	lastParticles: NetworkedParticle[] = []
 export function HandleParticleChangeFurionTP(par: NetworkedParticle, is_update: boolean): void {
 	if (!par.Path.includes("furion_teleport"))
@@ -11,13 +12,16 @@ export function HandleParticleChangeFurionTP(par: NetworkedParticle, is_update: 
 	const is_end = par.Path.includes("furion_teleport_end"),
 		unit = par.AttachedTo
 	if (!is_update) {
-		if (!is_end && unit instanceof Unit) {
-			// PredictedPosition should be set in Gesture handler if TP actually finished
-			unit.TPStartTime = -1
-			unit.TPStartPosition.CopyTo(unit.LastTPStartPosition)
-			unit.TPEndPosition.CopyTo(unit.LastTPEndPosition)
-			unit.TPStartPosition.Invalidate()
-			unit.TPEndPosition.Invalidate()
+		if (!is_end) {
+			const target = GetPredictionTarget(unit)
+			if (target !== undefined) {
+				// PredictedPosition should be set in Gesture handler if TP actually finished
+				target.TPStartTime = -1
+				target.TPStartPosition.CopyTo(target.LastTPStartPosition)
+				target.TPEndPosition.CopyTo(target.LastTPEndPosition)
+				target.TPStartPosition.Invalidate()
+				target.TPEndPosition.Invalidate()
+			}
 		}
 		arrayRemove(lastParticles, par)
 		arrayRemoveCallback(lastTeleports, ([otherPar]) => par === otherPar)
@@ -41,12 +45,14 @@ export function HandleParticleChangeFurionTP(par: NetworkedParticle, is_update: 
 		lastTeleports.splice(0, 1)
 		if (firstTP !== undefined)
 			firstTP[1].TPEndPosition.CopyFrom(cpPosision)
-	} else if (unit instanceof Unit) {
-		if (unit.TPStartTime === -1)
-			unit.TPStartTime = GameState.RawGameTime
-		unit.TPStartPosition.CopyFrom(cpPosision).CopyTo(unit.PredictedPosition)
-		lastTeleports.push([par, unit])
-	} else
-		return
+	} else {
+		const target = GetPredictionTarget(unit)
+		if (target === undefined)
+			return
+		if (target.TPStartTime === -1)
+			target.TPStartTime = GameState.RawGameTime
+		target.TPStartPosition.CopyFrom(cpPosision).CopyTo(target.PredictedPosition)
+		lastTeleports.push([par, target])
+	}
 	lastParticles.push(par)
 }

@@ -1,6 +1,6 @@
 import NetworkedParticle from "../../Base/NetworkedParticle"
 import Entity from "../../Objects/Base/Entity"
-import Unit from "../../Objects/Base/Unit"
+import { GetPredictionTarget } from "../../Objects/Base/FakeUnit"
 import GameState from "../../Utils/GameState"
 
 export function HandleParticleChangeTPScroll(par: NetworkedParticle, is_update: boolean): void {
@@ -24,31 +24,32 @@ export function HandleParticleChangeTPScroll(par: NetworkedParticle, is_update: 
 		)
 		|| cpFallbackTeleporting === undefined
 		|| cpColor === undefined
-		|| !(cpEntTeleporting[0] instanceof Unit)
 		|| cpColor.x < 0 || cpColor.x > 1
 		|| cpColor.y < 0 || cpColor.y > 1
 		|| cpColor.y < 0 || cpColor.z > 1
 	)
 		return
-	const unit = cpEntTeleporting[0]
-	unit.LastRealPredictedPositionUpdate = GameState.RawGameTime
-	unit.LastPredictedPositionUpdate = GameState.RawGameTime
-	if (unit.TPStartTime === -1)
-		unit.TPStartTime = GameState.RawGameTime
+	const target = GetPredictionTarget(cpEntTeleporting[0])
+	if (target === undefined)
+		return
+	target.LastRealPredictedPositionUpdate = GameState.RawGameTime
+	target.LastPredictedPositionUpdate = GameState.RawGameTime
+	if (target.TPStartTime === -1)
+		target.TPStartTime = GameState.RawGameTime
 	if (cpFallbackTeleporting !== undefined)
-		unit.TPStartPosition.CopyFrom(cpFallbackTeleporting).CopyTo(unit.PredictedPosition)
+		target.TPStartPosition.CopyFrom(cpFallbackTeleporting).CopyTo(target.PredictedPosition)
 	if (cpTarget0 !== undefined)
-		unit.TPEndPosition.CopyFrom(cpTarget0)
+		target.TPEndPosition.CopyFrom(cpTarget0)
 	else if (cpEntTarget0 instanceof Entity)
-		unit.TPEndPosition.CopyFrom(cpEntTarget0.Position)
+		target.TPEndPosition.CopyFrom(cpEntTarget0.Position)
 	else if (cpFallbackTarget0 !== undefined)
-		unit.TPEndPosition.CopyFrom(cpFallbackTarget0)
+		target.TPEndPosition.CopyFrom(cpFallbackTarget0)
 	if (!is_update) {
 		// PredictedPosition should be set in Gesture handler if TP actually finished
-		unit.TPStartTime = -1
-		unit.TPStartPosition.CopyTo(unit.LastTPStartPosition)
-		unit.TPEndPosition.CopyTo(unit.LastTPEndPosition)
-		unit.TPStartPosition.Invalidate()
-		unit.TPEndPosition.Invalidate()
+		target.TPStartTime = -1
+		target.TPStartPosition.CopyTo(target.LastTPStartPosition)
+		target.TPEndPosition.CopyTo(target.LastTPEndPosition)
+		target.TPStartPosition.Invalidate()
+		target.TPEndPosition.Invalidate()
 	}
 }

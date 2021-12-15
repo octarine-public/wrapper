@@ -4,6 +4,7 @@ import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { SOType } from "../Enums/SOType"
 import ExecuteOrder from "../Native/ExecuteOrder"
 import Entity from "../Objects/Base/Entity"
+import FakeUnit from "../Objects/Base/FakeUnit"
 import Modifier from "../Objects/Base/Modifier"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import Unit from "../Objects/Base/Unit"
@@ -65,7 +66,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "Draw", callback: () => void): EventsSDK
 	on(name: "ParticleCreated", callback: (particle: NetworkedParticle) => void): EventsSDK
 	on(name: "ParticleUpdated", callback: (particle: NetworkedParticle) => void): EventsSDK
-	on(name: "ParticleUnitPositionUpdated", callback: (unit: Unit, particle: NetworkedParticle) => void): EventsSDK
+	on(name: "ParticleUnitPositionUpdated", callback: (unit: FakeUnit | Unit, particle: NetworkedParticle) => void): EventsSDK
 	on(name: "ParticleReleased", listener: (particle: NetworkedParticle) => void): EventsSDK
 	on(name: "ParticleDestroyed", listener: (particle: NetworkedParticle) => void): EventsSDK
 	on(name: "BloodImpact", callback: (target: Entity | number, scale: number, xnormal: number, ynormal: number) => void): EventsSDK

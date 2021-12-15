@@ -7,6 +7,7 @@ import { Localization } from "../Menu/Imports"
 import * as WASM from "../Native/WASM"
 import Workers from "../Native/Workers"
 import Entity, { LocalPlayer } from "../Objects/Base/Entity"
+import FakeUnit, { GetPredictionTarget } from "../Objects/Base/FakeUnit"
 import { PlayerResource } from "../Objects/Base/PlayerResource"
 import Unit from "../Objects/Base/Unit"
 import AbilityData, { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
@@ -559,14 +560,14 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 	const par = NetworkedParticle.Instances.get(index)
 	const msg_type = msg.get("type") as PARTICLE_MESSAGE
 	let changed_ent_pos = false,
-		changed_ent: Nullable<Unit>
+		changed_ent: Nullable<FakeUnit | Unit>
 	switch (msg_type) {
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENTITY_POSITION: {
 			const submsg = msg.get("update_entity_position") as RecursiveProtobuf
 			const position = CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf),
 				entID = submsg.get("entity_handle") as number
-			const ent = EntityManager.EntityByIndex(entID)
-			if (ent instanceof Unit) {
+			const ent = GetPredictionTarget(entID)
+			if (ent !== undefined) {
 				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				ent.LastPredictedPositionUpdate = GameState.RawGameTime
 				ent.PredictedPosition.CopyFrom(position)
@@ -579,8 +580,8 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			const submsg = msg.get("update_particle_ent") as RecursiveProtobuf
 			const entID = submsg.get("entity_handle") as number,
 				position = CMsgVectorToVector3(submsg.get("fallback_position") as RecursiveProtobuf)
-			const ent = EntityManager.EntityByIndex(entID)
-			if (ent instanceof Unit) {
+			const ent = GetPredictionTarget(entID)
+			if (ent !== undefined) {
 				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				ent.LastPredictedPositionUpdate = GameState.RawGameTime
 				ent.PredictedPosition.CopyFrom(position)
@@ -693,12 +694,15 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 				position = CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf)
 			par.ControlPointsFallback.set(cp, position)
 			const cpEnt = par.ControlPointsEnt.get(cp)
-			if (cpEnt !== undefined && cpEnt[0] instanceof Unit) {
-				cpEnt[0].LastRealPredictedPositionUpdate = GameState.RawGameTime
-				cpEnt[0].LastPredictedPositionUpdate = GameState.RawGameTime
-				cpEnt[0].PredictedPosition.CopyFrom(position)
-				changed_ent_pos = true
-				changed_ent = cpEnt[0]
+			if (cpEnt !== undefined) {
+				const ent = GetPredictionTarget(cpEnt[0])
+				if (ent !== undefined) {
+					ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
+					ent.LastPredictedPositionUpdate = GameState.RawGameTime
+					ent.PredictedPosition.CopyFrom(position)
+					changed_ent_pos = true
+					changed_ent = ent
+				}
 			}
 			break
 		}

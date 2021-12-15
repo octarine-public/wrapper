@@ -1,20 +1,23 @@
 import { GameActivity_t } from "../../Enums/GameActivity_t"
 import EventsSDK from "../../Managers/EventsSDK"
-import Unit from "../../Objects/Base/Unit"
+import { GetPredictionTarget } from "../../Objects/Base/FakeUnit"
 import GameState from "../../Utils/GameState"
 
 EventsSDK.on("UnitAddGesture", (unit, activity) => {
-	if (!(unit instanceof Unit) || activity !== GameActivity_t.ACT_DOTA_TELEPORT_END)
+	if (activity !== GameActivity_t.ACT_DOTA_TELEPORT_END)
 		return
-	const end_pos = unit.TPEndPosition.IsValid
-		? unit.TPEndPosition
-		: unit.LastTPEndPosition
+	const target = GetPredictionTarget(unit)
+	if (target === undefined)
+		return
+	const end_pos = target.TPEndPosition.IsValid
+		? target.TPEndPosition
+		: target.LastTPEndPosition
 	if (end_pos.IsValid) {
-		unit.PredictedPosition.CopyFrom(end_pos)
-		unit.LastRealPredictedPositionUpdate = GameState.RawGameTime
-		unit.LastPredictedPositionUpdate = GameState.RawGameTime
+		target.PredictedPosition.CopyFrom(end_pos)
+		target.LastRealPredictedPositionUpdate = GameState.RawGameTime
+		target.LastPredictedPositionUpdate = GameState.RawGameTime
 	}
-	unit.TPStartTime = -1
-	unit.TPStartPosition.Invalidate()
-	unit.TPEndPosition.Invalidate()
+	target.TPStartTime = -1
+	target.TPStartPosition.Invalidate()
+	target.TPEndPosition.Invalidate()
 })

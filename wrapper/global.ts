@@ -20,6 +20,7 @@ import _RendererSDK from "./Native/RendererSDK"
 import * as _WASM from "./Native/WASM"
 import _Workers from "./Native/Workers"
 import { GameRules as _GameRules, LocalPlayer as _LocalPlayer } from "./Objects/Base/Entity"
+import { FakeUnits as _FakeUnits } from "./Objects/Base/FakeUnit"
 import { PlayerResource as _PlayerResource } from "./Objects/Base/PlayerResource"
 import { SDKClasses } from "./Objects/NativeToSDK"
 import { EntityDataLump as _EntityDataLump } from "./Resources/ParseEntityLump"
@@ -35,6 +36,7 @@ globalThis.Vector4 = _Vector4
 globalThis.AABB = _AABB
 globalThis.DotaMap = _DotaMap
 globalThis.NetworkedParticle = _NetworkedParticle
+globalThis.FakeUnits = _FakeUnits
 
 Object.defineProperty(globalThis, "LocalPlayer", {
 	get: () => {
