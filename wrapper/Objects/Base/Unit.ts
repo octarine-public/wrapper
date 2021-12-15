@@ -67,7 +67,6 @@ export default class Unit extends Entity {
 
 	public readonly Inventory = new Inventory(this)
 	public readonly ModifiersBook = new ModifiersBook(this)
-	public readonly PredictedPosition = new Vector3().Invalidate()
 
 	public IsVisibleForEnemies = Unit.IsVisibleForEnemies(this)
 	public IsTrueSightedForEnemies = false
@@ -161,8 +160,14 @@ export default class Unit extends Entity {
 	public BaseAttackTime = 0
 	public MoveCapabilities = DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE
 	public BonusArmor = 0
-	public LastRealPredictedPositionUpdate = 0
-	public LastPredictedPositionUpdate = 0
+	public TPStartTime = -1
+	public readonly PredictedPosition = new Vector3().Invalidate()
+	public readonly TPStartPosition = new Vector3().Invalidate()
+	public readonly TPEndPosition = new Vector3().Invalidate()
+	public readonly LastTPStartPosition = new Vector3().Invalidate()
+	public readonly LastTPEndPosition = new Vector3().Invalidate()
+	private LastRealPredictedPositionUpdate_ = 0
+	private LastPredictedPositionUpdate_ = 0
 	private IdealSpeed_: Nullable<number>
 	private HealthBarOffset_: Nullable<number>
 	private MagicDamageResist_: Nullable<number>
@@ -177,6 +182,23 @@ export default class Unit extends Entity {
 		"modifier_riki_permanent_invisibility",
 		"modifier_treant_natures_guise_invis",
 	]
+
+	public get LastRealPredictedPositionUpdate(): number {
+		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid)
+			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime
+		return this.LastRealPredictedPositionUpdate_
+	}
+	public set LastRealPredictedPositionUpdate(val: number) {
+		this.LastRealPredictedPositionUpdate_ = val
+	}
+	public get LastPredictedPositionUpdate(): number {
+		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid)
+			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime
+		return this.LastPredictedPositionUpdate_
+	}
+	public set LastPredictedPositionUpdate(val: number) {
+		this.LastPredictedPositionUpdate_ = val
+	}
 
 	/* ======== modifierstate ======== */
 	public get IsIllusion(): boolean {
@@ -465,6 +487,8 @@ export default class Unit extends Entity {
 	public get Position(): Vector3 {
 		if (this.IsVisible || this.IsWaitingToSpawn)
 			return this.RealPosition
+		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid)
+			return this.TPStartPosition
 		return this.PredictedPosition
 	}
 	public get HasFlyingVision(): boolean {
