@@ -558,6 +558,8 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 	const index = msg.get("index") as number
 	const par = NetworkedParticle.Instances.get(index)
 	const msg_type = msg.get("type") as PARTICLE_MESSAGE
+	let changed_ent_pos = false,
+		changed_ent: Nullable<Unit>
 	switch (msg_type) {
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENTITY_POSITION: {
 			const submsg = msg.get("update_entity_position") as RecursiveProtobuf
@@ -568,6 +570,8 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				ent.LastPredictedPositionUpdate = GameState.RawGameTime
 				ent.PredictedPosition.CopyFrom(position)
+				changed_ent_pos = true
+				changed_ent = ent
 			}
 			break
 		}
@@ -580,38 +584,39 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				ent.LastPredictedPositionUpdate = GameState.RawGameTime
 				ent.PredictedPosition.CopyFrom(position)
+				changed_ent_pos = true
+				changed_ent = ent
 			}
 			break
 		}
 		default:
 			break
 	}
-	if (par === undefined) {
-		if (msg_type === PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE) {
-			const submsg = msg.get("create_particle") as RecursiveProtobuf
-			const particleSystemHandle = submsg.get("particle_name_index") as bigint,
-				entID = submsg.get("entity_handle") as number
-			const path = Manifest.GetPathByHash(particleSystemHandle ?? 0n)
-			if (path !== undefined)
-				await EventsSDK.emit(
-					"ParticleCreated",
-					false,
-					new NetworkedParticle(
-						index,
-						path,
-						particleSystemHandle,
-						submsg.get("attach_type") as number,
-						EntityManager.EntityByIndex(entID) ?? entID,
-					),
-				)
-			else
-				console.log(
-					GameState.RawGameTime,
-					`Received unknown particleSystemHandle ${particleSystemHandle} for particle ${index}`,
-				)
-		}
-		return
+	if (par === undefined && msg_type === PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE) {
+		const submsg = msg.get("create_particle") as RecursiveProtobuf
+		const particleSystemHandle = submsg.get("particle_name_index") as bigint,
+			entID = submsg.get("entity_handle") as number
+		const path = Manifest.GetPathByHash(particleSystemHandle ?? 0n)
+		if (path !== undefined)
+			await EventsSDK.emit(
+				"ParticleCreated",
+				false,
+				new NetworkedParticle(
+					index,
+					path,
+					particleSystemHandle,
+					submsg.get("attach_type") as number,
+					EntityManager.EntityByIndex(entID) ?? entID,
+				),
+			)
+		else
+			console.log(
+				GameState.RawGameTime,
+				`Received unknown particleSystemHandle ${particleSystemHandle} for particle ${index}`,
+			)
 	}
+	if (par === undefined)
+		return
 	switch (msg_type) {
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY: {
 			const submsg = msg.get("destroy_particle") as RecursiveProtobuf
@@ -692,6 +697,8 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 				cpEnt[0].LastRealPredictedPositionUpdate = GameState.RawGameTime
 				cpEnt[0].LastPredictedPositionUpdate = GameState.RawGameTime
 				cpEnt[0].PredictedPosition.CopyFrom(position)
+				changed_ent_pos = true
+				changed_ent = cpEnt[0]
 			}
 			break
 		}
@@ -830,6 +837,13 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 		false,
 		par,
 	)
+	if (changed_ent_pos)
+		await EventsSDK.emit(
+			"ParticleUnitPositionUpdated",
+			false,
+			changed_ent,
+			par,
+		)
 }
 
 Events.on("ServerMessage", async (msg_id, buf_) => {

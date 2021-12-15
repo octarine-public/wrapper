@@ -65,6 +65,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "Draw", callback: () => void): EventsSDK
 	on(name: "ParticleCreated", callback: (particle: NetworkedParticle) => void): EventsSDK
 	on(name: "ParticleUpdated", callback: (particle: NetworkedParticle) => void): EventsSDK
+	on(name: "ParticleUnitPositionUpdated", callback: (unit: Unit, particle: NetworkedParticle) => void): EventsSDK
 	on(name: "ParticleReleased", listener: (particle: NetworkedParticle) => void): EventsSDK
 	on(name: "ParticleDestroyed", listener: (particle: NetworkedParticle) => void): EventsSDK
 	on(name: "BloodImpact", callback: (target: Entity | number, scale: number, xnormal: number, ynormal: number) => void): EventsSDK
