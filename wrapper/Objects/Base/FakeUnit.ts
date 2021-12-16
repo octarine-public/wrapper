@@ -1,6 +1,7 @@
 import Vector3 from "../../Base/Vector3"
 import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
+import { arrayRemove } from "../../Utils/ArrayExtensions"
 import GameState from "../../Utils/GameState"
 import Entity from "./Entity"
 import Unit from "./Unit"
@@ -50,7 +51,8 @@ export default class FakeUnit {
 		return true
 	}
 }
-export const FakeUnits = new Map<number, FakeUnit>()
+const FakeUnitsMap = new Map<number, FakeUnit>()
+export const FakeUnits: FakeUnit[] = []
 
 export function GetPredictionTarget(handle: Entity | number): Nullable<Unit | FakeUnit> {
 	if (handle instanceof Entity)
@@ -66,19 +68,21 @@ export function GetPredictionTarget(handle: Entity | number): Nullable<Unit | Fa
 			: undefined
 	const index = handle & EntityManager.INDEX_MASK
 	const serial = (handle >> EntityManager.INDEX_BITS) & EntityManager.SERIAL_MASK
-	let fake_unit = FakeUnits.get(index)
+	let fake_unit = FakeUnitsMap.get(index)
 	if (fake_unit === undefined) {
 		fake_unit = new FakeUnit(index, serial)
-		FakeUnits.set(index, fake_unit)
+		FakeUnitsMap.set(index, fake_unit)
+		FakeUnits.push(fake_unit)
 	}
 	return fake_unit
 }
 
 EventsSDK.on("EntityCreated", ent => {
-	const fake_unit = FakeUnits.get(ent.Index)
+	const fake_unit = FakeUnitsMap.get(ent.Index)
 	if (fake_unit === undefined)
 		return
-	FakeUnits.delete(ent.Index)
+	FakeUnitsMap.delete(ent.Index)
+	arrayRemove(FakeUnits, fake_unit)
 	if (!(ent instanceof Unit))
 		return
 	ent.TPStartTime = fake_unit.TPStartTime
@@ -87,4 +91,7 @@ EventsSDK.on("EntityCreated", ent => {
 	ent.LastTPStartPosition.CopyFrom(fake_unit.LastTPStartPosition)
 	ent.LastTPEndPosition.CopyFrom(fake_unit.LastTPEndPosition)
 })
-EventsSDK.on("GameEnded", () => FakeUnits.clear())
+EventsSDK.on("GameEnded", () => {
+	FakeUnitsMap.clear()
+	FakeUnits.splice(0)
+})
