@@ -50,7 +50,7 @@ export default class Creep extends Unit {
 		return multiplier
 	}
 	public TryAssignLane(): void {
-		if (this.Lane !== MapArea.Unknown)
+		if (this.IsNeutral || this.Owner !== undefined || this.Lane !== MapArea.Unknown)
 			return
 		const area = DotaMap.GetMapArea(this.Position, true)
 		switch (area[0]) {
@@ -74,6 +74,10 @@ EventsSDK.on("Tick", dt => {
 	const wave_time = ((GameRules?.GameTime ?? 0) % 30)
 	const spawn_creeps = wave_time >= 0 && wave_time < (1 / 3)
 	Creeps.forEach(creep => {
+		if (creep.IsNeutral || creep.Owner !== undefined) {
+			creep.Lane = MapArea.Unknown
+			return
+		}
 		creep.TryAssignLane()
 		if (creep.PredictedIsWaitingToSpawn)
 			creep.PredictedIsWaitingToSpawn = creep.IsWaitingToSpawn
