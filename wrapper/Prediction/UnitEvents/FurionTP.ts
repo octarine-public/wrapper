@@ -6,14 +6,14 @@ import GameState from "../../Utils/GameState"
 
 const lastTeleports: [NetworkedParticle, Unit | FakeUnit][] = [],
 	lastParticles: NetworkedParticle[] = []
-export function HandleParticleChangeFurionTP(par: NetworkedParticle, is_update: boolean): void {
+export async function HandleParticleChangeFurionTP(par: NetworkedParticle, is_update: boolean): Promise<void> {
 	if (!par.Path.includes("furion_teleport"))
 		return
 	const is_end = par.Path.includes("furion_teleport_end"),
 		unit = par.AttachedTo
 	if (!is_update) {
 		if (!is_end) {
-			const target = GetPredictionTarget(unit)
+			const target = await GetPredictionTarget(unit)
 			if (target !== undefined) {
 				// PredictedPosition should be set in Gesture handler if TP actually finished
 				target.TPStartTime = -1
@@ -46,7 +46,7 @@ export function HandleParticleChangeFurionTP(par: NetworkedParticle, is_update: 
 		if (firstTP !== undefined)
 			firstTP[1].TPEndPosition.CopyFrom(cpPosision)
 	} else {
-		const target = GetPredictionTarget(unit)
+		const target = await GetPredictionTarget(unit)
 		if (target === undefined)
 			return
 		if (target.TPStartTime === -1)

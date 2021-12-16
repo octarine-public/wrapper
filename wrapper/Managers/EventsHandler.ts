@@ -566,7 +566,7 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			const submsg = msg.get("update_entity_position") as RecursiveProtobuf
 			const position = CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf),
 				entID = submsg.get("entity_handle") as number
-			const ent = GetPredictionTarget(entID)
+			const ent = await GetPredictionTarget(entID)
 			if (ent !== undefined) {
 				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				ent.LastPredictedPositionUpdate = GameState.RawGameTime
@@ -580,7 +580,7 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			const submsg = msg.get("update_particle_ent") as RecursiveProtobuf
 			const entID = submsg.get("entity_handle") as number,
 				position = CMsgVectorToVector3(submsg.get("fallback_position") as RecursiveProtobuf)
-			const ent = GetPredictionTarget(entID)
+			const ent = await GetPredictionTarget(entID)
 			if (ent !== undefined) {
 				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				ent.LastPredictedPositionUpdate = GameState.RawGameTime
@@ -695,7 +695,7 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			par.ControlPointsFallback.set(cp, position)
 			const cpEnt = par.ControlPointsEnt.get(cp)
 			if (cpEnt !== undefined) {
-				const ent = GetPredictionTarget(cpEnt[0])
+				const ent = await GetPredictionTarget(cpEnt[0])
 				if (ent !== undefined) {
 					ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 					ent.LastPredictedPositionUpdate = GameState.RawGameTime

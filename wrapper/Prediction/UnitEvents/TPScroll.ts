@@ -3,7 +3,7 @@ import Entity from "../../Objects/Base/Entity"
 import { GetPredictionTarget } from "../../Objects/Base/FakeUnit"
 import GameState from "../../Utils/GameState"
 
-export function HandleParticleChangeTPScroll(par: NetworkedParticle, is_update: boolean): void {
+export async function HandleParticleChangeTPScroll(par: NetworkedParticle, is_update: boolean): Promise<void> {
 	if (!par.Path.includes("teleport_end"))
 		return
 	const cpEntTarget0 = par.ControlPointsEnt.get(0),
@@ -29,7 +29,7 @@ export function HandleParticleChangeTPScroll(par: NetworkedParticle, is_update: 
 		|| cpColor.y < 0 || cpColor.z > 1
 	)
 		return
-	const target = GetPredictionTarget(cpEntTeleporting[0])
+	const target = await GetPredictionTarget(cpEntTeleporting[0])
 	if (target === undefined)
 		return
 	target.LastRealPredictedPositionUpdate = GameState.RawGameTime

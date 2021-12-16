@@ -3,7 +3,9 @@ import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
 import GameState from "../../Utils/GameState"
+import UnitData from "../DataBook/UnitData"
 import Entity from "./Entity"
+import { PlayerResource } from "./PlayerResource"
 import Unit from "./Unit"
 
 export default class FakeUnit {
@@ -13,6 +15,7 @@ export default class FakeUnit {
 	public readonly TPEndPosition = new Vector3().Invalidate()
 	public readonly LastTPStartPosition = new Vector3().Invalidate()
 	public readonly LastTPEndPosition = new Vector3().Invalidate()
+	public Name = ""
 	private LastRealPredictedPositionUpdate_ = 0
 	private LastPredictedPositionUpdate_ = 0
 
@@ -50,11 +53,18 @@ export default class FakeUnit {
 		this.Serial = serial
 		return true
 	}
+	public async UpdateName(): Promise<void> {
+		if (this.Name !== "")
+			return
+		const data = PlayerResource?.PlayerTeamData?.find(x => this.HandleMatches(x.SelectedHeroIndex))
+		if (data !== undefined)
+			this.Name = await UnitData.GetHeroNameByID(data.SelectedHeroID)
+	}
 }
 const FakeUnitsMap = new Map<number, FakeUnit>()
 export const FakeUnits: FakeUnit[] = []
 
-export function GetPredictionTarget(handle: Entity | number): Nullable<Unit | FakeUnit> {
+export async function GetPredictionTarget(handle: Entity | number): Promise<Nullable<Unit | FakeUnit>> {
 	if (handle instanceof Entity)
 		return handle instanceof Unit
 			? handle
@@ -73,6 +83,7 @@ export function GetPredictionTarget(handle: Entity | number): Nullable<Unit | Fa
 		fake_unit = new FakeUnit(index, serial)
 		FakeUnitsMap.set(index, fake_unit)
 		FakeUnits.push(fake_unit)
+		await fake_unit.UpdateName()
 	}
 	return fake_unit
 }
@@ -94,4 +105,9 @@ EventsSDK.on("EntityCreated", ent => {
 EventsSDK.on("GameEnded", () => {
 	FakeUnitsMap.clear()
 	FakeUnits.splice(0)
+})
+
+EventsSDK.on("PostDataUpdate", async () => {
+	for (const fake_unit of FakeUnits)
+		await fake_unit.UpdateName()
 })
