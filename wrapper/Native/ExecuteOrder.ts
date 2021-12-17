@@ -623,13 +623,15 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 		)
 			return current_pos
 		const hitbox = GetEntityHitBox(last_order_target, camera_vec)
-		if (hitbox === undefined || (hitbox.Points.some(point => (
-			latest_camera_red_zone_poly_screen.IsOutside(point)
-			|| (
-				(yellow_zone_reached || green_zone_reached)
-				&& latest_camera_green_zone_poly_screen.IsOutside(point)
-			)
-		)) && CanMoveCamera(camera_vec, current_pos)))
+		if (hitbox === undefined || hitbox.Points.some(point => (
+			(
+				latest_camera_red_zone_poly_screen.IsOutside(point)
+				|| (
+					(yellow_zone_reached || green_zone_reached)
+					&& latest_camera_green_zone_poly_screen.IsOutside(point)
+				)
+			) && CanMoveCamera(camera_vec, point)
+		)))
 			return last_order_target.Position
 		// TODO: try to find best spot between other entities' hitboxes, i.e. between creeps
 		const center = hitbox.Center,
@@ -650,7 +652,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 		}
 		if (
 			latest_camera_red_zone_poly_screen.IsOutside(center)
-			&& !CanMoveCamera(camera_vec, center)
+			&& CanMoveCamera(camera_vec, center)
 		)
 			return last_order_target.Position
 		return center
@@ -667,8 +669,8 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 				|| (
 					(yellow_zone_reached || green_zone_reached)
 					&& latest_camera_green_zone_poly_screen.IsOutside(w2s)
-				)) && !CanMoveCamera(camera_vec, w2s)
-			)
+				)
+			) && CanMoveCamera(camera_vec, w2s))
 		)
 			return last_order_target
 		// allow 0.5% error (i.e. 19x10 for 1920x1080)
@@ -677,7 +679,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 		if (new Rectangle(min, max).Contains(current_pos)) {
 			if (
 				latest_camera_red_zone_poly_screen.IsOutside(current_pos)
-				&& !CanMoveCamera(camera_vec, current_pos)
+				&& CanMoveCamera(camera_vec, current_pos)
 			)
 				return last_order_target
 			return current_pos
@@ -685,7 +687,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 		const ret = min.AddForThis(max.SubtractForThis(min).MultiplyScalarForThis(Math.random()))
 		if (
 			latest_camera_red_zone_poly_screen.IsOutside(ret)
-			&& !CanMoveCamera(camera_vec, ret)
+			&& CanMoveCamera(camera_vec, ret)
 		)
 			return last_order_target
 		return ret
@@ -763,7 +765,8 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 					|| (
 						(yellow_zone_reached || green_zone_reached)
 						&& latest_camera_green_zone_poly_screen.IsOutside(w2s)
-					)) && CanMoveCamera(camera_vec, w2s))
+					)
+				) && CanMoveCamera(camera_vec, w2s))
 			)
 				return pos.Clone()
 			return w2s
