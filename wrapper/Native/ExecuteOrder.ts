@@ -850,39 +850,39 @@ function CanMoveCamera(camera_vec: Vector2, target_pos: Vector2): boolean {
 	const bounds_min = bounds_ent.BoundsMin,
 		bounds_max = bounds_ent.BoundsMax
 	let bounds = 0
-	if (
-		target_pos.x > 0.5
-		&& (
-			Math.abs(camera_vec.x - bounds_max.x) < 1 // right
-			|| camera_vec.x > bounds_max.x
-		)
-	)
+	if (target_pos.x !== 0.5) {
 		bounds++
-	if (
-		target_pos.y > 0.5
-		&& (
-			Math.abs(camera_vec.y - bounds_min.y) < 1 // bot
-			|| camera_vec.y < bounds_min.y
-		)
-	)
+		if (target_pos.x < 0.5) {
+			if (
+				Math.abs(camera_vec.x - bounds_min.x) < 1 // left
+				|| camera_vec.x < bounds_min.x
+			)
+				bounds--
+		} else {
+			if (
+				Math.abs(camera_vec.x - bounds_max.x) < 1 // right
+				|| camera_vec.x > bounds_max.x
+			)
+				bounds--
+		}
+	}
+	if (target_pos.y !== 0.5) {
 		bounds++
-	if (
-		target_pos.x < 0.5
-		&& (
-			Math.abs(camera_vec.x - bounds_min.x) < 1 // left
-			|| camera_vec.x < bounds_min.x
-		)
-	)
-		bounds++
-	if (
-		target_pos.y < 0.5
-		&& (
-			Math.abs(camera_vec.y - bounds_max.y) < 1 // top
-			|| camera_vec.y > bounds_max.y
-		)
-	)
-		bounds++
-	return bounds < 2
+		if (target_pos.y < 0.5) {
+			if (
+				Math.abs(camera_vec.y - bounds_max.y) < 1 // top
+				|| camera_vec.y > bounds_max.y
+			)
+				bounds--
+		} else {
+			if (
+				Math.abs(camera_vec.y - bounds_min.y) < 1 // bot
+				|| camera_vec.y < bounds_min.y
+			)
+				bounds--
+		}
+	}
+	return bounds > 0
 }
 function MoveCameraByScreen(target_pos: Vector3, current_time: number): Vector2 {
 	const dist_right_bot = target_pos.DistanceSqr2D(latest_camera_green_zone_poly_world.Points[0]),
@@ -967,7 +967,6 @@ function MoveCamera(
 	camera_vec: Vector2,
 	target_pos: Vector3,
 	current_time: number,
-	check = false,
 ): [Vector2, boolean] {
 	if (target_pos.Distance2D(camera_vec) > 1500) {
 		const nearest = orderByFirst(Units.filter(ent => (
@@ -986,8 +985,11 @@ function MoveCamera(
 			return [latest_usercmd.MousePosition, false]
 		}
 	}
-	if (latest_camera_poly.Center.Distance(target_pos) > ExecuteOrder.camera_minimap_spaces * default_camera_dist)
-		return [MinimapSDK.WorldToMinimap(target_pos).DivideForThis(RendererSDK.WindowSize), true]
+	if (latest_camera_poly.Center.Distance(target_pos) > ExecuteOrder.camera_minimap_spaces * default_camera_dist) {
+		const minimap_target = MinimapSDK.WorldToMinimap(target_pos).DivideForThis(RendererSDK.WindowSize)
+		if (minimap_target.x <= 1 && minimap_target.x >= 0 && minimap_target.y <= 1 && minimap_target.y >= 0)
+			return [minimap_target, true]
+	}
 	return [MoveCameraByScreen(target_pos, current_time), false]
 }
 
