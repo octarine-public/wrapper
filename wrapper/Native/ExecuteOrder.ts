@@ -1293,6 +1293,18 @@ Events.on("PrepareUnitOrders", async () => {
 	return true
 })
 
+Events.on("DebuggerPrepareUnitOrders", async (is_user_input: boolean, was_cancelled: boolean) => {
+	const order = ExecuteOrder.fromNative()
+	if (order !== undefined)
+		await EventsSDK.emit(
+			"DebuggerPrepareUnitOrders",
+			true,
+			order,
+			is_user_input,
+			was_cancelled,
+		)
+})
+
 function ClearHumanizerState() {
 	ExecuteOrder.order_queue.splice(0)
 	last_order_finish = 0

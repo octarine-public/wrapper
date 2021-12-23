@@ -80,6 +80,7 @@ declare interface Events extends EventEmitter {
 	on(name: "RequestUserCmd", callback: () => void): EventEmitter
 	on(name: "Draw", callback: (visual_data: ArrayBuffer) => void): EventEmitter
 	on(name: "PrepareUnitOrders", callback: () => false | any): EventEmitter
+	on(name: "DebuggerPrepareUnitOrders", callback: (is_user_input: boolean, was_cancelled: boolean) => void): EventEmitter
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "CustomGameEvent", listener: (event_name: string, data: Map<string, BinaryKV>) => void): EventEmitter
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
