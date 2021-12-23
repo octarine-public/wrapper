@@ -623,13 +623,15 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 		)
 			return current_pos
 		const hitbox = GetEntityHitBox(last_order_target, camera_vec)
-		if (hitbox === undefined || (hitbox.Points.some(point => (
-			latest_camera_red_zone_poly_screen.IsOutside(point)
-			|| (
-				(yellow_zone_reached || green_zone_reached)
-				&& latest_camera_green_zone_poly_screen.IsOutside(point)
-			)
-		)) && CanMoveCamera(camera_vec, current_pos)))
+		if (hitbox === undefined || hitbox.Points.some(point => (
+			(
+				latest_camera_red_zone_poly_screen.IsOutside(point)
+				|| (
+					(yellow_zone_reached || green_zone_reached)
+					&& latest_camera_green_zone_poly_screen.IsOutside(point)
+				)
+			) && CanMoveCamera(camera_vec, point)
+		)))
 			return last_order_target.Position
 		// TODO: try to find best spot between other entities' hitboxes, i.e. between creeps
 		const center = hitbox.Center,
@@ -650,7 +652,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 		}
 		if (
 			latest_camera_red_zone_poly_screen.IsOutside(center)
-			&& !CanMoveCamera(camera_vec, center)
+			&& CanMoveCamera(camera_vec, center)
 		)
 			return last_order_target.Position
 		return center
@@ -667,8 +669,8 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 				|| (
 					(yellow_zone_reached || green_zone_reached)
 					&& latest_camera_green_zone_poly_screen.IsOutside(w2s)
-				)) && !CanMoveCamera(camera_vec, w2s)
-			)
+				)
+			) && CanMoveCamera(camera_vec, w2s))
 		)
 			return last_order_target
 		// allow 0.5% error (i.e. 19x10 for 1920x1080)
@@ -677,7 +679,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 		if (new Rectangle(min, max).Contains(current_pos)) {
 			if (
 				latest_camera_red_zone_poly_screen.IsOutside(current_pos)
-				&& !CanMoveCamera(camera_vec, current_pos)
+				&& CanMoveCamera(camera_vec, current_pos)
 			)
 				return last_order_target
 			return current_pos
@@ -685,7 +687,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 		const ret = min.AddForThis(max.SubtractForThis(min).MultiplyScalarForThis(Math.random()))
 		if (
 			latest_camera_red_zone_poly_screen.IsOutside(ret)
-			&& !CanMoveCamera(camera_vec, ret)
+			&& CanMoveCamera(camera_vec, ret)
 		)
 			return last_order_target
 		return ret
@@ -763,7 +765,8 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 					|| (
 						(yellow_zone_reached || green_zone_reached)
 						&& latest_camera_green_zone_poly_screen.IsOutside(w2s)
-					)) && CanMoveCamera(camera_vec, w2s))
+					)
+				) && CanMoveCamera(camera_vec, w2s))
 			)
 				return pos.Clone()
 			return w2s
@@ -847,39 +850,39 @@ function CanMoveCamera(camera_vec: Vector2, target_pos: Vector2): boolean {
 	const bounds_min = bounds_ent.BoundsMin,
 		bounds_max = bounds_ent.BoundsMax
 	let bounds = 0
-	if (
-		target_pos.x > 0.5
-		&& (
-			Math.abs(camera_vec.x - bounds_max.x) < 1 // right
-			|| camera_vec.x > bounds_max.x
-		)
-	)
+	if (target_pos.x !== 0.5) {
 		bounds++
-	if (
-		target_pos.y > 0.5
-		&& (
-			Math.abs(camera_vec.y - bounds_min.y) < 1 // bot
-			|| camera_vec.y < bounds_min.y
-		)
-	)
+		if (target_pos.x < 0.5) {
+			if (
+				Math.abs(camera_vec.x - bounds_min.x) < 1 // left
+				|| camera_vec.x < bounds_min.x
+			)
+				bounds--
+		} else {
+			if (
+				Math.abs(camera_vec.x - bounds_max.x) < 1 // right
+				|| camera_vec.x > bounds_max.x
+			)
+				bounds--
+		}
+	}
+	if (target_pos.y !== 0.5) {
 		bounds++
-	if (
-		target_pos.x < 0.5
-		&& (
-			Math.abs(camera_vec.x - bounds_min.x) < 1 // left
-			|| camera_vec.x < bounds_min.x
-		)
-	)
-		bounds++
-	if (
-		target_pos.y < 0.5
-		&& (
-			Math.abs(camera_vec.y - bounds_max.y) < 1 // top
-			|| camera_vec.y > bounds_max.y
-		)
-	)
-		bounds++
-	return bounds < 2
+		if (target_pos.y < 0.5) {
+			if (
+				Math.abs(camera_vec.y - bounds_max.y) < 1 // top
+				|| camera_vec.y > bounds_max.y
+			)
+				bounds--
+		} else {
+			if (
+				Math.abs(camera_vec.y - bounds_min.y) < 1 // bot
+				|| camera_vec.y < bounds_min.y
+			)
+				bounds--
+		}
+	}
+	return bounds > 0
 }
 function MoveCameraByScreen(target_pos: Vector3, current_time: number): Vector2 {
 	const dist_right_bot = target_pos.DistanceSqr2D(latest_camera_green_zone_poly_world.Points[0]),
@@ -964,7 +967,6 @@ function MoveCamera(
 	camera_vec: Vector2,
 	target_pos: Vector3,
 	current_time: number,
-	check = false,
 ): [Vector2, boolean] {
 	if (target_pos.Distance2D(camera_vec) > 1500) {
 		const nearest = orderByFirst(Units.filter(ent => (
@@ -983,8 +985,11 @@ function MoveCamera(
 			return [latest_usercmd.MousePosition, false]
 		}
 	}
-	if (latest_camera_poly.Center.Distance(target_pos) > ExecuteOrder.camera_minimap_spaces * default_camera_dist)
-		return [MinimapSDK.WorldToMinimap(target_pos).DivideForThis(RendererSDK.WindowSize), true]
+	if (latest_camera_poly.Center.Distance(target_pos) > ExecuteOrder.camera_minimap_spaces * default_camera_dist) {
+		const minimap_target = MinimapSDK.WorldToMinimap(target_pos).DivideForThis(RendererSDK.WindowSize)
+		if (minimap_target.x <= 1 && minimap_target.x >= 0 && minimap_target.y <= 1 && minimap_target.y >= 0)
+			return [minimap_target, true]
+	}
 	return [MoveCameraByScreen(target_pos, current_time), false]
 }
 
@@ -1288,6 +1293,18 @@ Events.on("PrepareUnitOrders", async () => {
 		return false
 	}
 	return true
+})
+
+Events.on("DebuggerPrepareUnitOrders", async (is_user_input: boolean, was_cancelled: boolean) => {
+	const order = ExecuteOrder.fromNative()
+	if (order !== undefined)
+		await EventsSDK.emit(
+			"DebuggerPrepareUnitOrders",
+			true,
+			order,
+			is_user_input,
+			was_cancelled,
+		)
 })
 
 function ClearHumanizerState() {

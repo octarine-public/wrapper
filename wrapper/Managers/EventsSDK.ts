@@ -71,6 +71,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "ParticleDestroyed", listener: (particle: NetworkedParticle) => void): EventsSDK
 	on(name: "BloodImpact", callback: (target: Entity | number, scale: number, xnormal: number, ynormal: number) => void): EventsSDK
 	on(name: "PrepareUnitOrders", callback: (order: ExecuteOrder) => false | any): EventsSDK
+	on(name: "DebuggerPrepareUnitOrders", callback: (order: ExecuteOrder, is_user_input: boolean, was_cancelled: boolean) => void): EventsSDK
 	on(name: "LinearProjectileCreated", callback: (proj: LinearProjectile) => void): EventsSDK
 	on(name: "LinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): EventsSDK
 	on(name: "TrackingProjectileCreated", callback: (proj: TrackingProjectile) => void): EventsSDK
