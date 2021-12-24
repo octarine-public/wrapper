@@ -1,16 +1,16 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
-import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import Entity, { GameRules } from "../Base/Entity"
 import Unit from "../Base/Unit"
+import FakeUnit from "./FakeUnit"
 
 @WrapperClass("CDOTA_Unit_Roshan")
 export default class Roshan extends Unit {
 	public static HP = 0
 	public static HPRegenCounter = 0
 	public static MaxHP = 0
-	public static Instance: Nullable<Entity | number>
+	public static Instance: Nullable<Unit | FakeUnit>
 	public static get HPRegen() {
 		return 20
 	}
@@ -33,9 +33,7 @@ let last_minute = 0
 EventsSDK.on("ParticleCreated", par => {
 	if (par.Path !== "particles/neutral_fx/roshan_spawn.vpcf")
 		return
-	Roshan.Instance = typeof par.AttachedTo === "number"
-		? par.AttachedTo & EntityManager.INDEX_MASK
-		: par.AttachedTo
+	Roshan.Instance = par.AttachedTo
 	if (GameRules === undefined)
 		return
 	last_minute = Math.max(0, Math.floor(GameRules.GameTime / 60))
@@ -45,8 +43,7 @@ EventsSDK.on("ParticleCreated", par => {
 EventsSDK.on("GameEvent", (name, obj) => {
 	if (name !== "entity_hurt")
 		return
-	const ent = EntityManager.EntityByIndex(obj.entindex_killed) ?? (obj.entindex_killed & EntityManager.INDEX_MASK)
-	if (ent === Roshan.Instance)
+	if (Roshan.Instance?.HandleMatches(obj.entindex_killed))
 		Roshan.HP = Math.max(Math.round(Roshan.HP - obj.damage), 0)
 })
 EventsSDK.on("LifeStateChanged", ent => {

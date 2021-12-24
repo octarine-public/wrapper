@@ -1,8 +1,9 @@
 import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
-import EntityManager from "../../Managers/EntityManager"
 import Entity from "./Entity"
+import FakeUnit from "./FakeUnit"
+import Unit from "./Unit"
 
 export class Projectile {
 	public IsValid = true
@@ -10,16 +11,12 @@ export class Projectile {
 
 	constructor(
 		public readonly ID: number,
-		protected path: string,
-		protected particleSystemHandle: bigint,
-		public Source: Entity | number,
+		public ParticlePath: string,
+		public ParticleSystemHandle: bigint,
+		public Source: Nullable<Unit | FakeUnit>,
 		public readonly ColorGemColor: Color,
-		protected speed: number,
+		public Speed: number,
 	) { }
-
-	public get ParticlePath(): string { return this.path }
-	public get ParticleSystemHandle(): string { return this.ParticleSystemHandle }
-	public get Speed(): number { return this.speed }
 }
 
 export class LinearProjectile extends Projectile {
@@ -29,7 +26,7 @@ export class LinearProjectile extends Projectile {
 
 	constructor(
 		projID: number,
-		ent: Entity | number,
+		ent: Nullable<Unit | FakeUnit>,
 		path: string,
 		particleSystemHandle: bigint,
 		public readonly MaxSpeed: number,
@@ -53,8 +50,8 @@ export class TrackingProjectile extends Projectile {
 
 	constructor(
 		projID: number,
-		source: Entity | number,
-		private TargetEntity: Nullable<Entity | number>,
+		source: Nullable<Unit | FakeUnit>,
+		public Target: Nullable<Unit | FakeUnit>,
 		speed: number,
 		public readonly SourceAttachment: string,
 		path: string,
@@ -78,22 +75,11 @@ export class TrackingProjectile extends Projectile {
 	public get IsAttack(): boolean { return this.isAttack }
 	public get ExpireTime(): number { return this.expireTime }
 
-	public get Target(): Nullable<Entity | number> {
-		if (this.IsDodged)
-			return undefined
-		if (!(this.TargetEntity instanceof Entity)) {
-			const ent = EntityManager.EntityByIndex(this.TargetEntity as number)
-			if (ent !== undefined)
-				return this.TargetEntity = ent
-		}
-		return this.TargetEntity
-	}
-
-	public Update(TargetEntity: Nullable<Entity | number>, Speed: number, path: string, particleSystemHandle: bigint, dodgeable: boolean, isAttack: boolean, expireTime: number, launchTick: number, targetLoc: Vector3) {
-		this.TargetEntity = TargetEntity
-		this.speed = Speed
-		this.path = path
-		this.particleSystemHandle = particleSystemHandle
+	public Update(TargetEntity: Nullable<Unit | FakeUnit>, Speed: number, path: string, particleSystemHandle: bigint, dodgeable: boolean, isAttack: boolean, expireTime: number, launchTick: number, targetLoc: Vector3) {
+		this.Target = TargetEntity
+		this.Speed = Speed
+		this.ParticlePath = path
+		this.ParticleSystemHandle = particleSystemHandle
 		this.dodgeable = dodgeable
 		this.isAttack = isAttack
 		this.expireTime = expireTime

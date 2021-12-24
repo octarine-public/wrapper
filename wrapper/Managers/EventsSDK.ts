@@ -69,7 +69,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "ParticleUnitPositionUpdated", callback: (unit: FakeUnit | Unit, particle: NetworkedParticle) => void): EventsSDK
 	on(name: "ParticleReleased", listener: (particle: NetworkedParticle) => void): EventsSDK
 	on(name: "ParticleDestroyed", listener: (particle: NetworkedParticle) => void): EventsSDK
-	on(name: "BloodImpact", callback: (target: Entity | number, scale: number, xnormal: number, ynormal: number) => void): EventsSDK
+	on(name: "BloodImpact", callback: (target: Nullable<Unit | FakeUnit>, scale: number, xnormal: number, ynormal: number) => void): EventsSDK
 	on(name: "PrepareUnitOrders", callback: (order: ExecuteOrder) => false | any): EventsSDK
 	on(name: "DebuggerPrepareUnitOrders", callback: (order: ExecuteOrder, is_user_input: boolean, was_cancelled: boolean) => void): EventsSDK
 	on(name: "LinearProjectileCreated", callback: (proj: LinearProjectile) => void): EventsSDK
@@ -77,7 +77,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "TrackingProjectileCreated", callback: (proj: TrackingProjectile) => void): EventsSDK
 	on(name: "TrackingProjectileUpdated", callback: (proj: TrackingProjectile) => void): EventsSDK
 	on(name: "TrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventsSDK
-	on(name: "TrackingProjectilesDodged", callback: (ent: Entity | number, attacks_only: boolean) => void): EventsSDK
+	on(name: "TrackingProjectilesDodged", callback: (ent: Nullable<Unit | FakeUnit>, attacks_only: boolean) => void): EventsSDK
 	on(name: "UnitAnimation", callback: (
 		npc: Unit,
 		sequenceVariant: number,
@@ -93,7 +93,7 @@ interface EventsSDK extends EventEmitter {
 	) => void): EventsSDK
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventsSDK
 	on(name: "UnitSpeech", listener: (
-		npc: Unit | number,
+		npc: Nullable<Unit | FakeUnit>,
 		concept: number,
 		response: string,
 		recipient_type: number,
@@ -103,9 +103,9 @@ interface EventsSDK extends EventEmitter {
 		predelay_range: number,
 		flags: number,
 	) => void): EventsSDK
-	on(name: "UnitSpeechMute", listener: (npc: Unit | number, delay: number) => void): EventsSDK
+	on(name: "UnitSpeechMute", listener: (npc: Nullable<Unit | FakeUnit>, delay: number) => void): EventsSDK
 	on(name: "UnitAddGesture", listener: (
-		npc: Unit | number,
+		npc: Nullable<Unit | FakeUnit>,
 		activity: number,
 		slot: number,
 		fade_in: number,
@@ -113,8 +113,8 @@ interface EventsSDK extends EventEmitter {
 		playback_rate: number,
 		sequence_variant: number,
 	) => void): EventsSDK
-	on(name: "UnitRemoveGesture", listener: (npc: Unit | number, activity: number) => void): EventsSDK
-	on(name: "UnitFadeGesture", listener: (npc: Unit | number, activity: number) => void): EventsSDK
+	on(name: "UnitRemoveGesture", listener: (npc: Nullable<Unit | FakeUnit>, activity: number) => void): EventsSDK
+	on(name: "UnitFadeGesture", listener: (npc: Nullable<Unit | FakeUnit>, activity: number) => void): EventsSDK
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventsSDK
 	on(name: "LifeStateChanged", listener: (ent: Entity) => void): EventsSDK
 	on(name: "EntityNameChanged", listener: (ent: Entity) => void): EventsSDK
@@ -143,7 +143,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "UpdateStringTable", listener: (name: string, update: Map<number, [string, Uint8Array]>) => void): EventsSDK
 	on(name: "StartSound", listener: (
 		name: string,
-		source_ent: Nullable<Entity | number>,
+		source_ent: Nullable<Unit | FakeUnit>,
 		position: Vector3,
 		seed: number,
 		start_time: number,

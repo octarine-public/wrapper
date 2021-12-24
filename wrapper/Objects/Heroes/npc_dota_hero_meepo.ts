@@ -16,7 +16,7 @@ export default class npc_dota_hero_meepo extends Hero {
 		return this.WhichMeepo !== 0
 	}
 	public get IsIllusion(): boolean {
-		return this.ReplicatingOtherHeroModel_ !== 0 && !this.IsClone
+		return super.IsIllusion && !this.IsClone
 	}
 	public get CanBeMainHero(): boolean {
 		return super.CanBeMainHero && !this.IsClone

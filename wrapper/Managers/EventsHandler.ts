@@ -607,7 +607,7 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 					path,
 					particleSystemHandle,
 					submsg.get("attach_type") as number,
-					EntityManager.EntityByIndex(entID) ?? entID,
+					await GetPredictionTarget(entID),
 				),
 			)
 		else
@@ -695,14 +695,11 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			par.ControlPointsFallback.set(cp, position)
 			const cpEnt = par.ControlPointsEnt.get(cp)
 			if (cpEnt !== undefined) {
-				const ent = await GetPredictionTarget(cpEnt[0])
-				if (ent !== undefined) {
-					ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
-					ent.LastPredictedPositionUpdate = GameState.RawGameTime
-					ent.PredictedPosition.CopyFrom(position)
-					changed_ent_pos = true
-					changed_ent = ent
-				}
+				cpEnt[0].LastRealPredictedPositionUpdate = GameState.RawGameTime
+				cpEnt[0].LastPredictedPositionUpdate = GameState.RawGameTime
+				cpEnt[0].PredictedPosition.CopyFrom(position)
+				changed_ent_pos = true
+				changed_ent = cpEnt[0]
 			}
 			break
 		}
@@ -711,16 +708,17 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			const entID = submsg.get("entity_handle") as number,
 				cp = submsg.get("control_point") as number,
 				position = CMsgVectorToVector3(submsg.get("fallback_position") as RecursiveProtobuf)
-			const ent = EntityManager.EntityByIndex(entID) ?? entID
-			par.ControlPointsEnt.set(
-				cp,
-				[
-					ent,
-					submsg.get("attach_type") as number,
-					submsg.get("attachment") as number,
-					submsg.get("include_wearables") as boolean,
-				],
-			)
+			const ent = await GetPredictionTarget(entID)
+			if (ent !== undefined)
+				par.ControlPointsEnt.set(
+					cp,
+					[
+						ent,
+						submsg.get("attach_type") as number,
+						submsg.get("attachment") as number,
+						submsg.get("include_wearables") as boolean,
+					],
+				)
 			par.ControlPointsFallback.set(cp, position)
 			break
 		}
@@ -910,7 +908,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 				seed = (msg.get("seed") as number) ?? 0,
 				start_time = (msg.get("start_time") as number) ?? -1,
 				packed_params = msg.get("packed_params") as Nullable<Uint8Array>
-			const ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? handle,
+			const ent = await GetPredictionTarget(handle),
 				position = new Vector3()
 			if (packed_params !== undefined && packed_params.byteLength >= 19) {
 				const stream = new BinaryStream(new DataView(
@@ -936,7 +934,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 		case 488: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_UnitEvent")
 			const handle = msg.get("entity_index") as number
-			const ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? handle
+			const ent = await GetPredictionTarget(handle)
 			if (ent instanceof Entity && !(ent instanceof Unit))
 				break
 			switch (msg.get("msg_type") as EDotaEntityMessages) {

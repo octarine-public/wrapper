@@ -1,13 +1,9 @@
 import { GameActivity_t } from "../../Enums/GameActivity_t"
 import EventsSDK from "../../Managers/EventsSDK"
-import { GetPredictionTarget } from "../../Objects/Base/FakeUnit"
 import GameState from "../../Utils/GameState"
 
-EventsSDK.on("UnitAddGesture", async (unit, activity) => {
-	if (activity !== GameActivity_t.ACT_DOTA_TELEPORT_END)
-		return
-	const target = await GetPredictionTarget(unit)
-	if (target === undefined)
+EventsSDK.on("UnitAddGesture", async (target, activity) => {
+	if (activity !== GameActivity_t.ACT_DOTA_TELEPORT_END || target === undefined)
 		return
 	const end_pos = target.TPEndPosition.IsValid
 		? target.TPEndPosition

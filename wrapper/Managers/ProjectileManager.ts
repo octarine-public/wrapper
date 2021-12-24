@@ -2,7 +2,9 @@ import Color from "../Base/Color"
 import Vector3 from "../Base/Vector3"
 import { GetPositionHeight } from "../Native/WASM"
 import Entity from "../Objects/Base/Entity"
+import { GetPredictionTarget } from "../Objects/Base/FakeUnit"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
+import Unit from "../Objects/Base/Unit"
 import { arrayRemove } from "../Utils/ArrayExtensions"
 import GameState from "../Utils/GameState"
 import { CMsgVector2DToVector2, CMsgVectorToVector3, NumberToColor, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
@@ -44,20 +46,30 @@ async function DestroyTrackingProjectile(proj: TrackingProjectile) {
 }
 
 EventsSDK.on("EntityCreated", ent => {
-	for (const proj of ProjectileManager.AllTrackingProjectiles)
-		if (typeof proj.Source === "number" && ent.HandleMatches(proj.Source))
+	if (!(ent instanceof Unit))
+		return
+	for (const proj of ProjectileManager.AllTrackingProjectiles) {
+		if (proj.Source?.EntityMatches(ent))
 			proj.Source = ent
+		if (proj.Target?.EntityMatches(ent))
+			proj.Target = ent
+	}
 	for (const proj of ProjectileManager.AllLinearProjectiles)
-		if (typeof proj.Source === "number" && ent.HandleMatches(proj.Source))
+		if (proj.Source?.EntityMatches(ent))
 			proj.Source = ent
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	for (const proj of ProjectileManager.AllTrackingProjectiles)
+	if (!(ent instanceof Unit))
+		return
+	for (const proj of ProjectileManager.AllTrackingProjectiles) {
 		if (proj.Source === ent)
-			proj.Source = 0
+			proj.Source = undefined
+		if (proj.Target === ent)
+			proj.Target = undefined
+	}
 	for (const proj of ProjectileManager.AllLinearProjectiles)
 		if (proj.Source === ent)
-			proj.Source = 0
+			proj.Source = undefined
 })
 
 EventsSDK.on("PostDataUpdate", () => ProjectileManager.AllTrackingProjectiles.forEach(proj => proj.UpdateTargetLoc()))
@@ -198,11 +210,10 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 	switch (msg_id) {
 		case 471: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_CreateLinearProjectile")
-			const particle_system_handle = msg.get("particle_index") as bigint,
-				hSource = msg.get("entindex") as number
+			const particle_system_handle = msg.get("particle_index") as bigint
 			const projectile = new LinearProjectile(
 				msg.get("handle") as number,
-				EntityManager.EntityByIndex(hSource) ?? hSource,
+				await GetPredictionTarget(msg.get("entindex") as number),
 				(particle_system_handle !== undefined ? Manifest.GetPathByHash(particle_system_handle) : undefined)!,
 				particle_system_handle ?? 0n,
 				msg.get("max_speed") as number,
@@ -248,12 +259,10 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 		case 518: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_Projectile")
 			const particle_system_handle = msg.get("particleSystemHandle") as bigint
-			const hSource = msg.get("hSource") as number,
-				hTarget = msg.get("hTarget") as number
 			const projectile = new TrackingProjectile(
 				msg.get("handle") as number,
-				EntityManager.EntityByIndex(hSource) ?? hSource,
-				EntityManager.EntityByIndex(hTarget) ?? hTarget,
+				await GetPredictionTarget(msg.get("hSource") as number),
+				await GetPredictionTarget(msg.get("hTarget") as number),
 				msg.get("moveSpeed") as number,
 				projectile_attachments_names[msg.get("sourceAttachment") as Nullable<number> ?? 0],
 				(particle_system_handle !== undefined ? Manifest.GetPathByHash(particle_system_handle) : undefined)!,
@@ -272,7 +281,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 		}
 		case 519: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_ProjectileLoc")
-			const target = EntityManager.EntityByIndex(msg.get("hTarget") as number)
+			const target = await GetPredictionTarget(msg.get("hTarget") as number)
 			const handle = msg.get("handle") as number,
 				launch_tick = msg.get("launch_tick") as number,
 				expire_time = msg.get("expireTime") as number,
@@ -287,7 +296,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			if (projectile === undefined) {
 				projectile = new TrackingProjectile(
 					handle,
-					0,
+					undefined,
 					target,
 					move_speed,
 					"",

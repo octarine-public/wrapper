@@ -1,6 +1,7 @@
 import { ParticleAttachment_t } from "../Enums/ParticleAttachment_t"
 import EventsSDK from "../Managers/EventsSDK"
-import Entity from "../Objects/Base/Entity"
+import FakeUnit from "../Objects/Base/FakeUnit"
+import Unit from "../Objects/Base/Unit"
 import { parseKVFile } from "../Resources/ParseKV"
 import { GetMapNumberProperty, GetMapStringProperty } from "../Resources/ParseUtils"
 import GameState from "../Utils/GameState"
@@ -95,7 +96,7 @@ export default class NetworkedParticle {
 	public readonly ControlPointsFallback = new Map<number, Vector3>()
 	public readonly ControlPointsOrient = new Map<number, [Vector3, Vector3, Vector3]>()
 	public readonly ControlPointsOffset = new Map<number, [Vector3, QAngle]>()
-	public readonly ControlPointsEnt = new Map<number, [Entity | number, ParticleAttachment_t, number, boolean]>()
+	public readonly ControlPointsEnt = new Map<number, [Unit | FakeUnit, ParticleAttachment_t, number, boolean]>()
 	public readonly TextureAttributes = new Map<string, string>()
 	public readonly EndTime: number
 	public Released = false
@@ -108,7 +109,7 @@ export default class NetworkedParticle {
 		public readonly Path: string,
 		public readonly ParticleSystemHandle: bigint,
 		public readonly Attach: ParticleAttachment_t,
-		public AttachedTo: Entity | number,
+		public AttachedTo: Nullable<Unit | FakeUnit>,
 	) {
 		NetworkedParticle.Instances.set(this.Index, this)
 		this.EndTime = ApproximateParticleLifetime(this.Path)
@@ -127,14 +128,16 @@ export default class NetworkedParticle {
 }
 
 EventsSDK.on("EntityCreated", async ent => {
+	if (!(ent instanceof Unit))
+		return
 	for (const par of NetworkedParticle.Instances.values()) {
 		let changed_anything = false
-		if (typeof par.AttachedTo === "number" && ent.HandleMatches(par.AttachedTo)) {
+		if (par.AttachedTo?.EntityMatches(ent)) {
 			par.AttachedTo = ent
 			changed_anything = true
 		}
 		for (const data of par.ControlPointsEnt.values())
-			if (typeof data[0] === "number" && ent.HandleMatches(data[0])) {
+			if (data[0].EntityMatches(ent)) {
 				data[0] = ent
 				changed_anything = true
 			}

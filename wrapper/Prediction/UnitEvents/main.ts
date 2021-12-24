@@ -5,7 +5,7 @@ import { HandleParticleChangeFurionTP } from "./FurionTP"
 import { HandleParticleChangeTPScroll } from "./TPScroll"
 
 const releasedParticles: NetworkedParticle[] = []
-async function HandleParticleChange(par: NetworkedParticle, is_update: boolean, is_release: boolean): void {
+async function HandleParticleChange(par: NetworkedParticle, is_update: boolean, is_release: boolean): Promise<void> {
 	if (releasedParticles.includes(par)) {
 		arrayRemove(releasedParticles, par)
 		return

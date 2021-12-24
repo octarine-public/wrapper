@@ -53,6 +53,9 @@ export default class FakeUnit {
 		this.Serial = serial
 		return true
 	}
+	public EntityMatches(ent: Entity): boolean {
+		return ent.HandleMatches((this.Serial << EntityManager.INDEX_BITS) | this.Index)
+	}
 	public async UpdateName(): Promise<void> {
 		if (this.Name !== "")
 			return
@@ -64,20 +67,22 @@ export default class FakeUnit {
 const FakeUnitsMap = new Map<number, FakeUnit>()
 export const FakeUnits: FakeUnit[] = []
 
-export async function GetPredictionTarget(handle: Entity | number): Promise<Nullable<Unit | FakeUnit>> {
+export async function GetPredictionTarget(handle: Nullable<Entity | number>): Promise<Nullable<Unit | FakeUnit>> {
+	if (handle === undefined)
+		return undefined
 	if (handle instanceof Entity)
 		return handle instanceof Unit
 			? handle
 			: undefined
-	if (handle === 0)
+	const index = handle & EntityManager.INDEX_MASK
+	const serial = (handle >> EntityManager.INDEX_BITS) & EntityManager.SERIAL_MASK
+	if (handle === 0 || index === EntityManager.INDEX_MASK)
 		return undefined
 	const ent = EntityManager.EntityByIndex(handle)
 	if (ent !== undefined)
 		return ent instanceof Unit
 			? ent
 			: undefined
-	const index = handle & EntityManager.INDEX_MASK
-	const serial = (handle >> EntityManager.INDEX_BITS) & EntityManager.SERIAL_MASK
 	let fake_unit = FakeUnitsMap.get(index)
 	if (fake_unit === undefined) {
 		fake_unit = new FakeUnit(index, serial)

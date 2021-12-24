@@ -2,7 +2,8 @@ import { DamageAmplifyPerIntellectPrecent } from "../../Data/GameData"
 
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import EntityManager from "../../Managers/EntityManager"
-import Entity from "./Entity"
+import EventsSDK from "../../Managers/EventsSDK"
+import FakeUnit, { GetPredictionTarget } from "./FakeUnit"
 import Unit from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Hero")
@@ -35,24 +36,16 @@ export default class Hero extends Unit {
 	public TotalIntellect = 0
 	@NetworkedBasicField("m_flStrengthTotal")
 	public TotalStrength = 0
-	public m_hReplicatingOtherHeroModel = 0
+	public ReplicatingOtherHeroModel: Nullable<Unit | FakeUnit>
 
 	public get IsHero(): boolean {
 		return true
 	}
-	public get ReplicatingOtherHeroModel_(): Entity | number {
-		const id = this.m_hReplicatingOtherHeroModel
-		return EntityManager.EntityByIndex(id) ?? id
-	}
 	public get HeroID(): number {
 		return this.UnitData.HeroID
 	}
-	public get ReplicatingOtherHeroModel(): Nullable<Entity> {
-		return EntityManager.EntityByIndex(this.m_hReplicatingOtherHeroModel)
-	}
 	public get IsIllusion(): boolean {
-		const ReplicatingOtherHeroModel_ = this.ReplicatingOtherHeroModel_
-		return (ReplicatingOtherHeroModel_ instanceof Entity) || (ReplicatingOtherHeroModel_ > 0)
+		return this.ReplicatingOtherHeroModel !== undefined
 	}
 	public get SpellAmplification(): number {
 		return super.SpellAmplification + (this.TotalIntellect * DamageAmplifyPerIntellectPrecent / 100)
@@ -61,9 +54,23 @@ export default class Hero extends Unit {
 export const Heroes = EntityManager.GetEntitiesByClass(Hero)
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", (ent, new_val) => {
+RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", async (ent, new_val) => {
 	const id = new_val as number
-	ent.m_hReplicatingOtherHeroModel = (id & EntityManager.INDEX_MASK) !== EntityManager.INDEX_MASK
-		? id
-		: 0
+	ent.ReplicatingOtherHeroModel = await GetPredictionTarget(id)
+})
+
+EventsSDK.on("PreEntityCreated", ent => {
+	if (!(ent instanceof Unit))
+		return
+	for (const hero of Heroes)
+		if (hero.ReplicatingOtherHeroModel?.EntityMatches(ent))
+			hero.ReplicatingOtherHeroModel = ent
+})
+
+EventsSDK.on("EntityDestroyed", ent => {
+	if (!(ent instanceof Unit))
+		return
+	for (const hero of Heroes)
+		if (hero.ReplicatingOtherHeroModel === ent)
+			hero.ReplicatingOtherHeroModel = undefined
 })

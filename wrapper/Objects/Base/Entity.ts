@@ -238,6 +238,9 @@ export default class Entity {
 		const serial = (handle >> EntityManager.INDEX_BITS) & EntityManager.SERIAL_MASK
 		return this.Index === index && this.SerialMatches(serial)
 	}
+	public EntityMatches(ent: Entity): boolean {
+		return this === ent
+	}
 	public Distance(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.Position
