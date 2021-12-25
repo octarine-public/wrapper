@@ -46,16 +46,25 @@ async function DestroyTrackingProjectile(proj: TrackingProjectile) {
 EventsSDK.on("PostDataUpdate", () => ProjectileManager.AllTrackingProjectiles.forEach(proj => proj.UpdateTargetLoc()))
 EventsSDK.on("Tick", async () => {
 	const cur_time = GameState.RawGameTime
-	ProjectileManager.AllLinearProjectiles.forEach(proj => {
+	const ExpiredLinearProjectiles: LinearProjectile[] = []
+	for (const proj of ProjectileManager.AllLinearProjectiles) {
 		if (proj.LastUpdate === 0) {
 			proj.LastUpdate = cur_time
-			return
+			continue
 		}
 		const dt = cur_time - proj.LastUpdate
-		proj.Position.AddForThis(Vector3.FromVector2(proj.Velocity.MultiplyScalar(dt)))
+		const add = Vector3.FromVector2(proj.Velocity.MultiplyScalar(dt))
+		proj.Position.AddForThis(add)
 		proj.LastUpdate = cur_time
 		proj.Position.z = GetPositionHeight(proj.Position)
-	})
+		if (proj.Position.DistanceSqr2D(proj.TargetLoc) < add.LengthSqr)
+			ExpiredLinearProjectiles.push(proj)
+	}
+	for (const proj of ExpiredLinearProjectiles) {
+		await EventsSDK.emit("LinearProjectileDestroyed", false, proj)
+		arrayRemove(ProjectileManager.AllLinearProjectiles, proj)
+		ProjectileManager.AllLinearProjectilesMap.delete(proj.ID)
+	}
 	for (const proj of ProjectileManager.AllTrackingProjectiles) {
 		if (proj.LastUpdate === 0) {
 			proj.LastUpdate = cur_time
