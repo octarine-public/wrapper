@@ -121,6 +121,7 @@ export default class Unit extends Entity {
 	public IsSummoned = false
 	@NetworkedBasicField("m_bIsWaitingToSpawn")
 	public IsWaitingToSpawn = false
+	public PredictedIsWaitingToSpawn = true
 	@NetworkedBasicField("m_iCurrentLevel")
 	public Level = 0
 	@NetworkedBasicField("m_flMagicalResistanceValue")
@@ -485,7 +486,7 @@ export default class Unit extends Entity {
 		return this.UnitName_
 	}
 	public get Position(): Vector3 {
-		if (this.IsVisible || this.IsWaitingToSpawn)
+		if (this.IsVisible || (this.PredictedIsWaitingToSpawn && this.IsWaitingToSpawn))
 			return this.RealPosition
 		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid)
 			return this.TPStartPosition
@@ -1412,7 +1413,9 @@ EventsSDK.on("Tick", dt => {
 			unit.HP = Math.max(Math.min(unit.MaxHP, unit.HP + regen_amount_floor), 0)
 			unit.Mana = Math.max(Math.min(unit.MaxMana, unit.Mana + unit.ManaRegen * Math.min(dt, 0.1)), 0)
 		}
-		if (!unit.IsAlive || unit.IsVisible || !unit.IsSpawned) {
+		if (!unit.IsWaitingToSpawn)
+			unit.PredictedIsWaitingToSpawn = false
+		if (!unit.IsAlive || unit.IsVisible || (!unit.IsSpawned && !unit.PredictedIsWaitingToSpawn)) {
 			unit.PredictedPosition.CopyFrom(unit.NetworkedPosition)
 			unit.LastRealPredictedPositionUpdate = GameState.RawGameTime
 			unit.LastPredictedPositionUpdate = GameState.RawGameTime

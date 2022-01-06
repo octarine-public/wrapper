@@ -1,4 +1,3 @@
-import Vector3 from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
 import { MapArea } from "../../Enums/MapArea"
 import DotaMap from "../../Helpers/DotaMap"
@@ -14,22 +13,14 @@ export default class Creep extends Unit {
 	public PredictedIsWaitingToSpawn = true
 	public Lane = MapArea.Unknown
 
-	public get IsCreep(): boolean {
-		return true
-	}
 	public get IsLaneCreep(): boolean {
 		return this.ClassName === "CDOTA_BaseNPC_Creep_Lane" || this.ClassName === "CDOTA_BaseNPC_Creep_Siege"
 	}
 	public get IsDeniable(): boolean {
-		return super.IsDeniable || this.HPPercent <= 50
+		return this.HPPercent <= 50 || super.IsDeniable
 	}
 	public get RingRadius(): number {
 		return 60
-	}
-	public get Position(): Vector3 {
-		if (this.IsVisible || (this.PredictedIsWaitingToSpawn && this.IsWaitingToSpawn))
-			return this.RealPosition
-		return this.PredictedPosition
 	}
 	public GetAdditionalAttackDamage(source: Unit): number {
 		let damage = 0
@@ -79,8 +70,6 @@ EventsSDK.on("Tick", dt => {
 			return
 		}
 		creep.TryAssignLane()
-		if (creep.PredictedIsWaitingToSpawn)
-			creep.PredictedIsWaitingToSpawn = creep.IsWaitingToSpawn
 		if (
 			// we should handle all those cases except creep.Lane in Unit
 			creep.Lane === MapArea.Unknown
