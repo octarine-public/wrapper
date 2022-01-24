@@ -42,7 +42,7 @@ export default new (class DotaMap {
 		if (nearest_corner.Distance2D(pos) < 1550)
 			return [nearest_corner.Spawner!.Lane, this.GetPathCornerNearestTeam(nearest_corner)]
 		const corner1 = nearest_corner,
-			corner2 = nearest_corners.find(corner => corner.Spawner !== corner1.Spawner)
+			corner2 = nearest_corners.find(corner => corner.Spawner?.Lane !== corner1.Spawner?.Lane)
 		if (corner2 === undefined)
 			return [MapArea.Unknown, Team.None]
 		const lane1 = corner1.Spawner!.Lane,
