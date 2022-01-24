@@ -73,7 +73,7 @@ EventsSDK.on("Tick", dt => {
 		if (
 			// we should handle all those cases except creep.Lane in Unit
 			creep.Lane === MapArea.Unknown
-			|| creep.IsAlive
+			|| !creep.IsAlive
 			|| creep.IsVisible
 		)
 			return
