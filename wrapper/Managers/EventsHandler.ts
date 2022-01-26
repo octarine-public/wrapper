@@ -616,8 +616,15 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 				`Received unknown particleSystemHandle ${particleSystemHandle} for particle ${index}`,
 			)
 	}
-	if (par === undefined)
+	if (par === undefined) {
+		await EventsSDK.emit(
+			"ParticleUnitPositionUpdated",
+			false,
+			changed_ent,
+			undefined,
+		)
 		return
+	}
 	switch (msg_type) {
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY: {
 			const submsg = msg.get("destroy_particle") as RecursiveProtobuf
