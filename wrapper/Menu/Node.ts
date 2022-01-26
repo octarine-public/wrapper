@@ -135,6 +135,24 @@ export default class Node extends Base {
 	}
 
 	public async Render(): Promise<void> {
+		if (this.is_open) {
+			const position = this.Position.Clone().AddScalarX(this.TotalSize.x),
+				max_width = this.EntriesSizeX
+			position.y = Math.min(position.y, this.WindowSize.y - this.EntriesSizeY)
+			for (const entry of this.entries)
+				if (entry.IsVisible) {
+					position.CopyTo(entry.Position)
+					entry.TotalSize.x = max_width
+					entry.TotalSize.y = entry.OriginalSize.y
+					if (entry.QueuedUpdate) {
+						entry.QueuedUpdate = false
+						await entry.Update()
+					}
+					await entry.Render()
+					position.AddScalarY(entry.TotalSize.y)
+				}
+		}
+
 		await super.Render(this.parent instanceof Node) // only draw bars on non-root nodes
 
 		const TextPos = this.Position.Clone()
@@ -150,24 +168,6 @@ export default class Node extends Base {
 			RendererSDK.Image(Node.arrow_active_path, arrow_pos, -1, Node.arrow_size)
 		else
 			RendererSDK.Image(Node.arrow_inactive_path, arrow_pos, -1, Node.arrow_size)
-		if (!this.is_open)
-			return
-
-		const position = this.Position.Clone().AddScalarX(this.TotalSize.x),
-			max_width = this.EntriesSizeX
-		position.y = Math.min(position.y, this.WindowSize.y - this.EntriesSizeY)
-		for (const entry of this.entries)
-			if (entry.IsVisible) {
-				position.CopyTo(entry.Position)
-				entry.TotalSize.x = max_width
-				entry.TotalSize.y = entry.OriginalSize.y
-				if (entry.QueuedUpdate) {
-					entry.QueuedUpdate = false
-					await entry.Update()
-				}
-				await entry.Render()
-				position.AddScalarY(entry.TotalSize.y)
-			}
 	}
 	public async PostRender(): Promise<void> {
 		if (this.is_open)
