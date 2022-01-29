@@ -5,7 +5,7 @@ import { Notifications, Queue } from "./data"
 export { default as Notification } from "./AbstractNotification"
 export const NotificationsSDK = new (class CNotificationsSDK {
 	public size = 230
-	public y_offset = 240
+	public y_offset = 400
 	public debug = false
 
 	/**
