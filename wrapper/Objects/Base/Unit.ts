@@ -1415,7 +1415,7 @@ EventsSDK.on("Tick", dt => {
 		}
 		if (!unit.IsWaitingToSpawn)
 			unit.PredictedIsWaitingToSpawn = false
-		if (unit.IsVisible || (!unit.IsSpawned && unit.PredictedIsWaitingToSpawn)) {
+		if (unit.IsVisible) {
 			unit.PredictedPosition.CopyFrom(unit.NetworkedPosition)
 			unit.LastRealPredictedPositionUpdate = GameState.RawGameTime
 			unit.LastPredictedPositionUpdate = GameState.RawGameTime
