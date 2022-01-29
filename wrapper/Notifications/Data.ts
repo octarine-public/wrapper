@@ -1,11 +1,10 @@
-import Notification from "./AbstractNotification"
 import EventsSDK from "../Managers/EventsSDK"
+import Notification from "./AbstractNotification"
 
-export const MAX_SHOW_NOTIFICATION = 5
-export let Queue: Notification[] = []
-export let Notifications: Notification[] = []
+export const Queue: Notification[] = []
+export const Notifications: Notification[] = []
 
 EventsSDK.on("GameEnded", () => {
-	Queue = []
-	Notifications = []
+	Queue.splice(0)
+	Notifications.splice(0)
 })

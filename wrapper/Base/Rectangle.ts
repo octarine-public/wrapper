@@ -83,6 +83,16 @@ export default class Rectangle {
 		this.pos2.SubtractForThis(vec)
 		return this
 	}
+	public AddX(num: number): Rectangle {
+		this.pos1.AddScalarX(num)
+		this.pos2.AddScalarX(num)
+		return this
+	}
+	public AddY(num: number): Rectangle {
+		this.pos1.AddScalarY(num)
+		this.pos2.AddScalarY(num)
+		return this
+	}
 	public SubtractX(num: number): Rectangle {
 		this.pos1.SubtractScalarX(num)
 		this.pos2.SubtractScalarX(num)

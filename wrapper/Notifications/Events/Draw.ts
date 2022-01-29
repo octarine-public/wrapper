@@ -1,10 +1,11 @@
 import Color from "../../Base/Color"
 import Rectangle from "../../Base/Rectangle"
+import GUIInfo from "../../GUI/GUIInfo"
 import EventsSDK from "../../Managers/EventsSDK"
 import InputManager from "../../Managers/InputManager"
 import RendererSDK from "../../Native/RendererSDK"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
-import { MAX_SHOW_NOTIFICATION, Notifications, Queue } from "../data"
+import { Notifications, Queue } from "../data"
 import { NotificationsSDK } from "../Imports"
 import { GetPanel } from "../Util"
 
@@ -12,29 +13,30 @@ EventsSDK.after("Draw", () => {
 	arrayRemove(Notifications, Notifications.filter(x => x.IsExpired)[0])
 	if (InputManager.IsShopOpen)
 		return
-	const num = Math.min(Queue.length, MAX_SHOW_NOTIFICATION - Notifications.length)
+	const num = Math.min(Queue.length, NotificationsSDK.limit - Notifications.length)
 	for (let index = 0; index < num; index++) {
 		const notification = Queue.shift()
 		if (notification === undefined)
 			continue
 		notification.PushTime()
-		Notifications.unshift(notification)
+		Notifications.push(notification)
 	}
 
 	const panel = new Rectangle()
 
 	GetPanel(panel)
-	const panel_height = panel.Size.y
+	const panel_offset = GUIInfo.ScaleHeight(20),
+		panel_height = panel.Height
 	if (NotificationsSDK.debug) {
-		for (let i = 0; i < MAX_SHOW_NOTIFICATION; i++) {
-			RendererSDK.OutlinedRect(panel.pos1, panel.Size, 1, Color.White)
-			panel.SubtractY(panel_height + 20)
+		for (let i = 0; i < NotificationsSDK.limit; i++) {
+			RendererSDK.OutlinedRect(panel.pos1, panel.Size, 3, Color.White)
+			panel.AddY(panel_height + panel_offset)
 		}
 		GetPanel(panel) // because we've just been modifying existing one
 	}
 	Notifications.forEach(notification => {
 		notification.Draw(panel)
 		notification.PlaySound()
-		panel.SubtractY(panel_height + 20)
+		panel.AddY(panel_height + panel_offset)
 	})
 })

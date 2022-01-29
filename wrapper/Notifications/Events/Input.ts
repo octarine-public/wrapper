@@ -14,7 +14,7 @@ InputEventSDK.on("MouseKeyDown", key => {
 	return !Notifications.some(notification => {
 		if (panel.Contains(MosePosition) && notification.OnClick())
 			return true
-		panel.SubtractY(panel_height + 20)
+		panel.AddY(panel_height + 20)
 		return false
 	})
 })
