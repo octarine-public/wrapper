@@ -63,7 +63,7 @@ EventsSDK.on("PreEntityCreated", ent => {
 })
 EventsSDK.on("Tick", dt => {
 	const wave_time = ((GameRules?.GameTime ?? 0) % 30)
-	const spawn_creeps = wave_time >= 0 && wave_time < (1 / 3)
+	const spawn_creeps = wave_time >= 0 && wave_time < 1
 	Creeps.forEach(creep => {
 		if (creep.IsNeutral || creep.Owner !== undefined) {
 			creep.Lane = MapArea.Unknown
