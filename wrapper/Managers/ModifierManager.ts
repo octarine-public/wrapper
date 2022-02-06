@@ -149,7 +149,7 @@ async function EmitModifierCreated(mod: IModifier) {
 		await AddModifier(parent, mod_)
 	await EventsSDK.emit("ModifierCreatedRaw", false, mod_)
 }
-EventsSDK.on("PreEntityCreated", async ent => {
+EventsSDK.after("EntityCreated", async ent => {
 	if (!(ent instanceof Unit))
 		return
 	for (const mod of ActiveModifiers.values())
