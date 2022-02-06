@@ -127,7 +127,7 @@ export default class NetworkedParticle {
 	}
 }
 
-EventsSDK.on("EntityCreated", async ent => {
+EventsSDK.after("EntityCreated", async ent => {
 	if (!(ent instanceof Unit))
 		return
 	for (const par of NetworkedParticle.Instances.values()) {
