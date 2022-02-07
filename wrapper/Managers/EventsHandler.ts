@@ -22,6 +22,7 @@ import GameState from "../Utils/GameState"
 import { CMsgVectorToVector3, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
 import { createMapFromMergedIterators } from "../Utils/Utils"
 import * as VBKV from "../Utils/VBKV"
+import { LoadEconData } from "./EconHelper"
 import EntityManager from "./EntityManager"
 import Events from "./Events"
 import EventsSDK from "./EventsSDK"
@@ -1214,20 +1215,19 @@ async function TryLoadMapFiles(): Promise<void> {
 	const map_name = GameState.MapName
 	{
 		const buf = fread(`maps/${map_name}.vhcg`)
-		if (buf !== undefined) {
+		if (buf !== undefined)
 			WASM.ParseVHCG(buf)
-			await EventsSDK.emit("MapDataLoaded", false)
-		} else
+		else
 			WASM.ResetVHCG()
 	}
 	{
 		const buf = fread(`maps/${map_name}.gnv`)
-		if (buf !== undefined) {
+		if (buf !== undefined)
 			ParseGNV(buf)
-			await EventsSDK.emit("MapDataLoaded", false)
-		} else
+		else
 			ResetGNV()
 	}
+	LoadEconData()
 	{
 		ResetEntityLump()
 		WASM.ResetWorld()

@@ -1459,6 +1459,7 @@ export { default as RuneSpawnerPowerup } from "./Objects/Base/RuneSpawnerPowerup
 export { LinearProjectile, TrackingProjectile } from "./Objects/Base/Projectile"
 export * as CustomGameEvents from "./Managers/CustomGameEvents"
 export * as CustomNetTables from "./Managers/CustomNetTables"
+export * as EconHelper from "./Managers/EconHelper"
 export { default as ProjectileManager } from "./Managers/ProjectileManager"
 export { default as Manifest } from "./Managers/Manifest"
 
