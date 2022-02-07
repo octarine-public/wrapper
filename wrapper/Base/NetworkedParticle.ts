@@ -1,4 +1,5 @@
 import { ParticleAttachment_t } from "../Enums/ParticleAttachment_t"
+import * as EconHelper from "../Managers/EconHelper"
 import EventsSDK from "../Managers/EventsSDK"
 import FakeUnit from "../Objects/Base/FakeUnit"
 import Unit from "../Objects/Base/Unit"
@@ -99,6 +100,7 @@ export default class NetworkedParticle {
 	public readonly ControlPointsEnt = new Map<number, [Unit | FakeUnit, ParticleAttachment_t, number, boolean]>()
 	public readonly TextureAttributes = new Map<string, string>()
 	public readonly EndTime: number
+	public readonly PathNoEcon: string
 	public Released = false
 	public ShouldDraw = true
 	public FrozenAt = -1
@@ -111,6 +113,10 @@ export default class NetworkedParticle {
 		public readonly Attach: ParticleAttachment_t,
 		public AttachedTo: Nullable<Unit | FakeUnit>,
 	) {
+		const orig = EconHelper.Particles.repl2orig.get(this.Path)
+		this.PathNoEcon = orig !== undefined && orig.length !== 0
+			? orig[0]
+			: this.Path
 		NetworkedParticle.Instances.set(this.Index, this)
 		this.EndTime = ApproximateParticleLifetime(this.Path)
 		if (this.EndTime !== -1)
