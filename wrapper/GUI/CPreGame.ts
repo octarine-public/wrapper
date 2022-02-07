@@ -7,7 +7,7 @@ import { GameRules } from "../Objects/Base/Entity"
 import { PlayerResource } from "../Objects/Base/PlayerResource"
 import GUIInfo from "./GUIInfo"
 
-export default class CTopBar {
+export default class CPreGame {
 	private static get HasRadiantCoach(): boolean {
 		return PlayerResource?.PlayerData?.some(data => data.CoachTeam === Team.Radiant) ?? false
 	}
@@ -27,11 +27,11 @@ export default class CTopBar {
 	public readonly DirePlayersHeroImages: Rectangle[] = []
 	public readonly RadiantPlayersRoles: Rectangle[] = []
 	public readonly DirePlayersRoles: Rectangle[] = []
-	public readonly HasRadiantCoach = CTopBar.HasRadiantCoach
-	public readonly HasDireCoach = CTopBar.HasDireCoach
+	public readonly HasRadiantCoach = CPreGame.HasRadiantCoach
+	public readonly HasDireCoach = CPreGame.HasDireCoach
 	private readonly RadiantPlayers: Rectangle[] = []
 	private readonly DirePlayers: Rectangle[] = []
-	private readonly IsRetardedGameMode = CTopBar.IsRetardedGameMode
+	private readonly IsRetardedGameMode = CPreGame.IsRetardedGameMode
 
 	constructor(screen_size: Vector2) {
 		const aspect_ratio = RendererSDK.GetAspectRatio(screen_size)
@@ -58,9 +58,9 @@ export default class CTopBar {
 	}
 	public HasChanged(): boolean {
 		return (
-			this.HasRadiantCoach !== CTopBar.HasRadiantCoach
-			|| this.HasDireCoach !== CTopBar.HasDireCoach
-			|| this.IsRetardedGameMode !== CTopBar.IsRetardedGameMode
+			this.HasRadiantCoach !== CPreGame.HasRadiantCoach
+			|| this.HasDireCoach !== CPreGame.HasDireCoach
+			|| this.IsRetardedGameMode !== CPreGame.IsRetardedGameMode
 		)
 	}
 
@@ -107,7 +107,7 @@ export default class CTopBar {
 				PlayerRect.Width = PlayerWidth
 				PlayerRect.Height = 0
 				// No clue why, but on 4:3 resolutions gap between 1st and 2nd radiant players
-				// are bigger than other ones.
+				// is bigger than other ones.
 				if (aspect_ratio === "4x3" && i === 4 && this.IsRetardedGameMode)
 					current_pos -= GUIInfo.ScaleWidth(9, screen_size)
 				PlayerRect.x = current_pos - PlayerRect.Width - PlayerMargin
