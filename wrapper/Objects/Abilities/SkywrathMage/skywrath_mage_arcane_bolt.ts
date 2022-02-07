@@ -4,6 +4,7 @@ import Ability from "../../Base/Ability"
 
 @WrapperClass("skywrath_mage_arcane_bolt")
 export default class skywrath_mage_arcane_bolt extends Ability {
+	public readonly ProjectilePath = "particles/units/heroes/hero_skywrath_mage/skywrath_mage_arcane_bolt.vpcf"
 	public get Speed(): number {
 		return this.GetSpecialValue("bolt_speed")
 	}
@@ -21,14 +22,5 @@ export default class skywrath_mage_arcane_bolt extends Ability {
 			return super.AbilityImmunityType
 
 		return SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
-	}
-
-	public get ProjectileName() {
-		return [
-			"particles/units/heroes/hero_skywrath_mage/skywrath_mage_arcane_bolt.vpcf",
-			"particles/econ/items/skywrath_mage/skywrath_ti9_immortal_back/skywrath_mage_ti9_arcane_bolt.vpcf",
-			"particles/econ/items/skywrath_mage/skywrath_ti9_immortal_back/skywrath_mage_ti9_arcane_bolt_golden.vpcf",
-			"particles/econ/items/skywrath_mage/skywrath_ti9_immortal_back/skywrath_mage_ti9_arcane_bolt_crimson.vpcf",
-		]
 	}
 }

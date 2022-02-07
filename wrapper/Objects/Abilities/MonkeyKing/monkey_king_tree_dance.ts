@@ -33,7 +33,7 @@ function FilterValidTrees(ar: (Tree | TempTree)[], pos: Vector3, cast_range: num
 }
 
 EventsSDK.on("ParticleUpdated", par => {
-	if (par.Path !== "particles/units/heroes/hero_monkey_king/monkey_king_jump_trail.vpcf")
+	if (par.PathNoEcon !== "particles/units/heroes/hero_monkey_king/monkey_king_jump_trail.vpcf")
 		return
 
 	const cpEnt = par.ControlPointsEnt.get(1)
@@ -63,7 +63,7 @@ EventsSDK.on("ParticleUpdated", par => {
 })
 
 EventsSDK.on("ParticleDestroyed", par => {
-	if (par.Path !== "particles/units/heroes/hero_monkey_king/monkey_king_jump_trail.vpcf")
+	if (par.PathNoEcon !== "particles/units/heroes/hero_monkey_king/monkey_king_jump_trail.vpcf")
 		return
 	const cpEnt = par.ControlPointsEnt.get(1)
 	if (cpEnt === undefined)

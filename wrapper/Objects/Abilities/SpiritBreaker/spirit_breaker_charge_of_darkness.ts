@@ -14,7 +14,7 @@ export default class spirit_breaker_charge_of_darkness extends Ability {
 
 EventsSDK.on("ParticleCreated", par => {
 	if (
-		par.Path !== "particles/units/heroes/hero_spirit_breaker/spirit_breaker_charge_start.vpcf"
+		par.PathNoEcon !== "particles/units/heroes/hero_spirit_breaker/spirit_breaker_charge_start.vpcf"
 		|| !(par.AttachedTo instanceof Unit)
 	)
 		return

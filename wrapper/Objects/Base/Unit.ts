@@ -1396,7 +1396,7 @@ EventsSDK.on("ModifierRemoved", OnModifierUpdated)
 
 EventsSDK.on("ParticleCreated", par => {
 	if (
-		par.Path === "particles/generic_hero_status/hero_levelup.vpcf"
+		par.PathNoEcon === "particles/generic_hero_status/hero_levelup.vpcf"
 		&& par.AttachedTo instanceof Unit
 		&& !par.AttachedTo.IsVisible
 		&& !par.AttachedTo.IsIllusion

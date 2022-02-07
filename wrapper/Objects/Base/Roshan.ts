@@ -31,7 +31,7 @@ function GetHPChangedByMinute(minute: number): number {
 
 let last_minute = 0
 EventsSDK.on("ParticleCreated", par => {
-	if (par.Path !== "particles/neutral_fx/roshan_spawn.vpcf")
+	if (par.PathNoEcon !== "particles/neutral_fx/roshan_spawn.vpcf")
 		return
 	Roshan.Instance = par.AttachedTo
 	if (GameRules === undefined)

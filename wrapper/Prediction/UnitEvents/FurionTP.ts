@@ -7,9 +7,9 @@ import GameState from "../../Utils/GameState"
 const lastTeleports: [NetworkedParticle, Unit | FakeUnit][] = [],
 	lastParticles: NetworkedParticle[] = []
 export async function HandleParticleChangeFurionTP(par: NetworkedParticle, is_update: boolean): Promise<void> {
-	if (!par.Path.includes("furion_teleport"))
+	if (!par.PathNoEcon.includes("furion_teleport"))
 		return
-	const is_end = par.Path.includes("furion_teleport_end"),
+	const is_end = par.PathNoEcon.includes("furion_teleport_end"),
 		target = par.AttachedTo
 	if (!is_update) {
 		if (!is_end && target !== undefined) {

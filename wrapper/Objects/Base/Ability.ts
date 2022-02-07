@@ -54,6 +54,7 @@ export default class Ability extends Entity {
 	public CurrentCharges = 0
 	@NetworkedBasicField("m_iDirtyButtons")
 	public DirtyButtons = 0
+	public readonly ProjectilePath: Nullable<string>
 
 	constructor(Index: number, Serial: number, name: string) {
 		super(Index, Serial)
@@ -164,10 +165,6 @@ export default class Ability extends Entity {
 
 	public get IsPassive(): boolean {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
-	}
-
-	public get ProjectileName(): string[] {
-		return []
 	}
 
 	/**

@@ -1,6 +1,7 @@
 import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
+import * as EconHelper from "../../Managers/EconHelper"
 import Entity from "./Entity"
 import FakeUnit from "./FakeUnit"
 import Unit from "./Unit"
@@ -8,6 +9,7 @@ import Unit from "./Unit"
 export class Projectile {
 	public IsValid = true
 	public LastUpdate = 0
+	public ParticlePathNoEcon = ""
 
 	constructor(
 		public readonly ID: number,
@@ -16,7 +18,16 @@ export class Projectile {
 		public Source: Nullable<Unit | FakeUnit>,
 		public readonly ColorGemColor: Color,
 		public Speed: number,
-	) { }
+	) {
+		this.UpdateParticlePathNoEcon()
+	}
+
+	public UpdateParticlePathNoEcon(): void {
+		const orig = EconHelper.Particles.repl2orig.get(this.ParticlePath)
+		this.ParticlePathNoEcon = orig !== undefined && orig.length !== 0
+			? orig[0]
+			: this.ParticlePath
+	}
 }
 
 export class LinearProjectile extends Projectile {
@@ -79,6 +90,7 @@ export class TrackingProjectile extends Projectile {
 		this.Target = TargetEntity
 		this.Speed = Speed
 		this.ParticlePath = path
+		this.UpdateParticlePathNoEcon()
 		this.ParticleSystemHandle = particleSystemHandle
 		this.dodgeable = dodgeable
 		this.isAttack = isAttack

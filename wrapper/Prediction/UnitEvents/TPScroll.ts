@@ -3,7 +3,7 @@ import Entity from "../../Objects/Base/Entity"
 import GameState from "../../Utils/GameState"
 
 export async function HandleParticleChangeTPScroll(par: NetworkedParticle, is_update: boolean): Promise<void> {
-	if (!par.Path.includes("teleport_end"))
+	if (!par.PathNoEcon.includes("teleport_end"))
 		return
 	const cpEntTarget0 = par.ControlPointsEnt.get(0),
 		cpEntTarget1 = par.ControlPointsEnt.get(1),
