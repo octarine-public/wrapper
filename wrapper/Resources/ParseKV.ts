@@ -74,12 +74,15 @@ function _parse(buf: Uint8Array | BinaryStream, map = new Map<string, any>()): R
 
 		if (c === NODE_OPEN) {
 			next_is_value = false  // Make sure the next string is interpreted as a key.
-			if (!map.has(laststr))
-				map.set(laststr, new Map())
-			let x = map.get(laststr)
-			if (!(x instanceof Map))
-				map.set(laststr, x = new Map())
-			_parse(stream, map.get(laststr))
+			let cnt = 0
+			if (map.has(laststr)) {
+				while (map.has(laststr + cnt))
+					cnt++
+				laststr += cnt
+			}
+			const x = new Map()
+			map.set(laststr, x)
+			_parse(stream, x)
 		} else if (c === NODE_CLOSE) {
 			return map
 		} else if (c === BR_OPEN)
