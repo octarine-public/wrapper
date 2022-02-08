@@ -30,11 +30,11 @@ export default class CreepPathCorner extends Entity {
 }
 export const CreepPathCorners = EntityManager.GetEntitiesByClass(CreepPathCorner)
 
-let cur_local_id = 0x4000
+let cur_local_id = 0x2000
 async function LoadCreepSpawnersAndPathCorners(): Promise<void> {
-	while (cur_local_id > 0x4000) {
+	while (cur_local_id > 0x2000) {
 		const id = --cur_local_id
-		const ent = EntityManager.EntityByIndex(id, true)
+		const ent = EntityManager.EntityByIndex(id)
 		if (ent instanceof CreepPathCorner || ent instanceof LaneCreepSpawner)
 			await DeleteEntity(id)
 	}
@@ -54,7 +54,7 @@ async function LoadCreepSpawnersAndPathCorners(): Promise<void> {
 		)
 			continue
 		let id = cur_local_id++
-		while (EntityManager.EntityByIndex(id, true) !== undefined)
+		while (EntityManager.EntityByIndex(id) !== undefined)
 			id = cur_local_id++
 		const entity = new CreepPathCorner(id, 0)
 		await entity.AsyncCreate()
@@ -120,7 +120,7 @@ async function LoadCreepSpawnersAndPathCorners(): Promise<void> {
 		)
 			continue
 		let id = cur_local_id++
-		while (EntityManager.EntityByIndex(id, true) !== undefined)
+		while (EntityManager.EntityByIndex(id) !== undefined)
 			id = cur_local_id++
 		const entity = new LaneCreepSpawner(id, 0)
 		await entity.AsyncCreate()

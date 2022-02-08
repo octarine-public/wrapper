@@ -50,13 +50,11 @@ class CEntityManager {
 	public get AllEntities(): Entity[] {
 		return AllEntities
 	}
-	public EntityByIndex(handle: Nullable<number>, include_local = false): Nullable<Entity> {
+	public EntityByIndex(handle: Nullable<number>): Nullable<Entity> {
 		if (handle === 0 || handle === undefined)
 			return undefined
 		const index = handle & this.INDEX_MASK,
 			serial = (handle >> this.INDEX_BITS) & this.SERIAL_MASK
-		if (!include_local && (index >> (this.INDEX_BITS - 1)) === 1)
-			return undefined
 		const ent = AllEntitiesAsMap.get(index)
 		return ent?.SerialMatches(serial)
 			? ent

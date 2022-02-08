@@ -40,12 +40,12 @@ export default class Tree extends Entity {
 export const Trees = EntityManager.GetEntitiesByClass(Tree)
 
 export let TempTreeIDOffset = 0
-export let cur_local_id = 0x4000
+let cur_local_id = 0x2000
 async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 	TempTreeIDOffset = 0
-	while (cur_local_id > 0x4000) {
+	while (cur_local_id > 0x2000) {
 		const id = --cur_local_id
-		const ent = EntityManager.EntityByIndex(id, true)
+		const ent = EntityManager.EntityByIndex(id)
 		if (ent instanceof Tree) {
 			await DeleteEntity(id)
 			GridNav?.UpdateTreeState(ent)
@@ -58,7 +58,7 @@ async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 		if (trees.some(tree => tree.Position.Equals(pos)))
 			continue
 		let id = cur_local_id++
-		while (EntityManager.EntityByIndex(id, true) !== undefined)
+		while (EntityManager.EntityByIndex(id) !== undefined)
 			id = cur_local_id++
 		const entity = new Tree(id, 0)
 		await entity.AsyncCreate()
