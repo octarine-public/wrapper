@@ -63,6 +63,7 @@ export default class AbilityData {
 	public readonly MaxDuration: number[]
 	public readonly SecretShop: boolean
 	public readonly ItemRequirements: string[][] = []
+	public readonly ItemQuality: Nullable<string>
 	public readonly ItemResult: Nullable<string>
 	public readonly ItemStockTime: number
 
@@ -162,6 +163,7 @@ export default class AbilityData {
 			map.forEach(str => this.ItemRequirements.push(str.split(";")))
 		}
 		this.ItemResult = m_Storage.get("ItemResult") as Nullable<string>
+		this.ItemQuality = m_Storage.get("ItemQuality") as Nullable<string>
 		this.ItemStockTime = m_Storage.has("ItemStockTime")
 			? parseInt(m_Storage.get("ItemStockTime") as string)
 			: 0
