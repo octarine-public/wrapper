@@ -11,7 +11,7 @@ import Item from "./Item"
 
 @WrapperClass("CDOTAPlayer")
 export default class Player extends Entity {
-	@NetworkedBasicField("m_iPlayerID")
+	@NetworkedBasicField("m_nPlayerID")
 	public PlayerID: number = -1
 	@NetworkedBasicField("m_quickBuyItems")
 	public QuickBuyItems: number[] = []
