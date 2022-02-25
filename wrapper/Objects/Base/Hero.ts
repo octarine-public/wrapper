@@ -14,7 +14,7 @@ export default class Hero extends Unit {
 	public CurrentXP = 0
 	@NetworkedBasicField("m_bReincarnating")
 	public IsReincarnating = false
-	@NetworkedBasicField("m_iPlayerID")
+	@NetworkedBasicField("m_nPlayerID")
 	public PlayerID = 0
 	@NetworkedBasicField("m_iRecentDamage")
 	public RecentDamage = 0
