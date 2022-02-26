@@ -351,7 +351,7 @@ export default class AbilityData {
 				LinkedSpecialBonus = name
 				talent_change_str = value
 			}
-			let value = AbilityValues.get("value") ?? ""
+			let value = special.get("value") ?? ""
 			if (typeof value !== "string")
 				value = ""
 			const ar = this.ExtendLevelArray(value.split(" ").map(str => this.parseFloat(str)))
