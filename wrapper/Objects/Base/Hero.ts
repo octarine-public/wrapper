@@ -5,6 +5,7 @@ import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import FakeUnit, { GetPredictionTarget } from "./FakeUnit"
 import Unit from "./Unit"
+import { EPropertyType } from "../../Enums/PropertyType"
 
 @WrapperClass("CDOTA_BaseNPC_Hero")
 export default class Hero extends Unit {
@@ -14,7 +15,7 @@ export default class Hero extends Unit {
 	public CurrentXP = 0
 	@NetworkedBasicField("m_bReincarnating")
 	public IsReincarnating = false
-	@NetworkedBasicField("m_iPlayerID")
+	@NetworkedBasicField("m_iPlayerID", EPropertyType.INT32)
 	public PlayerID = 0
 	@NetworkedBasicField("m_iRecentDamage")
 	public RecentDamage = 0

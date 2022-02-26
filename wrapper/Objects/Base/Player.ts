@@ -13,7 +13,7 @@ import { EPropertyType } from "../../Enums/PropertyType"
 @WrapperClass("CDOTAPlayer")
 export default class Player extends Entity {
 	@NetworkedBasicField("m_nPlayerID", EPropertyType.INT32)
-	public PlayerID: number = -1
+	public PlayerID = -1
 	@NetworkedBasicField("m_quickBuyItems")
 	public QuickBuyItems: number[] = []
 	@NetworkedBasicField("m_iTotalEarnedGold")
