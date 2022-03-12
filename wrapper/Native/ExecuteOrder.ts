@@ -200,6 +200,7 @@ export default class ExecuteOrder {
 		public readonly Issuers: Unit[],
 		public readonly Queue: boolean = false,
 		public readonly ShowEffects: boolean = false,
+		public IsPlayerInput: boolean = true,
 	) {
 		this.Position = this.Position.Clone()
 	}
