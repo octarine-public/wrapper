@@ -79,6 +79,12 @@ export default class UnitData {
 				return name
 		return ""
 	}
+	public static async GetHeroAttributePrimary(name: string): Promise<Attributes> {
+		const data = (await UnitData.global_storage).get(name)
+		if (data === undefined)
+			throw `Unknown unit name: ${name}`
+		return data.AttributePrimary
+	}
 
 	public readonly HeroID: number
 	public readonly ModelName: string
