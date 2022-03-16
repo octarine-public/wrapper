@@ -67,7 +67,7 @@ export default class AbilityData {
 	public readonly ItemResult: Nullable<string>
 	public readonly ItemStockTime: number
 
-	private readonly SpecialValueCache = new Map<string, [number[], string, string, EDOTASpecialBonusOperation]>()
+	private readonly SpecialValueCache = new Map<string, [number[], string, string | number, EDOTASpecialBonusOperation]>()
 	private readonly CastRangeCache: number[]
 	private readonly GetManaCostCache: number[]
 	private readonly ChannelTimeCache: number[]
@@ -90,7 +90,8 @@ export default class AbilityData {
 				? 3
 				: 4
 		this.MaxTalentLevel = this.MaxLevel
-		this.CacheSpecialValues(m_Storage)
+		this.CacheSpecialValuesNew(m_Storage)
+		this.CacheSpecialValuesOld(m_Storage)
 
 		this.AbilityBehavior = m_Storage.has("AbilityBehavior")
 			? parseEnumString(DOTA_ABILITY_BEHAVIOR, m_Storage.get("AbilityBehavior") as string)
@@ -190,7 +191,10 @@ export default class AbilityData {
 		if (ar[1] !== "") {
 			const talent = owner.GetAbilityByName(ar[1])
 			if (talent !== undefined && talent.Level !== 0) {
-				const talent_val = talent.GetSpecialValue(ar[2])
+				const val = ar[2]
+				const talent_val = typeof val === "string"
+					? talent.GetSpecialValue(val)
+					: val
 				switch (ar[3]) {
 					default:
 					case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
@@ -273,7 +277,14 @@ export default class AbilityData {
 		return this.ChargeRestoreTimeCache[level - 1]
 	}
 
-	private CacheSpecialValues(m_Storage: RecursiveMap) {
+	private parseFloat(str: string): number {
+		return parseFloat(
+			str.endsWith("f")
+				? str.substring(0, str.length - 1)
+				: str,
+		)
+	}
+	private CacheSpecialValuesOld(m_Storage: RecursiveMap) {
 		const AbilitySpecial = m_Storage.get("AbilitySpecial") as RecursiveMap
 		if (AbilitySpecial === undefined)
 			return
@@ -286,10 +297,9 @@ export default class AbilityData {
 			if (!(special instanceof Map))
 				continue
 			for (const [name, value] of special) {
-				if (name === "var_type" || name === "LinkedSpecialBonus" || typeof value !== "string")
+				if (name === "var_type" || name === "LinkedSpecialBonus" || name === "levelkey" || typeof value !== "string")
 					continue
-				const ar = value.split(" ").map(str => parseFloat(str.endsWith("f") ? str.substring(0, str.length - 1) : str))
-				this.ExtendLevelArray(ar)
+				const ar = this.ExtendLevelArray(value.split(" ").map(str => this.parseFloat(str)))
 				let LinkedSpecialBonus = special.get("LinkedSpecialBonus")
 				if (typeof LinkedSpecialBonus !== "string")
 					LinkedSpecialBonus = ""
@@ -310,6 +320,61 @@ export default class AbilityData {
 					] as [number[], string, string, EDOTASpecialBonusOperation],
 				)
 			}
+		}
+	}
+	private CacheSpecialValuesNew(m_Storage: RecursiveMap) {
+		const AbilityValues = m_Storage.get("AbilityValues") as RecursiveMap
+		if (AbilityValues === undefined)
+			return
+		for (const special of AbilityValues.values())
+			if (special instanceof Map && special.has("levelkey")) {
+				this.MaxTalentLevel = Math.max(this.MaxLevel, 7)
+				break
+			}
+		for (const [name, special] of AbilityValues) {
+			if (!(special instanceof Map)) {
+				if (typeof special === "string")
+					this.SpecialValueCache.set(
+						name,
+						[
+							this.ExtendLevelArray(special.split(" ").map(str => this.parseFloat(str))),
+							"",
+							0,
+							EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD,
+						] as [number[], string, number, EDOTASpecialBonusOperation],
+					)
+				continue
+			}
+			let LinkedSpecialBonus = "",
+				talent_change_str = "+0"
+			for (const [name, value] of special) {
+				if (name === "value" || name === "LinkedSpecialBonus" || name === "levelkey" || typeof value !== "string")
+					continue
+				LinkedSpecialBonus = name
+				talent_change_str = value
+			}
+			let value = special.get("value") ?? ""
+			if (typeof value !== "string")
+				value = ""
+			const ar = this.ExtendLevelArray(value.split(" ").map(str => this.parseFloat(str)))
+			let LinkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+			let talent_change: number
+			if (talent_change_str.startsWith("x")) {
+				LinkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY
+				talent_change = this.parseFloat(talent_change_str.substring(1))
+			} else {
+				LinkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+				talent_change = this.parseFloat(talent_change_str)
+			}
+			this.SpecialValueCache.set(
+				name,
+				[
+					ar,
+					LinkedSpecialBonus,
+					talent_change,
+					LinkedSpecialBonusOperation,
+				] as [number[], string, number, EDOTASpecialBonusOperation],
+			)
 		}
 	}
 	private GetCachedSpecialValue(name: string) {
