@@ -119,12 +119,15 @@ export default class ImageSelector extends Base {
 		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
 		const base_pos = this.IconsRect.pos1
 		for (let i = 0; i < this.values.length; i++) {
+			const imagePath = this.rendered_paths[i]
+			if (imagePath === undefined)
+				continue
 			const size = this.image_size,
 				pos = new Vector2(
 					i % ImageSelector.elements_per_row,
 					Math.floor(i / ImageSelector.elements_per_row),
 				).Multiply(this.image_size.AddScalar(ImageSelector.image_border_width * 2 + ImageSelector.image_gap)).Add(base_pos)
-			RendererSDK.Image(this.rendered_paths[i], pos, -1, size)
+			RendererSDK.Image(imagePath, pos, -1, size)
 			if (this.IsEnabled(this.values[i]))
 				RendererSDK.OutlinedRect(
 					pos,

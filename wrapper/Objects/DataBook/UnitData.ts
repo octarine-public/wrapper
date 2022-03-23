@@ -79,11 +79,18 @@ export default class UnitData {
 				return name
 		return ""
 	}
+	public static async GetHeroAttributePrimary(name: string): Promise<Attributes> {
+		const data = (await UnitData.global_storage).get(name)
+		if (data === undefined)
+			throw `Unknown unit name: ${name}`
+		return data.AttributePrimary
+	}
 
 	public readonly HeroID: number
 	public readonly ModelName: string
 	public readonly MovementTurnRate: number
 	public readonly BaseAttackRange: number
+	public readonly BaseAttackTime: number
 	public readonly AttackAnimationPoint: number
 	public readonly ProjectileSpeed: number
 	public readonly AttackDamageType: AttackDamageType
@@ -115,6 +122,9 @@ export default class UnitData {
 			: 0
 		this.ProjectileSpeed = m_Storage.has("ProjectileSpeed")
 			? parseInt(m_Storage.get("ProjectileSpeed") as string)
+			: 0
+		this.BaseAttackTime = m_Storage.has("AttackRate")
+			? parseFloat(m_Storage.get("AttackRate") as string)
 			: 0
 		this.AttackDamageType = m_Storage.has("CombatClassAttack")
 			? FixCombatClassAttack(parseEnumString(DOTA_COMBAT_CLASS_ATTACK, m_Storage.get("CombatClassAttack") as string))

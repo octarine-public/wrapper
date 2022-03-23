@@ -158,7 +158,6 @@ export default class Unit extends Entity {
 	public AttackSpeed = 0
 	public IncreasedAttackSpeed = 0
 	public AttacksPerSecond = 0
-	public BaseAttackTime = 0
 	public MoveCapabilities = DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE
 	public BonusArmor = 0
 	public TPStartTime = -1
@@ -341,6 +340,9 @@ export default class Unit extends Entity {
 		wts.SubtractForThis(manabar_size.Divide(new Vector2(1.95, 0.42))).FloorForThis()
 		return [wts, manabar_size]
 	}*/
+	public get BaseAttackTime() {
+		return this.UnitData.BaseAttackTime
+	}
 	public get AttackSpeedBonus() {
 		let attackSpeed = this.AttackSpeed
 		attackSpeed += this.GetBuffByName("modifier_ursa_overpower")?.Ability?.GetSpecialValue("attack_speed_bonus_pct") ?? 0
@@ -554,7 +556,6 @@ export default class Unit extends Entity {
 		this.AttackSpeed = m_fAttackSpeed
 		this.IncreasedAttackSpeed = m_fIncreasedAttackSpeed
 		this.AttacksPerSecond = m_fAttacksPerSecond
-		this.BaseAttackTime = m_flBaseAttackTime
 		this.IdealSpeed_ = m_fIdealSpeed
 		this.AttackRange = m_fAttackRange
 		this.HealthBarOffset_ = m_iHealthBarOffset
