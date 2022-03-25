@@ -64,7 +64,7 @@ export default class ImageSelector extends Base {
 		this.enabled_values = new Map<string, boolean>(value)
 		this.values.forEach(value_ => {
 			if (!this.enabled_values.has(value_))
-				this.enabled_values.set(value_, false)
+				this.enabled_values.set(value_, true)
 		})
 	}
 
@@ -73,7 +73,7 @@ export default class ImageSelector extends Base {
 			return false
 		this.values.forEach(value => {
 			if (!this.enabled_values.has(value))
-				this.enabled_values.set(value, false)
+				this.enabled_values.set(value, true)
 		})
 		this.image_size.x = this.image_size.y = ImageSelector.base_image_height
 		this.rendered_paths = []
@@ -127,7 +127,9 @@ export default class ImageSelector extends Base {
 					i % ImageSelector.elements_per_row,
 					Math.floor(i / ImageSelector.elements_per_row),
 				).Multiply(this.image_size.AddScalar(ImageSelector.image_border_width * 2 + ImageSelector.image_gap)).Add(base_pos)
-			RendererSDK.Image(imagePath, pos, -1, size)
+
+			RendererSDK.Image(imagePath, pos, -1, size, Color.White, 0, undefined, !this.IsEnabled(this.values[i]))
+
 			if (this.IsEnabled(this.values[i]))
 				RendererSDK.OutlinedRect(
 					pos,
