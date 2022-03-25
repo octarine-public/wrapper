@@ -9,8 +9,9 @@ import Entity from "./Entity"
 import Hero from "./Hero"
 import Item from "./Item"
 import { EPropertyType } from "../../Enums/PropertyType"
+import { PlayerResource } from "./PlayerResource"
 
-@WrapperClass("CDOTAPlayer")
+@WrapperClass("CDOTAPlayerController")
 export default class Player extends Entity {
 	@NetworkedBasicField("m_nPlayerID", EPropertyType.INT32)
 	public PlayerID = -1
@@ -44,17 +45,25 @@ export default class Player extends Entity {
 	public Scan(position: Vector3, queue?: boolean, showEffects?: boolean): void {
 		return ExecuteOrder.Scan(position, queue, showEffects)
 	}
-}
-const Players = EntityManager.GetEntitiesByClass(Player)
 
-import { RegisterFieldHandler } from "../NativeToSDK"
-RegisterFieldHandler(Player, "m_hAssignedHero", (player, new_value) => {
-	player.Hero_ = new_value as number
-	const ent = EntityManager.EntityByIndex(player.Hero_)
-	player.Hero = ent instanceof Hero ? ent : undefined
-})
+	public UpdateHero(): void {
+		const teamDataAr = PlayerResource?.PlayerTeamData
+		if (teamDataAr === undefined)
+			return
+		this.Hero_ = teamDataAr[this.PlayerID]?.SelectedHeroIndex ?? this.Hero_
+		const ent = EntityManager.EntityByIndex(this.Hero_)
+		this.Hero = ent instanceof Hero
+			? ent
+			: undefined
+	}
+}
+export const Players = EntityManager.GetEntitiesByClass(Player)
 
 EventsSDK.on("PreEntityCreated", ent => {
+	if (ent instanceof Player) {
+		ent.UpdateHero()
+		return
+	}
 	if (!(ent instanceof Hero) || !ent.CanBeMainHero)
 		return
 	for (const player of Players)

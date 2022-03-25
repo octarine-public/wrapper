@@ -4,6 +4,7 @@ import { WrapperClass } from "../../Decorators"
 import { EntityPropertiesNode } from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import Entity from "../Base/Entity"
+import { Players } from "./Player"
 
 @WrapperClass("CDOTA_PlayerResource")
 export default class CPlayerResource extends Entity {
@@ -21,6 +22,7 @@ export default class CPlayerResource extends Entity {
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(CPlayerResource, "m_vecPlayerTeamData", (resource, new_val) => {
 	resource.PlayerTeamData = (new_val as EntityPropertiesNode[]).map(map => new PlayerTeamData(map))
+	Players.forEach(player => player.UpdateHero())
 })
 RegisterFieldHandler(CPlayerResource, "m_vecPlayerData", (resource, new_val) => {
 	resource.PlayerData = (new_val as EntityPropertiesNode[]).map(map => new PlayerData(map))
