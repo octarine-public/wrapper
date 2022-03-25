@@ -22,7 +22,7 @@ export default class CPlayerResource extends Entity {
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(CPlayerResource, "m_vecPlayerTeamData", (resource, new_val) => {
 	resource.PlayerTeamData = (new_val as EntityPropertiesNode[]).map(map => new PlayerTeamData(map))
-	Players.forEach(player => player.UpdateHero())
+	Players.forEach(player => player.UpdateHero(resource))
 })
 RegisterFieldHandler(CPlayerResource, "m_vecPlayerData", (resource, new_val) => {
 	resource.PlayerData = (new_val as EntityPropertiesNode[]).map(map => new PlayerData(map))

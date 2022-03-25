@@ -9,7 +9,7 @@ import Entity from "./Entity"
 import Hero from "./Hero"
 import Item from "./Item"
 import { EPropertyType } from "../../Enums/PropertyType"
-import { PlayerResource } from "./PlayerResource"
+import CPlayerResource, { PlayerResource } from "./PlayerResource"
 
 @WrapperClass("CDOTAPlayerController")
 export default class Player extends Entity {
@@ -46,8 +46,8 @@ export default class Player extends Entity {
 		return ExecuteOrder.Scan(position, queue, showEffects)
 	}
 
-	public UpdateHero(): void {
-		const teamDataAr = PlayerResource?.PlayerTeamData
+	public UpdateHero(playerResource: Nullable<CPlayerResource>): void {
+		const teamDataAr = playerResource?.PlayerTeamData
 		if (teamDataAr === undefined)
 			return
 		this.Hero_ = teamDataAr[this.PlayerID]?.SelectedHeroIndex ?? this.Hero_
@@ -61,7 +61,7 @@ export const Players = EntityManager.GetEntitiesByClass(Player)
 
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof Player) {
-		ent.UpdateHero()
+		ent.UpdateHero(PlayerResource)
 		return
 	}
 	if (!(ent instanceof Hero) || !ent.CanBeMainHero)
