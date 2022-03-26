@@ -33,6 +33,7 @@ export default class ImageSelector extends Base {
 		public values: string[],
 		default_values = new Map<string, boolean>(),
 		tooltip = "",
+		public created_default_state = false,
 	) {
 		super(parent, name, tooltip)
 		this.enabled_values = default_values
@@ -64,7 +65,7 @@ export default class ImageSelector extends Base {
 		this.enabled_values = new Map<string, boolean>(value)
 		this.values.forEach(value_ => {
 			if (!this.enabled_values.has(value_))
-				this.enabled_values.set(value_, false)
+				this.enabled_values.set(value_, this.created_default_state)
 		})
 	}
 
@@ -73,7 +74,7 @@ export default class ImageSelector extends Base {
 			return false
 		this.values.forEach(value => {
 			if (!this.enabled_values.has(value))
-				this.enabled_values.set(value, false)
+				this.enabled_values.set(value, this.created_default_state)
 		})
 		this.image_size.x = this.image_size.y = ImageSelector.base_image_height
 		this.rendered_paths = []
