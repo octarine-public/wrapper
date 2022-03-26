@@ -64,7 +64,7 @@ export default class ImageSelector extends Base {
 		this.enabled_values = new Map<string, boolean>(value)
 		this.values.forEach(value_ => {
 			if (!this.enabled_values.has(value_))
-				this.enabled_values.set(value_, true)
+				this.enabled_values.set(value_, false)
 		})
 	}
 
@@ -73,7 +73,7 @@ export default class ImageSelector extends Base {
 			return false
 		this.values.forEach(value => {
 			if (!this.enabled_values.has(value))
-				this.enabled_values.set(value, true)
+				this.enabled_values.set(value, false)
 		})
 		this.image_size.x = this.image_size.y = ImageSelector.base_image_height
 		this.rendered_paths = []
