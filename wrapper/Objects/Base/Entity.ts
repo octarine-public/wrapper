@@ -227,6 +227,10 @@ export default class Entity {
 		return 0
 	}
 
+	public get Handle(): number {
+		return (this.Serial << EntityManager.INDEX_BITS) | this.Index
+	}
+
 	public async AsyncCreate(): Promise<void> {
 		// TBD in child classes
 	}

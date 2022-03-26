@@ -24,6 +24,7 @@ export default class UserCmd {
 	public readonly ViewAngles = new QAngle(60, 90, 0)
 	public WeaponSelect: Nullable<Entity>
 	public WeaponSubType: Nullable<Entity>
+	public Pawn: Nullable<Entity>
 
 	public Read(): this {
 		this.ComandNumber = UserCmd.LatestUserCmd_view.getInt32(0, true)
@@ -50,6 +51,8 @@ export default class UserCmd {
 		this.VectorUnderCursor.x = UserCmd.LatestUserCmd_view.getFloat32(69, true)
 		this.VectorUnderCursor.y = UserCmd.LatestUserCmd_view.getFloat32(73, true)
 		this.VectorUnderCursor.z = UserCmd.LatestUserCmd_view.getFloat32(77, true)
+		if (UserCmd.LatestUserCmd_view.byteLength > 81)
+			this.Pawn = EntityManager.EntityByIndex(UserCmd.LatestUserCmd_view.getUint32(81))
 		return this
 	}
 
@@ -78,6 +81,8 @@ export default class UserCmd {
 		UserCmd.LatestUserCmd_view.setFloat32(69, this.VectorUnderCursor.x, true)
 		UserCmd.LatestUserCmd_view.setFloat32(73, this.VectorUnderCursor.y, true)
 		UserCmd.LatestUserCmd_view.setFloat32(77, this.VectorUnderCursor.z, true)
+		if (UserCmd.LatestUserCmd_view.byteLength > 81)
+			UserCmd.LatestUserCmd_view.setUint32(81, this.Pawn?.Handle ?? -1, true)
 	}
 
 	public Clone(): UserCmd {

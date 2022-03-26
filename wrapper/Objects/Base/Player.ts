@@ -21,8 +21,11 @@ export default class Player extends Entity {
 	public TotalEarnedGold = 0
 	@NetworkedBasicField("m_iTotalEarnedXP")
 	public TotalEarnedXP = 0
-	public Hero: Nullable<Hero> = undefined
+	public Hero: Nullable<Hero>
 	public Hero_ = 0
+	public Pawn: Nullable<Entity>
+	@NetworkedBasicField("m_hPawn", EPropertyType.INT32)
+	public Pawn_ = -1
 
 	public get IsSpectator(): boolean {
 		return this.Team === Team.Observer || this.Team === Team.Neutral || this.Team === Team.None || this.Team === Team.Shop
@@ -64,17 +67,21 @@ EventsSDK.on("PreEntityCreated", ent => {
 		ent.UpdateHero(PlayerResource)
 		return
 	}
-	if (!(ent instanceof Hero) || !ent.CanBeMainHero)
-		return
 	for (const player of Players)
-		if (ent.HandleMatches(player.Hero_))
-			player.Hero = ent
+		if (ent.HandleMatches(player.Pawn_))
+			player.Pawn = ent
+	if (ent instanceof Hero && ent.CanBeMainHero)
+		for (const player of Players)
+			if (ent.HandleMatches(player.Hero_))
+				player.Hero = ent
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (!(ent instanceof Hero))
-		return
 	for (const player of Players)
-		if (ent.HandleMatches(player.Hero_))
-			player.Hero = undefined
+		if (ent.HandleMatches(player.Pawn_))
+			player.Pawn = undefined
+	if (ent instanceof Hero)
+		for (const player of Players)
+			if (ent.HandleMatches(player.Hero_))
+				player.Hero = undefined
 })
