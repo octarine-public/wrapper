@@ -1005,6 +1005,7 @@ function ProcessUserCmd(): void {
 		return
 	latest_usercmd.SpectatorStatsCategoryID = 0
 	latest_usercmd.SpectatorStatsSortMethod = 0
+	latest_usercmd.Pawn = LocalPlayer?.Pawn
 	latest_usercmd.MousePosition.CopyFrom(InputManager.CursorOnScreen.DivideForThis(RendererSDK.WindowSize))
 	InputManager.IsShopOpen = IsShopOpen()
 	InputManager.IsScoreboardOpen = ConVars.GetInt("dota_spectator_stats_panel") === 1

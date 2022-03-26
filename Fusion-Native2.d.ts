@@ -59,6 +59,7 @@ struct CUserCmd {
 	uint8_t stats_dropdown; // 67, spectator_stats_category_id
 	uint8_t stats_dropdown_sort; // 68, spectator_stats_sort_method
 	Vector3 crosshairtrace; // 69
+	CHandle pawn; // 81
 };
  */
 declare var LatestUserCmd: Uint8Array
