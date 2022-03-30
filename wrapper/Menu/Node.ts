@@ -239,8 +239,8 @@ export default class Node extends Base {
 	public AddKeybind(name: string, default_key = "", tooltip = "") {
 		return this.AddEntry(new KeyBind(this, name, default_key, tooltip))
 	}
-	public AddImageSelector(name: string, values: string[], default_values = new Map<string, boolean>(), tooltip = "") {
-		return this.AddEntry(new ImageSelector(this, name, values, default_values, tooltip))
+	public AddImageSelector(name: string, values: string[], default_values = new Map<string, boolean>(), tooltip = "", created_default_state = false, drag_and_drop = false) {
+		return this.AddEntry(new ImageSelector(this, name, values, default_values, tooltip, created_default_state, drag_and_drop))
 	}
 	public AddButton(name: string, tooltip = ""): Button {
 		return this.AddEntry(new Button(this, name, tooltip))
