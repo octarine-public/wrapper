@@ -3,7 +3,6 @@ import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import GUIInfo from "../GUI/GUIInfo"
 import EventsSDK from "../Managers/EventsSDK"
-import InputManager, { VKeys } from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
 import AbilityData from "../Objects/DataBook/AbilityData"
 import Base, { IMenu } from "./Base"
@@ -25,8 +24,6 @@ export default class ImageSelector extends Base {
 	private static readonly image_activated_border_color = new Color(104, 4, 255)
 
 	public enabled_values: Map<string, boolean>
-	protected item_drop = new Map<string, number>()
-
 	protected readonly image_size = new Vector2()
 	protected rendered_paths: string[] = []
 
@@ -37,12 +34,10 @@ export default class ImageSelector extends Base {
 		default_values = new Map<string, boolean>(),
 		tooltip = "",
 		public created_default_state = false,
-		public drag_and_drop = false,
 	) {
 		super(parent, name, tooltip)
 		this.enabled_values = default_values
 	}
-
 	public get IsZeroSelected(): boolean {
 		for (const value of this.enabled_values.values())
 			if (value)
@@ -63,22 +58,10 @@ export default class ImageSelector extends Base {
 		)
 	}
 
-	public get ConfigValue() {
-		return Array.from(this.enabled_values.entries())
-	}
-
+	public get ConfigValue() { return Array.from(this.enabled_values.entries()) }
 	public set ConfigValue(value) {
 		if (this.ShouldIgnoreNewConfigValue || value === undefined)
 			return
-
-		if (this.drag_and_drop)
-			this.values = [...value.map(val => val[0])]
-
-		if (!Array.isArray(this.values)) {
-			console.error("config has errors", this.values, new Error().stack)
-			return
-		}
-
 		this.enabled_values = new Map<string, boolean>(value)
 		this.values.forEach(value_ => {
 			if (!this.enabled_values.has(value_))
@@ -141,28 +124,17 @@ export default class ImageSelector extends Base {
 			const imagePath = this.rendered_paths[i]
 			if (imagePath === undefined)
 				continue
-
-			const value = this.values[i]
-			const item_drop = this.item_drop.get(value)
-
 			const size = this.image_size,
 				pos = new Vector2(
 					i % ImageSelector.elements_per_row,
 					Math.floor(i / ImageSelector.elements_per_row),
 				).Multiply(this.image_size.AddScalar(ImageSelector.image_border_width * 2 + ImageSelector.image_gap)).Add(base_pos)
 
-			RendererSDK.Image(imagePath,
-				item_drop !== undefined ? this.MousePosition : pos,
-				-1,
-				size,
-				Color.White,
-				0,
-				undefined,
-				!this.IsEnabled(value),
-			)
-			if (this.IsEnabled(value))
+			RendererSDK.Image(imagePath, pos, -1, size, Color.White, 0, undefined, !this.IsEnabled(this.values[i]))
+
+			if (this.IsEnabled(this.values[i]))
 				RendererSDK.OutlinedRect(
-					item_drop !== undefined ? this.MousePosition : pos,
+					pos,
 					size,
 					ImageSelector.image_border_width,
 					ImageSelector.image_activated_border_color,
@@ -171,41 +143,14 @@ export default class ImageSelector extends Base {
 	}
 
 	public async OnMouseLeftDown(): Promise<boolean> {
-		const rect = this.IconsRect
-		const off = rect.GetOffset(this.MousePosition)
-		if (InputManager.IsKeyDown(VKeys.CONTROL) && this.drag_and_drop) {
-			this.ImageValueChanged(off, async (value, index) => {
-				this.item_drop.set(value, index)
-			})
-		}
-		return !rect.Contains(this.MousePosition)
+		return !this.IconsRect.Contains(this.MousePosition)
 	}
 
 	public async OnMouseLeftUp(): Promise<boolean> {
 		const rect = this.IconsRect
-		const off = rect.GetOffset(this.MousePosition)
-		if (this.drag_and_drop) {
-			for (const [name, oldIndex] of this.item_drop) {
-				this.ImageValueChanged(off, async (_, index) => {
-					this.values.splice(oldIndex, 1)
-					this.values.splice(index, 0, name)
-					this.enabled_values = new Map(this.values.map(x => [x, this.IsEnabled(x)]))
-					await this.TriggerOnValueChangedCBs()
-					await this.Update()
-				})
-				this.item_drop.delete(name)
-			}
-		}
-		if (!rect.Contains(this.MousePosition) || (InputManager.IsKeyDown(VKeys.CONTROL) && this.drag_and_drop))
+		if (!rect.Contains(this.MousePosition))
 			return false
-		this.ImageValueChanged(off, async value => {
-			this.enabled_values.set(value, !this.IsEnabled(value))
-			await this.TriggerOnValueChangedCBs()
-		})
-		return false
-	}
-
-	private async ImageValueChanged(off: Vector2, callback: (value: string, index: number) => Promise<void>) {
+		const off = rect.GetOffset(this.MousePosition)
 		for (let i = 0; i < this.values.length; i++) {
 			const base_pos = new Vector2(
 				i % ImageSelector.elements_per_row,
@@ -213,9 +158,12 @@ export default class ImageSelector extends Base {
 			).Multiply(this.image_size.AddScalar(ImageSelector.image_border_width * 2 + ImageSelector.image_gap))
 			if (!new Rectangle(base_pos, base_pos.Add(this.image_size)).Contains(off))
 				continue
-			await callback(this.values[i], i)
+			const value = this.values[i]
+			this.enabled_values.set(value, !this.IsEnabled(value))
+			await this.TriggerOnValueChangedCBs()
 			break
 		}
+		return false
 	}
 }
 

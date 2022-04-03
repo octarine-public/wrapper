@@ -1,5 +1,6 @@
 export { default as Base } from "./Base"
 
+export { default as DinamicImageSelector } from "./DinamicImageSelector"
 export { default as ImageSelector } from "./ImageSelector"
 export { default as Slider } from "./Slider"
 export { default as Dropdown } from "./Dropdown"
