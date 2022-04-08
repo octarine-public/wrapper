@@ -351,6 +351,7 @@ export default class Entity {
 			promise = ComputeAttachmentsAndBoundsAsync(this.ModelName)
 			ModelDataCache.set(this.ModelName, promise)
 		}
+
 		try {
 			const ar = await promise
 			this.Attachments = ar[0]
@@ -364,6 +365,9 @@ export default class Entity {
 			max.x = this.RingRadius
 			max.y = this.RingRadius
 		} catch (err) {
+			// parse error models/items/wards/rod_ward_2021/rod_ward_2021.vmdl
+			// catch Offset is outside the bounds of the DataView
+			// console.log(promise, this.ModelName)
 			console.error(err)
 		}
 	}
