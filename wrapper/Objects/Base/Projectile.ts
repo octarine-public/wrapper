@@ -110,10 +110,9 @@ export class TrackingProjectile extends Projectile {
 				target.RotationRad,
 				target.ModelScale,
 			)
-			const attachment_pos = attachment_off !== undefined
-				? target.Position.Add(attachment_off)
-				: target.Position
-			this.TargetLoc.CopyFrom(attachment_pos)
+			this.TargetLoc.CopyFrom(target.Position)
+			if (attachment_off !== undefined)
+				this.TargetLoc.AddForThis(attachment_off)
 		}
 	}
 }
