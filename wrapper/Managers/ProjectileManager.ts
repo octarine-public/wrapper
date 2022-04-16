@@ -72,8 +72,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 			proj.Source = undefined
 })
 
-EventsSDK.on("PostDataUpdate", () => ProjectileManager.AllTrackingProjectiles.forEach(proj => proj.UpdateTargetLoc()))
-EventsSDK.on("Tick", async () => {
+EventsSDK.on("PostDataUpdate", async () => {
 	const cur_time = GameState.RawGameTime
 	const ExpiredLinearProjectiles: LinearProjectile[] = []
 	for (const proj of ProjectileManager.AllLinearProjectiles) {
@@ -95,6 +94,7 @@ EventsSDK.on("Tick", async () => {
 		ProjectileManager.AllLinearProjectilesMap.delete(proj.ID)
 	}
 	for (const proj of ProjectileManager.AllTrackingProjectiles) {
+		proj.UpdateTargetLoc()
 		if (proj.LastUpdate === 0) {
 			proj.LastUpdate = cur_time
 			const source = proj.Source
@@ -102,7 +102,7 @@ EventsSDK.on("Tick", async () => {
 				const attachment = source.GetAttachment(proj.SourceAttachment)
 				if (attachment !== undefined)
 					proj.Position.AddForThis(attachment.GetPosition(
-						(attachment.FrameCount / attachment.FPS) / 2,
+						(attachment.FrameCount / 2) / attachment.FPS,
 						source.RotationRad,
 						source.ModelScale,
 					))
@@ -117,7 +117,7 @@ EventsSDK.on("Tick", async () => {
 					: undefined
 				if (attachment !== undefined)
 					proj.Position.AddForThis(attachment.GetPosition(
-						(attachment.FrameCount / attachment.FPS) / 2,
+						(attachment.FrameCount / 2) / attachment.FPS,
 						proj.Source.RotationRad,
 						proj.Source.ModelScale,
 					))
@@ -126,14 +126,14 @@ EventsSDK.on("Tick", async () => {
 					.CopyTo(proj.Position)
 			} else
 				continue
-		const dist = proj.Position.Distance(proj.TargetLoc)
 		const velocity = proj.Position.GetDirectionTo(proj.TargetLoc).MultiplyScalarForThis(proj.Speed * dt)
 		proj.Position.AddForThis(velocity)
 		proj.LastUpdate = cur_time
+		const distSqr = proj.Position.DistanceSqr(proj.TargetLoc)
 		const collision_size = proj.Target instanceof Entity ? proj.Target.ProjectileCollisionSize ** 2 : 0
 		if (
-			(collision_size !== 0 && proj.Position.DistanceSqr(proj.TargetLoc) < collision_size)
-			|| (dist < velocity.Length)
+			(collision_size !== 0 && distSqr < collision_size)
+			|| (distSqr < velocity.LengthSqr)
 		)
 			await DestroyTrackingProjectile(proj)
 	}

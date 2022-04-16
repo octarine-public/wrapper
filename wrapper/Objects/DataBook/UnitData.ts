@@ -89,6 +89,7 @@ export default class UnitData {
 	public readonly HeroID: number
 	public readonly ModelName: string
 	public readonly MovementTurnRate: number
+	public readonly AttackAcquisitionRange: number
 	public readonly BaseAttackRange: number
 	public readonly BaseAttackTime: number
 	public readonly AttackAnimationPoint: number
@@ -116,6 +117,9 @@ export default class UnitData {
 			: 0
 		this.AttackAnimationPoint = m_Storage.has("AttackAnimationPoint")
 			? parseFloat(m_Storage.get("AttackAnimationPoint") as string)
+			: 0
+		this.AttackAcquisitionRange = m_Storage.has("AttackAcquisitionRange")
+			? parseInt(m_Storage.get("AttackAcquisitionRange") as string)
 			: 0
 		this.BaseAttackRange = m_Storage.has("AttackRange")
 			? parseInt(m_Storage.get("AttackRange") as string)
@@ -219,8 +223,8 @@ function FixUnitInheritance(
 		map.set("BaseClass", "npc_dota_units_base")
 	else if (unit_name.startsWith("npc_dota_hero_") && !map.has("BaseClass"))
 		map.set("BaseClass", "npc_dota_hero_base")
-	if (map.has("BaseClass")) {
-		const base_name = map.get("BaseClass")
+	if (map.has("BaseClass") || map.has("include_keys_from")) {
+		const base_name = map.get("BaseClass") ?? map.get("include_keys_from")
 		if (typeof base_name === "string" && base_name !== unit_name) {
 			const base_map = units_map.get(base_name)
 			if (base_map instanceof Map) {

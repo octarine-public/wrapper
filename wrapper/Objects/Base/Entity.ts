@@ -374,11 +374,16 @@ export default class Entity {
 	public CalculateActivityModifiers(activity: GameActivity_t, ar: string[]): void {
 		// to be implemented in child classes
 	}
-	public GetAttachments(activity = GameActivity_t.ACT_DOTA_IDLE): Nullable<Map<string, ComputedAttachment>> {
+	public GetAttachments(activity = GameActivity_t.ACT_DOTA_IDLE, sequence_num = -1): Nullable<Map<string, ComputedAttachment>> {
 		if (this.Attachments === undefined)
 			return undefined
-		const modifiers: string[] = []
 		const activity_name = activity2name.get(activity)
+		if (sequence_num >= 0 && activity_name !== undefined) {
+			const ar = this.Attachments.filter(attachment => attachment[0].has(activity_name))
+			if (ar.length > sequence_num)
+				return ar[sequence_num][1]
+		}
+		const modifiers: string[] = []
 		if (activity_name !== undefined)
 			modifiers.push(activity_name)
 		this.CalculateActivityModifiers(activity, modifiers)
@@ -391,7 +396,7 @@ export default class Entity {
 				highest_scored = ar[1]
 			}
 		}
-		if (highest_scored === undefined) {
+		if (highest_scored !== undefined) {
 			const default_ar = this.Attachments.find(ar => ar[0].has("ACT_DOTA_CONSTANT_LAYER"))
 			if (default_ar !== undefined)
 				highest_scored = default_ar[1]
@@ -401,8 +406,9 @@ export default class Entity {
 	public GetAttachment(
 		name: string,
 		activity = GameActivity_t.ACT_DOTA_IDLE,
+		sequence_num = -1,
 	): Nullable<ComputedAttachment> {
-		return this.GetAttachments(activity)?.get(name)
+		return this.GetAttachments(activity, sequence_num)?.get(name)
 	}
 	/**
 	 * @returns attachment position mid-animation
@@ -410,8 +416,9 @@ export default class Entity {
 	public GetAttachmentPosition(
 		name: string,
 		activity = GameActivity_t.ACT_DOTA_IDLE,
+		sequence_num = -1,
 	): Nullable<Vector3> {
-		const attachment = this.GetAttachment(name, activity)
+		const attachment = this.GetAttachment(name, activity, sequence_num)
 		if (attachment === undefined)
 			return undefined
 		return attachment.GetPosition(

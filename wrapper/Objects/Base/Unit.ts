@@ -76,6 +76,7 @@ export default class Unit extends Entity {
 	public IsControllableByPlayerMask = 0n
 	public NetworkActivity = GameActivity_t.ACT_DOTA_IDLE
 	public NetworkActivityStartTime = 0
+	public NetworkSequenceIndex = 0
 	public HPRegenCounter = 0
 	@NetworkedBasicField("m_flHealthThinkRegen")
 	public HPRegen = 0
@@ -557,7 +558,7 @@ export default class Unit extends Entity {
 		this.IncreasedAttackSpeed = m_fIncreasedAttackSpeed
 		this.AttacksPerSecond = m_fAttacksPerSecond
 		this.IdealSpeed_ = m_fIdealSpeed
-		this.AttackRange = m_fAttackRange
+		// this.BaseAttackTime = m_flBaseAttackTime
 		this.HealthBarOffset_ = m_iHealthBarOffset
 		this.MoveCapabilities = m_iMoveCapabilities
 		this.MagicDamageResist_ = m_flMagicalResistanceValueReal
@@ -1011,14 +1012,18 @@ export default class Unit extends Entity {
 		} else
 			ar.push("unleash")
 	}
-	public GetAttachments(activity = this.NetworkActivity): Nullable<Map<string, ComputedAttachment>> {
-		return super.GetAttachments(activity)
+	public GetAttachments(
+		activity = this.NetworkActivity,
+		sequence_num = this.NetworkSequenceIndex,
+	): Nullable<Map<string, ComputedAttachment>> {
+		return super.GetAttachments(activity, sequence_num)
 	}
 	public GetAttachment(
 		name: string,
 		activity = this.NetworkActivity,
+		sequence_num = this.NetworkSequenceIndex,
 	): Nullable<ComputedAttachment> {
-		return super.GetAttachment(name, activity)
+		return super.GetAttachment(name, activity, sequence_num)
 	}
 	/**
 	 * @returns attachment position mid-animation
@@ -1026,8 +1031,9 @@ export default class Unit extends Entity {
 	public GetAttachmentPosition(
 		name: string,
 		activity = this.NetworkActivity,
+		sequence_num = this.NetworkSequenceIndex,
 	): Nullable<Vector3> {
-		return super.GetAttachmentPosition(name, activity)
+		return super.GetAttachmentPosition(name, activity, sequence_num)
 	}
 	public GetAdditionalAttackDamage(source: Unit): number {
 		return 0
@@ -1277,6 +1283,11 @@ ReplaceFieldHandler(Unit, "m_iTeamNum", async (unit, new_val) => {
 RegisterFieldHandler(Unit, "m_NetworkActivity", async (unit, new_value) => {
 	unit.NetworkActivity = new_value as number
 	unit.NetworkActivityStartTime = GameState.RawGameTime
+	if (unit.IsValid)
+		await EventsSDK.emit("NetworkActivityChanged", false, unit)
+})
+RegisterFieldHandler(Unit, "m_NetworkSequenceIndex", async (unit, new_value) => {
+	unit.NetworkSequenceIndex = new_value as number
 	if (unit.IsValid)
 		await EventsSDK.emit("NetworkActivityChanged", false, unit)
 })
