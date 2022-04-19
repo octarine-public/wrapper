@@ -618,12 +618,13 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			)
 	}
 	if (par === undefined) {
-		await EventsSDK.emit(
-			"ParticleUnitPositionUpdated",
-			false,
-			changed_ent,
-			undefined,
-		)
+		if (changed_ent !== undefined)
+			await EventsSDK.emit(
+				"ParticleUnitPositionUpdated",
+				false,
+				changed_ent,
+				undefined,
+			)
 		return
 	}
 	switch (msg_type) {
