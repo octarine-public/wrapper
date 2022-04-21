@@ -997,10 +997,10 @@ function MoveCamera(
 // polyfills for old core
 globalThis.GetSelectedEntities = globalThis.GetSelectedEntities ?? (() => 0)
 globalThis.GetQueryUnit = globalThis.GetQueryUnit ?? (() => 0)
-function ProcessUserCmd(): void {
+const min_ProcessUserCmd_window = 1 / 60
+function ProcessUserCmd(force = false): void {
 	const current_time = hrtime()
 	const dt = Math.min(current_time - latest_update, 100) / 1000
-	latest_update = current_time
 	if (RendererSDK.WindowSize.IsZero())
 		return
 	latest_usercmd.SpectatorStatsCategoryID = 0
@@ -1033,6 +1033,9 @@ function ProcessUserCmd(): void {
 		RendererSDK.WindowSize,
 		Camera.FoV,
 	)[0]
+	if (!force && dt < min_ProcessUserCmd_window)
+		return
+	latest_update = current_time
 	if (ExecuteOrder.disable_humanizer)
 		return
 	latest_usercmd.ShopMask = 15
@@ -1240,7 +1243,7 @@ function ProcessUserCmd(): void {
 EventsSDK.on("Draw", ProcessUserCmd)
 Events.on("RequestUserCmd", () => {
 	ExecuteOrder.received_usercmd_request = true
-	ProcessUserCmd()
+	ProcessUserCmd(true)
 	if (ExecuteOrder.disable_humanizer)
 		return
 	usercmd_cache.forEach(usercmd => {
@@ -1291,7 +1294,7 @@ Events.on("PrepareUnitOrders", async () => {
 	if (!ExecuteOrder.disable_humanizer) {
 		order.ExecuteQueued()
 		if (latest_usercmd !== undefined)
-			ProcessUserCmd()
+			ProcessUserCmd(true)
 		return false
 	}
 	return true
