@@ -495,18 +495,16 @@ EventsSDK.on("PreEntityCreated", ent => {
 	ent.SpawnPosition.CopyFrom(ent.NetworkedPosition)
 	if (ent.Index === 0)
 		return
-	EntityManager.AllEntities.forEach(iter => {
+	for (const iter of EntityManager.AllEntities)
 		if (ent.HandleMatches(iter.Owner_))
 			iter.OwnerEntity = ent
-	})
 })
 EventsSDK.on("EntityDestroyed", ent => {
 	if (ent.Index === 0)
 		return
-	EntityManager.AllEntities.forEach(iter => {
+	for (const iter of EntityManager.AllEntities)
 		if (ent.HandleMatches(iter.Owner_))
 			iter.OwnerEntity = undefined
-	})
 })
 
 RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => {
