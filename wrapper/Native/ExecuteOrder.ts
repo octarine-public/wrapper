@@ -956,10 +956,10 @@ function MoveCameraByScreen(target_pos: Vector3, current_time: number): Vector2 
 	if (last_camera_move_seed < current_time - camera_move_seed_expiry)
 		last_camera_move_seed = current_time
 	ret.x = camera_direction.x === 0.5
-		? Math.min(0.9, Math.max(0.1, ret.x + Math.cos(last_camera_move_seed) * 0.1))
+		? Math.min(0.9, Math.max(0.1, 0.5 + (Math.cos(last_camera_move_seed) ** 3) * 0.1))
 		: camera_direction.x
 	ret.y = camera_direction.y === 0.5
-		? Math.min(0.9, Math.max(0.1, ret.y + Math.sin(last_camera_move_seed) * 0.1))
+		? Math.min(0.9, Math.max(0.1, 0.5 + (Math.sin(last_camera_move_seed) ** 3) * 0.1))
 		: camera_direction.y
 	return ret
 }
@@ -1095,12 +1095,12 @@ function ProcessUserCmd(force = false): void {
 			ExecuteOrder.cursor_speed_max_accel,
 		) * ExecuteOrder.cursor_speed * dt
 		if (extend < dist) {
-			// Vector3#Extend with sin/cos
+			// Vector2#Extend with sin^2/cos^2
 			latest_usercmd.MousePosition
 				.GetDirectionTo(target_pos)
 				.MultiplyScalarForThis(extend)
-				.MultiplyScalarX(Math.abs(Math.cos(current_time)))
-				.MultiplyScalarY(Math.abs(Math.sin(current_time)))
+				.MultiplyScalarX(Math.cos(current_time) ** 2)
+				.MultiplyScalarY(Math.sin(current_time) ** 2)
 				.AddForThis(latest_usercmd.MousePosition)
 				.CopyTo(latest_usercmd.MousePosition)
 		} else
