@@ -55,27 +55,22 @@ export default class Modifier {
 
 	public readonly Index: number
 	public readonly SerialNumber: number
-
-	public readonly AbilityLevel: number
 	public readonly IsAura: boolean
 	public readonly Name: string
+
+	public AbilityLevel = 0
 	public DDAbilityName = "" // should be initialized in AsyncCreate
-
-	private Parent_: Nullable<Unit>
-	private Ability_: Nullable<Ability>
-
-	private Caster_: Nullable<Entity>
-	private AuraOwner_: Nullable<Entity>
+	public Parent: Nullable<Unit>
+	public Ability: Nullable<Ability>
+	public Caster: Nullable<Entity>
+	public AuraOwner: Nullable<Entity>
 
 	constructor(public m_pBuff: IModifier) {
 		this.Index = this.m_pBuff.Index as number
 		this.SerialNumber = this.m_pBuff.SerialNum as number
 
-		this.AbilityLevel = this.m_pBuff.AbilityLevel as number
 		this.IsAura = this.m_pBuff.IsAura as boolean
-
-		this.Caster_ = EntityManager.EntityByIndex(this.m_pBuff.Caster)
-		this.AuraOwner_ = EntityManager.EntityByIndex(this.m_pBuff.AuraOwner)
+		this.Update()
 
 		const lua_name = this.m_pBuff.LuaName
 		this.Name = lua_name === undefined || lua_name === ""
@@ -133,29 +128,6 @@ export default class Modifier {
 	public get ElapsedTime(): number {
 		return Math.max(GameState.RawGameTime - this.CreationTime, 0)
 	}
-	public get Parent(): Nullable<Unit> {
-		if (this.Parent_ === undefined) {
-			const ent = EntityManager.EntityByIndex(this.m_pBuff.Parent)
-			if (ent !== undefined && ent instanceof Unit)
-				this.Parent_ = ent
-		}
-		return this.Parent_
-	}
-	public get Ability(): Nullable<Ability> {
-		if (this.Ability_ === undefined)
-			this.Ability_ = EntityManager.EntityByIndex(this.m_pBuff.Ability) as Nullable<Ability>
-		return this.Ability_
-	}
-	public get Caster(): Nullable<Entity> {
-		if (this.Caster_ === undefined)
-			this.Caster_ = EntityManager.EntityByIndex(this.m_pBuff.Caster)
-		return this.Caster_
-	}
-	public get AuraOwner(): Nullable<Entity> {
-		if (this.AuraOwner_ === undefined)
-			this.AuraOwner_ = EntityManager.EntityByIndex(this.m_pBuff.AuraOwner)
-		return this.AuraOwner_
-	}
 	public get RemainingTime(): number {
 		return Math.max(this.DieTime - GameState.RawGameTime, 0)
 	}
@@ -188,5 +160,13 @@ export default class Modifier {
 			? await AbilityData.GetAbilityNameByID(DDAbilityID)
 			: undefined
 		this.DDAbilityName = DDAbilityName ?? "ability_base"
+	}
+
+	public Update(): void {
+		this.Caster = EntityManager.EntityByIndex(this.m_pBuff.Caster)
+		this.Ability = EntityManager.EntityByIndex(this.m_pBuff.Ability) as Nullable<Ability>
+		this.AuraOwner = EntityManager.EntityByIndex(this.m_pBuff.AuraOwner)
+		this.Parent = EntityManager.EntityByIndex(this.m_pBuff.Parent) as Nullable<Unit>
+		this.AbilityLevel = this.m_pBuff.AbilityLevel ?? 0
 	}
 }

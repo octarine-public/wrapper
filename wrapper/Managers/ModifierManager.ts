@@ -1,5 +1,6 @@
 import Vector3 from "../Base/Vector3"
 import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
+import Ability from "../Objects/Base/Ability"
 import Modifier from "../Objects/Base/Modifier"
 import Unit from "../Objects/Base/Unit"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
@@ -150,11 +151,18 @@ async function EmitModifierCreated(mod: IModifier) {
 	await EventsSDK.emit("ModifierCreatedRaw", false, mod_)
 }
 EventsSDK.after("EntityCreated", async ent => {
-	if (!(ent instanceof Unit))
-		return
-	for (const mod of ActiveModifiers.values())
-		if (mod.Parent === ent)
-			await AddModifier(ent, mod)
+	if (ent instanceof Unit)
+		for (const mod of ActiveModifiers.values())
+			if (ent.HandleMatches(mod.m_pBuff.Parent ?? 0)) {
+				mod.Update()
+				await AddModifier(ent, mod)
+			}
+	if (ent instanceof Ability)
+		for (const mod of ActiveModifiers.values())
+			if (ent.HandleMatches(mod.m_pBuff.Ability ?? 0)) {
+				mod.Update()
+				await EventsSDK.emit("ModifierChanged", false, mod)
+			}
 })
 async function EmitModifierRemoved(mod: Modifier) {
 	ActiveModifiers.delete(mod.SerialNumber)
@@ -173,6 +181,7 @@ EventsSDK.on("EntityDestroyed", async ent => {
 })
 async function EmitModifierChanged(old_mod: Modifier, mod: IModifier) {
 	old_mod.m_pBuff = mod
+	old_mod.Update()
 	if (old_mod.Parent !== undefined)
 		await EventsSDK.emit("ModifierChanged", false, old_mod)
 	await EventsSDK.emit("ModifierChangedRaw", false, old_mod)
