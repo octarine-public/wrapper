@@ -92,6 +92,7 @@ export default class UnitData {
 	public readonly AttackAcquisitionRange: number
 	public readonly BaseAttackRange: number
 	public readonly BaseAttackTime: number
+	public readonly BaseAttackSpeed: number
 	public readonly AttackAnimationPoint: number
 	public readonly ProjectileSpeed: number
 	public readonly AttackDamageType: AttackDamageType
@@ -129,6 +130,9 @@ export default class UnitData {
 			: 0
 		this.BaseAttackTime = m_Storage.has("AttackRate")
 			? parseFloat(m_Storage.get("AttackRate") as string)
+			: 0
+		this.BaseAttackSpeed = m_Storage.has("BaseAttackSpeed")
+			? parseFloat(m_Storage.get("BaseAttackSpeed") as string)
 			: 0
 		this.AttackDamageType = m_Storage.has("CombatClassAttack")
 			? FixCombatClassAttack(parseEnumString(DOTA_COMBAT_CLASS_ATTACK, m_Storage.get("CombatClassAttack") as string))
