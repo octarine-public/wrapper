@@ -2,6 +2,7 @@ import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { Attributes } from "../../Enums/Attributes"
 import { DOTAHullSize } from "../../Enums/DOTAHullSize"
+import { DOTAUnitMoveCapability_t } from "../../Enums/DOTAUnitMoveCapability_t"
 import Workers from "../../Native/Workers"
 import { parseKVFile } from "../../Resources/ParseKV"
 import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
@@ -107,6 +108,7 @@ export default class UnitData {
 	public readonly HealthBarOffset: number
 	public readonly WorkshopName: string
 	public readonly AttributePrimary: Attributes
+	public readonly MovementCapabilities: DOTAUnitMoveCapability_t
 
 	constructor(name: string, m_Storage: RecursiveMap) {
 		this.HeroID = m_Storage.has("HeroID")
@@ -134,6 +136,9 @@ export default class UnitData {
 		this.BaseAttackSpeed = m_Storage.has("BaseAttackSpeed")
 			? parseFloat(m_Storage.get("BaseAttackSpeed") as string)
 			: 0
+		this.MovementCapabilities = m_Storage.has("MovementCapabilities")
+			? parseEnumString(DOTAUnitMoveCapability_t, m_Storage.get("MovementCapabilities") as string)
+			: DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_GROUND
 		this.AttackDamageType = m_Storage.has("CombatClassAttack")
 			? FixCombatClassAttack(parseEnumString(DOTA_COMBAT_CLASS_ATTACK, m_Storage.get("CombatClassAttack") as string))
 			: AttackDamageType.Basic
