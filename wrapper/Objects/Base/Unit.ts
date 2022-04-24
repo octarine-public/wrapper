@@ -665,16 +665,14 @@ export default class Unit extends Entity {
 		let turnRate = this.MovementTurnRate || 0.5
 
 		if (currentTurnRate) {
-			if (this.HasBuffByName("modifier_medusa_stone_gaze_slow"))
-				turnRate *= 0.65
-
-			if (this.HasBuffByName("modifier_batrider_sticky_napalm"))
-				turnRate *= 0.3
+			const buff = this.GetBuffByName("modifier_batrider_sticky_napalm")
+			if (buff !== undefined && buff.Ability !== undefined)
+				turnRate *= 1 + (buff.Ability.GetSpecialValue("turn_rate_pct", buff.AbilityLevel) / 100)
 		}
 
 		const legs = this.GetItemByName("item_spider_legs")
 		if (legs !== undefined)
-			turnRate *= (1 + (legs.GetSpecialValue("turn_rate") / 100))
+			turnRate *= 1 + (legs.GetSpecialValue("turn_rate") / 100)
 
 		return turnRate
 	}
@@ -684,7 +682,7 @@ export default class Unit extends Entity {
 			angle = this.FindRotationAngle(angle)
 
 		const name = this.Name
-		if (name === "npc_dota_hero_wisp" || name === "npc_dota_hero_pangolier" || name === "npc_dota_hero_clinkz")
+		if (name === "npc_dota_hero_wisp" || name === "npc_dota_hero_pangolier")
 			return 0
 
 		if (angle <= 0.2)
