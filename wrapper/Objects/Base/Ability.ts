@@ -54,6 +54,8 @@ export default class Ability extends Entity {
 	public CurrentCharges = 0
 	@NetworkedBasicField("m_iDirtyButtons")
 	public DirtyButtons = 0
+	@NetworkedBasicField("m_fAbilityChargeRestoreTimeRemaining")
+	public AbilityChargeRestoreTimeRemaining = 0
 	public readonly ProjectilePath: Nullable<string>
 
 	constructor(Index: number, Serial: number, name: string) {
