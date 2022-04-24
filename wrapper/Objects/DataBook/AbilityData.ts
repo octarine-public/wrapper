@@ -325,7 +325,7 @@ export default class AbilityData {
 			let LinkedSpecialBonus = "",
 				talent_change_str = "+0"
 			for (const [name, value] of special) {
-				if (name === "value" || name === "LinkedSpecialBonus" || name === "levelkey" || typeof value !== "string")
+				if (name === "value" || name === "LinkedSpecialBonus" || name === "levelkey" || name === "RequiresShard" || typeof value !== "string")
 					continue
 				LinkedSpecialBonus = name
 				talent_change_str = value
