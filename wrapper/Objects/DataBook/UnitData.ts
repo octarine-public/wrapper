@@ -109,6 +109,8 @@ export default class UnitData {
 	public readonly WorkshopName: string
 	public readonly AttributePrimary: Attributes
 	public readonly MovementCapabilities: DOTAUnitMoveCapability_t
+	public readonly ArmorPhysical: number
+	public readonly MagicalResistance: number
 
 	constructor(name: string, m_Storage: RecursiveMap) {
 		this.HeroID = m_Storage.has("HeroID")
@@ -216,6 +218,12 @@ export default class UnitData {
 		this.AttributePrimary = m_Storage.has("AttributePrimary")
 			? parseEnumString(Attributes, m_Storage.get("AttributePrimary") as string)
 			: Attributes.DOTA_ATTRIBUTE_STRENGTH
+		this.ArmorPhysical = m_Storage.has("ArmorPhysical")
+			? parseFloat(m_Storage.get("ArmorPhysical") as string)
+			: 0
+		this.MagicalResistance = m_Storage.has("MagicalResistance")
+			? parseFloat(m_Storage.get("MagicalResistance") as string)
+			: 0
 	}
 }
 
