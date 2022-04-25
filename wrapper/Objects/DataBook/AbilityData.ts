@@ -279,7 +279,14 @@ export default class AbilityData {
 			if (!(special instanceof Map))
 				continue
 			for (const [name, value] of special) {
-				if (name === "var_type" || name === "LinkedSpecialBonus" || name === "levelkey" || typeof value !== "string")
+				if (
+					name === "var_type"
+					|| name === "LinkedSpecialBonus"
+					|| name === "levelkey"
+					|| name === "RequiresScepter"
+					|| name === "RequiresShard"
+					|| typeof value !== "string"
+				)
 					continue
 				const ar = this.ExtendLevelArray(value.split(" ").map(str => this.parseFloat(str)))
 				let LinkedSpecialBonus = special.get("LinkedSpecialBonus")
@@ -325,7 +332,14 @@ export default class AbilityData {
 			let LinkedSpecialBonus = "",
 				talent_change_str = "+0"
 			for (const [name, value] of special) {
-				if (name === "value" || name === "LinkedSpecialBonus" || name === "levelkey" || name === "RequiresShard" || typeof value !== "string")
+				if (
+					name === "value"
+					|| name === "LinkedSpecialBonus"
+					|| name === "levelkey"
+					|| name === "RequiresScepter"
+					|| name === "RequiresShard"
+					|| typeof value !== "string"
+				)
 					continue
 				LinkedSpecialBonus = name
 				talent_change_str = value
