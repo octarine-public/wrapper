@@ -91,6 +91,7 @@ export default class Modifier {
 			return 1
 		return Math.min(this.ElapsedTime / (fade_time * 2), 1)
 	}
+
 	public get DeltaZ(): number {
 		if (
 			(
@@ -108,6 +109,7 @@ export default class Modifier {
 				return 0
 		}
 	}
+
 	public get ShouldDoFlyHeightVisual(): boolean {
 		return (
 			this.Name === "modifier_winter_wyvern_arctic_burn_flight"
@@ -118,6 +120,15 @@ export default class Modifier {
 	}
 	public get CreationTime(): number {
 		return this.m_pBuff.CreationTime
+	}
+	public get Armor(): Nullable<number> {
+		return this.m_pBuff.Armor
+	}
+	public get AttackSpeed(): Nullable<number> {
+		return this.m_pBuff.AttackSpeed
+	}
+	public get MovementSpeed(): Nullable<number> {
+		return this.m_pBuff.MovementSpeed
 	}
 	public get DieTime(): number {
 		return this.CreationTime + this.Duration
