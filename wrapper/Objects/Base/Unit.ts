@@ -92,6 +92,8 @@ export default class Unit extends Entity {
 	public BaseMoveSpeed = 0
 	@NetworkedBasicField("m_iBKBChargesUsed")
 	public BKBChargesUsed = 0
+	@NetworkedBasicField("m_iAeonChargesUsed")
+	public AeonChargesUsed = 0
 	@NetworkedBasicField("m_iDamageBonus")
 	public BonusDamage = 0
 	@NetworkedBasicField("m_iDayTimeVisionRange")
