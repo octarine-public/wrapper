@@ -142,7 +142,7 @@ async function EmitModifierCreated(mod: IModifier) {
 	const mod_ = new Modifier(mod)
 	await mod_.AsyncCreate()
 	const time = GameState.RawGameTime
-	if (mod_.Duration !== -1 && mod_.DieTime < time)
+	if (mod_.Duration !== -1 && mod_.DieTime < time && mod_.Name !== "modifier_legion_commander_overwhelming_odds")
 		return
 	ActiveModifiers.set(mod_.SerialNumber, mod_)
 	const parent = mod_.Parent
