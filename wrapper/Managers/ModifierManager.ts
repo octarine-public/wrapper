@@ -153,7 +153,7 @@ async function EmitModifierCreated(mod: IModifier) {
 EventsSDK.after("EntityCreated", async ent => {
 	if (ent instanceof Unit)
 		for (const mod of ActiveModifiers.values())
-			if (ent.HandleMatches(mod.m_pBuff.Parent ?? 0)) {
+			if (ent.HandleMatches(mod.m_pBuff.Parent ?? 0) || ent.HandleMatches(mod.m_pBuff.Caster ?? 0)) {
 				mod.Update()
 				await AddModifier(ent, mod)
 			}
@@ -175,9 +175,14 @@ async function EmitModifierRemoved(mod: Modifier) {
 	await EventsSDK.emit("ModifierRemovedRaw", false, mod)
 }
 EventsSDK.on("EntityDestroyed", async ent => {
-	for (const mod of ActiveModifiers.values())
+	for (const mod of ActiveModifiers.values()) {
 		if (mod.Parent === ent)
 			await EmitModifierRemoved(mod)
+		if (mod.Ability === ent || mod.Caster === ent) {
+			mod.Update()
+			await EventsSDK.emit("ModifierChanged", false, mod)
+		}
+	}
 })
 async function EmitModifierChanged(old_mod: Modifier, mod: IModifier) {
 	old_mod.m_pBuff = mod
