@@ -23,15 +23,16 @@ export default class Vector2 {
 		return new Vector2(Math.cos(polar) * radial, Math.sin(polar) * radial)
 	}
 	public static GetCenterType<T>(array: T[], callback: (value: T) => Vector2): Vector2 {
-		const newVec = new Vector2()
-		array.forEach(vec => newVec.AddForThis(callback(vec)))
-		return newVec.DivideScalarForThis(array.length)
+		return array.reduce(
+			(prev, cur) => prev.AddForThis(callback(cur)),
+			new Vector2(),
+		).DivideScalarForThis(array.length)
 	}
 	public static GetCenter(array: Vector2[]): Vector2 {
-		const newVec = new Vector2()
-		array.forEach(vec => newVec.AddForThis(vec))
-		return newVec.DivideScalarForThis(array.length)
-
+		return array.reduce(
+			(prev, cur) => prev.AddForThis(cur),
+			new Vector2(),
+		).DivideScalarForThis(array.length)
 	}
 	public static CopyFrom(vec: Vector2): Vector2 {
 		return new Vector2(vec.x, vec.y)
