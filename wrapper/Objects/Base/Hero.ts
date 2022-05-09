@@ -1,7 +1,6 @@
 import Vector3 from "../../Base/Vector3"
 import { DamageAmplifyPerIntellectPrecent } from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
-import { LifeState_t } from "../../Enums/LifeState_t"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { Team } from "../../Enums/Team"
 import EntityManager from "../../Managers/EntityManager"
@@ -62,7 +61,6 @@ export default class Hero extends Unit {
 export const Heroes = EntityManager.GetEntitiesByClass(Hero)
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-
 RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", async (ent, new_val) => {
 	const id = new_val as number
 	ent.ReplicatingOtherHeroModel = await GetPredictionTarget(id)
@@ -137,16 +135,18 @@ EventsSDK.on("EntityDestroyed", ent => {
 })
 
 EventsSDK.on("LifeStateChanged", hero => {
-	if (hero instanceof Hero && !hero.IsAlive)
+	if (!(hero instanceof Hero))
+		return
+	if (!hero.IsAlive) {
 		SetRespawn(hero)
+	} else
+		hero.RespawPosition.Invalidate()
 })
 
 EventsSDK.on("GameEvent", async (name, obj) => {
 	if (name !== "dota_buyback")
 		return
 	const entity = EntityManager.EntityByIndex(obj.entindex)
-	if (entity instanceof Hero) {
-		entity.LifeState = LifeState_t.LIFE_ALIVE
+	if (entity instanceof Hero)
 		SetRespawn(entity)
-	}
 })

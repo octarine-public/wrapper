@@ -561,6 +561,13 @@ EventsSDK.on("GameEvent", async (name, obj) => {
 			}
 			break
 		}
+		case "dota_buyback": {
+			const ent = EntityManager.EntityByIndex(obj.entindex)
+			if (ent !== undefined && ent.LifeState === LifeState_t.LIFE_DEAD) {
+				ent.LifeState = LifeState_t.LIFE_ALIVE
+				await EventsSDK.emit("LifeStateChanged", false, ent)
+			}
+		}
 		default:
 			break
 	}
