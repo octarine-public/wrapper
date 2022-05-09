@@ -1265,8 +1265,6 @@ Workers.RegisterRPCEndPoint("SetSearchPaths", paths => {
 const last_search_paths: (string | bigint)[] = []
 EventsSDK.on("ServerInfo", async info => {
 	let map_name = (info.get("map_name") as string) ?? "<empty>"
-	if (map_name === undefined)
-		return
 	if (map_name === "start")
 		map_name = "dota"
 	GameState.MapName = map_name

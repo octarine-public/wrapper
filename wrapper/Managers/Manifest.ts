@@ -11,6 +11,7 @@ const Manifest = new (class CManifest {
 	public readonly FileNames: string[] = []
 	public readonly Paths = new Map<bigint, [number, number, number]>()
 	public readonly SoundHashToString = new Map<number, string>()
+	public readonly SoundPathToHash = new Map<string, number>()
 	public readonly PathHash32To64 = new Map<number, bigint>()
 	public readonly Hash32ToString = new Map<number, string>()
 
@@ -52,10 +53,50 @@ const Manifest = new (class CManifest {
 			console.log(`Missing ${path}`)
 			return
 		}
-		parseKV(buf).forEach((_, name) => this.SoundHashToString.set(this.SoundNameToHash(name), name))
+		parseKV(buf).forEach((v, k) => {
+			const hash = this.SoundNameToHash(k, true)
+			this.SoundHashToString.set(hash, k)
+			if (v instanceof Map) {
+				if (v.has("vsnd_files")) {
+					const vsnd_files = v.get("vsnd_files")
+					if (typeof vsnd_files === "string")
+						this.SoundPathToHash.set(vsnd_files, hash)
+					if (Array.isArray(vsnd_files))
+						for (const vsnd_file of vsnd_files)
+							if (typeof vsnd_file === "string")
+								this.SoundPathToHash.set(vsnd_file, hash)
+					if (vsnd_files instanceof Map)
+						for (const vsnd_file of vsnd_files.values())
+							if (typeof vsnd_file === "string")
+								this.SoundPathToHash.set(vsnd_file, hash)
+				}
+				if (v.has("operator_stacks")) {
+					const operator_stacks = v.get("operator_stacks")
+					if (operator_stacks instanceof Map) {
+						const update_stack = operator_stacks.get("update_stack")
+						if (update_stack instanceof Map) {
+							const reference_operator = update_stack.get("operator_stacks")
+							if (reference_operator instanceof Map) {
+								const vsnd_files = reference_operator.get("vsnd_files")
+								if (vsnd_files instanceof Map) {
+									const value = vsnd_files.get("value")
+									if (value instanceof Map)
+										for (const vsnd_file of value.values())
+											if (typeof vsnd_file === "string")
+												this.SoundPathToHash.set(vsnd_file, hash)
+								}
+							}
+						}
+					}
+				}
+			}
+		})
 	}
-	public SoundNameToHash(name: string): number {
-		return MurmurHash2(StringToUTF8(name.toLowerCase()), 0x53524332)
+	public SoundNameToHash(name: string, is_loading = false): number {
+		const hash = MurmurHash2(StringToUTF8(name.toLowerCase()), 0x53524332)
+		if (!is_loading && !this.SoundHashToString.has(hash))
+			console.log(`Sound path "${name}" isn't in SoundHashToString and will likely fail`)
+		return hash
 	}
 	public LookupSoundNameByHash(hash: number): Nullable<string> {
 		if (hash === 0)
@@ -132,8 +173,8 @@ function ReadStringTokenDatabase(): void {
 	}
 }
 
-function ReadSoundManifest(): void {
-	const manifest = fread("soundevents/soundevents_manifest.vrman_c")
+function ReadSoundManifest(path: string): void {
+	const manifest = fread(path)
 	if (manifest === undefined) {
 		console.log("Sound manifest not found.")
 		return
@@ -141,6 +182,8 @@ function ReadSoundManifest(): void {
 	ParseExternalReferences(manifest, true).forEach(path => {
 		if (path.endsWith(".vsndevts_c"))
 			Manifest.LoadSoundFile(path)
+		if (path.endsWith(".vrman_c"))
+			ReadSoundManifest(path)
 	})
 }
 
@@ -159,5 +202,5 @@ export function LoadManifest() {
 	known_strings.forEach(str => Manifest.SaveStringToken(str))
 
 	ReadStringTokenDatabase()
-	ReadSoundManifest()
+	ReadSoundManifest("soundevents/soundevents_manifest.vrman_c")
 }
