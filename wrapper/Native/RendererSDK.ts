@@ -47,11 +47,26 @@ enum CommandID {
 }
 
 enum PathFlags {
+	LINE_CAP_OFFSET = 2,
+	LINE_JOIN_OFFSET = 4,
+
 	GRAYSCALE = 1 << 0,
 	IMAGE_SHADER = 1 << 1,
+	LINE_CAP_BITS = (1 << LINE_CAP_OFFSET) | (1 << (LINE_CAP_OFFSET + 1)),
+	LINE_JOIN_BITS = (1 << LINE_JOIN_OFFSET) | (1 << (LINE_JOIN_OFFSET + 1)),
 	FILL = 1 << 6,
 	STROKE = 1 << 7,
 	STROKE_AND_FILL = FILL | STROKE,
+}
+export enum LineCap {
+	Butt = 1,
+	Round = 2,
+	Square = 3,
+}
+export enum LineJoin {
+	Miter = 1,
+	Round = 2,
+	Bevel = 3,
 }
 
 class Font {
@@ -340,6 +355,8 @@ class CRendererSDK {
 				color,
 				flags,
 				grayscale,
+				LineCap.Square,
+				LineJoin.Round,
 				texture_id[0],
 				(subtexOffset?.x ?? 0) * (vecSize.x / size_x),
 				(subtexOffset?.y ?? 0) * (vecSize.x / size_y),
@@ -543,6 +560,7 @@ class CRendererSDK {
 		custom_scissor?: Rectangle,
 		grayscale = false,
 		outer = false,
+		cap = LineCap.Butt,
 	): void {
 		if (Number.isNaN(baseAngle) || !Number.isFinite(baseAngle))
 			baseAngle = 0
@@ -589,6 +607,7 @@ class CRendererSDK {
 				? PathFlags.FILL
 				: PathFlags.STROKE,
 			grayscale,
+			cap,
 		)
 	}
 	public AllocateCommandSpace_(commandID: CommandID, bytes: number): BinaryStream {
@@ -784,6 +803,8 @@ class CRendererSDK {
 		strokeColor: Color,
 		flags: PathFlags,
 		grayscale: boolean,
+		cap = LineCap.Square,
+		join = LineJoin.Round,
 		tex_id?: number,
 		tex_offset_x?: number,
 		tex_offset_y?: number,
@@ -792,6 +813,8 @@ class CRendererSDK {
 	): void {
 		if (grayscale)
 			flags |= PathFlags.GRAYSCALE
+		flags |= Math.max(Math.min(cap, LineCap.Square), LineCap.Butt) << PathFlags.LINE_CAP_OFFSET
+		flags |= Math.max(Math.min(join, LineJoin.Bevel), LineJoin.Miter) << PathFlags.LINE_JOIN_OFFSET
 		const has_image = HasMask(flags, PathFlags.IMAGE_SHADER)
 		this.AllocateCommandSpace(
 			CommandID.PATH,

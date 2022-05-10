@@ -114,7 +114,7 @@ export { default as CTurboHeroPickRules, TurboHeroPickRules } from "./Objects/Ba
 export { default as CCustomHeroPickRules, CustomHeroPickRules } from "./Objects/Base/CustomPickRules"
 export { default as DOTAGameMode, GameMode } from "./Objects/Base/DOTAGameMode"
 
-export { default as RendererSDK } from "./Native/RendererSDK"
+export { default as RendererSDK, LineCap, LineJoin } from "./Native/RendererSDK"
 export { default as SoundSDK } from "./Native/SoundSDK"
 export { GetPositionHeight } from "./Native/WASM"
 export { default as Workers } from "./Native/Workers"
