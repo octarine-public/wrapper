@@ -123,9 +123,6 @@ interface EventsSDK extends EventEmitter {
 	on(name: "EntityTeamChanged", listener: (ent: Entity) => void): EventsSDK
 	// on(name: "NetworkFieldChanged", listener: (args: NetworkFieldChanged) => void): EventsSDK
 	on(name: "NetworkActivityChanged", listener: (npc: Unit) => void): EventsSDK
-	on(name: "ModifierCreatedRaw", listener: (mod: Modifier) => void): EventsSDK
-	on(name: "ModifierChangedRaw", listener: (mod: Modifier) => void): EventsSDK
-	on(name: "ModifierRemovedRaw", listener: (mod: Modifier) => void): EventsSDK
 	on(name: "ModifierCreated", listener: (mod: Modifier) => void): EventsSDK
 	on(name: "ModifierChanged", listener: (mod: Modifier) => void): EventsSDK
 	on(name: "ModifierRemoved", listener: (mod: Modifier) => void): EventsSDK

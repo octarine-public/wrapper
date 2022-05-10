@@ -1093,6 +1093,30 @@ export default class Unit extends Entity {
 		return testPoint
 	}
 
+	public async ChangeFieldsByEvents() {
+		const buffs = this.ModifiersBook.Buffs
+
+		{ // IsTrueSightedForEnemies
+			const lastIsTrueSighted = this.IsTrueSightedForEnemies
+			const isTrueSighted = Modifier.HasTrueSightBuff(buffs)
+
+			if (isTrueSighted !== lastIsTrueSighted) {
+				this.IsTrueSightedForEnemies = isTrueSighted
+				await EventsSDK.emit("TrueSightedChanged", false, this)
+			}
+		}
+
+		{ // HasScepter
+			const lastHasScepter = this.HasScepter
+			const hasScepter = Modifier.HasScepterBuff(buffs)
+
+			if (hasScepter !== lastHasScepter) {
+				this.HasScepterModifier = hasScepter
+				await EventsSDK.emit("HasScepterChanged", false, this)
+			}
+		}
+	}
+
 	/* ================================ ORDERS ================================ */
 	public UseSmartAbility(ability: Ability, target?: Vector3 | Entity, checkAutoCast = false, checkToggled = false, queue?: boolean, showEffects?: boolean) {
 		if (checkAutoCast && ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_AUTOCAST) && !ability.IsAutoCastEnabled)

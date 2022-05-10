@@ -130,66 +130,51 @@ export class IModifier {
 const ActiveModifiersRaw = new Map<number, IModifier>(),
 	ActiveModifiers = new Map<number, Modifier>()
 
-async function AddModifier(parent: Unit, mod: Modifier) {
-	parent.Buffs.push(mod)
-	await changeFieldsByEvents(parent)
-	await EventsSDK.emit("ModifierCreated", false, mod)
-}
-
 async function EmitModifierCreated(mod: IModifier) {
 	if (mod.Index === undefined || mod.SerialNum === undefined || mod.Parent === undefined)
 		return
 	const mod_ = new Modifier(mod)
 	await mod_.AsyncCreate()
-	const time = GameState.RawGameTime
-	if (mod_.Duration !== -1 && mod_.DieTime < time && mod_.Name !== "modifier_legion_commander_overwhelming_odds")
-		return
 	ActiveModifiers.set(mod_.SerialNumber, mod_)
-	const parent = mod_.Parent
-	if (parent !== undefined)
-		await AddModifier(parent, mod_)
-	await EventsSDK.emit("ModifierCreatedRaw", false, mod_)
+	await mod_.Update()
 }
-EventsSDK.after("EntityCreated", async ent => {
-	if (ent instanceof Unit)
-		for (const mod of ActiveModifiers.values())
-			if (ent.HandleMatches(mod.m_pBuff.Parent ?? 0) || ent.HandleMatches(mod.m_pBuff.Caster ?? 0)) {
-				mod.Update()
-				await AddModifier(ent, mod)
-			}
-	if (ent instanceof Ability)
-		for (const mod of ActiveModifiers.values())
-			if (ent.HandleMatches(mod.m_pBuff.Ability ?? 0)) {
-				mod.Update()
-				await EventsSDK.emit("ModifierChanged", false, mod)
-			}
+const queued_ents: (Unit | Ability)[] = []
+EventsSDK.on("EntityCreated", ent => {
+	if (ent instanceof Unit || ent instanceof Ability)
+		queued_ents.push(ent)
+})
+EventsSDK.on("EntityDestroyed", ent => ArrayExtensions.arrayRemove(queued_ents, ent))
+EventsSDK.on("PostDataUpdate", async () => {
+	if (queued_ents.length === 0)
+		return
+	for (const ent of queued_ents) {
+		if (ent instanceof Unit)
+			for (const mod of ActiveModifiers.values())
+				if (
+					ent.HandleMatches(mod.m_pBuff.Parent ?? 0)
+					|| ent.HandleMatches(mod.m_pBuff.Caster ?? 0)
+					|| ent.HandleMatches(mod.m_pBuff.AuraOwner ?? 0)
+				)
+					await mod.Update()
+		if (ent instanceof Ability)
+			for (const mod of ActiveModifiers.values())
+				if (ent.HandleMatches(mod.m_pBuff.Ability ?? 0))
+					await mod.Update()
+	}
+	queued_ents.splice(0)
 })
 async function EmitModifierRemoved(mod: Modifier) {
 	ActiveModifiers.delete(mod.SerialNumber)
-	const parent = mod.Parent
-	if (parent !== undefined) {
-		ArrayExtensions.arrayRemove(parent.Buffs, mod)
-		await changeFieldsByEvents(parent)
-		await EventsSDK.emit("ModifierRemoved", false, mod)
-	}
-	await EventsSDK.emit("ModifierRemovedRaw", false, mod)
+	await mod.Remove()
 }
 EventsSDK.on("EntityDestroyed", async ent => {
-	for (const mod of ActiveModifiers.values()) {
-		if (mod.Parent === ent)
-			await EmitModifierRemoved(mod)
-		if (mod.Ability === ent || mod.Caster === ent) {
-			mod.Update()
-			await EventsSDK.emit("ModifierChanged", false, mod)
-		}
-	}
+	for (const mod of ActiveModifiers.values())
+		if (mod.Parent === ent || mod.Ability === ent || mod.Caster === ent || mod.AuraOwner === ent)
+			await mod.Update()
 })
 async function EmitModifierChanged(old_mod: Modifier, mod: IModifier) {
 	old_mod.m_pBuff = mod
-	old_mod.Update()
-	if (old_mod.Parent !== undefined)
-		await EventsSDK.emit("ModifierChanged", false, old_mod)
-	await EventsSDK.emit("ModifierChangedRaw", false, old_mod)
+	await old_mod.Update()
 }
 ParseProtobufDesc(`
 enum DOTA_MODIFIER_ENTRY_TYPE {
@@ -267,30 +252,6 @@ EventsSDK.on("RemoveAllStringTables", async () => {
 		await EmitModifierRemoved(mod)
 	ActiveModifiers.clear()
 })
-
-async function changeFieldsByEvents(unit: Unit) {
-	const buffs = unit.ModifiersBook.Buffs
-
-	{ // IsTrueSightedForEnemies
-		const lastIsTrueSighted = unit.IsTrueSightedForEnemies
-		const isTrueSighted = Modifier.HasTrueSightBuff(buffs)
-
-		if (isTrueSighted !== lastIsTrueSighted) {
-			unit.IsTrueSightedForEnemies = isTrueSighted
-			await EventsSDK.emit("TrueSightedChanged", false, unit)
-		}
-	}
-
-	{ // HasScepter
-		const lastHasScepter = unit.HasScepter
-		const hasScepter = Modifier.HasScepterBuff(buffs)
-
-		if (hasScepter !== lastHasScepter) {
-			unit.HasScepterModifier = hasScepter
-			await EventsSDK.emit("HasScepterChanged", false, unit)
-		}
-	}
-}
 
 declare global {
 	var DebugBuffsParents: () => void
