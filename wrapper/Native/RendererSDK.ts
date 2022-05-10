@@ -542,6 +542,7 @@ class CRendererSDK {
 		rotation_deg = 0,
 		custom_scissor?: Rectangle,
 		grayscale = false,
+		outer = false,
 	): void {
 		if (Number.isNaN(baseAngle) || !Number.isFinite(baseAngle))
 			baseAngle = 0
@@ -549,7 +550,12 @@ class CRendererSDK {
 			percent = 100
 		percent = Math.min(Math.max(percent / 100, 0), 1)
 
+		const size_off = outer ? Math.round(width / 2 - 1) : 0,
+			pos_off = -Math.round(width / 4 - 1)
+
 		if (percent >= 1) {
+			vecPos = vecPos.AddScalar(pos_off)
+			vecSize = vecSize.AddScalar(size_off)
 			if (fill)
 				this.FilledCircle(vecPos, vecSize, color, rotation_deg, custom_scissor)
 			else
@@ -560,6 +566,8 @@ class CRendererSDK {
 		if (custom_scissor !== undefined)
 			this.SetScissor(custom_scissor)
 		this.Translate(vecPos)
+		if (outer)
+			this.Translate(new Vector2(pos_off, pos_off))
 		this.Rotate(rotation_deg)
 
 		baseAngle = DegreesToRadian(baseAngle)
@@ -568,8 +576,8 @@ class CRendererSDK {
 		this.AllocateCommandSpace(CommandID.PATH_ADD_ARC, 6 * 4 + 1)
 		this.commandStream.WriteFloat32(0)
 		this.commandStream.WriteFloat32(0)
-		this.commandStream.WriteFloat32(vecSize.x)
-		this.commandStream.WriteFloat32(vecSize.y)
+		this.commandStream.WriteFloat32(vecSize.x + size_off)
+		this.commandStream.WriteFloat32(vecSize.y + size_off)
 		this.commandStream.WriteFloat32(baseAngle)
 		this.commandStream.WriteFloat32(sweepAngle)
 		this.commandStream.WriteBoolean(fill)
