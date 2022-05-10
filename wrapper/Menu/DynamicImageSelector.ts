@@ -11,22 +11,22 @@ import { orderBy } from "../Utils/ArrayExtensions"
 import Base, { IMenu } from "./Base"
 
 type IDefaultValues = Map<string, [
-	boolean, /** defulat state */
-	boolean, /** defulat static show */
+	boolean, /** default state */
+	boolean, /** default static show */
 	boolean, /** show */
-	number /** priority */
+	number,  /** priority */
 ]>
 
 // every icon: 32x32, 1x1 border
-export default class DinamicImageSelector extends Base {
+export default class DynamicImageSelector extends Base {
 
 	public static ServicePriorityToggle = false
 
 	public static OnWindowSizeChanged(): void {
-		DinamicImageSelector.image_border_width = GUIInfo.ScaleWidth(2)
-		DinamicImageSelector.image_gap = GUIInfo.ScaleWidth(2)
-		DinamicImageSelector.base_image_height = GUIInfo.ScaleHeight(32)
-		DinamicImageSelector.random_height_value = GUIInfo.ScaleHeight(40)
+		DynamicImageSelector.image_border_width = GUIInfo.ScaleWidth(2)
+		DynamicImageSelector.image_gap = GUIInfo.ScaleWidth(2)
+		DynamicImageSelector.base_image_height = GUIInfo.ScaleHeight(32)
+		DynamicImageSelector.random_height_value = GUIInfo.ScaleHeight(40)
 	}
 
 	private static image_border_width = 0
@@ -71,10 +71,10 @@ export default class DinamicImageSelector extends Base {
 			base_pos,
 			base_pos.Add(
 				this.image_size
-					.AddScalar(DinamicImageSelector.image_border_width * 2 + DinamicImageSelector.image_gap)
-					.MultiplyScalarX(Math.min(this.values.length, DinamicImageSelector.elements_per_row))
-					.MultiplyScalarY(Math.ceil(this.values.length / DinamicImageSelector.elements_per_row)),
-			).SubtractScalar((DinamicImageSelector.elements_per_row - 1) * DinamicImageSelector.image_gap),
+					.AddScalar(DynamicImageSelector.image_border_width * 2 + DynamicImageSelector.image_gap)
+					.MultiplyScalarX(Math.min(this.values.length, DynamicImageSelector.elements_per_row))
+					.MultiplyScalarY(Math.ceil(this.values.length / DynamicImageSelector.elements_per_row)),
+			).SubtractScalar((DynamicImageSelector.elements_per_row - 1) * DynamicImageSelector.image_gap),
 		)
 	}
 
@@ -111,7 +111,7 @@ export default class DinamicImageSelector extends Base {
 		})
 
 		this.rendered_paths.clear()
-		this.image_size.x = this.image_size.y = DinamicImageSelector.base_image_height
+		this.image_size.x = this.image_size.y = DynamicImageSelector.base_image_height
 
 		for (const name of this.values) {
 			if (!this.IsVisibleImage(name))
@@ -128,20 +128,20 @@ export default class DinamicImageSelector extends Base {
 			} else
 				path = `panorama/images/heroes/${path}_png.vtex_c`
 			const path_iamge_size = RendererSDK.GetImageSize(path)
-			this.image_size.x = Math.max(this.image_size.x, DinamicImageSelector.base_image_height * (path_iamge_size.x / path_iamge_size.y))
+			this.image_size.x = Math.max(this.image_size.x, DynamicImageSelector.base_image_height * (path_iamge_size.x / path_iamge_size.y))
 			this.rendered_paths.set(name, path)
 		}
 
 		this.OriginalSize.x = Math.max(
 			this.name_size.x,
-			Math.min(this.rendered_paths.size, DinamicImageSelector.elements_per_row)
-			* (this.image_size.x + DinamicImageSelector.image_border_width * 2 + DinamicImageSelector.image_gap),
+			Math.min(this.rendered_paths.size, DynamicImageSelector.elements_per_row)
+			* (this.image_size.x + DynamicImageSelector.image_border_width * 2 + DynamicImageSelector.image_gap),
 		) + this.text_offset.x * 2
 
 		this.OriginalSize.y = (
-			Math.ceil(this.rendered_paths.size / DinamicImageSelector.elements_per_row)
-			* (this.image_size.y + DinamicImageSelector.image_border_width * 2 + DinamicImageSelector.image_gap)
-			+ DinamicImageSelector.random_height_value
+			Math.ceil(this.rendered_paths.size / DynamicImageSelector.elements_per_row)
+			* (this.image_size.y + DynamicImageSelector.image_border_width * 2 + DynamicImageSelector.image_gap)
+			+ DynamicImageSelector.random_height_value
 		)
 
 		return true
@@ -180,8 +180,8 @@ export default class DinamicImageSelector extends Base {
 			return
 		}
 
-		// boolean, /** defulat state */
-		// boolean, /** defulat static show */
+		// boolean, /** default state */
+		// boolean, /** default static show */
 		// boolean, /** show */
 		// number /** priority */
 
@@ -214,8 +214,8 @@ export default class DinamicImageSelector extends Base {
 
 	public async OnHideImages(names?: string[]) {
 
-		// boolean, /** defulat state */
-		// boolean, /** defulat static show */
+		// boolean, /** default state */
+		// boolean, /** default static show */
 		// boolean, /** show */
 		// number /** priority */
 
@@ -266,15 +266,15 @@ export default class DinamicImageSelector extends Base {
 
 			const size = this.image_size,
 				pos = new Vector2(
-					i % DinamicImageSelector.elements_per_row,
-					Math.floor(i / DinamicImageSelector.elements_per_row),
-				).Multiply(this.image_size.AddScalar(DinamicImageSelector.image_border_width * 2 + DinamicImageSelector.image_gap)).Add(base_pos)
+					i % DynamicImageSelector.elements_per_row,
+					Math.floor(i / DynamicImageSelector.elements_per_row),
+				).Multiply(this.image_size.AddScalar(DynamicImageSelector.image_border_width * 2 + DynamicImageSelector.image_gap)).Add(base_pos)
 
 			const position = this.item_drop.has(value) ? this.MousePosition : pos
 
 			RendererSDK.Image(imagePath, position, -1, size, Color.White, 0, undefined, !this.IsEnabled(value))
 
-			if (InputManager.IsKeyDown(VKeys.CONTROL) || DinamicImageSelector.ServicePriorityToggle)
+			if (InputManager.IsKeyDown(VKeys.CONTROL) || DynamicImageSelector.ServicePriorityToggle)
 				RendererSDK.FilledRect(position, size, Color.Black.SetA(180))
 
 			if (this.IsEnabled(value))
@@ -290,11 +290,11 @@ export default class DinamicImageSelector extends Base {
 				RendererSDK.OutlinedRect(
 					position,
 					size,
-					DinamicImageSelector.image_border_width,
-					DinamicImageSelector.image_activated_border_color,
+					DynamicImageSelector.image_border_width,
+					DynamicImageSelector.image_activated_border_color,
 				)
 
-			if (DinamicImageSelector.ServicePriorityToggle)
+			if (DynamicImageSelector.ServicePriorityToggle)
 				this.DrawTextRealPriority(this.enabled_values.get(value), position, size)
 
 		}
@@ -369,9 +369,9 @@ export default class DinamicImageSelector extends Base {
 			if (enabled_values === undefined || !this.IsVisibleImage(value))
 				return
 			const base_pos = new Vector2(
-				i % DinamicImageSelector.elements_per_row,
-				Math.floor(i / DinamicImageSelector.elements_per_row),
-			).Multiply(this.image_size.AddScalar(DinamicImageSelector.image_border_width * 2 + DinamicImageSelector.image_gap))
+				i % DynamicImageSelector.elements_per_row,
+				Math.floor(i / DynamicImageSelector.elements_per_row),
+			).Multiply(this.image_size.AddScalar(DynamicImageSelector.image_border_width * 2 + DynamicImageSelector.image_gap))
 			if (!new Rectangle(base_pos, base_pos.Add(this.image_size)).Contains(off))
 				continue
 			await callback(value, enabled_values[0], enabled_values[3])
@@ -439,7 +439,7 @@ export default class DinamicImageSelector extends Base {
 
 	/** service */
 	private DrawTextRealPriority(
-		enabled: Nullable<[boolean, /** defulat state */ boolean, /** defulat show */ boolean, /** show */ number /** priority */]>,
+		enabled: Nullable<[boolean, /** default state */ boolean, /** default show */ boolean, /** show */ number /** priority */]>,
 		position: Vector2, size: Vector2,
 	) {
 
@@ -464,11 +464,11 @@ export default class DinamicImageSelector extends Base {
 	}
 }
 
-EventsSDK.on("WindowSizeChanged", () => DinamicImageSelector.OnWindowSizeChanged())
+EventsSDK.on("WindowSizeChanged", () => DynamicImageSelector.OnWindowSizeChanged())
 
 InputEventSDK.on("KeyDown", key => {
 	if (key !== VKeys.MENU && key !== VKeys.KEY_K || !(InputManager.IsKeyDown(VKeys.MENU) && InputManager.IsKeyDown(VKeys.KEY_K)))
 		return true
-	DinamicImageSelector.ServicePriorityToggle = !DinamicImageSelector.ServicePriorityToggle
+	DynamicImageSelector.ServicePriorityToggle = !DynamicImageSelector.ServicePriorityToggle
 	return !(InputManager.IsKeyDown(VKeys.MENU) && InputManager.IsKeyDown(VKeys.KEY_K))
 })

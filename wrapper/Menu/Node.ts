@@ -8,8 +8,8 @@ import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Button from "./Button"
 import ColorPicker from "./ColorPicker"
-import DinamicImageSelector from "./DinamicImageSelector"
 import Dropdown from "./Dropdown"
+import DynamicImageSelector from "./DynamicImageSelector"
 import ImageSelector from "./ImageSelector"
 import { IMenuParticlePicker } from "./ITypes"
 import KeyBind from "./KeyBind"
@@ -243,14 +243,14 @@ export default class Node extends Base {
 	public AddImageSelector(name: string, values: string[], default_values = new Map<string, boolean>(), tooltip = "", created_default_state = false) {
 		return this.AddEntry(new ImageSelector(this, name, values, default_values, tooltip, created_default_state))
 	}
-	public AddDinamicImageSelector(
+	public AddDynamicImageSelector(
 		name: string,
 		values: string[],
-		default_values = new Map<string, [boolean, /** defulat state */ boolean, /** defulat show */ boolean, /** show */ number /** priority */]>(),
+		default_values = new Map<string, [boolean, /** default state */ boolean, /** default show */ boolean, /** show */ number /** priority */]>(),
 		all_default_state = false,
 		tooltip = "",
 	) {
-		return this.AddEntry(new DinamicImageSelector(this, name, values, default_values, all_default_state, tooltip))
+		return this.AddEntry(new DynamicImageSelector(this, name, values, default_values, all_default_state, tooltip))
 	}
 	public AddButton(name: string, tooltip = ""): Button {
 		return this.AddEntry(new Button(this, name, tooltip))
