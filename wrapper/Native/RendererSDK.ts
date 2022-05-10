@@ -252,16 +252,29 @@ class CRendererSDK {
 	public FilledRect(
 		vecPos = new Vector2(),
 		vecSize = this.DefaultShapeSize,
-		color = Color.White,
+		fillColor = Color.White,
 		rotation_deg = 0,
 		custom_scissor?: Rectangle,
 		grayscale = false,
+		strokeColor = fillColor,
+		width = 0,
+		cap = LineCap.Square,
+		join = LineJoin.Round,
 	): void {
 		if (custom_scissor !== undefined)
 			this.SetScissor(custom_scissor)
 		this.Translate(vecPos)
 		this.Rotate(rotation_deg)
-		this.Rect(vecSize, 0, PathFlags.FILL, color, grayscale)
+		this.Rect(
+			vecSize,
+			width,
+			width === 0 ? PathFlags.FILL : PathFlags.STROKE_AND_FILL,
+			fillColor,
+			strokeColor,
+			grayscale,
+			cap,
+			join,
+		)
 	}
 	/**
 	 * @param vecSize default Width 5 x Height 5
@@ -276,12 +289,14 @@ class CRendererSDK {
 		rotation_deg = 0,
 		custom_scissor?: Rectangle,
 		grayscale = false,
+		cap = LineCap.Square,
+		join = LineJoin.Round,
 	): void {
 		if (custom_scissor !== undefined)
 			this.SetScissor(custom_scissor)
 		this.Translate(vecPos)
 		this.Rotate(rotation_deg)
-		this.Rect(vecSize, width, PathFlags.STROKE, color, grayscale)
+		this.Rect(vecSize, width, PathFlags.STROKE, color, color, grayscale, cap, join)
 	}
 	/**
 	 * @param path must end with "_c" (without double-quotes), if that's vtex_c
@@ -514,14 +529,36 @@ class CRendererSDK {
 		custom_scissor?: Rectangle,
 		strokeColor = fillColor,
 		grayscale = false,
+		outline_width = -1,
+		outer = false,
+		cap = LineCap.Square,
+		join = LineJoin.Round,
 	): void {
+		outer = outer && outline_width !== -1
+		const size_off = outer ? Math.round(outline_width / 2 - 1) : 0,
+			pos_off = outer ? -Math.round(outline_width / 4 - 1) : 0
+		vecPos.AddScalarForThis(pos_off)
+		vecSize.AddScalarForThis(size_off)
+
+		percent = Math.min(Math.max(percent / 100, 0), 1)
+		if (outline_width !== -1 && percent >= 1) {
+			this.OutlinedRect(vecPos, vecSize, outline_width, strokeColor, rotation_deg, custom_scissor, grayscale)
+			vecSize.SubtractScalarForThis(size_off)
+			vecPos.SubtractScalarForThis(pos_off)
+			return
+		}
+		vecPos.AddScalarForThis(pos_off)
+		vecSize.AddScalarForThis(size_off)
+
+		if (outline_width !== -1)
+			this.BeginClip(false)
+
 		if (custom_scissor !== undefined)
 			this.SetScissor(custom_scissor)
 		this.Translate(vecPos)
 		this.Rotate(rotation_deg)
-		percent = Math.min(percent, 100)
 
-		let angle = this.NormalizedAngle(DegreesToRadian(360 * percent / 100))
+		let angle = this.NormalizedAngle(DegreesToRadian(360 * percent))
 		const startAngleSign = Math.sign(startAngle)
 		startAngle = DegreesToRadian(startAngle)
 		if (startAngleSign < 0)
@@ -546,7 +583,24 @@ class CRendererSDK {
 			const pt = this.PointOnBounds(startAngle + angle, vecSize)
 			this.PathLineTo(pt.x, pt.y)
 		}
-		this.Path(1, fillColor, strokeColor, PathFlags.STROKE_AND_FILL, grayscale)
+		this.Path(
+			1,
+			outline_width !== -1 ? Color.White : fillColor,
+			outline_width !== -1 ? Color.White : strokeColor,
+			PathFlags.STROKE_AND_FILL,
+			grayscale,
+			cap,
+			join,
+		)
+
+		vecSize.SubtractScalarForThis(size_off)
+		vecPos.SubtractScalarForThis(pos_off)
+		if (outline_width !== -1) {
+			this.EndClip()
+			this.OutlinedRect(vecPos, vecSize, outline_width, strokeColor, rotation_deg, custom_scissor, grayscale)
+		}
+		vecSize.SubtractScalarForThis(size_off)
+		vecPos.SubtractScalarForThis(pos_off)
 	}
 	public Arc(
 		baseAngle: number,
@@ -569,15 +623,15 @@ class CRendererSDK {
 		percent = Math.min(Math.max(percent / 100, 0), 1)
 
 		const size_off = outer ? Math.round(width / 2 - 1) : 0,
-			pos_off = -Math.round(width / 4 - 1)
+			pos_off = outer ? -Math.round(width / 4 - 1) : 0
 
 		if (percent >= 1) {
 			vecPos = vecPos.AddScalar(pos_off)
 			vecSize = vecSize.AddScalar(size_off)
 			if (fill)
-				this.FilledCircle(vecPos, vecSize, color, rotation_deg, custom_scissor)
+				this.FilledCircle(vecPos, vecSize, color, rotation_deg, custom_scissor, grayscale)
 			else
-				this.OutlinedCircle(vecPos, vecSize, color, width, rotation_deg, custom_scissor)
+				this.OutlinedCircle(vecPos, vecSize, color, width, rotation_deg, custom_scissor, grayscale)
 			return
 		}
 
@@ -659,15 +713,18 @@ class CRendererSDK {
 		vecSize: Vector2,
 		width: number,
 		pathFlags: PathFlags,
-		color: Color,
+		fillColor: Color,
+		strokeColor: Color,
 		grayscale: boolean,
+		cap: LineCap,
+		join: LineJoin,
 	): void {
 		this.AllocateCommandSpace(CommandID.PATH_ADD_RECT, 4 * 4)
 		this.commandStream.WriteFloat32(0)
 		this.commandStream.WriteFloat32(0)
 		this.commandStream.WriteFloat32(vecSize.x)
 		this.commandStream.WriteFloat32(vecSize.y)
-		this.Path(width, color, color, pathFlags, grayscale)
+		this.Path(width, fillColor, strokeColor, pathFlags, grayscale, cap, join)
 	}
 	private Ellipse(
 		vecSize: Vector2,
