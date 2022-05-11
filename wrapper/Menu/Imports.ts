@@ -15,8 +15,8 @@ import Node from "./Node"
 export { Node }
 
 import MenuManager from "./Menu"
-function AddEntry(name: string, icon_path = ""): Node {
-	return MenuManager.AddEntry(name, icon_path)
+function AddEntry(name: string, icon_path = "", tooltip = "", icon_round = -1): Node {
+	return MenuManager.AddEntry(name, icon_path, tooltip, icon_round)
 }
 function AddEntryDeep(name: string[], icon_path: string[] = []): Node {
 	return MenuManager.AddEntryDeep(name, icon_path)

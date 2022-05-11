@@ -52,7 +52,7 @@ export default class Node extends Base {
 	protected is_open_ = false
 	protected readonly text_offset = Node.text_offset_
 
-	constructor(parent: IMenu, name: string, private icon_path_ = "", tooltip = "") {
+	constructor(parent: IMenu, name: string, private icon_path_ = "", tooltip = "", private icon_round = -1) {
 		super(parent, name, tooltip)
 	}
 
@@ -159,7 +159,7 @@ export default class Node extends Base {
 		const TextPos = this.Position.Clone()
 		if (this.icon_path !== "") {
 			TextPos.AddForThis(Node.text_offset_with_icon)
-			RendererSDK.Image(this.icon_path, this.Position.Add(Node.icon_offset), -1, Node.icon_size)
+			RendererSDK.Image(this.icon_path, this.Position.Add(Node.icon_offset), this.icon_round, Node.icon_size)
 		} else
 			TextPos.AddForThis(this.text_offset)
 
@@ -224,7 +224,7 @@ export default class Node extends Base {
 	public AddSlider(name: string, default_value = 0, min = 0, max = 100, precision = 0, tooltip = ""): Slider {
 		return this.AddEntry(new Slider(this, name, default_value, min, max, precision, tooltip))
 	}
-	public AddNode(name: string, icon_path = "", tooltip = ""): Node {
+	public AddNode(name: string, icon_path = "", tooltip = "", icon_round = -1): Node {
 		const node = this.entries.find(entry => entry instanceof Node && entry.InternalName === name) as Node
 		if (node !== undefined) {
 			if (node.icon_path === "")
@@ -232,7 +232,7 @@ export default class Node extends Base {
 			// TODO: should we do the same for tooltips?
 			return node
 		}
-		return this.AddEntry(new Node(this, name, icon_path, tooltip))
+		return this.AddEntry(new Node(this, name, icon_path, tooltip, icon_round))
 	}
 	public AddDropdown(name: string, values: string[], default_value = 0, tooltip = ""): Dropdown {
 		return this.AddEntry(new Dropdown(this, name, values, default_value, tooltip))

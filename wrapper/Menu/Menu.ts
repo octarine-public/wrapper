@@ -157,7 +157,7 @@ class MenuManager {
 		this.active_element = undefined
 		return ret
 	}
-	public AddEntry(name: string, icon_path = ""): Node {
+	public AddEntry(name: string, icon_path = "", tooltip = "", icon_round = -1): Node {
 		let node = this.entries.find(entry => entry.InternalName === name)
 		if (node !== undefined) {
 			if (node.icon_path === "")
@@ -166,7 +166,7 @@ class MenuManager {
 		}
 		if (hardcoded_icons.has(name))
 			icon_path = hardcoded_icons.get(name)!
-		node = new Node(this, name, icon_path)
+		node = new Node(this, name, icon_path, tooltip, icon_round)
 		if (hardcoded_priorities.has(name))
 			node.Priority = hardcoded_priorities.get(name)!
 		node.parent = this
