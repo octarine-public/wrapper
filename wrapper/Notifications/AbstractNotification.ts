@@ -9,18 +9,15 @@ export default abstract class Notification {
 	private IsPlaying = false
 	private stopDisplayTime = 0
 	private startDisplayTime = 0
-	private playSound: Nullable<string> = undefined
-	private playVolume = 0
+	private playSoundName: Nullable<string> = undefined
 
 	constructor(options?: {
 		timeToShow?: number
-		playSound?: string
-		playVolume?: number
+		playSoundName?: string
 		uniqueKey?: any,
 	}) {
 		this.UniqueKey = options?.uniqueKey
-		this.playSound = options?.playSound
-		this.playVolume = options?.playVolume ?? 0
+		this.playSoundName = options?.playSoundName
 		this.TimeToShow = options?.timeToShow ?? this.TimeToShow
 	}
 
@@ -58,9 +55,9 @@ export default abstract class Notification {
 	}
 
 	public PlaySound() {
-		if (this.playSound === undefined || this.IsPlaying)
+		if (this.playSoundName === undefined || this.IsPlaying)
 			return
-		SoundSDK.PlaySound(this.playSound, this.playVolume)
+		SoundSDK.PlaySound(this.playSoundName)
 		this.IsPlaying = true
 	}
 }
