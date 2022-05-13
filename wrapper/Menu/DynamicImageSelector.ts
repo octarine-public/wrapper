@@ -162,6 +162,14 @@ export default class DynamicImageSelector extends Base {
 	}
 
 	public IsEnabled(value: string): boolean {
+
+		if (this.QueuedUpdate) {
+			const state = this.QueueImages.get(value)
+			if (state === undefined)
+				return false
+			return state[0]
+		}
+
 		const state = this.enabled_values.get(value)
 		if (state === undefined)
 			return false
