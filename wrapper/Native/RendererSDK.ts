@@ -535,8 +535,8 @@ class CRendererSDK {
 		join = LineJoin.Round,
 	): void {
 		outer = outer && outline_width !== -1
-		const size_off = outer ? Math.round(outline_width / 2 - 1) : 0,
-			pos_off = outer ? -Math.round(outline_width / 4 - 1) : 0
+		const size_off = outer ? Math.round(outline_width / 2) : 0,
+			pos_off = outer ? -Math.round(outline_width / 4) : 0
 		vecPos.AddScalarForThis(pos_off)
 		vecSize.AddScalarForThis(size_off)
 
@@ -620,10 +620,10 @@ class CRendererSDK {
 			baseAngle = 0
 		if (Number.isNaN(percent) || !Number.isFinite(percent))
 			percent = 100
-		percent = Math.min(Math.max(percent / 100, 0), 1)
+		percent = Math.min(Math.max(percent / 100, -1), 1)
 
-		const size_off = outer ? Math.round(width / 2 - 1) : 0,
-			pos_off = outer ? -Math.round(width / 4 - 1) : 0
+		const size_off = outer ? Math.round(width / 2) : 0,
+			pos_off = outer ? -Math.round(width / 4) : 0
 
 		if (percent >= 1) {
 			vecPos = vecPos.AddScalar(pos_off)
