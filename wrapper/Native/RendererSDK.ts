@@ -540,7 +540,7 @@ class CRendererSDK {
 		vecPos.AddScalarForThis(pos_off)
 		vecSize.AddScalarForThis(size_off)
 
-		percent = Math.min(Math.max(percent / 100, 0), 1)
+		percent = Math.min(Math.max(percent / 100, -1), 1)
 		if (percent >= 1) {
 			if (outline_width !== -1)
 				this.OutlinedRect(vecPos, vecSize, outline_width, strokeColor, rotation_deg, custom_scissor, grayscale)
@@ -908,10 +908,9 @@ class CRendererSDK {
 		this.commandStream.WriteFloat32(vecPos.y)
 	}
 	private NormalizedAngle(ang: number): number {
-		ang = ang % (Math.PI * 2)
-		if (ang < 0)
+		while (ang < 0)
 			ang += 2 * Math.PI
-		if (ang > 2 * Math.PI)
+		while (ang > 2 * Math.PI)
 			ang -= 2 * Math.PI
 		return ang
 	}
@@ -941,7 +940,10 @@ class CRendererSDK {
 		}
 	}
 	private PointOnBounds(ang: number, vecSize: Vector2): Vector2 {
-		return this.NormalizedPoint(ang).AddScalarForThis(1).DivideScalarForThis(2).MultiplyForThis(vecSize)
+		const res = this.NormalizedPoint(ang).AddScalarForThis(1).DivideScalarForThis(2)
+		res.x = Math.min(Math.max(res.x, 0), 1)
+		res.y = Math.min(Math.max(res.y, 0), 1)
+		return res.MultiplyForThis(vecSize)
 	}
 }
 const RendererSDK = new CRendererSDK()
