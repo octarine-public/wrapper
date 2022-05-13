@@ -541,8 +541,11 @@ class CRendererSDK {
 		vecSize.AddScalarForThis(size_off)
 
 		percent = Math.min(Math.max(percent / 100, 0), 1)
-		if (outline_width !== -1 && percent >= 1) {
-			this.OutlinedRect(vecPos, vecSize, outline_width, strokeColor, rotation_deg, custom_scissor, grayscale)
+		if (percent >= 1) {
+			if (outline_width !== -1)
+				this.OutlinedRect(vecPos, vecSize, outline_width, strokeColor, rotation_deg, custom_scissor, grayscale)
+			else
+				this.FilledRect(vecPos, vecSize, fillColor, rotation_deg, custom_scissor, grayscale)
 			vecSize.SubtractScalarForThis(size_off)
 			vecPos.SubtractScalarForThis(pos_off)
 			return
