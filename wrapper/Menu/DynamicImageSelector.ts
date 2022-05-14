@@ -162,15 +162,18 @@ export default class DynamicImageSelector extends Base {
 	}
 
 	public IsEnabled(value: string): boolean {
+		const state = this.enabled_values.get(value)
 
 		if (this.QueuedUpdate) {
-			const state = this.QueueImages.get(value)
-			if (state === undefined)
+			const state_ = this.QueueImages.get(value)
+			if (state_ === undefined)
 				return false
-			return state[0]
+			return state_[0]
 		}
 
-		const state = this.enabled_values.get(value)
+		if (!this.QueuedUpdate && !this.QueueSleeper.Sleeping(value))
+			this.QueueImages.delete(value)
+
 		if (state === undefined)
 			return false
 		return state[0]
@@ -182,7 +185,7 @@ export default class DynamicImageSelector extends Base {
 
 	public async OnAddNewImage(name: string, default_state = true, default_show = false) {
 
-		if (this.QueuedUpdate) {
+		if (this.QueuedUpdate && !this.values.some(name_ => name_ === name)) {
 			this.QueueSleeper.Sleep(300, name)
 			this.QueueImages.set(name, [default_state, default_show])
 			return
@@ -193,7 +196,7 @@ export default class DynamicImageSelector extends Base {
 		// boolean, /** show */
 		// number /** priority */
 
-		if (this.values.includes(name)) {
+		if (this.values.some(name_ => name_ === name)) {
 
 			const enabled_values = this.enabled_values.get(name)
 			if (enabled_values === undefined || !Array.isArray(enabled_values)) {
@@ -208,8 +211,8 @@ export default class DynamicImageSelector extends Base {
 		}
 
 		this.values.push(name)
-		const enabled_values_ = this.enabled_values.get(name)
 
+		const enabled_values_ = this.enabled_values.get(name)
 		if (enabled_values_ === undefined || !Array.isArray(enabled_values_)) {
 			this.enabled_values.set(name, [default_state, default_show, true, this.autoPriority++])
 			await this.Update()
