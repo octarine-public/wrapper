@@ -379,9 +379,10 @@ export default class Entity {
 			return undefined
 		const activity_name = activity2name.get(activity)
 		if (sequence_num >= 0 && activity_name !== undefined) {
-			const ar = this.Attachments.filter(attachment => attachment[0].has(activity_name))
-			if (ar.length > sequence_num)
-				return ar[sequence_num][1]
+			let i = 0
+			for (const attachment of this.Attachments)
+				if (attachment[0].has(activity_name) && i++ === sequence_num)
+					return attachment[1]
 		}
 		const modifiers: string[] = []
 		if (activity_name !== undefined)
