@@ -19,7 +19,6 @@ type IDefaultValues = Map<string, [
 
 // every icon: 32x32, 1x1 border
 export default class DynamicImageSelector extends Base {
-
 	public static ServicePriorityToggle = false
 
 	public static OnWindowSizeChanged(): void {
@@ -184,8 +183,7 @@ export default class DynamicImageSelector extends Base {
 	}
 
 	public async OnAddNewImage(name: string, default_state = true, default_show = false) {
-
-		if (this.QueuedUpdate && !this.values.some(name_ => name_ === name)) {
+		if (this.QueuedUpdate && !this.values.includes(name)) {
 			this.QueueSleeper.Sleep(300, name)
 			this.QueueImages.set(name, [default_state, default_show])
 			return
@@ -196,8 +194,7 @@ export default class DynamicImageSelector extends Base {
 		// boolean, /** show */
 		// number /** priority */
 
-		if (this.values.some(name_ => name_ === name)) {
-
+		if (this.values.includes(name)) {
 			const enabled_values = this.enabled_values.get(name)
 			if (enabled_values === undefined || !Array.isArray(enabled_values)) {
 				this.enabled_values.set(name, [default_state, default_show, true, this.autoPriority++])
@@ -253,7 +250,6 @@ export default class DynamicImageSelector extends Base {
 	}
 
 	public async Render(): Promise<void> {
-
 		await super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
 
@@ -307,14 +303,12 @@ export default class DynamicImageSelector extends Base {
 
 			if (DynamicImageSelector.ServicePriorityToggle)
 				this.DrawTextRealPriority(this.enabled_values.get(value), position, size)
-
 		}
 	}
 
 	public async OnMouseLeftDown(): Promise<boolean> {
-		const rect = this.IconsRect
-
-		const off = rect.GetOffset(this.MousePosition)
+		const rect = this.IconsRect,
+			off = rect.GetOffset(this.MousePosition)
 
 		if (InputManager.IsKeyDown(VKeys.CONTROL))
 			this.ImageValueChanged(off, async value => {
@@ -328,12 +322,10 @@ export default class DynamicImageSelector extends Base {
 	}
 
 	public async OnMouseLeftUp(): Promise<boolean> {
-
-		const rect = this.IconsRect
-		const off = rect.GetOffset(this.MousePosition)
+		const rect = this.IconsRect,
+			off = rect.GetOffset(this.MousePosition)
 
 		for (const [dragName, dragPriority] of this.item_drop) {
-
 			await this.ImageValueChanged(off, async (currName, _, currPriority) => {
 
 				const dragNameValue = this.enabled_values.get(dragName)
@@ -403,7 +395,6 @@ export default class DynamicImageSelector extends Base {
 	}
 
 	private InsertIncrease(currName: string, dragName: string, currPriority: number) {
-
 		const entriesEnables = [...this.enabled_values.entries()]
 
 		const Increase = entriesEnables.filter(([name, [, , , priority]]) =>
@@ -430,7 +421,6 @@ export default class DynamicImageSelector extends Base {
 	}
 
 	private DrawTextPriority(Id: number, position: Vector2, size: Vector2) {
-
 		const text = `${Id}`
 		const textSize = size.y / 2
 		const textName = RendererSDK.DefaultFontName
@@ -453,7 +443,6 @@ export default class DynamicImageSelector extends Base {
 		enabled: Nullable<[boolean, /** default state */ boolean, /** default show */ boolean, /** show */ number /** priority */]>,
 		position: Vector2, size: Vector2,
 	) {
-
 		if (enabled === undefined)
 			return
 
