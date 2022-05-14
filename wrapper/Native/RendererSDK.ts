@@ -387,27 +387,16 @@ class CRendererSDK {
 		if (text === "")
 			return
 
-		if (outlined)
-			this.Text(
-				text,
-				vecPos.Clone().SubtractScalarX(1).AddScalarY(1),
-				Color.Black,
-				font_name,
-				font_size,
-				weight,
-				italic,
-				false,
-			)
-
 		const font_id = this.GetFont(font_name, weight, italic)
 		if (font_id === -1)
 			return
 
-		this.Translate(vecPos)
+		this.Translate(outlined ? vecPos.Clone().SubtractScalarX(1).AddScalarY(1) : vecPos)
+		const start_pos = this.commandCacheSize
 		this.AllocateCommandSpace(CommandID.TEXT, 2 * 2 + 2 * 4)
 		this.commandStream.WriteUint16(font_id)
 		this.commandStream.WriteUint16(Math.round(font_size + 2))
-		this.commandStream.WriteColor(color)
+		this.commandStream.WriteColor(outlined ? Color.Black : color)
 		const length_pos = this.commandStream.pos
 		this.commandStream.WriteUint32(0)
 		{
@@ -427,6 +416,17 @@ class CRendererSDK {
 		this.commandStream.RelativeSeek(length_pos - end_pos)
 		this.commandStream.WriteUint32(bytes_len)
 		this.commandStream.RelativeSeek(bytes_len)
+
+		if (outlined) {
+			this.Translate(vecPos)
+			const new_pos = this.commandCacheSize,
+				cmd_size = end_pos - start_pos
+			this.AllocateCommandSpace(CommandID.TEXT, cmd_size - 1)
+			this.commandCache.copyWithin(new_pos, start_pos, end_pos)
+			this.commandStream.RelativeSeek(2 * 2)
+			this.commandStream.WriteColor(color)
+			this.commandStream.RelativeSeek(cmd_size - (this.commandStream.pos - new_pos))
+		}
 	}
 	/**
 	 * @returns text size defined as new Vector3(width, height, under_line)

@@ -375,7 +375,7 @@ export default class Entity {
 		// to be implemented in child classes
 	}
 	public GetAttachments(activity = GameActivity_t.ACT_DOTA_IDLE, sequence_num = -1): Nullable<Map<string, ComputedAttachment>> {
-		if (this.Attachments === undefined)
+		if (this.Attachments === undefined || this.Attachments.length === 0)
 			return undefined
 		const activity_name = activity2name.get(activity)
 		if (sequence_num >= 0 && activity_name !== undefined) {
