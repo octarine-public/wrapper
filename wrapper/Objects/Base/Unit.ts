@@ -1176,8 +1176,8 @@ export default class Unit extends Entity {
 	public TrainAbility(ability: Ability) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY, issuers: [this], ability })
 	}
-	public DropItemAtFountain(item: Item, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM_AT_FOUNTAIN, issuers: [this], ability: item, queue, showEffects })
+	public DropItemAtFountain(item: Item, queue?: boolean, showEffects?: boolean, slot?: DOTAScriptInventorySlot_t) {
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM_AT_FOUNTAIN, issuers: [this], target: slot, ability: item, queue, showEffects })
 	}
 	public DropItem(item: Item, position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM, issuers: [this], ability: item, position, queue, showEffects })
