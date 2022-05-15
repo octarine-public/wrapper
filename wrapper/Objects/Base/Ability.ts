@@ -12,7 +12,7 @@ import ExecuteOrder from "../../Native/ExecuteOrder"
 import { HasMask, MaskToArrayNumber } from "../../Utils/BitsExtensions"
 import GameState from "../../Utils/GameState"
 import AbilityData from "../DataBook/AbilityData"
-import Entity, { GameRules } from "./Entity"
+import Entity from "./Entity"
 import Unit from "./Unit"
 
 @WrapperClass("CDOTABaseAbility")
@@ -98,7 +98,7 @@ export default class Ability extends Entity {
 		return this.AbilityData.GetChannelTime(this.Level)
 	}
 	public get ChannelTime(): number {
-		return Math.max(GameRules!.RawGameTime - this.ChannelStartTime, 0)
+		return Math.max(GameState.RawGameTime - this.ChannelStartTime, 0)
 	}
 	public get MaxCharges(): number {
 		return this.AbilityData.GetMaxCharges(this.Level) + this.GetSpecialValue("AbilityCharges")
@@ -116,7 +116,7 @@ export default class Ability extends Entity {
 		return this.ChannelStartTime > 0 && this.ChannelTime <= this.MaxChannelTime
 	}
 	public get IsInAbilityPhase(): boolean {
-		return this.IsInAbilityPhase_ && (GameRules === undefined || GameRules.RawGameTime - this.IsInAbilityPhase_ChangeTime <= this.CastPoint)
+		return this.IsInAbilityPhase_ && (GameState.RawGameTime - this.IsInAbilityPhase_ChangeTime <= this.CastPoint)
 	}
 	public get CooldownLength(): number {
 		const charge_restore_time = this.ChargeRestoreTime
