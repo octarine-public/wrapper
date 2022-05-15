@@ -1,6 +1,7 @@
 import Vector3 from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { EShareAbility } from "../../Enums/EShareAbility"
+import { EPropertyType } from "../../Enums/PropertyType"
 import { Team } from "../../Enums/Team"
 import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
@@ -8,7 +9,6 @@ import ExecuteOrder from "../../Native/ExecuteOrder"
 import Entity from "./Entity"
 import Hero from "./Hero"
 import Item from "./Item"
-import { EPropertyType } from "../../Enums/PropertyType"
 import CPlayerResource, { PlayerResource } from "./PlayerResource"
 
 @WrapperClass("CDOTAPlayerController")
