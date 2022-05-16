@@ -834,12 +834,12 @@ message CSOEconGameAccountClient {
 	optional bool made_first_purchase = 9 [default = false];
 }
 `)
-Events.on("SharedObjectChanged", async (id, reason, data) => {
+Events.on("SharedObjectChanged", async (type_id, reason, data) => {
 	let name: string
-	switch (id) {
-		// case SOType.EconItem:
-		// 	name = "CSOEconItem"
-		// 	break
+	switch (type_id) {
+		case SOType.EconItem:
+			name = "CSOEconItem"
+			break
 		case SOType.ItemRecipe:
 			name = "CSOItemRecipe"
 			break
@@ -888,7 +888,7 @@ Events.on("SharedObjectChanged", async (id, reason, data) => {
 	await EventsSDK.emit(
 		"SharedObjectChanged",
 		false,
-		id,
+		type_id,
 		reason,
 		ParseProtobufNamed(new Uint8Array(data), name),
 	)

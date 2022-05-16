@@ -160,7 +160,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "MapDataLoaded", listener: () => void): EventsSDK
 	on(name: "WindowSizeChanged", listener: () => void): EventsSDK
 	on(name: "MatchmakingStatsUpdated", listener: (msg: RecursiveMap) => void): EventEmitter
-	on(name: "SharedObjectChanged", listener: (id: number, reason: SOType, msg: RecursiveMap) => void): EventEmitter
+	on(name: "SharedObjectChanged", listener: (type_id: SOType, reason: number, msg: RecursiveMap) => void): EventEmitter
 	on(name: "LocalTeamChanged", listener: () => void): EventsSDK
 	on(name: "UnitAbilityDataUpdated", listener: () => void): EventsSDK
 }
