@@ -837,9 +837,9 @@ message CSOEconGameAccountClient {
 Events.on("SharedObjectChanged", async (type_id, reason, data) => {
 	let name: string
 	switch (type_id) {
-		case SOType.EconItem:
-			name = "CSOEconItem"
-			break
+		// case SOType.EconItem:
+		// 	name = "CSOEconItem"
+		// 	break
 		case SOType.ItemRecipe:
 			name = "CSOItemRecipe"
 			break
