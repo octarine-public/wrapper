@@ -78,7 +78,9 @@ EventsSDK.on("Tick", dt => {
 
 	Roshan.HPRegenCounter += Roshan.HPRegen * Math.min(dt, 0.1)
 	const regen_amount_floor = Math.floor(Roshan.HPRegenCounter)
-	Roshan.HP = Math.min(Roshan.HP + regen_amount_floor, Roshan.MaxHP)
+	Roshan.HP = Roshan.Instance instanceof Entity && Roshan.Instance.IsVisible
+		? Roshan.Instance.HP
+		: Math.min(Roshan.HP + regen_amount_floor, Roshan.MaxHP)
 	Roshan.HPRegenCounter -= regen_amount_floor
 
 	const min = Math.floor(Math.max(GameRules!.GameTime, 0) / 60)
