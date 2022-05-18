@@ -12,7 +12,6 @@ export default abstract class Notification {
 	private stopDisplayTime = 0
 	private startDisplayTime = 0
 
-	private seed = 0
 	private sourceEntity: Nullable<Entity>
 	private position = new Vector3().Invalidate()
 	private playSoundName: Nullable<string> = undefined
@@ -23,14 +22,12 @@ export default abstract class Notification {
 		uniqueKey?: any,
 		position?: Vector3,
 		sourceEntity?: Entity,
-		seed?: number,
 	}) {
 		this.UniqueKey = options?.uniqueKey
 		this.playSoundName = options?.playSoundName
 		this.TimeToShow = options?.timeToShow ?? this.TimeToShow
 		this.position = options?.position ?? this.position
 		this.sourceEntity = options?.sourceEntity
-		this.seed = options?.seed ?? ((Math.random() * (2 ** 32 - 1)) | 0)
 	}
 
 	public get IsExpired() {
@@ -73,7 +70,6 @@ export default abstract class Notification {
 			this.playSoundName,
 			this.position,
 			this.sourceEntity,
-			this.seed,
 		)
 		this.IsPlaying = true
 	}
