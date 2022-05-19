@@ -174,15 +174,15 @@ export default class CLowerHUD {
 		const NeutralAndTPWidthPadded = NeutralAndTPWidth - NeutralAndTPPaddingWidth * 2,
 			NeutralAndTPHeightPadded = NeutralAndTPHeight - NeutralAndTPPaddingHeight * 2
 		const BaseNeutralAndTPHeight = screen_size.y - NeutralAndTPHeight + NeutralAndTPPaddingHeight
-		this.NeutralSlot.Width = NeutralAndTPWidthPadded
-		this.NeutralSlot.Height = NeutralAndTPHeightPadded
-		this.NeutralSlot.x = this.NeutralAndTPContainer.x + NeutralAndTPPaddingWidth
-		this.NeutralSlot.y = BaseNeutralAndTPHeight - GUIInfo.ScaleHeight(9, screen_size)
-
 		this.TPSlot.Width = NeutralAndTPWidthPadded
 		this.TPSlot.Height = NeutralAndTPHeightPadded
-		this.TPSlot.x = this.NeutralSlot.x
-		this.TPSlot.y = BaseNeutralAndTPHeight - GUIInfo.ScaleHeight(62, screen_size)
+		this.TPSlot.x = this.NeutralAndTPContainer.x + NeutralAndTPPaddingWidth
+		this.TPSlot.y = BaseNeutralAndTPHeight - GUIInfo.ScaleHeight(9, screen_size)
+
+		this.NeutralSlot.Width = NeutralAndTPWidthPadded
+		this.NeutralSlot.Height = NeutralAndTPHeightPadded
+		this.NeutralSlot.x = this.TPSlot.x
+		this.NeutralSlot.y = BaseNeutralAndTPHeight - GUIInfo.ScaleHeight(62, screen_size)
 
 		this.HealthManaContainer.Height = GUIInfo.ScaleHeight(26, screen_size) * 2
 		this.HealthManaContainer.x = GUIInfo.ScaleWidth(223, screen_size)
