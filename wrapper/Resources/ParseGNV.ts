@@ -30,7 +30,7 @@ class CGridNav {
 		return pos.DivideScalarForThis(this.EdgeSize).RoundForThis()
 	}
 	public GetRectForGridPos(gridPosX: number, gridPosY: number): Rectangle {
-		const pos1 = new Vector2(gridPosX | 0, gridPosY | 0).RoundForThis().MultiplyScalarForThis(this.EdgeSize)
+		const pos1 = new Vector2(gridPosX, gridPosY).RoundForThis().MultiplyScalarForThis(this.EdgeSize)
 		return new Rectangle(
 			pos1,
 			pos1.AddScalar(this.EdgeSize),
@@ -48,10 +48,6 @@ class CGridNav {
 		this.SetCellFlag(gridPos.x - 1, gridPos.y - 1, GridNavCellFlags.Tree, is_alive)
 	}
 
-	private GetCellIndexForPos(pos: Vector3 | Vector2): number {
-		const gridPos = this.GetGridPosForPos(pos)
-		return (this.Size.x * (gridPos.y - this.Min.y) + (gridPos.x - this.Min.x)) | 0
-	}
 	private SetCellFlag(gridPosX: number, gridPosY: number, flag: GridNavCellFlags, state: boolean): void {
 		const cell_id = this.GetCellIndexForGridPos(gridPosX, gridPosY)
 		if (this.CellFlags.byteLength <= cell_id)
@@ -62,7 +58,11 @@ class CGridNav {
 			this.CellFlags[cell_id] &= ~(1 << flag)
 	}
 	private GetCellIndexForGridPos(gridPosX: number, gridPosY: number): number {
-		return (this.Size.x * ((gridPosY | 0) - this.Min.y) + ((gridPosX | 0) - this.Min.x)) | 0
+		return this.Size.x * (gridPosY - this.Min.y) + (gridPosX - this.Min.x)
+	}
+	private GetCellIndexForPos(pos: Vector3 | Vector2): number {
+		const gridPos = this.GetGridPosForPos(pos)
+		return this.GetCellIndexForGridPos(gridPos.x, gridPos.y)
 	}
 }
 export let GridNav: Nullable<CGridNav>
