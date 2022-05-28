@@ -52,7 +52,7 @@ export default class Node extends Base {
 	protected is_open_ = false
 	protected readonly text_offset = Node.text_offset_
 
-	constructor(parent: IMenu, name: string, private icon_path_ = "", tooltip = "", private icon_round = -1) {
+	constructor(parent: IMenu, name: string, private icon_path_ = "", tooltip = "", private icon_round_ = -1) {
 		super(parent, name, tooltip)
 	}
 
@@ -72,6 +72,14 @@ export default class Node extends Base {
 	}
 	public set icon_path(val: string) {
 		this.icon_path_ = val
+		this.Update()
+	}
+
+	public get icon_round(): number {
+		return this.icon_round_
+	}
+	public set icon_round(val: number) {
+		this.icon_round_ = val
 		this.Update()
 	}
 
