@@ -7,6 +7,7 @@ import BinaryStream from "../Utils/BinaryStream"
 
 class CGridNav {
 	public readonly Max: Vector2
+	private readonly EdgeSizeRcp: number
 	constructor(
 		public readonly EdgeSize: number,
 		public readonly Offset: Vector2,
@@ -14,6 +15,7 @@ class CGridNav {
 		public readonly Min: Vector2,
 		private readonly CellFlags: Uint8Array,
 	) {
+		this.EdgeSizeRcp = 1 / this.EdgeSize
 		this.Max = this.Min.Add(this.Size).SubtractScalarForThis(1)
 	}
 
@@ -27,7 +29,7 @@ class CGridNav {
 		pos = pos instanceof Vector3
 			? Vector2.FromVector3(pos).SubtractForThis(this.Offset)
 			: pos.Subtract(this.Offset)
-		return pos.DivideScalarForThis(this.EdgeSize).RoundForThis()
+		return pos.MultiplyScalarForThis(this.EdgeSizeRcp).RoundForThis()
 	}
 	public GetRectForGridPos(gridPosX: number, gridPosY: number): Rectangle {
 		const pos1 = new Vector2(gridPosX, gridPosY).RoundForThis().MultiplyScalarForThis(this.EdgeSize)
