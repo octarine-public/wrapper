@@ -91,9 +91,6 @@ export default class Node extends Base {
 		this.entries.forEach(entry => {
 			this.config_storage[entry.InternalName] = entry.ConfigValue
 		})
-		Object.getOwnPropertyNames(this.config_storage).forEach(name => {
-			delete this.config_storage[name]
-		})
 		return this.config_storage
 	}
 	public set ConfigValue(obj) {
