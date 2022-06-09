@@ -47,11 +47,26 @@ enum CommandID {
 }
 
 enum PathFlags {
+	LINE_CAP_OFFSET = 2,
+	LINE_JOIN_OFFSET = 4,
+
 	GRAYSCALE = 1 << 0,
 	IMAGE_SHADER = 1 << 1,
+	LINE_CAP_BITS = (1 << LINE_CAP_OFFSET) | (1 << (LINE_CAP_OFFSET + 1)),
+	LINE_JOIN_BITS = (1 << LINE_JOIN_OFFSET) | (1 << (LINE_JOIN_OFFSET + 1)),
 	FILL = 1 << 6,
 	STROKE = 1 << 7,
 	STROKE_AND_FILL = FILL | STROKE,
+}
+export enum LineCap {
+	Butt = 1,
+	Round = 2,
+	Square = 3,
+}
+export enum LineJoin {
+	Miter = 1,
+	Round = 2,
+	Bevel = 3,
 }
 
 class Font {
@@ -237,16 +252,29 @@ class CRendererSDK {
 	public FilledRect(
 		vecPos = new Vector2(),
 		vecSize = this.DefaultShapeSize,
-		color = Color.White,
+		fillColor = Color.White,
 		rotation_deg = 0,
 		custom_scissor?: Rectangle,
 		grayscale = false,
+		strokeColor = fillColor,
+		width = 0,
+		cap = LineCap.Square,
+		join = LineJoin.Round,
 	): void {
 		if (custom_scissor !== undefined)
 			this.SetScissor(custom_scissor)
 		this.Translate(vecPos)
 		this.Rotate(rotation_deg)
-		this.Rect(vecSize, 0, PathFlags.FILL, color, grayscale)
+		this.Rect(
+			vecSize,
+			width,
+			width === 0 ? PathFlags.FILL : PathFlags.STROKE_AND_FILL,
+			fillColor,
+			strokeColor,
+			grayscale,
+			cap,
+			join,
+		)
 	}
 	/**
 	 * @param vecSize default Width 5 x Height 5
@@ -261,12 +289,14 @@ class CRendererSDK {
 		rotation_deg = 0,
 		custom_scissor?: Rectangle,
 		grayscale = false,
+		cap = LineCap.Square,
+		join = LineJoin.Round,
 	): void {
 		if (custom_scissor !== undefined)
 			this.SetScissor(custom_scissor)
 		this.Translate(vecPos)
 		this.Rotate(rotation_deg)
-		this.Rect(vecSize, width, PathFlags.STROKE, color, grayscale)
+		this.Rect(vecSize, width, PathFlags.STROKE, color, color, grayscale, cap, join)
 	}
 	/**
 	 * @param path must end with "_c" (without double-quotes), if that's vtex_c
@@ -340,6 +370,8 @@ class CRendererSDK {
 				color,
 				flags,
 				grayscale,
+				LineCap.Square,
+				LineJoin.Round,
 				texture_id[0],
 				(subtexOffset?.x ?? 0) * (vecSize.x / size_x),
 				(subtexOffset?.y ?? 0) * (vecSize.x / size_y),
@@ -355,27 +387,16 @@ class CRendererSDK {
 		if (text === "")
 			return
 
-		if (outlined)
-			this.Text(
-				text,
-				vecPos.Clone().SubtractScalarX(1).AddScalarY(1),
-				Color.Black,
-				font_name,
-				font_size,
-				weight,
-				italic,
-				false,
-			)
-
 		const font_id = this.GetFont(font_name, weight, italic)
 		if (font_id === -1)
 			return
 
-		this.Translate(vecPos)
+		this.Translate(outlined ? vecPos.Clone().SubtractScalarX(1).AddScalarY(1) : vecPos)
+		const start_pos = this.commandCacheSize
 		this.AllocateCommandSpace(CommandID.TEXT, 2 * 2 + 2 * 4)
 		this.commandStream.WriteUint16(font_id)
 		this.commandStream.WriteUint16(Math.round(font_size + 2))
-		this.commandStream.WriteColor(color)
+		this.commandStream.WriteColor(outlined ? Color.Black : color)
 		const length_pos = this.commandStream.pos
 		this.commandStream.WriteUint32(0)
 		{
@@ -395,6 +416,17 @@ class CRendererSDK {
 		this.commandStream.RelativeSeek(length_pos - end_pos)
 		this.commandStream.WriteUint32(bytes_len)
 		this.commandStream.RelativeSeek(bytes_len)
+
+		if (outlined) {
+			this.Translate(vecPos)
+			const new_pos = this.commandCacheSize,
+				cmd_size = end_pos - start_pos
+			this.AllocateCommandSpace(CommandID.TEXT, cmd_size - 1)
+			this.commandCache.copyWithin(new_pos, start_pos, end_pos)
+			this.commandStream.RelativeSeek(2 * 2)
+			this.commandStream.WriteColor(color)
+			this.commandStream.RelativeSeek(cmd_size - (this.commandStream.pos - new_pos))
+		}
 	}
 	/**
 	 * @returns text size defined as new Vector3(width, height, under_line)
@@ -497,14 +529,39 @@ class CRendererSDK {
 		custom_scissor?: Rectangle,
 		strokeColor = fillColor,
 		grayscale = false,
+		outline_width = -1,
+		outer = false,
+		cap = LineCap.Square,
+		join = LineJoin.Round,
 	): void {
+		outer = outer && outline_width !== -1
+		const size_off = outer ? Math.round(outline_width / 2) : 0,
+			pos_off = outer ? -Math.round(outline_width / 4) : 0
+		vecPos.AddScalarForThis(pos_off)
+		vecSize.AddScalarForThis(size_off)
+
+		percent = Math.min(Math.max(percent / 100, -1), 1)
+		if (percent >= 1) {
+			if (outline_width !== -1)
+				this.OutlinedRect(vecPos, vecSize, outline_width, strokeColor, rotation_deg, custom_scissor, grayscale)
+			else
+				this.FilledRect(vecPos, vecSize, fillColor, rotation_deg, custom_scissor, grayscale)
+			vecSize.SubtractScalarForThis(size_off)
+			vecPos.SubtractScalarForThis(pos_off)
+			return
+		}
+		vecPos.AddScalarForThis(pos_off)
+		vecSize.AddScalarForThis(size_off)
+
+		if (outline_width !== -1)
+			this.BeginClip(false)
+
 		if (custom_scissor !== undefined)
 			this.SetScissor(custom_scissor)
 		this.Translate(vecPos)
 		this.Rotate(rotation_deg)
-		percent = Math.min(percent, 100)
 
-		let angle = this.NormalizedAngle(DegreesToRadian(360 * percent / 100))
+		let angle = this.NormalizedAngle(DegreesToRadian(360 * percent))
 		const startAngleSign = Math.sign(startAngle)
 		startAngle = DegreesToRadian(startAngle)
 		if (startAngleSign < 0)
@@ -529,7 +586,24 @@ class CRendererSDK {
 			const pt = this.PointOnBounds(startAngle + angle, vecSize)
 			this.PathLineTo(pt.x, pt.y)
 		}
-		this.Path(1, fillColor, strokeColor, PathFlags.STROKE_AND_FILL, grayscale)
+		this.Path(
+			1,
+			outline_width !== -1 ? Color.White : fillColor,
+			outline_width !== -1 ? Color.White : strokeColor,
+			PathFlags.STROKE_AND_FILL,
+			grayscale,
+			cap,
+			join,
+		)
+
+		vecSize.SubtractScalarForThis(size_off)
+		vecPos.SubtractScalarForThis(pos_off)
+		if (outline_width !== -1) {
+			this.EndClip()
+			this.OutlinedRect(vecPos, vecSize, outline_width, strokeColor, rotation_deg, custom_scissor, grayscale)
+		}
+		vecSize.SubtractScalarForThis(size_off)
+		vecPos.SubtractScalarForThis(pos_off)
 	}
 	public Arc(
 		baseAngle: number,
@@ -542,24 +616,33 @@ class CRendererSDK {
 		rotation_deg = 0,
 		custom_scissor?: Rectangle,
 		grayscale = false,
+		outer = false,
+		cap = LineCap.Butt,
 	): void {
 		if (Number.isNaN(baseAngle) || !Number.isFinite(baseAngle))
 			baseAngle = 0
 		if (Number.isNaN(percent) || !Number.isFinite(percent))
 			percent = 100
-		percent = Math.min(Math.max(percent / 100, 0), 1)
+		percent = Math.min(Math.max(percent / 100, -1), 1)
+
+		const size_off = outer ? Math.round(width / 2) : 0,
+			pos_off = outer ? -Math.round(width / 4) : 0
 
 		if (percent >= 1) {
+			vecPos = vecPos.AddScalar(pos_off)
+			vecSize = vecSize.AddScalar(size_off)
 			if (fill)
-				this.FilledCircle(vecPos, vecSize, color, rotation_deg, custom_scissor)
+				this.FilledCircle(vecPos, vecSize, color, rotation_deg, custom_scissor, grayscale)
 			else
-				this.OutlinedCircle(vecPos, vecSize, color, width, rotation_deg, custom_scissor)
+				this.OutlinedCircle(vecPos, vecSize, color, width, rotation_deg, custom_scissor, grayscale)
 			return
 		}
 
 		if (custom_scissor !== undefined)
 			this.SetScissor(custom_scissor)
 		this.Translate(vecPos)
+		if (outer)
+			this.Translate(new Vector2(pos_off, pos_off))
 		this.Rotate(rotation_deg)
 
 		baseAngle = DegreesToRadian(baseAngle)
@@ -568,8 +651,8 @@ class CRendererSDK {
 		this.AllocateCommandSpace(CommandID.PATH_ADD_ARC, 6 * 4 + 1)
 		this.commandStream.WriteFloat32(0)
 		this.commandStream.WriteFloat32(0)
-		this.commandStream.WriteFloat32(vecSize.x)
-		this.commandStream.WriteFloat32(vecSize.y)
+		this.commandStream.WriteFloat32(vecSize.x + size_off)
+		this.commandStream.WriteFloat32(vecSize.y + size_off)
 		this.commandStream.WriteFloat32(baseAngle)
 		this.commandStream.WriteFloat32(sweepAngle)
 		this.commandStream.WriteBoolean(fill)
@@ -581,6 +664,7 @@ class CRendererSDK {
 				? PathFlags.FILL
 				: PathFlags.STROKE,
 			grayscale,
+			cap,
 		)
 	}
 	public AllocateCommandSpace_(commandID: CommandID, bytes: number): BinaryStream {
@@ -632,15 +716,18 @@ class CRendererSDK {
 		vecSize: Vector2,
 		width: number,
 		pathFlags: PathFlags,
-		color: Color,
+		fillColor: Color,
+		strokeColor: Color,
 		grayscale: boolean,
+		cap: LineCap,
+		join: LineJoin,
 	): void {
 		this.AllocateCommandSpace(CommandID.PATH_ADD_RECT, 4 * 4)
 		this.commandStream.WriteFloat32(0)
 		this.commandStream.WriteFloat32(0)
 		this.commandStream.WriteFloat32(vecSize.x)
 		this.commandStream.WriteFloat32(vecSize.y)
-		this.Path(width, color, color, pathFlags, grayscale)
+		this.Path(width, fillColor, strokeColor, pathFlags, grayscale, cap, join)
 	}
 	private Ellipse(
 		vecSize: Vector2,
@@ -776,6 +863,8 @@ class CRendererSDK {
 		strokeColor: Color,
 		flags: PathFlags,
 		grayscale: boolean,
+		cap = LineCap.Square,
+		join = LineJoin.Round,
 		tex_id?: number,
 		tex_offset_x?: number,
 		tex_offset_y?: number,
@@ -784,6 +873,8 @@ class CRendererSDK {
 	): void {
 		if (grayscale)
 			flags |= PathFlags.GRAYSCALE
+		flags |= Math.max(Math.min(cap, LineCap.Square), LineCap.Butt) << PathFlags.LINE_CAP_OFFSET
+		flags |= Math.max(Math.min(join, LineJoin.Bevel), LineJoin.Miter) << PathFlags.LINE_JOIN_OFFSET
 		const has_image = HasMask(flags, PathFlags.IMAGE_SHADER)
 		this.AllocateCommandSpace(
 			CommandID.PATH,
@@ -817,10 +908,9 @@ class CRendererSDK {
 		this.commandStream.WriteFloat32(vecPos.y)
 	}
 	private NormalizedAngle(ang: number): number {
-		ang = ang % (Math.PI * 2)
-		if (ang < 0)
+		while (ang < 0)
 			ang += 2 * Math.PI
-		if (ang > 2 * Math.PI)
+		while (ang > 2 * Math.PI)
 			ang -= 2 * Math.PI
 		return ang
 	}
@@ -850,7 +940,10 @@ class CRendererSDK {
 		}
 	}
 	private PointOnBounds(ang: number, vecSize: Vector2): Vector2 {
-		return this.NormalizedPoint(ang).AddScalarForThis(1).DivideScalarForThis(2).MultiplyForThis(vecSize)
+		const res = this.NormalizedPoint(ang).AddScalarForThis(1).DivideScalarForThis(2)
+		res.x = Math.min(Math.max(res.x, 0), 1)
+		res.y = Math.min(Math.max(res.y, 0), 1)
+		return res.MultiplyForThis(vecSize)
 	}
 }
 const RendererSDK = new CRendererSDK()

@@ -29,47 +29,7 @@ message CSOEconItem {
 	optional uint64 original_id = 16 [default = 0];
 	repeated .CSOEconItemEquipped equipped_state = 18;
 }
-message CSOItemCriteriaCondition {
-	optional int32 op = 1;
-	optional string field = 2;
-	optional bool required = 3;
-	optional float float_value = 4;
-	optional string string_value = 5;
-}
 
-message CSOItemCriteria {
-	optional uint32 item_level = 1;
-	optional int32 item_quality = 2;
-	optional bool item_level_set = 3;
-	optional bool item_quality_set = 4;
-	optional uint32 initial_inventory = 5;
-	optional uint32 initial_quantity = 6;
-	optional bool ignore_enabled_flag = 8;
-	repeated .CSOItemCriteriaCondition conditions = 9;
-	optional bool recent_only = 10;
-}
-
-message CSOItemRecipe {
-	optional uint32 def_index = 1;
-	optional string name = 2;
-	optional string n_a = 3;
-	optional string desc_inputs = 4;
-	optional string desc_outputs = 5;
-	optional string di_a = 6;
-	optional string di_b = 7;
-	optional string di_c = 8;
-	optional string do_a = 9;
-	optional string do_b = 10;
-	optional string do_c = 11;
-	optional bool requires_all_same_class = 12;
-	optional bool requires_all_same_slot = 13;
-	optional int32 class_usage_for_output = 14;
-	optional int32 slot_usage_for_output = 15;
-	optional int32 set_for_output = 16;
-	repeated .CSOItemCriteria input_items_criteria = 20;
-	repeated .CSOItemCriteria output_items_criteria = 21;
-	repeated uint32 input_item_dupe_counts = 22;
-}
 message CSOEconItemDropRateBonus {
 	optional uint32 account_id = 1 [(key_field) = true];
 	optional fixed32 expiration_date = 2;
@@ -79,17 +39,6 @@ message CSOEconItemDropRateBonus {
 	optional uint32 def_index = 6;
 	optional uint32 seconds_left = 7;
 	optional uint32 booster_type = 8 [(key_field) = true];
-}
-message CSOEconItemLeagueViewPass {
-	optional uint32 account_id = 1 [(key_field) = true];
-	optional uint32 league_id = 2 [(key_field) = true];
-	optional uint32 itemindex = 4;
-	optional uint32 grant_reason = 5;
-}
-message CSOEconItemEventTicket {
-	optional uint32 account_id = 1;
-	optional uint32 event_id = 2;
-	optional uint64 item_id = 3;
 }
 message CSOEconItemTournamentPassport {
 	optional uint32 account_id = 1;
@@ -834,26 +783,17 @@ message CSOEconGameAccountClient {
 	optional bool made_first_purchase = 9 [default = false];
 }
 `)
-Events.on("SharedObjectChanged", async (id, reason, data) => {
+Events.on("SharedObjectChanged", async (type_id, reason, data) => {
 	let name: string
-	switch (id) {
+	switch (type_id) {
 		// case SOType.EconItem:
 		// 	name = "CSOEconItem"
 		// 	break
-		case SOType.ItemRecipe:
-			name = "CSOItemRecipe"
-			break
 		case SOType.EconGameAccountClient:
 			name = "CSOEconGameAccountClient"
 			break
 		case SOType.DropRateBonus:
 			name = "CSOEconItemDropRateBonus"
-			break
-		case SOType.LeagueViewPass:
-			name = "CSOEconItemLeagueViewPass"
-			break
-		case SOType.EventTicket:
-			name = "CSOEconItemEventTicket"
 			break
 		case SOType.ItemTournamentPassport:
 			name = "CSOEconItemTournamentPassport"
@@ -888,7 +828,7 @@ Events.on("SharedObjectChanged", async (id, reason, data) => {
 	await EventsSDK.emit(
 		"SharedObjectChanged",
 		false,
-		id,
+		type_id,
 		reason,
 		ParseProtobufNamed(new Uint8Array(data), name),
 	)

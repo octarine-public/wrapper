@@ -9,6 +9,7 @@ import Base, { IMenu } from "./Base"
 import Button from "./Button"
 import ColorPicker from "./ColorPicker"
 import Dropdown from "./Dropdown"
+import DynamicImageSelector from "./DynamicImageSelector"
 import ImageSelector from "./ImageSelector"
 import { IMenuParticlePicker } from "./ITypes"
 import KeyBind from "./KeyBind"
@@ -51,7 +52,7 @@ export default class Node extends Base {
 	protected is_open_ = false
 	protected readonly text_offset = Node.text_offset_
 
-	constructor(parent: IMenu, name: string, private icon_path_ = "", tooltip = "") {
+	constructor(parent: IMenu, name: string, private icon_path_ = "", tooltip = "", private icon_round_ = -1) {
 		super(parent, name, tooltip)
 	}
 
@@ -74,25 +75,29 @@ export default class Node extends Base {
 		this.Update()
 	}
 
+	public get icon_round(): number {
+		return this.icon_round_
+	}
+	public set icon_round(val: number) {
+		this.icon_round_ = val
+		this.Update()
+	}
+
 	public get ConfigValue() {
 		if (!this.save_unused_configs && this.entries.length === 0)
 			return undefined
 		if (!this.save_unused_configs)
 			this.config_storage = Object.create(null)
 		this.entries.forEach(entry => {
-			const name = entry.InternalName
-			if (name === "" || name.includes("."))
-				return
-			this.config_storage[name] = entry.ConfigValue
+			this.config_storage[entry.InternalName] = entry.ConfigValue
 		})
 		Object.getOwnPropertyNames(this.config_storage).forEach(name => {
-			if (name === "" || name.includes("."))
-				delete this.config_storage[name]
+			delete this.config_storage[name]
 		})
 		return this.config_storage
 	}
 	public set ConfigValue(obj) {
-		if (obj === undefined)
+		if (obj === undefined || typeof obj !== "object" || Array.isArray(obj))
 			return
 		if (this.save_unused_configs)
 			this.config_storage = obj
@@ -158,7 +163,7 @@ export default class Node extends Base {
 		const TextPos = this.Position.Clone()
 		if (this.icon_path !== "") {
 			TextPos.AddForThis(Node.text_offset_with_icon)
-			RendererSDK.Image(this.icon_path, this.Position.Add(Node.icon_offset), -1, Node.icon_size)
+			RendererSDK.Image(this.icon_path, this.Position.Add(Node.icon_offset), this.icon_round, Node.icon_size)
 		} else
 			TextPos.AddForThis(this.text_offset)
 
@@ -223,7 +228,7 @@ export default class Node extends Base {
 	public AddSlider(name: string, default_value = 0, min = 0, max = 100, precision = 0, tooltip = ""): Slider {
 		return this.AddEntry(new Slider(this, name, default_value, min, max, precision, tooltip))
 	}
-	public AddNode(name: string, icon_path = "", tooltip = ""): Node {
+	public AddNode(name: string, icon_path = "", tooltip = "", icon_round = -1): Node {
 		const node = this.entries.find(entry => entry instanceof Node && entry.InternalName === name) as Node
 		if (node !== undefined) {
 			if (node.icon_path === "")
@@ -231,7 +236,7 @@ export default class Node extends Base {
 			// TODO: should we do the same for tooltips?
 			return node
 		}
-		return this.AddEntry(new Node(this, name, icon_path, tooltip))
+		return this.AddEntry(new Node(this, name, icon_path, tooltip, icon_round))
 	}
 	public AddDropdown(name: string, values: string[], default_value = 0, tooltip = ""): Dropdown {
 		return this.AddEntry(new Dropdown(this, name, values, default_value, tooltip))
@@ -239,8 +244,17 @@ export default class Node extends Base {
 	public AddKeybind(name: string, default_key = "", tooltip = "") {
 		return this.AddEntry(new KeyBind(this, name, default_key, tooltip))
 	}
-	public AddImageSelector(name: string, values: string[], default_values = new Map<string, boolean>(), tooltip = "", created_default_state = false, drag_and_drop = false) {
-		return this.AddEntry(new ImageSelector(this, name, values, default_values, tooltip, created_default_state, drag_and_drop))
+	public AddImageSelector(name: string, values: string[], default_values = new Map<string, boolean>(), tooltip = "", created_default_state = false) {
+		return this.AddEntry(new ImageSelector(this, name, values, default_values, tooltip, created_default_state))
+	}
+	public AddDynamicImageSelector(
+		name: string,
+		values: string[],
+		default_values = new Map<string, [boolean, /** default state */ boolean, /** default show */ boolean, /** show */ number /** priority */]>(),
+		all_default_state = false,
+		tooltip = "",
+	) {
+		return this.AddEntry(new DynamicImageSelector(this, name, values, default_values, all_default_state, tooltip))
 	}
 	public AddButton(name: string, tooltip = ""): Button {
 		return this.AddEntry(new Button(this, name, tooltip))

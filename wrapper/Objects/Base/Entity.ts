@@ -351,6 +351,7 @@ export default class Entity {
 			promise = ComputeAttachmentsAndBoundsAsync(this.ModelName)
 			ModelDataCache.set(this.ModelName, promise)
 		}
+
 		try {
 			const ar = await promise
 			this.Attachments = ar[0]
@@ -364,17 +365,26 @@ export default class Entity {
 			max.x = this.RingRadius
 			max.y = this.RingRadius
 		} catch (err) {
+			// parse error models/items/wards/rod_ward_2021/rod_ward_2021.vmdl
+			// catch Offset is outside the bounds of the DataView
+			// console.log(promise, this.ModelName)
 			console.error(err)
 		}
 	}
 	public CalculateActivityModifiers(activity: GameActivity_t, ar: string[]): void {
 		// to be implemented in child classes
 	}
-	public GetAttachments(activity = GameActivity_t.ACT_DOTA_IDLE): Nullable<Map<string, ComputedAttachment>> {
-		if (this.Attachments === undefined)
+	public GetAttachments(activity = GameActivity_t.ACT_DOTA_IDLE, sequence_num = -1): Nullable<Map<string, ComputedAttachment>> {
+		if (this.Attachments === undefined || this.Attachments.length === 0)
 			return undefined
-		const modifiers: string[] = []
 		const activity_name = activity2name.get(activity)
+		if (sequence_num >= 0 && activity_name !== undefined) {
+			let i = 0
+			for (const attachment of this.Attachments)
+				if (attachment[0].has(activity_name) && i++ === sequence_num)
+					return attachment[1]
+		}
+		const modifiers: string[] = []
 		if (activity_name !== undefined)
 			modifiers.push(activity_name)
 		this.CalculateActivityModifiers(activity, modifiers)
@@ -387,7 +397,7 @@ export default class Entity {
 				highest_scored = ar[1]
 			}
 		}
-		if (highest_scored === undefined) {
+		if (highest_scored !== undefined) {
 			const default_ar = this.Attachments.find(ar => ar[0].has("ACT_DOTA_CONSTANT_LAYER"))
 			if (default_ar !== undefined)
 				highest_scored = default_ar[1]
@@ -397,8 +407,9 @@ export default class Entity {
 	public GetAttachment(
 		name: string,
 		activity = GameActivity_t.ACT_DOTA_IDLE,
+		sequence_num = -1,
 	): Nullable<ComputedAttachment> {
-		return this.GetAttachments(activity)?.get(name)
+		return this.GetAttachments(activity, sequence_num)?.get(name)
 	}
 	/**
 	 * @returns attachment position mid-animation
@@ -406,8 +417,9 @@ export default class Entity {
 	public GetAttachmentPosition(
 		name: string,
 		activity = GameActivity_t.ACT_DOTA_IDLE,
+		sequence_num = -1,
 	): Nullable<Vector3> {
-		const attachment = this.GetAttachment(name, activity)
+		const attachment = this.GetAttachment(name, activity, sequence_num)
 		if (attachment === undefined)
 			return undefined
 		return attachment.GetPosition(
@@ -484,18 +496,16 @@ EventsSDK.on("PreEntityCreated", ent => {
 	ent.SpawnPosition.CopyFrom(ent.NetworkedPosition)
 	if (ent.Index === 0)
 		return
-	EntityManager.AllEntities.forEach(iter => {
+	for (const iter of EntityManager.AllEntities)
 		if (ent.HandleMatches(iter.Owner_))
 			iter.OwnerEntity = ent
-	})
 })
 EventsSDK.on("EntityDestroyed", ent => {
 	if (ent.Index === 0)
 		return
-	EntityManager.AllEntities.forEach(iter => {
+	for (const iter of EntityManager.AllEntities)
 		if (ent.HandleMatches(iter.Owner_))
 			iter.OwnerEntity = undefined
-	})
 })
 
 RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => {
@@ -551,6 +561,13 @@ EventsSDK.on("GameEvent", async (name, obj) => {
 				await EventsSDK.emit("LifeStateChanged", false, ent)
 			}
 			break
+		}
+		case "dota_buyback": {
+			const ent = EntityManager.EntityByIndex(obj.entindex)
+			if (ent !== undefined && ent.LifeState === LifeState_t.LIFE_DEAD) {
+				ent.LifeState = LifeState_t.LIFE_ALIVE
+				await EventsSDK.emit("LifeStateChanged", false, ent)
+			}
 		}
 		default:
 			break

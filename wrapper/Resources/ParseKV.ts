@@ -1,5 +1,5 @@
 import { DecompressLZ4, DecompressLZ4Chained, DecompressZstd } from "../Native/WASM"
-import { ArrayBuffersEqual } from "../Utils/ArrayBufferUtils"
+import { ArrayBuffersEqual, StringToUTF8 } from "../Utils/ArrayBufferUtils"
 import BinaryStream from "../Utils/BinaryStream"
 import { HasBit } from "../Utils/BitsExtensions"
 import { ParseExternalReferences } from "../Utils/Utils"
@@ -814,7 +814,7 @@ class C_NTRO {
 function FixupSoundEventScript(map: RecursiveMap): RecursiveMap {
 	const fixed_map: RecursiveMap = new Map(),
 		m_SoundEvents = map.get("m_SoundEvents")
-	if (!(m_SoundEvents instanceof Map))
+	if (!(m_SoundEvents instanceof Map) && !Array.isArray(m_SoundEvents))
 		return fixed_map
 	m_SoundEvents.forEach(entry => {
 		if (!(entry instanceof Map))
@@ -822,7 +822,7 @@ function FixupSoundEventScript(map: RecursiveMap): RecursiveMap {
 		const name = entry.get("m_SoundName"),
 			value = entry.get("m_OperatorsKV")
 		if (typeof name === "string" && typeof value === "string")
-			fixed_map.set(name, value.replace(/\r\n/g, "\n")) // TODO: parse KV3 text inside too
+			fixed_map.set(name, _parse(StringToUTF8(value.replace(/\r\n/g, "\n"))))
 	})
 	return fixed_map
 }

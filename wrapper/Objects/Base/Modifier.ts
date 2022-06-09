@@ -1,11 +1,12 @@
 import Vector3 from "../../Base/Vector3"
 import EntityManager from "../../Managers/EntityManager"
+import EventsSDK from "../../Managers/EventsSDK"
 import { IModifier } from "../../Managers/ModifierManager"
 import * as StringTables from "../../Managers/StringTables"
+import { arrayRemove } from "../../Utils/ArrayExtensions"
 import GameState from "../../Utils/GameState"
 import AbilityData from "../DataBook/AbilityData"
 import Ability from "./Ability"
-import Entity from "./Entity"
 import Unit from "./Unit"
 
 // AllowIllusionDuplicate
@@ -55,27 +56,31 @@ export default class Modifier {
 
 	public readonly Index: number
 	public readonly SerialNumber: number
-
-	public readonly AbilityLevel: number
 	public readonly IsAura: boolean
 	public readonly Name: string
+
+	public CreationTime = 0
+	public Armor = 0
+	public AttackSpeed = 0
+	public MovementSpeed = 0
+	public BonusAllStats = 0
+	public BonusHealth = 0
+	public BonusMana = 0
+	public CustomEntity: Nullable<Unit>
+	public StackCount = 0
+	public Duration = 0
+	public AbilityLevel = 0
 	public DDAbilityName = "" // should be initialized in AsyncCreate
-
-	private Parent_: Nullable<Unit>
-	private Ability_: Nullable<Ability>
-
-	private Caster_: Nullable<Entity>
-	private AuraOwner_: Nullable<Entity>
+	public Parent: Nullable<Unit>
+	public Ability: Nullable<Ability>
+	public Caster: Nullable<Unit>
+	public AuraOwner: Nullable<Unit>
 
 	constructor(public m_pBuff: IModifier) {
 		this.Index = this.m_pBuff.Index as number
 		this.SerialNumber = this.m_pBuff.SerialNum as number
 
-		this.AbilityLevel = this.m_pBuff.AbilityLevel as number
 		this.IsAura = this.m_pBuff.IsAura as boolean
-
-		this.Caster_ = EntityManager.EntityByIndex(this.m_pBuff.Caster)
-		this.AuraOwner_ = EntityManager.EntityByIndex(this.m_pBuff.AuraOwner)
 
 		const lua_name = this.m_pBuff.LuaName
 		this.Name = lua_name === undefined || lua_name === ""
@@ -96,6 +101,7 @@ export default class Modifier {
 			return 1
 		return Math.min(this.ElapsedTime / (fade_time * 2), 1)
 	}
+
 	public get DeltaZ(): number {
 		if (
 			(
@@ -113,6 +119,7 @@ export default class Modifier {
 				return 0
 		}
 	}
+
 	public get ShouldDoFlyHeightVisual(): boolean {
 		return (
 			this.Name === "modifier_winter_wyvern_arctic_burn_flight"
@@ -121,46 +128,14 @@ export default class Modifier {
 			|| this.Name === "modifier_monkey_king_bounce_perch"
 		)
 	}
-	public get CreationTime(): number {
-		return this.m_pBuff.CreationTime
-	}
 	public get DieTime(): number {
 		return this.CreationTime + this.Duration
-	}
-	public get Duration(): number {
-		return this.m_pBuff.Duration
 	}
 	public get ElapsedTime(): number {
 		return Math.max(GameState.RawGameTime - this.CreationTime, 0)
 	}
-	public get Parent(): Nullable<Unit> {
-		if (this.Parent_ === undefined) {
-			const ent = EntityManager.EntityByIndex(this.m_pBuff.Parent)
-			if (ent !== undefined && ent instanceof Unit)
-				this.Parent_ = ent
-		}
-		return this.Parent_
-	}
-	public get Ability(): Nullable<Ability> {
-		if (this.Ability_ === undefined)
-			this.Ability_ = EntityManager.EntityByIndex(this.m_pBuff.Ability) as Nullable<Ability>
-		return this.Ability_
-	}
-	public get Caster(): Nullable<Entity> {
-		if (this.Caster_ === undefined)
-			this.Caster_ = EntityManager.EntityByIndex(this.m_pBuff.Caster)
-		return this.Caster_
-	}
-	public get AuraOwner(): Nullable<Entity> {
-		if (this.AuraOwner_ === undefined)
-			this.AuraOwner_ = EntityManager.EntityByIndex(this.m_pBuff.AuraOwner)
-		return this.AuraOwner_
-	}
 	public get RemainingTime(): number {
 		return Math.max(this.DieTime - GameState.RawGameTime, 0)
-	}
-	public get StackCount(): number {
-		return this.m_pBuff.StackCount ?? 0
 	}
 	public get DDModifierID(): Nullable<number> {
 		return this.m_pBuff.DDModifierID
@@ -188,5 +163,110 @@ export default class Modifier {
 			? await AbilityData.GetAbilityNameByID(DDAbilityID)
 			: undefined
 		this.DDAbilityName = DDAbilityName ?? "ability_base"
+	}
+
+	public async Update(): Promise<void> {
+		const new_caster = EntityManager.EntityByIndex(this.m_pBuff.Caster) as Nullable<Unit>,
+			new_ability = EntityManager.EntityByIndex(this.m_pBuff.Ability) as Nullable<Ability>,
+			new_aura_owner = EntityManager.EntityByIndex(this.m_pBuff.AuraOwner) as Nullable<Unit>,
+			new_parent = EntityManager.EntityByIndex(this.m_pBuff.Parent) as Nullable<Unit>,
+			new_ability_level = this.m_pBuff.AbilityLevel ?? 0,
+			new_duration = this.m_pBuff.Duration ?? 0,
+			new_stack_count = this.m_pBuff.StackCount ?? 0,
+			new_creation_time = this.m_pBuff.CreationTime ?? 0,
+			new_armor = this.m_pBuff.Armor ?? 0,
+			new_attack_speed = this.m_pBuff.AttackSpeed ?? 0,
+			new_movement_speed = this.m_pBuff.MovementSpeed ?? 0,
+			new_bonus_all_stats = this.m_pBuff.BonusAllStats ?? 0,
+			new_bonus_health = this.m_pBuff.BonusHealth ?? 0,
+			new_bonus_mana = this.m_pBuff.BonusMana ?? 0,
+			new_custom_entity = EntityManager.EntityByIndex(this.m_pBuff.CustomEntity) as Nullable<Unit>
+
+		if (this.Parent !== new_parent)
+			await this.Remove()
+		let updated = false
+		if (this.Caster !== new_caster) {
+			this.Caster = new_caster
+			updated = true
+		}
+		if (this.Ability !== new_ability) {
+			this.Ability = new_ability
+			updated = true
+		}
+		if (this.AuraOwner !== new_aura_owner) {
+			this.AuraOwner = new_aura_owner
+			updated = true
+		}
+		if (this.AbilityLevel !== new_ability_level) {
+			this.AbilityLevel = new_ability_level
+			updated = true
+		}
+		if (this.Duration !== new_duration) {
+			this.Duration = new_duration
+			updated = true
+		}
+		if (this.StackCount !== new_stack_count) {
+			this.StackCount = new_stack_count
+			updated = true
+		}
+		if (this.CreationTime !== new_creation_time) {
+			this.CreationTime = new_creation_time
+			updated = true
+		}
+		if (this.Armor !== new_armor) {
+			this.Armor = new_armor
+			updated = true
+		}
+		if (this.AttackSpeed !== new_attack_speed) {
+			this.AttackSpeed = new_attack_speed
+			updated = true
+		}
+		if (this.MovementSpeed !== new_movement_speed) {
+			this.MovementSpeed = new_movement_speed
+			updated = true
+		}
+		if (this.BonusAllStats !== new_bonus_all_stats) {
+			this.BonusAllStats = new_bonus_all_stats
+			updated = true
+		}
+		if (this.BonusHealth !== new_bonus_health) {
+			this.BonusHealth = new_bonus_health
+			updated = true
+		}
+		if (this.BonusMana !== new_bonus_mana) {
+			this.BonusMana = new_bonus_mana
+			updated = true
+		}
+		if (this.CustomEntity !== new_custom_entity) {
+			this.CustomEntity = new_custom_entity
+			updated = true
+		}
+		if (
+			this.Duration !== -1
+			&& this.DieTime < GameState.RawGameTime
+			&& this.Name !== "modifier_legion_commander_overwhelming_odds"
+		) {
+			await this.Remove()
+			return
+		}
+		if (this.Parent !== new_parent) {
+			this.Parent = new_parent
+			await this.AddModifier()
+		} else if (this.Parent !== undefined && updated)
+			await EventsSDK.emit("ModifierChanged", false, this)
+	}
+	public async Remove(): Promise<void> {
+		if (this.Parent === undefined || !this.Parent.Buffs.includes(this))
+			return
+		arrayRemove(this.Parent.Buffs, this)
+		await EventsSDK.emit("ModifierRemoved", false, this)
+		await this.Parent.ChangeFieldsByEvents()
+	}
+	private async AddModifier(): Promise<void> {
+		if (this.Parent === undefined || this.Parent.Buffs.includes(this))
+			return
+		this.Parent.Buffs.push(this)
+		await EventsSDK.emit("ModifierCreated", false, this)
+		await this.Parent.ChangeFieldsByEvents()
 	}
 }

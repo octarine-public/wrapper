@@ -956,10 +956,10 @@ function MoveCameraByScreen(target_pos: Vector3, current_time: number): Vector2 
 	if (last_camera_move_seed < current_time - camera_move_seed_expiry)
 		last_camera_move_seed = current_time
 	ret.x = camera_direction.x === 0.5
-		? Math.min(0.9, Math.max(0.1, ret.x + Math.cos(last_camera_move_seed) * 0.1))
+		? Math.min(0.9, Math.max(0.1, 0.5 + (Math.cos(last_camera_move_seed) ** 3) * 0.1))
 		: camera_direction.x
 	ret.y = camera_direction.y === 0.5
-		? Math.min(0.9, Math.max(0.1, ret.y + Math.sin(last_camera_move_seed) * 0.1))
+		? Math.min(0.9, Math.max(0.1, 0.5 + (Math.sin(last_camera_move_seed) ** 3) * 0.1))
 		: camera_direction.y
 	return ret
 }
@@ -994,13 +994,10 @@ function MoveCamera(
 	return [MoveCameraByScreen(target_pos, current_time), false]
 }
 
-// polyfills for old core
-globalThis.GetSelectedEntities = globalThis.GetSelectedEntities ?? (() => 0)
-globalThis.GetQueryUnit = globalThis.GetQueryUnit ?? (() => 0)
-function ProcessUserCmd(): void {
+const min_ProcessUserCmd_window = 1 / 60
+function ProcessUserCmd(force = false): void {
 	const current_time = hrtime()
 	const dt = Math.min(current_time - latest_update, 100) / 1000
-	latest_update = current_time
 	if (RendererSDK.WindowSize.IsZero())
 		return
 	latest_usercmd.SpectatorStatsCategoryID = 0
@@ -1033,6 +1030,9 @@ function ProcessUserCmd(): void {
 		RendererSDK.WindowSize,
 		Camera.FoV,
 	)[0]
+	if (!force && dt < min_ProcessUserCmd_window)
+		return
+	latest_update = current_time
 	if (ExecuteOrder.disable_humanizer)
 		return
 	latest_usercmd.ShopMask = 15
@@ -1092,12 +1092,12 @@ function ProcessUserCmd(): void {
 			ExecuteOrder.cursor_speed_max_accel,
 		) * ExecuteOrder.cursor_speed * dt
 		if (extend < dist) {
-			// Vector3#Extend with sin/cos
+			// Vector2#Extend with sin^2/cos^2
 			latest_usercmd.MousePosition
 				.GetDirectionTo(target_pos)
 				.MultiplyScalarForThis(extend)
-				.MultiplyScalarX(Math.abs(Math.cos(current_time)))
-				.MultiplyScalarY(Math.abs(Math.sin(current_time)))
+				.MultiplyScalarX(Math.cos(current_time) ** 2)
+				.MultiplyScalarY(Math.sin(current_time) ** 2)
 				.AddForThis(latest_usercmd.MousePosition)
 				.CopyTo(latest_usercmd.MousePosition)
 		} else
@@ -1240,7 +1240,7 @@ function ProcessUserCmd(): void {
 EventsSDK.on("Draw", ProcessUserCmd)
 Events.on("RequestUserCmd", () => {
 	ExecuteOrder.received_usercmd_request = true
-	ProcessUserCmd()
+	ProcessUserCmd(true)
 	if (ExecuteOrder.disable_humanizer)
 		return
 	usercmd_cache.forEach(usercmd => {
@@ -1291,7 +1291,7 @@ Events.on("PrepareUnitOrders", async () => {
 	if (!ExecuteOrder.disable_humanizer) {
 		order.ExecuteQueued()
 		if (latest_usercmd !== undefined)
-			ProcessUserCmd()
+			ProcessUserCmd(true)
 		return false
 	}
 	return true

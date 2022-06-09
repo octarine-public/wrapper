@@ -59,8 +59,8 @@ export default class AbilityData {
 	public readonly AbilityImmunityType: SPELL_IMMUNITY_TYPES
 	public readonly ItemDisplayCharges: boolean
 	public readonly ItemHideCharges: boolean
-	public readonly MaxCooldown: number[]
-	public readonly MaxDuration: number[]
+	public readonly MaxCooldownCache: number[]
+	public readonly MaxDurationCache: number[]
 	public readonly SecretShop: boolean
 	public readonly ItemRequirements: string[][] = []
 	public readonly ItemQuality: Nullable<string>
@@ -69,13 +69,12 @@ export default class AbilityData {
 
 	private readonly SpecialValueCache = new Map<string, [number[], string, string | number, EDOTASpecialBonusOperation]>()
 	private readonly CastRangeCache: number[]
-	private readonly GetManaCostCache: number[]
+	private readonly ManaCostCache: number[]
 	private readonly ChannelTimeCache: number[]
 	private readonly AbilityDamageCache: number[]
 	private readonly CastPointCache: number[]
 	private readonly ChargesCache: number[]
 	private readonly ChargeRestoreTimeCache: number[]
-	private MaxTalentLevel: number
 
 	constructor(name: string, m_Storage: RecursiveMap) {
 		this.AbilityType = m_Storage.has("AbilityType")
@@ -89,7 +88,6 @@ export default class AbilityData {
 			this.MaxLevel = this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE
 				? 3
 				: 4
-		this.MaxTalentLevel = this.MaxLevel
 		this.CacheSpecialValuesNew(m_Storage)
 		this.CacheSpecialValuesOld(m_Storage)
 
@@ -146,15 +144,15 @@ export default class AbilityData {
 			? parseInt(m_Storage.get("ItemHideCharges") as string) !== 0
 			: true
 
-		this.GetManaCostCache = this.GetLevelArray(m_Storage.get("AbilityManaCost") as Nullable<string>)
+		this.ManaCostCache = this.GetLevelArray(m_Storage.get("AbilityManaCost") as Nullable<string>)
 		this.CastRangeCache = this.GetLevelArray(m_Storage.get("AbilityCastRange") as Nullable<string>)
 		this.ChannelTimeCache = this.GetLevelArray(m_Storage.get("AbilityChannelTime") as Nullable<string>)
 		this.AbilityDamageCache = this.GetLevelArray(m_Storage.get("AbilityDamage") as Nullable<string>)
 		this.CastPointCache = this.GetLevelArray(m_Storage.get("AbilityCastPoint") as Nullable<string>)
 		this.ChargesCache = this.GetLevelArray(m_Storage.get("AbilityCharges") as Nullable<string>)
 		this.ChargeRestoreTimeCache = this.GetLevelArray(m_Storage.get("AbilityChargeRestoreTime") as Nullable<string>)
-		this.MaxCooldown = this.GetLevelArray(m_Storage.get("AbilityCooldown") as Nullable<string>)
-		this.MaxDuration = this.GetLevelArray(m_Storage.get("AbilityDuration") as Nullable<string>)
+		this.MaxCooldownCache = this.GetLevelArray(m_Storage.get("AbilityCooldown") as Nullable<string>)
+		this.MaxDurationCache = this.GetLevelArray(m_Storage.get("AbilityDuration") as Nullable<string>)
 
 		this.SecretShop = m_Storage.has("SecretShop")
 			? parseInt(m_Storage.get("SecretShop") as string) !== 0
@@ -170,24 +168,22 @@ export default class AbilityData {
 			: 0
 	}
 
-	public GetSpecialValue(name: string, level = this.MaxTalentLevel): number {
+	public GetSpecialValue(name: string, level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxTalentLevel) - 1
 		const ar = this.GetCachedSpecialValue(name)
 		if (ar === undefined)
 			return 0
-		return ar[0][level]
+		return ar[0][Math.min(level, ar[0].length) - 1]
 	}
 
 	public GetSpecialValueWithTalent(owner: Unit, name: string, level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxTalentLevel) - 1
 		const ar = this.GetCachedSpecialValue(name)
 		if (ar === undefined)
 			return 0
-		let base_val = ar[0][level]
+		let base_val = ar[0][Math.min(level, ar[0].length) - 1]
 		if (ar[1] !== "") {
 			const talent = owner.GetAbilityByName(ar[1])
 			if (talent !== undefined && talent.Level !== 0) {
@@ -218,63 +214,54 @@ export default class AbilityData {
 	public GetCastRange(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxTalentLevel)
-		return this.CastRangeCache[level - 1]
+		return this.CastRangeCache[Math.min(level, this.CastRangeCache.length) - 1]
 	}
 
 	public GetManaCost(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxTalentLevel)
-		return this.GetManaCostCache[level - 1]
+		return this.ManaCostCache[Math.min(level, this.ManaCostCache.length) - 1]
 	}
 
 	public GetMaxDurationForLevel(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxTalentLevel)
-		return this.MaxDuration[level - 1]
+		return this.MaxDurationCache[Math.min(level, this.MaxDurationCache.length) - 1]
 	}
 
 	public GetMaxCooldownForLevel(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxTalentLevel)
-		return this.MaxCooldown[level - 1]
+		return this.MaxCooldownCache[Math.min(level, this.MaxCooldownCache.length) - 1]
 	}
 
 	public GetChannelTime(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxTalentLevel)
-		return this.ChannelTimeCache[level - 1]
+		return this.ChannelTimeCache[Math.min(level, this.ChannelTimeCache.length) - 1]
 	}
 
 	public GetAbilityDamage(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxTalentLevel)
-		return this.AbilityDamageCache[level - 1]
+		return this.AbilityDamageCache[Math.min(level, this.AbilityDamageCache.length) - 1]
 	}
 
 	public GetCastPoint(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxTalentLevel)
-		return this.CastPointCache[level - 1]
+		return this.CastPointCache[Math.min(level, this.CastPointCache.length) - 1]
 	}
 
 	public GetMaxCharges(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxTalentLevel)
-		return this.ChargesCache[level - 1]
+		return this.ChargesCache[Math.min(level, this.ChargesCache.length) - 1]
 	}
 	public GetChargeRestoreTime(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxTalentLevel)
-		return this.ChargeRestoreTimeCache[level - 1]
+		return this.ChargeRestoreTimeCache[Math.min(level, this.ChargeRestoreTimeCache.length) - 1]
 	}
 
 	private parseFloat(str: string): number {
@@ -288,16 +275,18 @@ export default class AbilityData {
 		const AbilitySpecial = m_Storage.get("AbilitySpecial") as RecursiveMap
 		if (AbilitySpecial === undefined)
 			return
-		for (const special of AbilitySpecial.values())
-			if (special instanceof Map && special.has("levelkey")) {
-				this.MaxTalentLevel = Math.max(this.MaxLevel, 7)
-				break
-			}
 		for (const special of AbilitySpecial.values()) {
 			if (!(special instanceof Map))
 				continue
 			for (const [name, value] of special) {
-				if (name === "var_type" || name === "LinkedSpecialBonus" || name === "levelkey" || typeof value !== "string")
+				if (
+					name === "var_type"
+					|| name === "LinkedSpecialBonus"
+					|| name === "levelkey"
+					|| name === "RequiresScepter"
+					|| name === "RequiresShard"
+					|| typeof value !== "string"
+				)
 					continue
 				const ar = this.ExtendLevelArray(value.split(" ").map(str => this.parseFloat(str)))
 				let LinkedSpecialBonus = special.get("LinkedSpecialBonus")
@@ -326,11 +315,6 @@ export default class AbilityData {
 		const AbilityValues = m_Storage.get("AbilityValues") as RecursiveMap
 		if (AbilityValues === undefined)
 			return
-		for (const special of AbilityValues.values())
-			if (special instanceof Map && special.has("levelkey")) {
-				this.MaxTalentLevel = Math.max(this.MaxLevel, 7)
-				break
-			}
 		for (const [name, special] of AbilityValues) {
 			if (!(special instanceof Map)) {
 				if (typeof special === "string")
@@ -348,7 +332,14 @@ export default class AbilityData {
 			let LinkedSpecialBonus = "",
 				talent_change_str = "+0"
 			for (const [name, value] of special) {
-				if (name === "value" || name === "LinkedSpecialBonus" || name === "levelkey" || typeof value !== "string")
+				if (
+					name === "value"
+					|| name === "LinkedSpecialBonus"
+					|| name === "levelkey"
+					|| name === "RequiresScepter"
+					|| name === "RequiresShard"
+					|| typeof value !== "string"
+				)
 					continue
 				LinkedSpecialBonus = name
 				talent_change_str = value
@@ -383,7 +374,7 @@ export default class AbilityData {
 			return ar
 
 		return [
-			new Array<number>(this.MaxTalentLevel).fill(0),
+			[0],
 			"",
 			"value",
 			EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD,
@@ -393,8 +384,6 @@ export default class AbilityData {
 	private ExtendLevelArray(ar: number[]): number[] {
 		if (ar.length === 0)
 			ar.push(0)
-		while (ar.length < this.MaxTalentLevel)
-			ar.push(ar[ar.length - 1])
 		return ar
 	}
 	private GetLevelArray(str: Nullable<string>): number[] {

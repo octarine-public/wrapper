@@ -2,6 +2,7 @@ import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { Attributes } from "../../Enums/Attributes"
 import { DOTAHullSize } from "../../Enums/DOTAHullSize"
+import { DOTAUnitMoveCapability_t } from "../../Enums/DOTAUnitMoveCapability_t"
 import Workers from "../../Native/Workers"
 import { parseKVFile } from "../../Resources/ParseKV"
 import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
@@ -89,8 +90,10 @@ export default class UnitData {
 	public readonly HeroID: number
 	public readonly ModelName: string
 	public readonly MovementTurnRate: number
+	public readonly AttackAcquisitionRange: number
 	public readonly BaseAttackRange: number
 	public readonly BaseAttackTime: number
+	public readonly BaseAttackSpeed: number
 	public readonly AttackAnimationPoint: number
 	public readonly ProjectileSpeed: number
 	public readonly AttackDamageType: AttackDamageType
@@ -105,6 +108,9 @@ export default class UnitData {
 	public readonly HealthBarOffset: number
 	public readonly WorkshopName: string
 	public readonly AttributePrimary: Attributes
+	public readonly MovementCapabilities: DOTAUnitMoveCapability_t
+	public readonly ArmorPhysical: number
+	public readonly MagicalResistance: number
 
 	constructor(name: string, m_Storage: RecursiveMap) {
 		this.HeroID = m_Storage.has("HeroID")
@@ -117,6 +123,9 @@ export default class UnitData {
 		this.AttackAnimationPoint = m_Storage.has("AttackAnimationPoint")
 			? parseFloat(m_Storage.get("AttackAnimationPoint") as string)
 			: 0
+		this.AttackAcquisitionRange = m_Storage.has("AttackAcquisitionRange")
+			? parseInt(m_Storage.get("AttackAcquisitionRange") as string)
+			: 0
 		this.BaseAttackRange = m_Storage.has("AttackRange")
 			? parseInt(m_Storage.get("AttackRange") as string)
 			: 0
@@ -126,6 +135,12 @@ export default class UnitData {
 		this.BaseAttackTime = m_Storage.has("AttackRate")
 			? parseFloat(m_Storage.get("AttackRate") as string)
 			: 0
+		this.BaseAttackSpeed = m_Storage.has("BaseAttackSpeed")
+			? parseFloat(m_Storage.get("BaseAttackSpeed") as string)
+			: 0
+		this.MovementCapabilities = m_Storage.has("MovementCapabilities")
+			? parseEnumString(DOTAUnitMoveCapability_t, m_Storage.get("MovementCapabilities") as string)
+			: DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_GROUND
 		this.AttackDamageType = m_Storage.has("CombatClassAttack")
 			? FixCombatClassAttack(parseEnumString(DOTA_COMBAT_CLASS_ATTACK, m_Storage.get("CombatClassAttack") as string))
 			: AttackDamageType.Basic
@@ -203,6 +218,12 @@ export default class UnitData {
 		this.AttributePrimary = m_Storage.has("AttributePrimary")
 			? parseEnumString(Attributes, m_Storage.get("AttributePrimary") as string)
 			: Attributes.DOTA_ATTRIBUTE_STRENGTH
+		this.ArmorPhysical = m_Storage.has("ArmorPhysical")
+			? parseFloat(m_Storage.get("ArmorPhysical") as string)
+			: 0
+		this.MagicalResistance = m_Storage.has("MagicalResistance")
+			? parseFloat(m_Storage.get("MagicalResistance") as string)
+			: 0
 	}
 }
 
@@ -219,8 +240,8 @@ function FixUnitInheritance(
 		map.set("BaseClass", "npc_dota_units_base")
 	else if (unit_name.startsWith("npc_dota_hero_") && !map.has("BaseClass"))
 		map.set("BaseClass", "npc_dota_hero_base")
-	if (map.has("BaseClass")) {
-		const base_name = map.get("BaseClass")
+	if (map.has("BaseClass") || map.has("include_keys_from")) {
+		const base_name = map.get("BaseClass") ?? map.get("include_keys_from")
 		if (typeof base_name === "string" && base_name !== unit_name) {
 			const base_map = units_map.get(base_name)
 			if (base_map instanceof Map) {

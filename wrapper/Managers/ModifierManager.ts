@@ -1,5 +1,6 @@
 import Vector3 from "../Base/Vector3"
 import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
+import Ability from "../Objects/Base/Ability"
 import Modifier from "../Objects/Base/Modifier"
 import Unit from "../Objects/Base/Unit"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
@@ -115,6 +116,18 @@ export class IModifier {
 	public get AuraOwner(): Nullable<number> {
 		return this.GetProperty("aura_owner")
 	}
+	public get BonusAllStats(): Nullable<number> {
+		return this.GetProperty("bonus_all_stats")
+	}
+	public get BonusHealth(): Nullable<number> {
+		return this.GetProperty("bonus_health")
+	}
+	public get BonusMana(): Nullable<number> {
+		return this.GetProperty("bonus_mana")
+	}
+	public get CustomEntity(): Nullable<number> {
+		return this.GetProperty("custom_entity")
+	}
 	public GetProperty<T>(name: string): Nullable<T> {
 		return this.m_Protobuf.get(name) as any as T
 	}
@@ -129,53 +142,52 @@ export class IModifier {
 const ActiveModifiersRaw = new Map<number, IModifier>(),
 	ActiveModifiers = new Map<number, Modifier>()
 
-async function AddModifier(parent: Unit, mod: Modifier) {
-	parent.Buffs.push(mod)
-	await changeFieldsByEvents(parent)
-	await EventsSDK.emit("ModifierCreated", false, mod)
-}
-
 async function EmitModifierCreated(mod: IModifier) {
 	if (mod.Index === undefined || mod.SerialNum === undefined || mod.Parent === undefined)
 		return
 	const mod_ = new Modifier(mod)
 	await mod_.AsyncCreate()
-	const time = GameState.RawGameTime
-	if (mod_.Duration !== -1 && mod_.DieTime < time)
-		return
 	ActiveModifiers.set(mod_.SerialNumber, mod_)
-	const parent = mod_.Parent
-	if (parent !== undefined)
-		await AddModifier(parent, mod_)
-	await EventsSDK.emit("ModifierCreatedRaw", false, mod_)
+	await mod_.Update()
 }
-EventsSDK.after("EntityCreated", async ent => {
-	if (!(ent instanceof Unit))
+const queued_ents: (Unit | Ability)[] = []
+EventsSDK.on("EntityCreated", ent => {
+	if (ent instanceof Unit || ent instanceof Ability)
+		queued_ents.push(ent)
+})
+EventsSDK.on("EntityDestroyed", ent => ArrayExtensions.arrayRemove(queued_ents, ent))
+EventsSDK.on("PostDataUpdate", async () => {
+	if (queued_ents.length === 0)
 		return
-	for (const mod of ActiveModifiers.values())
-		if (mod.Parent === ent)
-			await AddModifier(ent, mod)
+	for (const ent of queued_ents) {
+		if (ent instanceof Unit)
+			for (const mod of ActiveModifiers.values())
+				if (
+					ent.HandleMatches(mod.m_pBuff.Parent ?? 0)
+					|| ent.HandleMatches(mod.m_pBuff.Caster ?? 0)
+					|| ent.HandleMatches(mod.m_pBuff.AuraOwner ?? 0)
+					|| ent.HandleMatches(mod.m_pBuff.CustomEntity ?? 0)
+				)
+					await mod.Update()
+		if (ent instanceof Ability)
+			for (const mod of ActiveModifiers.values())
+				if (ent.HandleMatches(mod.m_pBuff.Ability ?? 0))
+					await mod.Update()
+	}
+	queued_ents.splice(0)
 })
 async function EmitModifierRemoved(mod: Modifier) {
 	ActiveModifiers.delete(mod.SerialNumber)
-	const parent = mod.Parent
-	if (parent !== undefined) {
-		ArrayExtensions.arrayRemove(parent.Buffs, mod)
-		await changeFieldsByEvents(parent)
-		await EventsSDK.emit("ModifierRemoved", false, mod)
-	}
-	await EventsSDK.emit("ModifierRemovedRaw", false, mod)
+	await mod.Remove()
 }
 EventsSDK.on("EntityDestroyed", async ent => {
 	for (const mod of ActiveModifiers.values())
-		if (mod.Parent === ent)
-			await EmitModifierRemoved(mod)
+		if (mod.Parent === ent || mod.Ability === ent || mod.Caster === ent || mod.AuraOwner === ent)
+			await mod.Update()
 })
 async function EmitModifierChanged(old_mod: Modifier, mod: IModifier) {
 	old_mod.m_pBuff = mod
-	if (old_mod.Parent !== undefined)
-		await EventsSDK.emit("ModifierChanged", false, old_mod)
-	await EventsSDK.emit("ModifierChangedRaw", false, old_mod)
+	await old_mod.Update()
 }
 ParseProtobufDesc(`
 enum DOTA_MODIFIER_ENTRY_TYPE {
@@ -185,7 +197,7 @@ enum DOTA_MODIFIER_ENTRY_TYPE {
 
 message CDOTAModifierBuffTableEntry {
 	required .DOTA_MODIFIER_ENTRY_TYPE entry_type = 1;
-	required int32 parent = 2;
+	required uint32 parent = 2;
 	required int32 index = 3;
 	required int32 serial_num = 4;
 	optional int32 modifier_class = 5;
@@ -193,8 +205,8 @@ message CDOTAModifierBuffTableEntry {
 	optional int32 stack_count = 7;
 	optional float creation_time = 8;
 	optional float duration = 9 [default = -1];
-	optional int32 caster = 10;
-	optional int32 ability = 11;
+	optional uint32 caster = 10;
+	optional uint32 ability = 11;
 	optional int32 armor = 12;
 	optional float fade_time = 13;
 	optional bool subtle = 14;
@@ -217,7 +229,11 @@ message CDOTAModifierBuffTableEntry {
 	optional string player_ids = 31;
 	optional string lua_name = 32;
 	optional int32 attack_speed = 33;
-	optional int32 aura_owner = 34;
+	optional uint32 aura_owner = 34;
+	optional int32 bonus_all_stats = 35;
+	optional int32 bonus_health = 36;
+	optional int32 bonus_mana = 37;
+	optional uint32 custom_entity = 38;
 }
 `)
 EventsSDK.on("UpdateStringTable", async (name, update) => {
@@ -253,30 +269,6 @@ EventsSDK.on("RemoveAllStringTables", async () => {
 		await EmitModifierRemoved(mod)
 	ActiveModifiers.clear()
 })
-
-async function changeFieldsByEvents(unit: Unit) {
-	const buffs = unit.ModifiersBook.Buffs
-
-	{ // IsTrueSightedForEnemies
-		const lastIsTrueSighted = unit.IsTrueSightedForEnemies
-		const isTrueSighted = Modifier.HasTrueSightBuff(buffs)
-
-		if (isTrueSighted !== lastIsTrueSighted) {
-			unit.IsTrueSightedForEnemies = isTrueSighted
-			await EventsSDK.emit("TrueSightedChanged", false, unit)
-		}
-	}
-
-	{ // HasScepter
-		const lastHasScepter = unit.HasScepter
-		const hasScepter = Modifier.HasScepterBuff(buffs)
-
-		if (hasScepter !== lastHasScepter) {
-			unit.HasScepterModifier = hasScepter
-			await EventsSDK.emit("HasScepterChanged", false, unit)
-		}
-	}
-}
 
 declare global {
 	var DebugBuffsParents: () => void

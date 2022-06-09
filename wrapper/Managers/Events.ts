@@ -84,7 +84,7 @@ declare interface Events extends EventEmitter {
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "CustomGameEvent", listener: (event_name: string, data: Map<string, BinaryKV>) => void): EventEmitter
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
-	on(name: "SharedObjectChanged", listener: (id: number, reason: SOType, msg: ArrayBuffer) => void): EventEmitter
+	on(name: "SharedObjectChanged", listener: (type_id: SOType, reason: number, msg: ArrayBuffer) => void): EventEmitter
 	on(name: "NewConnection", listener: () => void): EventEmitter
 	on(name: "ServerMessage", listener: (msg_id: number, buf: ArrayBuffer) => void): EventEmitter
 	on(name: "GCPingResponse", listener: () => boolean): EventEmitter

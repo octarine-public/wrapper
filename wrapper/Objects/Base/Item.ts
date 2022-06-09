@@ -44,7 +44,7 @@ export default class Item extends Ability {
 	public IsSellable = true
 	@NetworkedBasicField("m_bStackable")
 	public IsStackable = false
-	@NetworkedBasicField("m_iPlayerOwnerID")
+	@NetworkedBasicField("m_iPlayerOwnerID", EPropertyType.INT32)
 	public PurchaserID = -1
 	@NetworkedBasicField("m_flPurchaseTime")
 	public PurchaseTime = 0
@@ -124,6 +124,7 @@ export default class Item extends Ability {
 }
 
 import { ReplaceFieldHandler } from "wrapper/Objects/NativeToSDK"
+import { EPropertyType } from "../../Enums/PropertyType"
 ReplaceFieldHandler(Item, "m_nAbilityCurrentCharges", () => {
 	// override ability handler so that Item#CurrentCharges will have priority over Ability#CurrentCharges
 })

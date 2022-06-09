@@ -71,7 +71,7 @@ export default class Dropdown extends Base {
 
 	public get ConfigValue() { return this.selected_id }
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue)
+		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number")
 			return
 		this.selected_id = value ?? this.selected_id
 		this.FixSelectedID()

@@ -40,10 +40,10 @@ export default class Tree extends Entity {
 export const Trees = EntityManager.GetEntitiesByClass(Tree)
 
 export let TempTreeIDOffset = 0
-let cur_local_id = 0x2000
+let cur_local_id = 0x3000
 async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 	TempTreeIDOffset = 0
-	while (cur_local_id > 0x2000) {
+	while (cur_local_id > 0x3000) {
 		const id = --cur_local_id
 		const ent = EntityManager.EntityByIndex(id)
 		if (ent instanceof Tree) {

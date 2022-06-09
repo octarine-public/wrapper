@@ -83,7 +83,7 @@ export default class ColorPicker extends Base {
 		return this.selected_color.toArray()
 	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || value === undefined)
+		if (this.ShouldIgnoreNewConfigValue || value === undefined || !Array.isArray(value))
 			return
 		this.selected_color.r = Math.max(0, Math.min(255, value[0] ?? this.selected_color.r))
 		this.selected_color.g = Math.max(0, Math.min(255, value[1] ?? this.selected_color.g))

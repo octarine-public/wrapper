@@ -51,6 +51,7 @@ export class LinearProjectile extends Projectile {
 	) {
 		super(projID, path, particleSystemHandle, ent, colorgemcolor, Math.round(Velocity.Length))
 		this.Position = this.Origin.Clone()
+
 		this.Forward = Vector3.FromAngle(this.Velocity.Angle)
 		this.TargetLoc = Origin.Rotation(this.Forward, this.Distance)
 	}

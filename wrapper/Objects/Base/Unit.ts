@@ -16,7 +16,6 @@ import { GameActivity_t } from "../../Enums/GameActivity_t"
 import { GridNavCellFlags } from "../../Enums/GridNavCellFlags"
 import { modifierstate } from "../../Enums/modifierstate"
 import { EPropertyType } from "../../Enums/PropertyType"
-import { Team } from "../../Enums/Team"
 import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import * as StringTables from "../../Managers/StringTables"
@@ -44,38 +43,18 @@ const MAX_ITEMS = 16
 
 @WrapperClass("CDOTA_BaseNPC")
 export default class Unit extends Entity {
-	public static IsVisibleForEnemies(unit: Unit): boolean {
-		// don't check not existing team (0), spectators (1), neutrals (4) and shop (5)
-		const valid_teams = ~(
-			(1 << Team.None)
-			| (1 << Team.Observer)
-			| (1 << Team.Neutral)
-			| (1 << Team.Shop)
-		)
-
-		const local_team = GameState.LocalTeam,
-			ent_team = unit.Team,
-			flags = unit.IsVisibleForTeamMask & valid_teams
-
-		for (let i = 14; i--;)
-			if (i !== local_team && i !== ent_team && ((flags >> i) & 1))
-				return true
-		return false
-	}
-
 	public UnitData = UnitData.empty
 
 	public readonly Inventory = new Inventory(this)
 	public readonly ModifiersBook = new ModifiersBook(this)
 
-	public IsVisibleForEnemies = Unit.IsVisibleForEnemies(this)
 	public IsTrueSightedForEnemies = false
 	public HasScepterModifier = false
 	public UnitName_ = ""
-	public IsVisibleForTeamMask = 0
 	public IsControllableByPlayerMask = 0n
 	public NetworkActivity = GameActivity_t.ACT_DOTA_IDLE
 	public NetworkActivityStartTime = 0
+	public NetworkSequenceIndex = 0
 	public HPRegenCounter = 0
 	@NetworkedBasicField("m_flHealthThinkRegen")
 	public HPRegen = 0
@@ -91,6 +70,8 @@ export default class Unit extends Entity {
 	public BaseMoveSpeed = 0
 	@NetworkedBasicField("m_iBKBChargesUsed")
 	public BKBChargesUsed = 0
+	@NetworkedBasicField("m_iAeonChargesUsed")
+	public AeonChargesUsed = 0
 	@NetworkedBasicField("m_iDamageBonus")
 	public BonusDamage = 0
 	@NetworkedBasicField("m_iDayTimeVisionRange")
@@ -557,7 +538,7 @@ export default class Unit extends Entity {
 		this.IncreasedAttackSpeed = m_fIncreasedAttackSpeed
 		this.AttacksPerSecond = m_fAttacksPerSecond
 		this.IdealSpeed_ = m_fIdealSpeed
-		this.AttackRange = m_fAttackRange
+		// this.BaseAttackTime = m_flBaseAttackTime
 		this.HealthBarOffset_ = m_iHealthBarOffset
 		this.MoveCapabilities = m_iMoveCapabilities
 		this.MagicDamageResist_ = m_flMagicalResistanceValueReal
@@ -664,16 +645,14 @@ export default class Unit extends Entity {
 		let turnRate = this.MovementTurnRate || 0.5
 
 		if (currentTurnRate) {
-			if (this.HasBuffByName("modifier_medusa_stone_gaze_slow"))
-				turnRate *= 0.65
-
-			if (this.HasBuffByName("modifier_batrider_sticky_napalm"))
-				turnRate *= 0.3
+			const buff = this.GetBuffByName("modifier_batrider_sticky_napalm")
+			if (buff !== undefined && buff.Ability !== undefined)
+				turnRate *= 1 + (buff.Ability.GetSpecialValue("turn_rate_pct", buff.AbilityLevel) / 100)
 		}
 
 		const legs = this.GetItemByName("item_spider_legs")
 		if (legs !== undefined)
-			turnRate *= (1 + (legs.GetSpecialValue("turn_rate") / 100))
+			turnRate *= 1 + (legs.GetSpecialValue("turn_rate") / 100)
 
 		return turnRate
 	}
@@ -683,7 +662,7 @@ export default class Unit extends Entity {
 			angle = this.FindRotationAngle(angle)
 
 		const name = this.Name
-		if (name === "npc_dota_hero_wisp" || name === "npc_dota_hero_pangolier" || name === "npc_dota_hero_clinkz")
+		if (name === "npc_dota_hero_wisp" || name === "npc_dota_hero_pangolier")
 			return 0
 
 		if (angle <= 0.2)
@@ -1011,14 +990,18 @@ export default class Unit extends Entity {
 		} else
 			ar.push("unleash")
 	}
-	public GetAttachments(activity = this.NetworkActivity): Nullable<Map<string, ComputedAttachment>> {
-		return super.GetAttachments(activity)
+	public GetAttachments(
+		activity = this.NetworkActivity,
+		sequence_num = this.NetworkSequenceIndex,
+	): Nullable<Map<string, ComputedAttachment>> {
+		return super.GetAttachments(activity, sequence_num)
 	}
 	public GetAttachment(
 		name: string,
 		activity = this.NetworkActivity,
+		sequence_num = this.NetworkSequenceIndex,
 	): Nullable<ComputedAttachment> {
-		return super.GetAttachment(name, activity)
+		return super.GetAttachment(name, activity, sequence_num)
 	}
 	/**
 	 * @returns attachment position mid-animation
@@ -1026,8 +1009,9 @@ export default class Unit extends Entity {
 	public GetAttachmentPosition(
 		name: string,
 		activity = this.NetworkActivity,
+		sequence_num = this.NetworkSequenceIndex,
 	): Nullable<Vector3> {
-		return super.GetAttachmentPosition(name, activity)
+		return super.GetAttachmentPosition(name, activity, sequence_num)
 	}
 	public GetAdditionalAttackDamage(source: Unit): number {
 		return 0
@@ -1085,6 +1069,30 @@ export default class Unit extends Entity {
 		}
 
 		return testPoint
+	}
+
+	public async ChangeFieldsByEvents() {
+		const buffs = this.ModifiersBook.Buffs
+
+		{ // IsTrueSightedForEnemies
+			const lastIsTrueSighted = this.IsTrueSightedForEnemies
+			const isTrueSighted = Modifier.HasTrueSightBuff(buffs)
+
+			if (isTrueSighted !== lastIsTrueSighted) {
+				this.IsTrueSightedForEnemies = isTrueSighted
+				await EventsSDK.emit("TrueSightedChanged", false, this)
+			}
+		}
+
+		{ // HasScepter
+			const lastHasScepter = this.HasScepter
+			const hasScepter = Modifier.HasScepterBuff(buffs)
+
+			if (hasScepter !== lastHasScepter) {
+				this.HasScepterModifier = hasScepter
+				await EventsSDK.emit("HasScepterChanged", false, this)
+			}
+		}
 	}
 
 	/* ================================ ORDERS ================================ */
@@ -1146,8 +1154,8 @@ export default class Unit extends Entity {
 	public TrainAbility(ability: Ability) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY, issuers: [this], ability })
 	}
-	public DropItemAtFountain(item: Item, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM_AT_FOUNTAIN, issuers: [this], ability: item, queue, showEffects })
+	public DropItemAtFountain(item: Item, queue?: boolean, showEffects?: boolean, slot?: DOTAScriptInventorySlot_t) {
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM_AT_FOUNTAIN, issuers: [this], target: slot, ability: item, queue, showEffects })
 	}
 	public DropItem(item: Item, position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM, issuers: [this], ability: item, position, queue, showEffects })
@@ -1245,38 +1253,19 @@ ReplaceFieldHandler(Unit, "m_nameStringableIndex", async (unit, new_val) => {
 	if (old_name !== unit.Name)
 		await UnitNameChanged(unit)
 })
-RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", async (unit, new_value) => {
-	unit.IsVisibleForTeamMask = new_value as number
-	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
-	if (unit.IsValid)
-		await EventsSDK.emit("TeamVisibilityChanged", false, unit)
-})
-EventsSDK.on("LocalTeamChanged", () => {
-	for (const unit of Units)
-		unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
-})
 RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", async (unit, new_value) => {
 	unit.IsControllableByPlayerMask = new_value as bigint
 	if (unit.IsValid)
 		await EventsSDK.emit("ControllableByPlayerMaskChanged", false, unit)
 })
-ReplaceFieldHandler(Unit, "m_iTeamNum", async (unit, new_val) => {
-	const old_visibility = unit.IsVisibleForEnemies
-
-	{ // we're overriding parent m_iTeamNum handler, so we should handle it here
-		const old_team = unit.Team
-		unit.Team = new_val as Team
-		if (old_team !== unit.Team && unit.IsValid)
-			await EventsSDK.emit("EntityTeamChanged", false, unit)
-	}
-
-	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
-	if (unit.IsVisibleForEnemies !== old_visibility && unit.IsValid)
-		await EventsSDK.emit("TeamVisibilityChanged", false, unit)
-})
 RegisterFieldHandler(Unit, "m_NetworkActivity", async (unit, new_value) => {
 	unit.NetworkActivity = new_value as number
 	unit.NetworkActivityStartTime = GameState.RawGameTime
+	if (unit.IsValid)
+		await EventsSDK.emit("NetworkActivityChanged", false, unit)
+})
+RegisterFieldHandler(Unit, "m_NetworkSequenceIndex", async (unit, new_value) => {
+	unit.NetworkSequenceIndex = new_value as number
 	if (unit.IsValid)
 		await EventsSDK.emit("NetworkActivityChanged", false, unit)
 })

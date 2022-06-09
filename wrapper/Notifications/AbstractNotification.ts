@@ -1,5 +1,7 @@
 import Rectangle from "../Base/Rectangle"
+import Vector3 from "../Base/Vector3"
 import SoundSDK from "../Native/SoundSDK"
+import Entity from "../Objects/Base/Entity"
 
 export default abstract class Notification {
 	public readonly UniqueKey: any
@@ -9,19 +11,23 @@ export default abstract class Notification {
 	private IsPlaying = false
 	private stopDisplayTime = 0
 	private startDisplayTime = 0
-	private playSound: Nullable<string> = undefined
-	private playVolume = 0
+
+	private sourceEntity: Nullable<Entity>
+	private position = new Vector3().Invalidate()
+	private playSoundName: Nullable<string> = undefined
 
 	constructor(options?: {
 		timeToShow?: number
-		playSound?: string
-		playVolume?: number
+		playSoundName?: string
 		uniqueKey?: any,
+		position?: Vector3,
+		sourceEntity?: Entity,
 	}) {
 		this.UniqueKey = options?.uniqueKey
-		this.playSound = options?.playSound
-		this.playVolume = options?.playVolume ?? 0
+		this.playSoundName = options?.playSoundName
 		this.TimeToShow = options?.timeToShow ?? this.TimeToShow
+		this.position = options?.position ?? this.position
+		this.sourceEntity = options?.sourceEntity
 	}
 
 	public get IsExpired() {
@@ -58,9 +64,13 @@ export default abstract class Notification {
 	}
 
 	public PlaySound() {
-		if (this.playSound === undefined || this.IsPlaying)
+		if (this.playSoundName === undefined || this.IsPlaying)
 			return
-		SoundSDK.PlaySound(this.playSound, this.playVolume)
+		SoundSDK.EmitStartSoundEvent(
+			this.playSoundName,
+			this.position,
+			this.sourceEntity,
+		)
 		this.IsPlaying = true
 	}
 }

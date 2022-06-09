@@ -19,7 +19,7 @@ export const ScanRadius = 900
 /**
  * https://dota2.gamepedia.com/Attributes
  */
-export const ArmorPerAgility = 0.17
+export const ArmorPerAgility = 1 / 6
 export const DamageAmplifyPerIntellectPrecent = 0.07
 export const MaxManaPerIntellect = 12
 export const MaxManaRegenerationPerIntellect = 0.05

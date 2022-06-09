@@ -4,7 +4,7 @@ import Item from "../Base/Item"
 import Player from "../Base/Player"
 import Unit from "../Base/Unit"
 
-const MAX_ITEMS = 16
+const MAX_ITEMS = DOTAScriptInventorySlot_t.DOTA_ITEM_NEUTRAL_SLOT
 
 export default class Inventory {
 	constructor(public readonly Owner: Unit) { }
@@ -13,13 +13,13 @@ export default class Inventory {
 		return this.Owner.TotalItems
 	}
 	get TPScroll(): Nullable<Item> {
-		return this.GetItem(15)
+		return this.GetItem(DOTAScriptInventorySlot_t.DOTA_ITEM_TP_SCROLL)
 	}
 	get NeutralItem(): Nullable<Item> {
-		return this.GetItem(16)
+		return this.GetItem(DOTAScriptInventorySlot_t.DOTA_ITEM_NEUTRAL_SLOT)
 	}
 	get Items(): Item[] {
-		const ar = this.GetItems(0, 5),
+		const ar = this.GetItems(DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_1, DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_6),
 			tp = this.TPScroll,
 			neutral = this.NeutralItem
 		if (tp !== undefined)
@@ -29,43 +29,43 @@ export default class Inventory {
 		return ar
 	}
 	get Backpack(): Item[] {
-		return this.GetItems(6, 8)
+		return this.GetItems(DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_7, DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_9)
 	}
 	get Stash(): Item[] {
-		return this.GetItems(9, 14)
+		return this.GetItems(DOTAScriptInventorySlot_t.DOTA_STASH_SLOT_1, DOTAScriptInventorySlot_t.DOTA_STASH_SLOT_6)
 	}
 	get FreeSlotsInventory(): DOTAScriptInventorySlot_t[] {
-		return this.GetFreeSlots(0, 5)
+		return this.GetFreeSlots(DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_1, DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_6)
 	}
 	get FreeSlotsBackpack(): DOTAScriptInventorySlot_t[] {
-		return this.GetFreeSlots(6, 8)
+		return this.GetFreeSlots(DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_7, DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_9)
 	}
 	get FreeSlotsStash(): DOTAScriptInventorySlot_t[] {
-		return this.GetFreeSlots(9, 14)
+		return this.GetFreeSlots(DOTAScriptInventorySlot_t.DOTA_STASH_SLOT_1, DOTAScriptInventorySlot_t.DOTA_STASH_SLOT_6)
 	}
 	get HasAnyItemInventory(): boolean {
-		return this.HasAnyItem(0, 5)
+		return this.HasAnyItem(DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_1, DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_6)
 	}
 	get HasAnyItemBackpack(): boolean {
-		return this.HasAnyItem(6, 8)
+		return this.HasAnyItem(DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_7, DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_9)
 	}
 	get HasAnyItemStash(): boolean {
-		return this.HasAnyItem(9, 14)
+		return this.HasAnyItem(DOTAScriptInventorySlot_t.DOTA_STASH_SLOT_1, DOTAScriptInventorySlot_t.DOTA_STASH_SLOT_6)
 	}
 	get HasFreeSlotsInventory(): boolean {
-		return this.HasFreeSlot(0, 5)
+		return this.HasFreeSlot(DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_1, DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_6)
 	}
 	get HasFreeSlotsBackpack(): boolean {
-		return this.HasFreeSlot(6, 8)
+		return this.HasFreeSlot(DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_7, DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_9)
 	}
 	get HasFreeSlotsStash(): boolean {
-		return this.HasFreeSlot(9, 14)
+		return this.HasFreeSlot(DOTAScriptInventorySlot_t.DOTA_STASH_SLOT_1, DOTAScriptInventorySlot_t.DOTA_STASH_SLOT_6)
 	}
 
 	public GetItem(slot: DOTAScriptInventorySlot_t): Nullable<Item> {
 		return this.Owner.TotalItems[slot]
 	}
-	public GetItems(start: number, end: number): Item[] {
+	public GetItems(start: DOTAScriptInventorySlot_t, end: DOTAScriptInventorySlot_t): Item[] {
 		start = Math.min(start, MAX_ITEMS)
 		end = Math.min(end, MAX_ITEMS)
 
@@ -79,7 +79,7 @@ export default class Inventory {
 
 		return items
 	}
-	public GetFreeSlots(start: number, end: number): DOTAScriptInventorySlot_t[] {
+	public GetFreeSlots(start: DOTAScriptInventorySlot_t, end: DOTAScriptInventorySlot_t): DOTAScriptInventorySlot_t[] {
 		start = Math.min(start, MAX_ITEMS)
 		end = Math.min(end, MAX_ITEMS)
 
@@ -87,24 +87,24 @@ export default class Inventory {
 		if (this.Owner.IsValid && start <= end)
 			for (let i = start; i <= end; i++)
 				if (this.GetItem(i) === undefined)
-					items.push(i as DOTAScriptInventorySlot_t)
+					items.push(i)
 		return items
 	}
-	public HasAnyItem(start: number, end: number): boolean {
+	public HasAnyItem(start: DOTAScriptInventorySlot_t, end: DOTAScriptInventorySlot_t): boolean {
 		if (this.Owner.IsValid && start <= MAX_ITEMS && start <= end)
 			for (let i = Math.min(end + 1, MAX_ITEMS); i-- > start;)
 				if (this.GetItem(i) !== undefined)
 					return true
 		return false
 	}
-	public HasFreeSlot(start: number, end: number): boolean {
+	public HasFreeSlot(start: DOTAScriptInventorySlot_t, end: DOTAScriptInventorySlot_t): boolean {
 		if (this.Owner.IsValid && start <= MAX_ITEMS && start <= end)
 			for (let i = Math.min(end + 1, MAX_ITEMS); i-- > start;)
 				if (this.GetItem(i) === undefined)
 					return true
 		return false
 	}
-	public HasFreeSlots(start: number, end: number, howMany: number): boolean {
+	public HasFreeSlots(start: DOTAScriptInventorySlot_t, end: DOTAScriptInventorySlot_t, howMany: number): boolean {
 		if (this.Owner.IsValid && start <= MAX_ITEMS && start <= end) {
 			let man = 0
 			for (let i = Math.min(end + 1, MAX_ITEMS); i-- > start;)
