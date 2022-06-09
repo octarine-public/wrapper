@@ -16,7 +16,6 @@ import { GameActivity_t } from "../../Enums/GameActivity_t"
 import { GridNavCellFlags } from "../../Enums/GridNavCellFlags"
 import { modifierstate } from "../../Enums/modifierstate"
 import { EPropertyType } from "../../Enums/PropertyType"
-import { Team } from "../../Enums/Team"
 import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import * as StringTables from "../../Managers/StringTables"
@@ -44,35 +43,14 @@ const MAX_ITEMS = 16
 
 @WrapperClass("CDOTA_BaseNPC")
 export default class Unit extends Entity {
-	public static IsVisibleForEnemies(unit: Unit): boolean {
-		// don't check not existing team (0), spectators (1), neutrals (4) and shop (5)
-		const valid_teams = ~(
-			(1 << Team.None)
-			| (1 << Team.Observer)
-			| (1 << Team.Neutral)
-			| (1 << Team.Shop)
-		)
-
-		const local_team = GameState.LocalTeam,
-			ent_team = unit.Team,
-			flags = unit.IsVisibleForTeamMask & valid_teams
-
-		for (let i = 14; i--;)
-			if (i !== local_team && i !== ent_team && ((flags >> i) & 1))
-				return true
-		return false
-	}
-
 	public UnitData = UnitData.empty
 
 	public readonly Inventory = new Inventory(this)
 	public readonly ModifiersBook = new ModifiersBook(this)
 
-	public IsVisibleForEnemies = Unit.IsVisibleForEnemies(this)
 	public IsTrueSightedForEnemies = false
 	public HasScepterModifier = false
 	public UnitName_ = ""
-	public IsVisibleForTeamMask = 0
 	public IsControllableByPlayerMask = 0n
 	public NetworkActivity = GameActivity_t.ACT_DOTA_IDLE
 	public NetworkActivityStartTime = 0
@@ -1275,34 +1253,10 @@ ReplaceFieldHandler(Unit, "m_nameStringableIndex", async (unit, new_val) => {
 	if (old_name !== unit.Name)
 		await UnitNameChanged(unit)
 })
-RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", async (unit, new_value) => {
-	unit.IsVisibleForTeamMask = new_value as number
-	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
-	if (unit.IsValid)
-		await EventsSDK.emit("TeamVisibilityChanged", false, unit)
-})
-EventsSDK.on("LocalTeamChanged", () => {
-	for (const unit of Units)
-		unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
-})
 RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", async (unit, new_value) => {
 	unit.IsControllableByPlayerMask = new_value as bigint
 	if (unit.IsValid)
 		await EventsSDK.emit("ControllableByPlayerMaskChanged", false, unit)
-})
-ReplaceFieldHandler(Unit, "m_iTeamNum", async (unit, new_val) => {
-	const old_visibility = unit.IsVisibleForEnemies
-
-	{ // we're overriding parent m_iTeamNum handler, so we should handle it here
-		const old_team = unit.Team
-		unit.Team = new_val as Team
-		if (old_team !== unit.Team && unit.IsValid)
-			await EventsSDK.emit("EntityTeamChanged", false, unit)
-	}
-
-	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
-	if (unit.IsVisibleForEnemies !== old_visibility && unit.IsValid)
-		await EventsSDK.emit("TeamVisibilityChanged", false, unit)
 })
 RegisterFieldHandler(Unit, "m_NetworkActivity", async (unit, new_value) => {
 	unit.NetworkActivity = new_value as number
