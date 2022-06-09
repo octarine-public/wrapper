@@ -43,7 +43,7 @@ export default class KeyBind extends Base {
 		return this.assigned_key
 	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue)
+		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number")
 			return
 		this.assigned_key = value !== undefined ? value : this.assigned_key
 		this.Update()

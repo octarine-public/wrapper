@@ -40,7 +40,7 @@ export default class Header extends Base {
 		return this.Position.toArray()
 	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || value === undefined)
+		if (this.ShouldIgnoreNewConfigValue || value === undefined || !Array.isArray(value))
 			return
 		Vector2.fromArray(value).Max(0).CopyTo(this.Position)
 	}

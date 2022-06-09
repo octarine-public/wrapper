@@ -60,7 +60,7 @@ export default class ImageSelector extends Base {
 
 	public get ConfigValue() { return Array.from(this.enabled_values.entries()) }
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || value === undefined)
+		if (this.ShouldIgnoreNewConfigValue || value === undefined || !Array.isArray(value))
 			return
 		this.enabled_values = new Map<string, boolean>(value)
 		this.values.forEach(value_ => {

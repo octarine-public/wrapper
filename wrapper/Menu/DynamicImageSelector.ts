@@ -82,7 +82,7 @@ export default class DynamicImageSelector extends Base {
 	}
 
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || value === undefined)
+		if (this.ShouldIgnoreNewConfigValue || value === undefined || !Array.isArray(value))
 			return
 
 		this.enabled_values = new Map(value)

@@ -42,7 +42,7 @@ export default class Toggle extends Base {
 
 	public get ConfigValue() { return this.value }
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue)
+		if (this.ShouldIgnoreNewConfigValue || typeof value !== "boolean")
 			return
 		this.value = value ?? this.value
 	}
