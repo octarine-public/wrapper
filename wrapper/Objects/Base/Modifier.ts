@@ -63,6 +63,10 @@ export default class Modifier {
 	public Armor = 0
 	public AttackSpeed = 0
 	public MovementSpeed = 0
+	public BonusAllStats = 0
+	public BonusHealth = 0
+	public BonusMana = 0
+	public CustomEntity: Nullable<Unit>
 	public StackCount = 0
 	public Duration = 0
 	public AbilityLevel = 0
@@ -172,7 +176,11 @@ export default class Modifier {
 			new_creation_time = this.m_pBuff.CreationTime ?? 0,
 			new_armor = this.m_pBuff.Armor ?? 0,
 			new_attack_speed = this.m_pBuff.AttackSpeed ?? 0,
-			new_movement_speed = this.m_pBuff.MovementSpeed ?? 0
+			new_movement_speed = this.m_pBuff.MovementSpeed ?? 0,
+			new_bonus_all_stats = this.m_pBuff.BonusAllStats ?? 0,
+			new_bonus_health = this.m_pBuff.BonusHealth ?? 0,
+			new_bonus_mana = this.m_pBuff.BonusMana ?? 0,
+			new_custom_entity = EntityManager.EntityByIndex(this.m_pBuff.CustomEntity) as Nullable<Unit>
 
 		if (this.Parent !== new_parent)
 			await this.Remove()
@@ -215,6 +223,22 @@ export default class Modifier {
 		}
 		if (this.MovementSpeed !== new_movement_speed) {
 			this.MovementSpeed = new_movement_speed
+			updated = true
+		}
+		if (this.BonusAllStats !== new_bonus_all_stats) {
+			this.BonusAllStats = new_bonus_all_stats
+			updated = true
+		}
+		if (this.BonusHealth !== new_bonus_health) {
+			this.BonusHealth = new_bonus_health
+			updated = true
+		}
+		if (this.BonusMana !== new_bonus_mana) {
+			this.BonusMana = new_bonus_mana
+			updated = true
+		}
+		if (this.CustomEntity !== new_custom_entity) {
+			this.CustomEntity = new_custom_entity
 			updated = true
 		}
 		if (

@@ -994,9 +994,6 @@ function MoveCamera(
 	return [MoveCameraByScreen(target_pos, current_time), false]
 }
 
-// polyfills for old core
-globalThis.GetSelectedEntities = globalThis.GetSelectedEntities ?? (() => 0)
-globalThis.GetQueryUnit = globalThis.GetQueryUnit ?? (() => 0)
 const min_ProcessUserCmd_window = 1 / 60
 function ProcessUserCmd(force = false): void {
 	const current_time = hrtime()

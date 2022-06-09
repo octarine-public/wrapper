@@ -116,6 +116,18 @@ export class IModifier {
 	public get AuraOwner(): Nullable<number> {
 		return this.GetProperty("aura_owner")
 	}
+	public get BonusAllStats(): Nullable<number> {
+		return this.GetProperty("bonus_all_stats")
+	}
+	public get BonusHealth(): Nullable<number> {
+		return this.GetProperty("bonus_health")
+	}
+	public get BonusMana(): Nullable<number> {
+		return this.GetProperty("bonus_mana")
+	}
+	public get CustomEntity(): Nullable<number> {
+		return this.GetProperty("custom_entity")
+	}
 	public GetProperty<T>(name: string): Nullable<T> {
 		return this.m_Protobuf.get(name) as any as T
 	}
@@ -154,6 +166,7 @@ EventsSDK.on("PostDataUpdate", async () => {
 					ent.HandleMatches(mod.m_pBuff.Parent ?? 0)
 					|| ent.HandleMatches(mod.m_pBuff.Caster ?? 0)
 					|| ent.HandleMatches(mod.m_pBuff.AuraOwner ?? 0)
+					|| ent.HandleMatches(mod.m_pBuff.CustomEntity ?? 0)
 				)
 					await mod.Update()
 		if (ent instanceof Ability)
@@ -184,7 +197,7 @@ enum DOTA_MODIFIER_ENTRY_TYPE {
 
 message CDOTAModifierBuffTableEntry {
 	required .DOTA_MODIFIER_ENTRY_TYPE entry_type = 1;
-	required int32 parent = 2;
+	required uint32 parent = 2;
 	required int32 index = 3;
 	required int32 serial_num = 4;
 	optional int32 modifier_class = 5;
@@ -192,8 +205,8 @@ message CDOTAModifierBuffTableEntry {
 	optional int32 stack_count = 7;
 	optional float creation_time = 8;
 	optional float duration = 9 [default = -1];
-	optional int32 caster = 10;
-	optional int32 ability = 11;
+	optional uint32 caster = 10;
+	optional uint32 ability = 11;
 	optional int32 armor = 12;
 	optional float fade_time = 13;
 	optional bool subtle = 14;
@@ -216,7 +229,11 @@ message CDOTAModifierBuffTableEntry {
 	optional string player_ids = 31;
 	optional string lua_name = 32;
 	optional int32 attack_speed = 33;
-	optional int32 aura_owner = 34;
+	optional uint32 aura_owner = 34;
+	optional int32 bonus_all_stats = 35;
+	optional int32 bonus_health = 36;
+	optional int32 bonus_mana = 37;
+	optional uint32 custom_entity = 38;
 }
 `)
 EventsSDK.on("UpdateStringTable", async (name, update) => {
