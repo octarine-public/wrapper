@@ -118,17 +118,23 @@ const GUIInfo = new (class CGUIInfo {
 		} else
 			this.PreGame.DebugDraw()
 	}
-	public ScaleWidth(w: number, screen_size = RendererSDK.WindowSize): number {
+	public GetWidthScale(screen_size = RendererSDK.WindowSize): number {
 		let screen_height = screen_size.y
 		if (screen_size.x === 1280 && screen_height === 1024)
 			screen_height = 960
 		else if (screen_size.x === 720 && screen_height === 576)
 			screen_height = 540
-		return Math.round(screen_height / this.proportional_base * w)
+		return screen_height / this.proportional_base
+	}
+	public GetHeightScale(screen_size = RendererSDK.WindowSize): number {
+		const screen_height = screen_size.y
+		return screen_height / this.proportional_base
+	}
+	public ScaleWidth(w: number, screen_size = RendererSDK.WindowSize): number {
+		return Math.round(w * this.GetWidthScale(screen_size))
 	}
 	public ScaleHeight(h: number, screen_size = RendererSDK.WindowSize): number {
-		const screen_height = screen_size.y
-		return Math.round(screen_height / this.proportional_base * h)
+		return Math.round(h * this.GetHeightScale(screen_size))
 	}
 })()
 export default GUIInfo
