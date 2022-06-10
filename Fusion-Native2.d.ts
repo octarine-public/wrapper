@@ -139,7 +139,7 @@ declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer 
 	Ability?: number,
 	Issuers?: number[] | number,
 	Queue?: boolean,
-	ShowEffects?: boolean
+	ShowEffects?: boolean,
 }): void
 declare function GetLatency(flow: number): number
 declare function GetAvgLatency(flow: number): number
@@ -158,7 +158,18 @@ declare function SetTreeModel(model_name: string, scale: number): void
 declare function EmitStartSoundEvent( // pass location: Vector2 at IOBuffer offset 0
 	soundevent_hash: number,
 	source_entity_index: number,
-	seed: number
+	seed: number,
+): void
+declare function EmitStartSoundEventNew( // pass location: Vector2 at IOBuffer offset 0
+	soundevent_guid: number,
+	soundevent_hash: number,
+	source_entity_index: number,
+	seed: number,
+): void
+declare function EmitStopSoundEvent( // pass location: Vector2 at IOBuffer offset 0
+	soundevent_guid: number,
+	soundevent_hash: number,
+	source_entity_index: number,
 ): void
 /**
  * @returns biguint to IOBuffer offset 0, and return value is true if function succeeded
