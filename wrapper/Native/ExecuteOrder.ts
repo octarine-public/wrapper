@@ -827,7 +827,6 @@ function ProcessOrderQueue(current_time: number): Nullable<[ExecuteOrder, number
 const camera_move_linger_duration = 100,
 	order_linger_duration = 150,
 	camera_move_seed_expiry = 300,
-	usercmd_cache_delay = 10,
 	yellow_zone_max_duration = 700,
 	green_zone_max_duration = yellow_zone_max_duration * 2,
 	camera_direction = new Vector2(),
@@ -839,7 +838,6 @@ let last_order_finish = 0,
 	camera_move_end = 0,
 	were_moving_camera = false,
 	latest_update = 0,
-	usercmd_cache_last_wrote = 0,
 	latest_usercmd = new UserCmd(),
 	last_camera_move_seed = 0,
 	yellow_zone_out_at = 0,
@@ -994,6 +992,8 @@ function MoveCamera(
 	return [MoveCameraByScreen(target_pos, current_time), false]
 }
 
+// polyfill for old core
+const NEW_USERCMD_HANDLING_ = (globalThis as any).NEW_USERCMD_HANDLING ?? false
 const min_ProcessUserCmd_window = 1 / 60
 function ProcessUserCmd(force = false): void {
 	const current_time = hrtime()
@@ -1232,16 +1232,19 @@ function ProcessUserCmd(force = false): void {
 		ent => ent.Distance(latest_usercmd.VectorUnderCursor),
 	)
 
-	if (usercmd_cache_last_wrote < current_time - usercmd_cache_delay) {
+	if (NEW_USERCMD_HANDLING_) {
+		latest_usercmd.WriteBack()
+		WriteUserCmd()
+	} else
 		usercmd_cache.push(latest_usercmd.Clone())
-		usercmd_cache_last_wrote = current_time
-	}
 }
 EventsSDK.on("Draw", ProcessUserCmd)
 Events.on("RequestUserCmd", () => {
 	ExecuteOrder.received_usercmd_request = true
+	if (NEW_USERCMD_HANDLING_ && ExecuteOrder.disable_humanizer)
+		return
 	ProcessUserCmd(true)
-	if (ExecuteOrder.disable_humanizer)
+	if (ExecuteOrder.disable_humanizer || NEW_USERCMD_HANDLING_)
 		return
 	usercmd_cache.forEach(usercmd => {
 		usercmd.WriteBack()
@@ -1252,7 +1255,6 @@ Events.on("RequestUserCmd", () => {
 		WriteUserCmd()
 	}
 	usercmd_cache.splice(0)
-	usercmd_cache_last_wrote = 0
 })
 
 const debugParticles = new ParticlesSDK()
@@ -1321,7 +1323,6 @@ function ClearHumanizerState() {
 	camera_move_end = 0
 	camera_direction.toZero()
 	usercmd_cache.splice(0)
-	usercmd_cache_last_wrote = 0
 	yellow_zone_out_at = 0
 	green_zone_out_at = 0
 	InputManager.IsShopOpen = false
