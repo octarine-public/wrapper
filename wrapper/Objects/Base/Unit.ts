@@ -141,6 +141,7 @@ export default class Unit extends Entity {
 	public AttacksPerSecond = 0
 	public MoveCapabilities = DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE
 	public BonusArmor = 0
+	public UnitStateMask = 0n
 	public TPStartTime = -1
 	public readonly PredictedPosition = new Vector3().Invalidate()
 	public readonly TPStartPosition = new Vector3().Invalidate()
@@ -377,7 +378,7 @@ export default class Unit extends Entity {
 	public get SecondsPerAttack(): number {
 		return 1 / (this.AttacksPerSecond ?? 0)
 	}
-	public get UnitStateMask(): bigint {
+	public get UnitStateMask_(): bigint {
 		// TODO: use buffs to calculate this
 		if (!GetEntityUnitState(this.Index))
 			return this.UnitStateNetworked
@@ -1412,4 +1413,9 @@ EventsSDK.on("Tick", dt => {
 		}
 		// TODO: interpolate DeltaZ from OnModifierUpdated
 	}
+})
+
+EventsSDK.on("PostDataUpdate", () => {
+	for (const unit of Units)
+		unit.UnitStateMask = unit.UnitStateMask_
 })
