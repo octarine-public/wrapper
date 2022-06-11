@@ -58,11 +58,14 @@ InputEventSDK.on("KeyUp", key => {
 		shift_down = false
 })
 
+// polyfill for old core
+globalThis.ToggleRequestUserCmd = globalThis.ToggleRequestUserCmd ?? ((_new_val: boolean) => {
+	// not implemented
+})
 export default class ExecuteOrder {
 	public static readonly order_queue: [ExecuteOrder, number][] = []
 	public static debug_orders = false
 	public static debug_draw = false
-	public static disable_humanizer = false
 	public static hold_orders = 0
 	public static hold_orders_target: Nullable<Vector3 | Entity>
 	public static camera_minimap_spaces = 3 // 2 => 5
@@ -74,6 +77,16 @@ export default class ExecuteOrder {
 	public static received_usercmd_request = false
 	public static is_standalone = false
 	public static unsafe_mode = false
+	public static get disable_humanizer() {
+		return this.disable_humanizer_
+	}
+	public static set disable_humanizer(new_val: boolean) {
+		if (this.disable_humanizer_ === new_val)
+			return
+		this.disable_humanizer_ = new_val
+		ToggleRequestUserCmd(!this.disable_humanizer_)
+		EventsSDK.emit("HumanizerStateChanged", false)
+	}
 	public static PrepareOrder(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
@@ -183,6 +196,7 @@ export default class ExecuteOrder {
 			ExecuteOrder.LatestUnitOrder_view.getUint8(24) !== 0,
 		)
 	}
+	private static disable_humanizer_ = false
 
 	private static LatestUnitOrder_view = new DataView(LatestUnitOrder.buffer)
 
