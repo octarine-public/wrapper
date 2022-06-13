@@ -35,7 +35,7 @@ const GUIInfo = new (class CGUIInfo {
 
 	public OnDraw(): void {
 		const screen_size = RendererSDK.WindowSize,
-			hud_flipped = ConVars.GetInt("dota_hud_flip") !== 0
+			hud_flipped = (ConVars.GetInt("dota_hud_flip") ?? 0) !== 0
 		const everything_changed = (
 			this.HUDFlipped !== hud_flipped
 			|| !latest_screen_size.Equals(screen_size)

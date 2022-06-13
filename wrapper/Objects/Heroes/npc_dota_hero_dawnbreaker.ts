@@ -9,7 +9,7 @@ export default class npc_dota_hero_dawnbreaker extends Hero {
 
 	public CalculateActivityModifiers(activity: GameActivity_t, ar: string[]): void {
 		super.CalculateActivityModifiers(activity, ar)
-		if (parseFloat(ConVars.GetString("dota_dawnbreaker_attack_combo_cooldown_time")) >= 0)
+		if (parseFloat(ConVars.GetString("dota_dawnbreaker_attack_combo_cooldown_time") ?? "0") >= 0)
 			switch (this.AttackState) {
 				case 0:
 					ar.push("ATTACKCOMBO_A")

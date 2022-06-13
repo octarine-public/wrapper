@@ -9,7 +9,8 @@ export default class CMinimap {
 	private static UpdateExtraLargeMinimapSetting(): boolean {
 		const setting = ConVars.GetInt("dota_hud_extra_large_minimap")
 		if (
-			setting < 0
+			setting === undefined
+			|| setting < 0
 			|| setting > 2
 			|| extra_large_minimap_setting === setting
 		)

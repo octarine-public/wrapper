@@ -174,7 +174,7 @@ EventsSDK.after("ServerInfo", LoadIcons)
 EventsSDK.on("Draw", () => {
 	if (!GameRules?.IsInGame || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
-	hero_icon_scale = MinimapIconRenderer.GetSizeMultiplier(ConVars.GetInt("dota_minimap_hero_size"))
+	hero_icon_scale = MinimapIconRenderer.GetSizeMultiplier(ConVars.GetInt("dota_minimap_hero_size") ?? 600)
 	ArrayExtensions.orderBy(
 		[...minimap_icons_active.values()],
 		icon => icon.priority,

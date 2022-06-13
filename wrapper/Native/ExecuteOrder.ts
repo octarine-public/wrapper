@@ -172,7 +172,7 @@ export default class ExecuteOrder {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK:
 				break
 			default:
-				if (ctrl_down && ConVars.GetInt("dota_player_multipler_orders") !== 0)
+				if (ctrl_down && (ConVars.GetInt("dota_player_multipler_orders") ?? 0) !== 0)
 					issuers = [...new Set([...issuers, ...Units.filter(ent => (
 						ent.IsControllable
 						&& ent.RootOwner === LocalPlayer
@@ -1019,7 +1019,7 @@ function ProcessUserCmd(force = false): void {
 	latest_usercmd.Pawn = LocalPlayer?.Pawn
 	latest_usercmd.MousePosition.CopyFrom(InputManager.CursorOnScreen.DivideForThis(RendererSDK.WindowSize))
 	InputManager.IsShopOpen = IsShopOpen()
-	InputManager.IsScoreboardOpen = ConVars.GetInt("dota_spectator_stats_panel") === 1
+	InputManager.IsScoreboardOpen = (ConVars.GetInt("dota_spectator_stats_panel") ?? 0) === 1
 	const num_selected = GetSelectedEntities()
 	InputManager.SelectedEntities.splice(0)
 	for (let i = 0; i < num_selected; i++) {
@@ -1033,7 +1033,7 @@ function ProcessUserCmd(force = false): void {
 			InputManager.SelectedEntities.push(ent)
 	}
 	InputManager.QueryUnit = EntityManager.EntityByIndex(GetQueryUnit()) as Nullable<Unit>
-	InputManager.SelectedUnit = ConVars.GetInt("dota_hud_new_query_panel") === 0
+	InputManager.SelectedUnit = (ConVars.GetInt("dota_hud_new_query_panel") ?? 0) === 0
 		? InputManager.QueryUnit ?? InputManager.SelectedEntities[0]
 		: InputManager.SelectedEntities[0] ?? InputManager.QueryUnit
 	InputManager.CursorOnWorld = RendererSDK.ScreenToWorldFar(
