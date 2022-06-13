@@ -168,8 +168,9 @@ class MenuManager {
 			node.Priority = hardcoded_priorities.get(name)!
 		node.parent = this
 		this.entries.push(node)
-		this.entries = this.entries.sort((a, b) => a.Name.localeCompare(b.Name))
-		this.entries = this.entries.sort((a, b) => a.Priority - b.Priority)
+		this.entries = this.entries
+			.sort((a, b) => a.Name.localeCompare(b.Name))
+			.sort((a, b) => a.Priority - b.Priority)
 		node.ApplyLocalization()
 		return node
 	}

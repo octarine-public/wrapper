@@ -99,6 +99,9 @@ export default class Base {
 	public get IsVisible(): boolean {
 		return !this.IsHidden && !this.IsHiddenBecauseOfSearch
 	}
+	public get ClassPriority(): number {
+		return 0
+	}
 	protected get Rect() {
 		return new Rectangle(this.Position, this.Position.Add(this.TotalSize))
 	}

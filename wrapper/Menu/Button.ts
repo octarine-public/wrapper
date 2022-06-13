@@ -22,6 +22,9 @@ export default class Button extends Base {
 
 	protected readonly execute_on_add = false
 
+	public get ClassPriority(): number {
+		return 2
+	}
 	private get ButtonRect() {
 		return new Rectangle(
 			this.Position.Add(Button.button_offset),
