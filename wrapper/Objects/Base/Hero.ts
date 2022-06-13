@@ -158,7 +158,7 @@ EventsSDK.on("GameEvent", async (name, obj) => {
 EventsSDK.on("PostDataUpdate", async () => {
 	for (const hero of Heroes) {
 		const old_visibility = hero.IsVisibleForEnemies
-		hero.IsVisibleForEnemies = hero.StartSequenceCyclePrev === hero.StartSequenceCycle
+		hero.IsVisibleForEnemies = hero.StartSequenceCyclePrev === 0 && hero.StartSequenceCycle === 0
 		hero.StartSequenceCyclePrev = hero.StartSequenceCycle
 		if (old_visibility !== hero.IsVisibleForEnemies)
 			await EventsSDK.emit("TeamVisibilityChanged", false, hero)
