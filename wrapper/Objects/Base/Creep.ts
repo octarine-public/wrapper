@@ -1,3 +1,4 @@
+import Vector2 from "../../Base/Vector2"
 import { WrapperClass } from "../../Decorators"
 import { MapArea } from "../../Enums/MapArea"
 import DotaMap from "../../Helpers/DotaMap"
@@ -62,7 +63,7 @@ EventsSDK.on("PreEntityCreated", ent => {
 		ent.TryAssignLane()
 })
 EventsSDK.on("Tick", dt => {
-	const wave_time = ((GameRules?.GameTime ?? 0) % 30)
+	const wave_time = (GameRules?.GameTime ?? 0) % 30
 	const spawn_creeps = wave_time >= 0 && wave_time < 5
 	Creeps.forEach(creep => {
 		if (creep.IsNeutral || creep.Owner !== undefined) {
@@ -84,10 +85,18 @@ EventsSDK.on("Tick", dt => {
 		const next_pos = DotaMap.GetCreepCurrentTarget(creep.Position, creep.Team, creep.Lane)?.Position
 		if (next_pos === undefined)
 			return
-		creep.PredictedPosition
-			.Extend(next_pos, creep.IdealSpeed * dt)
-			.CopyTo(creep.PredictedPosition)
-		creep.PredictedPosition.SetZ(GetPositionHeight(creep.PredictedPosition))
+		const dist2D = creep.PredictedPosition.Distance2D(next_pos)
+		if (dist2D > 0.01) {
+			const new_pos = Vector2.FromVector3(creep.PredictedPosition)
+				.Extend(
+					Vector2.FromVector3(next_pos),
+					Math.min(creep.IdealSpeed * dt, dist2D),
+				)
+			creep.PredictedPosition
+				.SetX(new_pos.x)
+				.SetY(new_pos.y)
+				.SetZ(GetPositionHeight(new_pos))
+		}
 		creep.LastPredictedPositionUpdate = GameState.RawGameTime
 	})
 })
