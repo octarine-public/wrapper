@@ -1,4 +1,3 @@
-import Color from "../Base/Color"
 import Vector3 from "../Base/Vector3"
 import { GetPositionHeight } from "../Native/WASM"
 import Entity from "../Objects/Base/Entity"
@@ -317,7 +316,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 					undefined,
 					launch_tick,
 					TargetLoc,
-					Color.fromIOBuffer(6),
+					NumberToColor(msg.get("colorgemcolor") as number),
 				)
 				// TODO: do we need particle_cp_data?
 				projectile.Position.CopyFrom(CMsgVectorToVector3(msg.get("vSourceLoc") as RecursiveProtobuf))

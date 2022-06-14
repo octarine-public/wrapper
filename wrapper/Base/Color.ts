@@ -13,9 +13,6 @@ export default class Color {
 	public static get LightGray() { return new Color(190, 190, 190) }
 	public static get White() { return new Color(255, 255, 255) }
 
-	public static fromIOBuffer(offset = 0): Color {
-		return new Color(IOBuffer[offset + 0], IOBuffer[offset + 1])
-	}
 	// reverse toUint32
 	public static fromUint32(num: number): Color {
 		const color = new Color()
@@ -133,13 +130,5 @@ export default class Color {
 	}
 	public toJSON() {
 		return this.toArray()
-	}
-
-	public toIOBuffer(offset: number = 0): true {
-		IOBuffer[offset + 0] = this.r
-		IOBuffer[offset + 1] = this.g
-		IOBuffer[offset + 2] = this.b
-		IOBuffer[offset + 3] = this.a
-		return true
 	}
 }
