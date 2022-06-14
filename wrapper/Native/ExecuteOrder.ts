@@ -58,10 +58,6 @@ InputEventSDK.on("KeyUp", key => {
 		shift_down = false
 })
 
-// polyfill for old core
-globalThis.ToggleRequestUserCmd = globalThis.ToggleRequestUserCmd ?? ((_new_val: boolean) => {
-	// not implemented
-})
 export default class ExecuteOrder {
 	public static readonly order_queue: [ExecuteOrder, number][] = []
 	public static debug_orders = false
@@ -844,8 +840,7 @@ const camera_move_linger_duration = 100,
 	yellow_zone_max_duration = 700,
 	green_zone_max_duration = yellow_zone_max_duration * 2,
 	camera_direction = new Vector2(),
-	debug_cursor = new Vector3(),
-	usercmd_cache: UserCmd[] = []
+	debug_cursor = new Vector3()
 let last_order_finish = 0,
 	latest_camera_x = 0,
 	latest_camera_y = 0,
@@ -1006,8 +1001,6 @@ function MoveCamera(
 	return [MoveCameraByScreen(target_pos, current_time), false]
 }
 
-// polyfill for old core
-const NEW_USERCMD_HANDLING_ = (globalThis as any).NEW_USERCMD_HANDLING ?? false
 const min_ProcessUserCmd_window = 1 / 60
 function ProcessUserCmd(force = false): void {
 	const current_time = hrtime()
@@ -1246,29 +1239,15 @@ function ProcessUserCmd(force = false): void {
 		ent => ent.Distance(latest_usercmd.VectorUnderCursor),
 	)
 
-	if (NEW_USERCMD_HANDLING_) {
-		latest_usercmd.WriteBack()
-		WriteUserCmd()
-	} else
-		usercmd_cache.push(latest_usercmd.Clone())
+	latest_usercmd.WriteBack()
+	WriteUserCmd()
 }
 EventsSDK.on("Draw", ProcessUserCmd)
 Events.on("RequestUserCmd", () => {
 	ExecuteOrder.received_usercmd_request = true
-	if (NEW_USERCMD_HANDLING_ && ExecuteOrder.disable_humanizer)
+	if (ExecuteOrder.disable_humanizer)
 		return
 	ProcessUserCmd(true)
-	if (ExecuteOrder.disable_humanizer || NEW_USERCMD_HANDLING_)
-		return
-	usercmd_cache.forEach(usercmd => {
-		usercmd.WriteBack()
-		WriteUserCmd()
-	})
-	if (usercmd_cache.length === 0) {
-		latest_usercmd.WriteBack()
-		WriteUserCmd()
-	}
-	usercmd_cache.splice(0)
 })
 
 const debugParticles = new ParticlesSDK()
@@ -1336,7 +1315,6 @@ function ClearHumanizerState() {
 	latest_usercmd = new UserCmd()
 	camera_move_end = 0
 	camera_direction.toZero()
-	usercmd_cache.splice(0)
 	yellow_zone_out_at = 0
 	green_zone_out_at = 0
 	InputManager.IsShopOpen = false
