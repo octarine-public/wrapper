@@ -24,6 +24,7 @@ interface WorkerOptions {
 /// GLOBAL OBJECTS
 declare var IOBuffer: Float32Array // 128 floats in size
 declare var IOBufferView: DataView // IOBuffer DataView
+declare var DrawMatrix: Float32Array // 16 floats in size
 /**
 struct CUnitOrder {
 	uint32_t order_type; // 0

@@ -78,7 +78,7 @@ declare interface Events extends EventEmitter {
 	 */
 	on(name: "WndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
 	on(name: "RequestUserCmd", callback: () => void): EventEmitter
-	on(name: "Draw", callback: (visual_data: ArrayBuffer) => void): EventEmitter
+	on(name: "Draw", callback: (visual_data: ArrayBuffer, w: number, h: number) => void): EventEmitter
 	on(name: "PrepareUnitOrders", callback: () => false | any): EventEmitter
 	on(name: "DebuggerPrepareUnitOrders", callback: (is_user_input: boolean, was_cancelled: boolean) => void): EventEmitter
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventEmitter

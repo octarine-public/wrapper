@@ -77,6 +77,7 @@ class Font {
 	) { }
 }
 
+const NEW_DRAW_HANDLING_ = (globalThis as any).NEW_DRAW_HANDLING ?? false
 class CRendererSDK {
 	public readonly DefaultFontName = "Roboto"
 	public readonly DefaultTextSize = 18
@@ -463,13 +464,19 @@ class CRendererSDK {
 		this.Text(text, vecMouse, color, font_name, font_size, weight, italic, outlined)
 	}
 
-	public async BeforeDraw() {
+	public async BeforeDraw(w: number, h: number) {
 		this.in_draw = true
-		WASM.CloneWorldToProjection(IOBuffer.slice(0, 16))
 		const prev_width = this.WindowSize.x,
 			prev_height = this.WindowSize.y
-		this.WindowSize.x = IOBufferView.getInt32(17 * 4, true)
-		this.WindowSize.y = IOBufferView.getInt32(18 * 4, true)
+		if (NEW_DRAW_HANDLING_) {
+			WASM.CloneWorldToProjection(DrawMatrix)
+			this.WindowSize.x = w
+			this.WindowSize.y = h
+		} else {
+			WASM.CloneWorldToProjection(IOBuffer.slice(0, 16))
+			this.WindowSize.x = IOBufferView.getInt32(17 * 4, true)
+			this.WindowSize.y = IOBufferView.getInt32(18 * 4, true)
+		}
 		if (this.WindowSize.x !== prev_width || this.WindowSize.y !== prev_height)
 			await EventsSDK.emit("WindowSizeChanged", false)
 		if (this.clear_texture_cache) {
@@ -949,8 +956,8 @@ class CRendererSDK {
 const RendererSDK = new CRendererSDK()
 EventsSDK.on("UnitAbilityDataUpdated", () => RendererSDK.FreeTextureCache())
 
-Events.on("Draw", async visual_data => {
-	await RendererSDK.BeforeDraw()
+Events.on("Draw", async (visual_data, w, h) => {
+	await RendererSDK.BeforeDraw(w, h)
 	const stream = new BinaryStream(new DataView(visual_data))
 	while (!stream.Empty()) {
 		const entity_id = stream.ReadUint32()
