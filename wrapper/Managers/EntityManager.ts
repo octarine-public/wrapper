@@ -3,12 +3,11 @@ import Vector3 from "../Base/Vector3"
 import Vector4 from "../Base/Vector4"
 import { EPropertyType, PropertyType } from "../Enums/PropertyType"
 import Entity from "../Objects/Base/Entity"
-import GetConstructorByName, { ClassToEntities, FieldHandler, FieldHandlers, SDKClasses } from "../Objects/NativeToSDK"
+import GetConstructorByName, { cached_field_handlers, ClassToEntities, entities_symbols, SDKClasses } from "../Objects/NativeToSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import BinaryStream from "../Utils/BinaryStream"
 import GameState from "../Utils/GameState"
-import { ParseProtobufDesc, ParseProtobufNamed } from "../Utils/Protobuf"
-import { MapToObject } from "../Utils/Utils"
+import { ParseProtobufDesc } from "../Utils/Protobuf"
 import Events from "./Events"
 import EventsSDK from "./EventsSDK"
 import * as StringTables from "./StringTables"
@@ -211,7 +210,6 @@ function DumpStreamPosition(
 	return ret
 }
 
-let entities_symbols: string[] = []
 type StringEntityPropertyType = Map<string, StringEntityPropertyType> | StringEntityPropertyType[] | string | Vector4 | Vector3 | Vector2 | bigint | number | boolean
 function ConvertToStringedMap(prop: EntityPropertyType): StringEntityPropertyType {
 	if (Array.isArray(prop))
@@ -248,7 +246,6 @@ export class EntityPropertiesNode {
 	}
 }
 
-const cached_field_handlers = new Map<Constructor<Entity>, Map<number, FieldHandler>>()
 async function ParseEntityUpdate(
 	stream: BinaryStream,
 	ent_id: number,
@@ -340,46 +337,6 @@ async function ParseEntityUpdate(
 		await EventsSDK.emit("PreEntityCreated", false, ent)
 		created_entities.push(ent)
 	}
-}
-
-function FixType(symbols: string[], field: any): string {
-	{
-		const field_serializer_name_sym = field.field_serializer_name_sym
-		if (field_serializer_name_sym !== undefined)
-			return symbols[field_serializer_name_sym] + (field.field_serializer_version !== 0 ? field.field_serializer_version : "")
-	}
-	let type = symbols[field.var_type_sym]
-	// types
-	type = type.replace(/\<\s/g, "<")
-	type = type.replace(/\s\>/g, ">")
-	type = type.replace(/CNetworkedQuantizedFloat/g, "float")
-	type = type.replace(/CUtlVector\<(.*)\>/g, "$1[]")
-	type = type.replace(/CNetworkUtlVectorBase\<(.*)\>/g, "$1[]")
-	type = type.replace(/CHandle\<(.*)\>/g, "CEntityIndex<$1>")
-	type = type.replace(/CStrongHandle\<(.*)\>/g, "CStrongHandle<$1>")
-	type = type.replace(/Vector2D/g, "Vector2")
-	type = type.replace(/Vector4D|Quaternion/g, "Vector4")
-	type = type.replace(/Vector$/g, "Vector3")
-	type = type.replace(/Vector([^\d])/g, "Vector3$1")
-
-	// fix arrays
-	type = type.replace(/\[\d+\]/g, "[]")
-
-	// primitives
-	type = type.replace(/bool/g, "boolean")
-	type = type.replace(/double/g, "number")
-	type = type.replace(/uint64/g, "bigint")
-	type = type.replace(/int64/g, "bigint")
-	type = type.replace(/float(32|64)?/g, "number")
-	type = type.replace(/u?int(\d+)/g, "number")
-	type = type.replace(/CUtlStringToken/g, "CStringToken")
-	type = type.replace(/CUtlString|CUtlSymbolLarge|char(\*|\[\])/g, "string")
-	type = type.replace(/CStringToken/g, "CUtlStringToken")
-
-	// omit pointers
-	type = type.replace(/\*/g, "")
-
-	return type
 }
 
 let LatestTickDelta = 0
@@ -509,53 +466,10 @@ async function ParseEntityPacketWrapper(buf: Uint8Array): Promise<void> {
 		console.error(e)
 	}
 }
+
 Events.on("ServerMessage", async (msg_id, buf_) => {
 	const buf = new Uint8Array(buf_)
 	switch (msg_id) {
-		case 41: {
-			const msg = ParseProtobufNamed(buf, "CSVCMsg_FlattenedSerializer")
-			if ((globalThis as any).dump_d_ts) {
-				const obj = MapToObject(msg)
-				const list = Object.values(obj.serializers).map((ser: any) => [
-					obj.symbols[ser.serializer_name_sym] + (ser.serializer_version !== 0 ? ser.serializer_version : ""),
-					Object.values(ser.fields_index).map((field_id: any) => {
-						const field = obj.fields[field_id]
-						return [
-							FixType(obj.symbols as string[], field),
-							obj.symbols[field.var_name_sym],
-						]
-					}),
-				])
-				console.log("dump_CSVCMsg_FlattenedSerializer.d.ts", `\
-import { Vector2, Vector3, QAngle, Vector4 } from "wrapper/Imports"
-
-type Color = number // 0xAABBGGRR?
-type HSequence = number
-type item_definition_index_t = number
-type itemid_t = number
-type style_index_t = number
-
-${list.map(([name, fields]) => `\
-declare class ${name} {
-	${(fields as [string, string][]).map(([type, f_name]) => `${f_name}: ${type}`).join("\n\t")}
-}`).join("\n\n")}
-`)
-			}
-			entities_symbols = msg.get("symbols") as string[]
-			for (const [construct, map] of FieldHandlers) {
-				const map2 = new Map<number, FieldHandler>()
-				for (const [field_name, field_handler] of map) {
-					const id = entities_symbols.indexOf(field_name)
-					if (id === -1) {
-						console.log(`[WARNING] Index of "${field_name}" not found in CSVCMsg_FlattenedSerializer.`)
-						continue
-					}
-					map2.set(id, field_handler)
-				}
-				cached_field_handlers.set(construct, map2)
-			}
-			break
-		}
 		case 55: // we have custom parsing for CSVCMsg_PacketEntities
 			await ParseEntityPacketWrapper(buf)
 			break

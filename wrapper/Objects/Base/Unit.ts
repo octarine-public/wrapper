@@ -18,7 +18,6 @@ import { modifierstate } from "../../Enums/modifierstate"
 import { EPropertyType } from "../../Enums/PropertyType"
 import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
-import * as StringTables from "../../Managers/StringTables"
 import ExecuteOrder from "../../Native/ExecuteOrder"
 import { ComputedAttachment } from "../../Resources/ComputeAttachments"
 import { GridNav } from "../../Resources/ParseGNV"
@@ -26,7 +25,6 @@ import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensi
 import GameState from "../../Utils/GameState"
 import { DamageIgnoreBuffs } from "../../Utils/Utils"
 import Inventory from "../DataBook/Inventory"
-import ModifiersBook from "../DataBook/ModifiersBook"
 import UnitData from "../DataBook/UnitData"
 import Ability from "./Ability"
 import Entity, { LocalPlayer } from "./Entity"
@@ -46,7 +44,6 @@ export default class Unit extends Entity {
 	public UnitData = UnitData.empty
 
 	public readonly Inventory = new Inventory(this)
-	public readonly ModifiersBook = new ModifiersBook(this)
 
 	public IsTrueSightedForEnemies = false
 	public HasScepterModifier = false
@@ -123,6 +120,7 @@ export default class Unit extends Entity {
 	public readonly Spells = new Array<Nullable<Ability>>(MAX_SPELLS).fill(undefined)
 	public readonly TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
 	public readonly TotalItems = new Array<Nullable<Item>>(MAX_SPELLS).fill(undefined)
+	public readonly Buffs: Modifier[] = []
 	@NetworkedBasicField("m_iXPBounty")
 	public XPBounty = 0
 	@NetworkedBasicField("m_iXPBountyExtra")
@@ -388,17 +386,13 @@ export default class Unit extends Entity {
 		return MaskToArrayBigInt(this.UnitStateMask)
 	}
 	public get IsEthereal(): boolean {
-		return this.ModifiersBook.HasAnyBuffByNames(this.EtherealModifiers)
+		return this.HasAnyBuffByNames(this.EtherealModifiers)
 	}
 	public get CanUseAbilitiesInInvisibility(): boolean {
-		return this.ModifiersBook.HasAnyBuffByNames(this.CanUseAbilitiesInInvis)
+		return this.HasAnyBuffByNames(this.CanUseAbilitiesInInvis)
 	}
 	public get Items(): Item[] {
 		return this.Inventory.Items
-	}
-
-	public get Buffs(): Modifier[] {
-		return this.ModifiersBook.Buffs
 	}
 
 	public get HullRadius(): number {
@@ -603,11 +597,22 @@ export default class Unit extends Entity {
 	public GetActivityForAbilityClass<T extends Ability>(class_: Constructor<T>): Nullable<GameActivity_t> {
 		return this.GetActivityForAbility(this.GetAbilityByClass(class_))
 	}
-	public GetBuffByName(name: string) {
-		return this.ModifiersBook.GetBuffByName(name)
+	public GetBuffByName(name: string): Nullable<Modifier> {
+		return this.Buffs.find(buff => buff.Name === name)
 	}
 	public HasBuffByName(name: string): boolean {
-		return this.ModifiersBook.HasBuffByName(name)
+		return this.Buffs.some(buff => buff.Name === name)
+	}
+	public GetBuffByRegexp(regex: RegExp): Nullable<Modifier> {
+		return this.Buffs.find(buff => regex.test(buff.Name))
+	}
+	public GetAnyBuffByNames(names: string[]): Nullable<Modifier> {
+		let buff: Nullable<Modifier>
+		names.some(name => (buff = this.GetBuffByName(name)) !== undefined)
+		return buff
+	}
+	public HasAnyBuffByNames(names: string[]): boolean {
+		return names.some(name => this.GetBuffByName(name) !== undefined)
 	}
 	/**
 	 * faster (Distance <= range)
@@ -1073,7 +1078,7 @@ export default class Unit extends Entity {
 	}
 
 	public async ChangeFieldsByEvents() {
-		const buffs = this.ModifiersBook.Buffs
+		const buffs = this.Buffs
 
 		{ // IsTrueSightedForEnemies
 			const lastIsTrueSighted = this.IsTrueSightedForEnemies
@@ -1233,11 +1238,9 @@ export const Units = EntityManager.GetEntitiesByClass(Unit)
 
 async function UnitNameChanged(unit: Unit) {
 	unit.UnitData = (await UnitData.global_storage).get(unit.Name) ?? UnitData.empty
-	if (unit.IsValid)
-		await EventsSDK.emit("EntityNameChanged", false, unit)
 }
 
-import { RegisterFieldHandler, ReplaceFieldHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", async (unit, new_value) => {
 	const old_name = unit.Name
 	unit.UnitName_ = new_value >= 0 ? (await UnitData.GetUnitNameByNameIndex(new_value as number) ?? "") : ""
@@ -1246,13 +1249,10 @@ RegisterFieldHandler(Unit, "m_iUnitNameIndex", async (unit, new_value) => {
 	if (old_name !== unit.Name)
 		await UnitNameChanged(unit)
 })
-ReplaceFieldHandler(Unit, "m_nameStringableIndex", async (unit, new_val) => {
-	const old_name = unit.Name
-	unit.Name_ = StringTables.GetString("EntityNames", new_val as number) ?? unit.Name_
+RegisterFieldHandler(Unit, "m_nameStringableIndex", async (unit, new_val) => {
 	if (unit.UnitName_ === "")
 		unit.UnitName_ = unit.Name_
-	if (old_name !== unit.Name)
-		await UnitNameChanged(unit)
+	await UnitNameChanged(unit)
 })
 RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", async (unit, new_value) => {
 	unit.IsControllableByPlayerMask = new_value as bigint

@@ -117,7 +117,6 @@ interface EventsSDK extends EventEmitter {
 	on(name: "UnitFadeGesture", listener: (npc: Nullable<Unit | FakeUnit>, activity: number) => void): EventsSDK
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventsSDK
 	on(name: "LifeStateChanged", listener: (ent: Entity) => void): EventsSDK
-	on(name: "EntityNameChanged", listener: (ent: Entity) => void): EventsSDK
 	on(name: "UnitAbilitiesChanged", listener: (ent: Unit) => void): EventsSDK
 	on(name: "UnitItemsChanged", listener: (ent: Unit) => void): EventsSDK
 	on(name: "EntityTeamChanged", listener: (ent: Entity) => void): EventsSDK

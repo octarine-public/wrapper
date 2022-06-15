@@ -482,10 +482,7 @@ RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => {
 	ent.VisualAngles.CopyFrom(m_angRotation)
 })
 RegisterFieldHandler(Entity, "m_nameStringableIndex", async (ent, new_val) => {
-	const old_name = ent.Name
 	ent.Name_ = StringTables.GetString("EntityNames", new_val as number) ?? ent.Name_
-	if (ent.IsValid && old_name !== ent.Name)
-		await EventsSDK.emit("EntityNameChanged", false, ent)
 })
 
 RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, new_val) => {

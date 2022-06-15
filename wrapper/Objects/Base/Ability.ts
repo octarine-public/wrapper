@@ -51,7 +51,7 @@ export default class Ability extends Entity {
 	@NetworkedBasicField("m_bHidden")
 	public IsHidden_ = false
 	@NetworkedBasicField("m_nAbilityCurrentCharges")
-	public CurrentCharges = 0
+	public AbilityCurrentCharges = 0
 	@NetworkedBasicField("m_iDirtyButtons")
 	public DirtyButtons = 0
 	@NetworkedBasicField("m_fAbilityChargeRestoreTimeRemaining")
@@ -208,6 +208,9 @@ export default class Ability extends Entity {
 	}
 	public get IsCastRangeFake(): boolean {
 		return false
+	}
+	public get CurrentCharges() {
+		return this.AbilityCurrentCharges
 	}
 	public async AsyncCreate(): Promise<void> {
 		this.AbilityData = (await AbilityData.global_storage).get(this.Name) ?? AbilityData.empty

@@ -1,6 +1,7 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAScriptInventorySlot_t } from "../../Enums/DOTAScriptInventorySlot_t"
 import { EShareAbility } from "../../Enums/EShareAbility"
+import { EPropertyType } from "../../Enums/PropertyType"
 import Ability from "./Ability"
 import { GameRules } from "./Entity"
 
@@ -53,25 +54,25 @@ export default class Item extends Ability {
 	@NetworkedBasicField("m_bIsNeutralDrop")
 	public IsNeutralDrop = false
 	@NetworkedBasicField("m_iCurrentCharges")
-	public CurrentCharges = 0
+	public ItemCurrentCharges = 0
 
-	get IsReady(): boolean {
+	public get IsReady(): boolean {
 		const unit = this.Owner
 		return this.IsCooldownReady && this.Level !== 0 && (unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsMuted))
 	}
-	get IsMuted(): boolean {
+	public get IsMuted(): boolean {
 		return this.EnableTime !== 0 && this.EnableTime > GameRules!.RawGameTime
 	}
-	get Cost(): number {
+	public get Cost(): number {
 		return this.AbilityData.Cost
 	}
-	get EffectName(): string {
+	public get EffectName(): string {
 		return this.AbilityData.EffectName
 	}
-	get IsDisplayingCharges(): boolean {
+	public get IsDisplayingCharges(): boolean {
 		return this.AbilityData.ItemDisplayCharges
 	}
-	get IsHidingCharges(): boolean {
+	public get IsHidingCharges(): boolean {
 		return this.AbilityData.ItemHideCharges
 	}
 	public get GroundModelName(): string {
@@ -82,6 +83,9 @@ export default class Item extends Ability {
 	}
 	public get SpellAmplification(): number {
 		return this.GetSpecialValue("spell_amp") / 100
+	}
+	public get CurrentCharges() {
+		return this.ItemCurrentCharges
 	}
 	public DisassembleItem(queue?: boolean) {
 		return this.Owner?.DisassembleItem(this, queue)
@@ -122,9 +126,3 @@ export default class Item extends Ability {
 			&& this.IsCooldownReady
 	}
 }
-
-import { ReplaceFieldHandler } from "wrapper/Objects/NativeToSDK"
-import { EPropertyType } from "../../Enums/PropertyType"
-ReplaceFieldHandler(Item, "m_nAbilityCurrentCharges", () => {
-	// override ability handler so that Item#CurrentCharges will have priority over Ability#CurrentCharges
-})

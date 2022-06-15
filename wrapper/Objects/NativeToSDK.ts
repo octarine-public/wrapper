@@ -1,4 +1,7 @@
 import { EntityPropertyType } from "../Managers/EntityManager"
+import Events from "../Managers/Events"
+import { ParseProtobufNamed } from "../Utils/Protobuf"
+import { MapToObject } from "../Utils/Utils"
 import Entity from "./Base/Entity"
 
 export type FieldHandler = (entity: Entity, new_value: EntityPropertyType) => any
@@ -6,10 +9,13 @@ export const ClassToEntities = new Map<Constructor<any>, Entity[]>(),
 	SDKClasses: [Constructor<Entity>, Entity[]][] = [],
 	FieldHandlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>()
 const constructors = new Map<string, Constructor<Entity>>()
+export const cached_field_handlers = new Map<Constructor<Entity>, Map<number, FieldHandler>>()
 
 function RegisterClassInternal(constructor: Constructor<Entity>) {
 	if (!ClassToEntities.has(constructor))
 		ClassToEntities.set(constructor, [])
+	if (!cached_field_handlers.has(constructor))
+		cached_field_handlers.set(constructor, new Map())
 	SDKClasses.push([constructor, ClassToEntities.get(constructor)!])
 	const map = new Map<string, FieldHandler>()
 	const prototype = constructor.prototype
@@ -44,13 +50,15 @@ export function RegisterFieldHandler<T extends Entity>(
 	if (map.has(field_name))
 		handler_ = GenerateChainedFieldHandler(map.get(field_name)!, handler_)
 	map.set(field_name, handler_)
-}
-export function ReplaceFieldHandler<T extends Entity>(
-	constructor: Constructor<T>,
-	field_name: string,
-	handler: (entity: T, new_value: EntityPropertyType) => any,
-) {
-	FieldHandlers.get(constructor)!.set(field_name, handler as FieldHandler)
+
+	const map2 = cached_field_handlers.get(constructor)!
+	const id = entities_symbols.indexOf(field_name)
+	if (id === -1) {
+		if (entities_symbols.length !== 0)
+			console.log(`[WARNING] Index of "${field_name}" not found in CSVCMsg_FlattenedSerializer.`)
+		return
+	}
+	map2.set(id, handler_)
 }
 
 function FixClassNameForMap<T>(constructor_name: string, map: Map<string, T>): Nullable<string> {
@@ -95,3 +103,93 @@ export default function GetConstructorByName(class_name: string, constructor_nam
 	console.error(`Can't find wrapper declared inherited classes for classname ${class_name}, [${inherited}]`)
 	return undefined
 }
+
+function FixType(symbols: string[], field: any): string {
+	{
+		const field_serializer_name_sym = field.field_serializer_name_sym
+		if (field_serializer_name_sym !== undefined)
+			return symbols[field_serializer_name_sym] + (field.field_serializer_version !== 0 ? field.field_serializer_version : "")
+	}
+	let type = symbols[field.var_type_sym]
+	// types
+	type = type.replace(/\<\s/g, "<")
+	type = type.replace(/\s\>/g, ">")
+	type = type.replace(/CNetworkedQuantizedFloat/g, "float")
+	type = type.replace(/CUtlVector\<(.*)\>/g, "$1[]")
+	type = type.replace(/CNetworkUtlVectorBase\<(.*)\>/g, "$1[]")
+	type = type.replace(/CHandle\<(.*)\>/g, "CEntityIndex<$1>")
+	type = type.replace(/CStrongHandle\<(.*)\>/g, "CStrongHandle<$1>")
+	type = type.replace(/Vector2D/g, "Vector2")
+	type = type.replace(/Vector4D|Quaternion/g, "Vector4")
+	type = type.replace(/Vector$/g, "Vector3")
+	type = type.replace(/Vector([^\d])/g, "Vector3$1")
+
+	// fix arrays
+	type = type.replace(/\[\d+\]/g, "[]")
+
+	// primitives
+	type = type.replace(/bool/g, "boolean")
+	type = type.replace(/double/g, "number")
+	type = type.replace(/uint64/g, "bigint")
+	type = type.replace(/int64/g, "bigint")
+	type = type.replace(/float(32|64)?/g, "number")
+	type = type.replace(/u?int(\d+)/g, "number")
+	type = type.replace(/CUtlStringToken/g, "CStringToken")
+	type = type.replace(/CUtlString|CUtlSymbolLarge|char(\*|\[\])/g, "string")
+	type = type.replace(/CStringToken/g, "CUtlStringToken")
+
+	// omit pointers
+	type = type.replace(/\*/g, "")
+
+	return type
+}
+
+export let entities_symbols: string[] = []
+Events.on("ServerMessage", async (msg_id, buf_) => {
+	const buf = new Uint8Array(buf_)
+	switch (msg_id) {
+		case 41: {
+			const msg = ParseProtobufNamed(buf, "CSVCMsg_FlattenedSerializer")
+			if ((globalThis as any).dump_d_ts) {
+				const obj = MapToObject(msg)
+				const list = Object.values(obj.serializers).map((ser: any) => [
+					obj.symbols[ser.serializer_name_sym] + (ser.serializer_version !== 0 ? ser.serializer_version : ""),
+					Object.values(ser.fields_index).map((field_id: any) => {
+						const field = obj.fields[field_id]
+						return [
+							FixType(obj.symbols as string[], field),
+							obj.symbols[field.var_name_sym],
+						]
+					}),
+				])
+				console.log("dump_CSVCMsg_FlattenedSerializer.d.ts", `\
+import { Vector2, Vector3, QAngle, Vector4 } from "wrapper/Imports"
+
+type Color = number // 0xAABBGGRR?
+type HSequence = number
+type item_definition_index_t = number
+type itemid_t = number
+type style_index_t = number
+
+${list.map(([name, fields]) => `\
+declare class ${name} {
+	${(fields as [string, string][]).map(([type, f_name]) => `${f_name}: ${type}`).join("\n\t")}
+}`).join("\n\n")}
+`)
+			}
+			entities_symbols = msg.get("symbols") as string[]
+			for (const [construct, map] of FieldHandlers) {
+				const map2 = cached_field_handlers.get(construct)!
+				for (const [field_name, field_handler] of map) {
+					const id = entities_symbols.indexOf(field_name)
+					if (id === -1) {
+						console.log(`[WARNING] Index of "${field_name}" not found in CSVCMsg_FlattenedSerializer.`)
+						continue
+					}
+					map2.set(id, field_handler)
+				}
+			}
+			break
+		}
+	}
+})
