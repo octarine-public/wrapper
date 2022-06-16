@@ -1,12 +1,8 @@
-import Vector2 from "../../Base/Vector2"
 import { WrapperClass } from "../../Decorators"
 import { MapArea } from "../../Enums/MapArea"
 import DotaMap from "../../Helpers/DotaMap"
 import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
-import { GetPositionHeight } from "../../Native/WASM"
-import GameState from "../../Utils/GameState"
-import { GameRules } from "./Entity"
 import Unit from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Creep")
@@ -61,42 +57,4 @@ export const Creeps = EntityManager.GetEntitiesByClass(Creep)
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof Creep)
 		ent.TryAssignLane()
-})
-EventsSDK.on("Tick", dt => {
-	const wave_time = (GameRules?.GameTime ?? 0) % 30
-	const spawn_creeps = wave_time >= 0 && wave_time < 5
-	Creeps.forEach(creep => {
-		if (creep.IsNeutral || creep.Owner !== undefined) {
-			creep.Lane = MapArea.Unknown
-			return
-		}
-		creep.TryAssignLane()
-		if (
-			// we should handle all those cases except creep.Lane in Unit
-			creep.Lane === MapArea.Unknown
-			|| !creep.IsAlive
-			|| creep.IsVisible
-		)
-			return
-		if (spawn_creeps)
-			creep.PredictedIsWaitingToSpawn = false
-		else if (!creep.IsSpawned && creep.PredictedIsWaitingToSpawn)
-			return
-		const next_pos = DotaMap.GetCreepCurrentTarget(creep.Position, creep.Team, creep.Lane)?.Position
-		if (next_pos === undefined)
-			return
-		const dist2D = creep.PredictedPosition.Distance2D(next_pos)
-		if (dist2D > 0.01) {
-			const new_pos = Vector2.FromVector3(creep.PredictedPosition)
-				.Extend(
-					Vector2.FromVector3(next_pos),
-					Math.min(creep.IdealSpeed * dt, dist2D),
-				)
-			creep.PredictedPosition
-				.SetX(new_pos.x)
-				.SetY(new_pos.y)
-				.SetZ(GetPositionHeight(new_pos))
-		}
-		creep.LastPredictedPositionUpdate = GameState.RawGameTime
-	})
 })

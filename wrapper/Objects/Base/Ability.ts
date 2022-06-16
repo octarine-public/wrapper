@@ -254,10 +254,6 @@ export default class Ability extends Entity {
 		return this.GetCastDelay(position) + ((time + this.ActivationDelay) * 1000)
 	}
 
-	public GetDamage(target: Unit, source?: Unit): number {
-		return target.CalculateDamage((this.AbilityDamage || this.GetSpecialValue("damage")) * 1, this.DamageType, source)
-	}
-
 	public UseAbility(target?: Vector3 | Entity, checkAutoCast: boolean = false, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
 		return this.Owner?.UseSmartAbility(this, target, checkAutoCast, checkToggled, queue, showEffects)
 	}

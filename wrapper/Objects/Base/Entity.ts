@@ -428,18 +428,10 @@ export default class Entity {
 			this.ModelScale,
 		)
 	}
-	public ForwardNativeProperties(
-		m_fAttackRange: number,
-		m_fAttackSpeed: number,
-		m_fIncreasedAttackSpeed: number,
-		m_fAttacksPerSecond: number,
-		m_fIdealSpeed: number,
-		m_flBaseAttackTime: number,
-		m_iHealthBarOffset: number,
-		m_iMoveCapabilities: number,
-		m_flMagicalResistanceValueReal: number,
-		m_flBonusPhysicalArmor: number,
-	) {
+	/**
+	 * @deprecated
+	 */
+	public ForwardNativeProperties(m_iHealthBarOffset: number, m_iMoveCapabilities: number) {
 		// To be implemented in child classes
 	}
 

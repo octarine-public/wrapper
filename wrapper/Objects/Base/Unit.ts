@@ -1,6 +1,5 @@
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
-import { ArmorPerAgility } from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
@@ -133,12 +132,10 @@ export default class Unit extends Entity {
 	public LastActivityEndTime = 0
 	public Spawner: Nullable<NeutralSpawner>
 	public Spawner_ = 0
-	public AttackRange = 0
-	public AttackSpeed = 0
-	public IncreasedAttackSpeed = 0
-	public AttacksPerSecond = 0
 	public MoveCapabilities = DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE
-	public BonusArmor = 0
+	/**
+	 * @deprecated
+	 */
 	public UnitStateMask = 0n
 	public TPStartTime = -1
 	public readonly PredictedPosition = new Vector3().Invalidate()
@@ -148,9 +145,10 @@ export default class Unit extends Entity {
 	public readonly LastTPEndPosition = new Vector3().Invalidate()
 	private LastRealPredictedPositionUpdate_ = 0
 	private LastPredictedPositionUpdate_ = 0
-	private IdealSpeed_: Nullable<number>
+	/**
+	 * @deprecated
+	 */
 	private HealthBarOffset_: Nullable<number>
-	private MagicDamageResist_: Nullable<number>
 
 	private EtherealModifiers: string[] = [
 		"modifier_ghost_state",
@@ -274,13 +272,6 @@ export default class Unit extends Entity {
 	public get AttackDamageAverage(): number {
 		return (this.AttackDamageMin + this.AttackDamageMax) / 2
 	}
-	/**
-	 * https://dota2.gamepedia.com/Armor
-	 */
-	public get DamageResist(): number {
-		const armor = this.Armor
-		return (0.06 * armor) / (1 + 0.06 * Math.abs(armor))
-	}
 	public get HasArcana(): boolean {
 		return this.ArcanaLevel > 0
 	}
@@ -323,20 +314,6 @@ export default class Unit extends Entity {
 	public get BaseAttackTime() {
 		return this.UnitData.BaseAttackTime
 	}
-	public get AttackSpeedBonus() {
-		let attackSpeed = this.AttackSpeed
-		attackSpeed += this.GetBuffByName("modifier_ursa_overpower")?.Ability?.GetSpecialValue("attack_speed_bonus_pct") ?? 0
-		return Math.min(Math.max(20, attackSpeed * 100), 600)
-	}
-	public get AttackPoint(): number {
-		return this.AttackAnimationPoint / (1 + ((this.AttackSpeedBonus - 100) / 100))
-	}
-	public get AttackRate(): number {
-		return this.BaseAttackTime / (1 + ((this.AttackSpeedBonus - 100) / 100))
-	}
-	public get AttackBackswing() {
-		return this.AttackRate - this.AttackPoint
-	}
 	public get InvisibilityLevel(): number {
 		return this.Buffs.reduce((prev, buff) => Math.max(prev, buff.InvisibilityLevel), 0)
 	}
@@ -355,12 +332,6 @@ export default class Unit extends Entity {
 	public get IsSpawned(): boolean {
 		return !this.IsWaitingToSpawn
 	}
-	public get MagicDamageResist(): number {
-		return this.MagicDamageResist_ ?? this.BaseMagicDamageResist
-	}
-	public get Armor(): number {
-		return this.BaseArmor + this.BonusArmor + (this.TotalAgility * ArmorPerAgility)
-	}
 	public get ManaPercent(): number {
 		return Math.floor(this.Mana / this.MaxMana * 100) || 0
 	}
@@ -370,12 +341,9 @@ export default class Unit extends Entity {
 	public get MinimapIconSize(): number {
 		return this.UnitData.MinimapIconSize
 	}
-	public get IdealSpeed(): number {
-		return this.IdealSpeed_ ?? this.BaseMoveSpeed
-	}
-	public get SecondsPerAttack(): number {
-		return 1 / (this.AttacksPerSecond ?? 0)
-	}
+	/**
+	 * @deprecated
+	 */
 	public get UnitStateMask_(): bigint {
 		// TODO: use buffs to calculate this
 		if (!GetEntityUnitState(this.Index))
@@ -483,7 +451,7 @@ export default class Unit extends Entity {
 		return true
 	}
 
-	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
+	public VelocityWaypoint(time: number, movespeed: number): Vector3 {
 		return this.InFront(movespeed * time)
 	}
 	public GetItemByName(name: string | RegExp, includeBackpack = false) {
@@ -515,29 +483,12 @@ export default class Unit extends Entity {
 	public IsControllableByPlayer(playerID: number): boolean {
 		return HasBitBigInt(this.IsControllableByPlayerMask, BigInt(playerID))
 	}
-	// TODO: parse from KV + use buffs + items
-	public ForwardNativeProperties(
-		m_fAttackRange: number,
-		m_fAttackSpeed: number,
-		m_fIncreasedAttackSpeed: number,
-		m_fAttacksPerSecond: number,
-		m_fIdealSpeed: number,
-		m_flBaseAttackTime: number,
-		m_iHealthBarOffset: number,
-		m_iMoveCapabilities: number,
-		m_flMagicalResistanceValueReal: number,
-		m_flBonusPhysicalArmor: number,
-	) {
-		this.AttackRange = m_fAttackRange
-		this.AttackSpeed = m_fAttackSpeed
-		this.IncreasedAttackSpeed = m_fIncreasedAttackSpeed
-		this.AttacksPerSecond = m_fAttacksPerSecond
-		this.IdealSpeed_ = m_fIdealSpeed
-		// this.BaseAttackTime = m_flBaseAttackTime
+	/**
+	 * @deprecated
+	 */
+	public ForwardNativeProperties(m_iHealthBarOffset: number, m_iMoveCapabilities: number) {
 		this.HealthBarOffset_ = m_iHealthBarOffset
 		this.MoveCapabilities = m_iMoveCapabilities
-		this.MagicDamageResist_ = m_flMagicalResistanceValueReal
-		this.BonusArmor = m_flBonusPhysicalArmor
 	}
 
 	/**
@@ -740,179 +691,6 @@ export default class Unit extends Entity {
 		return dmg
 	}
 
-	public CalculateDamage(damage: number, damage_type: DAMAGE_TYPES, source?: Unit): number {
-		if (damage <= 0 || this.WillIgnore(damage_type))
-			return 0
-		damage = this.AbsorbedDamage(damage, damage_type, source)
-		if (damage <= 0)
-			return 0
-		switch (damage_type) {
-			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
-				damage *= 1 - this.MagicDamageResist / 100
-				break
-			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL: {
-				const armor = this.Armor
-				damage *= Math.max(Math.min((1 - (0.06 * armor) / (1 + 0.06 * armor)), 25 / 12), 0)
-				{
-					const phys_damage_type = source === undefined ? AttackDamageType.Basic : source.AttackDamageType,
-						phys_armor_type = this.ArmorType
-					if (phys_damage_type === AttackDamageType.Hero && phys_armor_type === ArmorType.Structure)
-						damage *= .5
-					else if (phys_damage_type === AttackDamageType.Basic && phys_armor_type === ArmorType.Hero)
-						damage *= .75
-					else if (phys_damage_type === AttackDamageType.Basic && phys_armor_type === ArmorType.Structure)
-						damage *= .7
-					else if (phys_damage_type === AttackDamageType.Pierce && phys_armor_type === ArmorType.Hero)
-						damage *= .5
-					else if (phys_damage_type === AttackDamageType.Pierce && phys_armor_type === ArmorType.Basic)
-						damage *= 1.5
-					else if (phys_damage_type === AttackDamageType.Pierce && phys_armor_type === ArmorType.Structure)
-						damage *= .35
-					else if (phys_damage_type === AttackDamageType.Siege && phys_armor_type === ArmorType.Structure)
-						damage *= 2.5
-				}
-				break
-			}
-			default:
-				break
-		}
-		return Math.max(damage, 0)
-	}
-
-	public CalculateDamageByHand(source: Unit): number {
-		if (source.GetBuffByName("modifier_tinker_laser_blind") !== undefined || this.WillIgnore(DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL))
-			return 0
-		let mult = 1
-		{
-			const damage_type = source.AttackDamageType,
-				armor_type = this.ArmorType
-			if (damage_type === AttackDamageType.Hero && armor_type === ArmorType.Structure)
-				mult *= .5
-			else if (damage_type === AttackDamageType.Basic && armor_type === ArmorType.Hero)
-				mult *= .75
-			else if (damage_type === AttackDamageType.Basic && armor_type === ArmorType.Structure)
-				mult *= .7
-			else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Hero)
-				mult *= .5
-			else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Basic)
-				mult *= 1.5
-			else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Structure)
-				mult *= .35
-			else if (damage_type === AttackDamageType.Siege && armor_type === ArmorType.Hero)
-				mult *= .85
-			else if (damage_type === AttackDamageType.Siege && armor_type === ArmorType.Structure)
-				mult *= 2.5
-		}
-		let damage = source.AttackDamageMin + source.BonusDamage
-		damage = this.AbsorbedDamage(damage, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL)
-		if (damage <= 0)
-			return 0
-		const is_enemy = this.IsEnemy(source)
-		let armor = this.Armor
-		if (is_enemy) {
-			{
-				if (!this.HasBuffByName("modifier_blight_stone_buff")) {
-					const item = source.GetItemByName("item_blight_stone")
-					if (item !== undefined)
-						armor += item.GetSpecialValue("corruption_armor")
-				}
-			}
-			{
-				if (!this.HasBuffByName("modifier_desolator_buff")) {
-					const item = source.GetItemByName("item_desolator")
-					if (item !== undefined)
-						armor += item.GetSpecialValue("corruption_armor")
-				}
-			}
-			{
-				const item = source.GetItemByName("item_quelling_blade")
-				if (item !== undefined)
-					damage += item.GetSpecialValue(source.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? "damage_bonus_ranged" : "damage_bonus")
-			}
-			{
-				const item = source.GetItemByName("item_bfury")
-				if (item !== undefined)
-					damage += item.GetSpecialValue(source.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? "damage_bonus_ranged" : "damage_bonus")
-			}
-			{
-				const abil = source.GetAbilityByName("clinkz_searing_arrows")
-				if (abil !== undefined && abil.IsAutoCastEnabled && abil.IsManaEnough())
-					damage += abil.GetSpecialValue("damage_bonus")
-			}
-			{
-				const abil = source.GetAbilityByName("antimage_mana_break")
-				if (abil !== undefined && this.MaxMana > 0)
-					damage += Math.min(this.Mana, abil.GetSpecialValue("mana_per_hit")) * abil.GetSpecialValue("damage_per_burn")
-			}
-			{
-				const abil = source.GetAbilityByName("ursa_fury_swipes")
-				if (abil !== undefined) {
-					const buff = this.GetBuffByName("modifier_ursa_fury_swipes_damage_increase")
-					damage += abil.GetSpecialValue("damage_per_stack") * (1 + (buff !== undefined ? buff.StackCount : 0))
-				}
-			}
-			{
-				const abil = source.GetAbilityByName("bounty_hunter_jinada")
-				if (abil !== undefined && abil.Cooldown === 0)
-					damage += abil.GetSpecialValue("bonus_damage")
-			}
-		}
-		{
-			const abil = source.GetAbilityByName("kunkka_tidebringer")
-			if (abil !== undefined && abil.IsAutoCastEnabled && abil.Cooldown === 0)
-				damage += abil.GetSpecialValue("damage_bonus")
-		}
-		{
-			const buff = source.GetBuffByName("modifier_storm_spirit_overload_passive")
-			if (buff !== undefined) {
-				const abil = buff.Ability
-				if (abil instanceof Ability)
-					damage += abil.AbilityDamage
-			}
-		}
-		{
-			const abil = source.GetAbilityByName("riki_permanent_invisibility")
-			if (abil !== undefined && (source.Forward.AngleBetweenFaces(this.Forward) * 180 / Math.PI) < abil.GetSpecialValue("backstab_angle"))
-				damage += abil.GetSpecialValue("damage_multiplier") * source.TotalAgility
-		}
-		damage *= 1 - (armor * 0.05) / (1 + Math.abs(armor) * 0.05)
-		if (is_enemy) {
-			{
-				const abil = source.GetAbilityByName("silencer_glaives_of_wisdom")
-				if (abil !== undefined && abil.IsAutoCastEnabled && abil.IsManaEnough())
-					damage += abil.GetSpecialValue("intellect_damage_pct") * source.TotalIntellect / 100
-			}
-			{
-				const abil = source.GetAbilityByName("obsidian_destroyer_arcane_orb")
-				if (abil !== undefined && abil.IsAutoCastEnabled && abil.IsManaEnough())
-					damage += abil.GetSpecialValue("mana_pool_damage_pct") * source.MaxMana / 100
-			}
-		}
-		{
-			const abil = source.GetAbilityByName("spectre_desolate")
-			if (abil !== undefined)
-				damage += abil.GetSpecialValue("bonus_damage")
-		}
-		{
-			const buff = source.GetBuffByName("modifier_bloodseeker_bloodrage")
-			if (buff !== undefined) {
-				const abil = buff.Ability
-				if (abil instanceof Ability)
-					mult *= 1 + abil.GetSpecialValue("damage_increase_pct") / 100
-			}
-		}
-		{
-			const buff = this.GetBuffByName("modifier_bloodseeker_bloodrage")
-			if (buff !== undefined) {
-				const abil = buff.Ability
-				if (abil instanceof Ability)
-					mult *= 1 + abil.GetSpecialValue("damage_increase_pct") / 100
-			}
-		}
-
-		return Math.max(damage * mult, 0)
-	}
-
 	// TODO: rewrite this
 	public IsInside(vec: Vector3, radius: number): boolean {
 		const direction = this.Forward,
@@ -946,37 +724,6 @@ export default class Unit extends Entity {
 		return sphereTarget !== undefined && sphereTarget.RemainingTime - time <= 0
 	}
 
-	public AttackDamage(target: Unit, useMinDamage = true, damageAmplifier: number = 0): number {
-		const damageType = this.AttackDamageType,
-			armorType = target.ArmorType
-		let damage = (useMinDamage ? this.AttackDamageMin : this.AttackDamageAverage) + this.BonusDamage,
-			mult = 1
-
-		if (damageType === AttackDamageType.Hero && armorType === ArmorType.Structure)
-			mult *= .5
-		else if (damageType === AttackDamageType.Basic && armorType === ArmorType.Hero)
-			mult *= .75
-		else if (damageType === AttackDamageType.Basic && armorType === ArmorType.Structure)
-			mult *= .7
-		else if (damageType === AttackDamageType.Pierce && armorType === ArmorType.Hero)
-			mult *= .5
-		else if (damageType === AttackDamageType.Pierce && armorType === ArmorType.Basic)
-			mult *= 1.5
-		else if (damageType === AttackDamageType.Pierce && armorType === ArmorType.Structure)
-			mult *= .35
-		else if (damageType === AttackDamageType.Siege && armorType === ArmorType.Hero)
-			mult *= .85
-		else if (damageType === AttackDamageType.Siege && armorType === ArmorType.Structure)
-			mult *= 2.5
-
-		damage += target.GetAdditionalAttackDamageMultiplier(this)
-		mult *= target.GetAdditionalAttackDamageMultiplier(this)
-
-		mult *= 1 - this.DamageResist
-		mult *= (1 + damageAmplifier)
-
-		return damage * mult
-	}
 	public CalculateActivityModifiers(activity: GameActivity_t, ar: string[]): void {
 		super.CalculateActivityModifiers(activity, ar)
 		if (this.IsIllusion)
@@ -1024,10 +771,6 @@ export default class Unit extends Entity {
 	}
 	public GetAdditionalAttackDamageMultiplier(source: Unit): number {
 		return 1
-	}
-
-	public AttackRangeBonus(ent?: Unit) {
-		return (ent?.HullRadius ?? 0) + this.AttackRange + this.HullRadius
 	}
 
 	public CanAttack(target: Unit): boolean {

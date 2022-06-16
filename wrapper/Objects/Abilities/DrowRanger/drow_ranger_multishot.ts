@@ -3,7 +3,7 @@ import Ability from "../../Base/Ability"
 
 @WrapperClass("drow_ranger_multishot")
 export default class drow_ranger_multishot extends Ability {
-	public GetCastRangeForLevel(level: number): number {
-		return (this.Owner?.AttackRange ?? 0) * this.GetSpecialValue("arrow_range_multiplier", level)
-	}
+	// public GetCastRangeForLevel(level: number): number {
+	// 	return (this.Owner?.AttackRange ?? 0) * this.GetSpecialValue("arrow_range_multiplier", level)
+	// }
 }

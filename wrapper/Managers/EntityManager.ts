@@ -371,28 +371,25 @@ message CSVCMsg_FlattenedSerializer {
 }
 `)
 let latest_entity_packet_promise = Promise.resolve()
+const NO_ENTITY_NATIVE_PROPS_ = (globalThis as any).NO_ENTITY_NATIVE_PROPS ?? false
 async function ParseEntityPacket(buf: Uint8Array): Promise<void> {
 	await EventsSDK.emit("PreDataUpdate", false)
 	LatestTickDelta = 0
 	const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
 	const native_changes: number[][] = []
-	while (!stream.Empty()) {
-		const ent_id = stream.ReadUint16()
-		if (ent_id === 0)
-			break
-		native_changes.push([
-			ent_id,
-			stream.ReadFloat32(), // m_fAttackRange
-			stream.ReadFloat32(), // m_fAttackSpeed
-			stream.ReadFloat32(), // m_fIncreasedAttackSpeed
-			stream.ReadFloat32(), // m_fAttacksPerSecond
-			stream.ReadFloat32(), // m_fIdealSpeed
-			stream.ReadFloat32(), // m_flBaseAttackTime
-			stream.ReadInt32(), // m_iHealthBarOffset
-			stream.ReadUint32(), // m_iMoveCapabilities
-			stream.ReadFloat32(), // m_flMagicalResistanceValueReal
-			stream.ReadFloat32(), // m_flBonusPhysicalArmor
-		])
+	if (!NO_ENTITY_NATIVE_PROPS_) {
+		while (!stream.Empty()) {
+			const ent_id = stream.ReadUint16()
+			if (ent_id === 0)
+				break
+			stream.RelativeSeek(6 * 4) // legacy
+			native_changes.push([
+				ent_id,
+				stream.ReadInt32(), // m_iHealthBarOffset
+				stream.ReadUint32(), // m_iMoveCapabilities
+			])
+			stream.RelativeSeek(2 * 4) // legacy
+		}
 	}
 	const created_entities: Entity[] = []
 	while (!stream.Empty()) {
@@ -418,32 +415,12 @@ async function ParseEntityPacket(buf: Uint8Array): Promise<void> {
 				break
 		}
 	}
-	for (const [
-		ent_id,
-		m_fAttackRange,
-		m_fAttackSpeed,
-		m_fIncreasedAttackSpeed,
-		m_fAttacksPerSecond,
-		m_fIdealSpeed,
-		m_flBaseAttackTime,
-		m_iHealthBarOffset,
-		m_iMoveCapabilities,
-		m_flMagicalResistanceValueReal,
-		m_flBonusPhysicalArmor,
-	] of native_changes) {
+	for (const [ent_id, m_iHealthBarOffset, m_iMoveCapabilities] of native_changes) {
 		const ent = EntityManager.EntityByIndex(ent_id)
 		if (ent !== undefined)
 			ent.ForwardNativeProperties(
-				m_fAttackRange,
-				m_fAttackSpeed,
-				m_fIncreasedAttackSpeed,
-				m_fAttacksPerSecond,
-				m_fIdealSpeed,
-				m_flBaseAttackTime,
 				m_iHealthBarOffset,
 				m_iMoveCapabilities,
-				m_flMagicalResistanceValueReal,
-				m_flBonusPhysicalArmor,
 			)
 	}
 	await EventsSDK.emit("MidDataUpdate", false)

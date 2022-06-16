@@ -1,17 +1,16 @@
 import Vector2 from "../../Base/Vector2"
-import Unit from "../../Objects/Base/Unit"
 import Obstacle from "./Obstacle"
 
 export default class MovingObstacle extends Obstacle {
-	public static FromUnit(unit: Unit): MovingObstacle {
-		return new MovingObstacle(
-			Vector2.FromVector3(unit.Position),
-			unit.HullRadius,
-			unit.IsMoving
-				? Vector2.FromVector3(unit.Forward).MultiplyScalarForThis(unit.IdealSpeed * 1.15)
-				: new Vector2(),
-		)
-	}
+	// public static FromUnit(unit: Unit): MovingObstacle {
+	// 	return new MovingObstacle(
+	// 		Vector2.FromVector3(unit.Position),
+	// 		unit.HullRadius,
+	// 		unit.IsMoving
+	// 			? Vector2.FromVector3(unit.Forward).MultiplyScalarForThis(unit.IdealSpeed * 1.15)
+	// 			: new Vector2(),
+	// 	)
+	// }
 
 	constructor(
 		Position_: Vector2,
