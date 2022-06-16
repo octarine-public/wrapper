@@ -77,7 +77,6 @@ class Font {
 	) { }
 }
 
-const NEW_DRAW_HANDLING_ = (globalThis as any).NEW_DRAW_HANDLING ?? false
 class CRendererSDK {
 	public readonly DefaultFontName = "Roboto"
 	public readonly DefaultTextSize = 18
@@ -468,15 +467,9 @@ class CRendererSDK {
 		this.in_draw = true
 		const prev_width = this.WindowSize.x,
 			prev_height = this.WindowSize.y
-		if (NEW_DRAW_HANDLING_) {
-			WASM.CloneWorldToProjection(DrawMatrix)
-			this.WindowSize.x = w
-			this.WindowSize.y = h
-		} else {
-			WASM.CloneWorldToProjection(IOBuffer.slice(0, 16))
-			this.WindowSize.x = IOBufferView.getInt32(17 * 4, true)
-			this.WindowSize.y = IOBufferView.getInt32(18 * 4, true)
-		}
+		WASM.CloneWorldToProjection(DrawMatrix)
+		this.WindowSize.x = w
+		this.WindowSize.y = h
 		if (this.WindowSize.x !== prev_width || this.WindowSize.y !== prev_height)
 			await EventsSDK.emit("WindowSizeChanged", false)
 		if (this.clear_texture_cache) {
