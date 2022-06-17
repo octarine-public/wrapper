@@ -121,6 +121,7 @@ export { default as Workers } from "./Native/Workers"
 export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/ExecuteOrder"
 
 export { default as Entity, LocalPlayer, GameRules } from "./Objects/Base/Entity"
+export { default as Wearable } from "./Objects/Base/Wearable"
 export { default as Unit } from "./Objects/Base/Unit"
 export { default as FakeUnit, FakeUnits } from "./Objects/Base/FakeUnit"
 export { default as SpiritBear } from "./Objects/Base/SpiritBear"

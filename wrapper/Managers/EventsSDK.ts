@@ -118,6 +118,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventsSDK
 	on(name: "LifeStateChanged", listener: (ent: Entity) => void): EventsSDK
 	on(name: "UnitAbilitiesChanged", listener: (ent: Unit) => void): EventsSDK
+	on(name: "UnitWearablesChanged", listener: (ent: Unit) => void): EventsSDK
 	on(name: "UnitItemsChanged", listener: (ent: Unit) => void): EventsSDK
 	on(name: "EntityTeamChanged", listener: (ent: Entity) => void): EventsSDK
 	// on(name: "NetworkFieldChanged", listener: (args: NetworkFieldChanged) => void): EventsSDK
@@ -157,6 +158,7 @@ interface EventsSDK extends EventEmitter {
 		value3: number,
 	) => void): EventsSDK
 	on(name: "MapDataLoaded", listener: () => void): EventsSDK
+	on(name: "EconDataLoaded", listener: () => void): EventsSDK
 	on(name: "WindowSizeChanged", listener: () => void): EventsSDK
 	on(name: "MatchmakingStatsUpdated", listener: (msg: RecursiveMap) => void): EventEmitter
 	on(name: "SharedObjectChanged", listener: (type_id: SOType, reason: number, msg: RecursiveMap) => void): EventEmitter

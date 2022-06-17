@@ -20,6 +20,7 @@ import EventsSDK from "../../Managers/EventsSDK"
 import ExecuteOrder from "../../Native/ExecuteOrder"
 import { ComputedAttachment } from "../../Resources/ComputeAttachments"
 import { GridNav } from "../../Resources/ParseGNV"
+import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
 import GameState from "../../Utils/GameState"
 import { DamageIgnoreBuffs } from "../../Utils/Utils"
@@ -34,6 +35,7 @@ import PhysicalItem from "./PhysicalItem"
 import Rune from "./Rune"
 import TempTree from "./TempTree"
 import Tree from "./Tree"
+import Wearable from "./Wearable"
 
 const MAX_SPELLS = 31
 const MAX_ITEMS = 16
@@ -120,6 +122,8 @@ export default class Unit extends Entity {
 	public readonly TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
 	public readonly TotalItems = new Array<Nullable<Item>>(MAX_SPELLS).fill(undefined)
 	public readonly Buffs: Modifier[] = []
+	public MyWearables: Wearable[] = []
+	public MyWearables_: number[] = []
 	@NetworkedBasicField("m_iXPBounty")
 	public XPBounty = 0
 	@NetworkedBasicField("m_iXPBountyExtra")
@@ -145,10 +149,6 @@ export default class Unit extends Entity {
 	public readonly LastTPEndPosition = new Vector3().Invalidate()
 	private LastRealPredictedPositionUpdate_ = 0
 	private LastPredictedPositionUpdate_ = 0
-	/**
-	 * @deprecated
-	 */
-	private HealthBarOffset_: Nullable<number>
 
 	private EtherealModifiers: string[] = [
 		"modifier_ghost_state",
@@ -281,7 +281,7 @@ export default class Unit extends Entity {
 	public get HealthBarOffset(): number {
 		let offset = this.HealthBarOffsetOverride
 		if (offset === -1)
-			offset = this.HealthBarOffset_ ?? this.UnitData.HealthBarOffset
+			offset = this.MyWearables.find(wearable => wearable.HealthBarOffset !== undefined)?.HealthBarOffset ?? this.UnitData.HealthBarOffset
 		return this.DeltaZ + offset
 	}
 	public get WorkshopName(): string {
@@ -486,8 +486,7 @@ export default class Unit extends Entity {
 	/**
 	 * @deprecated
 	 */
-	public ForwardNativeProperties(m_iHealthBarOffset: number, m_iMoveCapabilities: number) {
-		this.HealthBarOffset_ = m_iHealthBarOffset
+	public ForwardNativeProperties(m_iMoveCapabilities: number) {
 		this.MoveCapabilities = m_iMoveCapabilities
 	}
 
@@ -1043,6 +1042,12 @@ RegisterFieldHandler(Unit, "m_hItems", async (unit, new_value) => {
 	if (unit.TotalItems.some((item, i) => prevTotalItems[i] !== item))
 		await EventsSDK.emit("UnitItemsChanged", false, unit)
 })
+RegisterFieldHandler(Unit, "m_hMyWearables", async (unit, new_value) => {
+	unit.MyWearables_ = new_value as number[]
+	unit.MyWearables = unit.MyWearables_
+		.map(id => EntityManager.EntityByIndex(id) as Nullable<Wearable>)
+		.filter(ent => ent !== undefined) as Wearable[]
+})
 RegisterFieldHandler(Unit, "m_anglediff", (unit, new_value) => {
 	unit.NetworkedAngles.SubtractScalarY(unit.RotationDifference)
 	unit.RotationDifference = new_value as number
@@ -1083,6 +1088,13 @@ EventsSDK.on("PreEntityCreated", async ent => {
 				await EventsSDK.emit("UnitAbilitiesChanged", false, owner)
 				break
 			}
+	} else if (ent instanceof Wearable) {
+		for (let i = 0, end = owner.MyWearables_.length; i < end; i++)
+			if (ent.HandleMatches(owner.MyWearables_[i])) {
+				owner.MyWearables.push(ent)
+				await EventsSDK.emit("UnitWearablesChanged", false, owner)
+				break
+			}
 	}
 })
 
@@ -1091,19 +1103,22 @@ EventsSDK.on("EntityDestroyed", async ent => {
 	if (!(owner instanceof Unit))
 		return
 	if (ent instanceof Item) {
-		for (let i = 0, end = owner.TotalItems_.length; i < end; i++)
-			if (ent.HandleMatches(owner.TotalItems_[i])) {
+		for (let i = 0, end = owner.TotalItems.length; i < end; i++)
+			if (ent === owner.TotalItems[i]) {
 				owner.TotalItems[i] = undefined
 				await EventsSDK.emit("UnitItemsChanged", false, owner)
 				break
 			}
 	} else if (ent instanceof Ability) {
-		for (let i = 0, end = owner.Spells_.length; i < end; i++)
-			if (ent.HandleMatches(owner.Spells_[i])) {
+		for (let i = 0, end = owner.Spells.length; i < end; i++)
+			if (ent === owner.Spells[i]) {
 				owner.Spells[i] = undefined
 				await EventsSDK.emit("UnitAbilitiesChanged", false, owner)
 				break
 			}
+	} else if (ent instanceof Wearable) {
+		if (arrayRemove(owner.MyWearables, ent))
+			await EventsSDK.emit("UnitWearablesChanged", false, owner)
 	}
 })
 

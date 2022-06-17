@@ -377,20 +377,18 @@ async function ParseEntityPacket(buf: Uint8Array): Promise<void> {
 	LatestTickDelta = 0
 	const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
 	const native_changes: number[][] = []
-	if (!NO_ENTITY_NATIVE_PROPS_) {
+	if (!NO_ENTITY_NATIVE_PROPS_)
 		while (!stream.Empty()) {
 			const ent_id = stream.ReadUint16()
 			if (ent_id === 0)
 				break
-			stream.RelativeSeek(6 * 4) // legacy
+			stream.RelativeSeek(7 * 4) // legacy
 			native_changes.push([
 				ent_id,
-				stream.ReadInt32(), // m_iHealthBarOffset
 				stream.ReadUint32(), // m_iMoveCapabilities
 			])
 			stream.RelativeSeek(2 * 4) // legacy
 		}
-	}
 	const created_entities: Entity[] = []
 	while (!stream.Empty()) {
 		const ent_id = stream.ReadUint16()
@@ -415,14 +413,12 @@ async function ParseEntityPacket(buf: Uint8Array): Promise<void> {
 				break
 		}
 	}
-	for (const [ent_id, m_iHealthBarOffset, m_iMoveCapabilities] of native_changes) {
-		const ent = EntityManager.EntityByIndex(ent_id)
-		if (ent !== undefined)
-			ent.ForwardNativeProperties(
-				m_iHealthBarOffset,
-				m_iMoveCapabilities,
-			)
-	}
+	if (!NO_ENTITY_NATIVE_PROPS_)
+		for (const [ent_id, m_iMoveCapabilities] of native_changes) {
+			const ent = EntityManager.EntityByIndex(ent_id)
+			if (ent !== undefined)
+				ent.ForwardNativeProperties(m_iMoveCapabilities)
+		}
 	await EventsSDK.emit("MidDataUpdate", false)
 	for (const ent of created_entities)
 		await EventsSDK.emit("EntityCreated", false, ent)

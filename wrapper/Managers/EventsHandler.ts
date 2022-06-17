@@ -1228,7 +1228,10 @@ async function TryLoadMapFiles(): Promise<void> {
 		else
 			ResetGNV()
 	}
-	LoadEconData()
+	{
+		LoadEconData()
+		await EventsSDK.emit("EconDataLoaded", false)
+	}
 	{
 		ResetEntityLump()
 		WASM.ResetWorld()

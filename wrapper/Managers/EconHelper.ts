@@ -3,9 +3,9 @@ import { parseKVFile } from "../Resources/ParseKV"
 class EconReplacements {
 	public readonly orig2repl = new Map<string, string[]>()
 	public readonly repl2orig = new Map<string, string[]>()
-	public readonly repl2id = new Map<string, number>()
+	public readonly repl2id = new Map<string, bigint>()
 
-	public AddPair(orig: string, id: number, repl: string): void {
+	public AddPair(orig: string, id: bigint, repl: string): void {
 		let orig_ar = this.orig2repl.get(orig)
 		if (orig_ar === undefined) {
 			orig_ar = []
@@ -37,6 +37,8 @@ export const Models = new EconReplacements()
 export const IconReplacements = new EconReplacements()
 export const IconReplacementsMinimap = new EconReplacements()
 export const ChatWheel = new EconReplacements()
+export const ItemNames = new Map<bigint, string>()
+export const ItemHealthBarOffsets = new Map<bigint, number>()
 
 export function LoadEconData() {
 	Particles.Clear()
@@ -46,6 +48,8 @@ export function LoadEconData() {
 	IconReplacements.Clear()
 	IconReplacementsMinimap.Clear()
 	ChatWheel.Clear()
+	ItemNames.clear()
+	ItemHealthBarOffsets.clear()
 	const items_game = parseKVFile("scripts/items/items_game.txt").get("items_game")
 	if (!(items_game instanceof Map))
 		return
@@ -55,26 +59,43 @@ export function LoadEconData() {
 	for (const [id_str, item] of items) {
 		if (!(item instanceof Map))
 			continue
-		let id = 0
+		let id = 0n
 		try {
-			id = parseInt(id_str)
+			id = BigInt(id_str)
 		} catch {
 			continue
 		}
+		const itemName = item.get("name")
+		if (typeof itemName === "string")
+			ItemNames.set(id, itemName)
 		const visuals = item.get("visuals")
 		if (!(visuals instanceof Map))
 			continue
 		for (const [name, visual] of visuals) {
 			if (
 				!(visual instanceof Map)
-				|| !name.includes("asset_modifier")
+				|| !name.startsWith("asset_modifier")
 			)
 				continue
+			const type = visual.get("type")
+			switch (type) {
+				case "healthbar_offset":
+					const offset = visual.get("offset")
+					if (typeof offset === "string")
+						try {
+							ItemHealthBarOffsets.set(id, parseFloat(offset))
+						} catch {
+							continue
+						}
+					continue
+				default:
+					break
+			}
 			const orig = visual.get("asset"),
 				repl = visual.get("modifier")
 			if (typeof orig !== "string" || typeof repl !== "string")
 				continue
-			switch (visual.get("type")) {
+			switch (type) {
 				case "particle":
 					if (repl !== "particles/error/null.vpcf")
 						Particles.AddPair(orig, id, repl)
