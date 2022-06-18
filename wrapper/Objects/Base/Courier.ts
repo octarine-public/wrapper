@@ -22,3 +22,4 @@ export default class Courier extends Unit {
 		return false
 	}
 }
+export const Coruiers = EntityManager.GetEntitiesByClass(Courier)

@@ -89,7 +89,7 @@ export default class CGameRules extends Entity {
 	}
 }
 
-import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
 	const prev_tick = game.RawGameTime
 	GameState.RawGameTime = game.RawGameTime = new_val as number

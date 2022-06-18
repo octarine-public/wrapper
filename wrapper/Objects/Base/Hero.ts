@@ -43,10 +43,6 @@ export default class Hero extends Unit {
 	public TotalStrength = 0
 	public ReplicatingOtherHeroModel: Nullable<Unit | FakeUnit>
 	public RespawPosition = new Vector3().Invalidate()
-	@NetworkedBasicField("m_flStartSequenceCycle")
-	public StartSequenceCycle = 0
-	public StartSequenceCyclePrev = -1
-	public IsVisibleForEnemies = false
 
 	public get IsHero(): boolean {
 		return true
@@ -64,7 +60,7 @@ export default class Hero extends Unit {
 
 export const Heroes = EntityManager.GetEntitiesByClass(Hero)
 
-import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", async (ent, new_val) => {
 	const id = new_val as number
 	ent.ReplicatingOtherHeroModel = await GetPredictionTarget(id)
@@ -153,14 +149,4 @@ EventsSDK.on("GameEvent", async (name, obj) => {
 	const entity = EntityManager.EntityByIndex(obj.entindex)
 	if (entity instanceof Hero)
 		SetRespawn(entity)
-})
-
-EventsSDK.on("PostDataUpdate", async () => {
-	for (const hero of Heroes) {
-		const old_visibility = hero.IsVisibleForEnemies
-		hero.IsVisibleForEnemies = hero.StartSequenceCyclePrev === 0 && hero.StartSequenceCycle === 0
-		hero.StartSequenceCyclePrev = hero.StartSequenceCycle
-		if (old_visibility !== hero.IsVisibleForEnemies)
-			await EventsSDK.emit("TeamVisibilityChanged", false, hero)
-	}
 })

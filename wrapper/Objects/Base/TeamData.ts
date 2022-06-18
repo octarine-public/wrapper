@@ -54,7 +54,7 @@ export default class TeamData extends Entity {
 	}
 }
 
-import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 
 RegisterFieldHandler(TeamData, "m_vecDataTeam", (data, new_val) => {
 	data.DataTeam = (new_val as EntityPropertiesNode[]).map(map => new DataTeamPlayer(map))

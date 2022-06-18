@@ -132,6 +132,10 @@ export default class Unit extends Entity {
 	public GoldBountyMin = 0
 	@NetworkedBasicField("m_iGoldBountyMax")
 	public GoldBountyMax = 0
+	@NetworkedBasicField("m_flStartSequenceCycle")
+	public StartSequenceCycle = 0
+	public StartSequenceCyclePrev = -1
+	public IsVisibleForEnemies = false
 	public LastActivity = 0
 	public LastActivityEndTime = 0
 	public Spawner: Nullable<NeutralSpawner>
@@ -982,7 +986,7 @@ async function UnitNameChanged(unit: Unit) {
 	unit.UnitData = (await UnitData.global_storage).get(unit.Name) ?? UnitData.empty
 }
 
-import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", async (unit, new_value) => {
 	const old_name = unit.Name
 	unit.UnitName_ = new_value >= 0 ? (await UnitData.GetUnitNameByNameIndex(new_value as number) ?? "") : ""
@@ -1163,7 +1167,15 @@ EventsSDK.on("Tick", dt => {
 	}
 })
 
-EventsSDK.on("PostDataUpdate", () => {
-	for (const unit of Units)
+EventsSDK.on("PostDataUpdate", async () => {
+	for (const unit of Units) {
 		unit.UnitStateMask = unit.UnitStateMask_
+		const old_visibility = unit.IsVisibleForEnemies
+		unit.IsVisibleForEnemies = unit.StartSequenceCyclePrev === 0 && unit.StartSequenceCycle === 0
+		unit.StartSequenceCyclePrev = unit.StartSequenceCycle
+		if (old_visibility !== unit.IsVisibleForEnemies) {
+			await EventsSDK.emit("TeamVisibilityChanged", false, unit)
+			await EventsSDK.emit("UnitVisibilityChanged", false, unit)
+		}
+	}
 })

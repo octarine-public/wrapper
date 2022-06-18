@@ -58,7 +58,11 @@ interface EventsSDK extends EventEmitter {
 	 * Gets called when game is paused, and might be called faster than actual server ticks.
 	 */
 	on(name: "PostDataUpdate", callback: () => void, priority?: number): EventEmitter
+	/**
+	 * @deprecated
+	 */
 	on(name: "TeamVisibilityChanged", callback: (npc: Unit) => void, priority?: number): EventEmitter
+	on(name: "UnitVisibilityChanged", callback: (npc: Unit) => void, priority?: number): EventEmitter
 	on(name: "ControllableByPlayerMaskChanged", callback: (npc: Unit) => void, priority?: number): EventEmitter
 	on(name: "TrueSightedChanged", callback: (npc: Unit) => void, priority?: number): EventEmitter
 	on(name: "HasScepterChanged", callback: (npc: Unit) => void, priority?: number): EventEmitter

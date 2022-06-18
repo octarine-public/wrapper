@@ -13,6 +13,8 @@ export interface IMenu {
 	entries: Base[]
 	EntriesSizeX: number
 	EntriesSizeY: number
+	is_open: boolean
+	IsVisible: boolean
 }
 
 export interface ILanguage {

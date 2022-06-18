@@ -57,7 +57,7 @@ export default class item_bottle extends Item {
 	}
 }
 
-import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 RegisterFieldHandler(item_bottle, "m_iStoredRuneType", (bottle, new_val) => {
 	bottle.StoredRune = new_val as DOTA_RUNES
 	bottle.LastRuneTypeChangeTime = GameState.RawGameTime

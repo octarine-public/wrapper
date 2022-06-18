@@ -320,7 +320,7 @@ export default class Ability extends Entity {
 	}
 }
 
-import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 RegisterFieldHandler(Ability, "m_fAbilityChargeRestoreTimeRemaining", (abil, new_value) => {
 	abil.Cooldown_ = abil.CurrentCharges !== 0 ? 0 : Math.max(new_value as number, 0)
 	abil.Cooldown_ChangeTime = GameState.RawGameTime

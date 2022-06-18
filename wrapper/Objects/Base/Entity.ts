@@ -25,7 +25,7 @@ let player_slot = NaN
 EventsSDK.on("ServerInfo", info => player_slot = (info.get("player_slot") as number) ?? NaN)
 let gameInProgress = false
 const ModelDataCache = new Map<string, Promise<[ComputedAttachments, Vector3, Vector3]>>()
-export async function SetGameInProgress(new_val: boolean) {
+async function SetGameInProgress(new_val: boolean) {
 	if (!gameInProgress && new_val)
 		await EventsSDK.emit("GameStarted", false)
 	else if (gameInProgress && !new_val) {
@@ -448,8 +448,8 @@ function QuantitizedVecCoordToCoord(cell: Nullable<number>, inside: Nullable<num
 	return ((cell ?? 0) - 128) * 128 + (inside ?? 0)
 }
 
-import { FieldHandler, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 import Events from "../../Managers/Events"
+import { FieldHandler, RegisterFieldHandler } from "../../Objects/NativeToSDK"
 RegisterFieldHandler(Entity, "m_iTeamNum", async (ent, new_val) => {
 	const old_team = ent.Team
 	ent.Team = new_val as Team

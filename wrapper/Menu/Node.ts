@@ -69,7 +69,7 @@ export default class Node extends Base {
 	}
 
 	public get is_open(): boolean {
-		return this.is_open_
+		return this.parent.is_open && this.IsVisible && this.is_open_
 	}
 	public set is_open(val: boolean) {
 		if (this.is_open_ === val)

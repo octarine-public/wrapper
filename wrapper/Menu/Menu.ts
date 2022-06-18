@@ -52,6 +52,9 @@ class MenuManager {
 		}
 		this.is_open_ = val
 	}
+	public get IsVisible() {
+		return this.is_open
+	}
 
 	public get ConfigValue() {
 		this.config = Object.create(null)

@@ -25,5 +25,8 @@
 		"type": "git",
 		"directory": "/",
 		"url": "https://github.com/octarine-public/wrapper/"
+	},
+	"dependencies": {
+		"rxjs": "^7.5.5"
 	}
 }

@@ -1,5 +1,4 @@
-import { Events, Menu } from "wrapper/Imports"
-import { SetGameInProgress } from "./wrapper/Objects/Base/Entity"
+import { Events, Menu } from "./wrapper/Imports"
 
 declare global {
 	const reload: () => void
@@ -35,7 +34,6 @@ const ReloadScriptsBind = SettingsReloadTree.AddKeybind("Key Bind")
 const ReloadScriptsBtn = SettingsReloadTree.AddButton("Reload")
 
 async function ReloadScripts() {
-	await SetGameInProgress(false)
 	reload()
 }
 
