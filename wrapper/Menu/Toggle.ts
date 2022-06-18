@@ -46,6 +46,9 @@ export default class Toggle extends Base {
 			return
 		this.value = value ?? this.value
 	}
+	public get ClassPriority(): number {
+		return 1
+	}
 
 	private get ToggleRect() {
 		const base_pos = this.Position.Add(this.TotalSize).SubtractForThis(Toggle.toggle_background_offset)

@@ -33,11 +33,14 @@ export default class Slider extends Base {
 	public get ConfigValue() {
 		return this.value
 	}
-
 	public set ConfigValue(value) {
 		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number")
 			return
 		this.value = value !== undefined ? Math.min(Math.max(value, this.min), this.max) : this.value
+	}
+
+	public get ClassPriority(): number {
+		return 3
 	}
 
 	private get SliderRect() {

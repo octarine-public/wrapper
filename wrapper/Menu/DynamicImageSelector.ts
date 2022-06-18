@@ -98,6 +98,10 @@ export default class DynamicImageSelector extends Base {
 		})
 	}
 
+	public get ClassPriority(): number {
+		return 6
+	}
+
 	public async Update(): Promise<boolean> {
 		if (!(await super.Update()))
 			return false

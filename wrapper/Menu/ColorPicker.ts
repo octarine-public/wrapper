@@ -90,6 +90,11 @@ export default class ColorPicker extends Base {
 		this.selected_color.b = Math.max(0, Math.min(255, value[2] ?? this.selected_color.b))
 		this.selected_color.a = Math.max(0, Math.min(255, value[3] ?? this.selected_color.a))
 	}
+
+	public get ClassPriority(): number {
+		return 5
+	}
+
 	private get SelectedColorRect() {
 		const base_pos = this.Position.Add(this.TotalSize).SubtractForThis(ColorPicker.color_offset)
 		return new Rectangle(base_pos.Subtract(ColorPicker.selected_color_size), base_pos)

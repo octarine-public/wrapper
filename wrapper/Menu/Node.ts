@@ -113,7 +113,7 @@ export default class Node extends Base {
 		)
 	}
 	public get ClassPriority(): number {
-		return 1
+		return 7
 	}
 	public OnConfigLoaded() {
 		this.entries.forEach(entry => entry.OnConfigLoaded())

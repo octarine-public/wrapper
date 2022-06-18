@@ -55,6 +55,9 @@ export default class KeyBind extends Base {
 		this.is_pressed_ = new_val
 		this.TriggerOnValueChangedCBs()
 	}
+	public get ClassPriority(): number {
+		return 2
+	}
 	private get KeybindRect() {
 		const base_pos = this.Position
 			.Add(this.TotalSize)

@@ -92,6 +92,11 @@ export default class Dropdown extends Base {
 	public get PopupElementHeight(): number {
 		return this.longest_value_size.y + Dropdown.dropdown_popup_element_text_offset.y * 2
 	}
+
+	public get ClassPriority(): number {
+		return 4
+	}
+
 	public ApplyLocalization() {
 		this.ValuesNames = this.InternalValuesNames.map(name => Localization.Localize(name))
 		super.ApplyLocalization()
