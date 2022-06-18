@@ -156,6 +156,12 @@ class MenuManager {
 			this.header.QueuedUpdate = false
 			await this.header.Update()
 		}
+		for (const entry of this.entries)
+			if (entry.QueuedUpdate) {
+				entry.QueuedUpdate = false
+				await entry.Update()
+			}
+		this.UpdateScrollbar()
 		const max_width = this.EntriesSizeX
 		this.header.TotalSize.x = max_width
 		this.header.TotalSize.y = this.header.OriginalSize.y
@@ -183,8 +189,9 @@ class MenuManager {
 				await node.PostRender()
 		await this.PostRender()
 	}
-	public Update(): void {
-		this.entries.forEach(entry => entry.Update(true))
+	public async Update(): Promise<void> {
+		for (const entry of this.entries)
+			await entry.Update(true)
 		this.UpdateScrollbar()
 		this.EntriesSizeX = this.EntriesSizeX_
 		this.EntriesSizeY = this.EntriesSizeY_

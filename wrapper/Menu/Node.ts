@@ -161,7 +161,8 @@ export default class Node extends Base {
 		this.entries.forEach(entry => entry.OnConfigLoaded())
 	}
 	public async ApplyLocalization() {
-		this.entries.forEach(entry => entry.ApplyLocalization())
+		for (const entry of this.entries)
+			await entry.ApplyLocalization()
 		await super.ApplyLocalization()
 	}
 	public async Update(recursive = false): Promise<boolean> {
@@ -177,7 +178,8 @@ export default class Node extends Base {
 		else
 			this.OriginalSize.AddScalarX(this.text_offset.x)
 		if (recursive)
-			this.entries.forEach(entry => entry.Update(true))
+			for (const entry of this.entries)
+				await entry.Update(true)
 		this.UpdateScrollbar()
 		this.EntriesSizeX = this.EntriesSizeX_
 		this.EntriesSizeY = this.EntriesSizeY_
@@ -186,6 +188,7 @@ export default class Node extends Base {
 
 	public async Render(): Promise<void> {
 		if (this.is_open) {
+			this.UpdateScrollbar()
 			const position = this.Position.Clone().AddScalarX(this.TotalSize.x),
 				max_width = this.EntriesSizeX
 			position.y = Math.min(position.y, this.WindowSize.y - this.EntriesSizeY)
@@ -497,6 +500,7 @@ export default class Node extends Base {
 		this.entries.push(entry)
 		this.SortEntries()
 		entry.ApplyLocalization()
+		this.UpdateScrollbar()
 		Base.ForwardConfigASAP = true
 		return entry
 	}
