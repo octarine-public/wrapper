@@ -49,7 +49,7 @@ export default class Ability extends Entity {
 	@NetworkedBasicField("m_bToggleState")
 	public IsToggled = false
 	@NetworkedBasicField("m_bHidden")
-	public IsHidden_ = false
+	public IsHidden = false
 	@NetworkedBasicField("m_nAbilityCurrentCharges")
 	public AbilityCurrentCharges = 0
 	@NetworkedBasicField("m_iDirtyButtons")
@@ -197,9 +197,6 @@ export default class Ability extends Entity {
 		if (this.Name.startsWith("special_bonus_spell_amplify"))
 			return this.GetSpecialValue("value") / 100
 		return 0
-	}
-	public get IsHidden(): boolean {
-		return this.IsHidden_
 	}
 	public get BonusCastRange(): number {
 		if (this.Name.startsWith("special_bonus_cast_range"))
