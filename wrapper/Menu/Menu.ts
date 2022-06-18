@@ -1,10 +1,14 @@
+import Rectangle from "../Base/Rectangle"
+import Vector2 from "../Base/Vector2"
+import GUIInfo from "../GUI/GUIInfo"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
-import { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
+import InputManager, { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
 import { StringToUTF8, Utf16ArrayToStr, Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
 import { readJSON } from "../Utils/Utils"
 import Base from "./Base"
+import Dropdown from "./Dropdown"
 import Header from "./Header"
 import Localization from "./Localization"
 import Node from "./Node"
@@ -12,13 +16,26 @@ import Node from "./Node"
 const hardcoded_icons = new Map<string, string>(Object.entries(readJSON("hardcoded_icons.json"))),
 	hardcoded_priorities = new Map<string, number>(Object.entries(readJSON("hardcoded_priorities.json")))
 class MenuManager {
+	public static OnWindowSizeChanged(): void {
+		MenuManager.scrollbar_width = GUIInfo.ScaleWidth(3)
+		MenuManager.scrollbar_offset.x = GUIInfo.ScaleWidth(2)
+		MenuManager.scrollbar_offset.y = GUIInfo.ScaleHeight(2)
+	}
+	private static readonly scrollbar_path = "menu/scrollbar.svg"
+	private static scrollbar_width = 0
+	private static readonly scrollbar_offset = new Vector2()
 	public entries: Node[] = []
 	public config: any
 	public empty_config = false
+	public EntriesSizeX = 0
+	public EntriesSizeY = 0
 	private readonly header = new Header(this)
 	private active_element?: Base
 	private is_open_ = true
 	private initialized_language = false
+	private ScrollPosition = 0
+	private IsAtScrollEnd = true
+	private VisibleEntries = 0
 
 	public get Position() {
 		return this.header.Position.Clone()
@@ -50,18 +67,50 @@ class MenuManager {
 		this.ForwardConfig()
 	}
 
-	public get EntriesSizeX(): number {
-		return this.entries.reduce(
-			(prev, cur) => Math.max(prev, cur.IsVisible ? cur.OriginalSize.x : 0),
-			this.header.OriginalSize.x,
+	public get ScrollVisible() {
+		let remaining = -this.VisibleEntries
+		for (const entry of this.entries)
+			if (entry.IsVisible)
+				remaining++
+		return remaining > 0
+	}
+
+	private get EntriesSizeX_(): number {
+		let width = this.header.OriginalSize.x
+		for (const entry of this.entries)
+			if (entry.IsVisible)
+				width = Math.max(width, entry.OriginalSize.x)
+		return width
+	}
+	private get EntriesSizeY_(): number {
+		const visibleEntries = this.VisibleEntries
+		let height = this.header.OriginalSize.y,
+			cnt = 0,
+			skip = this.ScrollPosition
+		for (const entry of this.entries) {
+			if (!entry.IsVisible || skip-- > 0)
+				continue
+			height += entry.OriginalSize.y
+			if (++cnt >= visibleEntries)
+				break
+		}
+		return height
+	}
+	private get EntriesRect() {
+		const pos = this.header.Position
+			.Clone()
+			.AddScalarY(this.header.OriginalSize.y),
+			height = this.EntriesSizeY
+		pos.y = Math.min(pos.y, RendererSDK.WindowSize.y - height)
+		return new Rectangle(
+			pos,
+			pos
+				.Clone()
+				.AddScalarX(this.EntriesSizeX)
+				.AddScalarY(height),
 		)
 	}
-	public get EntriesSizeY(): number {
-		return this.entries.reduce(
-			(prev, cur) => prev + (cur.IsVisible ? cur.OriginalSize.y : 0),
-			this.header.OriginalSize.y,
-		)
-	}
+
 	public async LoadConfig() {
 		if (!IS_MAIN_WORKER)
 			return // workers shouldn't propagate configs
@@ -92,7 +141,8 @@ class MenuManager {
 		}
 		this.ForwardConfig()
 		if (Localization.was_changed) {
-			this.entries.forEach(entry => entry.ApplyLocalization())
+			for (const entry of this.entries)
+				await entry.ApplyLocalization()
 			Localization.was_changed = false
 			Base.SaveConfigASAP = true
 		}
@@ -102,33 +152,42 @@ class MenuManager {
 		}
 		if (!this.is_open)
 			return
-		const max_width = this.EntriesSizeX
-		this.header.TotalSize.x = max_width
-		this.header.TotalSize.y = this.header.OriginalSize.y
 		if (this.header.QueuedUpdate) {
 			this.header.QueuedUpdate = false
 			await this.header.Update()
 		}
+		const max_width = this.EntriesSizeX
+		this.header.TotalSize.x = max_width
+		this.header.TotalSize.y = this.header.OriginalSize.y
 		await this.header.Render()
 		const position = this.header.Position.Clone().AddScalarY(this.header.TotalSize.y)
-		for (const node of this.entries)
-			if (node.IsVisible) {
-				position.CopyTo(node.Position)
-				node.TotalSize.x = max_width
-				node.TotalSize.y = node.OriginalSize.y
-				if (node.QueuedUpdate) {
-					node.QueuedUpdate = false
-					await node.Update()
-				}
-				await node.Render()
-				position.AddScalarY(node.TotalSize.y)
+		let skip = this.ScrollPosition,
+			visibleEntries = this.VisibleEntries
+		for (const entry of this.entries) {
+			if (!entry.IsVisible || skip-- > 0)
+				continue
+			position.CopyTo(entry.Position)
+			if (entry.QueuedUpdate) {
+				entry.QueuedUpdate = false
+				await entry.Update()
 			}
+			entry.TotalSize.x = max_width
+			entry.TotalSize.y = entry.OriginalSize.y
+			await entry.Render()
+			position.AddScalarY(entry.TotalSize.y)
+			if (--visibleEntries <= 0)
+				break
+		}
 		for (const node of this.entries)
 			if (node.IsVisible)
 				await node.PostRender()
+		await this.PostRender()
 	}
 	public Update(): void {
 		this.entries.forEach(entry => entry.Update(true))
+		this.UpdateScrollbar()
+		this.EntriesSizeX = this.EntriesSizeX_
+		this.EntriesSizeY = this.EntriesSizeY_
 	}
 
 	public async OnMouseLeftDown(): Promise<boolean> {
@@ -153,6 +212,29 @@ class MenuManager {
 			Base.SaveConfigASAP = true
 		this.active_element = undefined
 		return ret
+	}
+	public OnMouseWheel(up: boolean): boolean {
+		if (!this.is_open)
+			return false
+		if (this.ScrollVisible) {
+			const rect = this.EntriesRect
+			if (rect.Contains(InputManager.CursorOnScreen)) {
+				if (up) {
+					if (this.ScrollPosition > 0) {
+						this.ScrollPosition--
+						this.UpdateScrollbar()
+					}
+				} else if (!this.IsAtScrollEnd) {
+					this.ScrollPosition++
+					this.UpdateScrollbar()
+				}
+				return true
+			}
+		}
+		return this.entries.some(entry => {
+			if (entry instanceof Node)
+				entry.OnMouseWheel(up)
+		})
 	}
 	public AddEntry(name: string, icon_path = "", tooltip = "", icon_round = -1): Node {
 		let node = this.entries.find(entry => entry.InternalName === name)
@@ -187,6 +269,78 @@ class MenuManager {
 			return prev.AddNode(cur, icon_path)
 		}, this.AddEntry(names[0]))
 	}
+	private GetScrollbarPositionsRect(elements_rect: Rectangle): Rectangle {
+		return new Rectangle(
+			new Vector2(
+				elements_rect.pos1.x
+				+ MenuManager.scrollbar_offset.x,
+				elements_rect.pos1.y
+				+ MenuManager.scrollbar_offset.y,
+			),
+			new Vector2(
+				elements_rect.pos1.x
+				+ MenuManager.scrollbar_offset.x
+				+ MenuManager.scrollbar_width,
+				elements_rect.pos2.y
+				- MenuManager.scrollbar_offset.y,
+			),
+		)
+	}
+	private GetScrollbarRect(scrollbar_positions_rect: Rectangle): Rectangle {
+		const positions_size = scrollbar_positions_rect.Size
+		const scrollbar_size = new Vector2(
+			MenuManager.scrollbar_width,
+			positions_size.y * this.VisibleEntries / this.entries.length,
+		)
+		const scrollbar_pos = scrollbar_positions_rect.pos1.Clone().AddScalarY(
+			positions_size.y * this.ScrollPosition / this.entries.length,
+		)
+		return new Rectangle(
+			scrollbar_pos,
+			scrollbar_pos.Add(scrollbar_size),
+		)
+	}
+	private async PostRender(): Promise<void> {
+		if (!this.is_open)
+			return
+		if (this.ScrollVisible) {
+			const rect = this.GetScrollbarRect(this.GetScrollbarPositionsRect(this.EntriesRect))
+			RendererSDK.Image(MenuManager.scrollbar_path, rect.pos1, -1, rect.Size)
+		}
+	}
+	private UpdateVisibleEntries() {
+		this.VisibleEntries = 0
+		this.IsAtScrollEnd = true
+		const maxHeight = RendererSDK.WindowSize.y
+		let height = this.header.OriginalSize.y,
+			skip = this.ScrollPosition
+		for (let i = 0; i < this.entries.length; i++) {
+			const entry = this.entries[i]
+			if (!entry.IsVisible || skip-- > 0)
+				continue
+			height += entry.OriginalSize.y
+			this.VisibleEntries++
+			if (height >= maxHeight) {
+				if (i < this.entries.length - 1)
+					this.IsAtScrollEnd = false
+				break
+			}
+		}
+	}
+	private UpdateScrollbar() {
+		this.ScrollPosition = Math.max(Math.min(this.ScrollPosition, this.entries.length - 1), 0)
+		this.UpdateVisibleEntries()
+		while (this.ScrollPosition > 0) {
+			this.ScrollPosition--
+			const prevVisibleEntries = this.VisibleEntries
+			this.UpdateVisibleEntries()
+			if (this.VisibleEntries <= prevVisibleEntries) {
+				this.ScrollPosition++
+				this.UpdateVisibleEntries()
+				break
+			}
+		}
+	}
 	private ForwardConfig() {
 		while (Base.ForwardConfigASAP && this.config !== undefined) {
 			Base.ForwardConfigASAP = false
@@ -216,5 +370,14 @@ InputEventSDK.on("MouseKeyUp", async key => {
 		return Menu.OnMouseLeftUp()
 	return true
 })
+
+InputEventSDK.on("MouseWheel", up => {
+	const active_dropdown = Dropdown.active_dropdown
+	if (active_dropdown?.IsVisible && active_dropdown.OnMouseWheel(up))
+		return false
+	return !Menu.OnMouseWheel(up)
+})
+
+EventsSDK.on("WindowSizeChanged", () => MenuManager.OnWindowSizeChanged())
 
 export default Menu

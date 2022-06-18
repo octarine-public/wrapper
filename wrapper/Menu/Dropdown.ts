@@ -4,7 +4,6 @@ import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import GUIInfo from "../GUI/GUIInfo"
 import EventsSDK from "../Managers/EventsSDK"
-import { InputEventSDK } from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Localization from "./Localization"
@@ -97,9 +96,9 @@ export default class Dropdown extends Base {
 		return 4
 	}
 
-	public ApplyLocalization() {
+	public async ApplyLocalization() {
 		this.ValuesNames = this.InternalValuesNames.map(name => Localization.Localize(name))
-		super.ApplyLocalization()
+		await super.ApplyLocalization()
 	}
 
 	public async Update(): Promise<boolean> {
@@ -166,32 +165,6 @@ export default class Dropdown extends Base {
 		return new Rectangle(
 			popup_rect.pos1.Add(Dropdown.dropdown_popup_elements_offset),
 			popup_rect.pos2.Subtract(Dropdown.dropdown_popup_elements_offset),
-		)
-	}
-	public GetScrollbarPositionsRect(popup_elements_rect: Rectangle): Rectangle {
-		return new Rectangle(
-			new Vector2(
-				popup_elements_rect.pos2.x
-				- Dropdown.dropdown_popup_elements_scrollbar_offset.x
-				- Dropdown.dropdown_popup_elements_scrollbar_width,
-				popup_elements_rect.pos1.y
-				+ Dropdown.dropdown_popup_elements_scrollbar_offset.y,
-			),
-			popup_elements_rect.pos2.Subtract(Dropdown.dropdown_popup_elements_scrollbar_offset),
-		)
-	}
-	public GetScrollbarRect(scrollbar_positions_rect: Rectangle): Rectangle {
-		const positions_size = scrollbar_positions_rect.Size
-		const scrollbar_size = new Vector2(
-			Dropdown.dropdown_popup_elements_scrollbar_width,
-			positions_size.y * Dropdown.dropdown_popup_elements_limit / this.ValuesNames.length,
-		)
-		const scrollbar_pos = scrollbar_positions_rect.pos1.Clone().AddScalarY(
-			positions_size.y * this.currently_at_id / this.ValuesNames.length,
-		)
-		return new Rectangle(
-			scrollbar_pos,
-			scrollbar_pos.Add(scrollbar_size),
 		)
 	}
 	public GetHoveredID(popup_elements_rect: Rectangle): number {
@@ -325,22 +298,44 @@ export default class Dropdown extends Base {
 		}
 		return false
 	}
-	public OnMouseWheel(up: boolean): void {
+	public OnMouseWheel(up: boolean): boolean {
 		if (!this.GetPopupRect(this.DropdownRect).Contains(this.MousePosition))
-			return
+			return false
 		if (up)
 			this.currently_at_id--
 		else
 			this.currently_at_id++
+		return true
+	}
+	private GetScrollbarPositionsRect(popup_elements_rect: Rectangle): Rectangle {
+		return new Rectangle(
+			new Vector2(
+				popup_elements_rect.pos2.x
+				- Dropdown.dropdown_popup_elements_scrollbar_offset.x
+				- Dropdown.dropdown_popup_elements_scrollbar_width,
+				popup_elements_rect.pos1.y
+				+ Dropdown.dropdown_popup_elements_scrollbar_offset.y,
+			),
+			popup_elements_rect.pos2.Subtract(Dropdown.dropdown_popup_elements_scrollbar_offset),
+		)
+	}
+	private GetScrollbarRect(scrollbar_positions_rect: Rectangle): Rectangle {
+		const positions_size = scrollbar_positions_rect.Size
+		const scrollbar_size = new Vector2(
+			Dropdown.dropdown_popup_elements_scrollbar_width,
+			positions_size.y * Dropdown.dropdown_popup_elements_limit / this.ValuesNames.length,
+		)
+		const scrollbar_pos = scrollbar_positions_rect.pos1.Clone().AddScalarY(
+			positions_size.y * this.currently_at_id / this.ValuesNames.length,
+		)
+		return new Rectangle(
+			scrollbar_pos,
+			scrollbar_pos.Add(scrollbar_size),
+		)
 	}
 	private FixSelectedID(): void {
 		this.selected_id = Math.max(Math.min(this.InternalValuesNames.length - 1, this.selected_id), 0)
 	}
 }
-
-InputEventSDK.on("MouseWheel", up => {
-	const active_dropdown = Dropdown.active_dropdown
-	return !(active_dropdown?.IsVisible && active_dropdown.OnMouseWheel(up))
-})
 
 EventsSDK.on("WindowSizeChanged", () => Dropdown.OnWindowSizeChanged())

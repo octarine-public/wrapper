@@ -25,6 +25,7 @@ export default class Base {
 	public static ForwardConfigASAP = false
 	public static SaveConfigASAP = true
 	public static trigger_on_chat = false
+	public static bar_width = 0
 	public static OnWindowSizeChanged(): void {
 		Base.bar_width = GUIInfo.ScaleWidth(RendererSDK.GetImageSize(Base.bar_inactive_path).x)
 		Base.tooltip_offset = GUIInfo.ScaleWidth(3)
@@ -47,7 +48,6 @@ export default class Base {
 	private static readonly tooltip_path = "menu/tooltip.svg"
 	private static readonly bar_inactive_path = "menu/bar_inactive.svg"
 	private static readonly bar_active_path = "menu/bar_active.svg"
-	private static bar_width = 0
 	private static tooltip_offset = 0
 	private static readonly tooltip_icon_size = new Vector2()
 	private static readonly tooltip_icon_offset = new Vector2()
@@ -125,10 +125,10 @@ export default class Base {
 		if (this.execute_on_add)
 			this.TriggerOnValueChangedCBs()
 	}
-	public ApplyLocalization() {
+	public async ApplyLocalization() {
 		this.Name = Localization.Localize(this.InternalName)
 		this.Tooltip = Localization.Localize(this.InternalTooltipName)
-		this.Update()
+		await this.Update()
 	}
 
 	public async OnValue(func: (caller: this) => any): Promise<this> {

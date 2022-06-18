@@ -1,4 +1,5 @@
 import Color from "../Base/Color"
+import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import GUIInfo from "../GUI/GUIInfo"
@@ -31,10 +32,16 @@ export default class Node extends Base {
 		Node.text_offset_.y = GUIInfo.ScaleHeight(14)
 		Node.text_offset_with_icon.x = GUIInfo.ScaleWidth(48)
 		Node.text_offset_with_icon.y = GUIInfo.ScaleHeight(14)
+		Node.scrollbar_width = GUIInfo.ScaleWidth(3)
+		Node.scrollbar_offset.x = GUIInfo.ScaleWidth(2)
+		Node.scrollbar_offset.y = GUIInfo.ScaleHeight(2)
 	}
 
 	private static readonly arrow_active_path = "menu/arrow_active.svg"
 	private static readonly arrow_inactive_path = "menu/arrow_inactive.svg"
+	private static readonly scrollbar_path = "menu/scrollbar.svg"
+	private static scrollbar_width = 0
+	private static readonly scrollbar_offset = new Vector2()
 	private static readonly orig_arrow_size = RendererSDK.GetImageSize(Node.arrow_inactive_path)
 	private static readonly arrow_size = new Vector2()
 	private static readonly arrow_offset = new Vector2()
@@ -47,10 +54,15 @@ export default class Node extends Base {
 	public entries: Base[] = []
 	public save_unused_configs = false
 	public sort_nodes = true
+	public EntriesSizeX = 0
+	public EntriesSizeY = 0
 	protected config_storage = Object.create(null)
 	protected active_element?: Base
 	protected is_open_ = false
 	protected readonly text_offset = Node.text_offset_
+	private ScrollPosition = 0
+	private IsAtScrollEnd = true
+	private VisibleEntries = 0
 
 	constructor(parent: IMenu, name: string, private icon_path_ = "", tooltip = "", private icon_round_ = -1) {
 		super(parent, name, tooltip)
@@ -100,27 +112,57 @@ export default class Node extends Base {
 			this.config_storage = obj
 		this.entries.forEach(entry => entry.ConfigValue = obj[entry.InternalName])
 	}
-	public get EntriesSizeX(): number {
-		return this.entries.reduce(
-			(prev, cur) => Math.max(prev, cur.IsVisible ? cur.OriginalSize.x : 0),
-			this.OriginalSize.x,
-		)
-	}
-	public get EntriesSizeY(): number {
-		return this.entries.reduce(
-			(prev, cur) => prev + (cur.IsVisible ? cur.OriginalSize.y : 0),
-			0,
-		)
-	}
 	public get ClassPriority(): number {
 		return 7
+	}
+	public get ScrollVisible() {
+		let remaining = -this.VisibleEntries
+		for (const entry of this.entries)
+			if (entry.IsVisible)
+				remaining++
+		return remaining > 0
+	}
+	private get EntriesSizeX_(): number {
+		let width = this.OriginalSize.x
+		for (const entry of this.entries)
+			if (entry.IsVisible)
+				width = Math.max(width, entry.OriginalSize.x)
+		return width
+	}
+	private get EntriesSizeY_(): number {
+		const visibleEntries = this.VisibleEntries
+		let height = 0,
+			cnt = 0,
+			skip = this.ScrollPosition
+		for (const entry of this.entries) {
+			if (!entry.IsVisible || skip-- > 0)
+				continue
+			height += entry.OriginalSize.y
+			if (++cnt >= visibleEntries)
+				break
+		}
+		return height
+	}
+	private get EntriesRect() {
+		const pos = this.Position
+			.Clone()
+			.AddScalarX(this.TotalSize.x),
+			height = this.EntriesSizeY
+		pos.y = Math.min(pos.y, RendererSDK.WindowSize.y - height)
+		return new Rectangle(
+			pos,
+			pos
+				.Clone()
+				.AddScalarX(this.EntriesSizeX)
+				.AddScalarY(height),
+		)
 	}
 	public OnConfigLoaded() {
 		this.entries.forEach(entry => entry.OnConfigLoaded())
 	}
-	public ApplyLocalization() {
+	public async ApplyLocalization() {
 		this.entries.forEach(entry => entry.ApplyLocalization())
-		super.ApplyLocalization()
+		await super.ApplyLocalization()
 	}
 	public async Update(recursive = false): Promise<boolean> {
 		if (!(await super.Update()))
@@ -136,6 +178,9 @@ export default class Node extends Base {
 			this.OriginalSize.AddScalarX(this.text_offset.x)
 		if (recursive)
 			this.entries.forEach(entry => entry.Update(true))
+		this.UpdateScrollbar()
+		this.EntriesSizeX = this.EntriesSizeX_
+		this.EntriesSizeY = this.EntriesSizeY_
 		return true
 	}
 
@@ -144,18 +189,23 @@ export default class Node extends Base {
 			const position = this.Position.Clone().AddScalarX(this.TotalSize.x),
 				max_width = this.EntriesSizeX
 			position.y = Math.min(position.y, this.WindowSize.y - this.EntriesSizeY)
-			for (const entry of this.entries)
-				if (entry.IsVisible) {
-					position.CopyTo(entry.Position)
-					entry.TotalSize.x = max_width
-					entry.TotalSize.y = entry.OriginalSize.y
-					if (entry.QueuedUpdate) {
-						entry.QueuedUpdate = false
-						await entry.Update()
-					}
-					await entry.Render()
-					position.AddScalarY(entry.TotalSize.y)
+			let skip = this.ScrollPosition,
+				visibleEntries = this.VisibleEntries
+			for (const entry of this.entries) {
+				if (!entry.IsVisible || skip-- > 0)
+					continue
+				position.CopyTo(entry.Position)
+				if (entry.QueuedUpdate) {
+					entry.QueuedUpdate = false
+					await entry.Update()
 				}
+				entry.TotalSize.x = max_width
+				entry.TotalSize.y = entry.OriginalSize.y
+				await entry.Render()
+				position.AddScalarY(entry.TotalSize.y)
+				if (--visibleEntries <= 0)
+					break
+			}
 		}
 
 		await super.Render(this.parent instanceof Node) // only draw bars on non-root nodes
@@ -175,10 +225,15 @@ export default class Node extends Base {
 			RendererSDK.Image(Node.arrow_inactive_path, arrow_pos, -1, Node.arrow_size)
 	}
 	public async PostRender(): Promise<void> {
-		if (this.is_open)
-			for (const entry of this.entries)
-				if (entry.IsVisible)
-					await entry.PostRender()
+		if (!this.is_open)
+			return
+		for (const entry of this.entries)
+			if (entry.IsVisible)
+				await entry.PostRender()
+		if (this.ScrollVisible) {
+			const rect = this.GetScrollbarRect(this.GetScrollbarPositionsRect(this.EntriesRect))
+			RendererSDK.Image(Node.scrollbar_path, rect.pos1, -1, rect.Size)
+		}
 	}
 
 	public OnParentNotVisible(ignore_open = false): void {
@@ -221,6 +276,29 @@ export default class Node extends Base {
 		this.active_element = undefined
 		Base.SaveConfigASAP = true
 		return ret
+	}
+	public OnMouseWheel(up: boolean): boolean {
+		if (!this.is_open)
+			return false
+		if (this.ScrollVisible) {
+			const rect = this.EntriesRect
+			if (rect.Contains(this.MousePosition)) {
+				if (up) {
+					if (this.ScrollPosition > 0) {
+						this.ScrollPosition--
+						this.UpdateScrollbar()
+					}
+				} else if (!this.IsAtScrollEnd) {
+					this.ScrollPosition++
+					this.UpdateScrollbar()
+				}
+				return true
+			}
+		}
+		return this.entries.some(entry => {
+			if (entry instanceof Node)
+				entry.OnMouseWheel(up)
+		})
 	}
 	public AddToggle(name: string, default_value: boolean = false, tooltip = ""): Toggle {
 		return this.AddEntry(new Toggle(this, name, default_value, tooltip))
@@ -345,6 +423,73 @@ export default class Node extends Base {
 			Color: node.AddColorPicker("Color", color),
 			Width: node.AddSlider("Width", 15, 1, 150),
 			Style: node.AddDropdown("Style", render),
+		}
+	}
+	private GetScrollbarPositionsRect(elements_rect: Rectangle): Rectangle {
+		const additionalOffset = this.parent instanceof Node ? Base.bar_width : 0
+		return new Rectangle(
+			new Vector2(
+				elements_rect.pos1.x
+				+ Node.scrollbar_offset.x
+				+ additionalOffset,
+				elements_rect.pos1.y
+				+ Node.scrollbar_offset.y,
+			),
+			new Vector2(
+				elements_rect.pos1.x
+				+ Node.scrollbar_offset.x
+				+ additionalOffset
+				+ Node.scrollbar_width,
+				elements_rect.pos2.y
+				- Node.scrollbar_offset.y,
+			),
+		)
+	}
+	private GetScrollbarRect(scrollbar_positions_rect: Rectangle): Rectangle {
+		const positions_size = scrollbar_positions_rect.Size
+		const scrollbar_size = new Vector2(
+			Node.scrollbar_width,
+			positions_size.y * this.VisibleEntries / this.entries.length,
+		)
+		const scrollbar_pos = scrollbar_positions_rect.pos1.Clone().AddScalarY(
+			positions_size.y * this.ScrollPosition / this.entries.length,
+		)
+		return new Rectangle(
+			scrollbar_pos,
+			scrollbar_pos.Add(scrollbar_size),
+		)
+	}
+	private UpdateVisibleEntries() {
+		this.VisibleEntries = 0
+		this.IsAtScrollEnd = true
+		const maxHeight = this.WindowSize.y
+		let height = 0,
+			skip = this.ScrollPosition
+		for (let i = 0; i < this.entries.length; i++) {
+			const entry = this.entries[i]
+			if (!entry.IsVisible || skip-- > 0)
+				continue
+			height += entry.OriginalSize.y
+			this.VisibleEntries++
+			if (height >= maxHeight) {
+				if (i < this.entries.length - 1)
+					this.IsAtScrollEnd = false
+				break
+			}
+		}
+	}
+	private UpdateScrollbar() {
+		this.ScrollPosition = Math.max(Math.min(this.ScrollPosition, this.entries.length - 1), 0)
+		this.UpdateVisibleEntries()
+		while (this.ScrollPosition > 0) {
+			this.ScrollPosition--
+			const prevVisibleEntries = this.VisibleEntries
+			this.UpdateVisibleEntries()
+			if (this.VisibleEntries <= prevVisibleEntries) {
+				this.ScrollPosition++
+				this.UpdateVisibleEntries()
+				break
+			}
 		}
 	}
 
