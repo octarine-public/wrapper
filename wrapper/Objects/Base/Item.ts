@@ -87,6 +87,9 @@ export default class Item extends Ability {
 	public get CurrentCharges() {
 		return this.ItemCurrentCharges
 	}
+	public set CurrentCharges(new_val: number) {
+		this.ItemCurrentCharges = new_val
+	}
 	public DisassembleItem(queue?: boolean) {
 		return this.Owner?.DisassembleItem(this, queue)
 	}

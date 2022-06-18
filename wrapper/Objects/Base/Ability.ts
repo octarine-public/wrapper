@@ -209,6 +209,9 @@ export default class Ability extends Entity {
 	public get CurrentCharges() {
 		return this.AbilityCurrentCharges
 	}
+	public set CurrentCharges(new_val: number) {
+		this.AbilityCurrentCharges = new_val
+	}
 	public async AsyncCreate(): Promise<void> {
 		this.AbilityData = (await AbilityData.global_storage).get(this.Name) ?? AbilityData.empty
 	}
