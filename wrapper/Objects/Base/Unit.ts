@@ -1143,16 +1143,6 @@ EventsSDK.on("ModifierCreated", OnModifierUpdated)
 EventsSDK.on("ModifierChanged", OnModifierUpdated)
 EventsSDK.on("ModifierRemoved", OnModifierUpdated)
 
-EventsSDK.on("ParticleCreated", par => {
-	if (
-		par.PathNoEcon === "particles/generic_hero_status/hero_levelup.vpcf"
-		&& par.AttachedTo instanceof Unit
-		&& !par.AttachedTo.IsVisible
-		&& !par.AttachedTo.IsIllusion
-	)
-		par.AttachedTo.Level++
-})
-
 EventsSDK.on("Tick", dt => {
 	for (const unit of Units) {
 		unit.HPRegenCounter += unit.HPRegen * Math.min(dt, 0.1)
