@@ -1183,7 +1183,7 @@ function TryLoadWorld(world_kv: RecursiveMap): void {
 		current_world_promise = undefined
 		const world_bvh = data[0] as [Uint8Array, Uint8Array],
 			paths_data = data[1] as [string, [number, Uint8Array, Uint8Array, Uint8Array, number, number][]][],
-			paths = data[2] as string[],
+			// paths = data[2] as string[],
 			path2meshes = new Map<string, number[]>()
 		paths_data.forEach(([path, meshes_data]) => {
 			const meshes: number[] = []
