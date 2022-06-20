@@ -188,6 +188,18 @@ export default class Node extends Base {
 
 	public async Render(): Promise<void> {
 		if (this.is_open) {
+			let updatedEntries = false
+			for (const entry of this.entries) {
+				if (entry.QueuedUpdate) {
+					entry.QueuedUpdate = false
+					await entry.Update()
+				}
+				updatedEntries = updatedEntries || entry.NeedsRootUpdate
+			}
+			if (updatedEntries) {
+				await this.Update()
+				updatedEntries = false
+			}
 			this.UpdateScrollbar()
 			const position = this.Position.Clone().AddScalarX(this.TotalSize.x),
 				max_width = this.EntriesSizeX
@@ -202,6 +214,7 @@ export default class Node extends Base {
 					entry.QueuedUpdate = false
 					await entry.Update()
 				}
+				updatedEntries = updatedEntries || entry.NeedsRootUpdate
 				entry.TotalSize.x = max_width
 				entry.TotalSize.y = entry.OriginalSize.y
 				await entry.Render()
@@ -209,6 +222,8 @@ export default class Node extends Base {
 				if (--visibleEntries <= 0)
 					break
 			}
+			if (updatedEntries)
+				await this.Update()
 		}
 
 		await super.Render(this.parent instanceof Node) // only draw bars on non-root nodes

@@ -70,6 +70,7 @@ export default class Base {
 	public TooltipIconColor = new Color(104, 4, 255)
 	public Priority = 0
 	public QueuedUpdate = false
+	public NeedsRootUpdate = false
 	public readonly OnValueChangedCBs: ((caller: Base) => any)[] = []
 
 	public readonly Position = new Vector2()
@@ -145,6 +146,7 @@ export default class Base {
 			this.QueuedUpdate = true
 			return false
 		}
+		this.NeedsRootUpdate = true
 		this.OriginalSize.CopyFrom(Base.OriginalSize)
 		this.GetTextSizeDefault(this.Name).CopyTo(this.name_size)
 		if (this.Tooltip === "")

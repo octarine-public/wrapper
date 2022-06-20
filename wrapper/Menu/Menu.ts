@@ -156,11 +156,18 @@ class MenuManager {
 			this.header.QueuedUpdate = false
 			await this.header.Update()
 		}
-		for (const entry of this.entries)
+		let updatedEntries = false
+		for (const entry of this.entries) {
 			if (entry.QueuedUpdate) {
 				entry.QueuedUpdate = false
 				await entry.Update()
 			}
+			updatedEntries = updatedEntries || entry.NeedsRootUpdate
+		}
+		if (updatedEntries) {
+			await this.Update()
+			updatedEntries = false
+		}
 		this.UpdateScrollbar()
 		const max_width = this.EntriesSizeX
 		this.header.TotalSize.x = max_width
@@ -177,6 +184,7 @@ class MenuManager {
 				entry.QueuedUpdate = false
 				await entry.Update()
 			}
+			updatedEntries = updatedEntries || entry.NeedsRootUpdate
 			entry.TotalSize.x = max_width
 			entry.TotalSize.y = entry.OriginalSize.y
 			await entry.Render()
@@ -184,14 +192,17 @@ class MenuManager {
 			if (--visibleEntries <= 0)
 				break
 		}
+		if (updatedEntries)
+			await this.Update()
 		for (const node of this.entries)
 			if (node.IsVisible)
 				await node.PostRender()
 		await this.PostRender()
 	}
-	public async Update(): Promise<void> {
-		for (const entry of this.entries)
-			await entry.Update(true)
+	public async Update(recursive = false): Promise<void> {
+		if (recursive)
+			for (const entry of this.entries)
+				await entry.Update(true)
 		this.UpdateScrollbar()
 		this.EntriesSizeX = this.EntriesSizeX_
 		this.EntriesSizeY = this.EntriesSizeY_
@@ -364,8 +375,8 @@ Events.after("Draw", async () => {
 	RendererSDK.EmitDraw()
 })
 
-EventsSDK.on("WindowSizeChanged", () => Menu.Update())
-EventsSDK.on("UnitAbilityDataUpdated", () => Menu.Update())
+EventsSDK.on("WindowSizeChanged", () => Menu.Update(true))
+EventsSDK.on("UnitAbilityDataUpdated", () => Menu.Update(true))
 
 InputEventSDK.on("MouseKeyDown", async key => {
 	if (key === VMouseKeys.MK_LBUTTON)
