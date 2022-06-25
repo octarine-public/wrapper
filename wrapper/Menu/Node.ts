@@ -123,10 +123,10 @@ export default class Node extends Base {
 		return remaining > 0
 	}
 	private get EntriesSizeX_(): number {
-		let width = this.OriginalSize.x
+		let width = 0
 		for (const entry of this.entries)
 			if (entry.IsVisible)
-				width = Math.max(width, entry.OriginalSize.x)
+				width = Math.max(width, entry.Size.x)
 		return width
 	}
 	private get EntriesSizeY_(): number {
@@ -137,7 +137,7 @@ export default class Node extends Base {
 		for (const entry of this.entries) {
 			if (!entry.IsVisible || skip-- > 0)
 				continue
-			height += entry.OriginalSize.y
+			height += entry.Size.y
 			if (++cnt >= visibleEntries)
 				break
 		}
@@ -146,7 +146,7 @@ export default class Node extends Base {
 	private get EntriesRect() {
 		const pos = this.Position
 			.Clone()
-			.AddScalarX(this.TotalSize.x),
+			.AddScalarX(this.parent.EntriesSizeX),
 			height = this.EntriesSizeY
 		pos.y = Math.min(pos.y, RendererSDK.WindowSize.y - height)
 		return new Rectangle(
@@ -160,23 +160,18 @@ export default class Node extends Base {
 	public OnConfigLoaded() {
 		this.entries.forEach(entry => entry.OnConfigLoaded())
 	}
-	public async ApplyLocalization() {
-		for (const entry of this.entries)
-			await entry.ApplyLocalization()
-		await super.ApplyLocalization()
-	}
 	public async Update(recursive = false): Promise<boolean> {
-		if (!(await super.Update()))
+		if (!(await super.Update(recursive)))
 			return false
-		this.OriginalSize.x =
+		this.Size.x =
 			this.name_size.x
 			+ Node.arrow_size.x
 			+ Node.arrow_offset.x
 			+ Node.arrow_text_gap
 		if (this.icon_path !== "")
-			this.OriginalSize.AddScalarX(Node.text_offset_with_icon.x)
+			this.Size.AddScalarX(Node.text_offset_with_icon.x)
 		else
-			this.OriginalSize.AddScalarX(this.text_offset.x)
+			this.Size.AddScalarX(this.text_offset.x)
 		if (recursive)
 			for (const entry of this.entries)
 				await entry.Update(true)
@@ -187,22 +182,22 @@ export default class Node extends Base {
 	}
 
 	public async Render(): Promise<void> {
+		let updatedEntries = false
+		for (const entry of this.entries) {
+			if (entry.QueuedUpdate) {
+				entry.QueuedUpdate = false
+				await entry.Update(entry.QueuedUpdateRecursive)
+			}
+			updatedEntries = updatedEntries || entry.NeedsRootUpdate
+			entry.NeedsRootUpdate = false
+		}
+		if (updatedEntries) {
+			await this.Update()
+			updatedEntries = false
+		}
 		if (this.is_open) {
-			let updatedEntries = false
-			for (const entry of this.entries) {
-				if (entry.QueuedUpdate) {
-					entry.QueuedUpdate = false
-					await entry.Update()
-				}
-				updatedEntries = updatedEntries || entry.NeedsRootUpdate
-			}
-			if (updatedEntries) {
-				await this.Update()
-				updatedEntries = false
-			}
 			this.UpdateScrollbar()
-			const position = this.Position.Clone().AddScalarX(this.TotalSize.x),
-				max_width = this.EntriesSizeX
+			const position = this.Position.Clone().AddScalarX(this.parent.EntriesSizeX)
 			position.y = Math.min(position.y, this.WindowSize.y - this.EntriesSizeY)
 			let skip = this.ScrollPosition,
 				visibleEntries = this.VisibleEntries
@@ -212,13 +207,11 @@ export default class Node extends Base {
 				position.CopyTo(entry.Position)
 				if (entry.QueuedUpdate) {
 					entry.QueuedUpdate = false
-					await entry.Update()
+					await entry.Update(entry.QueuedUpdateRecursive)
 				}
 				updatedEntries = updatedEntries || entry.NeedsRootUpdate
-				entry.TotalSize.x = max_width
-				entry.TotalSize.y = entry.OriginalSize.y
 				await entry.Render()
-				position.AddScalarY(entry.TotalSize.y)
+				position.AddScalarY(entry.Size.y)
 				if (--visibleEntries <= 0)
 					break
 			}
@@ -236,7 +229,12 @@ export default class Node extends Base {
 			TextPos.AddForThis(this.text_offset)
 
 		this.RenderTextDefault(this.Name, TextPos)
-		const arrow_pos = this.Position.Add(this.TotalSize).SubtractForThis(Node.arrow_offset).SubtractForThis(Node.arrow_size)
+		const arrow_pos = this.Position
+			.Clone()
+			.AddScalarX(this.parent.EntriesSizeX)
+			.AddScalarY(this.Size.y)
+			.SubtractForThis(Node.arrow_offset)
+			.SubtractForThis(Node.arrow_size)
 		if (this.is_open)
 			RendererSDK.Image(Node.arrow_active_path, arrow_pos, -1, Node.arrow_size)
 		else
@@ -487,7 +485,7 @@ export default class Node extends Base {
 			const entry = this.entries[i]
 			if (!entry.IsVisible || skip-- > 0)
 				continue
-			height += entry.OriginalSize.y
+			height += entry.Size.y
 			this.VisibleEntries++
 			if (height >= maxHeight) {
 				if (i < this.entries.length - 1)
@@ -514,7 +512,6 @@ export default class Node extends Base {
 	private AddEntry<T extends Base>(entry: T): T {
 		this.entries.push(entry)
 		this.SortEntries()
-		entry.ApplyLocalization()
 		this.UpdateScrollbar()
 		Base.ForwardConfigASAP = true
 		return entry

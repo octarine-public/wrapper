@@ -37,8 +37,8 @@ export default class Base {
 		Base.tooltip_text_offset.x = GUIInfo.ScaleWidth(8)
 		Base.tooltip_text_offset.y = GUIInfo.ScaleHeight(12)
 		Base.tooltip_text_bottom_gap = GUIInfo.ScaleHeight(8)
-		Base.OriginalSize.x = GUIInfo.ScaleWidth(Base.ActualOriginalSize.x)
-		Base.OriginalSize.y = GUIInfo.ScaleHeight(Base.ActualOriginalSize.y)
+		Base.DefaultSize.x = GUIInfo.ScaleWidth(Base.UnscaledDefaultSize.x)
+		Base.DefaultSize.y = GUIInfo.ScaleHeight(Base.UnscaledDefaultSize.y)
 		Base.text_offset.x = GUIInfo.ScaleWidth(14)
 		Base.text_offset.y = GUIInfo.ScaleHeight(14)
 	}
@@ -54,8 +54,8 @@ export default class Base {
 	private static tooltip_icon_text_gap = 0
 	private static readonly tooltip_text_offset = new Vector2()
 	private static tooltip_text_bottom_gap = 0
-	private static readonly ActualOriginalSize = RendererSDK.GetImageSize(Base.background_inactive_path)
-	private static readonly OriginalSize = new Vector2()
+	private static readonly UnscaledDefaultSize = RendererSDK.GetImageSize(Base.background_inactive_path)
+	private static readonly DefaultSize = new Vector2()
 	private static readonly text_offset = new Vector2()
 
 	public IsHidden = false
@@ -69,13 +69,13 @@ export default class Base {
 	public TooltipIcon = "menu/icons/info.svg"
 	public TooltipIconColor = new Color(104, 4, 255)
 	public Priority = 0
-	public QueuedUpdate = false
-	public NeedsRootUpdate = false
+	public QueuedUpdate = true
+	public QueuedUpdateRecursive = false
+	public NeedsRootUpdate = true
 	public readonly OnValueChangedCBs: ((caller: Base) => any)[] = []
 
 	public readonly Position = new Vector2()
-	public readonly OriginalSize = new Vector2()
-	public readonly TotalSize = this.OriginalSize.Clone()
+	public readonly Size = new Vector2()
 
 	protected is_active = false
 	protected config_dirty = true
@@ -103,8 +103,17 @@ export default class Base {
 	public get ClassPriority(): number {
 		return 0
 	}
+	public get RenderSize() {
+		return new Vector2(this.parent.EntriesSizeX, this.Size.y)
+	}
 	protected get Rect() {
-		return new Rectangle(this.Position, this.Position.Add(this.TotalSize))
+		return new Rectangle(
+			this.Position,
+			this.Position
+				.Clone()
+				.AddScalarX(this.parent.EntriesSizeX)
+				.AddScalarY(this.Size.y),
+		)
 	}
 	protected get MousePosition(): Vector2 {
 		return InputManager.CursorOnScreen
@@ -126,11 +135,6 @@ export default class Base {
 		if (this.execute_on_add)
 			this.TriggerOnValueChangedCBs()
 	}
-	public async ApplyLocalization() {
-		this.Name = Localization.Localize(this.InternalName)
-		this.Tooltip = Localization.Localize(this.InternalTooltipName)
-		await this.Update()
-	}
 
 	public async OnValue(func: (caller: this) => any): Promise<this> {
 		if (!IS_MAIN_WORKER)
@@ -141,13 +145,15 @@ export default class Base {
 		return this
 	}
 
-	public async Update(_recursive = false): Promise<boolean> {
+	public async Update(recursive = false): Promise<boolean> {
 		if (!RendererSDK.IsInDraw) {
 			this.QueuedUpdate = true
+			this.QueuedUpdateRecursive = recursive
 			return false
 		}
+		await this.ApplyLocalization()
 		this.NeedsRootUpdate = true
-		this.OriginalSize.CopyFrom(Base.OriginalSize)
+		this.Size.CopyFrom(Base.DefaultSize)
 		this.GetTextSizeDefault(this.Name).CopyTo(this.name_size)
 		if (this.Tooltip === "")
 			return true
@@ -170,12 +176,12 @@ export default class Base {
 
 	public async Render(draw_bar = true): Promise<void> {
 		if (this.is_active)
-			RendererSDK.Image(Base.background_active_path, this.Position, -1, this.TotalSize)
+			RendererSDK.Image(Base.background_active_path, this.Position, -1, this.RenderSize)
 		else
-			RendererSDK.Image(Base.background_inactive_path, this.Position, -1, this.TotalSize)
+			RendererSDK.Image(Base.background_inactive_path, this.Position, -1, this.RenderSize)
 		const is_hovered = this.IsHovered
 		if (draw_bar) {
-			const bar_size = new Vector2(Base.bar_width, this.TotalSize.y)
+			const bar_size = new Vector2(Base.bar_width, this.Size.y)
 			if (is_hovered || this.is_active)
 				RendererSDK.Image(Base.bar_active_path, this.Position, -1, bar_size)
 			else
@@ -209,6 +215,10 @@ export default class Base {
 	public DetachFromParent(): boolean {
 		return ArrayExtensions.arrayRemove(this.parent.entries, this)
 	}
+	protected async ApplyLocalization() {
+		this.Name = Localization.Localize(this.InternalName)
+		this.Tooltip = Localization.Localize(this.InternalTooltipName)
+	}
 
 	protected GetTextSizeDefault(text: string): Vector3 {
 		return RendererSDK.GetTextSize(
@@ -241,8 +251,8 @@ export default class Base {
 			return
 
 		const Position = this.Position.Clone()
-			.AddScalarX(this.TotalSize.x + Base.tooltip_offset)
-			.AddScalarY((this.TotalSize.y - this.TooltipSize.y) / 2)
+			.AddScalarX(this.parent.EntriesSizeX + Base.tooltip_offset)
+			.AddScalarY((this.Size.y - this.TooltipSize.y) / 2)
 			.FloorForThis()
 
 		RendererSDK.Image(

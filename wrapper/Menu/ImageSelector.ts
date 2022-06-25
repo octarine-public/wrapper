@@ -97,14 +97,14 @@ export default class ImageSelector extends Base {
 			this.image_size.x = Math.max(this.image_size.x, ImageSelector.base_image_height * (path_iamge_size.x / path_iamge_size.y))
 			this.rendered_paths.push(path)
 		}
-		this.OriginalSize.x =
+		this.Size.x =
 			Math.max(
 				this.name_size.x,
 				Math.min(this.values.length, ImageSelector.elements_per_row)
 				* (this.image_size.x + ImageSelector.image_border_width * 2 + ImageSelector.image_gap),
 			)
 			+ this.text_offset.x * 2
-		this.OriginalSize.y = (
+		this.Size.y = (
 			Math.ceil(this.values.length / ImageSelector.elements_per_row)
 			* (this.image_size.y + ImageSelector.image_border_width * 2 + ImageSelector.image_gap)
 			+ ImageSelector.random_height_value

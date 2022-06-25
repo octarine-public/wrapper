@@ -96,11 +96,6 @@ export default class Dropdown extends Base {
 		return 4
 	}
 
-	public async ApplyLocalization() {
-		this.ValuesNames = this.InternalValuesNames.map(name => Localization.Localize(name))
-		await super.ApplyLocalization()
-	}
-
 	public async Update(): Promise<boolean> {
 		if (!(await super.Update()))
 			return false
@@ -110,7 +105,7 @@ export default class Dropdown extends Base {
 			prev.y = Math.max(prev.y, cur.y + cur.z)
 			return prev
 		}, new Vector2()).CopyTo(this.longest_value_size)
-		this.OriginalSize.x = Math.max(
+		this.Size.x = Math.max(
 			this.name_size.x + this.text_offset.x * 2,
 			this.longest_value_size.x
 			+ (Dropdown.dropdown_text_offset.x * 2)
@@ -118,7 +113,7 @@ export default class Dropdown extends Base {
 			- 2 // because dropdown_offset includes bar size
 			+ Dropdown.dropdown_end_gap,
 		)
-		this.OriginalSize.y =
+		this.Size.y =
 			this.name_size.y
 			+ this.text_offset.y
 			+ Dropdown.name_dropdown_gap
@@ -306,6 +301,11 @@ export default class Dropdown extends Base {
 		else
 			this.currently_at_id++
 		return true
+	}
+
+	protected async ApplyLocalization() {
+		this.ValuesNames = this.InternalValuesNames.map(name => Localization.Localize(name))
+		await super.ApplyLocalization()
 	}
 	private GetScrollbarPositionsRect(popup_elements_rect: Rectangle): Rectangle {
 		return new Rectangle(

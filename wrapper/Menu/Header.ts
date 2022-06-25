@@ -27,8 +27,7 @@ export default class Header extends Base {
 	private static readonly OriginalSize_ = new Vector2()
 	private static FontSize = 0
 
-	public readonly OriginalSize = Header.OriginalSize_
-	public readonly TotalSize = this.OriginalSize.Clone()
+	public readonly Size = Header.OriginalSize_
 	protected dragging = false
 	protected readonly dragging_offset = new Vector2()
 
@@ -60,7 +59,7 @@ export default class Header extends Base {
 			window_size.y - this.parent.EntriesSizeY,
 		), 0)
 		this.Position.RoundForThis()
-		RendererSDK.Image(Header.image_path, this.Position, -1, this.TotalSize)
+		RendererSDK.Image(Header.image_path, this.Position, -1, this.RenderSize)
 		RendererSDK.Image(
 			Header.logo_path,
 			this.Position.Add(Header.LogoOffset),

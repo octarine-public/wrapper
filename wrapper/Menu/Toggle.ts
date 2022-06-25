@@ -51,14 +51,18 @@ export default class Toggle extends Base {
 	}
 
 	private get ToggleRect() {
-		const base_pos = this.Position.Add(this.TotalSize).SubtractForThis(Toggle.toggle_background_offset)
+		const base_pos = this.Position
+			.Clone()
+			.AddScalarX(this.parent.EntriesSizeX)
+			.AddScalarY(this.Size.y)
+			.SubtractForThis(Toggle.toggle_background_offset)
 		return new Rectangle(base_pos.Subtract(Toggle.toggle_background_size), base_pos)
 	}
 
 	public async Update(): Promise<boolean> {
 		if (!(await super.Update()))
 			return false
-		this.OriginalSize.x =
+		this.Size.x =
 			this.text_offset.x
 			+ this.name_size.x
 			+ Toggle.text_toggle_gap

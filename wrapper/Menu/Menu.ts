@@ -76,21 +76,21 @@ class MenuManager {
 	}
 
 	private get EntriesSizeX_(): number {
-		let width = this.header.OriginalSize.x
+		let width = this.header.Size.x
 		for (const entry of this.entries)
 			if (entry.IsVisible)
-				width = Math.max(width, entry.OriginalSize.x)
+				width = Math.max(width, entry.Size.x)
 		return width
 	}
 	private get EntriesSizeY_(): number {
 		const visibleEntries = this.VisibleEntries
-		let height = this.header.OriginalSize.y,
+		let height = this.header.Size.y,
 			cnt = 0,
 			skip = this.ScrollPosition
 		for (const entry of this.entries) {
 			if (!entry.IsVisible || skip-- > 0)
 				continue
-			height += entry.OriginalSize.y
+			height += entry.Size.y
 			if (++cnt >= visibleEntries)
 				break
 		}
@@ -99,7 +99,7 @@ class MenuManager {
 	private get EntriesRect() {
 		const pos = this.header.Position
 			.Clone()
-			.AddScalarY(this.header.OriginalSize.y),
+			.AddScalarY(this.header.Size.y),
 			height = this.EntriesSizeY
 		pos.y = Math.min(pos.y, RendererSDK.WindowSize.y - height)
 		return new Rectangle(
@@ -130,6 +130,7 @@ class MenuManager {
 				Localization.SelectedUnitName = this.config.SelectedLocalization
 				this.initialized_language = true
 			}
+			await this.Update(true)
 		}
 	}
 	public async Render(): Promise<void> {
@@ -141,8 +142,7 @@ class MenuManager {
 		}
 		this.ForwardConfig()
 		if (Localization.was_changed) {
-			for (const entry of this.entries)
-				await entry.ApplyLocalization()
+			await this.Update(true)
 			Localization.was_changed = false
 			Base.SaveConfigASAP = true
 		}
@@ -154,26 +154,24 @@ class MenuManager {
 			return
 		if (this.header.QueuedUpdate) {
 			this.header.QueuedUpdate = false
-			await this.header.Update()
+			await this.header.Update(this.header.QueuedUpdateRecursive)
 		}
 		let updatedEntries = false
 		for (const entry of this.entries) {
 			if (entry.QueuedUpdate) {
 				entry.QueuedUpdate = false
-				await entry.Update()
+				await entry.Update(entry.QueuedUpdateRecursive)
 			}
 			updatedEntries = updatedEntries || entry.NeedsRootUpdate
+			entry.NeedsRootUpdate = false
 		}
 		if (updatedEntries) {
 			await this.Update()
 			updatedEntries = false
 		}
 		this.UpdateScrollbar()
-		const max_width = this.EntriesSizeX
-		this.header.TotalSize.x = max_width
-		this.header.TotalSize.y = this.header.OriginalSize.y
 		await this.header.Render()
-		const position = this.header.Position.Clone().AddScalarY(this.header.TotalSize.y)
+		const position = this.header.Position.Clone().AddScalarY(this.header.Size.y)
 		let skip = this.ScrollPosition,
 			visibleEntries = this.VisibleEntries
 		for (const entry of this.entries) {
@@ -182,13 +180,11 @@ class MenuManager {
 			position.CopyTo(entry.Position)
 			if (entry.QueuedUpdate) {
 				entry.QueuedUpdate = false
-				await entry.Update()
+				await entry.Update(entry.QueuedUpdateRecursive)
 			}
 			updatedEntries = updatedEntries || entry.NeedsRootUpdate
-			entry.TotalSize.x = max_width
-			entry.TotalSize.y = entry.OriginalSize.y
 			await entry.Render()
-			position.AddScalarY(entry.TotalSize.y)
+			position.AddScalarY(entry.Size.y)
 			if (--visibleEntries <= 0)
 				break
 		}
@@ -271,7 +267,6 @@ class MenuManager {
 		this.entries = this.entries
 			.sort((a, b) => a.Name.localeCompare(b.Name))
 			.sort((a, b) => a.Priority - b.Priority)
-		node.ApplyLocalization()
 		return node
 	}
 	public AddEntryDeep(names: string[], icon_paths: string[] = []): Node {
@@ -330,13 +325,13 @@ class MenuManager {
 		this.VisibleEntries = 0
 		this.IsAtScrollEnd = true
 		const maxHeight = RendererSDK.WindowSize.y
-		let height = this.header.OriginalSize.y,
+		let height = this.header.Size.y,
 			skip = this.ScrollPosition
 		for (let i = 0; i < this.entries.length; i++) {
 			const entry = this.entries[i]
 			if (!entry.IsVisible || skip-- > 0)
 				continue
-			height += entry.OriginalSize.y
+			height += entry.Size.y
 			this.VisibleEntries++
 			if (height >= maxHeight) {
 				if (i < this.entries.length - 1)

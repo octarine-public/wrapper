@@ -29,7 +29,9 @@ export default class Button extends Base {
 		return new Rectangle(
 			this.Position.Add(Button.button_offset),
 			this.Position
-				.Add(this.TotalSize)
+				.Clone()
+				.AddScalarX(this.parent.EntriesSizeX)
+				.AddScalarY(this.Size.y)
 				.SubtractForThis(Button.button_offset)
 				.AddScalarX(2), // because text_button_gap includes bar size
 		)
@@ -43,7 +45,7 @@ export default class Button extends Base {
 			.AddForThis(Vector2.FromVector3(this.name_size))
 			.AddScalarX(Button.text_button_gap * 2)
 			.AddScalarY(Button.text_vertical_button_gap * 2)
-			.CopyTo(this.OriginalSize)
+			.CopyTo(this.Size)
 		return true
 	}
 	public async Render(): Promise<void> {

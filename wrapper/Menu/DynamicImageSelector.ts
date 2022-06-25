@@ -135,13 +135,13 @@ export default class DynamicImageSelector extends Base {
 			this.rendered_paths.set(name, path)
 		}
 
-		this.OriginalSize.x = Math.max(
+		this.Size.x = Math.max(
 			this.name_size.x,
 			Math.min(this.rendered_paths.size, DynamicImageSelector.elements_per_row)
 			* (this.image_size.x + DynamicImageSelector.image_border_width * 2 + DynamicImageSelector.image_gap),
 		) + this.text_offset.x * 2
 
-		this.OriginalSize.y = (
+		this.Size.y = (
 			Math.ceil(this.rendered_paths.size / DynamicImageSelector.elements_per_row)
 			* (this.image_size.y + DynamicImageSelector.image_border_width * 2 + DynamicImageSelector.image_gap)
 			+ DynamicImageSelector.random_height_value

@@ -64,12 +64,12 @@ export default class Slider extends Base {
 		).Max(this.GetTextSizeDefault(
 			this.min.toFixed(this.precision),
 		))
-		this.OriginalSize.x =
+		this.Size.x =
 			this.name_size.x
 			+ this.text_offset.x * 2
 			+ Slider.text_value_gap
 			+ max_value_size.x
-		this.OriginalSize.y =
+		this.Size.y =
 			this.text_offset.y
 			+ Math.max(max_value_size.y - max_value_size.z, this.name_size.y - this.name_size.z)
 			+ Slider.text_slider_vertical_gap
