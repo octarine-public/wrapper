@@ -101,7 +101,8 @@ export default class Node extends Base {
 		if (!this.save_unused_configs)
 			this.config_storage = Object.create(null)
 		this.entries.forEach(entry => {
-			this.config_storage[entry.InternalName] = entry.ConfigValue
+			if (entry.SaveConfig)
+				this.config_storage[entry.InternalName] = entry.ConfigValue
 		})
 		return this.config_storage
 	}
@@ -110,7 +111,10 @@ export default class Node extends Base {
 			return
 		if (this.save_unused_configs)
 			this.config_storage = obj
-		this.entries.forEach(entry => entry.ConfigValue = obj[entry.InternalName])
+		this.entries.forEach(entry => {
+			if (entry.SaveConfig)
+				entry.ConfigValue = obj[entry.InternalName]
+		})
 	}
 	public get ClassPriority(): number {
 		return 7
@@ -158,7 +162,10 @@ export default class Node extends Base {
 		)
 	}
 	public OnConfigLoaded() {
-		this.entries.forEach(entry => entry.OnConfigLoaded())
+		this.entries.forEach(entry => {
+			if (entry.SaveConfig)
+				entry.OnConfigLoaded()
+		})
 	}
 	public async Update(recursive = false): Promise<boolean> {
 		if (!(await super.Update(recursive)))

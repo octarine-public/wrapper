@@ -56,7 +56,8 @@ class MenuManager {
 	public get ConfigValue() {
 		this.config = Object.create(null)
 		this.entries.forEach(entry => {
-			this.config[entry.InternalName] = entry.ConfigValue
+			if (entry.SaveConfig)
+				this.config[entry.InternalName] = entry.ConfigValue
 		})
 		this.config.Header = this.header.ConfigValue
 		this.config.SelectedLocalization = Localization.SelectedUnitName
@@ -357,8 +358,14 @@ class MenuManager {
 	private ForwardConfig() {
 		while (Base.ForwardConfigASAP && this.config !== undefined) {
 			Base.ForwardConfigASAP = false
-			this.entries.forEach(entry => entry.ConfigValue = this.config[entry.InternalName])
-			this.entries.forEach(entry => entry.OnConfigLoaded())
+			this.entries.forEach(entry => {
+				if (entry.SaveConfig)
+					entry.ConfigValue = this.config[entry.InternalName]
+			})
+			this.entries.forEach(entry => {
+				if (entry.SaveConfig)
+					entry.OnConfigLoaded()
+			})
 		}
 	}
 }

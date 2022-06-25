@@ -72,6 +72,7 @@ export default class Base {
 	public QueuedUpdate = true
 	public QueuedUpdateRecursive = false
 	public NeedsRootUpdate = true
+	public SaveConfig = true
 	public readonly OnValueChangedCBs: ((caller: Base) => any)[] = []
 
 	public readonly Position = new Vector2()
