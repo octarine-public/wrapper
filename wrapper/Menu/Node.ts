@@ -524,6 +524,13 @@ export default class Node extends Base {
 			.sort((a, b) => a.Name.localeCompare(b.Name))
 			.sort((a, b) => a.ClassPriority - b.ClassPriority)
 			.sort((a, b) => a.Priority - b.Priority)
+			.sort((a, b) => {
+				if (a.InternalName === "State")
+					return -1
+				if (b.InternalName === "State")
+					return 1
+				return 0
+			})
 	}
 }
 
