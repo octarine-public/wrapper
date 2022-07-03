@@ -48,6 +48,8 @@ export default class Unit extends Entity {
 
 	public IsTrueSightedForEnemies = false
 	public HasScepterModifier = false
+	public HasShardModifier = false
+
 	public UnitName_ = ""
 	public IsControllableByPlayerMask = 0n
 	public NetworkActivity = GameActivity_t.ACT_DOTA_IDLE
@@ -257,6 +259,9 @@ export default class Unit extends Entity {
 	}
 	public get IsRangeAttacker(): boolean {
 		return this.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)
+	}
+	public get HasShard(): boolean {
+		return this.HasShardModifier
 	}
 	public get HasScepter(): boolean {
 		return this.HasScepterModifier || this.HasStolenScepter
@@ -843,6 +848,16 @@ export default class Unit extends Entity {
 			if (hasScepter !== lastHasScepter) {
 				this.HasScepterModifier = hasScepter
 				await EventsSDK.emit("HasScepterChanged", false, this)
+			}
+		}
+
+		{ // HasShard
+			const lastHasShard = this.HasShardModifier
+			const hasShard = Modifier.HasShardBuff(buffs)
+
+			if (hasShard !== lastHasShard) {
+				this.HasScepterModifier = hasShard
+				await EventsSDK.emit("HasShardChanged", false, this)
 			}
 		}
 	}

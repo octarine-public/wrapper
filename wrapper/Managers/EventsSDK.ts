@@ -66,6 +66,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "ControllableByPlayerMaskChanged", callback: (npc: Unit) => void, priority?: number): EventEmitter
 	on(name: "TrueSightedChanged", callback: (npc: Unit) => void, priority?: number): EventEmitter
 	on(name: "HasScepterChanged", callback: (npc: Unit) => void, priority?: number): EventEmitter
+	on(name: "HasShardChanged", callback: (npc: Unit) => void, priority?: number): EventEmitter
 	on(name: "PreDraw", callback: () => void, priority?: number): EventEmitter
 	on(name: "Draw", callback: () => void, priority?: number): EventEmitter
 	on(name: "ParticleCreated", callback: (particle: NetworkedParticle) => void, priority?: number): EventEmitter

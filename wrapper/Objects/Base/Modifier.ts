@@ -42,6 +42,7 @@ export const REFLECTING_DAMAGE_MODIFIERS = [
 	"modifier_item_blade_mail_reflect",
 ]
 
+const ShardRegExp = /modifier_item_aghanims_shard/
 const ScepterRegExp = /modifier_item_ultimate_scepter|modifier_wisp_tether_scepter/
 
 export default class Modifier {
@@ -50,6 +51,9 @@ export default class Modifier {
 	}
 	public static HasScepterBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => ScepterRegExp.test(buff.Name))
+	}
+	public static HasShardBuff(buffs: Modifier[]): boolean {
+		return buffs.some(buff => ShardRegExp.test(buff.Name))
 	}
 
 	public IsValid = true
