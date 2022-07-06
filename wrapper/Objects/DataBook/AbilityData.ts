@@ -66,6 +66,8 @@ export default class AbilityData {
 	public readonly ItemQuality: Nullable<string>
 	public readonly ItemResult: Nullable<string>
 	public readonly ItemStockTime: number
+	public readonly HasShardUpgrade: boolean
+	public readonly HasScepterUpgrade: boolean
 
 	private readonly SpecialValueCache = new Map<string, [number[], string, string | number, EDOTASpecialBonusOperation]>()
 	private readonly CastRangeCache: number[]
@@ -94,6 +96,15 @@ export default class AbilityData {
 		this.AbilityBehavior = m_Storage.has("AbilityBehavior")
 			? parseEnumString(DOTA_ABILITY_BEHAVIOR, m_Storage.get("AbilityBehavior") as string)
 			: DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NONE
+
+		this.HasShardUpgrade = m_Storage.has("HasShardUpgrade")
+			? parseInt(m_Storage.get("HasShardUpgrade") as string) === 1
+			: false
+
+		this.HasScepterUpgrade = m_Storage.has("HasScepterUpgrade")
+			? parseInt(m_Storage.get("HasScepterUpgrade") as string) === 1
+			: false
+
 		this.TexturePath = (m_Storage.get("AbilityTexturePath") as string) ?? ""
 		this.TargetFlags = m_Storage.has("AbilityUnitTargetFlags")
 			? parseEnumString(DOTA_UNIT_TARGET_FLAGS, m_Storage.get("AbilityUnitTargetFlags") as string)
@@ -150,6 +161,7 @@ export default class AbilityData {
 		this.AbilityDamageCache = this.GetLevelArray(m_Storage.get("AbilityDamage") as Nullable<string>)
 		this.CastPointCache = this.GetLevelArray(m_Storage.get("AbilityCastPoint") as Nullable<string>)
 		this.ChargesCache = this.GetLevelArray(m_Storage.get("AbilityCharges") as Nullable<string>)
+
 		this.ChargeRestoreTimeCache = this.GetLevelArray(m_Storage.get("AbilityChargeRestoreTime") as Nullable<string>)
 		this.MaxCooldownCache = this.GetLevelArray(m_Storage.get("AbilityCooldown") as Nullable<string>)
 		this.MaxDurationCache = this.GetLevelArray(m_Storage.get("AbilityDuration") as Nullable<string>)
