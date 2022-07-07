@@ -43,7 +43,7 @@ export const REFLECTING_DAMAGE_MODIFIERS = [
 ]
 
 const ShardRegExp = /modifier_item_aghanims_shard/
-const ScepterRegExp = /modifier_item_ultimate_scepter|modifier_wisp_tether_scepter/
+const ScepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
 export default class Modifier {
 	public static HasTrueSightBuff(buffs: Modifier[]): boolean {

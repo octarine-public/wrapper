@@ -198,10 +198,10 @@ export default class AbilityData {
 		let base_val = ar[0][Math.min(level, ar[0].length) - 1]
 		if (ar[1] !== "") {
 			const talent = owner.GetAbilityByName(ar[1])
-			if (talent !== undefined && talent.Level !== 0) {
+			if ((talent !== undefined && talent.Level !== 0) || (ar[1] === "special_bonus_scepter" && owner.HasScepter)) {
 				const val = ar[2]
 				const talent_val = typeof val === "string"
-					? talent.GetSpecialValue(val)
+					? talent?.GetSpecialValue(val) ?? this.GetSpecialValueWithTalent(owner, val, level) // TODO: should we handle named scepter values?
 					: val
 				switch (ar[3]) {
 					default:
