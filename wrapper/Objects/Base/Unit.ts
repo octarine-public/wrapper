@@ -138,6 +138,7 @@ export default class Unit extends Entity {
 	public StartSequenceCycle = 0
 	public StartSequenceCyclePrev = -1
 	public IsVisibleForEnemies = false
+	public IsVisibleForEnemiesTicks = 0
 	public LastActivity = 0
 	public LastActivityEndTime = 0
 	public Spawner: Nullable<NeutralSpawner>
@@ -1186,7 +1187,11 @@ EventsSDK.on("PostDataUpdate", async () => {
 	for (const unit of Units) {
 		unit.UnitStateMask = unit.UnitStateMask_
 		const old_visibility = unit.IsVisibleForEnemies
-		unit.IsVisibleForEnemies = unit.StartSequenceCyclePrev === 0 && unit.StartSequenceCycle === 0
+		if (unit.StartSequenceCyclePrev === unit.StartSequenceCycle)
+			unit.IsVisibleForEnemiesTicks++
+		else
+			unit.IsVisibleForEnemiesTicks = 0
+		unit.IsVisibleForEnemies = unit.IsVisibleForEnemiesTicks > 1
 		unit.StartSequenceCyclePrev = unit.StartSequenceCycle
 		if (old_visibility !== unit.IsVisibleForEnemies) {
 			await EventsSDK.emit("TeamVisibilityChanged", false, unit)
