@@ -74,9 +74,9 @@ declare interface Events extends EventEmitter {
 	 * That's analog of https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms633573(v%3Dvs.85 (w/o hwnd)
 	 * message_type: https://www.autoitscript.com/autoit3/docs/appendix/WinMsgCodes.htm
 	 */
-	on(name: "WndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => false | any, priority?: number): Events
+	on(name: "WndProc", callback: (message_type: number, wParam: bigint, lParam: bigint, x?: number, y?: number) => false | any, priority?: number): Events
 	on(name: "RequestUserCmd", callback: () => void, priority?: number): Events
-	on(name: "Draw", callback: (visual_data: ArrayBuffer, w: number, h: number) => void, priority?: number): Events
+	on(name: "Draw", callback: (visual_data: ArrayBuffer, w: number, h: number, x?: number, y?: number) => void, priority?: number): Events
 	on(name: "PrepareUnitOrders", callback: () => false | any, priority?: number): Events
 	on(name: "DebuggerPrepareUnitOrders", callback: (is_user_input: boolean, was_cancelled: boolean) => void, priority?: number): Events
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void, priority?: number): Events

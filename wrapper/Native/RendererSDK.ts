@@ -949,7 +949,8 @@ class CRendererSDK {
 const RendererSDK = new CRendererSDK()
 EventsSDK.on("UnitAbilityDataUpdated", () => RendererSDK.FreeTextureCache())
 
-Events.on("Draw", async (visual_data, w, h) => {
+Events.on("Draw", async (visual_data, w, h, x, y) => {
+	Input.UpdateCursorOnScreen(x, y)
 	await RendererSDK.BeforeDraw(w, h)
 	const stream = new BinaryStream(new DataView(visual_data))
 	while (!stream.Empty()) {

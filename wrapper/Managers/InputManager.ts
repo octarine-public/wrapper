@@ -15,13 +15,15 @@ const HIWORD = (dw: bigint) => Number((dw >> 16n) & 0xffffn)
 const XMouseKey = (wParam: bigint) => HIWORD(wParam) === VXMouseKeys.XBUTTON1
 	? VMouseKeys.MK_XBUTTON1 : VMouseKeys.MK_XBUTTON2
 
-class Input {
+class CInput {
 	public IsShopOpen = false
 	public IsScoreboardOpen = false
 	public readonly SelectedEntities: Unit[] = []
 	public QueryUnit: Nullable<Unit>
 	public SelectedUnit: Nullable<Unit>
 	private CursorOnWorld_ = new Vector3()
+	private x = 0
+	private y = 0
 
 	get CursorOnWorld(): Vector3 {
 		return this.CursorOnWorld_.Clone()
@@ -30,7 +32,7 @@ class Input {
 		this.CursorOnWorld_.CopyFrom(vec)
 	}
 	get CursorOnScreen(): Vector2 {
-		return new Vector2(CursorPosition[0], CursorPosition[1])
+		return new Vector2(this.x, this.y)
 	}
 	public IsKeyDown(key: VKeys): boolean {
 		return KeysDown.get(key) === true
@@ -38,9 +40,18 @@ class Input {
 	public IsMouseKeyDown(key: VMouseKeys): boolean {
 		return MouseDown.get(key) === true
 	}
+	public UpdateCursorOnScreen(x?: number, y?: number) {
+		if (x === undefined || y === undefined) {
+			x = globalThis.CursorPosition[0]
+			y = globalThis.CursorPosition[1]
+		}
+		this.x = x
+		this.y = y
+	}
 }
 
-Events.on("WndProc", async (msg, wParam) => {
+Events.on("WndProc", async (msg, wParam, _lParam, x, y) => {
+	Input.UpdateCursorOnScreen(x, y)
 	let mKey: VMouseKeys = 0
 	switch (msg) {
 		case InputMessage.WM_LBUTTONUP:
@@ -99,7 +110,8 @@ Events.on("WndProc", async (msg, wParam) => {
 	return true
 })
 
-export default new Input()
+const Input = new CInput()
+export default Input
 
 export enum InputMessage {
 	WM_NULL = 0x0000,
