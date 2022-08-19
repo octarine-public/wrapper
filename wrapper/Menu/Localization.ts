@@ -15,11 +15,13 @@ export default new (class Localization {
 		return [...this.LocalizationUnits.keys()]
 	}
 	public AddLocalizationUnit(unit_name: string, unit: Map<string, string>): void {
-		if (this.LocalizationUnits.has(unit_name)) {
-			const existing_unit = this.LocalizationUnits.get(unit_name)!
-			unit.forEach((v, k) => existing_unit.set(k, v))
-		} else
-			this.LocalizationUnits.set(unit_name, unit)
+		let existing_unit = this.LocalizationUnits.get(unit_name)
+		if (existing_unit === undefined) {
+			existing_unit = new Map()
+			this.LocalizationUnits.set(unit_name, existing_unit)
+		}
+		for (const [k, v] of unit)
+			existing_unit.set(k, v)
 		this.was_changed = true
 	}
 

@@ -66,7 +66,7 @@ export default class ExecuteOrder {
 	public static hold_orders_target: Nullable<Vector3 | Entity>
 	public static camera_minimap_spaces = 3 // 2 => 5
 	public static camera_speed = 8000 // 5000 => 20000
-	public static cursor_speed = 8 // ?
+	public static cursor_speed = 4 // ?
 	public static cursor_speed_min_accel = 1.5 //?
 	public static cursor_speed_max_accel = 4 // ?
 	public static prefire_orders = true
@@ -963,10 +963,10 @@ function MoveCameraByScreen(target_pos: Vector3, current_time: number): Vector2 
 	if (last_camera_move_seed < current_time - camera_move_seed_expiry)
 		last_camera_move_seed = current_time
 	ret.x = camera_direction.x === 0.5
-		? Math.min(0.9, Math.max(0.1, 0.5 + (Math.cos(last_camera_move_seed) ** 3) * 0.1))
+		? Math.min(0.9, Math.max(0.1, 0.5 + (Math.cos(last_camera_move_seed) ** 3) * 0.2 - 0.1))
 		: camera_direction.x
 	ret.y = camera_direction.y === 0.5
-		? Math.min(0.9, Math.max(0.1, 0.5 + (Math.sin(last_camera_move_seed) ** 3) * 0.1))
+		? Math.min(0.9, Math.max(0.1, 0.5 + (Math.sin(last_camera_move_seed) ** 3) * 0.2 - 0.1))
 		: camera_direction.y
 	return ret
 }
@@ -999,6 +999,29 @@ function MoveCamera(
 			return [minimap_target, true]
 	}
 	return [MoveCameraByScreen(target_pos, current_time), false]
+}
+
+function getParams() {
+	const res: [number, number][] = []
+	const num = 3 + Math.round(Math.random() * 3)
+	for (let i = 0; i < num; i++)
+		res.push([
+			1 / (0.5 + Math.random()), // amplitude rcp
+			Math.random() * (Math.PI / 2), // offset
+		])
+	return res
+}
+let params = getParams()
+function ApplyParams(vec: Vector2, currentTime: number): void {
+	const [cos, sin] = params.reduce((prev, cur) => {
+		const param = currentTime * cur[0] + cur[1]
+		prev[0] += (Math.cos(param) ** 2)
+		prev[1] += (Math.sin(param) ** 2)
+		return prev
+	}, [0, 0])
+	vec
+		.MultiplyScalarX(cos / params.length)
+		.MultiplyScalarY(sin / params.length)
 }
 
 const min_ProcessUserCmd_window = 1 / 60
@@ -1100,13 +1123,11 @@ function ProcessUserCmd(force = false): void {
 		) * ExecuteOrder.cursor_speed * dt
 		if (extend < dist) {
 			// Vector2#Extend with sin^2/cos^2
-			latest_usercmd.MousePosition
+			const dir = latest_usercmd.MousePosition
 				.GetDirectionTo(target_pos)
 				.MultiplyScalarForThis(extend)
-				.MultiplyScalarX(Math.cos(current_time) ** 2)
-				.MultiplyScalarY(Math.sin(current_time) ** 2)
-				.AddForThis(latest_usercmd.MousePosition)
-				.CopyTo(latest_usercmd.MousePosition)
+			ApplyParams(dir, current_time)
+			latest_usercmd.MousePosition.AddForThis(dir)
 		} else
 			latest_usercmd.MousePosition.CopyFrom(target_pos)
 	}
@@ -1320,6 +1341,7 @@ function ClearHumanizerState() {
 	InputManager.IsShopOpen = false
 	InputManager.IsScoreboardOpen = false
 	InputManager.SelectedEntities.splice(0)
+	params = getParams()
 }
 
 Events.on("NewConnection", ClearHumanizerState)

@@ -1302,6 +1302,7 @@ EventsSDK.on("ServerInfo", async info => {
 	await ReloadGlobalAbilityStorage()
 	UnitData.global_storage.then(unit_data_global_storage => {
 		AbilityData.global_storage.then(ability_data_global_storage => {
+			// TODO: load localization from current language
 			// automatically localize units, abilities and items in menu
 			const namesMapping = new Map<string, string>()
 			const lang_tokens = ((createMapFromMergedIterators<string, RecursiveMapValue>(
