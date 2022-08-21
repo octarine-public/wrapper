@@ -850,7 +850,9 @@ let last_order_finish = 0,
 	latest_usercmd = new UserCmd(),
 	last_camera_move_seed = 0,
 	yellow_zone_out_at = 0,
-	green_zone_out_at = 0
+	green_zone_out_at = 0,
+	cursor_at_minimap_at = 0,
+	cursor_entered_minimap_at = 0
 function CanMoveCamera(camera_vec: Vector2, target_pos: Vector2): boolean {
 	const bounds_ent = CameraBounds
 	if (bounds_ent === undefined)
@@ -1138,14 +1140,27 @@ function ProcessUserCmd(force = false): void {
 			|| !CanMoveCamera(camera_vec, target_pos)
 		)
 	)
-	if (interacting_with_minimap && latest_usercmd.MousePosition.Equals(target_pos)) { // move camera via minimap
-		const eye_vector = WASM.GetEyeVector(default_camera_angles)
-		const lookatpos = MinimapSDK.MinimapToWorld(latest_usercmd.MousePosition.Multiply(RendererSDK.WindowSize))
-			.SubtractScalarX(eye_vector.x * default_camera_dist)
-			.SubtractScalarY(eye_vector.y * default_camera_dist)
-		camera_vec.x = lookatpos.x
-		camera_vec.y = lookatpos.y
-		order_suits = true
+	// move camera via minimap
+	if (interacting_with_minimap) {
+		if (cursor_entered_minimap_at === 0 && GUIInfo.Minimap.Minimap.Contains(target_pos))
+			cursor_entered_minimap_at = current_time
+		if (
+			current_time - cursor_entered_minimap_at > (ConVars.GetInt("dota_minimap_misclick_time") ?? 0.2)
+			&& latest_usercmd.MousePosition.Equals(target_pos)
+		) {
+			const eye_vector = WASM.GetEyeVector(default_camera_angles)
+			const lookatpos = MinimapSDK.MinimapToWorld(latest_usercmd.MousePosition.Multiply(RendererSDK.WindowSize))
+				.SubtractScalarX(eye_vector.x * default_camera_dist)
+				.SubtractScalarY(eye_vector.y * default_camera_dist)
+			camera_vec.x = lookatpos.x
+			camera_vec.y = lookatpos.y
+			if (cursor_at_minimap_at === 0)
+				cursor_at_minimap_at = current_time
+			order_suits = current_time - cursor_at_minimap_at > order_linger_duration
+		}
+	} else {
+		cursor_at_minimap_at = 0
+		cursor_entered_minimap_at = 0
 	}
 	let moving_camera = false,
 		moved_x = false,
@@ -1338,6 +1353,8 @@ function ClearHumanizerState() {
 	camera_direction.toZero()
 	yellow_zone_out_at = 0
 	green_zone_out_at = 0
+	cursor_at_minimap_at = 0
+	cursor_entered_minimap_at = 0
 	InputManager.IsShopOpen = false
 	InputManager.IsScoreboardOpen = false
 	InputManager.SelectedEntities.splice(0)
