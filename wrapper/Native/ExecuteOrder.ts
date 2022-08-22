@@ -66,9 +66,9 @@ export default class ExecuteOrder {
 	public static hold_orders_target: Nullable<Vector3 | Entity>
 	public static camera_minimap_spaces = 3 // 2 => 5
 	public static camera_speed = 8000 // 5000 => 20000
-	public static cursor_speed = 4 // ?
-	public static cursor_speed_min_accel = 1.5 //?
-	public static cursor_speed_max_accel = 4 // ?
+	public static cursor_speed = 6 // ?
+	public static cursor_speed_min_accel = 1 //?
+	public static cursor_speed_max_accel = 2 // ?
 	public static prefire_orders = true
 	public static received_usercmd_request = false
 	public static is_standalone = false
@@ -1113,28 +1113,25 @@ function ProcessUserCmd(force = false): void {
 		target_pos = target_pos_
 		interacting_with_minimap = interacting_with_minimap_
 	}
+	let cursor_at_target = false
 	{ // move cursor
-		// TODO: use curves
 		const dist = latest_usercmd.MousePosition.Distance(target_pos)
 		const extend = Math.min(
-			Math.max(
-				dist,
-				1,
-			) * ExecuteOrder.cursor_speed_min_accel,
+			ExecuteOrder.cursor_speed_min_accel + Math.sqrt(dist) * (
+				ExecuteOrder.cursor_speed_max_accel
+				- ExecuteOrder.cursor_speed_min_accel
+			),
 			ExecuteOrder.cursor_speed_max_accel,
 		) * ExecuteOrder.cursor_speed * dt
-		if (extend < dist) {
-			// Vector2#Extend with sin^2/cos^2
-			const dir = latest_usercmd.MousePosition
-				.GetDirectionTo(target_pos)
-				.MultiplyScalarForThis(extend)
-			ApplyParams(dir, current_time)
-			latest_usercmd.MousePosition.AddForThis(dir)
-		} else
-			latest_usercmd.MousePosition.CopyFrom(target_pos)
+		const dir = latest_usercmd.MousePosition
+			.GetDirectionTo(target_pos)
+			.MultiplyScalarForThis(Math.min(extend, dist))
+		ApplyParams(dir, current_time)
+		latest_usercmd.MousePosition.AddForThis(dir)
+		cursor_at_target = dist < 0.01
 	}
 	let order_suits = (
-		latest_usercmd.MousePosition.Equals(target_pos)
+		cursor_at_target
 		&& (
 			latest_camera_red_zone_poly_screen.IsInside(target_pos)
 			|| !CanMoveCamera(camera_vec, target_pos)
@@ -1146,7 +1143,7 @@ function ProcessUserCmd(force = false): void {
 			cursor_entered_minimap_at = current_time
 		if (
 			current_time - cursor_entered_minimap_at > (ConVars.GetInt("dota_minimap_misclick_time") ?? 0.2)
-			&& latest_usercmd.MousePosition.Equals(target_pos)
+			&& cursor_at_target
 		) {
 			const eye_vector = WASM.GetEyeVector(default_camera_angles)
 			const lookatpos = MinimapSDK.MinimapToWorld(latest_usercmd.MousePosition.Multiply(RendererSDK.WindowSize))
@@ -1234,7 +1231,7 @@ function ProcessUserCmd(force = false): void {
 	let execute_order = (camera_limited_x === moved_x) && (camera_limited_y === moved_y)
 	if (target_pos instanceof Vector2) {
 		order_suits = order_suits || (
-			latest_usercmd.MousePosition.Equals(target_pos)
+			cursor_at_target
 			&& latest_camera_red_zone_poly_screen.IsInside(target_pos)
 		) || !CanMoveCamera(camera_vec, target_pos)
 		execute_order = execute_order || (!moving_camera && order_suits)
