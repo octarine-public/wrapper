@@ -64,7 +64,7 @@ export default class Unit extends Entity {
 	public IsAncient = false
 	@NetworkedBasicField("m_flPhysicalArmorValue")
 	public BaseArmor = 0
-	@NetworkedBasicField("m_iCurShop")
+	@NetworkedBasicField("m_iCurShop", EPropertyType.UINT32)
 	public CurrentShop = DOTA_SHOP_TYPE.DOTA_SHOP_NONE
 	@NetworkedBasicField("m_iMoveSpeed")
 	public BaseMoveSpeed = 0
