@@ -22,6 +22,7 @@ import Shop from "../Objects/Base/Shop"
 import TempTree from "../Objects/Base/TempTree"
 import Tree from "../Objects/Base/Tree"
 import Unit, { Units } from "../Objects/Base/Unit"
+import { EntityDataLump } from "../Resources/ParseEntityLump"
 import { arrayRemoveCallback, orderByFirst } from "../Utils/ArrayExtensions"
 import GameState from "../Utils/GameState"
 import RendererSDK from "./RendererSDK"
@@ -58,6 +59,7 @@ InputEventSDK.on("KeyUp", key => {
 		shift_down = false
 })
 
+let world_bounds: Nullable<[Vector2, Vector2]>
 export default class ExecuteOrder {
 	public static readonly order_queue: [ExecuteOrder, number, boolean][] = []
 	public static debug_orders = false
@@ -829,6 +831,12 @@ function ProcessOrderQueue(current_time: number): Nullable<[ExecuteOrder, number
 				last_order_target = undefined
 				break
 		}
+		if (last_order_target instanceof Vector3 && world_bounds !== undefined) {
+			if (order[0].Position !== last_order_target)
+				last_order_target = last_order_target.Clone()
+			last_order_target.x = Math.min(Math.max(last_order_target.x, world_bounds[0].x), world_bounds[1].x)
+			last_order_target.y = Math.min(Math.max(last_order_target.y, world_bounds[0].y), world_bounds[1].y)
+		}
 	}
 	return order
 }
@@ -1233,14 +1241,15 @@ function ProcessUserCmd(force = false): void {
 				Math.max(camera_vec.y, bounds_ent.BoundsMin.y),
 				bounds_ent.BoundsMax.y,
 			)
-			camera_limited_x = camera_vec.x !== old_x
-			camera_limited_y = camera_vec.y !== old_y
+			camera_limited_x = Math.abs(camera_vec.x - old_x) > 0.01
+			camera_limited_y = Math.abs(camera_vec.y - old_y) > 0.01
 		}
 		UpdateCameraBounds(camera_vec)
 		target_pos = ComputeTargetPos(camera_vec, current_time)
 	}
-	if (!moving_camera && !interacting_with_minimap) {
-		let execute_order = (camera_limited_x === moved_x) && (camera_limited_y === moved_y)
+	const camera_limited = (camera_limited_x === moved_x) && (camera_limited_y === moved_y)
+	if ((!moving_camera || camera_limited) && !interacting_with_minimap) {
+		let execute_order = camera_limited
 		if (target_pos instanceof Vector2)
 			execute_order ||= (
 				order_suits
@@ -1373,3 +1382,20 @@ function ClearHumanizerState() {
 
 Events.on("NewConnection", ClearHumanizerState)
 EventsSDK.on("GameEnded", ClearHumanizerState)
+
+EventsSDK.after("ServerInfo", async () => {
+	try {
+		const world_bounds_data = EntityDataLump.find(data => data.get("classname") === "world_bounds")
+		if (world_bounds_data !== undefined) {
+			const min = world_bounds_data.get("min"),
+				max = world_bounds_data.get("max")
+			world_bounds = typeof min === "string" && typeof max === "string"
+				? [Vector2.FromString(min), Vector2.FromString(max)]
+				: undefined
+		} else
+			world_bounds = undefined
+	} catch (e) {
+		console.error("Error in world_bounds_data init", e)
+		world_bounds = undefined
+	}
+})
