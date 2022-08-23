@@ -59,7 +59,7 @@ InputEventSDK.on("KeyUp", key => {
 })
 
 export default class ExecuteOrder {
-	public static readonly order_queue: [ExecuteOrder, number][] = []
+	public static readonly order_queue: [ExecuteOrder, number, boolean][] = []
 	public static debug_orders = false
 	public static debug_draw = false
 	public static hold_orders = 0
@@ -70,7 +70,6 @@ export default class ExecuteOrder {
 	public static cursor_speed_min_accel = 1 //?
 	public static cursor_speed_max_accel = 2 // ?
 	public static prefire_orders = true
-	public static received_usercmd_request = false
 	public static is_standalone = false
 	public static unsafe_mode = false
 	public static get disable_humanizer() {
@@ -289,21 +288,21 @@ export default class ExecuteOrder {
 			} else
 				while (arrayRemoveCallback(
 					ExecuteOrder.order_queue,
-					(order, i) => (
+					([order], i) => (
 						i !== 0
 						&& (
-							order[0].Issuers.every(unit => this.Issuers.includes(unit))
+							order.Issuers.every(unit => this.Issuers.includes(unit))
 							|| (
-								order[0].Issuers.length === 1
-								&& this.Issuers.includes(order[0].Issuers[0])
+								order.Issuers.length === 1
+								&& this.Issuers.includes(order.Issuers[0])
 							)
 						)
-						&& CanBeIgnored(order[0])
+						&& CanBeIgnored(order)
 					),
 				))
 					continue
 		}
-		ExecuteOrder.order_queue.push([this, hrtime()])
+		ExecuteOrder.order_queue.push([this, hrtime(), false])
 	}
 
 	public toJSON(): {
@@ -787,16 +786,16 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 }
 
 let last_order_target: Nullable<Vector3 | Entity>,
-	current_order: Nullable<[ExecuteOrder, number]>
-function ProcessOrderQueue(current_time: number): Nullable<[ExecuteOrder, number]> {
-	let order = ExecuteOrder.order_queue[0] as Nullable<[ExecuteOrder, number]>
+	current_order: Nullable<[ExecuteOrder, number, boolean]>
+function ProcessOrderQueue(current_time: number): Nullable<[ExecuteOrder, number, boolean]> {
+	let order = ExecuteOrder.order_queue[0] as Nullable<[ExecuteOrder, number, boolean]>
 	while (order !== undefined && CanOrderBeSkipped(order[0])) {
 		if (ExecuteOrder.debug_orders)
 			console.log(`Executing order ${order[0].OrderType} after ${current_time - order[1]}ms`)
 		order[0].Execute()
 		ExecuteOrder.order_queue.splice(0, 1)
 		current_order = undefined
-		order = ExecuteOrder.order_queue[0] as Nullable<[ExecuteOrder, number]>
+		order = ExecuteOrder.order_queue[0] as Nullable<[ExecuteOrder, number, boolean]>
 	}
 	if (order !== undefined && current_order !== order) {
 		current_order = order
@@ -836,12 +835,14 @@ function ProcessOrderQueue(current_time: number): Nullable<[ExecuteOrder, number
 
 const camera_move_linger_duration = 100,
 	order_linger_duration = 150,
+	order_linger_duration_minimap = 250,
 	camera_move_seed_expiry = 300,
 	yellow_zone_max_duration = 700,
 	green_zone_max_duration = yellow_zone_max_duration * 2,
 	camera_direction = new Vector2(),
 	debug_cursor = new Vector3()
 let last_order_finish = 0,
+	last_order_used_minimap = false,
 	latest_camera_x = 0,
 	latest_camera_y = 0,
 	camera_move_end = 0,
@@ -996,7 +997,9 @@ function MoveCamera(
 		}
 	}
 	if (latest_camera_poly.Center.Distance(target_pos) > ExecuteOrder.camera_minimap_spaces * default_camera_dist) {
-		const minimap_target = MinimapSDK.WorldToMinimap(target_pos).DivideForThis(RendererSDK.WindowSize)
+		const minimap_target = MinimapSDK
+			.WorldToMinimap(target_pos)
+			.DivideForThis(RendererSDK.WindowSize)
 		if (minimap_target.x <= 1 && minimap_target.x >= 0 && minimap_target.y <= 1 && minimap_target.y >= 0)
 			return [minimap_target, true]
 	}
@@ -1068,23 +1071,8 @@ function ProcessUserCmd(force = false): void {
 	if (ExecuteOrder.disable_humanizer)
 		return
 	latest_usercmd.ShopMask = 15
+	const prev_last_order_target = last_order_target
 	let order = ProcessOrderQueue(current_time)
-	if (order !== undefined)
-		switch (order[0].OrderType) {
-			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
-				latest_usercmd.ClickBehaviors = 2
-				break
-			case dotaunitorder_t.DOTA_UNIT_ORDER_PATROL:
-				latest_usercmd.ClickBehaviors = 8
-				break
-			case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
-				latest_usercmd.ClickBehaviors = 11
-				break
-			default:
-				latest_usercmd.ClickBehaviors = 0
-				break
-		}
 	latest_usercmd.CameraPosition.x = latest_camera_x
 	latest_usercmd.CameraPosition.y = latest_camera_y
 	latest_usercmd.MousePosition.CopyFrom(latest_cursor)
@@ -1109,34 +1097,58 @@ function ProcessUserCmd(force = false): void {
 	let target_pos = ComputeTargetPos(camera_vec, current_time)
 	let interacting_with_minimap = false
 	if (target_pos instanceof Vector3) {
-		const [target_pos_, interacting_with_minimap_] = MoveCamera(camera_vec, target_pos, current_time)
-		target_pos = target_pos_
-		interacting_with_minimap = interacting_with_minimap_
+		let ar = MoveCamera(camera_vec, target_pos, current_time)
+		if (ar[1] && last_order_used_minimap && last_order_finish > current_time - order_linger_duration_minimap) {
+			order = undefined
+			last_order_target = prev_last_order_target
+			target_pos = ComputeTargetPos(camera_vec, current_time)
+			if (target_pos instanceof Vector3)
+				ar = MoveCamera(camera_vec, target_pos, current_time)
+		}
+		target_pos = ar[0]
+		interacting_with_minimap = ar[1]
+		if (interacting_with_minimap && order !== undefined)
+			order[2] = true
 	}
+	if (order !== undefined)
+		switch (order[0].OrderType) {
+			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
+				latest_usercmd.ClickBehaviors = 2
+				break
+			case dotaunitorder_t.DOTA_UNIT_ORDER_PATROL:
+				latest_usercmd.ClickBehaviors = 8
+				break
+			case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
+				latest_usercmd.ClickBehaviors = 11
+				break
+			default:
+				latest_usercmd.ClickBehaviors = 0
+				break
+		}
 	let cursor_at_target = false
 	{ // move cursor
 		const dist = latest_usercmd.MousePosition.Distance(target_pos)
-		const extend = Math.min(
-			ExecuteOrder.cursor_speed_min_accel + Math.sqrt(dist) * (
-				ExecuteOrder.cursor_speed_max_accel
-				- ExecuteOrder.cursor_speed_min_accel
-			),
-			ExecuteOrder.cursor_speed_max_accel,
+		const extend = ExecuteOrder.cursor_speed_min_accel + Math.min(Math.sqrt(dist), 1) * (
+			ExecuteOrder.cursor_speed_max_accel
+			- ExecuteOrder.cursor_speed_min_accel
 		) * ExecuteOrder.cursor_speed * dt
 		const dir = latest_usercmd.MousePosition
 			.GetDirectionTo(target_pos)
 			.MultiplyScalarForThis(Math.min(extend, dist))
 		ApplyParams(dir, current_time)
 		latest_usercmd.MousePosition.AddForThis(dir)
-		cursor_at_target = dist < 0.01
+		cursor_at_target = dist < 0.005
 	}
-	let order_suits = (
+	const order_suits = (
 		cursor_at_target
 		&& (
 			latest_camera_red_zone_poly_screen.IsInside(target_pos)
 			|| !CanMoveCamera(camera_vec, target_pos)
 		)
 	)
+	if (order !== undefined)
+		interacting_with_minimap ||= order[2] && current_time - cursor_at_minimap_at < order_linger_duration
 	// move camera via minimap
 	if (interacting_with_minimap) {
 		if (cursor_entered_minimap_at === 0 && GUIInfo.Minimap.Minimap.Contains(target_pos))
@@ -1153,7 +1165,6 @@ function ProcessUserCmd(force = false): void {
 			camera_vec.y = lookatpos.y
 			if (cursor_at_minimap_at === 0)
 				cursor_at_minimap_at = current_time
-			order_suits = current_time - cursor_at_minimap_at > order_linger_duration
 		}
 	} else {
 		cursor_at_minimap_at = 0
@@ -1228,24 +1239,28 @@ function ProcessUserCmd(force = false): void {
 		UpdateCameraBounds(camera_vec)
 		target_pos = ComputeTargetPos(camera_vec, current_time)
 	}
-	let execute_order = (camera_limited_x === moved_x) && (camera_limited_y === moved_y)
-	if (target_pos instanceof Vector2) {
-		order_suits = order_suits || (
-			cursor_at_target
-			&& latest_camera_red_zone_poly_screen.IsInside(target_pos)
-		) || !CanMoveCamera(camera_vec, target_pos)
-		execute_order = execute_order || (!moving_camera && order_suits)
+	if (!moving_camera && !interacting_with_minimap) {
+		let execute_order = (camera_limited_x === moved_x) && (camera_limited_y === moved_y)
+		if (target_pos instanceof Vector2)
+			execute_order ||= (
+				order_suits
+				|| (
+					cursor_at_target
+					&& latest_camera_red_zone_poly_screen.IsInside(target_pos)
+				)
+				|| !CanMoveCamera(camera_vec, target_pos)
+			)
+		if (execute_order && order !== undefined) {
+			if (!ExecuteOrder.prefire_orders)
+				order[0].Execute()
+			if (ExecuteOrder.debug_orders)
+				console.log(`Finished order ${order[0].OrderType} after ${current_time - order[1]}ms at ${GameState.RawGameTime}`)
+			last_order_finish = current_time
+			last_order_used_minimap = order[2]
+			ExecuteOrder.order_queue.splice(0, 1)
+		}
 	}
-	if (execute_order && order !== undefined) {
-		if (!ExecuteOrder.prefire_orders)
-			order[0].Execute()
-		if (ExecuteOrder.debug_orders)
-			console.log(`Finished order ${order[0].OrderType} after ${current_time - order[1]}ms at ${GameState.RawGameTime}`)
-		last_order_finish = current_time
-		ExecuteOrder.order_queue.splice(0, 1)
-		order = ProcessOrderQueue(current_time)
-	}
-	if (order === undefined && last_order_finish < current_time - order_linger_duration)
+	if (order === undefined && last_order_finish < current_time - (last_order_used_minimap ? order_linger_duration_minimap : order_linger_duration))
 		last_order_target = undefined
 	latest_camera_x = latest_usercmd.CameraPosition.x = camera_vec.x
 	latest_camera_y = latest_usercmd.CameraPosition.y = camera_vec.y
@@ -1277,10 +1292,8 @@ function ProcessUserCmd(force = false): void {
 }
 EventsSDK.on("Draw", ProcessUserCmd)
 Events.on("RequestUserCmd", () => {
-	ExecuteOrder.received_usercmd_request = true
-	if (ExecuteOrder.disable_humanizer)
-		return
-	ProcessUserCmd(true)
+	if (!ExecuteOrder.disable_humanizer)
+		ProcessUserCmd(true)
 })
 
 const debugParticles = new ParticlesSDK()
