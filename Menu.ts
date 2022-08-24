@@ -58,25 +58,3 @@ MainMenuKeyBind.OnPressed(() => {
 
 ReloadScriptsBtn.OnValue(ReloadScripts)
 ReloadScriptsBind.OnPressed(ReloadScripts)
-
-Menu.Localization.AddLocalizationUnit("russian", new Map([
-	["Menu", "Меню"],
-	["Language", "Язык"],
-	["Settings", "Настройки"],
-	["Menu Bind", "Бинд Меню"],
-	["Humanizer", "Хуманайзер"],
-	["English", "Английский"],
-	["Russian", "Русский"],
-	["Chinese", "Китайский"],
-]))
-
-Menu.Localization.AddLocalizationUnit("chinese", new Map([
-	["Menu", "菜單"],
-	["Language", "語"],
-	["Settings", "設置"],
-	["Menu Bind", "菜單綁定"],
-	["Humanizer", "人性化者"],
-	["English", "英語"],
-	["Russian", "俄語"],
-	["Chinese", "中國人"],
-]))

@@ -1302,31 +1302,33 @@ EventsSDK.on("ServerInfo", async info => {
 	await ReloadGlobalAbilityStorage()
 	UnitData.global_storage.then(unit_data_global_storage => {
 		AbilityData.global_storage.then(ability_data_global_storage => {
-			// TODO: load localization from current language
-			// automatically localize units, abilities and items in menu
-			const namesMapping = new Map<string, string>()
-			const lang_tokens = ((createMapFromMergedIterators<string, RecursiveMapValue>(
-				parseKVFile("resource/localization/abilities_english.txt").entries(),
-				parseKVFile("resource/localization/dota_english.txt").entries(),
-				parseKVFile("resource/addon_english.txt").entries(),
-				parseKVFile("panorama/localization/addon_english.txt").entries(),
-			).get("lang") as RecursiveMap)?.get("Tokens") ?? new Map()) as Map<string, string>
-			unit_data_global_storage.forEach((data, name) => {
-				const lang_token = lang_tokens.get(name)
-				namesMapping.set(name, lang_token ?? data.WorkshopName)
-			})
-			ability_data_global_storage.forEach((_, name) => {
-				const lang_token = (
-					lang_tokens.get(`DOTA_Tooltip_ability_${name}`)
-					?? lang_tokens.get(`DOTA_Tooltip_Ability_${name}`)
-				)
-				if (lang_token !== undefined)
-					namesMapping.set(name, lang_token)
-			})
-			for (const [k, v] of lang_tokens)
-				if (k.startsWith("dota_matchgroup_"))
-					namesMapping.set(k, v)
-			Localization.AddLocalizationUnit("english", namesMapping)
+			// TODO: load other languages as well
+			for (const language of ["russian", "english"]) {
+				// automatically localize units, abilities and items in menu
+				const namesMapping = new Map<string, string>()
+				const lang_tokens = ((createMapFromMergedIterators<string, RecursiveMapValue>(
+					parseKVFile(`resource/localization/abilities_${language}.txt`).entries(),
+					parseKVFile(`resource/localization/dota_${language}.txt`).entries(),
+					parseKVFile(`resource/addon_${language}.txt`).entries(),
+					parseKVFile(`panorama/localization/addon_${language}.txt`).entries(),
+				).get("lang") as RecursiveMap)?.get("Tokens") ?? new Map()) as Map<string, string>
+				unit_data_global_storage.forEach((data, name) => {
+					const lang_token = lang_tokens.get(name)
+					namesMapping.set(name, lang_token ?? data.WorkshopName)
+				})
+				ability_data_global_storage.forEach((_, name) => {
+					const lang_token = (
+						lang_tokens.get(`DOTA_Tooltip_ability_${name}`)
+						?? lang_tokens.get(`DOTA_Tooltip_Ability_${name}`)
+					)
+					if (lang_token !== undefined)
+						namesMapping.set(name, lang_token)
+				})
+				for (const [k, v] of lang_tokens)
+					if (k.startsWith("dota_matchgroup_") || k.startsWith("DOTA_TopBar_LaneSelection"))
+						namesMapping.set(k, v)
+				Localization.AddLocalizationUnit(language, namesMapping)
+			}
 			EventsSDK.emit("UnitAbilityDataUpdated", false)
 		})
 	})

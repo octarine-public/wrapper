@@ -156,7 +156,7 @@ export function ParseMapName(path: string): Nullable<string> {
 }
 
 export function readJSON(path: string): any {
-	const buf = readFile(path)
+	const buf = readFile(path, 1)
 	if (buf === undefined)
 		throw `Failed to read JSON file at path ${path}`
 	try {
