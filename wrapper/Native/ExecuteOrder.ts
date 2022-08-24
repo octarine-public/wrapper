@@ -991,7 +991,7 @@ function MoveCamera(
 		const nearest = orderByFirst(Units.filter(ent => (
 			ent.IsControllable
 			&& ent.RootOwner === LocalPlayer
-			&& ent.IsAlive
+			&& (ent.IsAlive || ent === LocalPlayer?.Hero)
 			&& !ent.IsEnemy()
 		)), ent => ent.Distance(target_pos))
 		if (nearest !== undefined && nearest.Distance(target_pos) < 1000) {
@@ -1016,11 +1016,11 @@ function MoveCamera(
 
 function getParams() {
 	const res: [number, number][] = []
-	const num = 3 + Math.round(Math.random() * 3)
+	const num = 5 + Math.round(Math.random() * 3) // [5,8]
 	for (let i = 0; i < num; i++)
 		res.push([
-			1 / (0.5 + Math.random()), // amplitude rcp
-			Math.random() * (Math.PI / 2), // offset
+			1 / (0.5 + Math.random()), // amplitude rcp [1/1.5,1/0.5]
+			Math.random() * Math.PI * 2 - Math.PI, // offset [-180deg,180deg]
 		])
 	return res
 }
@@ -1248,7 +1248,7 @@ function ProcessUserCmd(force = false): void {
 		target_pos = ComputeTargetPos(camera_vec, current_time)
 	}
 	const camera_limited = (camera_limited_x === moved_x) && (camera_limited_y === moved_y)
-	if ((!moving_camera || camera_limited) && !interacting_with_minimap) {
+	if ((!moving_camera && !interacting_with_minimap) || camera_limited) {
 		let execute_order = camera_limited
 		if (target_pos instanceof Vector2)
 			execute_order ||= (
@@ -1329,8 +1329,6 @@ EventsSDK.on("Draw", () => {
 })
 
 Events.on("PrepareUnitOrders", async () => {
-	if (GameRules?.IsPaused)
-		return true
 	const order = ExecuteOrder.fromNative()
 	if (order === undefined)
 		return true
