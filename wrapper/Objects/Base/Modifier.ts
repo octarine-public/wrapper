@@ -118,6 +118,7 @@ export default class Modifier {
 			case "modifier_rattletrap_jetpack":
 				return 260
 			case "modifier_monkey_king_bounce_perch":
+			case "modifier_lina_flame_cloak":
 				return 100
 			default:
 				return 0
