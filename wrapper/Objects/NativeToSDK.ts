@@ -177,7 +177,11 @@ declare class ${name} {
 }`).join("\n\n")}
 `)
 			}
-			entities_symbols = msg.get("symbols") as string[]
+			entities_symbols = (msg.get("symbols") as string[]).map(sym => {
+				if (sym.startsWith("DOTA"))
+					return `C${sym}`
+				return sym
+			})
 			for (const [construct, map] of FieldHandlers) {
 				const map2 = cached_field_handlers.get(construct)!
 				for (const [field_name, field_handler] of map) {
