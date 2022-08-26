@@ -190,7 +190,7 @@ function ParseProperty(stream: BinaryStream): PropertyType {
 	}
 }
 
-const DEBUG_PARSING = false
+const DEBUG_PARSING = true
 function DumpStreamPosition(
 	ent_class: string,
 	stream: BinaryStream,
