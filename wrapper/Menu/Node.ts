@@ -323,13 +323,13 @@ export default class Node extends Base {
 				entry.OnMouseWheel(up)
 		})
 	}
-	public AddToggle(name: string, default_value: boolean = false, tooltip = ""): Toggle {
-		return this.AddEntry(new Toggle(this, name, default_value, tooltip))
+	public AddToggle(name: string, default_value: boolean = false, tooltip = "", priority = 0): Toggle {
+		return this.AddEntry(new Toggle(this, name, default_value, tooltip), priority)
 	}
-	public AddSlider(name: string, default_value = 0, min = 0, max = 100, precision = 0, tooltip = ""): Slider {
-		return this.AddEntry(new Slider(this, name, default_value, min, max, precision, tooltip))
+	public AddSlider(name: string, default_value = 0, min = 0, max = 100, precision = 0, tooltip = "", priority = 0): Slider {
+		return this.AddEntry(new Slider(this, name, default_value, min, max, precision, tooltip), priority)
 	}
-	public AddNode(name: string, icon_path = "", tooltip = "", icon_round = -1): Node {
+	public AddNode(name: string, icon_path = "", tooltip = "", icon_round = -1, priority = 0): Node {
 		const node = this.entries.find(entry => entry instanceof Node && entry.InternalName === name) as Node
 		if (node !== undefined) {
 			if (node.icon_path === "")
@@ -337,16 +337,16 @@ export default class Node extends Base {
 			// TODO: should we do the same for tooltips?
 			return node
 		}
-		return this.AddEntry(new Node(this, name, icon_path, tooltip, icon_round))
+		return this.AddEntry(new Node(this, name, icon_path, tooltip, icon_round), priority)
 	}
-	public AddDropdown(name: string, values: string[], default_value = 0, tooltip = ""): Dropdown {
-		return this.AddEntry(new Dropdown(this, name, values, default_value, tooltip))
+	public AddDropdown(name: string, values: string[], default_value = 0, tooltip = "", priority = 0): Dropdown {
+		return this.AddEntry(new Dropdown(this, name, values, default_value, tooltip), priority)
 	}
-	public AddKeybind(name: string, default_key = "", tooltip = "") {
-		return this.AddEntry(new KeyBind(this, name, default_key, tooltip))
+	public AddKeybind(name: string, default_key = "", tooltip = "", priority = 0) {
+		return this.AddEntry(new KeyBind(this, name, default_key, tooltip), priority)
 	}
-	public AddImageSelector(name: string, values: string[], default_values = new Map<string, boolean>(), tooltip = "", created_default_state = false) {
-		return this.AddEntry(new ImageSelector(this, name, values, default_values, tooltip, created_default_state))
+	public AddImageSelector(name: string, values: string[], default_values = new Map<string, boolean>(), tooltip = "", created_default_state = false, priority = 0) {
+		return this.AddEntry(new ImageSelector(this, name, values, default_values, tooltip, created_default_state), priority)
 	}
 	public AddDynamicImageSelector(
 		name: string,
@@ -354,11 +354,12 @@ export default class Node extends Base {
 		default_values = new Map<string, [boolean, /** default state */ boolean, /** default show */ boolean, /** show */ number /** priority */]>(),
 		all_default_state = false,
 		tooltip = "",
+		priority = 0,
 	) {
-		return this.AddEntry(new DynamicImageSelector(this, name, values, default_values, all_default_state, tooltip))
+		return this.AddEntry(new DynamicImageSelector(this, name, values, default_values, all_default_state, tooltip), priority)
 	}
-	public AddButton(name: string, tooltip = ""): Button {
-		return this.AddEntry(new Button(this, name, tooltip))
+	public AddButton(name: string, tooltip = "", priority = 0): Button {
+		return this.AddEntry(new Button(this, name, tooltip), priority)
 	}
 
 	public AddVector2(name: string, vector: Vector2, minVector?: Vector2 | number, maxVector?: Vector2 | number) {
@@ -421,8 +422,8 @@ export default class Node extends Base {
 			},
 		}
 	}
-	public AddColorPicker(name: string, default_color: Color = new Color(0, 255, 0), tooltip = ""): ColorPicker {
-		return this.AddEntry(new ColorPicker(this, name, default_color, tooltip))
+	public AddColorPicker(name: string, default_color: Color = new Color(0, 255, 0), tooltip = "", priority = 0): ColorPicker {
+		return this.AddEntry(new ColorPicker(this, name, default_color, tooltip), priority)
 	}
 
 	public AddParticlePicker(
@@ -516,7 +517,8 @@ export default class Node extends Base {
 		}
 	}
 
-	private AddEntry<T extends Base>(entry: T): T {
+	private AddEntry<T extends Base>(entry: T, priority = entry.Priority): T {
+		entry.Priority = priority
 		this.entries.push(entry)
 		this.SortEntries()
 		this.UpdateScrollbar()
