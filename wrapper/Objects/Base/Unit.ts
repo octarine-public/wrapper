@@ -1183,18 +1183,20 @@ EventsSDK.on("Tick", dt => {
 	}
 })
 
+const CYCLE_THRESHOLD = 2
 EventsSDK.on("PostDataUpdate", async () => {
 	for (const unit of Units) {
 		unit.UnitStateMask = unit.UnitStateMask_
-		const old_visibility = unit.IsVisibleForEnemies
-		if (unit.StartSequenceCyclePrev === unit.StartSequenceCycle)
-			unit.IsVisibleForEnemiesTicks++
-		else
-			unit.IsVisibleForEnemiesTicks = 0
-		unit.IsVisibleForEnemies = unit.IsVisibleForEnemiesTicks > 1
+		const old_ticks = unit.IsVisibleForEnemiesTicks
+		unit.IsVisibleForEnemiesTicks = unit.StartSequenceCyclePrev === unit.StartSequenceCycle
+			? Math.min(unit.IsVisibleForEnemiesTicks + 1, CYCLE_THRESHOLD)
+			: Math.max(unit.IsVisibleForEnemiesTicks - 1, 0)
 		unit.StartSequenceCyclePrev = unit.StartSequenceCycle
-		if (old_visibility !== unit.IsVisibleForEnemies) {
-			await EventsSDK.emit("TeamVisibilityChanged", false, unit)
+		if (
+			unit.IsVisibleForEnemiesTicks !== old_ticks &&
+			(unit.IsVisibleForEnemiesTicks === 0 || unit.IsVisibleForEnemiesTicks === CYCLE_THRESHOLD)
+		) {
+			unit.IsVisibleForEnemies = unit.IsVisibleForEnemiesTicks !== 0
 			await EventsSDK.emit("UnitVisibilityChanged", false, unit)
 		}
 	}
