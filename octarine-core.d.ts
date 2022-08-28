@@ -207,3 +207,4 @@ declare function MakeSTRATZRequest(req: string): Promise<ArrayBuffer>
 declare function IsShopOpen(): boolean
 declare function GetQueryUnit(): number
 declare function GetSelectedEntities(): number
+declare function LoadFont(path: string, is_fallback: boolean, weight?: number): boolean
