@@ -10,7 +10,7 @@ export default class Header extends Base {
 		Header.LogoOffset.x = GUIInfo.ScaleWidth(14)
 		Header.LogoOffset.y = GUIInfo.ScaleHeight(7)
 		Header.TextOffset.x = GUIInfo.ScaleWidth(49)
-		Header.TextOffset.y = GUIInfo.ScaleHeight(13)
+		Header.TextOffset.y = GUIInfo.ScaleHeight(12)
 		Header.FontSize = GUIInfo.ScaleHeight(18)
 		Header.LogoSize.x = GUIInfo.ScaleWidth(Header.OriginalLogoSize.x)
 		Header.LogoSize.y = GUIInfo.ScaleHeight(Header.OriginalLogoSize.y)

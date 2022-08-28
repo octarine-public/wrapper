@@ -395,7 +395,7 @@ class CRendererSDK {
 		const start_pos = this.commandCacheSize
 		this.AllocateCommandSpace(CommandID.TEXT, 2 * 2 + 2 * 4)
 		this.commandStream.WriteUint16(font_id)
-		this.commandStream.WriteUint16(Math.round(font_size + 2))
+		this.commandStream.WriteUint16(Math.round(font_size + 4))
 		this.commandStream.WriteColor(outlined ? Color.Black : color)
 		const length_pos = this.commandStream.pos
 		this.commandStream.WriteUint32(0)
@@ -441,7 +441,7 @@ class CRendererSDK {
 		const font_id = this.GetFont(font_name, weight, italic)
 		if (font_id === -1)
 			return new Vector3()
-		Renderer.GetTextSize(text, font_id, Math.round(font_size + 2))
+		Renderer.GetTextSize(text, font_id, Math.round(font_size + 4))
 		return new Vector3(
 			IOBuffer[0],
 			IOBuffer[1],

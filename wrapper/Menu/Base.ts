@@ -37,7 +37,7 @@ export default class Base {
 		Base.tooltip_icon_offset.y = GUIInfo.ScaleHeight(6)
 		Base.tooltip_icon_text_gap = GUIInfo.ScaleWidth(9)
 		Base.tooltip_text_offset.x = GUIInfo.ScaleWidth(8)
-		Base.tooltip_text_offset.y = GUIInfo.ScaleHeight(12)
+		Base.tooltip_text_offset.y = GUIInfo.ScaleHeight(11)
 		Base.tooltip_text_bottom_gap = GUIInfo.ScaleHeight(8)
 		Base.DefaultSize.x = GUIInfo.ScaleWidth(Base.UnscaledDefaultSize.x)
 		Base.DefaultSize.y = GUIInfo.ScaleHeight(Base.UnscaledDefaultSize.y)

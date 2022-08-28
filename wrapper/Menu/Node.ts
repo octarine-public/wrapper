@@ -29,9 +29,9 @@ export default class Node extends Base {
 		Node.icon_offset.x = GUIInfo.ScaleWidth(12)
 		Node.icon_offset.y = GUIInfo.ScaleHeight(8)
 		Node.text_offset_.x = GUIInfo.ScaleWidth(15)
-		Node.text_offset_.y = GUIInfo.ScaleHeight(14)
+		Node.text_offset_.y = GUIInfo.ScaleHeight(13)
 		Node.text_offset_with_icon.x = GUIInfo.ScaleWidth(48)
-		Node.text_offset_with_icon.y = GUIInfo.ScaleHeight(14)
+		Node.text_offset_with_icon.y = Node.text_offset_.y
 		Node.scrollbar_width = GUIInfo.ScaleWidth(3)
 		Node.scrollbar_offset.x = GUIInfo.ScaleWidth(2)
 		Node.scrollbar_offset.y = GUIInfo.ScaleHeight(2)
