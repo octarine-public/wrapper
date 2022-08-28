@@ -77,7 +77,7 @@ export * as VBKV from "./Utils/VBKV"
 export * as ArrayBufferUtils from "./Utils/ArrayBufferUtils"
 export * as Utils from "./Utils/Utils"
 export { default as GameState } from "./Utils/GameState"
-export { default as readFile } from "./Utils/readFile"
+export { default as readFile, tryFindFile } from "./Utils/readFile"
 
 export * as Menu from "./Menu/Imports"
 
