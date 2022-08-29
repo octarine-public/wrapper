@@ -1,17 +1,18 @@
 import Rectangle from "../Base/Rectangle"
 import Vector3 from "../Base/Vector3"
+import { BackgroundCover } from "../Enums/BackgroundCover"
 import SoundSDK from "../Native/SoundSDK"
 import Entity from "../Objects/Base/Entity"
 
 export default abstract class Notification {
 	public readonly UniqueKey: any
+	public Cover = BackgroundCover.Octarine
 
 	private TimeToShow = 4 * 1000 // 4 seconds by default
 
 	private IsPlaying = false
 	private stopDisplayTime = 0
 	private startDisplayTime = 0
-
 	private sourceEntity: Nullable<Entity>
 	private position = new Vector3().Invalidate()
 	private playSoundName: Nullable<string> = undefined
@@ -32,6 +33,15 @@ export default abstract class Notification {
 
 	public get IsExpired() {
 		return hrtime() > this.stopDisplayTime
+	}
+
+	public get BackgroundCover() {
+		switch (this.Cover) {
+			case BackgroundCover.Dota2:
+				return "panorama/images/hud/reborn/item_purchase_bg_psd.vtex_c"
+			default:
+				return "github.com/octarine-public/wrapper/scripts_files/menu/header.svg"
+		}
 	}
 
 	/**

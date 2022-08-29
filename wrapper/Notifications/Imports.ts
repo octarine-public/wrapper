@@ -1,3 +1,4 @@
+import { BackgroundCover } from "../Enums/BackgroundCover"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import Notification from "./AbstractNotification"
 import { Notifications, Queue } from "./data"
@@ -8,6 +9,7 @@ export const NotificationsSDK = new (class CNotificationsSDK {
 	public y_offset = 150
 	public limit = 4
 	public debug = false
+	public backgroundCover = BackgroundCover.Octarine
 
 	/**
 	 * @param notification abstract class
@@ -38,7 +40,13 @@ export const NotificationsSDK = new (class CNotificationsSDK {
 	 * })
 	 *
 	 */
-	public Push(notification: Notification, UniqCheck = false) {
+	public Push(
+		notification: Notification,
+		UniqCheck = false,
+		backgroundCover = this.backgroundCover,
+	) {
+		notification.Cover = backgroundCover
+
 		if (UniqCheck) {
 			ArrayExtensions.arrayRemoveCallback(
 				Notifications,

@@ -19,4 +19,8 @@ Menu.AddSlider(
 	2,
 	6,
 ).OnValue(slider => NotificationsSDK.limit = slider.value)
+Menu.AddDropdown(
+	"Background cover",
+	["Octarine", "Dota 2"],
+).OnValue(slider => NotificationsSDK.backgroundCover = slider.selected_id)
 EventsSDK.on("Draw", () => NotificationsSDK.debug = Menu.is_open)
