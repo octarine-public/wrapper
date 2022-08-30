@@ -72,7 +72,8 @@ function GetEnemyDeaths() {
 		return deaths
 	for (let i = 0; i < PlayerResource.PlayerData.length; i++) {
 		const team_data = PlayerResource.PlayerTeamData[i]
-		if (team_data !== undefined && PlayerResource.PlayerData[i].Team !== GameState.LocalTeam)
+		const player_data = PlayerResource.PlayerData[i]
+		if (team_data !== undefined && player_data !== undefined && player_data.Team !== GameState.LocalTeam)
 			deaths += team_data.Deaths
 	}
 	return deaths
@@ -82,7 +83,9 @@ function GetNextSpawn(team: Team) {
 	if (PlayerResource === undefined)
 		return 0
 	const playerData = PlayerResource.PlayerData
-	const enemyTeam = playerData.filter(data => data.Team !== team).length
+	if (playerData === undefined)
+		return 0
+	const enemyTeam = playerData.filter(data => data?.Team !== team).length
 	return enemyTeam + GetEnemyDeaths() + 4
 }
 
@@ -98,7 +101,8 @@ function SetRespawn(hero: Hero) {
 
 	for (let i = 0; i < PlayerResource.PlayerTeamData.length; i++) {
 		const team_data = PlayerResource.PlayerTeamData[i]
-		if (PlayerResource.PlayerData[i].Team === hero.Team)
+		const player_data = PlayerResource.PlayerData[i]
+		if (player_data === undefined || team_data === undefined || player_data.Team === hero.Team)
 			continue
 		let respawn_time = hero.RespawnTime - GameState.RawGameTime
 		if (respawn_time <= 0)
