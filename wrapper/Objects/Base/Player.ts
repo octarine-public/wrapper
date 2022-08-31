@@ -1,7 +1,6 @@
 import Vector3 from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { EShareAbility } from "../../Enums/EShareAbility"
-import { LifeState_t } from "../../Enums/LifeState_t"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { Team } from "../../Enums/Team"
 import EntityManager from "../../Managers/EntityManager"
@@ -50,40 +49,22 @@ export default class Player extends Entity {
 		return ExecuteOrder.Scan(position, queue, showEffects)
 	}
 
-	public async UpdateHero(playerResource: Nullable<CPlayerResource>): Promise<void> {
+	public UpdateHero(playerResource: Nullable<CPlayerResource>): void {
 		const teamDataAr = playerResource?.PlayerTeamData
 		if (teamDataAr === undefined)
 			return
-		const teamData = teamDataAr[this.PlayerID]
-		this.Hero_ = teamData?.SelectedHeroIndex ?? this.Hero_
+		this.Hero_ = teamDataAr[this.PlayerID]?.SelectedHeroIndex ?? this.Hero_
 		const ent = EntityManager.EntityByIndex(this.Hero_)
 		this.Hero = ent instanceof Hero
 			? ent
 			: undefined
-		if (this.Hero !== undefined && teamData !== undefined)
-			switch (this.Hero.LifeState) {
-				case LifeState_t.LIFE_ALIVE:
-					if (teamData.RespawnSeconds > 0) {
-						this.Hero.LifeState = LifeState_t.LIFE_DEAD
-						await EventsSDK.emit("LifeStateChanged", false, this.Hero)
-					}
-					break
-				case LifeState_t.LIFE_DEAD:
-					if (teamData.RespawnSeconds <= 0) {
-						this.Hero.LifeState = LifeState_t.LIFE_ALIVE
-						await EventsSDK.emit("LifeStateChanged", false, this.Hero)
-					}
-					break
-				default:
-					break
-			}
 	}
 }
 export const Players = EntityManager.GetEntitiesByClass(Player)
 
-EventsSDK.on("PreEntityCreated", async ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof Player) {
-		await ent.UpdateHero(PlayerResource)
+		ent.UpdateHero(PlayerResource)
 		return
 	}
 	for (const player of Players)
@@ -92,15 +73,15 @@ EventsSDK.on("PreEntityCreated", async ent => {
 	if (ent instanceof Hero && ent.CanBeMainHero)
 		for (const player of Players)
 			if (ent.HandleMatches(player.Hero_))
-				await player.UpdateHero(PlayerResource)
+				player.Hero = ent
 })
 
-EventsSDK.on("EntityDestroyed", async ent => {
+EventsSDK.on("EntityDestroyed", ent => {
 	for (const player of Players)
 		if (ent.HandleMatches(player.Pawn_))
 			player.Pawn = undefined
 	if (ent instanceof Hero)
 		for (const player of Players)
 			if (ent.HandleMatches(player.Hero_))
-				await player.UpdateHero(PlayerResource)
+				player.Hero = undefined
 })

@@ -8,22 +8,21 @@ import { Players } from "./Player"
 
 @WrapperClass("CDOTA_PlayerResource")
 export default class CPlayerResource extends Entity {
-	public PlayerTeamData: Nullable<PlayerTeamData>[] = []
-	public PlayerData: Nullable<PlayerData>[] = []
+	public PlayerTeamData: PlayerTeamData[] = []
+	public PlayerData: PlayerData[] = []
 
-	public GetPlayerTeamDataByPlayerID(playerID: number) {
+	public GetPlayerTeamDataByPlayerID(playerID: number): Nullable<PlayerTeamData> {
 		return this.PlayerTeamData[playerID]
 	}
-	public GetPlayerDataByPlayerID(playerID: number) {
+	public GetPlayerDataByPlayerID(playerID: number): Nullable<PlayerData> {
 		return this.PlayerData[playerID]
 	}
 }
 
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
-RegisterFieldHandler(CPlayerResource, "m_vecPlayerTeamData", async (resource, new_val) => {
+RegisterFieldHandler(CPlayerResource, "m_vecPlayerTeamData", (resource, new_val) => {
 	resource.PlayerTeamData = (new_val as EntityPropertiesNode[]).map(map => new PlayerTeamData(map))
-	for (const player of Players)
-		await player.UpdateHero(resource)
+	Players.forEach(player => player.UpdateHero(resource))
 })
 RegisterFieldHandler(CPlayerResource, "m_vecPlayerData", (resource, new_val) => {
 	resource.PlayerData = (new_val as EntityPropertiesNode[]).map(map => new PlayerData(map))
