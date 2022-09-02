@@ -190,13 +190,19 @@ function DecodeField(map: RecursiveProtobuf, field: ProtoFieldDescription, value
 		case ProtoFieldType.REQUIRED:
 			map.set(field.name, ParseField(field, value))
 			break
-		case ProtoFieldType.REPEATED: {
-			if (!map.has(field.name))
-				map.set(field.name, [])
-			const array = map.get(field.name) as ProtobufFieldType[]
-			array.push(ParseField(field, value))
+		case ProtoFieldType.REPEATED:
+			try {
+				if (!map.has(field.name))
+					map.set(field.name, [])
+				const array = map.get(field.name) as ProtobufFieldType[]
+				array.push(ParseField(field, value))
+			} catch (e) {
+				if (value instanceof Uint8Array)
+					map.set(field.name, ParsePacked(value, field))
+				else
+					throw e
+			}
 			break
-		}
 		case ProtoFieldType.PACKED:
 			if (!(value instanceof Uint8Array))
 				throw `Invalid proto [packed] at field name ${field.name}`

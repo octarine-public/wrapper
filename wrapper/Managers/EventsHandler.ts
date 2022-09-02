@@ -53,6 +53,9 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_SET_SCENE_OBJECT_GENERIC_FLAG = 21,
 	GAME_PARTICLE_MANAGER_EVENT_SET_SCENE_OBJECT_TINT_AND_DESAT = 22,
 	GAME_PARTICLE_MANAGER_EVENT_DESTROY_NAMED = 23,
+	GAME_PARTICLE_MANAGER_EVENT_SKIP_TO_TIME = 24,
+	GAME_PARTICLE_MANAGER_EVENT_CAN_FREEZE = 25,
+	GAME_PARTICLE_MANAGER_EVENT_SET_NAMED_VALUE_CONTEXT = 26,
 }
 enum EDotaEntityMessages {
 	DOTA_UNIT_SPEECH = 0,
@@ -140,6 +143,9 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_SET_SCENE_OBJECT_GENERIC_FLAG = 21;
 	GAME_PARTICLE_MANAGER_EVENT_SET_SCENE_OBJECT_TINT_AND_DESAT = 22;
 	GAME_PARTICLE_MANAGER_EVENT_DESTROY_NAMED = 23;
+	GAME_PARTICLE_MANAGER_EVENT_SKIP_TO_TIME = 24;
+	GAME_PARTICLE_MANAGER_EVENT_CAN_FREEZE = 25;
+	GAME_PARTICLE_MANAGER_EVENT_SET_NAMED_VALUE_CONTEXT = 26;
 }
 
 enum DOTA_CHAT_MESSAGE {
@@ -373,6 +379,31 @@ message CUserMsg_ParticleManager {
 		optional float desat = 2;
 	}
 
+	message ParticleSkipToTime {
+		optional float skip_to_time = 1;
+	}
+
+	message ParticleCanFreeze {
+		optional bool can_freeze = 1;
+	}
+
+	message SetParticleNamedValueContext {
+		message FloatContextValue {
+			optional string value_name = 1;
+			optional float value = 2;
+		}
+
+		message VectorContextValue {
+			optional string value_name = 1;
+			optional .CMsgVector value = 2;
+			optional uint32 ent_index = 3;
+			optional string attachment_name = 4;
+		}
+
+		repeated .CUserMsg_ParticleManager.SetParticleNamedValueContext.FloatContextValue float_values = 1;
+		repeated .CUserMsg_ParticleManager.SetParticleNamedValueContext.VectorContextValue vector_values = 2;
+	}
+
 	required .PARTICLE_MESSAGE type = 1 [default = GAME_PARTICLE_MANAGER_EVENT_CREATE];
 	required uint32 index = 2;
 	optional .CUserMsg_ParticleManager.ReleaseParticleIndex release_particle_index = 3;
@@ -398,6 +429,9 @@ message CUserMsg_ParticleManager {
 	optional .CUserMsg_ParticleManager.SetSceneObjectGenericFlag set_scene_object_generic_flag = 24;
 	optional .CUserMsg_ParticleManager.SetSceneObjectTintAndDesat set_scene_object_tint_and_desat = 25;
 	optional .CUserMsg_ParticleManager.DestroyParticleNamed destroy_particle_named = 26;
+	optional .CUserMsg_ParticleManager.ParticleSkipToTime particle_skip_to_time = 27;
+	optional .CUserMsg_ParticleManager.ParticleCanFreeze particle_can_freeze = 28;
+	optional .CUserMsg_ParticleManager.SetParticleNamedValueContext set_named_value_context = 29;
 }
 
 enum EDotaEntityMessages {
@@ -834,6 +868,18 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY_NAMED: {
 			// const submsg = msg.get("destroy_particle_named") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SKIP_TO_TIME: {
+			// const submsg = msg.get("particle_skip_to_time") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CAN_FREEZE: {
+			// const submsg = msg.get("particle_can_freeze") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_NAMED_VALUE_CONTEXT: {
+			// const submsg = msg.get("set_named_value_context") as RecursiveProtobuf
 			break
 		}
 		default:

@@ -7,7 +7,9 @@ import GUIInfo from "./GUIInfo"
 let extra_large_minimap_setting = 0
 export default class CMinimap {
 	private static UpdateExtraLargeMinimapSetting(): boolean {
-		const setting = ConVars.GetInt("dota_hud_extra_large_minimap")
+		let setting = ConVars.Get("dota_hud_extra_large_minimap")
+		if (typeof setting !== "number")
+			setting = undefined
 		if (
 			setting === undefined
 			|| setting < 0

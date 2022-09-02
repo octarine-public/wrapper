@@ -168,8 +168,11 @@ export default class ExecuteOrder {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK:
 				break
-			default:
-				if (ctrl_down && (ConVars.GetInt("dota_player_multipler_orders") ?? 0) !== 0)
+			default: {
+				let multiUnit = ConVars.Get("dota_player_multipler_orders")
+				if (typeof multiUnit !== "boolean")
+					multiUnit = false
+				if (ctrl_down && multiUnit)
 					issuers = [...new Set([...issuers, ...Units.filter(ent => (
 						ent.IsControllable
 						&& ent.RootOwner === LocalPlayer
@@ -178,6 +181,7 @@ export default class ExecuteOrder {
 						&& ent.ShouldUnifyOrders
 					))])]
 				break
+			}
 		}
 		return new ExecuteOrder(
 			order_type,
@@ -1048,7 +1052,10 @@ function ProcessUserCmd(force = false): void {
 	latest_usercmd.Pawn = LocalPlayer?.Pawn
 	latest_usercmd.MousePosition.CopyFrom(InputManager.CursorOnScreen.DivideForThis(RendererSDK.WindowSize))
 	InputManager.IsShopOpen = IsShopOpen()
-	InputManager.IsScoreboardOpen = (ConVars.GetInt("dota_spectator_stats_panel") ?? 0) === 1
+	let statsPanel = ConVars.Get("dota_spectator_stats_panel")
+	if (typeof statsPanel !== "number")
+		statsPanel = 0
+	InputManager.IsScoreboardOpen = statsPanel === 1
 	const num_selected = GetSelectedEntities()
 	InputManager.SelectedEntities.splice(0)
 	for (let i = 0; i < num_selected; i++) {
@@ -1062,13 +1069,16 @@ function ProcessUserCmd(force = false): void {
 			InputManager.SelectedEntities.push(ent)
 	}
 	InputManager.QueryUnit = EntityManager.EntityByIndex(GetQueryUnit()) as Nullable<Unit>
-	InputManager.SelectedUnit = (ConVars.GetInt("dota_hud_new_query_panel") ?? 0) === 0
+	let newQueryPanel = ConVars.Get("dota_hud_new_query_panel")
+	if (typeof newQueryPanel !== "number")
+		newQueryPanel = 0
+	InputManager.SelectedUnit = newQueryPanel === 0
 		? InputManager.QueryUnit ?? InputManager.SelectedEntities[0]
 		: InputManager.SelectedEntities[0] ?? InputManager.QueryUnit
 	InputManager.CursorOnWorld = RendererSDK.ScreenToWorldFar(
 		[latest_usercmd.MousePosition],
 		Camera.Position ? Vector3.fromIOBuffer() : new Vector3(),
-		Camera.Distance,
+		RendererSDK.CameraDistance,
 		Camera.Angles ? QAngle.fromIOBuffer() : new QAngle(),
 		RendererSDK.WindowSize,
 		Camera.FoV,
@@ -1161,8 +1171,11 @@ function ProcessUserCmd(force = false): void {
 	if (interacting_with_minimap) {
 		if (cursor_entered_minimap_at === 0 && GUIInfo.Minimap.Minimap.Contains(target_pos))
 			cursor_entered_minimap_at = current_time
+		let misclickTime = ConVars.Get("dota_minimap_misclick_time")
+		if (typeof misclickTime !== "number")
+			misclickTime = 0.2
 		if (
-			current_time - cursor_entered_minimap_at > (ConVars.GetInt("dota_minimap_misclick_time") ?? 0.2)
+			current_time - cursor_entered_minimap_at > misclickTime
 			&& cursor_at_target
 		) {
 			const eye_vector = WASM.GetEyeVector(default_camera_angles)

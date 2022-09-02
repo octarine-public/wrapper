@@ -108,6 +108,19 @@ class CRendererSDK {
 	public get IsInDraw(): boolean {
 		return this.in_draw
 	}
+
+	public get CameraDistance() {
+		const dist = Camera.Distance
+		if (dist !== -1)
+			return dist
+		let cv = ConVars.Get("dota_camera_distance")
+		if (typeof cv !== "number")
+			cv = -1
+		return cv !== -1
+			? cv
+			: 1200
+	}
+
 	/**
 	 * @param pos world position that needs to be turned to screen position
 	 * @returns screen position, or undefined
@@ -153,6 +166,7 @@ class CRendererSDK {
 			return undefined
 		return vec
 	}
+
 	/**
 	 * Projects given screen vector onto camera matrix. Can be used to connect ScreenToWorldFar and camera position dots.
 	 * @param screen screen position
@@ -163,7 +177,7 @@ class CRendererSDK {
 		vec.y = 1 - vec.y
 		const camera_pos = Camera.Position ? Vector3.fromIOBuffer() : new Vector3()
 		const camera_ang = Camera.Angles ? QAngle.fromIOBuffer() : new QAngle()
-		return WASM.ScreenToWorld(vec, camera_pos, Camera.Distance ?? 1200, camera_ang, this.WindowSize)
+		return WASM.ScreenToWorld(vec, camera_pos, this.CameraDistance, camera_ang, this.WindowSize)
 	}
 	/**
 	 * Projects given screen vector onto camera matrix. Can be used to connect ScreenToWorldFar and camera position dots.

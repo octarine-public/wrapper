@@ -34,8 +34,10 @@ const GUIInfo = new (class CGUIInfo {
 	private readonly proportional_base = 1080
 
 	public OnDraw(): void {
-		const screen_size = RendererSDK.WindowSize,
-			hud_flipped = (ConVars.GetInt("dota_hud_flip") ?? 0) !== 0
+		const screen_size = RendererSDK.WindowSize
+		let hud_flipped = ConVars.Get("dota_hud_flip")
+		if (typeof hud_flipped !== "boolean")
+			hud_flipped = false
 		const everything_changed = (
 			this.HUDFlipped !== hud_flipped
 			|| !latest_screen_size.Equals(screen_size)
@@ -68,6 +70,7 @@ const GUIInfo = new (class CGUIInfo {
 			&& abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_HIDDEN
 			&& abil.Name !== "plus_high_five"
 			&& abil.Name !== "plus_guild_banner"
+			&& !abil.Name.startsWith("seasonal_")
 			&& !abil.IsHidden
 		)) as Ability[]
 	}

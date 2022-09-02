@@ -174,7 +174,10 @@ EventsSDK.after("ServerInfo", LoadIcons)
 EventsSDK.on("Draw", () => {
 	if (!GameRules?.IsInGame || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
-	hero_icon_scale = MinimapIconRenderer.GetSizeMultiplier(ConVars.GetInt("dota_minimap_hero_size") ?? 600)
+	let heroSize = ConVars.Get("dota_minimap_hero_size")
+	if (typeof heroSize !== "number")
+		heroSize = 600
+	hero_icon_scale = MinimapIconRenderer.GetSizeMultiplier(heroSize)
 	ArrayExtensions.orderBy(
 		[...minimap_icons_active.values()],
 		icon => icon.priority,
@@ -195,8 +198,8 @@ const MinimapSDK = new (class CMinimapSDK {
 	/**
 	 * Draws icon at minimap
 	 * @param icon_name can be found at https://github.com/SteamDatabase/GameTracking-Dota2/blob/master/game/dota/pak01_dir/scripts/mod_textures.txt
-	 * @param size you can get that value for heroes from ConVars.GetInt("dota_minimap_hero_size")
-	 * @param end_time Must be for ex. Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration").
+	 * @param size you can get that value for heroes from ConVars.Get("dota_minimap_hero_size")
+	 * @param end_time Must be for ex. Game.RawGameTime + ConVars.Get("dota_minimap_ping_duration").
 	 * @param end_time Changing it to 0 will hide icon from minimap if you're not calling it repeatedly in Draw event
 	 * @param uid you can use this value to edit existing uid's location/color/icon/end_time
 	 */
@@ -243,7 +246,7 @@ const MinimapSDK = new (class CMinimapSDK {
 
 	/**
 	 * Draws ping at minimap
-	 * @param end_time Must be for ex. Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration").
+	 * @param end_time Must be for ex. Game.RawGameTime + ConVars.Get("dota_minimap_ping_duration").
 	 * @param end_time Changing it to 0 will hide icon from minimap if you're not calling it repeatedly in Draw event
 	 * @param uid you can use this value to edit existing uid's location/color/icon, or specify 0x80000000 to make it unique
 	 */

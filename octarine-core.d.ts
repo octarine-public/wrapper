@@ -76,9 +76,8 @@ declare const IS_MAIN_WORKER: boolean
 declare const IS_MINIMAL_CORE: boolean
 
 declare interface ConVars {
-	GetInt(convar_name: string): Nullable<number>
-	GetString(convar_name: string): Nullable<string>
-	Set(convar_name: string, value: number | boolean | string): void
+	Get(convar_name: string): Nullable<number | boolean | string | number[]>
+	Set(convar_name: string, value: number | boolean | string | number[]): void
 }
 
 declare interface CustomGameEvents {
