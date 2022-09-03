@@ -1,18 +1,16 @@
 import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
+import ConVarsSDK from "../Native/ConVarsSDK"
 import RendererSDK from "../Native/RendererSDK"
 import GUIInfo from "./GUIInfo"
 
 let extra_large_minimap_setting = 0
 export default class CMinimap {
 	private static UpdateExtraLargeMinimapSetting(): boolean {
-		let setting = ConVars.Get("dota_hud_extra_large_minimap")
-		if (typeof setting !== "number")
-			setting = undefined
+		const setting = ConVarsSDK.GetInt("dota_hud_extra_large_minimap", 0)
 		if (
-			setting === undefined
-			|| setting < 0
+			setting < 0
 			|| setting > 2
 			|| extra_large_minimap_setting === setting
 		)

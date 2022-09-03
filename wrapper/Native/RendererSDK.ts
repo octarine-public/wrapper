@@ -18,6 +18,7 @@ import { HasMask } from "../Utils/BitsExtensions"
 import GameState from "../Utils/GameState"
 import { DegreesToRadian } from "../Utils/Math"
 import readFile, { tryFindFile } from "../Utils/readFile"
+import ConVarsSDK from "./ConVarsSDK"
 import * as WASM from "./WASM"
 import Workers from "./Workers"
 
@@ -113,9 +114,7 @@ class CRendererSDK {
 		const dist = Camera.Distance
 		if (dist !== -1)
 			return dist
-		let cv = ConVars.Get("dota_camera_distance")
-		if (typeof cv !== "number")
-			cv = -1
+		const cv = ConVarsSDK.GetFloat("dota_camera_distance", -1)
 		return cv !== -1
 			? cv
 			: 1200

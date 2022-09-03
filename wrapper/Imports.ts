@@ -119,6 +119,7 @@ export { default as SoundSDK } from "./Native/SoundSDK"
 export { GetPositionHeight } from "./Native/WASM"
 export { default as Workers } from "./Native/Workers"
 export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/ExecuteOrder"
+export { default as ConVarsSDK } from "./Native/ConVarsSDK"
 
 export { default as Entity, LocalPlayer, GameRules } from "./Objects/Base/Entity"
 export { default as Wearable } from "./Objects/Base/Wearable"

@@ -4,6 +4,7 @@ import { DOTA_ABILITY_BEHAVIOR } from "../Enums/DOTA_ABILITY_BEHAVIOR"
 import { DOTA_GameState } from "../Enums/DOTA_GameState"
 import EventsSDK from "../Managers/EventsSDK"
 import InputManager from "../Managers/InputManager"
+import ConVarsSDK from "../Native/ConVarsSDK"
 import RendererSDK from "../Native/RendererSDK"
 import Ability from "../Objects/Base/Ability"
 import { GameRules } from "../Objects/Base/Entity"
@@ -35,9 +36,7 @@ const GUIInfo = new (class CGUIInfo {
 
 	public OnDraw(): void {
 		const screen_size = RendererSDK.WindowSize
-		let hud_flipped = ConVars.Get("dota_hud_flip")
-		if (typeof hud_flipped !== "boolean")
-			hud_flipped = false
+		const hud_flipped = ConVarsSDK.GetBoolean("dota_hud_flip", false)
 		const everything_changed = (
 			this.HUDFlipped !== hud_flipped
 			|| !latest_screen_size.Equals(screen_size)
