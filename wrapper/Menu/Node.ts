@@ -182,6 +182,7 @@ export default class Node extends Base {
 		if (recursive)
 			for (const entry of this.entries)
 				await entry.Update(true)
+		this.SortEntries()
 		this.UpdateScrollbar()
 		this.EntriesSizeX = this.EntriesSizeX_
 		this.EntriesSizeY = this.EntriesSizeY_
