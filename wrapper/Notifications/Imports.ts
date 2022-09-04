@@ -1,7 +1,7 @@
 import { BackgroundCover } from "../Enums/BackgroundCover"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import Notification from "./AbstractNotification"
-import { Notifications, Queue } from "./data"
+import { Notifications, Queue } from "./Data"
 
 export { default as Notification } from "./AbstractNotification"
 export const NotificationsSDK = new (class CNotificationsSDK {

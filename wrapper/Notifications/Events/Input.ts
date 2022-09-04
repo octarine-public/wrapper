@@ -1,6 +1,6 @@
 import Rectangle from "../../Base/Rectangle"
 import InputManager, { InputEventSDK, VMouseKeys } from "../../Managers/InputManager"
-import { Notifications } from "../data"
+import { Notifications } from "../Data"
 import { GetPanel } from "../Util"
 
 InputEventSDK.on("MouseKeyDown", key => {

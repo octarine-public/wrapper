@@ -163,7 +163,7 @@ Events.on("ServerMessage", async (msg_id, buf) => {
 					}),
 				])
 				console.log("dump_CSVCMsg_FlattenedSerializer.d.ts", `\
-import { Vector2, Vector3, QAngle, Vector4 } from "wrapper/Imports"
+import { Vector2, Vector3, QAngle, Vector4 } from "github.com/octarine-public/wrapper/wrapper/Imports"
 
 type Color = number // 0xAABBGGRR?
 type HSequence = number

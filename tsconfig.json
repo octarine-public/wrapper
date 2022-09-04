@@ -12,7 +12,8 @@
 		"experimentalDecorators": true,
 		"lib": [
 			"ESNext"
-		]
+		],
+		"forceConsistentCasingInFileNames": true
 	},
 	"include": [
 		"./**/*.ts",
@@ -23,6 +24,5 @@
 		"node_modules/**/*",
 		"scripts_files/**/*"
 	],
-	"compileOnSave": true,
-	"forceConsistentCasingInFileNames": true
+	"compileOnSave": true
 }

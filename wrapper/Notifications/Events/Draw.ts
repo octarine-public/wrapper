@@ -5,7 +5,7 @@ import EventsSDK from "../../Managers/EventsSDK"
 import InputManager from "../../Managers/InputManager"
 import RendererSDK from "../../Native/RendererSDK"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
-import { Notifications, Queue } from "../data"
+import { Notifications, Queue } from "../Data"
 import { NotificationsSDK } from "../Imports"
 import { GetPanel } from "../Util"
 
