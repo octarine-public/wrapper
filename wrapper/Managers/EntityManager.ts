@@ -5,9 +5,9 @@ import { EPropertyType, PropertyType } from "../Enums/PropertyType"
 import Entity from "../Objects/Base/Entity"
 import GetConstructorByName, { cached_field_handlers, ClassToEntities, entities_symbols, SDKClasses } from "../Objects/NativeToSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
-import BinaryStream from "../Utils/BinaryStream"
 import GameState from "../Utils/GameState"
 import { ParseProtobufDesc } from "../Utils/Protobuf"
+import ViewBinaryStream from "../Utils/ViewBinaryStream"
 import Events from "./Events"
 import EventsSDK from "./EventsSDK"
 import * as StringTables from "./StringTables"
@@ -147,7 +147,7 @@ const convert_uint8 = new Uint8Array(convert_buf),
 	convert_int32 = new Int32Array(convert_buf),
 	convert_int64 = new BigInt64Array(convert_buf),
 	convert_uint64 = new BigUint64Array(convert_buf)
-function ParseProperty(stream: BinaryStream): PropertyType {
+function ParseProperty(stream: ReadableBinaryStream): PropertyType {
 	const var_type: EPropertyType = stream.ReadUint8()
 	switch (var_type) {
 		case EPropertyType.INT8:
@@ -193,7 +193,7 @@ function ParseProperty(stream: BinaryStream): PropertyType {
 const DEBUG_PARSING = false
 function DumpStreamPosition(
 	ent_class: string,
-	stream: BinaryStream,
+	stream: ReadableBinaryStream,
 	path_size_walked: number,
 ): string {
 	stream.RelativeSeek((path_size_walked + 1) * -2) // uint16 = 2 bytes
@@ -247,7 +247,7 @@ export class EntityPropertiesNode {
 }
 
 async function ParseEntityUpdate(
-	stream: BinaryStream,
+	stream: ReadableBinaryStream,
 	ent_id: number,
 	created_entities: Entity[],
 	is_create = false,
@@ -372,10 +372,9 @@ message CSVCMsg_FlattenedSerializer {
 `)
 let latest_entity_packet_promise = Promise.resolve()
 const NO_ENTITY_NATIVE_PROPS_ = (globalThis as any).NO_ENTITY_NATIVE_PROPS ?? false
-async function ParseEntityPacket(buf: Uint8Array): Promise<void> {
+async function ParseEntityPacket(stream: ReadableBinaryStream): Promise<void> {
 	await EventsSDK.emit("PreDataUpdate", false)
 	LatestTickDelta = 0
-	const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
 	const native_changes: number[][] = []
 	if (!NO_ENTITY_NATIVE_PROPS_)
 		while (!stream.Empty()) {
@@ -426,13 +425,13 @@ async function ParseEntityPacket(buf: Uint8Array): Promise<void> {
 	if (LatestTickDelta !== 0)
 		await EventsSDK.emit("Tick", false, LatestTickDelta)
 }
-async function ParseEntityPacketWrapper(buf: Uint8Array): Promise<void> {
+async function ParseEntityPacketWrapper(stream: ReadableBinaryStream): Promise<void> {
 	try {
 		await latest_entity_packet_promise
 	} catch (e) {
 		console.error(e)
 	}
-	latest_entity_packet_promise = ParseEntityPacket(buf)
+	latest_entity_packet_promise = ParseEntityPacket(stream)
 	try {
 		await latest_entity_packet_promise
 	} catch (e) {
@@ -440,11 +439,10 @@ async function ParseEntityPacketWrapper(buf: Uint8Array): Promise<void> {
 	}
 }
 
-Events.on("ServerMessage", async (msg_id, buf_) => {
-	const buf = new Uint8Array(buf_)
+Events.on("ServerMessage", async (msg_id, buf) => {
 	switch (msg_id) {
 		case 55: // we have custom parsing for CSVCMsg_PacketEntities
-			await ParseEntityPacketWrapper(buf)
+			await ParseEntityPacketWrapper(new ViewBinaryStream(new DataView(buf)))
 			break
 	}
 })

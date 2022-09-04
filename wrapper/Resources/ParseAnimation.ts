@@ -1,7 +1,8 @@
 import Matrix4x4 from "../Base/Matrix4x4"
 import Vector3 from "../Base/Vector3"
 import Vector4 from "../Base/Vector4"
-import BinaryStream from "../Utils/BinaryStream"
+import { isStream } from "../Utils/ReadableBinaryStreamUtils"
+import ViewBinaryStream from "../Utils/ViewBinaryStream"
 import { parseKV, parseKVBlock, parseKVFile } from "./ParseKV"
 import { GetMapNumberProperty, GetMapStringProperty, MapToNumberArray, MapToStringArray, MapToVector3 } from "./ParseUtils"
 
@@ -148,7 +149,7 @@ export class CAnimation {
 	private readonly FrameBlockArray: [number, number, number[]][] = []
 	private readonly DataChannelArray: Nullable<[string[], number[], string]>[]
 	private readonly BoneCount: number
-	private readonly SegmentArray: Nullable<[number, BinaryStream]>[]
+	private readonly SegmentArray: Nullable<[number, ReadableBinaryStream]>[]
 	constructor(
 		animationDesc: RecursiveMap,
 		DecodeKey: RecursiveMap,
@@ -194,17 +195,17 @@ export class CAnimation {
 		})
 		this.SegmentArray = SegmentArray.map(segment => {
 			let container = segment.get("m_container")
+			if (container === undefined)
+				return undefined
 			if (container instanceof Map || Array.isArray(container))
-				container = new Uint8Array(MapToNumberArray(container))
-			if (!(container instanceof Uint8Array))
+				container = new ViewBinaryStream(new DataView(
+					new Uint8Array(MapToNumberArray(container)).buffer,
+				))
+			if (!isStream(container))
 				return undefined
 			return [
 				GetMapNumberProperty(segment, "m_nLocalChannel"),
-				new BinaryStream(new DataView(
-					container.buffer,
-					container.byteOffset,
-					container.byteLength,
-				)),
+				container,
 			]
 		})
 	}
@@ -225,7 +226,7 @@ export class CAnimation {
 		return frame
 	}
 
-	private GetSegment(id: number): Nullable<[BinaryStream, string[], number[], string]> {
+	private GetSegment(id: number): Nullable<[ReadableBinaryStream, string[], number[], string]> {
 		const segmentData = this.SegmentArray[id]
 		if (segmentData === undefined)
 			return undefined
@@ -314,7 +315,7 @@ export class CAnimation {
 	private ReadSegment(
 		frameNum: number,
 		frame: CAnimationFrame,
-		segment: [BinaryStream, string[], number[], string],
+		segment: [ReadableBinaryStream, string[], number[], string],
 	): void {
 		const [stream, boneNames, elementBones, channelAttribute] = segment
 		stream.pos = 0
@@ -372,7 +373,7 @@ export class CAnimation {
 			}
 		})
 	}
-	private ReadHalfFloat(stream: BinaryStream): number {
+	private ReadHalfFloat(stream: ReadableBinaryStream): number {
 		const val = stream.ReadUint16()
 		let rst: number
 		let mantissa = val & 1023,
@@ -393,7 +394,7 @@ export class CAnimation {
 		converFloatUint32[0] = rst
 		return converFloatFloat32[0]
 	}
-	private ReadVector4(stream: BinaryStream): Vector4 {
+	private ReadVector4(stream: ReadableBinaryStream): Vector4 {
 		const bytes = stream.ReadSlice(6)
 
 		// Values
@@ -485,8 +486,8 @@ export function ParseAnimationsFromData(
 }
 
 export function ParseEmbeddedAnimation(
-	group_data_block: Nullable<Uint8Array>,
-	anim_data_block: Nullable<Uint8Array>,
+	group_data_block: Nullable<ReadableBinaryStream>,
+	anim_data_block: Nullable<ReadableBinaryStream>,
 	hseq: RecursiveMap,
 ): CAnimation[] {
 	const groupData = parseKVBlock(group_data_block)
@@ -501,9 +502,9 @@ export function ParseEmbeddedAnimation(
 	return ParseAnimationsFromData(animationData, decodeKey, hseq)
 }
 
-export function ParseAnimationGroup(buf: Uint8Array): CAnimation[] {
+export function ParseAnimationGroup(stream: ReadableBinaryStream): CAnimation[] {
 	const ar: CAnimation[] = []
-	const kv = parseKV(buf)
+	const kv = parseKV(stream)
 	const animArrayMap = kv.get("m_localHAnimArray")
 	if (!(animArrayMap instanceof Map || Array.isArray(animArrayMap)))
 		throw "Animation group without animArray"

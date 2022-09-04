@@ -1,8 +1,9 @@
 import Matrix4x4 from "../Base/Matrix4x4"
 import Vector3 from "../Base/Vector3"
 import Vector4 from "../Base/Vector4"
+import FileBinaryStream from "../Utils/FileBinaryStream"
 import { parseKVBlock } from "./ParseKV"
-import { ParseMaterial } from "./ParseMaterial"
+import { CMaterial, ParseMaterial } from "./ParseMaterial"
 import { ParseResourceLayout } from "./ParseResource"
 import { GetMapNumberProperty, GetMapStringProperty, MapToBooleanArray, MapToNumberArray, MapToStringArray, MapToVector3, MapToVector3Array, MapToVector4Array } from "./ParseUtils"
 import { ParseVBIB, ParseVBIBFromKV, VBIB, VBIBBufferData } from "./ParseVBIB"
@@ -179,10 +180,14 @@ export class CMesh {
 					materialPath = GetMapStringProperty(drawCall, "m_pMaterial")
 				if (!materialPath.endsWith("_c"))
 					materialPath += "_c"
-				const materialBuf = fread(materialPath)
-				const material = materialBuf !== undefined
-					? ParseMaterial(materialBuf)
-					: undefined
+				let material: CMaterial | undefined
+				const materialBuf = fopen(materialPath)
+				if (materialBuf !== undefined)
+					try {
+						material = ParseMaterial(new FileBinaryStream(materialBuf))
+					} finally {
+						materialBuf.close()
+					}
 				this.DrawCalls.push(new CMeshDrawCall(
 					new VBIBBufferData(
 						vertexCount,
@@ -192,6 +197,7 @@ export class CMesh {
 							vertexBufferOffset,
 							vertexBufferOffset + (vertexCount * vertexBuffer.ElementSize),
 						),
+						true,
 					),
 					new VBIBBufferData(
 						indexCount,
@@ -201,6 +207,7 @@ export class CMesh {
 							indexBufferOffset,
 							indexBufferOffset + (indexCount * indexBuffer.ElementSize),
 						),
+						false,
 					),
 					material?.Flags ?? 0,
 				))
@@ -210,8 +217,8 @@ export class CMesh {
 }
 
 export function ParseEmbeddedMesh(
-	data: Nullable<Uint8Array>,
-	vbib_data: Nullable<Uint8Array>,
+	data: Nullable<ReadableBinaryStream>,
+	vbib_data: Nullable<ReadableBinaryStream>,
 ): CMesh {
 	const kv = parseKVBlock(data)
 	if (kv === undefined)
@@ -222,8 +229,8 @@ export function ParseEmbeddedMesh(
 	return new CMesh(kv, vbib)
 }
 
-export function ParseMesh(buf: Uint8Array): CMesh {
-	const layout = ParseResourceLayout(buf)
+export function ParseMesh(stream: ReadableBinaryStream): CMesh {
+	const layout = ParseResourceLayout(stream)
 	if (layout === undefined)
 		throw "Mesh without resource layout"
 	return ParseEmbeddedMesh(layout[0].get("DATA"), layout[0].get("VBIB"))

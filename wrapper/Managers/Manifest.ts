@@ -1,8 +1,9 @@
 import { MurmurHash2, MurmurHash64 } from "../Native/WASM"
 import { parseKV } from "../Resources/ParseKV"
-import { StringToUTF8, Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
-import BinaryStream from "../Utils/BinaryStream"
+import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
+import FileBinaryStream from "../Utils/FileBinaryStream"
 import { ParseExternalReferences, readJSON } from "../Utils/Utils"
+import ViewBinaryStream from "../Utils/ViewBinaryStream"
 import Events from "./Events"
 
 const Manifest = new (class CManifest {
@@ -48,49 +49,53 @@ const Manifest = new (class CManifest {
 		return this.Hash32ToString.get(hash)
 	}
 	public LoadSoundFile(path: string): void {
-		const buf = fread(path)
+		const buf = fopen(path)
 		if (buf === undefined) {
 			console.log(`Missing ${path}`)
 			return
 		}
-		parseKV(buf).forEach((v, k) => {
-			const hash = this.SoundNameToHash(k, true)
-			this.SoundHashToString.set(hash, k)
-			if (v instanceof Map) {
-				if (v.has("vsnd_files")) {
-					const vsnd_files = v.get("vsnd_files")
-					if (typeof vsnd_files === "string")
-						this.SoundPathToHash.set(vsnd_files, hash)
-					if (Array.isArray(vsnd_files))
-						for (const vsnd_file of vsnd_files)
-							if (typeof vsnd_file === "string")
-								this.SoundPathToHash.set(vsnd_file, hash)
-					if (vsnd_files instanceof Map)
-						for (const vsnd_file of vsnd_files.values())
-							if (typeof vsnd_file === "string")
-								this.SoundPathToHash.set(vsnd_file, hash)
-				}
-				if (v.has("operator_stacks")) {
-					const operator_stacks = v.get("operator_stacks")
-					if (operator_stacks instanceof Map) {
-						const update_stack = operator_stacks.get("update_stack")
-						if (update_stack instanceof Map) {
-							const reference_operator = update_stack.get("operator_stacks")
-							if (reference_operator instanceof Map) {
-								const vsnd_files = reference_operator.get("vsnd_files")
-								if (vsnd_files instanceof Map) {
-									const value = vsnd_files.get("value")
-									if (value instanceof Map)
-										for (const vsnd_file of value.values())
-											if (typeof vsnd_file === "string")
-												this.SoundPathToHash.set(vsnd_file, hash)
+		try {
+			parseKV(new FileBinaryStream(buf)).forEach((v, k) => {
+				const hash = this.SoundNameToHash(k, true)
+				this.SoundHashToString.set(hash, k)
+				if (v instanceof Map) {
+					if (v.has("vsnd_files")) {
+						const vsnd_files = v.get("vsnd_files")
+						if (typeof vsnd_files === "string")
+							this.SoundPathToHash.set(vsnd_files, hash)
+						if (Array.isArray(vsnd_files))
+							for (const vsnd_file of vsnd_files)
+								if (typeof vsnd_file === "string")
+									this.SoundPathToHash.set(vsnd_file, hash)
+						if (vsnd_files instanceof Map)
+							for (const vsnd_file of vsnd_files.values())
+								if (typeof vsnd_file === "string")
+									this.SoundPathToHash.set(vsnd_file, hash)
+					}
+					if (v.has("operator_stacks")) {
+						const operator_stacks = v.get("operator_stacks")
+						if (operator_stacks instanceof Map) {
+							const update_stack = operator_stacks.get("update_stack")
+							if (update_stack instanceof Map) {
+								const reference_operator = update_stack.get("operator_stacks")
+								if (reference_operator instanceof Map) {
+									const vsnd_files = reference_operator.get("vsnd_files")
+									if (vsnd_files instanceof Map) {
+										const value = vsnd_files.get("value")
+										if (value instanceof Map)
+											for (const vsnd_file of value.values())
+												if (typeof vsnd_file === "string")
+													this.SoundPathToHash.set(vsnd_file, hash)
+									}
 								}
 							}
 						}
 					}
 				}
-			}
-		})
+			})
+		} finally {
+			buf.close()
+		}
 	}
 	public SoundNameToHash(name: string, is_loading = false): number {
 		const hash = MurmurHash2(StringToUTF8(name.toLowerCase()), 0x53524332)
@@ -106,15 +111,15 @@ const Manifest = new (class CManifest {
 })()
 export default Manifest
 
-function BufferToPathString(buf: Uint8Array): string {
-	return Utf8ArrayToStr(buf).replace(/\\/g, "/").toLowerCase()
+function ReadPathString(stream: ReadableBinaryStream, size: number): string {
+	return stream.ReadUtf8String(size).replace(/\\/g, "/").toLowerCase()
 }
 
-function ParseStringFromStream(stream: BinaryStream, ar: string[]) {
+function ParseStringFromStream(stream: ReadableBinaryStream, ar: string[]) {
 	const id = stream.ReadVarUintAsNumber(),
 		size = stream.ReadVarUintAsNumber()
 	if (id === ar.length)
-		ar[id] = BufferToPathString(stream.ReadSlice(size))
+		ar[id] = ReadPathString(stream, size)
 	else
 		stream.RelativeSeek(size)
 }
@@ -122,7 +127,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 	const buf = new Uint8Array(buf_)
 	switch (msg_id) {
 		case 9: { // we have custom parsing for CNETMsg_SpawnGroup_Load & CNETMsg_SpawnGroup_ManifestUpdate
-			const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
+			const stream = new ViewBinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
 			for (let i = 0, end = stream.ReadVarUintAsNumber(); i < end; i++)
 				ParseStringFromStream(stream, Manifest.Extensions)
 			for (let i = 0, end = stream.ReadVarUintAsNumber(); i < end; i++)
@@ -134,7 +139,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 					file_id = stream.ReadVarUintAsNumber(),
 					file_size = stream.ReadVarUintAsNumber()
 				if (file_id === Manifest.FileNames.length)
-					Manifest.FileNames[file_id] = BufferToPathString(stream.ReadSlice(file_size))
+					Manifest.FileNames[file_id] = ReadPathString(stream, file_size)
 				else
 					stream.RelativeSeek(file_size)
 				if (path_id !== Manifest.Paths.size)
@@ -154,37 +159,40 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 })
 
 function ReadStringTokenDatabase(): void {
-	const buf = fread("stringtokendatabase.txt")
+	const buf = fopen("stringtokendatabase.txt")
 	if (buf === undefined)
 		return
-	const stream = new BinaryStream(new DataView(
-		buf.buffer,
-		buf.byteOffset,
-		buf.byteLength,
-	))
-	if (stream.ReadUint8() !== 0x21 || stream.ReadUint8() !== 0x0A)
-		return
-	while (!stream.Empty()) {
-		stream.RelativeSeek(6)
-		let str = ""
-		for (let i = stream.ReadUint8(); i !== 0x0A; i = stream.ReadUint8())
-			str += String.fromCharCode(i)
-		Manifest.SaveStringToken(str)
+	try {
+		const stream = new FileBinaryStream(buf)
+		if (stream.ReadUint8() === 0x21 && stream.ReadUint8() === 0x0A)
+			while (!stream.Empty()) {
+				stream.RelativeSeek(6)
+				let str = ""
+				for (let i = stream.ReadUint8(); i !== 0x0A; i = stream.ReadUint8())
+					str += String.fromCharCode(i)
+				Manifest.SaveStringToken(str)
+			}
+	} finally {
+		buf.close()
 	}
 }
 
 function ReadSoundManifest(path: string): void {
-	const manifest = fread(path)
+	const manifest = fopen(path)
 	if (manifest === undefined) {
 		console.log("Sound manifest not found.")
 		return
 	}
-	ParseExternalReferences(manifest, true).forEach(path => {
-		if (path.endsWith(".vsndevts_c"))
-			Manifest.LoadSoundFile(path)
-		if (path.endsWith(".vrman_c"))
-			ReadSoundManifest(path)
-	})
+	try {
+		ParseExternalReferences(new FileBinaryStream(manifest), true).forEach(refPath => {
+			if (refPath.endsWith(".vsndevts_c"))
+				Manifest.LoadSoundFile(refPath)
+			if (refPath.endsWith(".vrman_c"))
+				ReadSoundManifest(refPath)
+		})
+	} finally {
+		manifest.close()
+	}
 }
 
 // reset Manifest on new connection

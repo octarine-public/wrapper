@@ -3,8 +3,10 @@ import QAngle from "../Base/QAngle"
 import Vector3 from "../Base/Vector3"
 import Manifest from "../Managers/Manifest"
 import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
-import BinaryStream from "../Utils/BinaryStream"
 import { HasBit } from "../Utils/BitsExtensions"
+import FileBinaryStream from "../Utils/FileBinaryStream"
+import { isStream } from "../Utils/ReadableBinaryStreamUtils"
+import ViewBinaryStream from "../Utils/ViewBinaryStream"
 import { parseKV } from "./ParseKV"
 import { GetMapNumberProperty, GetMapStringProperty } from "./ParseUtils"
 
@@ -23,7 +25,7 @@ const enum EntsTypes {
 type EntityDataMap = Map<string, EntityDataMapValue>
 type EntityDataMapValue = string | bigint | number | boolean | Vector3 | QAngle | Color
 
-function ReadTypedValue(stream: BinaryStream): EntityDataMapValue {
+function ReadTypedValue(stream: ReadableBinaryStream): EntityDataMapValue {
 	const type: EntsTypes = stream.ReadUint32()
 	switch (type) {
 		case EntsTypes.FLOAT:
@@ -49,8 +51,8 @@ function ReadTypedValue(stream: BinaryStream): EntityDataMapValue {
 	}
 }
 
-function ParseEntityLumpInternal(buf: Uint8Array): void {
-	const kv = parseKV(buf)
+function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
+	const kv = parseKV(stream)
 
 	if (kv.has("m_childLumps")) {
 		const m_childLumps = kv.get("m_childLumps")
@@ -58,9 +60,13 @@ function ParseEntityLumpInternal(buf: Uint8Array): void {
 			m_childLumps.forEach(childLump => {
 				if (typeof childLump !== "string")
 					return
-				const childLumpBuf = fread(`${childLump}_c`)
+				const childLumpBuf = fopen(`${childLump}_c`)
 				if (childLumpBuf !== undefined)
-					ParseEntityLumpInternal(childLumpBuf)
+					try {
+						ParseEntityLumpInternal(new FileBinaryStream(childLumpBuf))
+					} finally {
+						childLumpBuf.close()
+					}
 			})
 		}
 	}
@@ -72,43 +78,40 @@ function ParseEntityLumpInternal(buf: Uint8Array): void {
 					return
 				// TODO: m_connections?
 				let kvData = entityKV.get("m_keyValuesData")
+				if (kvData === undefined)
+					return
 				if (typeof kvData === "string")
-					kvData = StringToUTF8(kvData)
-				if (kvData instanceof Uint8Array) {
-					const stream = new BinaryStream(new DataView(
-						kvData.buffer,
-						kvData.byteOffset,
-						kvData.byteLength,
-					))
-					{
-						const version = stream.ReadUint32()
-						if (version !== 1)
-							throw `Unknown entity data version: ${version}`
-					}
-					const hashed_keys = stream.ReadUint32(),
-						string_keys = stream.ReadUint32()
-					const map: EntityDataMap = new Map()
-					for (let i = 0; i < hashed_keys; i++) {
-						const hash = stream.ReadUint32(),
-							value = ReadTypedValue(stream)
-						let key = Manifest.LookupStringByToken(hash)
-						if (key === undefined)
-							key = hash.toString()
-						map.set(key, value)
-					}
-					for (let i = 0; i < string_keys; i++) {
-						stream.RelativeSeek(4) // hash
-						const key = stream.ReadNullTerminatedUtf8String(),
-							value = ReadTypedValue(stream)
-						map.set(key, value)
-					}
-					if (
-						map.get("classname") === "info_world_layer"
-						&& HasBit(GetMapNumberProperty(map as RecursiveMap, "spawnflags"), 0)
-					)
-						DefaultWorldLayers.push(GetMapStringProperty(map as RecursiveMap, "layername"))
-					EntityDataLump.push(map)
+					kvData = new ViewBinaryStream(new DataView(StringToUTF8(kvData).buffer))
+				if (!isStream(kvData))
+					return
+				{
+					const version = kvData.ReadUint32()
+					if (version !== 1)
+						throw `Unknown entity data version: ${version}`
 				}
+				const hashed_keys = kvData.ReadUint32(),
+					string_keys = kvData.ReadUint32()
+				const map: EntityDataMap = new Map()
+				for (let i = 0; i < hashed_keys; i++) {
+					const hash = kvData.ReadUint32(),
+						value = ReadTypedValue(kvData)
+					let key = Manifest.LookupStringByToken(hash)
+					if (key === undefined)
+						key = hash.toString()
+					map.set(key, value)
+				}
+				for (let i = 0; i < string_keys; i++) {
+					kvData.RelativeSeek(4) // hash
+					const key = kvData.ReadNullTerminatedUtf8String(),
+						value = ReadTypedValue(kvData)
+					map.set(key, value)
+				}
+				if (
+					map.get("classname") === "info_world_layer"
+					&& HasBit(GetMapNumberProperty(map as RecursiveMap, "spawnflags"), 0)
+				)
+					DefaultWorldLayers.push(GetMapStringProperty(map as RecursiveMap, "layername"))
+				EntityDataLump.push(map)
 			})
 		}
 	}
@@ -117,9 +120,9 @@ function ParseEntityLumpInternal(buf: Uint8Array): void {
 export let EntityDataLump: EntityDataMap[] = []
 export let DefaultWorldLayers: string[] = ["world_layer_base"]
 
-export function ParseEntityLump(buf: Uint8Array): void {
+export function ParseEntityLump(stream: FileBinaryStream): void {
 	try {
-		ParseEntityLumpInternal(buf)
+		ParseEntityLumpInternal(stream)
 	} catch (e) {
 		console.error("Error in EntityLump init", e)
 	}

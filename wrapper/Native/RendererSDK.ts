@@ -13,11 +13,13 @@ import { CMeshDrawCall, ParseMesh } from "../Resources/ParseMesh"
 import { ParseModel } from "../Resources/ParseModel"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
 import { orderByFirst } from "../Utils/ArrayExtensions"
-import BinaryStream from "../Utils/BinaryStream"
 import { HasMask } from "../Utils/BitsExtensions"
+import FileBinaryStream from "../Utils/FileBinaryStream"
+import { fread } from "../Utils/fread"
 import GameState from "../Utils/GameState"
 import { DegreesToRadian } from "../Utils/Math"
 import readFile, { tryFindFile } from "../Utils/readFile"
+import ViewBinaryStream from "../Utils/ViewBinaryStream"
 import ConVarsSDK from "./ConVarsSDK"
 import * as WASM from "./WASM"
 import Workers from "./Workers"
@@ -91,7 +93,7 @@ class CRendererSDK {
 	public readonly WindowSize = new Vector2()
 
 	private commandCache = new Uint8Array()
-	private commandStream = new BinaryStream(new DataView(
+	private commandStream = new ViewBinaryStream(new DataView(
 		this.commandCache.buffer,
 		this.commandCache.byteOffset,
 		this.commandCache.byteLength,
@@ -680,7 +682,7 @@ class CRendererSDK {
 			cap,
 		)
 	}
-	public AllocateCommandSpace_(commandID: CommandID, bytes: number): BinaryStream {
+	public AllocateCommandSpace_(commandID: CommandID, bytes: number): ViewBinaryStream {
 		this.AllocateCommandSpace(commandID, bytes)
 		return this.commandStream
 	}
@@ -769,8 +771,8 @@ class CRendererSDK {
 	private FreeTexture(texture_id: number): void {
 		Renderer.FreeTexture(texture_id)
 	}
-	private MakeTextureSVG(buf: Uint8Array): number {
-		const texture_id = Renderer.CreateTextureSVG(buf)
+	private MakeTextureSVG(stream: ReadableBinaryStream): number {
+		const texture_id = Renderer.CreateTextureSVG(stream.ReadSlice(stream.Remaining))
 		if (texture_id === -1)
 			throw "MakeTextureSVG failed"
 		this.tex2size.set(texture_id, Vector2.fromIOBuffer())
@@ -781,16 +783,19 @@ class CRendererSDK {
 			return this.texture_cache.get(path)!
 		let read_path = path
 		if (path.endsWith(".vmat_c")) {
-			const buf = fread(path)
-			if (buf !== undefined) {
-				const vmat = ParseMaterial(buf)
-				const g_tColor = vmat.TextureParams.get("g_tColor")
-				if (g_tColor !== undefined) {
-					read_path = g_tColor
-					if (read_path.endsWith(".vtex"))
-						read_path += "_c"
+			const buf = fopen(path)
+			if (buf !== undefined)
+				try {
+					const vmat = ParseMaterial(new FileBinaryStream(buf))
+					const g_tColor = vmat.TextureParams.get("g_tColor")
+					if (g_tColor !== undefined) {
+						read_path = g_tColor
+						if (read_path.endsWith(".vtex"))
+							read_path += "_c"
+					}
+				} finally {
+					buf.close()
 				}
-			}
 		}
 		const read = readFile(read_path, 2) // 1 for ourselves, 1 for caller [Image]
 		if (read === undefined) {
@@ -801,17 +806,20 @@ class CRendererSDK {
 			), false]
 			this.texture_cache.set(path, this.empty_texture)
 			return this.empty_texture
-		} else {
-			const is_svg = read_path.endsWith(".svg")
-			const texture = [
-				is_svg
-					? this.MakeTextureSVG(read)
-					: this.MakeTexture(...WASM.ParseImage(read)),
-				is_svg,
-			] as [number, boolean]
-			this.texture_cache.set(path, texture)
-			return texture
-		}
+		} else
+			try {
+				const is_svg = read_path.endsWith(".svg")
+				const texture = [
+					is_svg
+						? this.MakeTextureSVG(new FileBinaryStream(read))
+						: this.MakeTexture(...WASM.ParseImage(new FileBinaryStream(read))),
+					is_svg,
+				] as [number, boolean]
+				this.texture_cache.set(path, texture)
+				return texture
+			} finally {
+				read.close()
+			}
 	}
 	private GetFont(font_name: string, weight: number, italic: boolean): number {
 		const font_ar = this.font_cache.get(font_name)
@@ -824,7 +832,7 @@ class CRendererSDK {
 	}
 
 	private OnCommandCacheChanged() {
-		this.commandStream = new BinaryStream(new DataView(
+		this.commandStream = new ViewBinaryStream(new DataView(
 			this.commandCache.buffer,
 			this.commandCache.byteOffset,
 			this.commandCache.byteLength,
@@ -965,7 +973,7 @@ EventsSDK.on("UnitAbilityDataUpdated", () => RendererSDK.FreeTextureCache())
 Events.on("Draw", async (visual_data, w, h, x, y) => {
 	Input.UpdateCursorOnScreen(x, y)
 	await RendererSDK.BeforeDraw(w, h)
-	const stream = new BinaryStream(new DataView(visual_data))
+	const stream = new ViewBinaryStream(new DataView(visual_data))
 	while (!stream.Empty()) {
 		const entity_id = stream.ReadUint32()
 		const ent = EntityManager.EntityByIndex(entity_id)
@@ -999,19 +1007,23 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 	for (const [path] of objects) {
 		if (path2meshes.has(path))
 			continue
-		const buf = fread(`${path}_c`)
+		const buf = fopen(`${path}_c`)
 		if (buf === undefined)
 			continue
 		let draw_calls: CMeshDrawCall[] = []
-		if (path.endsWith(".vmdl")) {
-			const model = ParseModel(buf)
-			const mesh = model.Meshes[0]
-			if (mesh !== undefined)
-				draw_calls = mesh.DrawCalls
-		} else if (path.endsWith(".vmesh"))
-			draw_calls = ParseMesh(buf).DrawCalls
-		else
-			throw `Invalid path ${path}`
+		try {
+			if (path.endsWith(".vmdl")) {
+				const model = ParseModel(new FileBinaryStream(buf))
+				const mesh = model.Meshes[0]
+				if (mesh !== undefined)
+					draw_calls = mesh.DrawCalls
+			} else if (path.endsWith(".vmesh"))
+				draw_calls = ParseMesh(new FileBinaryStream(buf)).DrawCalls
+			else
+				throw `Invalid path ${path}`
+		} finally {
+			buf.close()
+		}
 		const path_meshes: number[] = []
 		path2meshes.set(path, path_meshes)
 		const path_id = paths.length

@@ -122,10 +122,17 @@ declare interface Camera {
 	Position: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
+declare class FileStream {
+	read(offset: number, buf: Uint8Array): number
+	close(): void
+
+	readonly byteLength: number
+}
+
 /// GLOBAL FUNCTIONS
 
 declare function SendToConsole(command: string): void
-declare function fread(path: string): Uint8Array | undefined
+declare function fopen(path: string): Nullable<FileStream>
 declare function fexists(path: string): boolean
 declare function requestPlayerData(player_id: number, hero_id: number): Promise<string>
 /**

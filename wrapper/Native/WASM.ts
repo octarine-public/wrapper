@@ -5,8 +5,9 @@ import Vector3 from "../Base/Vector3"
 import { MaterialFlags } from "../Resources/ParseMaterial"
 import { ParseRED2, ParseREDI } from "../Resources/ParseREDI"
 import { ParseResourceLayout } from "../Resources/ParseResource"
+import { fread } from "../Utils/fread"
 import { DegreesToRadian } from "../Utils/Math"
-import readFile from "../Utils/readFile"
+import { tryFindFile } from "../Utils/readFile"
 
 export class CHeightMap {
 	constructor(
@@ -44,10 +45,13 @@ enum HeightMapParseError {
 	ALLOCATION_ERROR = 3,
 };
 
-function TryLoadWASMModule(name: string): WebAssembly.Module {
-	const wasm_file = readFile(name)
+function TryLoadWASMModule(path: string): WebAssembly.Module {
+	const realPath = tryFindFile(path, 1)
+	if (realPath === undefined)
+		throw `${path} not found`
+	const wasm_file = fread(realPath)
 	if (wasm_file === undefined)
-		throw `${name} not found`
+		throw `Coudln't read ${realPath}`
 
 	return new WebAssembly.Module(wasm_file)
 }
@@ -350,11 +354,11 @@ export function ScreenToWorld(
 	return new Vector3(WASMIOBuffer[0], WASMIOBuffer[1], WASMIOBuffer[2])
 }
 
-function ParsePNG(buf: Uint8Array): [Uint8Array, Vector2] {
-	let addr = wasm.malloc(buf.byteLength)
-	new Uint8Array(wasm.memory.buffer, addr).set(buf)
+function ParsePNG(stream: ReadableBinaryStream): [Uint8Array, Vector2] {
+	let addr = wasm.malloc(stream.Size)
+	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, stream.Size))
 
-	addr = wasm.ParsePNG(addr, buf.byteLength)
+	addr = wasm.ParsePNG(addr, stream.Size)
 	if (addr === 0)
 		throw "PNG Image conversion failed: WASM failure"
 	const image_size = new Vector2(WASMIOBufferU32[0], WASMIOBufferU32[1])
@@ -365,22 +369,26 @@ function ParsePNG(buf: Uint8Array): [Uint8Array, Vector2] {
 	return [copy, image_size]
 }
 
-export function ParseImage(buf: Uint8Array): [Uint8Array, Vector2] {
-	if (buf.byteLength > 8 && new BigUint64Array(buf.buffer, buf.byteOffset, 8)[0] === 0x0A1A0A0D474E5089n)
-		return ParsePNG(buf)
+export function ParseImage(stream: ReadableBinaryStream): [Uint8Array, Vector2] {
+	const starting_pos = stream.pos,
+		is_png = stream.Size > 8 && stream.ReadUint64() === 0x0A1A0A0D474E5089n
+	stream.pos = starting_pos
+	if (is_png)
+		return ParsePNG(stream)
 
-	const layout = ParseResourceLayout(buf)
+	const layout = ParseResourceLayout(stream)
 	if (layout === undefined)
 		throw "Image conversion failed"
 
 	const data_block = layout[0].get("DATA")
 	if (data_block === undefined)
 		throw "Image conversion failed: missing DATA block"
-	if (data_block.byteLength < 40)
+	if (data_block.Size < 40)
 		throw "Image conversion failed: too small file"
 	// TODO: add check that's real VTEX file (lookup https://github.com/SteamDatabase/ValveResourceFormat/blob/master/ValveResourceFormat/Resource/Resource.cs)
-	if (new Uint16Array(data_block.buffer, data_block.byteOffset, 2)[0] !== 1)
+	if (data_block.ReadUint16() !== 1)
 		throw `Image conversion failed: unknown VTex version`
+	data_block.pos -= 2
 	let is_YCoCg = false,
 		normalize = false,
 		is_inverted = false,
@@ -410,14 +418,16 @@ export function ParseImage(buf: Uint8Array): [Uint8Array, Vector2] {
 		))
 	}
 
-	const data_size = buf.byteLength - data_block.byteOffset
-	let addr = wasm.malloc(data_size)
-	new Uint8Array(wasm.memory.buffer, addr).set(buf.subarray(data_block.byteOffset))
+	const data_size = stream.Remaining,
+		offset = data_block.Offset - stream.Offset
+	let addr = wasm.malloc(data_size - data_block.Offset)
+	stream.pos += offset
+	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, data_size - data_block.Offset))
 
 	addr = wasm.ParseVTex(
 		addr,
-		buf.byteLength,
-		addr + data_block.byteLength,
+		data_size, // TODO: this is really incorrect
+		addr + data_block.Size,
 		is_YCoCg,
 		normalize,
 		is_inverted,
@@ -434,15 +444,14 @@ export function ParseImage(buf: Uint8Array): [Uint8Array, Vector2] {
 	return [copy, image_size]
 }
 
-export function ParseVHCG(buf: Uint8Array): void {
+export function ParseVHCG(stream: ReadableBinaryStream): void {
 	try {
-		const addr = wasm.malloc(buf.byteLength)
+		const addr = wasm.malloc(stream.Size)
 		if (addr === 0)
 			throw "Memory allocation for VHCG raw data failed"
-		const memory = new Uint8Array(wasm.memory.buffer, addr)
-		memory.set(buf)
+		stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, stream.Size))
 
-		const err = wasm.ParseVHCG(addr, buf.byteLength)
+		const err = wasm.ParseVHCG(addr, stream.Size)
 		if (err !== HeightMapParseError.NONE) {
 			if (err < 0)
 				throw `VHCG parse failed with READ_ERROR ${-err}`
@@ -530,36 +539,39 @@ export function MurmurHash64(buf: Uint8Array, seed = 0xEDABCDEF): bigint {
 	return WASMIOBufferBU64[0]
 }
 
-export function CRC32(buf: Uint8Array): number {
-	const buf_addr = wasm.malloc(buf.byteLength)
+export function CRC32(stream: ReadableBinaryStream): number {
+	const size = stream.Remaining
+	const buf_addr = wasm.malloc(size)
 	if (buf_addr === 0)
 		throw "Memory allocation for MurmurHash2 raw data failed"
-	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
+	const old_pos = stream.pos
+	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, buf_addr, size))
+	stream.pos = old_pos
 
-	return wasm.CRC32(buf_addr, buf.byteLength) >>> 0
+	return wasm.CRC32(buf_addr, size) >>> 0
 }
 
-export function DecompressLZ4(buf: Uint8Array, dst_len: number): Uint8Array {
-	let addr = wasm.malloc(buf.byteLength)
-	new Uint8Array(wasm.memory.buffer, addr).set(buf)
+export function DecompressLZ4(stream: ReadableBinaryStream, input_size: number, dst_len: number): Uint8Array {
+	let addr = wasm.malloc(input_size)
+	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, input_size))
 
-	addr = wasm.DecompressLZ4(addr, buf.byteLength, dst_len)
+	addr = wasm.DecompressLZ4(addr, input_size, dst_len)
 	if (addr === 0)
 		throw "LZ4 decompression failed"
 	const copy = new Uint8Array(dst_len)
-	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
+	copy.set(new Uint8Array(wasm.memory.buffer, addr, dst_len))
 	wasm.free(addr)
 
 	return copy
 }
 
-export function DecompressZstd(buf: Uint8Array): Uint8Array {
-	if (buf.byteLength < 12)
-		throw `Zstd decompression failed: buf.byteLength < 12`
-	const addr = wasm.malloc(buf.byteLength)
-	new Uint8Array(wasm.memory.buffer, addr).set(buf)
+export function DecompressZstd(stream: ReadableBinaryStream, input_size: number): Uint8Array {
+	if (input_size < 12)
+		throw `Zstd decompression failed: input_size < 12`
+	const addr = wasm.malloc(input_size)
+	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, input_size))
 
-	const decompressed_addr = wasm.DecompressZstd(addr, buf.byteLength)
+	const decompressed_addr = wasm.DecompressZstd(addr, input_size)
 	const size = new Uint32Array(wasm.memory.buffer, addr)[0],
 		error = new Uint32Array(wasm.memory.buffer, addr)[1],
 		additional_data = new Uint32Array(wasm.memory.buffer, addr)[2]
@@ -574,15 +586,16 @@ export function DecompressZstd(buf: Uint8Array): Uint8Array {
 }
 
 export function DecompressLZ4Chained(
-	buf: Uint8Array,
+	stream: ReadableBinaryStream,
+	input_size: number,
 	input_sizes: number[],
 	output_sizes: number[],
 ): Uint8Array {
 	if (input_sizes.length !== output_sizes.length)
 		throw "Input and output count should match"
 	const count = input_sizes.length
-	let addr = wasm.malloc(buf.byteLength)
-	new Uint8Array(wasm.memory.buffer, addr).set(buf)
+	let addr = wasm.malloc(input_size)
+	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, input_size))
 	const inputs_addr = wasm.malloc(count * 4)
 	new Uint32Array(wasm.memory.buffer, inputs_addr).set(input_sizes)
 	const outputs_addr = wasm.malloc(count * 4)
@@ -620,16 +633,17 @@ export function WorldToScreenNew(
 }
 
 export function DecompressVertexBuffer(
-	buf: Uint8Array,
+	stream: ReadableBinaryStream,
 	elem_count: number,
 	elem_size: number,
 ): Uint8Array {
-	const buf_addr = wasm.malloc(buf.byteLength)
+	const size = stream.Remaining
+	const buf_addr = wasm.malloc(size)
 	if (buf_addr === 0)
 		throw "Memory allocation for DecompressVertexBuffer raw data failed"
-	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
+	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, buf_addr, size))
 
-	const addr = wasm.DecompressVertexBuffer(buf_addr, buf.byteLength, elem_count, elem_size)
+	const addr = wasm.DecompressVertexBuffer(buf_addr, size, elem_count, elem_size)
 	const copy = new Uint8Array(elem_count * elem_size)
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
 	wasm.free(addr)
@@ -638,16 +652,17 @@ export function DecompressVertexBuffer(
 }
 
 export function DecompressIndexBuffer(
-	buf: Uint8Array,
+	stream: ReadableBinaryStream,
 	elem_count: number,
 	elem_size: number,
 ): Uint8Array {
-	const buf_addr = wasm.malloc(buf.byteLength)
+	const size = stream.Remaining
+	const buf_addr = wasm.malloc(size)
 	if (buf_addr === 0)
 		throw "Memory allocation for DecompressIndexBuffer raw data failed"
-	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
+	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, buf_addr, size))
 
-	const addr = wasm.DecompressIndexBuffer(buf_addr, buf.byteLength, elem_count, elem_size)
+	const addr = wasm.DecompressIndexBuffer(buf_addr, size, elem_count, elem_size)
 	const copy = new Uint8Array(elem_count * elem_size)
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
 	wasm.free(addr)

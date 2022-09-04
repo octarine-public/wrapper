@@ -1,7 +1,7 @@
 import Color from "../Base/Color"
 import * as WASM from "../Native/WASM"
 import { StringToUTF8 } from "./ArrayBufferUtils"
-import BinaryStream from "./BinaryStream"
+import ViewBinaryStream from "./ViewBinaryStream"
 
 const enum VBKVTypes {
 	TYPE_NONE = 0,
@@ -17,7 +17,7 @@ const enum VBKVTypes {
 
 export type BinaryKV = Map<string, BinaryKV> | Color | string | bigint | number
 
-function parseBinaryKV(stream: BinaryStream, level = 0): Map<string, BinaryKV> {
+function parseBinaryKV(stream: ReadableBinaryStream, level = 0): Map<string, BinaryKV> {
 	if (level++ > 20)
 		throw "Too many nested objects in VBKV. Aborting to avoid stack overflow."
 	const map = new Map<string, BinaryKV>()
@@ -63,8 +63,7 @@ function parseBinaryKV(stream: BinaryStream, level = 0): Map<string, BinaryKV> {
 	return map
 }
 
-export function parseVBKV(buf: Uint8Array): Map<string, BinaryKV> {
-	const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
+export function parseVBKV(stream: ReadableBinaryStream): Map<string, BinaryKV> {
 	{
 		const magic = stream.ReadUint32(false)
 		if (magic !== 0x56424b56) // VBKV
@@ -72,7 +71,7 @@ export function parseVBKV(buf: Uint8Array): Map<string, BinaryKV> {
 	}
 	{
 		const crc32 = stream.ReadUint32()
-		const computed_crc32 = WASM.CRC32(new Uint8Array(stream.view.buffer, stream.view.byteOffset + stream.pos, stream.Remaining))
+		const computed_crc32 = WASM.CRC32(stream)
 		if (crc32 !== computed_crc32)
 			throw `CRC32 of VBKV doesn't match actual one (0x${crc32.toString(16)} !== 0x${computed_crc32.toString(16)})`
 	}
@@ -106,7 +105,7 @@ const serializer = new (class VBKVSerializer {
 			tail.setUint8(0, VBKVTypes.TYPE_END)
 		}
 		{
-			const computed_crc32 = WASM.CRC32(new Uint8Array(this.buf.buffer, 4 + 4, this.size - 4 - 4))
+			const computed_crc32 = WASM.CRC32(new ViewBinaryStream(new DataView(this.buf.buffer, 4 + 4, this.size - 4 - 4)))
 			new DataView(this.buf.buffer, 0, 4 + 4).setUint32(4, computed_crc32, true) // CRC32
 		}
 		return this.buf.subarray(0, this.size)

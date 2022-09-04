@@ -1,4 +1,4 @@
-import { Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
+import ViewBinaryStream from "../Utils/ViewBinaryStream"
 import EventsSDK from "./EventsSDK"
 
 const StringTables = new Map<string, Map<number, [string, ArrayBuffer]>>()
@@ -13,8 +13,7 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 	if (!StringTables.has(name))
 		StringTables.set(name, new Map())
 	const table = StringTables.get(name)!
-	// we do .slice().buffer to prevent referencing big ServerMessageBuffer, and create out own copy of needed region
-	update.forEach((val, key) => table.set(key, [val[0], val[1].slice().buffer]))
+	update.forEach((val, key) => table.set(key, [val[0], val[1]]))
 })
 
 globalThis.DumpStringTables = () => {
@@ -33,5 +32,8 @@ export function GetString(table_name: string, index: number): string {
 }
 export function GetValue(table_name: string, index: number): string {
 	const ar = GetTable(table_name)?.get(index)
-	return ar !== undefined ? Utf8ArrayToStr(new Uint8Array(ar[1])) : ""
+	if (ar === undefined)
+		return ""
+	const stream = new ViewBinaryStream(new DataView(ar[1]))
+	return stream.ReadUtf8String(stream.Remaining)
 }

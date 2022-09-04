@@ -156,7 +156,7 @@ interface EventsSDK extends EventEmitter {
 	): EventEmitter
 	on(name: "ServerInfo", listener: (map: RecursiveProtobuf) => void, priority?: number): EventEmitter
 	on(name: "RemoveAllStringTables", listener: () => void, priority?: number): EventEmitter
-	on(name: "UpdateStringTable", listener: (name: string, update: Map<number, [string, Uint8Array]>) => void, priority?: number): EventEmitter
+	on(name: "UpdateStringTable", listener: (name: string, update: Map<number, [string, ArrayBuffer]>) => void, priority?: number): EventEmitter
 	on(
 		name: "StartSound",
 		listener: (

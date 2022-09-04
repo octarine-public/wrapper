@@ -10,6 +10,7 @@ import { GetPositionHeight } from "../../Native/WASM"
 import { EntityDataLump } from "../../Resources/ParseEntityLump"
 import { GridNav } from "../../Resources/ParseGNV"
 import { ParseTRMP } from "../../Resources/ParseTRMP"
+import FileBinaryStream from "../../Utils/FileBinaryStream"
 import GameState from "../../Utils/GameState"
 import Entity from "./Entity"
 
@@ -41,7 +42,7 @@ export const Trees = EntityManager.GetEntitiesByClass(Tree)
 
 export let TempTreeIDOffset = 0
 let cur_local_id = 0x3000
-async function LoadTreeMap(buf: Uint8Array): Promise<void> {
+async function LoadTreeMap(stream: ReadableBinaryStream): Promise<void> {
 	TempTreeIDOffset = 0
 	while (cur_local_id > 0x3000) {
 		const id = --cur_local_id
@@ -52,7 +53,7 @@ async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 		}
 	}
 	const trees: Tree[] = []
-	for (const pos of ParseTRMP(buf)) {
+	for (const pos of ParseTRMP(stream)) {
 		TempTreeIDOffset++
 		// for some reason there are trees duplicates, but earlier ones override them
 		if (trees.some(tree => tree.Position.Equals(pos)))
@@ -103,11 +104,13 @@ async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 }
 
 EventsSDK.after("ServerInfo", async () => {
-	try {
-		const buf = fread(`maps/${GameState.MapName}.trm`)
-		if (buf !== undefined)
-			await LoadTreeMap(buf)
-	} catch (e) {
-		console.error("Error in TreeMap init", e)
-	}
+	const buf = fopen(`maps/${GameState.MapName}.trm`)
+	if (buf !== undefined)
+		try {
+			await LoadTreeMap(new FileBinaryStream(buf))
+		} catch (e) {
+			console.error("Error in TreeMap init", e)
+		} finally {
+			buf.close()
+		}
 })

@@ -24,10 +24,10 @@ export function tryFindFile(path: string, callstack_depth = 0): Nullable<string>
 	return undefined
 }
 
-export default function readFile(path: string, callstack_depth = 0): Nullable<Uint8Array> {
+export default function readFile(path: string, callstack_depth = 0): Nullable<FileStream> {
 	const real_path = tryFindFile(path, 1 + callstack_depth)
 	if (real_path === undefined)
 		return undefined
 
-	return fread(real_path)
+	return fopen(real_path)
 }

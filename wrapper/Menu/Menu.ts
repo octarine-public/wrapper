@@ -5,8 +5,9 @@ import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import InputManager, { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
-import { StringToUTF8, Utf16ArrayToStr, Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
+import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
 import { readJSON } from "../Utils/Utils"
+import ViewBinaryStream from "../Utils/ViewBinaryStream"
 import Base from "./Base"
 import Dropdown from "./Dropdown"
 import Header from "./Header"
@@ -120,10 +121,12 @@ class MenuManager {
 			return // workers shouldn't propagate configs
 		try {
 			const config = await readConfig("default.json")
+			const stream = new ViewBinaryStream(new DataView(config))
 			try {
-				this.ConfigValue = JSON.parse(Utf8ArrayToStr(new Uint8Array(config)))
+				this.ConfigValue = JSON.parse(stream.ReadUtf8String(stream.Remaining))
 			} catch {
-				this.ConfigValue = JSON.parse(Utf16ArrayToStr(new Uint16Array(config)))
+				stream.pos = 0
+				this.ConfigValue = JSON.parse(stream.ReadUtf16String(stream.Remaining))
 			}
 		} catch {
 			this.empty_config = true

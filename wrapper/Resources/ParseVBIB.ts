@@ -1,6 +1,6 @@
 import { DecompressIndexBuffer, DecompressVertexBuffer } from "../Native/WASM"
-import { Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
-import BinaryStream from "../Utils/BinaryStream"
+import { isStream } from "../Utils/ReadableBinaryStreamUtils"
+import ViewBinaryStream from "../Utils/ViewBinaryStream"
 import { GetMapNumberProperty, MapToNumberArray } from "./ParseUtils"
 
 export enum RenderSlotType {
@@ -26,8 +26,21 @@ export class VBIBBufferData {
 		public readonly ElementCount: number,
 		public readonly ElementSize: number,
 		public readonly InputLayout: VBIBLayoutField[],
-		public Data: Uint8Array,
+		private Data_: ReadableBinaryStream | Uint8Array,
+		private readonly IsVertexBuffer: boolean,
 	) { }
+
+	public get Data() {
+		if (this.Data_ instanceof Uint8Array)
+			return this.Data_
+		if (this.ElementCount * this.ElementSize !== this.Data_.Size)
+			this.Data_ = this.IsVertexBuffer
+				? DecompressVertexBuffer(this.Data_, this.ElementCount, this.ElementSize)
+				: DecompressIndexBuffer(this.Data_, this.ElementCount, this.ElementSize)
+		else
+			this.Data_ = this.Data_.ReadSlice(this.Data_.Size)
+		return this.Data_
+	}
 }
 
 export class VBIB {
@@ -37,18 +50,7 @@ export class VBIB {
 	) { }
 }
 
-function FixCompressedBuffers(vbib: VBIB): void {
-	vbib.VertexBuffers.forEach(buf => {
-		if (buf.ElementCount * buf.ElementSize !== buf.Data.byteLength)
-			buf.Data = DecompressVertexBuffer(buf.Data, buf.ElementCount, buf.ElementSize)
-	})
-	vbib.IndexBuffers.forEach(buf => {
-		if (buf.ElementCount * buf.ElementSize !== buf.Data.byteLength)
-			buf.Data = DecompressIndexBuffer(buf.Data, buf.ElementCount, buf.ElementSize)
-	})
-}
-
-function ReadOnDiskBufferData(stream: BinaryStream): VBIBBufferData {
+function ReadOnDiskBufferData(stream: ReadableBinaryStream, isVertexBuffer: boolean): VBIBBufferData {
 	const element_count = stream.ReadUint32(),
 		element_size = stream.ReadUint32(),
 		attribute_position = stream.pos + stream.ReadInt32(),
@@ -73,38 +75,33 @@ function ReadOnDiskBufferData(stream: BinaryStream): VBIBBufferData {
 		))
 	}
 	stream.pos = data_position
-	const data = stream.ReadSlice(data_size).slice()
+	const data = stream.CreateNestedStream(data_size)
 	stream.pos = header_end_position
 	return new VBIBBufferData(
 		element_count,
 		element_size,
 		fields,
 		data,
+		isVertexBuffer,
 	)
 }
 
-export function ParseVBIB(data: Uint8Array): VBIB {
+export function ParseVBIB(stream: ReadableBinaryStream): VBIB {
 	const vbib = new VBIB()
-	const stream = new BinaryStream(new DataView(
-		data.buffer,
-		data.byteOffset,
-		data.byteLength,
-	))
 	const vertexBufferPosition = stream.pos + stream.ReadUint32(),
 		vertexBufferCount = stream.ReadUint32(),
 		indexBufferPosition = stream.pos + stream.ReadUint32(),
 		indexBufferCount = stream.ReadUint32()
 	stream.pos = vertexBufferPosition
 	for (let i = 0; i < vertexBufferCount; i++)
-		vbib.VertexBuffers.push(ReadOnDiskBufferData(stream))
+		vbib.VertexBuffers.push(ReadOnDiskBufferData(stream, true))
 	stream.pos = indexBufferPosition
 	for (let i = 0; i < indexBufferCount; i++)
-		vbib.IndexBuffers.push(ReadOnDiskBufferData(stream))
-	FixCompressedBuffers(vbib)
+		vbib.IndexBuffers.push(ReadOnDiskBufferData(stream, false))
 	return vbib
 }
 
-function ReadBufferDataFromKV(kv: RecursiveMap): VBIBBufferData {
+function ReadBufferDataFromKV(kv: RecursiveMap, isVertexBuffer: boolean): VBIBBufferData {
 	const element_count = GetMapNumberProperty(kv, "m_nElementCount"),
 		element_size = GetMapNumberProperty(kv, "m_nElementSizeInBytes"),
 		fieldsKV = kv.get("m_inputLayoutFields")
@@ -115,11 +112,11 @@ function ReadBufferDataFromKV(kv: RecursiveMap): VBIBBufferData {
 				return
 			let name_array = fieldKV.get("m_pSemanticName")
 			if (name_array instanceof Map || Array.isArray(name_array))
-				name_array = new Uint8Array(MapToNumberArray(name_array))
-			if (!(name_array instanceof Uint8Array))
-				name_array = new Uint8Array()
+				name_array = new ViewBinaryStream(new DataView(new Uint8Array(MapToNumberArray(name_array)).buffer))
+			if (!isStream(name_array))
+				name_array = new ViewBinaryStream(new DataView(new ArrayBuffer(0)))
 			fields.push(new VBIBLayoutField(
-				Utf8ArrayToStr(name_array),
+				name_array.ReadUtf8String(name_array.Size),
 				GetMapNumberProperty(fieldKV, "m_nSemanticIndex"),
 				GetMapNumberProperty(fieldKV, "m_Format"),
 				GetMapNumberProperty(fieldKV, "m_nOffset"),
@@ -130,14 +127,15 @@ function ReadBufferDataFromKV(kv: RecursiveMap): VBIBBufferData {
 		})
 	let dataKV = kv.get("m_pData")
 	if (dataKV instanceof Map || Array.isArray(dataKV))
-		dataKV = new Uint8Array(MapToNumberArray(dataKV))
-	if (!(dataKV instanceof Uint8Array))
-		dataKV = new Uint8Array()
+		dataKV = new ViewBinaryStream(new DataView(new Uint8Array(MapToNumberArray(dataKV)).buffer))
+	if (!isStream(dataKV))
+		dataKV = new ViewBinaryStream(new DataView(new ArrayBuffer(0)))
 	return new VBIBBufferData(
 		element_count,
 		element_size,
 		fields,
 		dataKV,
+		isVertexBuffer,
 	)
 }
 
@@ -147,14 +145,13 @@ export function ParseVBIBFromKV(kv: RecursiveMap): VBIB {
 	if (vertexBuffers instanceof Map || Array.isArray(vertexBuffers))
 		vertexBuffers.forEach((vb: RecursiveMapValue) => {
 			if (vb instanceof Map)
-				vbib.IndexBuffers.push(ReadBufferDataFromKV(vb))
+				vbib.VertexBuffers.push(ReadBufferDataFromKV(vb, true))
 		})
 	const indexBuffers = kv.get("m_indexBuffers")
 	if (indexBuffers instanceof Map || Array.isArray(indexBuffers))
 		indexBuffers.forEach((ib: RecursiveMapValue) => {
 			if (ib instanceof Map)
-				vbib.IndexBuffers.push(ReadBufferDataFromKV(ib))
+				vbib.IndexBuffers.push(ReadBufferDataFromKV(ib, false))
 		})
-	FixCompressedBuffers(vbib)
 	return vbib
 }

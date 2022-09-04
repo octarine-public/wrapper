@@ -1,4 +1,5 @@
 import Vector3 from "../Base/Vector3"
+import FileBinaryStream from "../Utils/FileBinaryStream"
 import { CAnimation, ParseAnimationGroup, ParseEmbeddedAnimation } from "./ParseAnimation"
 import { parseKV, parseKVBlock } from "./ParseKV"
 import { CMesh, ParseEmbeddedMesh, ParseMesh } from "./ParseMesh"
@@ -18,11 +19,11 @@ export class CModel {
 	public readonly Skeletons: CSkeleton[] = []
 	public readonly MinBounds = new Vector3()
 	public readonly MaxBounds = new Vector3()
-	constructor(buf: Uint8Array) {
-		const layout = ParseResourceLayout(buf)
+	constructor(stream: ReadableBinaryStream) {
+		const layout = ParseResourceLayout(stream)
 		if (layout === undefined)
 			throw "Model without resource format"
-		const kv = parseKV(buf)
+		const kv = parseKV(stream)
 		if (kv.size === 0)
 			throw "Model without data"
 		this.LoadSkeletons(kv)
@@ -121,12 +122,16 @@ export class CModel {
 					return
 				if (!mesh_path.endsWith("_c"))
 					mesh_path += "_c"
-				const buf = fread(mesh_path)
+				const buf = fopen(mesh_path)
 				if (buf !== undefined)
-					this.Meshes.push(ParseMesh(buf))
+					try {
+						this.Meshes.push(ParseMesh(new FileBinaryStream(buf)))
+					} finally {
+						buf.close()
+					}
 			})
 	}
-	private LoadEmbeddedMeshes(kv: RecursiveMap, blocks: Uint8Array[]): void {
+	private LoadEmbeddedMeshes(kv: RecursiveMap, blocks: ReadableBinaryStream[]): void {
 		const embedded_meshes = kv.get("embedded_meshes")
 		if (!(embedded_meshes instanceof Map || Array.isArray(embedded_meshes)))
 			return
@@ -146,12 +151,16 @@ export class CModel {
 					return
 				if (!animation_group_path.endsWith("_c"))
 					animation_group_path += "_c"
-				const buf = fread(animation_group_path)
+				const buf = fopen(animation_group_path)
 				if (buf !== undefined)
-					this.Animations.push(...ParseAnimationGroup(buf))
+					try {
+						this.Animations.push(...ParseAnimationGroup(new FileBinaryStream(buf)))
+					} finally {
+						buf.close()
+					}
 			})
 	}
-	private LoadEmbeddedAnimation(kv: RecursiveMap, blocks: Uint8Array[], hseq: RecursiveMap): void {
+	private LoadEmbeddedAnimation(kv: RecursiveMap, blocks: ReadableBinaryStream[], hseq: RecursiveMap): void {
 		const embedded_animation = kv.get("embedded_animation")
 		if (!(embedded_animation instanceof Map))
 			return
@@ -161,6 +170,6 @@ export class CModel {
 	}
 }
 
-export function ParseModel(buf: Uint8Array): CModel {
-	return new CModel(buf)
+export function ParseModel(stream: ReadableBinaryStream): CModel {
+	return new CModel(stream)
 }

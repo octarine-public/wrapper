@@ -1,9 +1,10 @@
 import Matrix4x4 from "../Base/Matrix4x4"
 import Vector3 from "../Base/Vector3"
 import Workers from "../Native/Workers"
+import FileBinaryStream from "../Utils/FileBinaryStream"
 import { CAnimationFrame } from "./ParseAnimation"
 import { CMeshAttachment } from "./ParseMesh"
-import { ParseModel } from "./ParseModel"
+import { CModel, ParseModel } from "./ParseModel"
 import { CBone, CSkeleton } from "./Skeleton"
 
 export class ComputedAttachment {
@@ -78,10 +79,15 @@ export function ComputeAttachmentsAndBounds(model_name: string): [ComputedAttach
 		return [ar, new Vector3(), new Vector3()]
 	if (!model_name.endsWith("_c"))
 		model_name += "_c"
-	const buf = fread(model_name)
+	const buf = fopen(model_name)
 	if (buf === undefined)
 		return [ar, new Vector3(), new Vector3()]
-	const model = ParseModel(buf)
+	let model: CModel
+	try {
+		model = ParseModel(new FileBinaryStream(buf))
+	} finally {
+		buf.close()
+	}
 	const mesh = model.Meshes[0]
 	if (mesh === undefined)
 		return [ar, new Vector3(), new Vector3()]

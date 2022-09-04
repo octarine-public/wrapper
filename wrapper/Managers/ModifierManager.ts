@@ -6,6 +6,7 @@ import Unit from "../Objects/Base/Unit"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import GameState from "../Utils/GameState"
 import { ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
+import ViewBinaryStream from "../Utils/ViewBinaryStream"
 import EntityManager from "./EntityManager"
 import EventsSDK from "./EventsSDK"
 
@@ -241,13 +242,13 @@ EventsSDK.on("UpdateStringTable", async (name, update) => {
 		return
 	for (const [index, [, mod_serialized]] of update) {
 		const replaced = ActiveModifiersRaw.get(index)
-		if (mod_serialized.length === 0 && replaced?.SerialNum !== undefined) {
+		if (mod_serialized.byteLength === 0 && replaced?.SerialNum !== undefined) {
 			const replaced_mod = ActiveModifiers.get(replaced.SerialNum)
 			if (replaced_mod !== undefined)
 				await EmitModifierRemoved(replaced_mod)
 			continue
 		}
-		const mod = new IModifier(ParseProtobufNamed(mod_serialized, "CDOTAModifierBuffTableEntry"))
+		const mod = new IModifier(ParseProtobufNamed(new ViewBinaryStream(new DataView(mod_serialized)), "CDOTAModifierBuffTableEntry"))
 		if (replaced?.SerialNum !== undefined && replaced.SerialNum !== mod.SerialNum) {
 			const replaced_mod = ActiveModifiers.get(replaced.SerialNum)
 			if (replaced_mod !== undefined)

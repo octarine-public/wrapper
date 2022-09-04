@@ -1,13 +1,15 @@
 import Color from "../Base/Color"
 
-export default class BinaryStream {
-	public is_utf16 = false
-	public is_utf16_be = false
+export default class ViewBinaryStream implements ReadableBinaryStream {
+	private readonly is_utf16: boolean
+	private readonly is_utf16_be: boolean
 	constructor(
-		public readonly view: DataView,
+		private readonly view: DataView,
 		public pos = 0,
 		detect_encoding = false,
 	) {
+		this.is_utf16 = false
+		this.is_utf16_be = false
 		if (!detect_encoding)
 			return
 		if (this.Remaining >= 2) {
@@ -38,10 +40,15 @@ export default class BinaryStream {
 	public get Remaining(): number {
 		return Math.max(this.view.byteLength - this.pos, 0)
 	}
+	public get Size(): number {
+		return this.view.byteLength
+	}
+	public get Offset(): number {
+		return this.view.byteOffset
+	}
 
-	public RelativeSeek(s: number): BinaryStream {
+	public RelativeSeek(s: number): void {
 		this.pos += s
-		return this
 	}
 	public ReadUint8(): number {
 		return this.view.getUint8(this.pos++)
@@ -54,14 +61,6 @@ export default class BinaryStream {
 		this.WriteUint8(Math.max(Math.min(val.g, 255), 0))
 		this.WriteUint8(Math.max(Math.min(val.b, 255), 0))
 		this.WriteUint8(Math.max(Math.min(val.a, 255), 0))
-	}
-	public ReadColor(): Color {
-		return new Color(
-			this.ReadUint8(),
-			this.ReadUint8(),
-			this.ReadUint8(),
-			this.ReadUint8(),
-		)
 	}
 	public ReadInt8(): number {
 		return this.view.getInt8(this.pos++)
@@ -183,15 +182,14 @@ export default class BinaryStream {
 	public WriteBoolean(val: boolean): void {
 		this.WriteUint8(val ? 1 : 0)
 	}
-	// returns reference to original buffer instead of creating new one
-	public ReadSlice(size: number): Uint8Array {
-		const slice = new Uint8Array(this.view.buffer, this.view.byteOffset + this.pos, size)
-		this.RelativeSeek(size)
-		return slice
+	public ReadSliceTo(output: Uint8Array): void {
+		output.set(new Uint8Array(this.view.buffer, this.view.byteOffset + this.pos, output.byteLength))
+		this.RelativeSeek(output.byteLength)
 	}
-	// writes Uint8Array
-	public WriteSlice(slice: ArrayLike<number>): void {
-		this.ReadSlice(slice.length).set(slice)
+	public ReadSlice(size: number): Uint8Array {
+		const res = new Uint8Array(size)
+		this.ReadSliceTo(res)
+		return res
 	}
 	public ReadUtf8Char(size = this.Remaining): string {
 		const nPart = this.ReadUint8()
@@ -231,6 +229,16 @@ export default class BinaryStream {
 			const start = this.pos
 			out += this.ReadUtf8Char(size)
 			size -= this.pos - start
+		}
+		return out
+	}
+	public ReadUtf16String(size: number): string {
+		if ((size % 2) !== 0)
+			throw "Invalid size for ReadUtf16String"
+		let out = ""
+		while (size > 0) {
+			out += String.fromCharCode(this.ReadUint16())
+			size -= 2
 		}
 		return out
 	}
@@ -278,19 +286,19 @@ export default class BinaryStream {
 		this.pos = saved_pos
 		return ret
 	}
-	// returns reference to original buffer instead of creating new one
-	public ReadVarSlice(): Uint8Array {
-		return this.ReadSlice(this.ReadVarUintAsNumber())
-	}
-	// writes varint encoded length + Uint8Array
-	public WriteVarSlice(slice: ArrayLike<number>): void {
-		this.WriteVarUintAsNumber(slice.length)
-		this.ReadSlice(slice.length).set(slice)
-	}
 	public ReadVarString(): string {
 		return this.ReadUtf8String(this.ReadVarUintAsNumber())
 	}
 	public Empty(): boolean {
 		return this.pos >= this.view.byteLength
+	}
+	public CreateNestedStream(size: number): ViewBinaryStream {
+		const res = new ViewBinaryStream(new DataView(
+			this.view.buffer,
+			this.view.byteOffset + this.pos,
+			size,
+		))
+		this.pos += size
+		return res
 	}
 }

@@ -1,4 +1,3 @@
-import BinaryStream from "../Utils/BinaryStream"
 import { parseKVBlock } from "./ParseKV"
 import { GetMapNumberProperty, GetMapStringProperty } from "./ParseUtils"
 
@@ -6,7 +5,7 @@ class AdditionalRelatedFile {
 	public relative_filename = ""
 	public search_path = ""
 
-	public ReadV1(stream: BinaryStream): void {
+	public ReadV1(stream: ReadableBinaryStream): void {
 		this.relative_filename = stream.ReadOffsetString()
 		this.search_path = stream.ReadOffsetString()
 	}
@@ -19,7 +18,7 @@ class ChildResourceReference {
 	public id = 0n
 	public name = ""
 
-	public ReadV1(stream: BinaryStream): void {
+	public ReadV1(stream: ReadableBinaryStream): void {
 		this.id = stream.ReadUint64()
 		this.name = stream.ReadOffsetString()
 		stream.RelativeSeek(4) // unknown
@@ -35,7 +34,7 @@ class ArgumentDependency {
 	public fingerprint = 0
 	public fingerprint_default = 0
 
-	public ReadV1(stream: BinaryStream): void {
+	public ReadV1(stream: ReadableBinaryStream): void {
 		this.name = stream.ReadOffsetString()
 		this.type = stream.ReadOffsetString()
 		this.fingerprint = stream.ReadUint32()
@@ -50,7 +49,7 @@ class ExtraFloatData {
 	public name = ""
 	public value = 0
 
-	public ReadV1(stream: BinaryStream): void {
+	public ReadV1(stream: ReadableBinaryStream): void {
 		this.name = stream.ReadOffsetString()
 		this.value = stream.ReadFloat32()
 	}
@@ -63,7 +62,7 @@ class ExtraIntData {
 	public name = ""
 	public value = 0
 
-	public ReadV1(stream: BinaryStream): void {
+	public ReadV1(stream: ReadableBinaryStream): void {
 		this.name = stream.ReadOffsetString()
 		this.value = stream.ReadInt32()
 	}
@@ -76,7 +75,7 @@ class ExtraStringData {
 	public name = ""
 	public value = ""
 
-	public ReadV1(stream: BinaryStream): void {
+	public ReadV1(stream: ReadableBinaryStream): void {
 		this.name = stream.ReadOffsetString()
 		this.value = stream.ReadOffsetString()
 	}
@@ -91,7 +90,7 @@ class InputDependency {
 	public crc = 0
 	public flags = 0
 
-	public ReadV1(stream: BinaryStream): void {
+	public ReadV1(stream: ReadableBinaryStream): void {
 		this.relative_filename = stream.ReadOffsetString()
 		this.search_path = stream.ReadOffsetString()
 		this.crc = stream.ReadUint32()
@@ -108,7 +107,7 @@ class SpecialDependency {
 	public fingerprint = 0
 	public user_data = 0
 
-	public ReadV1(stream: BinaryStream): void {
+	public ReadV1(stream: ReadableBinaryStream): void {
 		this.str = stream.ReadOffsetString()
 		this.compiler_identifier = stream.ReadOffsetString()
 		this.fingerprint = stream.ReadUint32()
@@ -124,7 +123,7 @@ class SpecialDependency {
 }
 
 class CustomDependency {
-	public ReadV1(_: BinaryStream): void {
+	public ReadV1(_: ReadableBinaryStream): void {
 		throw "CustomDependency is not handled at the moment"
 	}
 	public ReadV2(map: RecursiveMap): this {
@@ -133,7 +132,7 @@ class CustomDependency {
 }
 
 interface REDIBlock {
-	ReadV1(stream: BinaryStream): void
+	ReadV1(stream: ReadableBinaryStream): void
 	ReadV2(map: RecursiveMap): this
 }
 class ResourceEditInfo {
@@ -148,7 +147,7 @@ class ResourceEditInfo {
 	public readonly ExtraFloatDataList: ExtraFloatData[] = []
 	public readonly ExtraStringDataList: ExtraStringData[] = []
 
-	public ReadV1(stream: BinaryStream): void {
+	public ReadV1(stream: ReadableBinaryStream): void {
 		this.ReadBlocks(stream, this.InputDependencies, InputDependency)
 		this.ReadBlocks(stream, this.AdditionalInputDependencies, InputDependency)
 		this.ReadBlocks(stream, this.ArgumentDependencies, ArgumentDependency)
@@ -170,7 +169,7 @@ class ResourceEditInfo {
 					this.SpecialDependencies.push(new SpecialDependency().ReadV2(el))
 			})
 	}
-	private ReadBlocks<T extends REDIBlock>(stream: BinaryStream, ar: T[], block: Constructor<T>): void {
+	private ReadBlocks<T extends REDIBlock>(stream: ReadableBinaryStream, ar: T[], block: Constructor<T>): void {
 		const blocks_pos = stream.pos + stream.ReadUint32(),
 			count = stream.ReadUint32()
 		const prev_pos = stream.pos
@@ -184,22 +183,18 @@ class ResourceEditInfo {
 	}
 }
 
-export function ParseREDI(buf: Nullable<Uint8Array>): Nullable<ResourceEditInfo> {
-	if (buf === undefined)
+export function ParseREDI(stream: Nullable<ReadableBinaryStream>): Nullable<ResourceEditInfo> {
+	if (stream === undefined)
 		return undefined
 	const REDI = new ResourceEditInfo()
-	REDI.ReadV1(new BinaryStream(new DataView(
-		buf.buffer,
-		buf.byteOffset,
-		buf.byteLength,
-	)))
+	REDI.ReadV1(stream)
 	return REDI
 }
 
-export function ParseRED2(buf: Nullable<Uint8Array>): Nullable<ResourceEditInfo> {
-	if (buf === undefined)
+export function ParseRED2(stream: Nullable<ReadableBinaryStream>): Nullable<ResourceEditInfo> {
+	if (stream === undefined)
 		return undefined
 	const REDI = new ResourceEditInfo()
-	REDI.ReadV2(parseKVBlock(buf))
+	REDI.ReadV2(parseKVBlock(stream))
 	return REDI
 }

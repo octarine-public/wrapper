@@ -16,12 +16,13 @@ import { DefaultWorldLayers, ParseEntityLump, ResetEntityLump } from "../Resourc
 import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
 import { parseKVFile } from "../Resources/ParseKV"
 import { GetMapNumberProperty, GetMapStringProperty, MapToMatrix4x4, MapToNumberArray, MapToStringArray } from "../Resources/ParseUtils"
-import BinaryStream from "../Utils/BinaryStream"
 import { HasBit } from "../Utils/BitsExtensions"
+import FileBinaryStream from "../Utils/FileBinaryStream"
 import GameState from "../Utils/GameState"
 import { CMsgVectorToVector3, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
 import { createMapFromMergedIterators } from "../Utils/Utils"
 import * as VBKV from "../Utils/VBKV"
+import ViewBinaryStream from "../Utils/ViewBinaryStream"
 import { LoadEconData } from "./EconHelper"
 import EntityManager from "./EntityManager"
 import Events from "./Events"
@@ -904,10 +905,10 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 }
 
 Events.on("ServerMessage", async (msg_id, buf_) => {
-	const buf = new Uint8Array(buf_)
+	const stream = new ViewBinaryStream(new DataView(buf_))
 	switch (msg_id) {
 		case 4: {
-			const msg = ParseProtobufNamed(buf, "CNETMsg_Tick")
+			const msg = ParseProtobufNamed(stream, "CNETMsg_Tick")
 			await EventsSDK.emit(
 				"ServerTick", false,
 				msg.get("tick") as number,
@@ -921,14 +922,13 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			break
 		}
 		case 40:
-			await EventsSDK.emit("ServerInfo", false, ParseProtobufNamed(buf, "CSVCMsg_ServerInfo"))
+			await EventsSDK.emit("ServerInfo", false, ParseProtobufNamed(stream, "CSVCMsg_ServerInfo"))
 			break
 		case 45: { // we have custom parsing for CSVCMsg_CreateStringTable & CSVCMsg_UpdateStringTable
-			const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
 			const table_name = stream.ReadVarString(),
 				update = new Map<number, [string, ArrayBuffer]>()
 			while (!stream.Empty())
-				update.set(stream.ReadVarUintAsNumber(), [stream.ReadVarString(), stream.ReadVarSlice()])
+				update.set(stream.ReadVarUintAsNumber(), [stream.ReadVarString(), stream.ReadSlice(stream.ReadVarUintAsNumber()).buffer])
 			await EventsSDK.emit("UpdateStringTable", false, table_name, update)
 			break
 		}
@@ -936,23 +936,26 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			await EventsSDK.emit("RemoveAllStringTables", false)
 			break
 		case 145:
-			await HandleParticleMsg(ParseProtobufNamed(buf, "CUserMsg_ParticleManager"))
+			await HandleParticleMsg(ParseProtobufNamed(stream, "CUserMsg_ParticleManager"))
 			break
 		case 148: {
-			const msg = ParseProtobufNamed(buf, "CUserMsg_CustomGameEvent")
+			const msg = ParseProtobufNamed(stream, "CUserMsg_CustomGameEvent")
 			const event_name = (msg.get("event_name") as Nullable<string>) ?? ""
-			const data = (msg.get("data") as Nullable<Uint8Array>) ?? new Uint8Array()
+			const data = msg.get("data") as Nullable<ReadableBinaryStream>
 			let parsed_data: Map<string, VBKV.BinaryKV>
-			try {
-				parsed_data = VBKV.parseVBKV(data)
-			} catch {
+			if (data !== undefined)
+				try {
+					parsed_data = VBKV.parseVBKV(data)
+				} catch {
+					parsed_data = new Map()
+				}
+			else
 				parsed_data = new Map()
-			}
 			await EventsSDK.emit("CustomGameEvent", false, event_name, parsed_data)
 			break
 		}
 		case 208: {
-			const msg = ParseProtobufNamed(buf, "CMsgSosStartSoundEvent")
+			const msg = ParseProtobufNamed(stream, "CMsgSosStartSoundEvent")
 			const hash = msg.get("soundevent_hash") as number
 			const sound_name = Manifest.LookupSoundNameByHash(hash)
 			if (sound_name === undefined) {
@@ -962,19 +965,14 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			const handle = (msg.get("source_entity_index") as number) ?? 0,
 				seed = (msg.get("seed") as number) ?? 0,
 				start_time = (msg.get("start_time") as number) ?? -1,
-				packed_params = msg.get("packed_params") as Nullable<Uint8Array>
+				packed_params = msg.get("packed_params") as Nullable<ReadableBinaryStream>
 			const ent = await GetPredictionTarget(handle),
 				position = new Vector3()
-			if (packed_params !== undefined && packed_params.byteLength >= 19) {
-				const stream = new BinaryStream(new DataView(
-					packed_params.buffer,
-					packed_params.byteOffset,
-					packed_params.byteLength,
-				))
-				stream.RelativeSeek(7)
-				position.x = stream.ReadFloat32()
-				position.y = stream.ReadFloat32()
-				position.z = stream.ReadFloat32()
+			if (packed_params !== undefined && packed_params.Size >= 19) {
+				packed_params.RelativeSeek(7)
+				position.x = packed_params.ReadFloat32()
+				position.y = packed_params.ReadFloat32()
+				position.z = packed_params.ReadFloat32()
 			}
 			await EventsSDK.emit(
 				"StartSound", false,
@@ -987,7 +985,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			break
 		}
 		case 488: {
-			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_UnitEvent")
+			const msg = ParseProtobufNamed(stream, "CDOTAUserMsg_UnitEvent")
 			const handle = msg.get("entity_index") as number
 			const ent = await GetPredictionTarget(handle)
 			if (ent instanceof Entity && !(ent instanceof Unit))
@@ -1055,7 +1053,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			break
 		}
 		case 466: {
-			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_ChatEvent")
+			const msg = ParseProtobufNamed(stream, "CDOTAUserMsg_ChatEvent")
 			await EventsSDK.emit(
 				"ChatEvent", false,
 				msg.get("type") as DOTA_CHAT_MESSAGE,
@@ -1072,7 +1070,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			break
 		}
 		case 520: {
-			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_DotaBloodImpact")
+			const msg = ParseProtobufNamed(stream, "CDOTAUserMsg_TE_DotaBloodImpact")
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (ent === undefined)
 				break
@@ -1086,7 +1084,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			break
 		}
 		case 521: {
-			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_UnitAnimation")
+			const msg = ParseProtobufNamed(stream, "CDOTAUserMsg_TE_UnitAnimation")
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (!(ent instanceof Unit))
 				break
@@ -1103,7 +1101,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			break
 		}
 		case 522: {
-			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_UnitAnimationEnd")
+			const msg = ParseProtobufNamed(stream, "CDOTAUserMsg_TE_UnitAnimationEnd")
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (!(ent instanceof Unit))
 				break
@@ -1137,7 +1135,7 @@ Events.on("MatchmakingStatsUpdated", async data => {
 	await EventsSDK.emit(
 		"MatchmakingStatsUpdated",
 		false,
-		ParseProtobufNamed(new Uint8Array(data), "CMsgDOTAMatchmakingStatsResponse"),
+		ParseProtobufNamed(new ViewBinaryStream(new DataView(data)), "CMsgDOTAMatchmakingStatsResponse"),
 	)
 })
 
@@ -1261,16 +1259,24 @@ function TryLoadWorld(world_kv: RecursiveMap): void {
 async function TryLoadMapFiles(): Promise<void> {
 	const map_name = GameState.MapName
 	{
-		const buf = fread(`maps/${map_name}.vhcg`)
+		const buf = fopen(`maps/${map_name}.vhcg`)
 		if (buf !== undefined)
-			WASM.ParseVHCG(buf)
+			try {
+				WASM.ParseVHCG(new FileBinaryStream(buf))
+			} finally {
+				buf.close()
+			}
 		else
 			WASM.ResetVHCG()
 	}
 	{
-		const buf = fread(`maps/${map_name}.gnv`)
+		const buf = fopen(`maps/${map_name}.gnv`)
 		if (buf !== undefined)
-			ParseGNV(buf)
+			try {
+				ParseGNV(new FileBinaryStream(buf))
+			} finally {
+				buf.close()
+			}
 		else
 			ResetGNV()
 	}
@@ -1287,10 +1293,14 @@ async function TryLoadMapFiles(): Promise<void> {
 			m_entityLumps.forEach((path: RecursiveMapValue) => {
 				if (typeof path !== "string")
 					return
-				const buf = fread(`${path}_c`)
+				const buf = fopen(`${path}_c`)
 				if (buf === undefined)
 					return
-				ParseEntityLump(buf)
+				try {
+					ParseEntityLump(new FileBinaryStream(buf))
+				} finally {
+					buf.close()
+				}
 			})
 		if (IS_MAIN_WORKER)
 			TryLoadWorld(world_kv)

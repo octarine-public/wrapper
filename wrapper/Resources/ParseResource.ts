@@ -1,8 +1,6 @@
-import BinaryStream from "../Utils/BinaryStream"
-
 // https://github.com/SteamDatabase/ValveResourceFormat/blob/cdc150c810e124d6dfc4ec8911852a0278210835/ValveResourceFormat/Resource/Resource.cs#L161
-export function ParseResourceLayout(buf: Uint8Array): Nullable<[Map<string, Uint8Array>, Uint8Array[]]> {
-	const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
+export function ParseResourceLayout(stream: ReadableBinaryStream): Nullable<[Map<string, ReadableBinaryStream>, ReadableBinaryStream[]]> {
+	const starting_pos = stream.pos
 	{
 		const file_size = stream.ReadUint32()
 		if (
@@ -27,14 +25,19 @@ export function ParseResourceLayout(buf: Uint8Array): Nullable<[Map<string, Uint
 		block_count = stream.ReadUint32()
 	stream.RelativeSeek(block_offset - 8)
 
-	const map = new Map<string, Uint8Array>(),
-		blocks: Uint8Array[] = []
+	const map = new Map<string, ReadableBinaryStream>(),
+		blocks: ReadableBinaryStream[] = []
 	for (let i = 0; i < block_count; i++) {
 		const type = stream.ReadUtf8String(4),
-			start = stream.pos + stream.ReadUint32()
-		const block = buf.subarray(start, start + stream.ReadUint32())
+			start = stream.pos + stream.ReadUint32(),
+			size = stream.ReadUint32()
+		const old_pos = stream.pos
+		stream.pos = start
+		const block = stream.CreateNestedStream(size)
+		stream.pos = old_pos
 		map.set(type, block)
 		blocks.push(block)
 	}
+	stream.pos = starting_pos
 	return [map, blocks]
 }

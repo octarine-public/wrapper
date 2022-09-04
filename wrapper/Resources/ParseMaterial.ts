@@ -12,8 +12,8 @@ export class CMaterial {
 	public readonly NumberAttributes = new Map<string, number>()
 	public readonly StringAttributes = new Map<string, string>()
 	public readonly Flags = MaterialFlags.None
-	constructor(buf: Uint8Array) {
-		const kv = parseKV(buf)
+	constructor(stream: ReadableBinaryStream) {
+		const kv = parseKV(stream)
 		if (kv === undefined)
 			throw "Material is an invalid KV"
 		const m_textureParams = kv.get("m_textureParams")
@@ -65,6 +65,6 @@ export class CMaterial {
 	}
 }
 
-export function ParseMaterial(buf: Uint8Array): CMaterial {
-	return new CMaterial(buf)
+export function ParseMaterial(stream: ReadableBinaryStream): CMaterial {
+	return new CMaterial(stream)
 }

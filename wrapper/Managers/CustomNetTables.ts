@@ -1,4 +1,5 @@
 import { BinaryKV, parseVBKV } from "../Utils/VBKV"
+import ViewBinaryStream from "../Utils/ViewBinaryStream"
 import { GetTable } from "./StringTables"
 
 export function GetValue(table_name: string, key: string): Nullable<Map<string, BinaryKV>> {
@@ -9,7 +10,7 @@ export function GetValue(table_name: string, key: string): Nullable<Map<string, 
 	for (const [, ar] of table)
 		if (ar[0] === key)
 			try {
-				return parseVBKV(new Uint8Array(ar[1]))
+				return parseVBKV(new ViewBinaryStream(new DataView(ar[1])))
 			} catch {
 				break
 			}

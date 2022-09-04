@@ -1,31 +1,3 @@
-import BinaryStream from "./BinaryStream"
-
-export function Utf8ArrayToStr(array: Uint8Array): string {
-	const stream = new BinaryStream(
-		new DataView(
-			array.buffer,
-			array.byteOffset,
-			array.byteLength,
-		),
-		0,
-		true,
-	)
-	let s = ""
-	while (!stream.Empty())
-		s += stream.ReadChar()
-	return s
-}
-export function Utf16ArrayToStr(array: Uint16Array): string {
-	let s = ""
-	for (const c of array)
-		s += String.fromCharCode(c)
-	return s
-}
-
-export function Uint8ArrayToHex(array: Uint8Array): string {
-	return array.reduce((memo, i) => memo + ("0" + i.toString(16)).slice(-2), "")
-}
-
 export function StringToUTF8Cb(str: string, writeByte: (b: number) => void): void {
 	for (let i = 0; i < str.length; i++) {
 		let charcode = str.charCodeAt(i)

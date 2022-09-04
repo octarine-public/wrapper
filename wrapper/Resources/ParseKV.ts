@@ -1,8 +1,9 @@
 import { DecompressLZ4, DecompressLZ4Chained, DecompressZstd } from "../Native/WASM"
 import { ArrayBuffersEqual, StringToUTF8 } from "../Utils/ArrayBufferUtils"
-import BinaryStream from "../Utils/BinaryStream"
 import { HasBit } from "../Utils/BitsExtensions"
+import FileBinaryStream from "../Utils/FileBinaryStream"
 import { ParseExternalReferences } from "../Utils/Utils"
+import ViewBinaryStream from "../Utils/ViewBinaryStream"
 import { ParseResourceLayout } from "./ParseResource"
 
 const STRING = '"'
@@ -17,7 +18,7 @@ const SPACE = " "
 const TAB = "\t"
 const WHITESPACE = [SPACE, "\t", "\r", "\n", "="]
 
-function _symtostr(stream: BinaryStream, token: string): string {
+function _symtostr(stream: ReadableBinaryStream, token: string): string {
 	const start_pos = stream.pos
 	let str = "",
 		escape_next_char = false
@@ -44,7 +45,7 @@ function _symtostr(stream: BinaryStream, token: string): string {
 	return ""
 }
 
-function _unquotedtostr(stream: BinaryStream): string {
+function _unquotedtostr(stream: ReadableBinaryStream): string {
 	let str = ""
 	while (!stream.Empty()) {
 		const ch = stream.ReadChar()
@@ -55,14 +56,7 @@ function _unquotedtostr(stream: BinaryStream): string {
 	return str
 }
 
-function _parse(buf: Uint8Array | BinaryStream, map = new Map<string, any>()): RecursiveMap {
-	const stream = buf instanceof Uint8Array
-		? new BinaryStream(new DataView(
-			buf.buffer,
-			buf.byteOffset,
-			buf.byteLength,
-		), 0, true)
-		: buf
+function _parse(stream: ReadableBinaryStream, map = new Map<string, any>()): RecursiveMap {
 	let laststr = "",
 		lasttok = "",
 		lastbrk = "",
@@ -151,7 +145,7 @@ class KVParser {
 	private static readonly KV3_ENCODING_BINARY_BLOCK_COMPRESSED = new Uint8Array([0x46, 0x1A, 0x79, 0x95, 0xBC, 0x95, 0x6C, 0x4F, 0xA7, 0x0B, 0x05, 0xBC, 0xA1, 0xB7, 0xDF, 0xD2]).buffer
 	private static readonly KV3_ENCODING_BINARY_UNCOMPRESSED = new Uint8Array([0x00, 0x05, 0x86, 0x1B, 0xD8, 0xF7, 0xC1, 0x40, 0xAD, 0x82, 0x75, 0xA4, 0x82, 0x67, 0xE7, 0x14]).buffer
 	private static readonly KV3_ENCODING_BINARY_BLOCK_LZ4 = new Uint8Array([0x8A, 0x34, 0x47, 0x68, 0xA1, 0x63, 0x5C, 0x4F, 0xA1, 0x97, 0x53, 0x80, 0x6F, 0xD9, 0xB1, 0x19]).buffer
-	private static BlockDecompress(stream: BinaryStream): Uint8Array {
+	private static BlockDecompress(stream: ReadableBinaryStream): Uint8Array {
 		const flags = stream.ReadSlice(4)
 		if (HasBit(flags[3], 7))
 			return stream.ReadSlice(stream.Remaining)
@@ -190,12 +184,12 @@ class KVParser {
 	private current_type_index = 0
 	private readonly strings: string[] = []
 	private readonly uncompressed_blocks_lengths: number[] = []
-	private uncompressed_blocks_stream: Nullable<BinaryStream>
+	private uncompressed_blocks_stream: Nullable<ReadableBinaryStream>
 	private current_compressed_block = 0
 	private offset_64bit = -1
 	private count_64bit = 0
 	private binary_bytes_offset = -1
-	public ReadVersion2(stream: BinaryStream): RecursiveMap {
+	public ReadVersion2(stream: ReadableBinaryStream): RecursiveMap {
 		this.binary_bytes_offset = 0
 		stream.RelativeSeek(16) // format
 		const compression_method = stream.ReadUint32(),
@@ -208,15 +202,14 @@ class KVParser {
 				kv3_buf = stream.ReadSlice(stream.ReadUint32())
 				break
 			case 1: {
-				const dst_len = stream.ReadUint32(),
-					compressed = stream.ReadSlice(stream.Remaining)
-				kv3_buf = DecompressLZ4(compressed, dst_len)
+				const dst_len = stream.ReadUint32()
+				kv3_buf = DecompressLZ4(stream, stream.Remaining, dst_len)
 				break
 			}
 			default:
 				throw `Unknown KV2 compression method: ${compression_method}`
 		}
-		stream = new BinaryStream(new DataView(kv3_buf.buffer, kv3_buf.byteOffset, kv3_buf.byteLength))
+		stream = new ViewBinaryStream(new DataView(kv3_buf.buffer, kv3_buf.byteOffset, kv3_buf.byteLength))
 		stream.pos = Math.ceil(data_offset / 4) * 4
 		const string_count = stream.ReadUint32()
 		const kv_data_offset = stream.pos
@@ -235,7 +228,7 @@ class KVParser {
 		stream.pos = kv_data_offset
 		return this.ParseBinaryKV3(stream)
 	}
-	public ReadVersion3(stream: BinaryStream): RecursiveMap {
+	public ReadVersion3(stream: ReadableBinaryStream): RecursiveMap {
 		this.binary_bytes_offset = 0
 		stream.RelativeSeek(16) // format
 		const compression_method = stream.ReadUint32(),
@@ -256,28 +249,28 @@ class KVParser {
 				if (compression_dictionary_id !== 0)
 					throw "Unexpected compression_dictionary_id for compression_method 0"
 				if (compression_frame_size !== 0)
-					throw "Unexpected compression_dictionary_id for compression_method 0"
+					throw "Unexpected compression_frame_size for compression_method 0"
 				kv3_buf = stream.ReadSlice(compressed_size)
 				break
 			case 1:
 				if (compression_dictionary_id !== 0)
 					throw "Unexpected compression_dictionary_id for compression_method 1"
 				if (compression_frame_size !== 16 * 1024)
-					throw "Unexpected compression_dictionary_id for compression_method 1"
-				kv3_buf = DecompressLZ4(stream.ReadSlice(compressed_size), uncompressed_size)
+					throw "Unexpected compression_frame_size for compression_method 1"
+				kv3_buf = DecompressLZ4(stream, compressed_size, uncompressed_size)
 				break
 			case 2:
 				if (compression_dictionary_id !== 0)
 					throw "Unexpected compression_dictionary_id for compression_method 2"
 				if (compression_frame_size !== 0)
-					throw "Unexpected compression_dictionary_id for compression_method 2"
-				kv3_buf = DecompressZstd(stream.ReadSlice(compressed_size))
+					throw "Unexpected compression_frame_size for compression_method 2"
+				kv3_buf = DecompressZstd(stream, compressed_size)
 				break
 			default:
 				throw `Unknown KV3 compression method: ${compression_method}`
 		}
 		const orig_stream = stream
-		stream = new BinaryStream(new DataView(kv3_buf.buffer, kv3_buf.byteOffset, kv3_buf.byteLength))
+		stream = new ViewBinaryStream(new DataView(kv3_buf.buffer, kv3_buf.byteOffset, kv3_buf.byteLength))
 		stream.pos = Math.ceil(data_offset / 4) * 4
 		const string_count = stream.ReadUint32()
 		const kv_data_offset = stream.pos
@@ -306,23 +299,20 @@ class KVParser {
 				const needed = this.uncompressed_blocks_lengths.reduce((prev, cur) => prev + cur, 0)
 				if (remaining < needed)
 					throw "Failed uncompressed reading: remaining < needed"
-				this.uncompressed_blocks_stream = new BinaryStream(new DataView(
-					orig_stream.view.buffer,
-					orig_stream.view.byteOffset + orig_stream.pos,
-					needed,
-				))
+				this.uncompressed_blocks_stream = orig_stream.CreateNestedStream(needed)
 				break
 			}
 			case 1: {
 				const compressed_block_lengths: number[] = []
 				for (let i = 0; i < block_count; i++)
 					compressed_block_lengths.push(stream.ReadUint16())
-				const uncompressed_blocks = DecompressLZ4Chained(new Uint8Array(
-					orig_stream.view.buffer,
-					orig_stream.view.byteOffset + orig_stream.pos,
-					orig_stream.view.byteLength - orig_stream.pos,
-				), compressed_block_lengths, this.uncompressed_blocks_lengths)
-				this.uncompressed_blocks_stream = new BinaryStream(new DataView(
+				const uncompressed_blocks = DecompressLZ4Chained(
+					stream,
+					stream.Remaining,
+					compressed_block_lengths,
+					this.uncompressed_blocks_lengths,
+				)
+				this.uncompressed_blocks_stream = new ViewBinaryStream(new DataView(
 					uncompressed_blocks.buffer,
 					uncompressed_blocks.byteOffset,
 					uncompressed_blocks.byteLength,
@@ -330,11 +320,7 @@ class KVParser {
 				break
 			}
 			case 2:
-				this.uncompressed_blocks_stream = new BinaryStream(new DataView(
-					stream.view.buffer,
-					stream.view.byteOffset + stream.pos,
-					stream.view.byteLength - stream.pos,
-				))
+				this.uncompressed_blocks_stream = stream.CreateNestedStream(stream.Remaining)
 				break
 			default:
 				throw `Unknown KV3 compression method: ${compression_method}`
@@ -343,22 +329,19 @@ class KVParser {
 		stream.pos = kv_data_offset
 		return this.ParseBinaryKV3(stream)
 	}
-	public ParseVKV3(stream: BinaryStream): RecursiveMap {
-		// ReadSlice returns view to original buffer, but we need our own copy here, so we do .slice().buffer
-		const encoding = stream.ReadSlice(16).slice().buffer
+	public ParseVKV3(stream: ReadableBinaryStream): RecursiveMap {
+		const encoding = stream.ReadSlice(16).buffer
 		stream.RelativeSeek(16) // format
 		if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_BLOCK_COMPRESSED)) {
 			const slice = KVParser.BlockDecompress(stream)
-			stream = new BinaryStream(new DataView(slice.buffer, slice.byteOffset, slice.byteLength))
+			stream = new ViewBinaryStream(new DataView(slice.buffer, slice.byteOffset, slice.byteLength))
 		} else if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_BLOCK_LZ4)) {
-			const dst_len = stream.ReadUint32(),
-				compressed = stream.ReadSlice(stream.Remaining)
-			stream = new BinaryStream(new DataView(DecompressLZ4(compressed, dst_len).buffer))
-		} else if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_UNCOMPRESSED)) {
-			const slice = stream.ReadSlice(stream.Remaining)
-			stream = new BinaryStream(new DataView(slice.buffer, slice.byteOffset, slice.byteLength))
-		} else
-			throw `Unrecognised KV3 Encoding: ${encoding.toString()}`
+			const dst_len = stream.ReadUint32()
+			stream = new ViewBinaryStream(new DataView(DecompressLZ4(stream, stream.Remaining, dst_len).buffer))
+		} else if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_UNCOMPRESSED))
+			stream = stream.CreateNestedStream(stream.Remaining)
+		else
+			throw `Unrecognised KV3 Encoding: ${new Uint8Array(encoding).toString().toString()}`
 
 		for (let i = 0, end = stream.ReadUint32(); i < end; i++)
 			this.strings.push(stream.ReadNullTerminatedUtf8String())
@@ -366,7 +349,7 @@ class KVParser {
 		return this.ParseBinaryKV3(stream)
 	}
 
-	private ReadType(stream: BinaryStream): KVType {
+	private ReadType(stream: ReadableBinaryStream): KVType {
 		let databyte = this.types.length !== 0
 			? this.types[this.current_type_index++]
 			: stream.ReadUint8()
@@ -381,7 +364,7 @@ class KVParser {
 
 		return databyte
 	}
-	private ReadBinaryValue(stream: BinaryStream, datatype = this.ReadType(stream)): RecursiveMapValue {
+	private ReadBinaryValue(stream: ReadableBinaryStream, datatype = this.ReadType(stream)): RecursiveMapValue {
 		let current_pos = stream.pos
 		switch (datatype) {
 			case KVType.NULL:
@@ -448,9 +431,9 @@ class KVParser {
 			}
 			case KVType.BINARY_BLOB: {
 				if (this.uncompressed_blocks_stream !== undefined)
-					return this.uncompressed_blocks_stream.ReadSlice(
+					return this.uncompressed_blocks_stream.CreateNestedStream(
 						this.uncompressed_blocks_lengths[this.current_compressed_block++],
-					).slice()
+					)
 
 				const length = stream.ReadInt32()
 				current_pos += 4
@@ -458,7 +441,7 @@ class KVParser {
 					stream.pos = this.binary_bytes_offset
 					this.binary_bytes_offset += length
 				}
-				const val = stream.ReadSlice(length).slice()
+				const val = stream.CreateNestedStream(length)
 				if (this.binary_bytes_offset > -1)
 					stream.pos = current_pos
 				return val
@@ -489,7 +472,7 @@ class KVParser {
 				throw `Unknown KVType: ${datatype}`
 		}
 	}
-	private ParseBinaryKV3(stream: BinaryStream, parent?: RecursiveMap): RecursiveMap {
+	private ParseBinaryKV3(stream: ReadableBinaryStream, parent?: RecursiveMap): RecursiveMap {
 		if (parent === undefined) {
 			const val = this.ReadBinaryValue(stream)
 			if (val instanceof Map)
@@ -569,7 +552,7 @@ class ResourceIntrospectionManifest {
 	public ReferencedStructs: ResourceDiskStruct[] = []
 	public ReferencedEnums: ResourceDiskEnum[] = []
 
-	public Parse(stream: BinaryStream): ResourceIntrospectionManifest {
+	public Parse(stream: ReadableBinaryStream): ResourceIntrospectionManifest {
 		this.IntrospectionVersion = stream.ReadUint32()
 
 		this.ParseStructs(stream)
@@ -577,7 +560,7 @@ class ResourceIntrospectionManifest {
 		this.ParseEnums(stream)
 		return this
 	}
-	private ParseStructs(stream: BinaryStream): void {
+	private ParseStructs(stream: ReadableBinaryStream): void {
 		const entries_offset = stream.ReadUint32(),
 			entries_count = stream.ReadUint32()
 		if (entries_count === 0)
@@ -625,7 +608,7 @@ class ResourceIntrospectionManifest {
 			this.ReferencedStructs.push(disc_struct)
 		}
 	}
-	private ParseEnums(stream: BinaryStream): void {
+	private ParseEnums(stream: ReadableBinaryStream): void {
 		const entries_offset = stream.ReadUint32(),
 			entries_count = stream.ReadUint32()
 		if (entries_count === 0)
@@ -655,7 +638,7 @@ class ResourceIntrospectionManifest {
 class C_NTRO {
 	constructor(private resourceIntrospectionManifest: ResourceIntrospectionManifest) { }
 	public Parse(
-		stream: BinaryStream,
+		stream: ReadableBinaryStream,
 		external_refs: Map<bigint, string>,
 	): Nullable<RecursiveMap> {
 		if (this.resourceIntrospectionManifest.ReferencedStructs.length === 0)
@@ -667,7 +650,7 @@ class C_NTRO {
 		)
 	}
 	private ReadStructure(
-		stream: BinaryStream,
+		stream: ReadableBinaryStream,
 		struct: ResourceDiskStruct,
 		external_refs: Map<bigint, string>,
 		startingOffset = 0,
@@ -696,7 +679,7 @@ class C_NTRO {
 		return map
 	}
 	private ReadFieldIntrospection(
-		stream: BinaryStream,
+		stream: ReadableBinaryStream,
 		parent: RecursiveMap,
 		field: ResourceDiskStruct_Field,
 		external_refs: Map<bigint, string>,
@@ -744,14 +727,14 @@ class C_NTRO {
 		if (prev !== 0)
 			stream.pos = prev
 	}
-	private ReadFloatArray(stream: BinaryStream, len: number): RecursiveMap {
+	private ReadFloatArray(stream: ReadableBinaryStream, len: number): RecursiveMap {
 		const map: RecursiveMap = new Map()
 		for (let i = 0; i < len; i++)
 			map.set(i.toString(), stream.ReadFloat32())
 		return map
 	}
 	private ReadField(
-		stream: BinaryStream,
+		stream: ReadableBinaryStream,
 		field: ResourceDiskStruct_Field,
 		external_refs: Map<bigint, string>,
 	): RecursiveMapValue {
@@ -822,23 +805,18 @@ function FixupSoundEventScript(map: RecursiveMap): RecursiveMap {
 		const name = entry.get("m_SoundName"),
 			value = entry.get("m_OperatorsKV")
 		if (typeof name === "string" && typeof value === "string")
-			fixed_map.set(name, _parse(StringToUTF8(value.replace(/\r\n/g, "\n"))))
+			fixed_map.set(name, _parse(new ViewBinaryStream(new DataView(StringToUTF8(value.replace(/\r\n/g, "\n")).buffer))))
 	})
 	return fixed_map
 }
 
 function TryParseNTROResource(
-	DATA: Uint8Array,
-	NTRO: Uint8Array,
+	DATA: ReadableBinaryStream,
+	NTRO: ReadableBinaryStream,
 	external_refs: Map<bigint, string>,
 ): Nullable<RecursiveMap> {
-	const manifest = new ResourceIntrospectionManifest().Parse(
-		new BinaryStream(new DataView(NTRO.buffer, NTRO.byteOffset, NTRO.byteLength)),
-	)
-	const map = new C_NTRO(manifest).Parse(
-		new BinaryStream(new DataView(DATA.buffer, DATA.byteOffset, DATA.byteLength)),
-		external_refs,
-	)
+	const manifest = new ResourceIntrospectionManifest().Parse(NTRO)
+	const map = new C_NTRO(manifest).Parse(DATA, external_refs)
 	if (map === undefined)
 		return undefined
 	if (manifest.ReferencedStructs.length > 0)
@@ -852,9 +830,8 @@ function TryParseNTROResource(
 	return map
 }
 
-export function parseKVBlock(buf: Nullable<Uint8Array>): Nullable<RecursiveMap> {
-	if (buf !== undefined && buf.byteLength >= 4) {
-		const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
+export function parseKVBlock(stream: Nullable<ReadableBinaryStream>): Nullable<RecursiveMap> {
+	if (stream !== undefined && stream.Size >= 4)
 		switch (stream.ReadUint32()) {
 			case 0x03564B56: // VKV\x03
 				return new KVParser().ParseVKV3(stream)
@@ -862,18 +839,21 @@ export function parseKVBlock(buf: Nullable<Uint8Array>): Nullable<RecursiveMap> 
 				return new KVParser().ReadVersion3(stream)
 			case 0x4B563301: // KV3\x01
 				return new KVParser().ReadVersion2(stream)
+			default:
+				break
 		}
-	}
 	return undefined
 }
 
-export function parseKV(buf: Uint8Array, block: string | number = "DATA"): RecursiveMap {
-	const layout = ParseResourceLayout(buf)
+export function parseKV(buf: ReadableBinaryStream, block: string | number = "DATA"): RecursiveMap {
+	const layout = ParseResourceLayout(buf),
+		starting_pos = buf.pos
 	if (layout !== undefined) {
 		const DATA = typeof block === "string" ? layout[0].get(block) : layout[1][block]
 		const parsed_DATA = parseKVBlock(DATA)
 		if (parsed_DATA !== undefined)
 			return parsed_DATA
+		buf.pos = starting_pos
 
 		const NTRO = layout[0].get("NTRO")
 		if (DATA !== undefined && NTRO !== undefined) {
@@ -885,13 +865,22 @@ export function parseKV(buf: Uint8Array, block: string | number = "DATA"): Recur
 			if (res !== undefined)
 				return res
 		}
+		buf.pos = starting_pos
+
 		if (DATA !== undefined)
 			return _parse(DATA)
+		buf.pos = starting_pos
 	}
 	return _parse(buf)
 }
 
 export function parseKVFile(path: string): RecursiveMap {
-	const buf = fread(path)
-	return buf !== undefined ? parseKV(buf) : new Map()
+	const buf = fopen(path)
+	if (buf === undefined)
+		return new Map()
+	try {
+		return parseKV(new FileBinaryStream(buf))
+	} finally {
+		buf.close()
+	}
 }

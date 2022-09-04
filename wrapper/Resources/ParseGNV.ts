@@ -3,7 +3,6 @@ import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { GridNavCellFlags } from "../Enums/GridNavCellFlags"
 import Tree from "../Objects/Base/Tree"
-import BinaryStream from "../Utils/BinaryStream"
 
 class CGridNav {
 	public readonly Max: Vector2
@@ -69,13 +68,8 @@ class CGridNav {
 }
 export let GridNav: Nullable<CGridNav>
 
-export function ParseGNV(buf: Uint8Array): void {
+export function ParseGNV(stream: ReadableBinaryStream): void {
 	try {
-		const stream = new BinaryStream(new DataView(
-			buf.buffer,
-			buf.byteOffset,
-			buf.byteLength,
-		))
 		{
 			const magic = stream.ReadUint32()
 			if (magic !== 0xFADEBEAD) // gnv magic
@@ -93,7 +87,7 @@ export function ParseGNV(buf: Uint8Array): void {
 			new Vector2(offsetX, offsetY),
 			new Vector2(width, height),
 			new Vector2(minX, minY),
-			stream.ReadSlice(width * height).slice(),
+			stream.ReadSlice(width * height),
 		)
 	} catch (e) {
 		console.error("Error in GridNav init", e)

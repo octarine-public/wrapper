@@ -1,9 +1,9 @@
 import { DAMAGE_TYPES } from "../Enums/DAMAGE_TYPES"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import { ParseResourceLayout } from "../Resources/ParseResource"
-import { Utf16ArrayToStr, Utf8ArrayToStr } from "./ArrayBufferUtils"
-import BinaryStream from "./BinaryStream"
+import FileBinaryStream from "./FileBinaryStream"
 import readFile from "./readFile"
+import ViewBinaryStream from "./ViewBinaryStream"
 
 export const DamageIgnoreBuffs = [
 	[], // DAMAGE_TYPES.DAMAGE_TYPE_NONE = 0
@@ -102,9 +102,9 @@ export function MapToObject(map: Map<any, any>): any {
 	return obj
 }
 
-export function ParseExternalReferences(buf: Uint8Array, recursive = false): Map<bigint, string> {
+export function ParseExternalReferences(stream: ReadableBinaryStream, recursive = false): Map<bigint, string> {
 	const map = new Map<bigint, string>()
-	const layout = ParseResourceLayout(buf)
+	const layout = ParseResourceLayout(stream)
 	if (layout === undefined)
 		return map
 
@@ -112,33 +112,32 @@ export function ParseExternalReferences(buf: Uint8Array, recursive = false): Map
 	if (RERL === undefined)
 		return map
 
-	const stream = new BinaryStream(new DataView(
-		RERL.buffer,
-		RERL.byteOffset,
-		RERL.byteLength,
-	))
-	const data_offset = stream.ReadUint32(),
-		size = stream.ReadUint32()
+	const data_offset = RERL.ReadUint32(),
+		size = RERL.ReadUint32()
 	if (size === 0)
 		return map
 
-	stream.pos += data_offset - 8 // offset from offset
+	RERL.pos += data_offset - 8 // offset from offset
 	for (let i = 0; i < size; i++) {
-		const id = stream.ReadUint64()
-		const offset = Number(stream.ReadUint64()),
-			prev = stream.pos
-		stream.pos += offset - 8
-		const str = `${stream.ReadNullTerminatedUtf8String()}_c`
+		const id = RERL.ReadUint64()
+		const offset = Number(RERL.ReadUint64()),
+			prev = RERL.pos
+		RERL.pos += offset - 8
+		const str = `${RERL.ReadNullTerminatedUtf8String()}_c`
 		if (fexists(str))
 			map.set(id, str)
-		stream.pos = prev
+		RERL.pos = prev
 	}
 	if (recursive) {
 		[...map.values()].forEach(path => {
-			const read = fread(path)
+			const read = fopen(path)
 			if (read !== undefined)
-				ParseExternalReferences(read)
-					.forEach((val, key) => map.set(key, val))
+				try {
+					ParseExternalReferences(new FileBinaryStream(read))
+						.forEach((val, key) => map.set(key, val))
+				} finally {
+					read.close()
+				}
 		})
 	}
 	return map
@@ -159,14 +158,18 @@ export function readJSON(path: string): any {
 	const buf = readFile(path, 1)
 	if (buf === undefined)
 		throw `Failed to read JSON file at path ${path}`
+	const stream = new FileBinaryStream(buf)
 	try {
-		return JSON.parse(Utf16ArrayToStr(new Uint16Array(buf.buffer, buf.byteOffset, buf.byteLength / 2)))
+		return JSON.parse(stream.ReadUtf16String(stream.Remaining))
 	} catch {
 		try {
-			return JSON.parse(Utf8ArrayToStr(buf))
+			stream.pos = 0
+			return JSON.parse(stream.ReadUtf8String(stream.Remaining))
 		} catch {
 			throw `invalid JSON at path ${path}`
 		}
+	} finally {
+		buf.close()
 	}
 }
 
@@ -225,9 +228,9 @@ export function createMapFromMergedIterators<K, V>(...iters: IterableIterator<[K
 
 export async function MakeSTRATZRequestWrapper(req: string): Promise<any> {
 	const res = await MakeSTRATZRequest(req)
-	const stream = new BinaryStream(new DataView(res))
+	const stream = new ViewBinaryStream(new DataView(res))
 	const status = stream.ReadUint32()
-	const str = Utf8ArrayToStr(stream.ReadSlice(stream.Remaining))
+	const str = stream.ReadUtf8String(stream.Remaining)
 	if (status !== 200)
 		throw `Got status code ${status}, ${str}`
 	const json = JSON.parse(str)
