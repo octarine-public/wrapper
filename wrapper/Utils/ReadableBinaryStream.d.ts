@@ -33,5 +33,5 @@ declare interface ReadableBinaryStream {
 	ReadOffsetString(): string
 	ReadVarString(): string
 	Empty(): boolean
-	CreateNestedStream(size: number): ReadableBinaryStream
+	CreateNestedStream(size: number, detectEncoding?: boolean): ReadableBinaryStream
 }

@@ -292,12 +292,12 @@ export default class ViewBinaryStream implements ReadableBinaryStream {
 	public Empty(): boolean {
 		return this.pos >= this.view.byteLength
 	}
-	public CreateNestedStream(size: number): ViewBinaryStream {
+	public CreateNestedStream(size: number, detectEncoding = false): ViewBinaryStream {
 		const res = new ViewBinaryStream(new DataView(
 			this.view.buffer,
 			this.view.byteOffset + this.pos,
 			size,
-		))
+		), 0, detectEncoding)
 		this.pos += size
 		return res
 	}

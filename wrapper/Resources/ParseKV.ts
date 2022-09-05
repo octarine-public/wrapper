@@ -800,7 +800,11 @@ function FixupSoundEventScript(map: RecursiveMap): RecursiveMap {
 		const name = entry.get("m_SoundName"),
 			value = entry.get("m_OperatorsKV")
 		if (typeof name === "string" && typeof value === "string")
-			fixed_map.set(name, _parse(new ViewBinaryStream(new DataView(StringToUTF8(value.replace(/\r\n/g, "\n")).buffer))))
+			fixed_map.set(name, _parse(new ViewBinaryStream(
+				new DataView(StringToUTF8(value.replace(/\r\n/g, "\n")).buffer),
+				0,
+				true,
+			)))
 	})
 	return fixed_map
 }
@@ -863,10 +867,10 @@ export function parseKV(buf: ReadableBinaryStream, block: string | number = "DAT
 		buf.pos = starting_pos
 
 		if (DATA !== undefined)
-			return _parse(DATA)
+			return _parse(DATA.CreateNestedStream(DATA.Remaining, true))
 		buf.pos = starting_pos
 	}
-	return _parse(buf)
+	return _parse(buf.CreateNestedStream(buf.Remaining, true))
 }
 
 export function parseKVFile(path: string): RecursiveMap {

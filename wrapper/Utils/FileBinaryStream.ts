@@ -261,8 +261,14 @@ export default class FileBinaryStream implements ReadableBinaryStream {
 	public Empty(): boolean {
 		return this.pos >= this.size
 	}
-	public CreateNestedStream(size: number): FileBinaryStream {
-		const res = new FileBinaryStream(this.fileStream, 0, false, Math.min(this.Remaining, size), this.pos)
+	public CreateNestedStream(size: number, detectEncoding = false): FileBinaryStream {
+		const res = new FileBinaryStream(
+			this.fileStream,
+			0,
+			detectEncoding,
+			Math.min(this.Remaining, size),
+			this.pos,
+		)
 		this.pos += size
 		return res
 	}
