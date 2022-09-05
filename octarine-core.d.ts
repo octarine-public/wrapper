@@ -19,6 +19,11 @@ interface WorkerOptions {
 	forward_events?: boolean // forward events [except several user-driven ones and /ServerMessages] to worker
 	forward_server_messages?: boolean // forward ServerMessage events, only works with forward_events
 	display_name?: string // display name in CDT
+	/**
+	 * if specified and not empty - absolute path of a singular entry point of the worker
+	 * i.e. github.com/octarine-public/wrapper/wrapper/Imports
+	 */
+	entry_point?: string
 }
 
 /// GLOBAL OBJECTS

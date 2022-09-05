@@ -475,7 +475,10 @@ export async function ReloadGlobalAbilityStorage() {
 					Object.assign(new AbilityData(key as string, empty_map), val),
 				))
 				resolve(target_map)
-			}, () => resolve(target_map))
+			}, err => {
+				console.error(err)
+				resolve(target_map)
+			})
 	})
 }
 

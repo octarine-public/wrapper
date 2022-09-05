@@ -150,6 +150,7 @@ export default new (class Workers {
 				forward_events: opts.forward_events,
 				forward_server_messages: opts.forward_events && opts.forward_server_messages,
 				display_name: opts.display_name ?? `Wrapper RPC Worker #${this.workers.length + 1}`,
+				entry_point: opts.entry_point ?? "github.com/octarine-public/wrapper/wrapper/Imports",
 			}
 			const ar: WorkerType = [
 				SpawnWorker(fixed_opts),
