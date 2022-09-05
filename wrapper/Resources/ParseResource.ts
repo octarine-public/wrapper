@@ -1,6 +1,8 @@
 // https://github.com/SteamDatabase/ValveResourceFormat/blob/cdc150c810e124d6dfc4ec8911852a0278210835/ValveResourceFormat/Resource/Resource.cs#L161
-export function ParseResourceLayout(stream: ReadableBinaryStream): Nullable<[Map<string, ReadableBinaryStream>, ReadableBinaryStream[]]> {
-	const starting_pos = stream.pos
+export function ParseResourceLayout(stream_: ReadableBinaryStream): Nullable<[Map<string, ReadableBinaryStream>, ReadableBinaryStream[]]> {
+	const starting_pos = stream_.pos,
+		stream = stream_.CreateNestedStream(stream_.Remaining)
+	stream_.pos = starting_pos
 	{
 		const file_size = stream.ReadUint32()
 		if (
@@ -38,6 +40,5 @@ export function ParseResourceLayout(stream: ReadableBinaryStream): Nullable<[Map
 		map.set(type, block)
 		blocks.push(block)
 	}
-	stream.pos = starting_pos
 	return [map, blocks]
 }
