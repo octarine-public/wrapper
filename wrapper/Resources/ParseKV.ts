@@ -145,10 +145,10 @@ class KVParser {
 	private static readonly KV3_ENCODING_BINARY_BLOCK_COMPRESSED = new Uint8Array([0x46, 0x1A, 0x79, 0x95, 0xBC, 0x95, 0x6C, 0x4F, 0xA7, 0x0B, 0x05, 0xBC, 0xA1, 0xB7, 0xDF, 0xD2]).buffer
 	private static readonly KV3_ENCODING_BINARY_UNCOMPRESSED = new Uint8Array([0x00, 0x05, 0x86, 0x1B, 0xD8, 0xF7, 0xC1, 0x40, 0xAD, 0x82, 0x75, 0xA4, 0x82, 0x67, 0xE7, 0x14]).buffer
 	private static readonly KV3_ENCODING_BINARY_BLOCK_LZ4 = new Uint8Array([0x8A, 0x34, 0x47, 0x68, 0xA1, 0x63, 0x5C, 0x4F, 0xA1, 0x97, 0x53, 0x80, 0x6F, 0xD9, 0xB1, 0x19]).buffer
-	private static BlockDecompress(stream: ReadableBinaryStream): Uint8Array {
+	private static BlockDecompress(stream: ReadableBinaryStream): ReadableBinaryStream {
 		const flags = stream.ReadSlice(4)
 		if (HasBit(flags[3], 7))
-			return stream.ReadSlice(stream.Remaining)
+			return stream.CreateNestedStream(stream.Remaining)
 		const out = new Uint8Array((flags[2] << 16) + (flags[1] << 8) + flags[0])
 		let out_pos = 0
 		while (!stream.Empty() && out_pos < out.byteLength) {
@@ -176,7 +176,7 @@ class KVParser {
 					break
 			}
 		}
-		return out
+		return new ViewBinaryStream(new DataView(out.buffer))
 	}
 	// private static readonly KV3_FORMAT_GENERIC = new Uint8Array([0x7C, 0x16, 0x12, 0x74, 0xE9, 0x06, 0x98, 0x46, 0xAF, 0xF2, 0xE6, 0x3E, 0xB5, 0x90, 0x37, 0xE7]).buffer
 
@@ -196,20 +196,18 @@ class KVParser {
 			data_offset = stream.ReadUint32(),
 			count_32bit = stream.ReadUint32()
 		this.count_64bit = stream.ReadUint32()
-		let kv3_buf: Uint8Array
 		switch (compression_method) {
 			case 0:
-				kv3_buf = stream.ReadSlice(stream.ReadUint32())
+				stream = stream.CreateNestedStream(stream.ReadUint32())
 				break
 			case 1: {
 				const dst_len = stream.ReadUint32()
-				kv3_buf = DecompressLZ4(stream, stream.Remaining, dst_len)
+				stream = new ViewBinaryStream(new DataView(DecompressLZ4(stream, stream.Remaining, dst_len).buffer))
 				break
 			}
 			default:
 				throw `Unknown KV2 compression method: ${compression_method}`
 		}
-		stream = new ViewBinaryStream(new DataView(kv3_buf.buffer, kv3_buf.byteOffset, kv3_buf.byteLength))
 		stream.pos = Math.ceil(data_offset / 4) * 4
 		const string_count = stream.ReadUint32()
 		const kv_data_offset = stream.pos
@@ -243,34 +241,32 @@ class KVParser {
 			compressed_size = stream.ReadUint32(),
 			block_count = stream.ReadUint32()
 		stream.RelativeSeek(4) // block_total_size
-		let kv3_buf: Uint8Array
+		const orig_stream = stream
 		switch (compression_method) {
 			case 0:
 				if (compression_dictionary_id !== 0)
 					throw "Unexpected compression_dictionary_id for compression_method 0"
 				if (compression_frame_size !== 0)
 					throw "Unexpected compression_frame_size for compression_method 0"
-				kv3_buf = stream.ReadSlice(compressed_size)
+				stream = stream.CreateNestedStream(compressed_size)
 				break
 			case 1:
 				if (compression_dictionary_id !== 0)
 					throw "Unexpected compression_dictionary_id for compression_method 1"
 				if (compression_frame_size !== 16 * 1024)
 					throw "Unexpected compression_frame_size for compression_method 1"
-				kv3_buf = DecompressLZ4(stream, compressed_size, uncompressed_size)
+				stream = new ViewBinaryStream(new DataView(DecompressLZ4(stream, compressed_size, uncompressed_size).buffer))
 				break
 			case 2:
 				if (compression_dictionary_id !== 0)
 					throw "Unexpected compression_dictionary_id for compression_method 2"
 				if (compression_frame_size !== 0)
 					throw "Unexpected compression_frame_size for compression_method 2"
-				kv3_buf = DecompressZstd(stream, compressed_size)
+				stream = new ViewBinaryStream(new DataView(DecompressZstd(stream, compressed_size).buffer))
 				break
 			default:
 				throw `Unknown KV3 compression method: ${compression_method}`
 		}
-		const orig_stream = stream
-		stream = new ViewBinaryStream(new DataView(kv3_buf.buffer, kv3_buf.byteOffset, kv3_buf.byteLength))
 		stream.pos = Math.ceil(data_offset / 4) * 4
 		const string_count = stream.ReadUint32()
 		const kv_data_offset = stream.pos
@@ -307,8 +303,8 @@ class KVParser {
 				for (let i = 0; i < block_count; i++)
 					compressed_block_lengths.push(stream.ReadUint16())
 				const uncompressed_blocks = DecompressLZ4Chained(
-					stream,
-					stream.Remaining,
+					orig_stream,
+					orig_stream.Remaining,
 					compressed_block_lengths,
 					this.uncompressed_blocks_lengths,
 				)
@@ -332,10 +328,9 @@ class KVParser {
 	public ParseVKV3(stream: ReadableBinaryStream): RecursiveMap {
 		const encoding = stream.ReadSlice(16).buffer
 		stream.RelativeSeek(16) // format
-		if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_BLOCK_COMPRESSED)) {
-			const slice = KVParser.BlockDecompress(stream)
-			stream = new ViewBinaryStream(new DataView(slice.buffer, slice.byteOffset, slice.byteLength))
-		} else if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_BLOCK_LZ4)) {
+		if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_BLOCK_COMPRESSED))
+			stream = KVParser.BlockDecompress(stream)
+		else if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_BLOCK_LZ4)) {
 			const dst_len = stream.ReadUint32()
 			stream = new ViewBinaryStream(new DataView(DecompressLZ4(stream, stream.Remaining, dst_len).buffer))
 		} else if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_UNCOMPRESSED))
