@@ -19,6 +19,7 @@ export class CModel {
 	public readonly Skeletons: CSkeleton[] = []
 	public readonly MinBounds = new Vector3()
 	public readonly MaxBounds = new Vector3()
+	public readonly FilesOpen: FileStream[] = []
 	constructor(stream: ReadableBinaryStream) {
 		const layout = ParseResourceLayout(stream)
 		if (layout === undefined)
@@ -123,12 +124,10 @@ export class CModel {
 				if (!mesh_path.endsWith("_c"))
 					mesh_path += "_c"
 				const buf = fopen(mesh_path)
-				if (buf !== undefined)
-					try {
-						this.Meshes.push(ParseMesh(new FileBinaryStream(buf)))
-					} finally {
-						buf.close()
-					}
+				if (buf !== undefined) {
+					this.FilesOpen.push(buf)
+					this.Meshes.push(ParseMesh(new FileBinaryStream(buf)))
+				}
 			})
 	}
 	private LoadEmbeddedMeshes(kv: RecursiveMap, blocks: ReadableBinaryStream[]): void {

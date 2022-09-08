@@ -88,55 +88,59 @@ export function ComputeAttachmentsAndBounds(model_name: string): [ComputedAttach
 	} finally {
 		buf.close()
 	}
-	const mesh = model.Meshes[0]
-	if (mesh === undefined)
-		return [ar, new Vector3(), new Vector3()]
-	const skeleton = model.Skeletons[0]
-	if (skeleton === undefined)
-		return [ar, model.MinBounds, model.MaxBounds]
-	model.Animations.forEach(anim => {
-		if (
-			(anim.Activities.length === 0 && anim.Movements.length === 0)
-			|| anim.Name.includes("showcase") // workaround for radiant towers
-		)
-			return
-		const attachments = new Map<string, ComputedAttachment>()
-		mesh.Attachments.forEach(mesh_attachment => attachments.set(
-			mesh_attachment.Name,
-			new ComputedAttachment(
-				anim.FPS,
-				anim.FrameCount,
-			),
-		))
-		for (let i = 0; i < anim.FrameCount; i++) {
-			const frame = anim.ReadFrame(i)
-			attachments.forEach((attachment, name) => ComputeAttachmentPosition(
-				skeleton,
-				mesh.Attachments.get(name)!,
-				attachment,
-				i,
-				frame,
-			))
-		}
-		const activity2weight = new Map(anim.Activities.map(activity => [activity.Name, activity.Weight]))
-		if (anim.Movements.length !== 0 && !activity2weight.has("ACT_DOTA_RUN"))
-			activity2weight.set("ACT_DOTA_RUN", Number.EPSILON)
-		ar.push([activity2weight, attachments])
-	})
-	if (!ar.some(el => el[0].has("ACT_DOTA_CONSTANT_LAYER"))) {
-		const empty_attachments = new Map<string, ComputedAttachment>()
-		mesh.Attachments.forEach(mesh_attachment => {
-			const attachment = new ComputedAttachment(1, 1)
-			ComputeAttachmentPosition(
-				skeleton,
-				mesh_attachment,
-				attachment,
+	try {
+		const mesh = model.Meshes[0]
+		if (mesh === undefined)
+			return [ar, new Vector3(), new Vector3()]
+		const skeleton = model.Skeletons[0]
+		if (skeleton === undefined)
+			return [ar, model.MinBounds, model.MaxBounds]
+		model.Animations.forEach(anim => {
+			if (
+				(anim.Activities.length === 0 && anim.Movements.length === 0)
+				|| anim.Name.includes("showcase") // workaround for radiant towers
 			)
-			empty_attachments.set(mesh_attachment.Name, attachment)
+				return
+			const attachments = new Map<string, ComputedAttachment>()
+			mesh.Attachments.forEach(mesh_attachment => attachments.set(
+				mesh_attachment.Name,
+				new ComputedAttachment(
+					anim.FPS,
+					anim.FrameCount,
+				),
+			))
+			for (let i = 0; i < anim.FrameCount; i++) {
+				const frame = anim.ReadFrame(i)
+				attachments.forEach((attachment, name) => ComputeAttachmentPosition(
+					skeleton,
+					mesh.Attachments.get(name)!,
+					attachment,
+					i,
+					frame,
+				))
+			}
+			const activity2weight = new Map(anim.Activities.map(activity => [activity.Name, activity.Weight]))
+			if (anim.Movements.length !== 0 && !activity2weight.has("ACT_DOTA_RUN"))
+				activity2weight.set("ACT_DOTA_RUN", Number.EPSILON)
+			ar.push([activity2weight, attachments])
 		})
-		ar.push([new Map([["ACT_DOTA_CONSTANT_LAYER", 1]]), empty_attachments])
+		if (!ar.some(el => el[0].has("ACT_DOTA_CONSTANT_LAYER"))) {
+			const empty_attachments = new Map<string, ComputedAttachment>()
+			mesh.Attachments.forEach(mesh_attachment => {
+				const attachment = new ComputedAttachment(1, 1)
+				ComputeAttachmentPosition(
+					skeleton,
+					mesh_attachment,
+					attachment,
+				)
+				empty_attachments.set(mesh_attachment.Name, attachment)
+			})
+			ar.push([new Map([["ACT_DOTA_CONSTANT_LAYER", 1]]), empty_attachments])
+		}
+		return [ar, model.MinBounds, model.MaxBounds]
+	} finally {
+		model.FilesOpen.forEach(file => file.close())
 	}
-	return [ar, model.MinBounds, model.MaxBounds]
 }
 
 Workers.RegisterRPCEndPoint("ComputeAttachmentsAndBounds", data => {

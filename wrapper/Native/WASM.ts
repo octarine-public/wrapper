@@ -675,27 +675,27 @@ export function ResetWorld(): void {
 
 export function LoadWorldMesh(
 	id: number,
-	vertexBuffer: Uint8Array,
+	vertexBuffer: ReadableBinaryStream,
 	vertexSize: number,
-	indexBuffer: Uint8Array,
+	indexBuffer: ReadableBinaryStream,
 	indexSize: number,
 	flags: number,
 	path_id: number,
 ): void {
-	const vertex_addr = wasm.malloc(vertexBuffer.byteLength)
+	const vertex_addr = wasm.malloc(vertexBuffer.Size)
 	if (vertex_addr === 0)
 		throw "Memory allocation for LoadWorldMesh vertexBuffer raw data failed"
-	new Uint8Array(wasm.memory.buffer, vertex_addr, vertexBuffer.byteLength).set(vertexBuffer)
+	vertexBuffer.ReadSliceTo(new Uint8Array(wasm.memory.buffer, vertex_addr, vertexBuffer.Size))
 
-	const index_addr = wasm.malloc(indexBuffer.byteLength)
+	const index_addr = wasm.malloc(indexBuffer.Size)
 	if (index_addr === 0)
 		throw "Memory allocation for LoadWorldMesh indexBuffer raw data failed"
-	new Uint8Array(wasm.memory.buffer, index_addr, indexBuffer.byteLength).set(indexBuffer)
+	indexBuffer.ReadSliceTo(new Uint8Array(wasm.memory.buffer, index_addr, indexBuffer.Size))
 
 	wasm.LoadWorldMesh(
 		id,
-		vertex_addr, vertexBuffer.byteLength, vertexSize,
-		index_addr, indexBuffer.byteLength, indexSize,
+		vertex_addr, vertexBuffer.Size, vertexSize,
+		index_addr, indexBuffer.Size, indexSize,
 		flags,
 		path_id,
 	)

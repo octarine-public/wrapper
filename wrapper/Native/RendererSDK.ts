@@ -1010,36 +1010,41 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 		const buf = fopen(`${path}_c`)
 		if (buf === undefined)
 			continue
-		let draw_calls: CMeshDrawCall[] = []
+		let filesOpen: FileStream[] = []
 		try {
+			let draw_calls: CMeshDrawCall[] = []
 			if (path.endsWith(".vmdl")) {
 				const model = ParseModel(new FileBinaryStream(buf))
 				const mesh = model.Meshes[0]
-				if (mesh !== undefined)
+				if (mesh !== undefined) {
 					draw_calls = mesh.DrawCalls
+					filesOpen = model.FilesOpen
+				} else
+					model.FilesOpen.forEach(file => file.close())
 			} else if (path.endsWith(".vmesh"))
 				draw_calls = ParseMesh(new FileBinaryStream(buf)).DrawCalls
 			else
 				throw `Invalid path ${path}`
+			const path_meshes: number[] = []
+			path2meshes.set(path, path_meshes)
+			const path_id = paths.length
+			paths.push(path)
+			for (const draw_call of draw_calls) {
+				const mesh_id = next_mesh_id++
+				WASM.LoadWorldMesh(
+					mesh_id,
+					draw_call.VertexBuffer.Data,
+					draw_call.VertexBuffer.ElementSize,
+					draw_call.IndexBuffer.Data,
+					draw_call.IndexBuffer.ElementSize,
+					draw_call.Flags,
+					path_id,
+				)
+				path_meshes.push(mesh_id)
+			}
 		} finally {
+			filesOpen.forEach(file => file.close())
 			buf.close()
-		}
-		const path_meshes: number[] = []
-		path2meshes.set(path, path_meshes)
-		const path_id = paths.length
-		paths.push(path)
-		for (const draw_call of draw_calls) {
-			const mesh_id = next_mesh_id++
-			WASM.LoadWorldMesh(
-				mesh_id,
-				draw_call.VertexBuffer.Data,
-				draw_call.VertexBuffer.ElementSize,
-				draw_call.IndexBuffer.Data,
-				draw_call.IndexBuffer.ElementSize,
-				draw_call.Flags,
-				path_id,
-			)
-			path_meshes.push(mesh_id)
 		}
 	}
 	objects.forEach(([path, transform]) => {
@@ -1049,15 +1054,15 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 				WASM.SpawnWorldMesh(mesh, transform)
 	})
 	{
-		const VB = new Uint8Array(new Float32Array([
+		const VB = new ViewBinaryStream(new DataView(new Float32Array([
 			-100000, -100000, -16384,
 			100000, -100000, -16384,
 			-100000, 100000, -16384,
 			100000, 100000, -16384,
-		]).buffer)
-		const IB = new Uint8Array([
+		]).buffer))
+		const IB = new ViewBinaryStream(new DataView(new Uint8Array([
 			0, 1, 2, 1, 2, 3,
-		])
+		]).buffer))
 		const plate_mesh_id = next_mesh_id++
 		WASM.LoadWorldMesh(
 			plate_mesh_id,

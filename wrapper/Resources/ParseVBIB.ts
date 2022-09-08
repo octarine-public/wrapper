@@ -22,23 +22,26 @@ export class VBIBLayoutField {
 }
 
 export class VBIBBufferData {
+	private CheckedData = false
 	constructor(
 		public readonly ElementCount: number,
 		public readonly ElementSize: number,
 		public readonly InputLayout: VBIBLayoutField[],
-		private Data_: ReadableBinaryStream | Uint8Array,
+		private Data_: ReadableBinaryStream,
 		private readonly IsVertexBuffer: boolean,
 	) { }
 
 	public get Data() {
-		if (this.Data_ instanceof Uint8Array)
+		if (this.CheckedData)
 			return this.Data_
-		if (this.ElementCount * this.ElementSize !== this.Data_.Size)
-			this.Data_ = this.IsVertexBuffer
-				? DecompressVertexBuffer(this.Data_, this.ElementCount, this.ElementSize)
-				: DecompressIndexBuffer(this.Data_, this.ElementCount, this.ElementSize)
-		else
-			this.Data_ = this.Data_.ReadSlice(this.Data_.Size)
+		if (this.ElementCount * this.ElementSize !== this.Data_.Size) {
+			this.Data_ = new ViewBinaryStream(new DataView(
+				this.IsVertexBuffer
+					? DecompressVertexBuffer(this.Data_, this.ElementCount, this.ElementSize).buffer
+					: DecompressIndexBuffer(this.Data_, this.ElementCount, this.ElementSize).buffer,
+			))
+		}
+		this.CheckedData = true
 		return this.Data_
 	}
 }

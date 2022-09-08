@@ -209,7 +209,7 @@ declare function SpawnWorker(options: WorkerOptions): bigint
  */
 declare function DespawnWorker(worker_uid: bigint): void
 /**
- * @param worker_uid could be 0 for parent or already spawned worker_uid returned from SpawnWorker
+ * @param worker_uid could be 0n for parent or already spawned worker_uid returned from SpawnWorker
  * @throws on wrong/self worker_uid
  */
 declare function SendIPCMessage(worker_uid: bigint, name: string, msg: WorkerIPCType): void

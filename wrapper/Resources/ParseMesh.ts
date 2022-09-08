@@ -169,11 +169,11 @@ export class CMesh {
 				indexBufferOffset += GetMapNumberProperty(drawCall, "m_nStartIndex") * indexBuffer.ElementSize
 				const vertexCount = Math.min(
 					GetMapNumberProperty(drawCall, "m_nVertexCount"),
-					Math.floor((vertexBuffer.Data.byteLength - vertexBufferOffset) / vertexBuffer.ElementSize),
+					Math.floor((vertexBuffer.Data.Size - vertexBufferOffset) / vertexBuffer.ElementSize),
 				)
 				const indexCount = Math.min(
 					GetMapNumberProperty(drawCall, "m_nIndexCount"),
-					Math.floor((indexBuffer.Data.byteLength - indexBufferOffset) / indexBuffer.ElementSize),
+					Math.floor((indexBuffer.Data.Size - indexBufferOffset) / indexBuffer.ElementSize),
 				)
 				let materialPath = GetMapStringProperty(drawCall, "m_material")
 				if (materialPath === "")
@@ -188,25 +188,21 @@ export class CMesh {
 					} finally {
 						materialBuf.close()
 					}
+				vertexBuffer.Data.pos = vertexBufferOffset
+				indexBuffer.Data.pos = indexBufferOffset
 				this.DrawCalls.push(new CMeshDrawCall(
 					new VBIBBufferData(
 						vertexCount,
 						vertexBuffer.ElementSize,
 						vertexBuffer.InputLayout,
-						vertexBuffer.Data.subarray(
-							vertexBufferOffset,
-							vertexBufferOffset + (vertexCount * vertexBuffer.ElementSize),
-						),
+						vertexBuffer.Data.CreateNestedStream(vertexCount * vertexBuffer.ElementSize),
 						true,
 					),
 					new VBIBBufferData(
 						indexCount,
 						indexBuffer.ElementSize,
 						indexBuffer.InputLayout,
-						indexBuffer.Data.subarray(
-							indexBufferOffset,
-							indexBufferOffset + (indexCount * indexBuffer.ElementSize),
-						),
+						indexBuffer.Data.CreateNestedStream(indexCount * indexBuffer.ElementSize),
 						false,
 					),
 					material?.Flags ?? 0,
