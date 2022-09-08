@@ -187,6 +187,8 @@ char* ParseVTexInternal(
 	bool hemi_oct,
 	bool hemi_oct_RB
 ) {
+	if (data_size < sizeof(VTexHeader))
+		return nullptr;
 	auto vtex_header = (VTexHeader*)data;
 	auto image_size = data_size - ((uint64_t)image_data - (uint64_t)data);
 	w = vtex_header->width;

@@ -418,15 +418,14 @@ export function ParseImage(stream: ReadableBinaryStream): [Uint8Array, Vector2] 
 		))
 	}
 
-	const data_size = stream.Remaining,
-		offset = data_block.Offset - stream.Offset
-	let addr = wasm.malloc(data_size - data_block.Offset)
-	stream.pos += offset
-	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, data_size - data_block.Offset))
+	stream.pos += data_block.Offset - stream.Offset
+	const data_size = stream.Remaining
+	let addr = wasm.malloc(data_size)
+	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, data_size))
 
 	addr = wasm.ParseVTex(
 		addr,
-		data_size, // TODO: this is really incorrect
+		data_size,
 		addr + data_block.Size,
 		is_YCoCg,
 		normalize,
