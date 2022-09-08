@@ -267,7 +267,7 @@ export default class FileBinaryStream implements ReadableBinaryStream {
 			0,
 			detectEncoding,
 			Math.min(this.Remaining, size),
-			this.pos,
+			this.offset + this.pos,
 		)
 		this.pos += size
 		return res
