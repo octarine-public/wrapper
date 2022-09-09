@@ -165,8 +165,6 @@ declare function setFireEvent(
 ): void
 declare function require(absolute_path: string): any
 declare function hrtime(): number
-declare function AddSearchPath(path: string | bigint): void
-declare function RemoveSearchPath(path: string | bigint): void
 declare function SetTreeModel(model_name: string, scale: number): void
 declare function EmitStartSoundEvent( // pass location: Vector2 at IOBuffer offset 0
 	soundevent_hash: number,
@@ -214,7 +212,6 @@ declare function DespawnWorker(worker_uid: bigint): void
  */
 declare function SendIPCMessage(worker_uid: bigint, name: string, msg: WorkerIPCType): void
 declare function WriteUserCmd(): void
-declare function MakeSTRATZRequest(req: string): Promise<ArrayBuffer>
 declare function IsShopOpen(): boolean
 declare function GetQueryUnit(): number
 declare function GetSelectedEntities(): number

@@ -3,7 +3,6 @@ import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import { ParseResourceLayout } from "../Resources/ParseResource"
 import FileBinaryStream from "./FileBinaryStream"
 import readFile from "./readFile"
-import ViewBinaryStream from "./ViewBinaryStream"
 
 export const DamageIgnoreBuffs = [
 	[], // DAMAGE_TYPES.DAMAGE_TYPE_NONE = 0
@@ -224,19 +223,4 @@ export function createMapFromMergedIterators<K, V>(...iters: IterableIterator<[K
 		for (const [k, v] of iter)
 			insertMapElement(map, k, v)
 	return map
-}
-
-export async function MakeSTRATZRequestWrapper(req: string): Promise<any> {
-	const res = await MakeSTRATZRequest(req)
-	const stream = new ViewBinaryStream(new DataView(res))
-	const status = stream.ReadUint32()
-	const str = stream.ReadUtf8String(stream.Remaining)
-	if (status !== 200)
-		throw `Got status code ${status}, ${str}`
-	const json = JSON.parse(str)
-	if (json.errors !== undefined)
-		throw `Got errors: ${json.errors}`
-	if (json.data === undefined)
-		throw `Got nothing: ${json}`
-	return json.data
 }

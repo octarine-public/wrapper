@@ -1308,20 +1308,6 @@ async function TryLoadMapFiles(): Promise<void> {
 	}
 }
 
-const last_search_paths_worker: (string | bigint)[] = []
-Workers.RegisterRPCEndPoint("SetSearchPaths", paths => {
-	if (!Array.isArray(paths))
-		throw "!Array.isArray(paths)"
-	last_search_paths_worker.forEach(path => RemoveSearchPath(path))
-	last_search_paths_worker.splice(0)
-	for (const path of paths)
-		if (typeof path === "string" || typeof path === "bigint") {
-			last_search_paths_worker.push(path)
-			AddSearchPath(path)
-		}
-})
-
-const last_search_paths: (string | bigint)[] = []
 EventsSDK.on("ServerInfo", async info => {
 	let map_name = (info.get("map_name") as string) ?? "<empty>"
 	if (map_name === "start")
@@ -1329,28 +1315,6 @@ EventsSDK.on("ServerInfo", async info => {
 	GameState.MapName = map_name
 	const addon_name = (info.get("addon_name") as string) ?? ""
 	GameState.AddonName = addon_name
-	last_search_paths.forEach(path => RemoveSearchPath(path))
-	last_search_paths.splice(0)
-	last_search_paths.push("content/core")
-	last_search_paths.push("game/dota")
-	last_search_paths.push("content/dota")
-	last_search_paths.push("game/dota_addons")
-	last_search_paths.push("content/dota_addons")
-	if (addon_name !== "")
-		try {
-			const addon_id = BigInt(addon_name) // throws if addon_name is not a number
-			if (addon_id !== 0n) {
-				if (addon_id < 0n)
-					throw "Addon ID should be unsigned"
-				last_search_paths.push(addon_id)
-			}
-		} catch {
-			last_search_paths.push(`game/dota_addons/${addon_name}`)
-			last_search_paths.push(`content/dota_addons/${addon_name}`)
-		}
-	last_search_paths.push(`maps/${map_name}.vpk`)
-	Workers.Propagate("SetSearchPaths", last_search_paths)
-	last_search_paths.forEach(path => AddSearchPath(path))
 	LoadManifest()
 	await TryLoadMapFiles()
 

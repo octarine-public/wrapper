@@ -9,10 +9,10 @@ import GUIInfo from "./GUIInfo"
 
 export default class CPreGame {
 	private static get HasRadiantCoach(): boolean {
-		return PlayerResource?.PlayerData?.some(data => data.CoachTeam === Team.Radiant) ?? false
+		return PlayerResource?.PlayerData?.some(data => data !== undefined && data.CoachTeam === Team.Radiant) ?? false
 	}
 	private static get HasDireCoach(): boolean {
-		return PlayerResource?.PlayerData?.some(data => data.CoachTeam === Team.Dire) ?? false
+		return PlayerResource?.PlayerData?.some(data => data !== undefined && data.CoachTeam === Team.Dire) ?? false
 	}
 	private static get IsRetardedGameMode(): boolean {
 		return (GameRules?.GameMode ?? 0) === 0

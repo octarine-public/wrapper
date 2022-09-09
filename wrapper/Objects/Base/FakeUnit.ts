@@ -59,7 +59,7 @@ export default class FakeUnit {
 	public async UpdateName(): Promise<void> {
 		if (this.Name !== "")
 			return
-		const data = PlayerResource?.PlayerTeamData?.find(x => this.HandleMatches(x.SelectedHeroIndex))
+		const data = PlayerResource?.PlayerTeamData?.find(x => x !== undefined && this.HandleMatches(x.SelectedHeroIndex))
 		if (data !== undefined)
 			this.Name = await UnitData.GetHeroNameByID(data.SelectedHeroID)
 	}
