@@ -282,6 +282,6 @@ export default class FileBinaryStream implements ReadableBinaryStream {
 		this.cachePos = this.pos
 		const read = this.fileStream.read(this.offset + this.pos, this.cache)
 		if (read < Math.min(remaining, this.cache.byteLength))
-			console.warn(`Failed populating cache while reading ${bytes} bytes`)
+			throw `Failed populating cache while reading ${bytes} bytes`
 	}
 }
