@@ -32,8 +32,9 @@ EventsSDK.on("LifeStateChanged", async ent => {
 		return
 	abil = abil.PrimeDividedWeStand
 	while (abil !== undefined) {
-		if (abil.Owner !== undefined && !abil.Owner.IsVisible) {
+		if (abil.Owner !== undefined && !abil.Owner.IsVisible && abil.Owner.LifeState !== ent.LifeState) {
 			abil.Owner.LifeState = ent.LifeState
+			abil.Owner.HP = ent.IsAlive ? abil.Owner.MaxHP : 0
 			isInMeepoCrutch = true
 			await EventsSDK.emit("LifeStateChanged", false, abil.Owner)
 			isInMeepoCrutch = false

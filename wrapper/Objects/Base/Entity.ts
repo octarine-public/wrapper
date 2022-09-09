@@ -555,6 +555,7 @@ EventsSDK.on("GameEvent", async (name, obj) => {
 			const ent = EntityManager.EntityByIndex(obj.entindex)
 			if (ent !== undefined && ent.LifeState === LifeState_t.LIFE_DEAD) {
 				ent.LifeState = LifeState_t.LIFE_ALIVE
+				ent.HP = ent.MaxHP
 				await EventsSDK.emit("LifeStateChanged", false, ent)
 			}
 		}
