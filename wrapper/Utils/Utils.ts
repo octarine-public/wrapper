@@ -101,20 +101,19 @@ export function MapToObject(map: Map<any, any>): any {
 	return obj
 }
 
-export function ParseExternalReferences(stream: ReadableBinaryStream, recursive = false): Map<bigint, string> {
-	const map = new Map<bigint, string>()
+function ParseExternalReferencesInternal(stream: ReadableBinaryStream, recursive: boolean, map: Map<bigint, string>): void {
 	const layout = ParseResourceLayout(stream)
 	if (layout === undefined)
-		return map
+		return
 
 	const RERL = layout[0].get("RERL")
 	if (RERL === undefined)
-		return map
+		return
 
 	const data_offset = RERL.ReadUint32(),
 		size = RERL.ReadUint32()
 	if (size === 0)
-		return map
+		return
 
 	RERL.pos += data_offset - 8 // offset from offset
 	for (let i = 0; i < size; i++) {
@@ -122,23 +121,26 @@ export function ParseExternalReferences(stream: ReadableBinaryStream, recursive 
 		const offset = Number(RERL.ReadUint64()),
 			prev = RERL.pos
 		RERL.pos += offset - 8
-		const str = `${RERL.ReadNullTerminatedUtf8String()}_c`
-		if (fexists(str))
-			map.set(id, str)
+		const path = `${RERL.ReadNullTerminatedUtf8String()}_c`
+		if (fexists(path)) {
+			map.set(id, path)
+			if (recursive) {
+				const read = fopen(path)
+				if (read !== undefined)
+					try {
+						ParseExternalReferencesInternal(new FileBinaryStream(read), true, map)
+					} finally {
+						read.close()
+					}
+			}
+		}
 		RERL.pos = prev
 	}
-	if (recursive) {
-		[...map.values()].forEach(path => {
-			const read = fopen(path)
-			if (read !== undefined)
-				try {
-					ParseExternalReferences(new FileBinaryStream(read))
-						.forEach((val, key) => map.set(key, val))
-				} finally {
-					read.close()
-				}
-		})
-	}
+}
+
+export function ParseExternalReferences(stream: ReadableBinaryStream, recursive = false): Map<bigint, string> {
+	const map = new Map<bigint, string>()
+	ParseExternalReferencesInternal(stream, recursive, map)
 	return map
 }
 
