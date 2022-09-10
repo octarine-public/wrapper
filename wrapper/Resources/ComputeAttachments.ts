@@ -138,6 +138,8 @@ export function ComputeAttachmentsAndBounds(model_name: string): [ComputedAttach
 			ar.push([new Map([["ACT_DOTA_CONSTANT_LAYER", 1]]), empty_attachments])
 		}
 		return [ar, model.MinBounds, model.MaxBounds]
+	} catch (e) {
+		throw new Error(model_name + " error: " + (e instanceof Error ? e.message + " " + e.stack : e))
 	} finally {
 		model.FilesOpen.forEach(file => file.close())
 	}
