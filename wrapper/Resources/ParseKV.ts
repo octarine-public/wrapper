@@ -77,15 +77,14 @@ class KVParser {
 	private uncompressed_blocks_stream: Nullable<ReadableBinaryStream>
 	private current_compressed_block = 0
 	private offset_64bit = -1
-	private count_64bit = 0
 	private binary_bytes_offset = -1
 	public ReadVersion2(stream: ReadableBinaryStream): RecursiveMap {
 		this.binary_bytes_offset = 0
 		stream.RelativeSeek(16) // format
 		const compression_method = stream.ReadUint32(),
 			data_offset = stream.ReadUint32(),
-			count_32bit = stream.ReadUint32()
-		this.count_64bit = stream.ReadUint32()
+			count_32bit = stream.ReadUint32(),
+			count_64bit = stream.ReadUint32()
 		switch (compression_method) {
 			case 0:
 				stream = stream.CreateNestedStream(stream.ReadUint32())
@@ -104,7 +103,7 @@ class KVParser {
 		// Subtract one integer since we already read it (string_count)
 		stream.pos = Math.ceil((stream.pos + (count_32bit - 1) * 4) / 8) * 8
 		this.offset_64bit = stream.pos
-		stream.pos += this.count_64bit * 8
+		stream.pos += count_64bit * 8
 
 		for (let i = 0; i < string_count; i++)
 			this.strings.push(stream.ReadNullTerminatedUtf8String())
@@ -123,8 +122,8 @@ class KVParser {
 			compression_dictionary_id = stream.ReadUint16(),
 			compression_frame_size = stream.ReadUint16(),
 			data_offset = stream.ReadUint32(),
-			count_32bit = stream.ReadUint32()
-		this.count_64bit = stream.ReadUint32()
+			count_32bit = stream.ReadUint32(),
+			count_64bit = stream.ReadUint32()
 		const string_and_types_buffer_size = stream.ReadUint32()
 		stream.RelativeSeek(4)
 		const uncompressed_size = stream.ReadUint32(),
@@ -163,7 +162,7 @@ class KVParser {
 		// Subtract one integer since we already read it (string_count)
 		stream.pos = Math.ceil((stream.pos + (count_32bit - 1) * 4) / 8) * 8
 		this.offset_64bit = stream.pos
-		stream.pos += this.count_64bit * 8
+		stream.pos += count_64bit * 8
 
 		const string_array_pos = stream.pos
 		for (let i = 0; i < string_count; i++)
