@@ -8,7 +8,7 @@ const CR = "\r"
 const LF = "\n"
 const SPACE = " "
 const TAB = "\t"
-const WHITESPACE = [SPACE, "\t", "\r", "\n", "="]
+const WHITESPACE = [SPACE, "\t", "\r", "\n", "=", ","]
 
 function _symtostr(stream: ReadableBinaryStream, token: string): string {
 	const start_pos = stream.pos
@@ -58,20 +58,71 @@ function _unquotedtostr(stream: ReadableBinaryStream): string {
 }
 
 export function parseTextKV(stream: ReadableBinaryStream, out = new Map<string, any>()): RecursiveMap {
-	const stack: [string, string, string, boolean, RecursiveMap][] = []
+	const stack: [string, string, boolean, boolean, number, RecursiveMap][] = []
 	let laststr = "",
 		lasttok = "",
-		lastbrk = "",
 		nextIsValue = false,
-		map = out
+		isArray = false,
+		currentArrayIndex = 0,
+		map = out,
+		isInComment = false
 
 	while (!stream.Empty()) {
 		const start_pos = stream.pos
 		let c = stream.ReadChar()
 
+		if (isInComment) {
+			const start_pos2 = stream.pos
+			// -->
+			if (
+				stream.Remaining >= 2
+				&& c === "-"
+				&& stream.ReadChar() === "-"
+				&& stream.ReadChar() === ">"
+			)
+				isInComment = false
+			else
+				stream.pos = start_pos2
+			continue
+		}
+
 		switch (c) {
 			case NODE_OPEN: {
-				nextIsValue = false  // Make sure the next string is interpreted as a key.
+				nextIsValue = false // Make sure the next string is interpreted as a key.
+				const fake_node = map.size === 0 && laststr === ""
+				if (!fake_node && map.has(laststr)) {
+					let cnt = 0
+					while (map.has(laststr + cnt))
+						cnt++
+					laststr += cnt
+				}
+				stack.push([laststr, lasttok, nextIsValue, isArray, currentArrayIndex, map])
+				if (!fake_node) {
+					const x = new Map()
+					map.set(laststr, x)
+					laststr = ""
+					lasttok = ""
+					nextIsValue = false
+					isArray = false
+					currentArrayIndex = 0
+					map = x
+				}
+				break
+			}
+			case BR_CLOSE:
+			case NODE_CLOSE:
+				if (stack.length === 0)
+					return out
+				const [laststr_, lasttok_, nextIsValue_, isArray_, currentArrayIndex_, map_] = stack.pop()!
+				laststr = laststr_
+				lasttok = lasttok_
+				nextIsValue = nextIsValue_
+				isArray = isArray_
+				currentArrayIndex = currentArrayIndex_
+				map = map_
+				break
+			case BR_OPEN: {
+				nextIsValue = false // Make sure the next string is interpreted as a key.
 				if (map.has(laststr)) {
 					let cnt = 0
 					while (map.has(laststr + cnt))
@@ -80,27 +131,15 @@ export function parseTextKV(stream: ReadableBinaryStream, out = new Map<string, 
 				}
 				const x = new Map()
 				map.set(laststr, x)
-				stack.push([laststr, lasttok, lastbrk, nextIsValue, map])
+				stack.push([laststr, lasttok, nextIsValue, isArray, currentArrayIndex, map])
 				laststr = ""
 				lasttok = ""
-				lastbrk = ""
 				nextIsValue = false
+				isArray = true
+				currentArrayIndex = 0
 				map = x
 				break
 			}
-			case NODE_CLOSE:
-				if (stack.length === 0)
-					return out
-				const [laststr_, lasttok_, lastbrk_, nextIsValue_, map_] = stack.pop()!
-				laststr = laststr_
-				lasttok = lasttok_
-				lastbrk = lastbrk_
-				nextIsValue = nextIsValue_
-				map = map_
-				break
-			case BR_OPEN:
-				lastbrk = _symtostr(stream, BR_CLOSE)
-				break
 			case COMMENT: {
 				const start_pos2 = stream.pos
 				if (stream.ReadChar() === COMMENT)
@@ -118,8 +157,24 @@ export function parseTextKV(stream: ReadableBinaryStream, out = new Map<string, 
 			case SPACE:
 			case TAB:
 			case "=":
+			case ",":
 				c = lasttok
 				break
+			case "<": {
+				const start_pos2 = stream.pos
+				// <!--
+				if (
+					stream.Remaining >= 3
+					&& stream.ReadChar() === "!"
+					&& stream.ReadChar() === "-"
+					&& stream.ReadChar() === "-"
+				) {
+					isInComment = true
+					break
+				} else
+					stream.pos = start_pos2
+				// fallthrough
+			}
 			default: {
 				let str: string
 				if (c !== STRING) {
@@ -128,15 +183,14 @@ export function parseTextKV(stream: ReadableBinaryStream, out = new Map<string, 
 				} else
 					str = _symtostr(stream, STRING)
 
-				if (lasttok === STRING && nextIsValue) {
-					if (lastbrk !== "" && map.has(laststr))
-						lastbrk = "" // Ignore this sentry if it's the second bracketed expression
-					else
+				if (!isArray) {
+					if (lasttok === STRING && nextIsValue)
 						map.set(laststr, str)
-				}
+					laststr = str
+					nextIsValue = !nextIsValue
+				} else
+					map.set((currentArrayIndex++).toString(), str)
 				c = STRING // Force c == str so lasttok will be set properly.
-				laststr = str
-				nextIsValue = !nextIsValue
 				break
 			}
 		}
