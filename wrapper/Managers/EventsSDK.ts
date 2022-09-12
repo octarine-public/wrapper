@@ -185,7 +185,6 @@ interface EventsSDK extends EventEmitter {
 		priority?: number,
 	): EventEmitter
 	on(name: "MapDataLoaded", listener: () => void, priority?: number): EventEmitter
-	on(name: "EconDataLoaded", listener: () => void, priority?: number): EventEmitter
 	on(name: "WindowSizeChanged", listener: () => void, priority?: number): EventEmitter
 	on(name: "MatchmakingStatsUpdated", listener: (msg: RecursiveMap) => void, priority?: number): EventEmitter
 	on(name: "SharedObjectChanged", listener: (type_id: SOType, reason: number, msg: RecursiveMap) => void, priority?: number): EventEmitter

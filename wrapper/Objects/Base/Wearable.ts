@@ -48,7 +48,3 @@ EventsSDK.on("EntityDestroyed", ent => {
 			if (ent.HandleMatches(wearable.AdditionalWearable_))
 				wearable.AdditionalWearable = undefined
 })
-EventsSDK.on("EconDataLoaded", () => {
-	for (const wearable of Wearables)
-		wearable.Update()
-})

@@ -62,8 +62,6 @@ function FillMessageDefaults(msg: RecursiveProtobuf, desc: ProtoDescription): Re
 			return
 		if (field.proto_type === ProtoFieldType.REPEATED || field.proto_type === ProtoFieldType.PACKED)
 			msg.set(field.name, [])
-		else if (field.type === ProtoType.TYPE_MESSAGE)
-			msg.set(field.name, FillMessageDefaults(new Map(), field.proto_desc!))
 		else if (field.default_value !== undefined)
 			msg.set(field.name, field.default_value)
 	})

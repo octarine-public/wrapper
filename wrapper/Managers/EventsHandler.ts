@@ -23,7 +23,6 @@ import { CMsgVectorToVector3, ParseProtobufDesc, ParseProtobufNamed, RecursivePr
 import { createMapFromMergedIterators } from "../Utils/Utils"
 import * as VBKV from "../Utils/VBKV"
 import ViewBinaryStream from "../Utils/ViewBinaryStream"
-import { LoadEconData } from "./EconHelper"
 import EntityManager from "./EntityManager"
 import Events from "./Events"
 import EventsSDK from "./EventsSDK"
@@ -1002,8 +1001,8 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 						submsg.get("recipient_type") as number,
 						submsg.get("level") as number,
 						submsg.get("muteable") as boolean,
-						predelay.get("start") as number,
-						predelay.get("range") as number,
+						predelay?.get("start") as number ?? 0,
+						predelay?.get("range") as number ?? 0,
 						submsg.get("flags") as number,
 					)
 					break
@@ -1013,7 +1012,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 					await EventsSDK.emit(
 						"UnitSpeechMute", false,
 						ent,
-						submsg.get("delay") as number,
+						submsg?.get("delay") as number ?? 0,
 					)
 					break
 				}
@@ -1279,10 +1278,6 @@ async function TryLoadMapFiles(): Promise<void> {
 			}
 		else
 			ResetGNV()
-	}
-	{
-		LoadEconData()
-		await EventsSDK.emit("EconDataLoaded", false)
 	}
 	{
 		ResetEntityLump()

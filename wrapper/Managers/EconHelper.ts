@@ -1,4 +1,7 @@
 import { parseKVFile } from "../Resources/ParseKV"
+import { ParseProtobufNamed } from "../Utils/Protobuf"
+import ViewBinaryStream from "../Utils/ViewBinaryStream"
+import EventsSDK from "./EventsSDK"
 
 class EconReplacements {
 	public readonly orig2repl = new Map<string, string[]>()
@@ -31,23 +34,15 @@ class EconReplacements {
 }
 
 export const Particles = new EconReplacements()
-export const AbilityIcons = new EconReplacements()
-export const EntityModels = new EconReplacements()
-export const Models = new EconReplacements()
 export const IconReplacements = new EconReplacements()
 export const IconReplacementsMinimap = new EconReplacements()
-export const ChatWheel = new EconReplacements()
 export const ItemNames = new Map<bigint, string>()
 export const ItemHealthBarOffsets = new Map<bigint, number>()
 
-export function LoadEconData() {
+function LoadEconData() {
 	Particles.Clear()
-	AbilityIcons.Clear()
-	EntityModels.Clear()
-	Models.Clear()
 	IconReplacements.Clear()
 	IconReplacementsMinimap.Clear()
-	ChatWheel.Clear()
 	ItemNames.clear()
 	ItemHealthBarOffsets.clear()
 	const items_game = parseKVFile("scripts/items/items_game.txt").get("items_game")
@@ -100,23 +95,11 @@ export function LoadEconData() {
 					if (repl !== "particles/error/null.vpcf")
 						Particles.AddPair(orig, id, repl)
 					break
-				case "ability_icon":
-					AbilityIcons.AddPair(orig, id, repl)
-					break
-				case "entity_model":
-					EntityModels.AddPair(orig, id, repl)
-					break
-				case "model":
-					Models.AddPair(orig, id, repl)
-					break
 				case "icon_replacement_hero":
 					IconReplacements.AddPair(orig, id, repl)
 					break
 				case "icon_replacement_hero_minimap":
 					IconReplacementsMinimap.AddPair(orig, id, repl)
-					break
-				case "chatwheel":
-					ChatWheel.AddPair(orig, id, repl)
 					break
 				default:
 					break
@@ -124,3 +107,17 @@ export function LoadEconData() {
 		}
 	}
 }
+LoadEconData()
+
+export const PresentEconItems = new Map<number, RecursiveMap>()
+EventsSDK.on("UpdateStringTable", (name, update) => {
+	if (name !== "EconItems")
+		return
+	for (const [index, [, item_serialized]] of update) {
+		const item = ParseProtobufNamed(new ViewBinaryStream(new DataView(item_serialized)), "CSOEconItem")
+		PresentEconItems.set(index, item)
+	}
+})
+EventsSDK.on("RemoveAllStringTables", () => {
+	PresentEconItems.clear()
+})
