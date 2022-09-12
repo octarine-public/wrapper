@@ -470,7 +470,6 @@ EventsSDK.on("GameEnded", () => ModelDataCache.clear())
 RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => {
 	const m_angRotation = new_val as QAngle
 	ent.NetworkedAngles.CopyFrom(m_angRotation)
-	ent.NetworkedAngles.AddScalarY(ent.RotationDifference)
 	ent.VisualAngles.CopyFrom(m_angRotation)
 })
 RegisterFieldHandler(Entity, "m_nameStringableIndex", async (ent, new_val) => {
