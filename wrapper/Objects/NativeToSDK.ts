@@ -7,19 +7,26 @@ import Entity from "./Base/Entity"
 
 export type FieldHandler = (entity: Entity, new_value: EntityPropertyType) => any
 export const ClassToEntities = new Map<Constructor<any>, Entity[]>(),
+	ClassToEntitiesAr = new Map<Constructor<any>, Entity[][]>(),
 	SDKClasses: [Constructor<Entity>, Entity[]][] = [],
 	FieldHandlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>()
 const constructors = new Map<string, Constructor<Entity>>()
 export const cached_field_handlers = new Map<Constructor<Entity>, Map<number, FieldHandler>>()
 
 function RegisterClassInternal(constructor: Constructor<Entity>) {
-	if (!ClassToEntities.has(constructor))
-		ClassToEntities.set(constructor, [])
+	const prototype = constructor.prototype
+	if (!ClassToEntities.has(constructor)) {
+		const ar: Entity[][] = [[]]
+		ClassToEntities.set(constructor, ar[0])
+		for (const [constructor_, ar_] of SDKClasses)
+			if (prototype instanceof constructor_)
+				ar.push(ar_)
+		ClassToEntitiesAr.set(constructor, ar)
+	}
 	if (!cached_field_handlers.has(constructor))
 		cached_field_handlers.set(constructor, new Map())
 	SDKClasses.push([constructor, ClassToEntities.get(constructor)!])
 	const map = new Map<string, FieldHandler>()
-	const prototype = constructor.prototype
 	for (const [constructor_, map_] of FieldHandlers)
 		if (prototype instanceof constructor_)
 			for (const [k, v] of map_)

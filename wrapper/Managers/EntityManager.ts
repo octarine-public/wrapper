@@ -3,7 +3,7 @@ import Vector3 from "../Base/Vector3"
 import Vector4 from "../Base/Vector4"
 import { EPropertyType, PropertyType } from "../Enums/PropertyType"
 import Entity from "../Objects/Base/Entity"
-import GetConstructorByName, { cached_field_handlers, ClassToEntities, entities_symbols, SDKClasses } from "../Objects/NativeToSDK"
+import GetConstructorByName, { cached_field_handlers, ClassToEntities, ClassToEntitiesAr, entities_symbols } from "../Objects/NativeToSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import GameState from "../Utils/GameState"
 import { ParseProtobufDesc } from "../Utils/Protobuf"
@@ -95,9 +95,8 @@ function ClassFromNative(
 export function CreateEntityInternal(ent: Entity): void {
 	AllEntitiesAsMap.set(ent.Index, ent)
 	AllEntities.push(ent)
-	for (const [class_, class_entities] of SDKClasses)
-		if (ent instanceof class_)
-			class_entities.push(ent)
+	for (const class_entities of ClassToEntitiesAr.get(ent.constructor as any)!)
+		class_entities.push(ent)
 }
 
 async function CreateEntity(
@@ -126,9 +125,8 @@ export async function DeleteEntity(id: number): Promise<void> {
 	await EventsSDK.emit("EntityDestroyed", false, entity)
 	entity.IsVisible = false
 	AllEntitiesAsMap.delete(id)
-	for (const [class_, class_entities] of SDKClasses)
-		if (entity instanceof class_)
-			ArrayExtensions.arrayRemove(class_entities, entity)
+	for (const class_entities of ClassToEntitiesAr.get(entity.constructor as any)!)
+		ArrayExtensions.arrayRemove(class_entities, entity)
 }
 
 const enum EntityPVS {
