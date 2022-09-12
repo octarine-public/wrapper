@@ -3,7 +3,7 @@ import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import ConVarsSDK from "../Native/ConVarsSDK"
 import RendererSDK from "../Native/RendererSDK"
-import GUIInfo from "./GUIInfo"
+import { ScaleHeight, ScaleWidth } from "./Helpers"
 
 let extra_large_minimap_setting = 0
 export default class CMinimap {
@@ -64,16 +64,16 @@ export default class CMinimap {
 	}
 	private CalculateMinimapBlock(screen_size: Vector2, hud_flip: boolean): void {
 		const block_size = this.MinimapBlockSize
-		this.Minimap.Width = GUIInfo.ScaleWidth(block_size, screen_size)
-		this.Minimap.Height = GUIInfo.ScaleHeight(block_size, screen_size)
+		this.Minimap.Width = ScaleWidth(block_size, screen_size)
+		this.Minimap.Height = ScaleHeight(block_size, screen_size)
 		this.Minimap.x = hud_flip
 			? screen_size.x - this.Minimap.Width
 			: 0
 		this.Minimap.y = screen_size.y - this.Minimap.Height
 
 		const size = this.MinimapSize
-		this.MinimapRenderBounds.Width = GUIInfo.ScaleWidth(size, screen_size)
-		this.MinimapRenderBounds.Height = GUIInfo.ScaleHeight(size, screen_size)
+		this.MinimapRenderBounds.Width = ScaleWidth(size, screen_size)
+		this.MinimapRenderBounds.Height = ScaleHeight(size, screen_size)
 		this.MinimapRenderBounds.x = this.Minimap.x + Math.round(
 			(this.Minimap.Width - this.MinimapRenderBounds.Width) / 2,
 		)
@@ -83,22 +83,22 @@ export default class CMinimap {
 	}
 	private CalculateGlyphScan(screen_size: Vector2, hud_flip: boolean): void {
 		const GlyphScan = new Rectangle()
-		GlyphScan.Width = GUIInfo.ScaleWidth(74, screen_size)
-		GlyphScan.Height = GUIInfo.ScaleHeight(this.MinimapBlockSize, screen_size)
+		GlyphScan.Width = ScaleWidth(74, screen_size)
+		GlyphScan.Height = ScaleHeight(this.MinimapBlockSize, screen_size)
 		GlyphScan.y = screen_size.y - GlyphScan.Height
 		GlyphScan.x = hud_flip
 			? this.Minimap.x - GlyphScan.Width
 			: this.Minimap.x + this.Minimap.Width
 
-		const Glyph_offset_x = GUIInfo.ScaleWidth(24, screen_size)
-		this.Glyph.Width = GUIInfo.ScaleWidth(44, screen_size)
-		this.Glyph.Height = GUIInfo.ScaleHeight(44, screen_size)
-		this.Glyph.y = GlyphScan.y + GlyphScan.Height - GUIInfo.ScaleHeight(6, screen_size) - this.Glyph.Height
+		const Glyph_offset_x = ScaleWidth(24, screen_size)
+		this.Glyph.Width = ScaleWidth(44, screen_size)
+		this.Glyph.Height = ScaleHeight(44, screen_size)
+		this.Glyph.y = GlyphScan.y + GlyphScan.Height - ScaleHeight(6, screen_size) - this.Glyph.Height
 
-		const Scan_offset_x = GUIInfo.ScaleWidth(24, screen_size)
-		this.Scan.Width = GUIInfo.ScaleWidth(44, screen_size)
-		this.Scan.Height = GUIInfo.ScaleHeight(44, screen_size)
-		this.Scan.y = GlyphScan.y + GlyphScan.Height - GUIInfo.ScaleHeight(50, screen_size) - this.Scan.Height
+		const Scan_offset_x = ScaleWidth(24, screen_size)
+		this.Scan.Width = ScaleWidth(44, screen_size)
+		this.Scan.Height = ScaleHeight(44, screen_size)
+		this.Scan.y = GlyphScan.y + GlyphScan.Height - ScaleHeight(50, screen_size) - this.Scan.Height
 
 		if (hud_flip) {
 			this.Glyph.x = GlyphScan.x + Glyph_offset_x

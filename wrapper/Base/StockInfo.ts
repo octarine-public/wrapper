@@ -1,6 +1,6 @@
 import { Team } from "../Enums/Team"
-import { EntityPropertiesNode } from "../Managers/EntityManager"
 import AbilityData from "../Objects/DataBook/AbilityData"
+import { EntityPropertiesNode } from "./EntityProperties"
 
 export default class StockInfo {
 	constructor(public readonly properties: EntityPropertiesNode) { }

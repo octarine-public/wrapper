@@ -16,6 +16,7 @@ import CPreGame from "./CPreGame"
 import CScoreboard from "./CScoreboard"
 import CShop from "./CShop"
 import CTopBar from "./CTopBar"
+import { GetHeightScale, GetWidthScale, ScaleHeight, ScaleWidth } from "./Helpers"
 
 const latest_screen_size = new Vector2()
 const GUIInfo = new (class CGUIInfo {
@@ -29,10 +30,6 @@ const GUIInfo = new (class CGUIInfo {
 	public Scoreboard = undefined as any as CScoreboard
 	public HUDFlipped = false
 	private LowerHUD_ = new Map<boolean, Map<number, Map<number, CLowerHUD>>>()
-
-	// Looks like it's hardcoded
-	// Do not change it unless anything breaks.
-	private readonly proportional_base = 1080
 
 	public OnDraw(): void {
 		const screen_size = RendererSDK.WindowSize
@@ -121,22 +118,16 @@ const GUIInfo = new (class CGUIInfo {
 			this.PreGame.DebugDraw()
 	}
 	public GetWidthScale(screen_size = RendererSDK.WindowSize): number {
-		let screen_height = screen_size.y
-		if (screen_size.x === 1280 && screen_height === 1024)
-			screen_height = 960
-		else if (screen_size.x === 720 && screen_height === 576)
-			screen_height = 540
-		return screen_height / this.proportional_base
+		return GetWidthScale(screen_size)
 	}
 	public GetHeightScale(screen_size = RendererSDK.WindowSize): number {
-		const screen_height = screen_size.y
-		return screen_height / this.proportional_base
+		return GetHeightScale(screen_size)
 	}
 	public ScaleWidth(w: number, screen_size = RendererSDK.WindowSize): number {
-		return Math.round(w * this.GetWidthScale(screen_size))
+		return ScaleWidth(w, screen_size)
 	}
 	public ScaleHeight(h: number, screen_size = RendererSDK.WindowSize): number {
-		return Math.round(h * this.GetHeightScale(screen_size))
+		return ScaleHeight(h, screen_size)
 	}
 })()
 export default GUIInfo

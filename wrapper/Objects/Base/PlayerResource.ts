@@ -1,13 +1,12 @@
+import { EntityPropertiesNode } from "../../Base/EntityProperties"
 import PlayerData from "../../Base/PlayerData"
 import PlayerTeamData from "../../Base/PlayerTeamData"
 import Vector3 from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
 import { Team } from "../../Enums/Team"
-import { EntityPropertiesNode } from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import Entity from "../Base/Entity"
 import { PlayerSpawners } from "./InfoPlayerStartDota"
-import { Players } from "./Player"
 
 @WrapperClass("CDOTA_PlayerResource")
 export default class CPlayerResource extends Entity {
@@ -24,10 +23,10 @@ export default class CPlayerResource extends Entity {
 }
 
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
-RegisterFieldHandler(CPlayerResource, "m_vecPlayerTeamData", (playerResource, new_val) => {
+RegisterFieldHandler(CPlayerResource, "m_vecPlayerTeamData", async (playerResource, new_val) => {
 	playerResource.PlayerTeamData = (new_val as EntityPropertiesNode[]).map(map => new PlayerTeamData(map))
-	Players.forEach(player => player.UpdateHero(playerResource))
 	UpdateRespawnPositions(playerResource)
+	await EventsSDK.emit("PlayerResourceUpdated", false, playerResource)
 })
 RegisterFieldHandler(CPlayerResource, "m_vecPlayerData", (playerResource, new_val) => {
 	playerResource.PlayerData = (new_val as EntityPropertiesNode[]).map(map => new PlayerData(map))

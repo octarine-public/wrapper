@@ -1,11 +1,5 @@
+import { MaterialFlags } from "../Enums/MaterialFlags"
 import { parseKV } from "./ParseKV"
-
-export enum MaterialFlags {
-	None = 0,
-	Walkable = 1 << 0,
-	Nonsolid = 1 << 1,
-	Water = 1 << 2,
-}
 
 export class CMaterial {
 	public readonly TextureParams = new Map<string, string>()

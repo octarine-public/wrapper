@@ -4,10 +4,9 @@ import QAngle from "../Base/QAngle"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import EntityManager from "../Managers/EntityManager"
-import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import { default as Input } from "../Managers/InputManager"
+import { ParseImage } from "../Resources/ParseImage"
 import { ParseMaterial } from "../Resources/ParseMaterial"
 import { CMeshDrawCall, ParseMesh } from "../Resources/ParseMesh"
 import { ParseModel } from "../Resources/ParseModel"
@@ -16,7 +15,6 @@ import { orderByFirst } from "../Utils/ArrayExtensions"
 import { HasMask } from "../Utils/BitsExtensions"
 import FileBinaryStream from "../Utils/FileBinaryStream"
 import { fread } from "../Utils/fread"
-import GameState from "../Utils/GameState"
 import { DegreesToRadian } from "../Utils/Math"
 import readFile, { tryFindFile } from "../Utils/readFile"
 import ViewBinaryStream from "../Utils/ViewBinaryStream"
@@ -812,7 +810,7 @@ class CRendererSDK {
 				const texture = [
 					is_svg
 						? this.MakeTextureSVG(new FileBinaryStream(read))
-						: this.MakeTexture(...WASM.ParseImage(new FileBinaryStream(read))),
+						: this.MakeTexture(...ParseImage(new FileBinaryStream(read))),
 					is_svg,
 				] as [number, boolean]
 				this.texture_cache.set(path, texture)
@@ -969,30 +967,6 @@ class CRendererSDK {
 }
 const RendererSDK = new CRendererSDK()
 EventsSDK.on("UnitAbilityDataUpdated", () => RendererSDK.FreeTextureCache())
-
-Events.on("Draw", async (visual_data, w, h, x, y) => {
-	Input.UpdateCursorOnScreen(x, y)
-	await RendererSDK.BeforeDraw(w, h)
-	const stream = new ViewBinaryStream(new DataView(visual_data))
-	while (!stream.Empty()) {
-		const entity_id = stream.ReadUint32()
-		const ent = EntityManager.EntityByIndex(entity_id)
-		if (ent === undefined) {
-			stream.RelativeSeek(2 * 3 * 4)
-			continue
-		}
-		ent.VisualPosition.x = stream.ReadFloat32()
-		ent.VisualPosition.y = stream.ReadFloat32()
-		ent.VisualPosition.z = stream.ReadFloat32()
-		ent.VisualAngles.x = stream.ReadFloat32()
-		ent.VisualAngles.y = stream.ReadFloat32()
-		ent.VisualAngles.z = stream.ReadFloat32()
-	}
-	GameState.IsInDraw = true
-	await EventsSDK.emit("PreDraw")
-	await EventsSDK.emit("Draw")
-	GameState.IsInDraw = false
-})
 
 export default RendererSDK
 

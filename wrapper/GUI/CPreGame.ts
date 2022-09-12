@@ -5,7 +5,7 @@ import { Team } from "../Enums/Team"
 import RendererSDK from "../Native/RendererSDK"
 import { GameRules } from "../Objects/Base/Entity"
 import { PlayerResource } from "../Objects/Base/PlayerResource"
-import GUIInfo from "./GUIInfo"
+import { ScaleHeight, ScaleWidth } from "./Helpers"
 
 export default class CPreGame {
 	private static get HasRadiantCoach(): boolean {
@@ -14,7 +14,7 @@ export default class CPreGame {
 	private static get HasDireCoach(): boolean {
 		return PlayerResource?.PlayerData?.some(data => data !== undefined && data.CoachTeam === Team.Dire) ?? false
 	}
-	private static get IsRetardedGameMode(): boolean {
+	private static get IsEmptyGameMode(): boolean {
 		return (GameRules?.GameMode ?? 0) === 0
 	}
 
@@ -31,7 +31,7 @@ export default class CPreGame {
 	public readonly HasDireCoach = CPreGame.HasDireCoach
 	private readonly RadiantPlayers: Rectangle[] = []
 	private readonly DirePlayers: Rectangle[] = []
-	private readonly IsRetardedGameMode = CPreGame.IsRetardedGameMode
+	private readonly IsEmptyGameMode = CPreGame.IsEmptyGameMode
 
 	constructor(screen_size: Vector2) {
 		const aspect_ratio = RendererSDK.GetAspectRatio(screen_size)
@@ -60,19 +60,19 @@ export default class CPreGame {
 		return (
 			this.HasRadiantCoach !== CPreGame.HasRadiantCoach
 			|| this.HasDireCoach !== CPreGame.HasDireCoach
-			|| this.IsRetardedGameMode !== CPreGame.IsRetardedGameMode
+			|| this.IsEmptyGameMode !== CPreGame.IsEmptyGameMode
 		)
 	}
 
 	private CalculateCenter(screen_size: Vector2, aspect_ratio: string): void {
-		this.Center.Width = GUIInfo.ScaleWidth(aspect_ratio === "16x10" ? 300 : 250, screen_size)
-		this.Center.Height = GUIInfo.ScaleHeight(88, screen_size)
+		this.Center.Width = ScaleWidth(aspect_ratio === "16x10" ? 300 : 250, screen_size)
+		this.Center.Height = ScaleHeight(88, screen_size)
 		this.Center.x = Math.round((screen_size.x - this.Center.Width) / 2)
 
 		// No clue how pregame aligns center, but this seem to fix it for several resolutions
-		if (this.IsRetardedGameMode) {
+		if (this.IsEmptyGameMode) {
 			if (aspect_ratio === "4x3")
-				this.Center.x += GUIInfo.ScaleWidth(4, screen_size)
+				this.Center.x += ScaleWidth(4, screen_size)
 			if (
 				(screen_size.x === 720 && screen_size.y === 576)
 				|| (screen_size.x === 720 && screen_size.y === 480)
@@ -85,12 +85,12 @@ export default class CPreGame {
 		screen_size: Vector2,
 		aspect_ratio: string,
 	): void {
-		const CoachMargin = GUIInfo.ScaleWidth(10, screen_size),
-			CoachWidth = GUIInfo.ScaleHeight(80, screen_size),
-			CoachHeight = GUIInfo.ScaleHeight(50, screen_size),
-			PlayersContainerMargin = GUIInfo.ScaleWidth(8, screen_size),
-			PlayerMargin = GUIInfo.ScaleWidth(aspect_ratio === "4x3" ? -4 : -2, screen_size),
-			PlayerWidth = GUIInfo.ScaleWidth(aspect_ratio === "4x3" ? 110 : 128, screen_size)
+		const CoachMargin = ScaleWidth(10, screen_size),
+			CoachWidth = ScaleHeight(80, screen_size),
+			CoachHeight = ScaleHeight(50, screen_size),
+			PlayersContainerMargin = ScaleWidth(8, screen_size),
+			PlayerMargin = ScaleWidth(aspect_ratio === "4x3" ? -4 : -2, screen_size),
+			PlayerWidth = ScaleWidth(aspect_ratio === "4x3" ? 110 : 128, screen_size)
 
 		{
 			let current_pos = this.Center.x
@@ -108,8 +108,8 @@ export default class CPreGame {
 				PlayerRect.Height = 0
 				// No clue why, but on 4:3 resolutions gap between 1st and 2nd radiant players
 				// is bigger than other ones.
-				if (aspect_ratio === "4x3" && i === 4 && this.IsRetardedGameMode)
-					current_pos -= GUIInfo.ScaleWidth(9, screen_size)
+				if (aspect_ratio === "4x3" && i === 4 && this.IsEmptyGameMode)
+					current_pos -= ScaleWidth(9, screen_size)
 				PlayerRect.x = current_pos - PlayerRect.Width - PlayerMargin
 				current_pos = PlayerRect.x - PlayerMargin
 				this.RadiantPlayers.push(PlayerRect)
@@ -189,20 +189,20 @@ export default class CPreGame {
 	private CalculateNames(screen_size: Vector2, aspect_ratio: string): void {
 		this.CalculateBasicRects(
 			0,
-			GUIInfo.ScaleHeight(27, screen_size),
-			GUIInfo.ScaleHeight(-(aspect_ratio === "4x3" ? 68 : 78), screen_size),
+			ScaleHeight(27, screen_size),
+			ScaleHeight(-(aspect_ratio === "4x3" ? 68 : 78), screen_size),
 			0,
 			this.RadiantPlayersNames,
 			this.DirePlayersNames,
 		)
 	}
 	private CalculateHeroImages(screen_size: Vector2, aspect_ratio: string): void {
-		const width = GUIInfo.ScaleWidth(aspect_ratio === "4x3" ? 100 : 118, screen_size)
+		const width = ScaleWidth(aspect_ratio === "4x3" ? 100 : 118, screen_size)
 		this.CalculateBasicRects(
 			width,
 			Math.round(width * 0.5625),
 			-0,
-			GUIInfo.ScaleWidth(4, screen_size),
+			ScaleWidth(4, screen_size),
 			this.RadiantPlayersHeroImages,
 			this.DirePlayersHeroImages,
 		)
@@ -210,9 +210,9 @@ export default class CPreGame {
 	private CalculateRoles(screen_size: Vector2): void {
 		this.CalculateBasicRects(
 			0,
-			GUIInfo.ScaleHeight(16, screen_size),
-			GUIInfo.ScaleHeight(-104, screen_size),
-			GUIInfo.ScaleWidth(6, screen_size),
+			ScaleHeight(16, screen_size),
+			ScaleHeight(-104, screen_size),
+			ScaleWidth(6, screen_size),
 			this.RadiantPlayersRoles,
 			this.DirePlayersRoles,
 		)

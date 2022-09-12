@@ -6,6 +6,7 @@ import ExecuteOrder from "../Native/ExecuteOrder"
 import Entity from "../Objects/Base/Entity"
 import FakeUnit from "../Objects/Base/FakeUnit"
 import Modifier from "../Objects/Base/Modifier"
+import CPlayerResource from "../Objects/Base/PlayerResource"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import Unit from "../Objects/Base/Unit"
 import { RecursiveProtobuf } from "../Utils/Protobuf"
@@ -191,6 +192,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "LocalTeamChanged", listener: () => void, priority?: number): EventEmitter
 	on(name: "UnitAbilityDataUpdated", listener: () => void, priority?: number): EventEmitter
 	on(name: "HumanizerStateChanged", listener: () => void, priority?: number): EventEmitter
+	on(name: "PlayerResourceUpdated", listener: (playerResource: CPlayerResource) => void, priority?: number): EventEmitter
 }
 
 const EventsSDK: EventsSDK = new EventEmitter()

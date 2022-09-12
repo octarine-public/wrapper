@@ -2,9 +2,7 @@ import AABB from "../Base/AABB"
 import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import { MaterialFlags } from "../Resources/ParseMaterial"
-import { ParseRED2, ParseREDI } from "../Resources/ParseREDI"
-import { ParseResourceLayout } from "../Resources/ParseResource"
+import { MaterialFlags } from "../Enums/MaterialFlags"
 import { fread } from "../Utils/fread"
 import { DegreesToRadian } from "../Utils/Math"
 import { tryFindFile } from "../Utils/readFile"
@@ -354,7 +352,7 @@ export function ScreenToWorld(
 	return new Vector3(WASMIOBuffer[0], WASMIOBuffer[1], WASMIOBuffer[2])
 }
 
-function ParsePNG(stream: ReadableBinaryStream): [Uint8Array, Vector2] {
+export function ParsePNG(stream: ReadableBinaryStream): [Uint8Array, Vector2] {
 	let addr = wasm.malloc(stream.Size)
 	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, stream.Size))
 
@@ -369,56 +367,15 @@ function ParsePNG(stream: ReadableBinaryStream): [Uint8Array, Vector2] {
 	return [copy, image_size]
 }
 
-export function ParseImage(stream: ReadableBinaryStream): [Uint8Array, Vector2] {
-	const starting_pos = stream.pos,
-		is_png = stream.Size > 8 && stream.ReadUint64() === 0x0A1A0A0D474E5089n
-	stream.pos = starting_pos
-	if (is_png)
-		return ParsePNG(stream)
-
-	const layout = ParseResourceLayout(stream)
-	if (layout === undefined)
-		throw "Image conversion failed"
-
-	const data_block = layout[0].get("DATA")
-	if (data_block === undefined)
-		throw "Image conversion failed: missing DATA block"
-	if (data_block.Size < 40)
-		throw "Image conversion failed: too small file"
-	// TODO: add check that's real VTEX file (lookup https://github.com/SteamDatabase/ValveResourceFormat/blob/master/ValveResourceFormat/Resource/Resource.cs)
-	if (data_block.ReadUint16() !== 1)
-		throw `Image conversion failed: unknown VTex version`
-	data_block.pos -= 2
-	let is_YCoCg = false,
-		normalize = false,
-		is_inverted = false,
-		hemi_oct = false,
-		hemi_oct_RB = false
-	const REDI = ParseRED2(layout[0].get("RED2")) ?? ParseREDI(layout[0].get("REDI"))
-	if (REDI !== undefined) {
-		is_YCoCg = REDI.SpecialDependencies.some(dep => (
-			dep.compiler_identifier === "CompileTexture"
-			&& dep.str === "Texture Compiler Version Image YCoCg Conversion"
-		))
-		normalize = REDI.SpecialDependencies.some(dep => (
-			dep.compiler_identifier === "CompileTexture"
-			&& dep.str === "Texture Compiler Version Image NormalizeNormals"
-		))
-		is_inverted = REDI.SpecialDependencies.some(dep => (
-			dep.compiler_identifier === "CompileTexture"
-			&& dep.str === "Texture Compiler Version LegacySource1InvertNormals"
-		))
-		hemi_oct = REDI.SpecialDependencies.some(dep => (
-			dep.compiler_identifier === "CompileTexture"
-			&& dep.str === "Texture Compiler Version Mip HemiOctAnisoRoughness"
-		))
-		hemi_oct_RB = REDI.SpecialDependencies.some(dep => (
-			dep.compiler_identifier === "CompileTexture"
-			&& dep.str === "Texture Compiler Version Mip HemiOctIsoRoughness_RG_B"
-		))
-	}
-
-	stream.pos += data_block.Offset - stream.Offset
+export function ParseVTex(
+	stream: ReadableBinaryStream,
+	data_block: ReadableBinaryStream,
+	is_YCoCg: boolean,
+	normalize: boolean,
+	is_inverted: boolean,
+	hemi_oct: boolean,
+	hemi_oct_RB: boolean,
+): [Uint8Array, Vector2] {
 	const data_size = stream.Remaining
 	let addr = wasm.malloc(data_size)
 	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, data_size))

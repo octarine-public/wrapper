@@ -4,6 +4,7 @@ import Vector3 from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { Team } from "../Enums/Team"
 import { Localization } from "../Menu/Imports"
+import RendererSDK from "../Native/RendererSDK"
 import * as WASM from "../Native/WASM"
 import Workers from "../Native/Workers"
 import Entity, { LocalPlayer } from "../Objects/Base/Entity"
@@ -26,6 +27,7 @@ import ViewBinaryStream from "../Utils/ViewBinaryStream"
 import EntityManager from "./EntityManager"
 import Events from "./Events"
 import EventsSDK from "./EventsSDK"
+import Input from "./InputManager"
 import Manifest, { LoadManifest } from "./Manifest"
 
 enum PARTICLE_MESSAGE {
@@ -1379,4 +1381,28 @@ EventsSDK.on("MidDataUpdate", () => {
 		return
 	GameState.LocalTeam = team
 	EventsSDK.emit("LocalTeamChanged", false)
+})
+
+Events.on("Draw", async (visual_data, w, h, x, y) => {
+	Input.UpdateCursorOnScreen(x, y)
+	await RendererSDK.BeforeDraw(w, h)
+	const stream = new ViewBinaryStream(new DataView(visual_data))
+	while (!stream.Empty()) {
+		const entity_id = stream.ReadUint32()
+		const ent = EntityManager.EntityByIndex(entity_id)
+		if (ent === undefined) {
+			stream.RelativeSeek(2 * 3 * 4)
+			continue
+		}
+		ent.VisualPosition.x = stream.ReadFloat32()
+		ent.VisualPosition.y = stream.ReadFloat32()
+		ent.VisualPosition.z = stream.ReadFloat32()
+		ent.VisualAngles.x = stream.ReadFloat32()
+		ent.VisualAngles.y = stream.ReadFloat32()
+		ent.VisualAngles.z = stream.ReadFloat32()
+	}
+	GameState.IsInDraw = true
+	await EventsSDK.emit("PreDraw")
+	await EventsSDK.emit("Draw")
+	GameState.IsInDraw = false
 })

@@ -1476,6 +1476,7 @@ export { CollisionObject } from "./Prediction/Collision/CollisionObject"
 export { default as UnitData } from "./Objects/DataBook/UnitData"
 
 import "./Managers/EventsHandler"
+import "./Native/HumanizerLogic"
 
 import "./global"
 

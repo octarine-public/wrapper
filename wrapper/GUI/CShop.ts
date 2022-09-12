@@ -2,7 +2,7 @@ import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
-import GUIInfo from "./GUIInfo"
+import { ScaleHeight, ScaleWidth } from "./Helpers"
 
 export default class CShop {
 	public readonly CourierGold = new Rectangle()
@@ -45,35 +45,35 @@ export default class CShop {
 	}
 
 	private CalculateCourierGold(screen_size: Vector2, hud_flip: boolean): void {
-		this.CourierGold.Width = GUIInfo.ScaleWidth(278, screen_size)
-		this.CourierGold.Height = GUIInfo.ScaleHeight(60, screen_size)
+		this.CourierGold.Width = ScaleWidth(278, screen_size)
+		this.CourierGold.Height = ScaleHeight(60, screen_size)
 		this.CourierGold.x = !hud_flip
 			? screen_size.x - this.CourierGold.Width
 			: 0
 		this.CourierGold.y = screen_size.y - this.CourierGold.Height
 
-		this.ShopButton.Width = GUIInfo.ScaleWidth(100, screen_size)
-		this.ShopButton.Height = GUIInfo.ScaleHeight(36, screen_size)
+		this.ShopButton.Width = ScaleWidth(100, screen_size)
+		this.ShopButton.Height = ScaleHeight(36, screen_size)
 
-		this.ShopButton.x = this.CourierGold.x + GUIInfo.ScaleWidth(8 + (!hud_flip ? 20 : 0), screen_size)
-		this.ShopButton.y = this.CourierGold.y + GUIInfo.ScaleHeight(12, screen_size)
+		this.ShopButton.x = this.CourierGold.x + ScaleWidth(8 + (!hud_flip ? 20 : 0), screen_size)
+		this.ShopButton.y = this.CourierGold.y + ScaleHeight(12, screen_size)
 	}
 	private CalculateQuickbuyAndSticky(screen_size: Vector2, hud_flip: boolean): void {
-		this.ClearQuickBuy_1Row.Width = this.ClearQuickBuy_2Rows.Width = GUIInfo.ScaleWidth(16, screen_size)
-		this.ClearQuickBuy_1Row.Height = this.ClearQuickBuy_2Rows.Height = GUIInfo.ScaleHeight(16, screen_size)
+		this.ClearQuickBuy_1Row.Width = this.ClearQuickBuy_2Rows.Width = ScaleWidth(16, screen_size)
+		this.ClearQuickBuy_1Row.Height = this.ClearQuickBuy_2Rows.Height = ScaleHeight(16, screen_size)
 
-		this.Quickbuy_1Row.Width = this.Quickbuy_2Rows.Width = GUIInfo.ScaleWidth(202, screen_size)
-		this.Quickbuy_1Row.Height = GUIInfo.ScaleHeight(40, screen_size)
-		this.Quickbuy_2Rows.Height = GUIInfo.ScaleHeight(74, screen_size)
+		this.Quickbuy_1Row.Width = this.Quickbuy_2Rows.Width = ScaleWidth(202, screen_size)
+		this.Quickbuy_1Row.Height = ScaleHeight(40, screen_size)
+		this.Quickbuy_2Rows.Height = ScaleHeight(74, screen_size)
 		this.Quickbuy_1Row.y = this.CourierGold.y - this.Quickbuy_1Row.Height
 		this.Quickbuy_2Rows.y = this.CourierGold.y - this.Quickbuy_2Rows.Height
 
-		const ClearQuickBuy_offset_x = GUIInfo.ScaleWidth(68, screen_size),
-			ClearQuickBuy_offset_y = GUIInfo.ScaleHeight(8, screen_size)
+		const ClearQuickBuy_offset_x = ScaleWidth(68, screen_size),
+			ClearQuickBuy_offset_y = ScaleHeight(8, screen_size)
 		this.ClearQuickBuy_1Row.y = this.Quickbuy_1Row.y + ClearQuickBuy_offset_y
 		this.ClearQuickBuy_2Rows.y = this.Quickbuy_2Rows.y + ClearQuickBuy_offset_y
 
-		this.Sticky_1Row.Width = this.Sticky_2Rows.Width = GUIInfo.ScaleWidth(60, screen_size)
+		this.Sticky_1Row.Width = this.Sticky_2Rows.Width = ScaleWidth(60, screen_size)
 		this.Sticky_1Row.Height = this.Quickbuy_1Row.Height
 		this.Sticky_2Rows.Height = this.Quickbuy_2Rows.Height
 
@@ -99,14 +99,14 @@ export default class CShop {
 	}
 	private CalculateStash(screen_size: Vector2, hud_flip: boolean): void {
 		const StashContainer = new Rectangle()
-		StashContainer.Width = GUIInfo.ScaleWidth(750, screen_size)
-		StashContainer.Height = GUIInfo.ScaleHeight(176, screen_size)
+		StashContainer.Width = ScaleWidth(750, screen_size)
+		StashContainer.Height = ScaleHeight(176, screen_size)
 
 		StashContainer.y = (
 			screen_size.y
 			- (
-				GUIInfo.ScaleHeight(56, screen_size)
-				- GUIInfo.ScaleHeight(16, screen_size)
+				ScaleHeight(56, screen_size)
+				- ScaleHeight(16, screen_size)
 			)
 			- StashContainer.Height
 		)
@@ -114,31 +114,31 @@ export default class CShop {
 			? 0
 			: screen_size.x - this.Stash.Width
 
-		this.Stash.Width = GUIInfo.ScaleWidth(262, screen_size)
-		this.Stash.Height = GUIInfo.ScaleHeight(72, screen_size)
+		this.Stash.Width = ScaleWidth(262, screen_size)
+		this.Stash.Height = ScaleHeight(72, screen_size)
 		this.Stash.y = StashContainer.y
 		this.Stash.x = hud_flip
 			? 0
 			: screen_size.x - this.Stash.Width
 
-		const StashGrabAllMargin = GUIInfo.ScaleWidth(186, screen_size)
-		this.StashGrabAll.Width = GUIInfo.ScaleWidth(102, screen_size)
-		this.StashGrabAll.Height = GUIInfo.ScaleHeight(26, screen_size)
-		this.StashGrabAll.y = StashContainer.y + GUIInfo.ScaleHeight(3, screen_size)
+		const StashGrabAllMargin = ScaleWidth(186, screen_size)
+		this.StashGrabAll.Width = ScaleWidth(102, screen_size)
+		this.StashGrabAll.Height = ScaleHeight(26, screen_size)
+		this.StashGrabAll.y = StashContainer.y + ScaleHeight(3, screen_size)
 		this.StashGrabAll.x = hud_flip
 			? StashContainer.x + StashGrabAllMargin
 			: StashContainer.x - StashGrabAllMargin - this.StashGrabAll.Width
 
 		const StashSlots = 6
-		const ItemWidth = GUIInfo.ScaleWidth(38, screen_size),
-			ItemHeight = GUIInfo.ScaleHeight(28, screen_size),
-			ItemMarginTop = GUIInfo.ScaleHeight(2, screen_size),
-			ItemMarginRight = GUIInfo.ScaleWidth(3, screen_size)
+		const ItemWidth = ScaleWidth(38, screen_size),
+			ItemHeight = ScaleHeight(28, screen_size),
+			ItemMarginTop = ScaleHeight(2, screen_size),
+			ItemMarginRight = ScaleWidth(3, screen_size)
 		const StashRow = new Rectangle()
 		StashRow.Width = (ItemWidth + ItemMarginRight) * StashSlots
 		StashRow.Height = ItemHeight
-		StashRow.x = this.Stash.pos2.x - StashRow.Width - GUIInfo.ScaleWidth(7, screen_size)
-		StashRow.y = this.Stash.y + GUIInfo.ScaleHeight(31, screen_size) + ItemMarginTop
+		StashRow.x = this.Stash.pos2.x - StashRow.Width - ScaleWidth(7, screen_size)
+		StashRow.y = this.Stash.y + ScaleHeight(31, screen_size) + ItemMarginTop
 		for (let i = 0; i < StashSlots; i++) {
 			const ItemRect = new Rectangle()
 			ItemRect.x = StashRow.x

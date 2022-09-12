@@ -2,7 +2,7 @@ import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
-import GUIInfo from "./GUIInfo"
+import { ScaleHeight, ScaleWidth } from "./Helpers"
 
 export default class CShop {
 	private static readonly MainPanelMiniWidth = 360
@@ -37,14 +37,14 @@ export default class CShop {
 	}
 
 	private CalculateMainPanel(large: boolean, screen_size: Vector2, hud_flip: boolean): void {
-		const HeaderHeight = GUIInfo.ScaleHeight(CShop.HeaderHeight, screen_size),
-			ItemsHeight = GUIInfo.ScaleHeight(CShop.ItemsHeight, screen_size),
-			PinnedItemsHeight = GUIInfo.ScaleHeight(CShop.PinnedItemsHeight, screen_size),
-			ItemCombinesHeight = GUIInfo.ScaleHeight(CShop.ItemCombinesHeight, screen_size),
-			ShopBottomMargin = GUIInfo.ScaleHeight(206, screen_size)
+		const HeaderHeight = ScaleHeight(CShop.HeaderHeight, screen_size),
+			ItemsHeight = ScaleHeight(CShop.ItemsHeight, screen_size),
+			PinnedItemsHeight = ScaleHeight(CShop.PinnedItemsHeight, screen_size),
+			ItemCombinesHeight = ScaleHeight(CShop.ItemCombinesHeight, screen_size),
+			ShopBottomMargin = ScaleHeight(206, screen_size)
 
 		const MainPanel = new Rectangle()
-		MainPanel.Width = GUIInfo.ScaleWidth(
+		MainPanel.Width = ScaleWidth(
 			large
 				? CShop.MainPanelLargeWidth
 				: CShop.MainPanelMiniWidth,
@@ -56,8 +56,8 @@ export default class CShop {
 		MainPanel.y = screen_size.y - ShopBottomMargin - MainPanel.Height
 
 		if (large) {
-			this.GuideFlyout.Width = GUIInfo.ScaleWidth(210, screen_size)
-			this.GuideFlyout.Height = GUIInfo.ScaleHeight(814, screen_size)
+			this.GuideFlyout.Width = ScaleWidth(210, screen_size)
+			this.GuideFlyout.Height = ScaleHeight(814, screen_size)
 			this.GuideFlyout.x = hud_flip
 				? MainPanel.pos2.x
 				: MainPanel.x - this.GuideFlyout.Width

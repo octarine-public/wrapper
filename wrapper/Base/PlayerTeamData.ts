@@ -1,4 +1,4 @@
-import { EntityPropertiesNode } from "../Managers/EntityManager"
+import { EntityPropertiesNode } from "./EntityProperties"
 
 export default class PlayerTeamData {
 	constructor(public readonly properties: EntityPropertiesNode) { }

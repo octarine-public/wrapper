@@ -1,4 +1,4 @@
-import { EntityPropertiesNode } from "../Managers/EntityManager"
+import { EntityPropertiesNode } from "./EntityProperties"
 
 export default class TreeModelReplacement {
 	constructor(public readonly properties: EntityPropertiesNode) { }

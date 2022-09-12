@@ -85,3 +85,8 @@ EventsSDK.on("EntityDestroyed", ent => {
 			if (ent.HandleMatches(player.Hero_))
 				player.Hero = undefined
 })
+
+EventsSDK.on("PlayerResourceUpdated", playerResource => {
+	for (const player of Players)
+		player.UpdateHero(playerResource)
+})

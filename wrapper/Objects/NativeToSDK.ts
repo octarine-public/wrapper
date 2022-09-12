@@ -1,4 +1,4 @@
-import { EntityPropertyType } from "../Managers/EntityManager"
+import { EntityPropertyType } from "../Base/EntityProperties"
 import Events from "../Managers/Events"
 import { ParseProtobufNamed } from "../Utils/Protobuf"
 import { MapToObject } from "../Utils/Utils"

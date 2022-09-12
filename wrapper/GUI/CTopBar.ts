@@ -2,7 +2,7 @@ import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
-import GUIInfo from "./GUIInfo"
+import { ScaleHeight, ScaleWidth } from "./Helpers"
 
 export default class CTopBar {
 	public readonly TopBar = new Rectangle()
@@ -81,8 +81,8 @@ export default class CTopBar {
 	}
 
 	private CalculateTopBar(screen_size: Vector2): void {
-		this.TopBar.Width = GUIInfo.ScaleWidth(1240, screen_size)
-		this.TopBar.Height = GUIInfo.ScaleHeight(165, screen_size)
+		this.TopBar.Width = ScaleWidth(1240, screen_size)
+		this.TopBar.Height = ScaleHeight(165, screen_size)
 		this.TopBar.x = Math.round((screen_size.x - this.TopBar.Width) / 2)
 
 		// These resolutions have incorrect centering - they assign more pixels to the right side
@@ -95,28 +95,28 @@ export default class CTopBar {
 			this.TopBar.x -= 1
 	}
 	private CalculateTimeOfDay(screen_size: Vector2): void {
-		this.TimeOfDay.Width = GUIInfo.ScaleWidth(80, screen_size)
-		this.TimeOfDay.Height = GUIInfo.ScaleHeight(45, screen_size)
+		this.TimeOfDay.Width = ScaleWidth(80, screen_size)
+		this.TimeOfDay.Height = ScaleHeight(45, screen_size)
 		this.TimeOfDay.x = this.TopBar.x + Math.round((this.TopBar.Width - this.TimeOfDay.Width) / 2)
 	}
 	private CalculateTimeOfDayTimeUntil(screen_size: Vector2): void {
-		this.TimeOfDayTimeUntil.Width = GUIInfo.ScaleWidth(150, screen_size)
-		this.TimeOfDayTimeUntil.Height = GUIInfo.ScaleWidth(18, screen_size)
+		this.TimeOfDayTimeUntil.Width = ScaleWidth(150, screen_size)
+		this.TimeOfDayTimeUntil.Height = ScaleWidth(18, screen_size)
 		this.TimeOfDayTimeUntil.x = this.TopBar.x + Math.round((this.TopBar.Width - this.TimeOfDayTimeUntil.Width) / 2)
-		this.TimeOfDayTimeUntil.y = this.TopBar.Height - GUIInfo.ScaleHeight(64, screen_size) - this.TimeOfDayTimeUntil.Height
+		this.TimeOfDayTimeUntil.y = this.TopBar.Height - ScaleHeight(64, screen_size) - this.TimeOfDayTimeUntil.Height
 	}
 	private CalculateSpectatorGoldDisplay(screen_size: Vector2): void {
-		const DisplayWidth = GUIInfo.ScaleWidth(62, screen_size),
-			DisplayHeight = GUIInfo.ScaleHeight(24, screen_size),
-			DisplayMargin = GUIInfo.ScaleWidth(3, screen_size)
+		const DisplayWidth = ScaleWidth(62, screen_size),
+			DisplayHeight = ScaleHeight(24, screen_size),
+			DisplayMargin = ScaleWidth(3, screen_size)
 		const SpectatorGoldDisplayContainer = new Rectangle()
-		SpectatorGoldDisplayContainer.Width = GUIInfo.ScaleWidth(210, screen_size)
-		SpectatorGoldDisplayContainer.Height = GUIInfo.ScaleHeight(50, screen_size)
+		SpectatorGoldDisplayContainer.Width = ScaleWidth(210, screen_size)
+		SpectatorGoldDisplayContainer.Height = ScaleHeight(50, screen_size)
 		SpectatorGoldDisplayContainer.x = (
 			this.TopBar.x
 			+ Math.round((this.TopBar.Width - SpectatorGoldDisplayContainer.Width) / 2)
 		)
-		SpectatorGoldDisplayContainer.y = this.TopBar.y + GUIInfo.ScaleHeight(40, screen_size)
+		SpectatorGoldDisplayContainer.y = this.TopBar.y + ScaleHeight(40, screen_size)
 
 		this.RadiantSpectatorGoldDisplay.Width = DisplayWidth
 		this.RadiantSpectatorGoldDisplay.Height = DisplayHeight
@@ -134,22 +134,22 @@ export default class CTopBar {
 		this.DireSpectatorGoldDisplay.y = SpectatorGoldDisplayContainer.y
 	}
 	private CalculateTeamScoreAndPlayers(screen_size: Vector2): void {
-		const ContainerWidth = GUIInfo.ScaleWidth(620, screen_size),
-			TeamBackgroundWidth = GUIInfo.ScaleWidth(410, screen_size),
-			TeamBackgroundHeight = GUIInfo.ScaleWidth(40, screen_size),
-			TeamScoreAndPlayersWidth = GUIInfo.ScaleWidth(540, screen_size),
-			TeamScoreAndPlayersMargin1 = GUIInfo.ScaleWidth(10, screen_size),
-			TeamScoreAndPlayersMargin2 = GUIInfo.ScaleWidth(40, screen_size),
-			ScoreWidth = GUIInfo.ScaleWidth(58, screen_size),
-			ScoreHeight = GUIInfo.ScaleHeight(38, screen_size),
-			ScoreMargin = GUIInfo.ScaleWidth(4, screen_size),
-			ScoreMarginTop = GUIInfo.ScaleHeight(7, screen_size),
-			PlayerWidth = GUIInfo.ScaleWidth(66, screen_size),
-			PlayerHeight = GUIInfo.ScaleHeight(165, screen_size),
-			PlayerMargin = GUIInfo.ScaleWidth(4, screen_size),
-			ProTeamInfoMargin = GUIInfo.ScaleWidth(2, screen_size),
-			TeamImageWidth = GUIInfo.ScaleWidth(66, screen_size),
-			TeamImageHeight = GUIInfo.ScaleHeight(40, screen_size)
+		const ContainerWidth = ScaleWidth(620, screen_size),
+			TeamBackgroundWidth = ScaleWidth(410, screen_size),
+			TeamBackgroundHeight = ScaleWidth(40, screen_size),
+			TeamScoreAndPlayersWidth = ScaleWidth(540, screen_size),
+			TeamScoreAndPlayersMargin1 = ScaleWidth(10, screen_size),
+			TeamScoreAndPlayersMargin2 = ScaleWidth(40, screen_size),
+			ScoreWidth = ScaleWidth(58, screen_size),
+			ScoreHeight = ScaleHeight(38, screen_size),
+			ScoreMargin = ScaleWidth(4, screen_size),
+			ScoreMarginTop = ScaleHeight(7, screen_size),
+			PlayerWidth = ScaleWidth(66, screen_size),
+			PlayerHeight = ScaleHeight(165, screen_size),
+			PlayerMargin = ScaleWidth(4, screen_size),
+			ProTeamInfoMargin = ScaleWidth(2, screen_size),
+			TeamImageWidth = ScaleWidth(66, screen_size),
+			TeamImageHeight = ScaleHeight(40, screen_size)
 
 		{
 			this.RadiantTeamBackground.Width = TeamBackgroundWidth
@@ -273,50 +273,50 @@ export default class CTopBar {
 	}
 	private CalculateHealthbars(screen_size: Vector2): void {
 		this.CalculateBasicRects(
-			GUIInfo.ScaleWidth(60, screen_size),
-			GUIInfo.ScaleHeight(8, screen_size),
-			GUIInfo.ScaleHeight(129, screen_size) - GUIInfo.ScaleHeight(11, screen_size),
-			GUIInfo.ScaleWidth(6, screen_size),
+			ScaleWidth(60, screen_size),
+			ScaleHeight(8, screen_size),
+			ScaleHeight(129, screen_size) - ScaleHeight(11, screen_size),
+			ScaleWidth(6, screen_size),
 			this.RadiantPlayersHealthbars,
 			this.DirePlayersHealthbars,
 		)
 	}
 	private CalculateManabars(screen_size: Vector2): void {
 		this.CalculateBasicRects(
-			GUIInfo.ScaleWidth(60, screen_size),
-			GUIInfo.ScaleHeight(8, screen_size),
-			GUIInfo.ScaleHeight(121, screen_size) - GUIInfo.ScaleHeight(11, screen_size),
-			GUIInfo.ScaleWidth(6, screen_size),
+			ScaleWidth(60, screen_size),
+			ScaleHeight(8, screen_size),
+			ScaleHeight(121, screen_size) - ScaleHeight(11, screen_size),
+			ScaleWidth(6, screen_size),
 			this.RadiantPlayersManabars,
 			this.DirePlayersManabars,
 		)
 	}
 	private CalculateBuybacks(screen_size: Vector2): void {
 		this.CalculateBasicRects(
-			GUIInfo.ScaleWidth(60, screen_size),
-			GUIInfo.ScaleHeight(4, screen_size),
-			GUIInfo.ScaleHeight(106, screen_size),
-			GUIInfo.ScaleWidth(6, screen_size),
+			ScaleWidth(60, screen_size),
+			ScaleHeight(4, screen_size),
+			ScaleHeight(106, screen_size),
+			ScaleWidth(6, screen_size),
 			this.RadiantPlayersBuybacks,
 			this.DirePlayersBuybacks,
 		)
 	}
 	private CalculateRespawnTimers(screen_size: Vector2): void {
 		this.CalculateBasicRects(
-			GUIInfo.ScaleWidth(60, screen_size),
-			GUIInfo.ScaleHeight(26, screen_size),
-			GUIInfo.ScaleHeight(99, screen_size),
-			GUIInfo.ScaleWidth(6, screen_size),
+			ScaleWidth(60, screen_size),
+			ScaleHeight(26, screen_size),
+			ScaleHeight(99, screen_size),
+			ScaleWidth(6, screen_size),
 			this.RadiantPlayersRespawnTimers,
 			this.DirePlayersRespawnTimers,
 		)
 	}
 	private CalculateTPIndicators(screen_size: Vector2): void {
 		this.CalculateBasicRects(
-			GUIInfo.ScaleWidth(48, screen_size),
-			GUIInfo.ScaleHeight(48, screen_size),
-			GUIInfo.ScaleHeight(40, screen_size),
-			GUIInfo.ScaleWidth(6, screen_size),
+			ScaleWidth(48, screen_size),
+			ScaleHeight(48, screen_size),
+			ScaleHeight(40, screen_size),
+			ScaleWidth(6, screen_size),
 			this.RadiantPlayersTPIndicators,
 			this.DirePlayersTPIndicators,
 			true,
@@ -324,10 +324,10 @@ export default class CTopBar {
 	}
 	private CalculateUltReadyIndicators(screen_size: Vector2): void {
 		this.CalculateBasicRects(
-			GUIInfo.ScaleWidth(38, screen_size),
-			GUIInfo.ScaleHeight(20, screen_size),
-			GUIInfo.ScaleHeight(-28, screen_size),
-			GUIInfo.ScaleWidth(6, screen_size),
+			ScaleWidth(38, screen_size),
+			ScaleHeight(20, screen_size),
+			ScaleHeight(-28, screen_size),
+			ScaleWidth(6, screen_size),
 			this.RadiantPlayersUltReadyIndicators,
 			this.DirePlayersUltReadyIndicators,
 			true,
@@ -335,9 +335,9 @@ export default class CTopBar {
 	}
 	private CalculateHeroImages(screen_size: Vector2): void {
 		this.CalculateBasicRects(
-			GUIInfo.ScaleWidth(66, screen_size),
-			GUIInfo.ScaleHeight(36, screen_size),
-			GUIInfo.ScaleHeight(-4, screen_size),
+			ScaleWidth(66, screen_size),
+			ScaleHeight(36, screen_size),
+			ScaleHeight(-4, screen_size),
 			0,
 			this.RadiantPlayersHeroImages,
 			this.DirePlayersHeroImages,
