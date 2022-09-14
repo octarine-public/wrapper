@@ -1466,13 +1466,6 @@ export * as EconHelper from "./Managers/EconHelper"
 export { default as ProjectileManager } from "./Managers/ProjectileManager"
 export { default as Manifest } from "./Managers/Manifest"
 
-export { default as Obstacle } from "./Prediction/NavMesh/Obstacle"
-export { default as MovingObstacle } from "./Prediction/NavMesh/MovingObstacle"
-export { default as NavMeshPathfinding } from "./Prediction/NavMesh/NavMeshPathfinding"
-// export { default as Prediction } from "./Prediction/Prediction"
-export { default as Collision } from "./Prediction/Collision/Collision"
-export { CollisionObject } from "./Prediction/Collision/CollisionObject"
-
 export { default as UnitData } from "./Objects/DataBook/UnitData"
 
 import "./Managers/EventsHandler"
