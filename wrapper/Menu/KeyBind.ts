@@ -1,15 +1,15 @@
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import GUIInfo from "../GUI/GUIInfo"
-import EventsSDK from "../Managers/EventsSDK"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { GUIInfo } from "../GUI/GUIInfo"
+import { EventsSDK } from "../Managers/EventsSDK"
 import { InputEventSDK, VKeys, VMouseKeys } from "../Managers/InputManager"
-import RendererSDK from "../Native/RendererSDK"
+import { RendererSDK } from "../Native/RendererSDK"
 import { arrayRemove } from "../Utils/ArrayExtensions"
-import GameState from "../Utils/GameState"
-import Base, { IMenu } from "./Base"
-import KeyNames from "./KeyNames"
+import { GameState } from "../Utils/GameState"
+import { Base, IMenu } from "./Base"
+import { KeyNames } from "./KeyNames"
 
-export default class KeyBind extends Base {
+export class KeyBind extends Base {
 	public static readonly callbacks = new Map<number, KeyBind[]>()
 	public static changing_now?: KeyBind
 	public static OnWindowSizeChanged(): void {

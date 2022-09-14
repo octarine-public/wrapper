@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("phoenix_icarus_dive")
-export default class phoenix_icarus_dive extends Ability {
+export class phoenix_icarus_dive extends Ability {
 	public get Speed(): number {
 		return this.CastRange / this.GetSpecialValue("dive_duration")
 	}

@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("enigma_midnight_pulse")
-export default class enigma_midnight_pulse extends Ability {
+export class enigma_midnight_pulse extends Ability {
 }

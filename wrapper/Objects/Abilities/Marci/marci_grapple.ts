@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("marci_grapple")
-export default class marci_grapple extends Ability {
+export class marci_grapple extends Ability {
 	public get Duration(): number {
 		return this.GetSpecialValue("stun_duration")
 	}

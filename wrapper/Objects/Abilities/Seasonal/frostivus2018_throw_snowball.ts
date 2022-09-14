@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("frostivus2018_throw_snowball")
-export default class frostivus2018_throw_snowball extends Ability {
+export class frostivus2018_throw_snowball extends Ability {
 }

@@ -1,12 +1,12 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
-import EventsSDK from "../../Managers/EventsSDK"
-import Entity, { GameRules } from "../Base/Entity"
-import Unit from "../Base/Unit"
-import FakeUnit from "./FakeUnit"
+import { EventsSDK } from "../../Managers/EventsSDK"
+import { Entity, GameRules } from "../Base/Entity"
+import { Unit } from "../Base/Unit"
+import { FakeUnit } from "./FakeUnit"
 
 @WrapperClass("CDOTA_Unit_Roshan")
-export default class Roshan extends Unit {
+export class Roshan extends Unit {
 	public static HP = 0
 	public static HPRegenCounter = 0
 	public static MaxHP = 0

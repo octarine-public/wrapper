@@ -2,11 +2,11 @@ import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAScriptInventorySlot_t } from "../../Enums/DOTAScriptInventorySlot_t"
 import { EShareAbility } from "../../Enums/EShareAbility"
 import { EPropertyType } from "../../Enums/PropertyType"
-import Ability from "./Ability"
+import { Ability } from "./Ability"
 import { GameRules } from "./Entity"
 
 @WrapperClass("CDOTA_Item")
-export default class Item extends Ability {
+export class Item extends Ability {
 	@NetworkedBasicField("m_flEnableTime")
 	public EnableTime = 0
 	@NetworkedBasicField("m_iSharability")

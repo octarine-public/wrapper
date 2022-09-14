@@ -1,14 +1,14 @@
-import Vector3 from "../../Base/Vector3"
-import EntityManager from "../../Managers/EntityManager"
-import EventsSDK from "../../Managers/EventsSDK"
+import { Vector3 } from "../../Base/Vector3"
+import { EntityManager } from "../../Managers/EntityManager"
+import { EventsSDK } from "../../Managers/EventsSDK"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
-import GameState from "../../Utils/GameState"
-import UnitData from "../DataBook/UnitData"
-import Entity from "./Entity"
+import { GameState } from "../../Utils/GameState"
+import { UnitData } from "../DataBook/UnitData"
+import { Entity } from "./Entity"
 import { PlayerResource } from "./PlayerResource"
-import Unit from "./Unit"
+import { Unit } from "./Unit"
 
-export default class FakeUnit {
+export class FakeUnit {
 	public TPStartTime = -1
 	public readonly PredictedPosition = new Vector3().Invalidate()
 	public readonly TPStartPosition = new Vector3().Invalidate()

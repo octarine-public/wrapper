@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("puck_illusory_orb")
-export default class puck_illusory_orb extends Ability {
+export class puck_illusory_orb extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("orb_speed")
 	}

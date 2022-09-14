@@ -1,12 +1,12 @@
-import Color from "../Base/Color"
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import GUIInfo from "../GUI/GUIInfo"
-import EventsSDK from "../Managers/EventsSDK"
-import RendererSDK from "../Native/RendererSDK"
-import Base, { IMenu } from "./Base"
+import { Color } from "../Base/Color"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { GUIInfo } from "../GUI/GUIInfo"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { RendererSDK } from "../Native/RendererSDK"
+import { Base, IMenu } from "./Base"
 
-export default class Toggle extends Base {
+export class Toggle extends Base {
 	public static OnWindowSizeChanged(): void {
 		Toggle.toggle_background_size.x = GUIInfo.ScaleWidth(Toggle.orig_toggle_background_size.x)
 		Toggle.toggle_background_size.y = GUIInfo.ScaleHeight(Toggle.orig_toggle_background_size.y)

@@ -1,8 +1,8 @@
-import Matrix4x4 from "../Base/Matrix4x4"
-import Vector3 from "../Base/Vector3"
-import Vector4 from "../Base/Vector4"
+import { Matrix4x4 } from "../Base/Matrix4x4"
+import { Vector3 } from "../Base/Vector3"
+import { Vector4 } from "../Base/Vector4"
 import { isStream } from "../Utils/ReadableBinaryStreamUtils"
-import ViewBinaryStream from "../Utils/ViewBinaryStream"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { parseKV, parseKVBlock, parseKVFile } from "./ParseKV"
 import { GetMapNumberProperty, GetMapStringProperty, MapToNumberArray, MapToStringArray, MapToVector3 } from "./ParseUtils"
 

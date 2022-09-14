@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("queenofpain_sonic_wave")
-export default class queenofpain_sonic_wave extends Ability {
+export class queenofpain_sonic_wave extends Ability {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("final_aoe")
 	}

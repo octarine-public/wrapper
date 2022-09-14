@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("venomancer_plague_ward")
-export default class venomancer_plague_ward extends Ability {
+export class venomancer_plague_ward extends Ability {
 	public get Duration(): number {
 		return this.GetSpecialValue("duration")
 	}

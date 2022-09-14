@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("earthshaker_aftershock")
-export default class earthshaker_aftershock extends Ability {
+export class earthshaker_aftershock extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("aftershock_range", level)
 	}

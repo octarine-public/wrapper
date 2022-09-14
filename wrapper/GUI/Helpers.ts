@@ -1,4 +1,4 @@
-import RendererSDK from "../Native/RendererSDK"
+import { RendererSDK } from "../Native/RendererSDK"
 
 // Looks like it's hardcoded
 // Do not change it unless anything breaks.

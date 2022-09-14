@@ -1,11 +1,11 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { CourierState_t } from "../../Enums/CourierState_t"
-import EntityManager from "../../Managers/EntityManager"
-import Hero from "./Hero"
-import Unit from "./Unit"
+import { EntityManager } from "../../Managers/EntityManager"
+import { Hero } from "./Hero"
+import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_Unit_Courier")
-export default class Courier extends Unit {
+export class Courier extends Unit {
 	@NetworkedBasicField("m_bFlyingCourier")
 	public IsFlying = false
 	@NetworkedBasicField("m_flRespawnTime")

@@ -1,11 +1,11 @@
-import Vector3 from "../Base/Vector3"
+import { Vector3 } from "../Base/Vector3"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
-import EventsSDK from "../Managers/EventsSDK"
-import Ability from "../Objects/Base/Ability"
-import Entity from "../Objects/Base/Entity"
-import TempTree from "../Objects/Base/TempTree"
-import Tree from "../Objects/Base/Tree"
-import Unit from "../Objects/Base/Unit"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { Ability } from "../Objects/Base/Ability"
+import { Entity } from "../Objects/Base/Entity"
+import { TempTree } from "../Objects/Base/TempTree"
+import { Tree } from "../Objects/Base/Tree"
+import { Unit } from "../Objects/Base/Unit"
 import { arrayRemoveCallback } from "../Utils/ArrayExtensions"
 import * as WASM from "./WASM"
 
@@ -91,7 +91,7 @@ function CanBeIgnored(order: ExecuteOrder): boolean {
 	}
 }
 
-export default class ExecuteOrder {
+export class ExecuteOrder {
 	public static readonly order_queue: [ExecuteOrder, number, boolean][] = []
 	public static debug_orders = false
 	public static debug_draw = false

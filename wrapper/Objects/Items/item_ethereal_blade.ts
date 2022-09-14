@@ -1,10 +1,10 @@
 import { WrapperClass } from "../../Decorators"
 import { Attributes } from "../../Enums/Attributes"
 import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
-import Item from "../Base/Item"
+import { Item } from "../Base/Item"
 
 @WrapperClass("item_ethereal_blade")
-export default class item_ethereal_blade extends Item {
+export class item_ethereal_blade extends Item {
 	public readonly ProjectilePath = "particles/items_fx/ethereal_blade.vpcf"
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")

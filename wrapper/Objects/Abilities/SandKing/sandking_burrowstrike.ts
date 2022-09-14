@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("sandking_burrowstrike")
-export default class sandking_burrowstrike extends Ability {
+export class sandking_burrowstrike extends Ability {
 	public get Speed(): number {
 		if (this.Owner?.HasScepter)
 			return this.GetSpecialValue("burrow_speed_scepter")

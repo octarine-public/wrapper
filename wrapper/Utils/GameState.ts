@@ -2,7 +2,7 @@ import { DOTAGameUIState_t } from "../Enums/DOTAGameUIState_t"
 import { Flow_t } from "../Enums/Flow_t"
 import { Team } from "../Enums/Team"
 
-export default new (class GameState {
+export const GameState = new (class CGameState {
 	public CurrentServerTick = -1
 	public IsInputCaptured = false
 	public UIState = DOTAGameUIState_t.DOTA_GAME_UI_STATE_DASHBOARD

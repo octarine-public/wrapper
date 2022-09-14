@@ -1,14 +1,14 @@
-import Color from "../Base/Color"
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import Vector3 from "../Base/Vector3"
-import GUIInfo from "../GUI/GUIInfo"
-import EventsSDK from "../Managers/EventsSDK"
-import RendererSDK from "../Native/RendererSDK"
-import Base, { IMenu } from "./Base"
-import Localization from "./Localization"
+import { Color } from "../Base/Color"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { Vector3 } from "../Base/Vector3"
+import { GUIInfo } from "../GUI/GUIInfo"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { RendererSDK } from "../Native/RendererSDK"
+import { Base, IMenu } from "./Base"
+import { Localization } from "./Localization"
 
-export default class Dropdown extends Base {
+export class Dropdown extends Base {
 	public static active_dropdown: Nullable<Dropdown>
 	public static readonly dropdown_popup_elements_limit = 4
 	public static OnWindowSizeChanged(): void {

@@ -1,14 +1,14 @@
-import NetworkedParticle from "../Base/NetworkedParticle"
-import Vector3 from "../Base/Vector3"
+import { NetworkedParticle } from "../Base/NetworkedParticle"
+import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { SOType } from "../Enums/SOType"
-import ExecuteOrder from "../Native/ExecuteOrder"
-import Entity from "../Objects/Base/Entity"
-import FakeUnit from "../Objects/Base/FakeUnit"
-import Modifier from "../Objects/Base/Modifier"
-import CPlayerResource from "../Objects/Base/PlayerResource"
+import { ExecuteOrder } from "../Native/ExecuteOrder"
+import { Entity } from "../Objects/Base/Entity"
+import { FakeUnit } from "../Objects/Base/FakeUnit"
+import { Modifier } from "../Objects/Base/Modifier"
+import { CPlayerResource } from "../Objects/Base/PlayerResource"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
-import Unit from "../Objects/Base/Unit"
+import { Unit } from "../Objects/Base/Unit"
 import { RecursiveProtobuf } from "../Utils/Protobuf"
 import { EventEmitter } from "./Events"
 
@@ -195,5 +195,4 @@ interface EventsSDK extends EventEmitter {
 	on(name: "PlayerResourceUpdated", listener: (playerResource: CPlayerResource) => void, priority?: number): EventEmitter
 }
 
-const EventsSDK: EventsSDK = new EventEmitter()
-export default EventsSDK
+export const EventsSDK: EventsSDK = new EventEmitter()

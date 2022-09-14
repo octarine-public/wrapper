@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../Decorators"
-import Building from "./Building"
+import { Building } from "./Building"
 
 @WrapperClass("CDOTA_BaseNPC_Fort")
-export default class Fort extends Building {
+export class Fort extends Building {
 	public get RingRadius(): number {
 		return 300
 	}

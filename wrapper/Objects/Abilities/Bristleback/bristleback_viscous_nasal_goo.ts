@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("bristleback_viscous_nasal_goo")
-export default class bristleback_viscous_nasal_goo extends Ability {
+export class bristleback_viscous_nasal_goo extends Ability {
 	public readonly ProjectilePath = "particles/units/heroes/hero_bristleback/bristleback_viscous_nasal_goo.vpcf"
 	public GetAOERadiusForLevel(level: number): number {
 		return this.Owner?.HasScepter

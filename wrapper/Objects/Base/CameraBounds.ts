@@ -1,10 +1,10 @@
-import Vector3 from "../../Base/Vector3"
+import { Vector3 } from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
-import EventsSDK from "../../Managers/EventsSDK"
-import Entity from "./Entity"
+import { EventsSDK } from "../../Managers/EventsSDK"
+import { Entity } from "./Entity"
 
 @WrapperClass("CDOTACameraBounds")
-export default class CCameraBounds extends Entity {
+export class CCameraBounds extends Entity {
 	@NetworkedBasicField("m_vecBoundsMin")
 	public BoundsMin = new Vector3()
 	@NetworkedBasicField("m_vecBoundsMax")

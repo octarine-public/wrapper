@@ -1,7 +1,7 @@
 import { WorldPolygon } from "../Geometry/WorldPolygon"
-import Vector3 from "./Vector3"
+import { Vector3 } from "./Vector3"
 
-export default class AABB {
+export class AABB {
 	constructor(
 		public readonly Base = new Vector3(),
 		public readonly MinOffset = new Vector3(),

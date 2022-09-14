@@ -1,9 +1,9 @@
 import { WrapperClass } from "../../Decorators"
-import EntityManager from "../../Managers/EntityManager"
-import Building from "./Building"
+import { EntityManager } from "../../Managers/EntityManager"
+import { Building } from "./Building"
 
 @WrapperClass("CDOTA_Unit_Fountain")
-export default class Fountain extends Building {
+export class Fountain extends Building {
 	public get RingRadius(): number {
 		return 300
 	}

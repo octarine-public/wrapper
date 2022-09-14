@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../Decorators"
-import Item from "../Base/Item"
+import { Item } from "../Base/Item"
 
 @WrapperClass("item_ring_of_aquila")
-export default class item_ring_of_aquila extends Item {
+export class item_ring_of_aquila extends Item {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("aura_radius", level)
 	}

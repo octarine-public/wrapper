@@ -1,9 +1,9 @@
 import { GetPositionHeight } from "../Native/WASM"
 import { EntityPropertiesNode } from "./EntityProperties"
-import Vector2 from "./Vector2"
-import Vector3 from "./Vector3"
+import { Vector2 } from "./Vector2"
+import { Vector3 } from "./Vector3"
 
-export default class NeutralSpawnBox {
+export class NeutralSpawnBox {
 	constructor(public readonly properties: EntityPropertiesNode) { }
 
 	public get MinBounds(): Vector3 {

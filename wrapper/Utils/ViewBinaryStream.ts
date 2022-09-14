@@ -1,6 +1,6 @@
-import Color from "../Base/Color"
+import { Color } from "../Base/Color"
 
-export default class ViewBinaryStream implements ReadableBinaryStream {
+export class ViewBinaryStream implements ReadableBinaryStream {
 	private readonly is_utf16: boolean
 	private readonly is_utf16_be: boolean
 	constructor(

@@ -1,14 +1,14 @@
-import Color from "../Base/Color"
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import GUIInfo from "../GUI/GUIInfo"
-import EventsSDK from "../Managers/EventsSDK"
-import RendererSDK from "../Native/RendererSDK"
-import AbilityData from "../Objects/DataBook/AbilityData"
-import Base, { IMenu } from "./Base"
+import { Color } from "../Base/Color"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { GUIInfo } from "../GUI/GUIInfo"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { RendererSDK } from "../Native/RendererSDK"
+import { AbilityData } from "../Objects/DataBook/AbilityData"
+import { Base, IMenu } from "./Base"
 
 // every icon: 32x32, 1x1 border
-export default class ImageSelector extends Base {
+export class ImageSelector extends Base {
 	public static OnWindowSizeChanged(): void {
 		ImageSelector.image_border_width = GUIInfo.ScaleWidth(2)
 		ImageSelector.image_gap = GUIInfo.ScaleWidth(2)

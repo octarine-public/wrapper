@@ -1,10 +1,10 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { GameActivity_t } from "../../Enums/GameActivity_t"
-import ConVarsSDK from "../../Native/ConVarsSDK"
-import Hero from "../Base/Hero"
+import { ConVarsSDK } from "../../Native/ConVarsSDK"
+import { Hero } from "../Base/Hero"
 
 @WrapperClass("CDOTA_Unit_Hero_Dawnbreaker")
-export default class npc_dota_hero_dawnbreaker extends Hero {
+export class npc_dota_hero_dawnbreaker extends Hero {
 	@NetworkedBasicField("m_nAttackState")
 	public AttackState = 0
 

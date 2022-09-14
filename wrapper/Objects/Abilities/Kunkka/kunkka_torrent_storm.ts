@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("kunkka_torrent_storm")
-export default class kunkka_torrent_storm extends Ability {
+export class kunkka_torrent_storm extends Ability {
 	public get Duration(): number {
 		return this.GetSpecialValue("torrent_duration")
 	}

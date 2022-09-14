@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("skywrath_mage_ancient_seal")
-export default class skywrath_mage_ancient_seal extends Ability {
+export class skywrath_mage_ancient_seal extends Ability {
 }

@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("mars_spear")
-export default class mars_spear extends Ability {
+export class mars_spear extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("spear_speed")
 	}

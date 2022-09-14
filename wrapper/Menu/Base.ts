@@ -1,13 +1,13 @@
-import Color from "../Base/Color"
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import Vector3 from "../Base/Vector3"
-import GUIInfo from "../GUI/GUIInfo"
-import EventsSDK from "../Managers/EventsSDK"
-import InputManager from "../Managers/InputManager"
-import RendererSDK from "../Native/RendererSDK"
+import { Color } from "../Base/Color"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { Vector3 } from "../Base/Vector3"
+import { GUIInfo } from "../GUI/GUIInfo"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { InputManager } from "../Managers/InputManager"
+import { RendererSDK } from "../Native/RendererSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
-import Localization from "./Localization"
+import { Localization } from "./Localization"
 
 export interface IMenu {
 	entries: Base[]
@@ -23,7 +23,7 @@ export interface ILanguage {
 	Cn: string
 }
 
-export default class Base {
+export class Base {
 	public static ForwardConfigASAP = false
 	public static SaveConfigASAP = true
 	public static trigger_on_chat = false

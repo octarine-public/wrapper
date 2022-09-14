@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("shredder_chakram_2")
-export default class shredder_chakram_2 extends Ability {
+export class shredder_chakram_2 extends Ability {
 }

@@ -1,16 +1,16 @@
 import { ParticleAttachment_t } from "../Enums/ParticleAttachment_t"
-import ParticlesSDK from "../Managers/ParticleManager"
-import Entity from "../Objects/Base/Entity"
-import GameState from "../Utils/GameState"
+import { ParticlesSDK } from "../Managers/ParticleManager"
+import { Entity } from "../Objects/Base/Entity"
+import { GameState } from "../Utils/GameState"
 import { tryFindFile } from "../Utils/readFile"
-import Color from "./Color"
-import Vector2 from "./Vector2"
-import Vector3 from "./Vector3"
+import { Color } from "./Color"
+import { Vector2 } from "./Vector2"
+import { Vector3 } from "./Vector3"
 
 export type ControlPoint = boolean | number | Entity | Vector3 | Vector2 | Color | number[]
 export type ControlPointParam = [number, ControlPoint]
 
-export default class Particle {
+export class Particle {
 	public IsValid = false
 	public IsHidden = false
 	public readonly ControlPoints = new Map<number, Vector3>()

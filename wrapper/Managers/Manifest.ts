@@ -1,12 +1,12 @@
 import { MurmurHash2, MurmurHash64 } from "../Native/WASM"
 import { parseKV } from "../Resources/ParseKV"
 import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
-import FileBinaryStream from "../Utils/FileBinaryStream"
+import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { ParseExternalReferences, readJSON } from "../Utils/Utils"
-import ViewBinaryStream from "../Utils/ViewBinaryStream"
-import Events from "./Events"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
+import { Events } from "./Events"
 
-const Manifest = new (class CManifest {
+export const Manifest = new (class CManifest {
 	public readonly Directories: string[] = []
 	public readonly Extensions: string[] = []
 	public readonly FileNames: string[] = []
@@ -109,7 +109,6 @@ const Manifest = new (class CManifest {
 		return this.SoundHashToString.get(hash >>> 0)
 	}
 })()
-export default Manifest
 
 function ReadPathString(stream: ReadableBinaryStream, size: number): string {
 	return stream.ReadUtf8String(size).replace(/\\/g, "/").toLowerCase()

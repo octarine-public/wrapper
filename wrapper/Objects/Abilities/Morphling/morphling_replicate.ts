@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("morphling_replicate")
-export default class morphling_replicate extends Ability {
+export class morphling_replicate extends Ability {
 }

@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("monkey_king_untransform")
-export default class monkey_king_untransform extends Ability {
+export class monkey_king_untransform extends Ability {
 }

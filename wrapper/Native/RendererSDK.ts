@@ -1,11 +1,11 @@
-import Color from "../Base/Color"
-import Matrix4x4 from "../Base/Matrix4x4"
-import QAngle from "../Base/QAngle"
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import Vector3 from "../Base/Vector3"
-import EventsSDK from "../Managers/EventsSDK"
-import { default as Input } from "../Managers/InputManager"
+import { Color } from "../Base/Color"
+import { Matrix4x4 } from "../Base/Matrix4x4"
+import { QAngle } from "../Base/QAngle"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { Vector3 } from "../Base/Vector3"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { InputManager } from "../Managers/InputManager"
 import { ParseImage } from "../Resources/ParseImage"
 import { ParseMaterial } from "../Resources/ParseMaterial"
 import { CMeshDrawCall, ParseMesh } from "../Resources/ParseMesh"
@@ -13,14 +13,14 @@ import { ParseModel } from "../Resources/ParseModel"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
 import { orderByFirst } from "../Utils/ArrayExtensions"
 import { HasMask } from "../Utils/BitsExtensions"
-import FileBinaryStream from "../Utils/FileBinaryStream"
+import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { fread } from "../Utils/fread"
 import { DegreesToRadian } from "../Utils/Math"
-import readFile, { tryFindFile } from "../Utils/readFile"
-import ViewBinaryStream from "../Utils/ViewBinaryStream"
-import ConVarsSDK from "./ConVarsSDK"
+import { readFile, tryFindFile } from "../Utils/readFile"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
+import { ConVarsSDK } from "./ConVarsSDK"
 import * as WASM from "./WASM"
-import Workers from "./Workers"
+import { Workers } from "./Workers"
 
 enum CommandID {
 	BEGIN_CLIP = 0,
@@ -468,7 +468,7 @@ class CRendererSDK {
 	 * @param flags default: FontFlags_t.ANTIALIAS
 	 */
 	public TextAroundMouse(text: string, vec?: Vector2 | false, color = Color.Yellow, font_name = this.DefaultFontName, font_size = 30, weight = 400, italic = false, outlined = true): void {
-		let vecMouse = Input.CursorOnScreen.AddScalarX(30).AddScalarY(15)
+		let vecMouse = InputManager.CursorOnScreen.AddScalarX(30).AddScalarY(15)
 
 		if (vec !== undefined && vec !== false)
 			vecMouse = vecMouse.Add(vec)
@@ -965,10 +965,10 @@ class CRendererSDK {
 		return res.MultiplyForThis(vecSize)
 	}
 }
-const RendererSDK = new CRendererSDK()
-EventsSDK.on("UnitAbilityDataUpdated", () => RendererSDK.FreeTextureCache())
 
-export default RendererSDK
+export const RendererSDK = new CRendererSDK()
+
+EventsSDK.on("UnitAbilityDataUpdated", () => RendererSDK.FreeTextureCache())
 
 Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 	if (!Array.isArray(data))

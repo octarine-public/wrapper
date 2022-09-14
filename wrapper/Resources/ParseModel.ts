@@ -1,5 +1,5 @@
-import Vector3 from "../Base/Vector3"
-import FileBinaryStream from "../Utils/FileBinaryStream"
+import { Vector3 } from "../Base/Vector3"
+import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { CAnimation, ParseAnimationGroup, ParseEmbeddedAnimation } from "./ParseAnimation"
 import { parseKV, parseKVBlock } from "./ParseKV"
 import { CMesh, ParseEmbeddedMesh, ParseMesh } from "./ParseMesh"

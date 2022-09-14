@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("lina_dragon_slave")
-export default class lina_dragon_slave extends Ability {
+export class lina_dragon_slave extends Ability {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("dragon_slave_width_end")
 	}

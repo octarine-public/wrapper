@@ -1,4 +1,4 @@
-export default class ConVarsSDK {
+export class ConVarsSDK {
 	public static GetBoolean(convarName: string, defaultValue: boolean): boolean {
 		const res = ConVars.Get(convarName)
 		if (res === undefined || Array.isArray(res))

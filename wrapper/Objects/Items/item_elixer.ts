@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../Decorators"
-import Item from "../Base/Item"
+import { Item } from "../Base/Item"
 
 @WrapperClass("item_elixer")
-export default class item_elixer extends Item {
+export class item_elixer extends Item {
 }

@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../Decorators"
-import Item from "../Base/Item"
+import { Item } from "../Base/Item"
 
 @WrapperClass("item_timeless_relic")
-export default class item_timeless_relic extends Item {
+export class item_timeless_relic extends Item {
 }

@@ -1,15 +1,15 @@
 import { EntityPropertiesNode } from "../../Base/EntityProperties"
-import PlayerData from "../../Base/PlayerData"
-import PlayerTeamData from "../../Base/PlayerTeamData"
-import Vector3 from "../../Base/Vector3"
+import { PlayerData } from "../../Base/PlayerData"
+import { PlayerTeamData } from "../../Base/PlayerTeamData"
+import { Vector3 } from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
 import { Team } from "../../Enums/Team"
-import EventsSDK from "../../Managers/EventsSDK"
-import Entity from "../Base/Entity"
+import { EventsSDK } from "../../Managers/EventsSDK"
+import { Entity } from "../Base/Entity"
 import { PlayerSpawners } from "./InfoPlayerStartDota"
 
 @WrapperClass("CDOTA_PlayerResource")
-export default class CPlayerResource extends Entity {
+export class CPlayerResource extends Entity {
 	public PlayerTeamData: Nullable<PlayerTeamData>[] = []
 	public PlayerData: Nullable<PlayerData>[] = []
 	public RespawnPositions: Nullable<Vector3>[] = []

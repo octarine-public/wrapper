@@ -1,15 +1,15 @@
-import Vector2 from "../../../Base/Vector2"
-import Vector3 from "../../../Base/Vector3"
+import { Vector2 } from "../../../Base/Vector2"
+import { Vector3 } from "../../../Base/Vector3"
 import { WrapperClass } from "../../../Decorators"
-import EntityManager from "../../../Managers/EntityManager"
-import EventsSDK from "../../../Managers/EventsSDK"
+import { EntityManager } from "../../../Managers/EntityManager"
+import { EventsSDK } from "../../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../../Native/WASM"
-import GameState from "../../../Utils/GameState"
-import Ability from "../../Base/Ability"
+import { GameState } from "../../../Utils/GameState"
+import { Ability } from "../../Base/Ability"
 import { LocalPlayer } from "../../Base/Entity"
 
 @WrapperClass("techies_suicide")
-export default class techies_suicide extends Ability {
+export class techies_suicide extends Ability {
 	public readonly StartPosition = new Vector3().Invalidate()
 	public readonly TargetPosition = new Vector3().Invalidate()
 	public readonly LastKnownOwnerPosition_ = new Vector3().Invalidate()

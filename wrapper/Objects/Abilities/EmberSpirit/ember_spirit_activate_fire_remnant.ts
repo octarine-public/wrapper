@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("ember_spirit_activate_fire_remnant")
-export default class ember_spirit_activate_fire_remnant extends Ability {
+export class ember_spirit_activate_fire_remnant extends Ability {
 }

@@ -1,11 +1,11 @@
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import GUIInfo from "../GUI/GUIInfo"
-import EventsSDK from "../Managers/EventsSDK"
-import RendererSDK from "../Native/RendererSDK"
-import Base, { IMenu } from "./Base"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { GUIInfo } from "../GUI/GUIInfo"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { RendererSDK } from "../Native/RendererSDK"
+import { Base, IMenu } from "./Base"
 
-export default class Slider extends Base {
+export class Slider extends Base {
 	public static OnWindowSizeChanged(): void {
 		Slider.slider_background_height = GUIInfo.ScaleHeight(Slider.orig_slider_background_height)
 		Slider.slider_background_offset.x = GUIInfo.ScaleWidth(13)

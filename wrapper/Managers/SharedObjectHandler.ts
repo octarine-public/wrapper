@@ -1,8 +1,8 @@
 import { SOType } from "../Enums/SOType"
 import { ParseProtobufDesc, ParseProtobufNamed } from "../Utils/Protobuf"
-import ViewBinaryStream from "../Utils/ViewBinaryStream"
-import Events from "./Events"
-import EventsSDK from "./EventsSDK"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
+import { Events } from "./Events"
+import { EventsSDK } from "./EventsSDK"
 
 ParseProtobufDesc(`
 message CSOEconItemEquipped {

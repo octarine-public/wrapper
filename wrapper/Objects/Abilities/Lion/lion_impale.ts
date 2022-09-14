@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("lion_impale")
-export default class lion_impale extends Ability {
+export class lion_impale extends Ability {
 	public get SkillshotRange(): number {
 		return this.CastRange + this.AOERadius + this.GetSpecialValue("length_buffer")
 	}

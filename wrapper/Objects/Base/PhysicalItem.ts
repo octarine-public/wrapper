@@ -1,10 +1,10 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
-import EntityManager from "../../Managers/EntityManager"
-import Entity from "./Entity"
-import Item from "./Item"
+import { EntityManager } from "../../Managers/EntityManager"
+import { Entity } from "./Entity"
+import { Item } from "./Item"
 
 @WrapperClass("CDOTA_Item_Physical")
-export default class PhysicalItem extends Entity {
+export class PhysicalItem extends Entity {
 	@NetworkedBasicField("m_hItem")
 	public Item_ = 0
 

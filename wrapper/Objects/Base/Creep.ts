@@ -1,12 +1,12 @@
 import { WrapperClass } from "../../Decorators"
 import { MapArea } from "../../Enums/MapArea"
-import DotaMap from "../../Helpers/DotaMap"
-import EntityManager from "../../Managers/EntityManager"
-import EventsSDK from "../../Managers/EventsSDK"
-import Unit from "./Unit"
+import { DotaMap } from "../../Helpers/DotaMap"
+import { EntityManager } from "../../Managers/EntityManager"
+import { EventsSDK } from "../../Managers/EventsSDK"
+import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Creep")
-export default class Creep extends Unit {
+export class Creep extends Unit {
 	public PredictedIsWaitingToSpawn = true
 	public Lane = MapArea.Unknown
 

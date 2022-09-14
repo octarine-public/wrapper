@@ -1,16 +1,16 @@
-import Color from "../Base/Color"
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import RendererSDK from "../Native/RendererSDK"
+import { Color } from "../Base/Color"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { RendererSDK } from "../Native/RendererSDK"
 import { ScaleHeight, ScaleWidth } from "./Helpers"
 
-export default class CShop {
+export class COpenShop {
 	private static readonly MainPanelMiniWidth = 360
 	private static readonly MainPanelLargeWidth = 400
 
 	private static readonly HeaderAndItemsHeight = 650
 	private static readonly HeaderHeight = 84
-	private static readonly ItemsHeight = CShop.HeaderAndItemsHeight - CShop.HeaderHeight
+	private static readonly ItemsHeight = COpenShop.HeaderAndItemsHeight - COpenShop.HeaderHeight
 	// TODO: this only works correctly on FulLHD
 	private static readonly PinnedItemsHeight = 74
 	private static readonly ItemCombinesHeight = 90
@@ -37,17 +37,17 @@ export default class CShop {
 	}
 
 	private CalculateMainPanel(large: boolean, screen_size: Vector2, hud_flip: boolean): void {
-		const HeaderHeight = ScaleHeight(CShop.HeaderHeight, screen_size),
-			ItemsHeight = ScaleHeight(CShop.ItemsHeight, screen_size),
-			PinnedItemsHeight = ScaleHeight(CShop.PinnedItemsHeight, screen_size),
-			ItemCombinesHeight = ScaleHeight(CShop.ItemCombinesHeight, screen_size),
+		const HeaderHeight = ScaleHeight(COpenShop.HeaderHeight, screen_size),
+			ItemsHeight = ScaleHeight(COpenShop.ItemsHeight, screen_size),
+			PinnedItemsHeight = ScaleHeight(COpenShop.PinnedItemsHeight, screen_size),
+			ItemCombinesHeight = ScaleHeight(COpenShop.ItemCombinesHeight, screen_size),
 			ShopBottomMargin = ScaleHeight(206, screen_size)
 
 		const MainPanel = new Rectangle()
 		MainPanel.Width = ScaleWidth(
 			large
-				? CShop.MainPanelLargeWidth
-				: CShop.MainPanelMiniWidth,
+				? COpenShop.MainPanelLargeWidth
+				: COpenShop.MainPanelMiniWidth,
 			screen_size,
 		)
 		MainPanel.Height = HeaderHeight + ItemsHeight + PinnedItemsHeight + ItemCombinesHeight

@@ -1,14 +1,14 @@
-import Vector3 from "../Base/Vector3"
+import { Vector3 } from "../Base/Vector3"
 import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
-import Ability from "../Objects/Base/Ability"
-import Modifier from "../Objects/Base/Modifier"
-import Unit from "../Objects/Base/Unit"
+import { Ability } from "../Objects/Base/Ability"
+import { Modifier } from "../Objects/Base/Modifier"
+import { Unit } from "../Objects/Base/Unit"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
-import GameState from "../Utils/GameState"
+import { GameState } from "../Utils/GameState"
 import { ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
-import ViewBinaryStream from "../Utils/ViewBinaryStream"
-import EntityManager from "./EntityManager"
-import EventsSDK from "./EventsSDK"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
+import { EntityManager } from "./EntityManager"
+import { EventsSDK } from "./EventsSDK"
 
 export class IModifier {
 	constructor(public readonly m_Protobuf: RecursiveProtobuf) {

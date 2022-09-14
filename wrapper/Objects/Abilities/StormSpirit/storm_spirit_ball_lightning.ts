@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("storm_spirit_ball_lightning")
-export default class storm_spirit_ball_lightning extends Ability {
+export class storm_spirit_ball_lightning extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("ball_lightning_move_speed")
 	}

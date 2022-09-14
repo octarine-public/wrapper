@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("marci_companion_run")
-export default class marci_companion_run extends Ability {
+export class marci_companion_run extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("move_speed")
 	}

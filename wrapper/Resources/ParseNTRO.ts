@@ -1,5 +1,5 @@
 import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
-import ViewBinaryStream from "../Utils/ViewBinaryStream"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { parseTextKV } from "./ParseTextKV"
 
 enum DataType {

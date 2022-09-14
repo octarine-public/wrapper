@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("monkey_king_boundless_strike")
-export default class monkey_king_boundless_strike extends Ability {
+export class monkey_king_boundless_strike extends Ability {
 	public get SkillshotRange(): number {
 		return this.CastRange + this.AOERadius
 	}

@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("grimstroke_spirit_walk")
-export default class grimstroke_spirit_walk extends Ability {
+export class grimstroke_spirit_walk extends Ability {
 }

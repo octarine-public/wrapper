@@ -1,7 +1,7 @@
 import { parseKVFile } from "../Resources/ParseKV"
 import { ParseProtobufNamed } from "../Utils/Protobuf"
-import ViewBinaryStream from "../Utils/ViewBinaryStream"
-import EventsSDK from "./EventsSDK"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
+import { EventsSDK } from "./EventsSDK"
 
 class EconReplacements {
 	public readonly orig2repl = new Map<string, string[]>()

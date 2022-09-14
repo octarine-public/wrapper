@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("pudge_eject")
-export default class pudge_eject extends Ability {
+export class pudge_eject extends Ability {
 }

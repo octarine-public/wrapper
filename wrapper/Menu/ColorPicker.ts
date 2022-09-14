@@ -1,13 +1,13 @@
-import Color from "../Base/Color"
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import GUIInfo from "../GUI/GUIInfo"
-import EventsSDK from "../Managers/EventsSDK"
-import RendererSDK from "../Native/RendererSDK"
+import { Color } from "../Base/Color"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { GUIInfo } from "../GUI/GUIInfo"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { RendererSDK } from "../Native/RendererSDK"
 import { HSVToRGB, RGBToHSV } from "../Utils/Math"
-import Base, { IMenu } from "./Base"
+import { Base, IMenu } from "./Base"
 
-export default class ColorPicker extends Base {
+export class ColorPicker extends Base {
 	public static active_colorpicker: Nullable<ColorPicker>
 	public static OnWindowSizeChanged(): void {
 		ColorPicker.selected_color_size.x = GUIInfo.ScaleWidth(ColorPicker.orig_selected_color_size.x)

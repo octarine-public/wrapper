@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("abaddon_aphotic_shield")
-export default class abaddon_aphotic_shield extends Ability {
+export class abaddon_aphotic_shield extends Ability {
 }

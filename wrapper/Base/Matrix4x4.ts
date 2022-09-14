@@ -1,7 +1,7 @@
-import Vector3 from "./Vector3"
-import Vector4 from "./Vector4"
+import { Vector3 } from "./Vector3"
+import { Vector4 } from "./Vector4"
 
-export default class Matrix4x4 {
+export class Matrix4x4 {
 	public static get Identity(): Matrix4x4 {
 		return this.Identity_.Clone()
 	}

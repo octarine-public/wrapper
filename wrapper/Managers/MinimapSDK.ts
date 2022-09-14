@@ -1,19 +1,19 @@
-import Color from "../Base/Color"
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import Vector3 from "../Base/Vector3"
+import { Color } from "../Base/Color"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { Vector3 } from "../Base/Vector3"
 import { DOTAGameUIState_t } from "../Enums/DOTAGameUIState_t"
 import { PingType_t } from "../Enums/PingType_t"
-import GUIInfo from "../GUI/GUIInfo"
-import ConVarsSDK from "../Native/ConVarsSDK"
-import RendererSDK from "../Native/RendererSDK"
+import { GUIInfo } from "../GUI/GUIInfo"
+import { ConVarsSDK } from "../Native/ConVarsSDK"
+import { RendererSDK } from "../Native/RendererSDK"
 import { GetPositionHeight } from "../Native/WASM"
-import Entity, { GameRules } from "../Objects/Base/Entity"
+import { Entity, GameRules } from "../Objects/Base/Entity"
 import { EntityDataLump } from "../Resources/ParseEntityLump"
 import { parseKVFile } from "../Resources/ParseKV"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
-import GameState from "../Utils/GameState"
-import EventsSDK from "./EventsSDK"
+import { GameState } from "../Utils/GameState"
+import { EventsSDK } from "./EventsSDK"
 
 class MinimapIcon {
 	constructor(
@@ -190,7 +190,7 @@ EventsSDK.on("Draw", () => {
 
 EventsSDK.on("GameEnded", () => minimap_icons_active.clear())
 
-const MinimapSDK = new (class CMinimapSDK {
+export const MinimapSDK = new (class CMinimapSDK {
 	public readonly MinimapBounds = new Rectangle()
 	public CurrentMinimapOverview: Nullable<MinimapOverview>
 	/**
@@ -281,4 +281,3 @@ const MinimapSDK = new (class CMinimapSDK {
 		return Vector3.FromVector2(ret_2d).SetZ(GetPositionHeight(ret_2d))
 	}
 })()
-export default MinimapSDK

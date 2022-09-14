@@ -1,10 +1,10 @@
-import Color from "../Base/Color"
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import RendererSDK from "../Native/RendererSDK"
+import { Color } from "../Base/Color"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { RendererSDK } from "../Native/RendererSDK"
 import { ScaleHeight, ScaleWidth } from "./Helpers"
 
-export default class CShop {
+export class CShop {
 	public readonly CourierGold = new Rectangle()
 	public readonly ShopButton = new Rectangle()
 	public readonly Quickbuy_1Row = new Rectangle()

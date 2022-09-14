@@ -1,8 +1,8 @@
-import Vector3 from "../Base/Vector3"
-import Manifest from "../Managers/Manifest"
-import Entity from "../Objects/Base/Entity"
+import { Vector3 } from "../Base/Vector3"
+import { Manifest } from "../Managers/Manifest"
+import { Entity } from "../Objects/Base/Entity"
 
-export default new (class CSoundSDK {
+export const SoundSDK = new (class CSoundSDK {
 	public EmitStartSoundEvent(
 		name: string,
 		position = new Vector3().Invalidate(),

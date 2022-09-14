@@ -1,4 +1,4 @@
-export default [
+export const KeyNames = [
 	"None",
 	"Left mouse", // VK_LBUTTON
 	"Right mouse", // VK_RBUTTON

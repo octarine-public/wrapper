@@ -1,9 +1,9 @@
 import { WrapperClass } from "../../../Decorators"
 import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("invoker_ghost_walk")
-export default class invoker_ghost_walk extends Ability {
+export class invoker_ghost_walk extends Ability {
 	public get AbilityLogicType(): AbilityLogicType {
 		return AbilityLogicType.Invisibility
 	}

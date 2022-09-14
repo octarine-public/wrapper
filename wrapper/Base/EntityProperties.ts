@@ -1,7 +1,7 @@
 import { entities_symbols } from "../Objects/NativeToSDK"
-import Vector2 from "./Vector2"
-import Vector3 from "./Vector3"
-import Vector4 from "./Vector4"
+import { Vector2 } from "./Vector2"
+import { Vector3 } from "./Vector3"
+import { Vector4 } from "./Vector4"
 
 export type EntityPropertyType = EntityPropertiesNode | EntityPropertyType[] | string | Vector4 | Vector3 | Vector2 | bigint | number | boolean
 

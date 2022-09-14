@@ -1,6 +1,6 @@
 import { DecompressIndexBuffer, DecompressVertexBuffer } from "../Native/WASM"
 import { isStream } from "../Utils/ReadableBinaryStreamUtils"
-import ViewBinaryStream from "../Utils/ViewBinaryStream"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { GetMapNumberProperty, MapToNumberArray } from "./ParseUtils"
 
 export enum RenderSlotType {

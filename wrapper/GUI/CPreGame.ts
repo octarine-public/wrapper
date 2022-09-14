@@ -1,13 +1,13 @@
-import Color from "../Base/Color"
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
+import { Color } from "../Base/Color"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
 import { Team } from "../Enums/Team"
-import RendererSDK from "../Native/RendererSDK"
+import { RendererSDK } from "../Native/RendererSDK"
 import { GameRules } from "../Objects/Base/Entity"
 import { PlayerResource } from "../Objects/Base/PlayerResource"
 import { ScaleHeight, ScaleWidth } from "./Helpers"
 
-export default class CPreGame {
+export class CPreGame {
 	private static get HasRadiantCoach(): boolean {
 		return PlayerResource?.PlayerData?.some(data => data !== undefined && data.CoachTeam === Team.Radiant) ?? false
 	}

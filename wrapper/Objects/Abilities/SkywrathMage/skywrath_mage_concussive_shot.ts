@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("skywrath_mage_concussive_shot")
-export default class skywrath_mage_concussive_shot extends Ability {
+export class skywrath_mage_concussive_shot extends Ability {
 	public readonly ProjectilePath = "particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf"
 	public get Speed(): number {
 		return this.GetSpecialValue("speed")

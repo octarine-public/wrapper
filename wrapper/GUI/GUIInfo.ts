@@ -1,25 +1,25 @@
-import Vector2 from "../Base/Vector2"
+import { Vector2 } from "../Base/Vector2"
 import { ABILITY_TYPES } from "../Enums/ABILITY_TYPES"
 import { DOTA_ABILITY_BEHAVIOR } from "../Enums/DOTA_ABILITY_BEHAVIOR"
 import { DOTA_GameState } from "../Enums/DOTA_GameState"
-import EventsSDK from "../Managers/EventsSDK"
-import InputManager from "../Managers/InputManager"
-import ConVarsSDK from "../Native/ConVarsSDK"
-import RendererSDK from "../Native/RendererSDK"
-import Ability from "../Objects/Base/Ability"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { InputManager } from "../Managers/InputManager"
+import { ConVarsSDK } from "../Native/ConVarsSDK"
+import { RendererSDK } from "../Native/RendererSDK"
+import { Ability } from "../Objects/Base/Ability"
 import { GameRules } from "../Objects/Base/Entity"
-import Unit from "../Objects/Base/Unit"
-import CLowerHUD from "./CLowerHUD"
-import CMinimap from "./CMinimap"
-import COpenShop from "./COpenShop"
-import CPreGame from "./CPreGame"
-import CScoreboard from "./CScoreboard"
-import CShop from "./CShop"
-import CTopBar from "./CTopBar"
+import { Unit } from "../Objects/Base/Unit"
+import { CLowerHUD } from "./CLowerHUD"
+import { CMinimap } from "./CMinimap"
+import { COpenShop } from "./COpenShop"
+import { CPreGame } from "./CPreGame"
+import { CScoreboard } from "./CScoreboard"
+import { CShop } from "./CShop"
+import { CTopBar } from "./CTopBar"
 import { GetHeightScale, GetWidthScale, ScaleHeight, ScaleWidth } from "./Helpers"
 
 const latest_screen_size = new Vector2()
-const GUIInfo = new (class CGUIInfo {
+export const GUIInfo = new (class CGUIInfo {
 	public debug_draw = false
 	public Minimap = undefined as any as CMinimap
 	public Shop = undefined as any as CShop
@@ -130,6 +130,5 @@ const GUIInfo = new (class CGUIInfo {
 		return ScaleHeight(h, screen_size)
 	}
 })()
-export default GUIInfo
 
 EventsSDK.on("PreDraw", () => GUIInfo.OnDraw())

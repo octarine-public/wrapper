@@ -1,5 +1,5 @@
-import Rectangle from "../../Base/Rectangle"
-import InputManager, { InputEventSDK, VMouseKeys } from "../../Managers/InputManager"
+import { Rectangle } from "../../Base/Rectangle"
+import { InputEventSDK, InputManager, VMouseKeys } from "../../Managers/InputManager"
 import { Notifications } from "../Data"
 import { GetPanel } from "../Util"
 

@@ -1,4 +1,4 @@
-export default class Color {
+export class Color {
 	public static get Black() { return new Color(0, 0, 0) }
 	public static get Red() { return new Color(255, 0, 0) }
 	public static get Green() { return new Color(0, 255, 0) }

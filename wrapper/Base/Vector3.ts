@@ -1,6 +1,6 @@
-import Vector2 from "./Vector2"
+import { Vector2 } from "./Vector2"
 
-export default class Vector3 {
+export class Vector3 {
 	public static fromIOBuffer(offset = 0): Vector3 {
 		return new Vector3(IOBuffer[offset + 0], IOBuffer[offset + 1], IOBuffer[offset + 2])
 	}

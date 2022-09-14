@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("troll_warlord_whirling_axes_ranged")
-export default class troll_warlord_whirling_axes_ranged extends Ability {
+export class troll_warlord_whirling_axes_ranged extends Ability {
 	public get EndRadius(): number {
 		return 206.17 // noе in special data
 	}

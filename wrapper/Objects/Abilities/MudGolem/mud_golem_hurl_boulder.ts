@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("mud_golem_hurl_boulder")
-export default class mud_golem_hurl_boulder extends Ability {
+export class mud_golem_hurl_boulder extends Ability {
 }

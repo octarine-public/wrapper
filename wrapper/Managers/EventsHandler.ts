@@ -1,34 +1,34 @@
-import Matrix4x4 from "../Base/Matrix4x4"
-import NetworkedParticle from "../Base/NetworkedParticle"
-import Vector3 from "../Base/Vector3"
+import { Matrix4x4 } from "../Base/Matrix4x4"
+import { NetworkedParticle } from "../Base/NetworkedParticle"
+import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { Team } from "../Enums/Team"
 import { Localization } from "../Menu/Imports"
-import RendererSDK from "../Native/RendererSDK"
+import { RendererSDK } from "../Native/RendererSDK"
 import * as WASM from "../Native/WASM"
-import Workers from "../Native/Workers"
-import Entity, { LocalPlayer } from "../Objects/Base/Entity"
-import FakeUnit, { GetPredictionTarget } from "../Objects/Base/FakeUnit"
+import { Workers } from "../Native/Workers"
+import { Entity, LocalPlayer } from "../Objects/Base/Entity"
+import { FakeUnit, GetPredictionTarget } from "../Objects/Base/FakeUnit"
 import { PlayerResource } from "../Objects/Base/PlayerResource"
-import Unit from "../Objects/Base/Unit"
-import AbilityData, { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
-import UnitData, { ReloadGlobalUnitStorage } from "../Objects/DataBook/UnitData"
+import { Unit } from "../Objects/Base/Unit"
+import { AbilityData, ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
+import { ReloadGlobalUnitStorage, UnitData } from "../Objects/DataBook/UnitData"
 import { DefaultWorldLayers, ParseEntityLump, ResetEntityLump } from "../Resources/ParseEntityLump"
 import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
 import { parseKVFile } from "../Resources/ParseKV"
 import { GetMapNumberProperty, GetMapStringProperty, MapToMatrix4x4, MapToNumberArray, MapToStringArray } from "../Resources/ParseUtils"
 import { HasBit } from "../Utils/BitsExtensions"
-import FileBinaryStream from "../Utils/FileBinaryStream"
-import GameState from "../Utils/GameState"
+import { FileBinaryStream } from "../Utils/FileBinaryStream"
+import { GameState } from "../Utils/GameState"
 import { CMsgVectorToVector3, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
 import { createMapFromMergedIterators } from "../Utils/Utils"
 import * as VBKV from "../Utils/VBKV"
-import ViewBinaryStream from "../Utils/ViewBinaryStream"
-import EntityManager from "./EntityManager"
-import Events from "./Events"
-import EventsSDK from "./EventsSDK"
-import Input from "./InputManager"
-import Manifest, { LoadManifest } from "./Manifest"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
+import { EntityManager } from "./EntityManager"
+import { Events } from "./Events"
+import { EventsSDK } from "./EventsSDK"
+import { InputManager } from "./InputManager"
+import { LoadManifest, Manifest } from "./Manifest"
 
 enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_CREATE = 0,
@@ -1384,7 +1384,7 @@ EventsSDK.on("MidDataUpdate", () => {
 })
 
 Events.on("Draw", async (visual_data, w, h, x, y) => {
-	Input.UpdateCursorOnScreen(x, y)
+	InputManager.UpdateCursorOnScreen(x, y)
 	await RendererSDK.BeforeDraw(w, h)
 	const stream = new ViewBinaryStream(new DataView(visual_data))
 	while (!stream.Empty()) {

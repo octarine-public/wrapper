@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("ursa_earthshock")
-export default class ursa_earthshock extends Ability {
+export class ursa_earthshock extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		let baseAOE = this.GetSpecialValue("shock_radius", level)
 		const talent = this.Owner?.GetAbilityByName("special_bonus_unique_ursa_5")

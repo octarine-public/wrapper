@@ -1,4 +1,4 @@
-export default class Vector4 {
+export class Vector4 {
 	public static fromString(str: string): Vector4 {
 		return new Vector4(...str.split(" ").map(el => parseFloat(el)))
 	}

@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("templar_assassin_self_trap")
-export default class templar_assassin_self_trap extends Ability {
+export class templar_assassin_self_trap extends Ability {
 }

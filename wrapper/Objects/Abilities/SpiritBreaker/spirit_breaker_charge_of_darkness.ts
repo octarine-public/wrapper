@@ -1,13 +1,13 @@
 import { WrapperClass } from "../../../Decorators"
-import EntityManager from "../../../Managers/EntityManager"
-import EventsSDK from "../../../Managers/EventsSDK"
-import GameState from "../../../Utils/GameState"
-import Ability from "../../Base/Ability"
+import { EntityManager } from "../../../Managers/EntityManager"
+import { EventsSDK } from "../../../Managers/EventsSDK"
+import { GameState } from "../../../Utils/GameState"
+import { Ability } from "../../Base/Ability"
 import { TrackingProjectile } from "../../Base/Projectile"
-import Unit from "../../Base/Unit"
+import { Unit } from "../../Base/Unit"
 
 @WrapperClass("spirit_breaker_charge_of_darkness")
-export default class spirit_breaker_charge_of_darkness extends Ability {
+export class spirit_breaker_charge_of_darkness extends Ability {
 	public StartedChargingTime = 0
 	public CurrentProjectile: Nullable<TrackingProjectile>
 }

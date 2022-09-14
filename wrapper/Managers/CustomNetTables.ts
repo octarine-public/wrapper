@@ -1,5 +1,5 @@
 import { BinaryKV, parseVBKV } from "../Utils/VBKV"
-import ViewBinaryStream from "../Utils/ViewBinaryStream"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { GetTable } from "./StringTables"
 
 export function GetValue(table_name: string, key: string): Nullable<Map<string, BinaryKV>> {

@@ -1,11 +1,11 @@
-import Color from "../Base/Color"
-import Vector2 from "../Base/Vector2"
-import GUIInfo from "../GUI/GUIInfo"
-import EventsSDK from "../Managers/EventsSDK"
-import RendererSDK from "../Native/RendererSDK"
-import Base, { IMenu } from "./Base"
+import { Color } from "../Base/Color"
+import { Vector2 } from "../Base/Vector2"
+import { GUIInfo } from "../GUI/GUIInfo"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { RendererSDK } from "../Native/RendererSDK"
+import { Base, IMenu } from "./Base"
 
-export default class Header extends Base {
+export class Header extends Base {
 	public static OnWindowSizeChanged(): void {
 		Header.LogoOffset.x = GUIInfo.ScaleWidth(14)
 		Header.LogoOffset.y = GUIInfo.ScaleHeight(7)

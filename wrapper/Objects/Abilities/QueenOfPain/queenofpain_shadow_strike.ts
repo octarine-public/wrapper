@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("queenofpain_shadow_strike")
-export default class queenofpain_shadow_strike extends Ability {
+export class queenofpain_shadow_strike extends Ability {
 	public readonly ProjectilePath = "particles/units/heroes/hero_queenofpain/queen_shadow_strike.vpcf"
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")

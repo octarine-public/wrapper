@@ -1,9 +1,9 @@
 import { NetworkedBasicField, WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("pudge_meat_hook")
 @WrapperClass("CDOTA_Ability_Pudge_MeatHook")
-export default class pudge_meat_hook extends Ability {
+export class pudge_meat_hook extends Ability {
 	@NetworkedBasicField("m_nConsecutiveHits")
 	public ConsecutiveHits = 0
 

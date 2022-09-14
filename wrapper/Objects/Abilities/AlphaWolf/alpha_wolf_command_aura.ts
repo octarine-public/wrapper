@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("alpha_wolf_command_aura")
-export default class alpha_wolf_command_aura extends Ability {
+export class alpha_wolf_command_aura extends Ability {
 }

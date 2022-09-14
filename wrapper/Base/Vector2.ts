@@ -1,7 +1,7 @@
 import { ProjectionInfo } from "../Geometry/ProjectionInfo"
-import Vector3 from "./Vector3"
+import { Vector3 } from "./Vector3"
 
-export default class Vector2 {
+export class Vector2 {
 	public static fromIOBuffer(offset = 0): Vector2 {
 		return new Vector2(IOBuffer[offset + 0], IOBuffer[offset + 1])
 	}

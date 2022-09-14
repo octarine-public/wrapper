@@ -1,6 +1,6 @@
 import { EntityPropertiesNode } from "./EntityProperties"
 
-export default class DataTeamPlayer {
+export class DataTeamPlayer {
 	constructor(public readonly properties: EntityPropertiesNode) { }
 
 	public get TotalEarnedGold(): number {

@@ -1,9 +1,9 @@
 import { WrapperClass } from "../../../Decorators"
 import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("windrunner_windrun")
-export default class windrunner_windrun extends Ability {
+export class windrunner_windrun extends Ability {
 	public get MaxCharges(): number {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("max_charges") : 0
 	}

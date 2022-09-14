@@ -1,12 +1,12 @@
 import { DOTAScriptInventorySlot_t } from "../../Enums/DOTAScriptInventorySlot_t"
 import { LocalPlayer } from "../Base/Entity"
-import Item from "../Base/Item"
-import Player from "../Base/Player"
-import Unit from "../Base/Unit"
+import { Item } from "../Base/Item"
+import { Player } from "../Base/Player"
+import { Unit } from "../Base/Unit"
 
 const MAX_ITEMS = DOTAScriptInventorySlot_t.DOTA_ITEM_NEUTRAL_SLOT
 
-export default class Inventory {
+export class Inventory {
 	constructor(public readonly Owner: Unit) { }
 
 	get TotalItems(): Nullable<Item>[] {

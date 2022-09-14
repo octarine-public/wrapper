@@ -1,15 +1,15 @@
-import Vector2 from "../Base/Vector2"
-import Vector3 from "../Base/Vector3"
+import { Vector2 } from "../Base/Vector2"
+import { Vector3 } from "../Base/Vector3"
 import { MapArea } from "../Enums/MapArea"
 import { MaterialFlags } from "../Enums/MaterialFlags"
 import { Team } from "../Enums/Team"
 import { GetPositionHeight } from "../Native/WASM"
 import { Buildings } from "../Objects/Base/Building"
-import CreepPathCorner, { CreepPathCorners } from "../Objects/Base/CreepPathCorner"
+import { CreepPathCorner, CreepPathCorners } from "../Objects/Base/CreepPathCorner"
 import { Fountains } from "../Objects/Base/Fountain"
 import { orderBy, orderByFirst } from "../Utils/ArrayExtensions"
 
-export default new (class DotaMap {
+export const DotaMap = new (class CDotaMap {
 	public IsRiver(pos: Vector3 | Vector2): boolean {
 		const main_height = GetPositionHeight(pos)
 		return GetPositionHeight(pos, MaterialFlags.None) > main_height

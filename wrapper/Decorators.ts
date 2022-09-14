@@ -1,8 +1,8 @@
-import Vector2 from "./Base/Vector2"
-import Vector3 from "./Base/Vector3"
-import Vector4 from "./Base/Vector4"
+import { Vector2 } from "./Base/Vector2"
+import { Vector3 } from "./Base/Vector3"
+import { Vector4 } from "./Base/Vector4"
 import { EPropertyType, PropertyType } from "./Enums/PropertyType"
-import Entity from "./Objects/Base/Entity"
+import { Entity } from "./Objects/Base/Entity"
 import { RegisterClass, RegisterFieldHandler } from "./Objects/NativeToSDK"
 
 export function WrapperClass(networked_class_name: string) {

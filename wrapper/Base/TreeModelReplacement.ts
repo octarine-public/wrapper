@@ -1,6 +1,6 @@
 import { EntityPropertiesNode } from "./EntityProperties"
 
-export default class TreeModelReplacement {
+export class TreeModelReplacement {
 	constructor(public readonly properties: EntityPropertiesNode) { }
 
 	public get BinaryObjectID(): number {

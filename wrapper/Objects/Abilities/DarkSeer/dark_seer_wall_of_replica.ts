@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("dark_seer_wall_of_replica")
-export default class dark_seer_wall_of_replica extends Ability {
+export class dark_seer_wall_of_replica extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		let width = this.GetSpecialValue("width", level)
 		if (this.Owner?.HasScepter)

@@ -1,6 +1,6 @@
-import Matrix4x4 from "../Base/Matrix4x4"
-import Vector3 from "../Base/Vector3"
-import Vector4 from "../Base/Vector4"
+import { Matrix4x4 } from "../Base/Matrix4x4"
+import { Vector3 } from "../Base/Vector3"
+import { Vector4 } from "../Base/Vector4"
 import { HasBit } from "../Utils/BitsExtensions"
 import { MapToNumberArray, MapToStringArray, MapToVector3Array, MapToVector4Array } from "./ParseUtils"
 

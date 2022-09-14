@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("grimstroke_dark_artistry")
-export default class grimstroke_dark_artistry extends Ability {
+export class grimstroke_dark_artistry extends Ability {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("end_radius")
 	}

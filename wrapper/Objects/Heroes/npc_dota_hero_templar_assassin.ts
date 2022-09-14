@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../Decorators"
-import Hero from "../Base/Hero"
+import { Hero } from "../Base/Hero"
 
 @WrapperClass("CDOTA_Unit_Hero_TemplarAssassin")
-export default class npc_dota_hero_templar_assassin extends Hero {
+export class npc_dota_hero_templar_assassin extends Hero {
 }

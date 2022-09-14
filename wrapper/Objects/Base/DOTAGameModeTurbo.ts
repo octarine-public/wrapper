@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../Decorators"
-import DOTABaseGameMode from "./DOTAGameMode"
+import { DOTABaseGameMode } from "./DOTABaseGameMode"
 
 @WrapperClass("CDOTATurboGameMode")
-export default class DOTAGameModeTurbo extends DOTABaseGameMode {
+export class DOTAGameModeTurbo extends DOTABaseGameMode {
 }

@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("giant_wolf_critical_strike")
-export default class giant_wolf_critical_strike extends Ability {
+export class giant_wolf_critical_strike extends Ability {
 }

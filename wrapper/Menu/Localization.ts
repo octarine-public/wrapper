@@ -1,4 +1,4 @@
-export default new (class Localization {
+export const Localization = new (class CLocalization {
 	public was_changed = true
 	public PreferredUnitName = ""
 	private SelectedUnitName_ = ""

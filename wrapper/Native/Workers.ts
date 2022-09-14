@@ -1,4 +1,4 @@
-import Events from "../Managers/Events"
+import { Events } from "../Managers/Events"
 import { arrayRemove, orderBy } from "../Utils/ArrayExtensions"
 
 type RPCEndPoint = (data: WorkerIPCType) => Promise<WorkerIPCType> | WorkerIPCType
@@ -10,7 +10,7 @@ type WorkerType = [
 	boolean,
 	boolean,
 ]
-export default new (class Workers {
+export const Workers = new (class CWorkers {
 	private readonly workers: WorkerType[] = []
 	private readonly endpoints = new Map<string, RPCEndPoint>()
 	private queued_tasks: [string, WorkerIPCType, PromiseResolver][] = []
@@ -141,7 +141,7 @@ export default new (class Workers {
 				forward_events: opts.forward_events,
 				forward_server_messages: opts.forward_events && opts.forward_server_messages,
 				display_name: opts.display_name ?? `Wrapper RPC Worker #${this.workers.length + 1}`,
-				entry_point: opts.entry_point ?? "github.com/octarine-public/wrapper/wrapper/Imports",
+				entry_point: opts.entry_point ?? "github.com/octarine-public/wrapper/index",
 			}
 			const ar: WorkerType = [
 				SpawnWorker(fixed_opts),

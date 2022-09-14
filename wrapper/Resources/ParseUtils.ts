@@ -1,6 +1,6 @@
-import Matrix4x4 from "../Base/Matrix4x4"
-import Vector3 from "../Base/Vector3"
-import Vector4 from "../Base/Vector4"
+import { Matrix4x4 } from "../Base/Matrix4x4"
+import { Vector3 } from "../Base/Vector3"
+import { Vector4 } from "../Base/Vector4"
 
 export function MapToNumberArray(map: RecursiveMap | RecursiveMapValue[]): number[] {
 	if (map instanceof Map)

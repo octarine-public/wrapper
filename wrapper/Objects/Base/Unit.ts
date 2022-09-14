@@ -1,5 +1,5 @@
-import Vector2 from "../../Base/Vector2"
-import Vector3 from "../../Base/Vector3"
+import { Vector2 } from "../../Base/Vector2"
+import { Vector3 } from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
@@ -15,33 +15,33 @@ import { GameActivity_t } from "../../Enums/GameActivity_t"
 import { GridNavCellFlags } from "../../Enums/GridNavCellFlags"
 import { modifierstate } from "../../Enums/modifierstate"
 import { EPropertyType } from "../../Enums/PropertyType"
-import EntityManager from "../../Managers/EntityManager"
-import EventsSDK from "../../Managers/EventsSDK"
-import ExecuteOrder from "../../Native/ExecuteOrder"
+import { EntityManager } from "../../Managers/EntityManager"
+import { EventsSDK } from "../../Managers/EventsSDK"
+import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { ComputedAttachment } from "../../Resources/ComputeAttachments"
 import { GridNav } from "../../Resources/ParseGNV"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
-import GameState from "../../Utils/GameState"
+import { GameState } from "../../Utils/GameState"
 import { DamageIgnoreBuffs } from "../../Utils/Utils"
-import Inventory from "../DataBook/Inventory"
-import UnitData from "../DataBook/UnitData"
-import Ability from "./Ability"
-import Entity, { LocalPlayer } from "./Entity"
-import Item from "./Item"
-import Modifier from "./Modifier"
-import NeutralSpawner from "./NeutralSpawner"
-import PhysicalItem from "./PhysicalItem"
-import Rune from "./Rune"
-import TempTree from "./TempTree"
-import Tree from "./Tree"
-import Wearable from "./Wearable"
+import { Inventory } from "../DataBook/Inventory"
+import { UnitData } from "../DataBook/UnitData"
+import { Ability } from "./Ability"
+import { Entity, LocalPlayer } from "./Entity"
+import { Item } from "./Item"
+import { Modifier } from "./Modifier"
+import { NeutralSpawner } from "./NeutralSpawner"
+import { PhysicalItem } from "./PhysicalItem"
+import { Rune } from "./Rune"
+import { TempTree } from "./TempTree"
+import { Tree } from "./Tree"
+import { Wearable } from "./Wearable"
 
 const MAX_SPELLS = 31
 const MAX_ITEMS = 16
 
 @WrapperClass("CDOTA_BaseNPC")
-export default class Unit extends Entity {
+export class Unit extends Entity {
 	public UnitData = UnitData.empty
 
 	public readonly Inventory = new Inventory(this)

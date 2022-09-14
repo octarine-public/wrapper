@@ -1,7 +1,7 @@
 import { Team } from "../Enums/Team"
 import { EntityPropertiesNode } from "./EntityProperties"
 
-export default class PlayerData {
+export class PlayerData {
 	constructor(public readonly properties: EntityPropertiesNode) { }
 
 	public get IsValid(): boolean {

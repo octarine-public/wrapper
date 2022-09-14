@@ -1,18 +1,18 @@
 import { EntityPropertiesNode } from "../../Base/EntityProperties"
-import NeutralSpawnBox from "../../Base/NeutralSpawnBox"
+import { NeutralSpawnBox } from "../../Base/NeutralSpawnBox"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 import { DOTA_GameState } from "../../Enums/DOTA_GameState"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { Team } from "../../Enums/Team"
-import EntityManager from "../../Managers/EntityManager"
+import { EntityManager } from "../../Managers/EntityManager"
 import { SetLatestTickDelta } from "../../Managers/EntityManagerLogic"
-import GameState from "../../Utils/GameState"
-import Entity, { LocalPlayer } from "../Base/Entity"
-import StockInfo from "./../../Base/StockInfo"
+import { GameState } from "../../Utils/GameState"
+import { Entity, LocalPlayer } from "../Base/Entity"
+import { StockInfo } from "./../../Base/StockInfo"
 
 @WrapperClass("CDOTAGamerulesProxy")
-export default class CGameRules extends Entity {
+export class CGameRules extends Entity {
 	public RawGameTime = 0
 	@NetworkedBasicField("m_iPauseTeam")
 	public PauseTeam = Team.None

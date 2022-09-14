@@ -1,25 +1,25 @@
-import AABB from "../../Base/AABB"
-import Color from "../../Base/Color"
+import { AABB } from "../../Base/AABB"
+import { Color } from "../../Base/Color"
 import { EntityPropertiesNode } from "../../Base/EntityProperties"
-import QAngle from "../../Base/QAngle"
-import Vector2 from "../../Base/Vector2"
-import Vector3 from "../../Base/Vector3"
+import { QAngle } from "../../Base/QAngle"
+import { Vector2 } from "../../Base/Vector2"
+import { Vector3 } from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { GameActivity_t } from "../../Enums/GameActivity_t"
 import { LifeState_t } from "../../Enums/LifeState_t"
 import { RenderMode_t } from "../../Enums/RenderMode_t"
 import { Team } from "../../Enums/Team"
-import { default as EntityManager } from "../../Managers/EntityManager"
-import EventsSDK from "../../Managers/EventsSDK"
-import Manifest from "../../Managers/Manifest"
+import { EntityManager } from "../../Managers/EntityManager"
+import { EventsSDK } from "../../Managers/EventsSDK"
+import { Manifest } from "../../Managers/Manifest"
 import * as StringTables from "../../Managers/StringTables"
-import RendererSDK from "../../Native/RendererSDK"
-import Player from "../../Objects/Base/Player"
+import { RendererSDK } from "../../Native/RendererSDK"
+import { Player } from "../../Objects/Base/Player"
 import { ComputeAttachmentsAndBoundsAsync, ComputedAttachment, ComputedAttachments } from "../../Resources/ComputeAttachments"
-import GameState from "../../Utils/GameState"
+import { GameState } from "../../Utils/GameState"
 import { DegreesToRadian } from "../../Utils/Math"
-import CGameRules from "./GameRules"
-import Item from "./Item"
+import { CGameRules } from "./GameRules"
+import { Item } from "./Item"
 
 export var LocalPlayer: Nullable<Player>
 let player_slot = NaN
@@ -66,7 +66,7 @@ const activity2name = new Map<GameActivity_t, string>(
 		.map(([k, v]) => [v as GameActivity_t, k]),
 )
 @WrapperClass("CBaseEntity")
-export default class Entity {
+export class Entity {
 	public IsValid = true
 	public Name_ = ""
 	@NetworkedBasicField("m_flCreateTime")
@@ -449,7 +449,7 @@ function QuantitizedVecCoordToCoord(cell: Nullable<number>, inside: Nullable<num
 	return ((cell ?? 0) - 128) * 128 + (inside ?? 0)
 }
 
-import Events from "../../Managers/Events"
+import { Events } from "../../Managers/Events"
 import { FieldHandler, RegisterFieldHandler } from "../../Objects/NativeToSDK"
 RegisterFieldHandler(Entity, "m_iTeamNum", async (ent, new_val) => {
 	const old_team = ent.Team

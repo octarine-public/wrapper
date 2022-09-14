@@ -1,6 +1,6 @@
-import Color from "../Base/Color"
-import Vector2 from "../Base/Vector2"
-import Vector3 from "../Base/Vector3"
+import { Color } from "../Base/Color"
+import { Vector2 } from "../Base/Vector2"
+import { Vector3 } from "../Base/Vector3"
 import { isStream } from "./ReadableBinaryStreamUtils"
 
 export enum ProtoType {

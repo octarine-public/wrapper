@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("invoker_invoke")
-export default class invoker_invoke extends Ability {
+export class invoker_invoke extends Ability {
 }

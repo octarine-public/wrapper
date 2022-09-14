@@ -170,7 +170,7 @@ import { WrapperClass } from "../../${!is_item ? "../" : ""}Decorators"
 import ${extends_class} from "../${!is_item ? "../" : ""}Base/${extends_class}"
 
 @WrapperClass("${abil}")
-export default class ${abil} extends ${extends_class} {
+export class ${abil} extends ${extends_class} {
 }
 `
 	fs.writeFileSync(path, source)
@@ -191,7 +191,7 @@ import Hero from "../Base/Hero"
 import { WrapperClass } from "../../Decorators"
 
 @WrapperClass("${class_name}")
-export default class ${hero} extends Hero {
+export class ${hero} extends Hero {
 }
 `
 	fs.writeFileSync(path, source)

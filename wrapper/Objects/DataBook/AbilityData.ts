@@ -6,17 +6,17 @@ import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EDOTASpecialBonusOperation } from "../../Enums/EDOTASpecialBonusOperation"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
-import Workers from "../../Native/Workers"
+import { Workers } from "../../Native/Workers"
 import { parseKVFile } from "../../Resources/ParseKV"
 import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
-import Unit from "../Base/Unit"
+import { Unit } from "../Base/Unit"
 
 function LoadAbilityFile(path: string): RecursiveMap {
 	const res = parseKVFile(path).get("DOTAAbilities")
 	return res instanceof Map ? res : new Map()
 }
 
-export default class AbilityData {
+export class AbilityData {
 	public static global_storage: Promise<Map<string, AbilityData>> = Promise.resolve(new Map())
 	public static empty = new AbilityData("", new Map())
 	public static async GetAbilityByName(name: string): Promise<Nullable<AbilityData>> {

@@ -1,10 +1,10 @@
 import { WrapperClass } from "../../Decorators"
 import { DOTA_RUNES } from "../../Enums/DOTA_RUNES"
-import GameState from "../../Utils/GameState"
-import Item from "../Base/Item"
+import { GameState } from "../../Utils/GameState"
+import { Item } from "../Base/Item"
 
 @WrapperClass("item_bottle")
-export default class item_bottle extends Item {
+export class item_bottle extends Item {
 	public StoredRune = DOTA_RUNES.DOTA_RUNE_INVALID
 	public LastRuneTypeChangeTime = GameState.RawGameTime
 

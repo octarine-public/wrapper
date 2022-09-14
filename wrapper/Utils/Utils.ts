@@ -1,8 +1,8 @@
 import { DAMAGE_TYPES } from "../Enums/DAMAGE_TYPES"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import { ParseResourceLayout } from "../Resources/ParseResource"
-import FileBinaryStream from "./FileBinaryStream"
-import readFile from "./readFile"
+import { FileBinaryStream } from "./FileBinaryStream"
+import { readFile } from "./readFile"
 
 export const DamageIgnoreBuffs = [
 	[], // DAMAGE_TYPES.DAMAGE_TYPE_NONE = 0

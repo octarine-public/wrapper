@@ -1,8 +1,8 @@
-import Color from "../Base/Color"
-import Vector3 from "../Base/Vector3"
-import ParticlesSDK from "../Managers/ParticleManager"
-import RendererSDK from "../Native/RendererSDK"
-import Entity from "../Objects/Base/Entity"
+import { Color } from "../Base/Color"
+import { Vector3 } from "../Base/Vector3"
+import { ParticlesSDK } from "../Managers/ParticleManager"
+import { RendererSDK } from "../Native/RendererSDK"
+import { Entity } from "../Objects/Base/Entity"
 
 export class WorldPolygon {
 	public Points: Vector3[] = []

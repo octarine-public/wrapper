@@ -94,6 +94,5 @@ declare interface Events extends EventEmitter {
 	on(name: "SetLanguage", func: (language: number) => void, priority?: number): Events
 }
 
-const Events: Events = new EventEmitter()
-export default Events
+export const Events: Events = new EventEmitter()
 setFireEvent(async (name, cancellable, ...args) => Events.emit(name, cancellable, ...args))

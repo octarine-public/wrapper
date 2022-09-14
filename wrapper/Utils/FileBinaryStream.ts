@@ -1,4 +1,4 @@
-export default class FileBinaryStream implements ReadableBinaryStream {
+export class FileBinaryStream implements ReadableBinaryStream {
 	private readonly is_utf16: boolean
 	private readonly is_utf16_be: boolean
 	private readonly cache: Uint8Array

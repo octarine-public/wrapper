@@ -1,11 +1,11 @@
 import { WrapperClass } from "../../Decorators"
 import { ItemHealthBarOffsets, ItemNames } from "../../Managers/EconHelper"
-import EntityManager from "../../Managers/EntityManager"
-import EventsSDK from "../../Managers/EventsSDK"
-import Entity from "./Entity"
+import { EntityManager } from "../../Managers/EntityManager"
+import { EventsSDK } from "../../Managers/EventsSDK"
+import { Entity } from "./Entity"
 
 @WrapperClass("CEconWearable")
-export default class Wearable extends Entity {
+export class Wearable extends Entity {
 	public ItemDefinitionIndex = 0n
 	public ItemName = ""
 	public HealthBarOffset: Nullable<number>

@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("bloodseeker_rupture")
-export default class bloodseeker_rupture extends Ability {
+export class bloodseeker_rupture extends Ability {
 	public get MaxCharges(): number {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("max_charges_scepter") : 0
 	}

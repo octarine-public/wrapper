@@ -1,12 +1,12 @@
-import NeutralSpawnBox from "../../Base/NeutralSpawnBox"
-import Vector2 from "../../Base/Vector2"
+import { NeutralSpawnBox } from "../../Base/NeutralSpawnBox"
+import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { NeutralSpawnerType } from "../../Enums/NeutralSpawnerType"
 import { Team } from "../../Enums/Team"
-import Entity, { GameRules } from "./Entity"
+import { Entity, GameRules } from "./Entity"
 
 @WrapperClass("CDOTA_NeutralSpawner")
-export default class NeutralSpawner extends Entity {
+export class NeutralSpawner extends Entity {
 	@NetworkedBasicField("m_Type")
 	public Type = NeutralSpawnerType.Small
 	private SpawnBox_: Nullable<NeutralSpawnBox>

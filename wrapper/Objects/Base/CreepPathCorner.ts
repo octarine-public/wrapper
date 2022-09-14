@@ -1,20 +1,20 @@
-import Color from "../../Base/Color"
-import QAngle from "../../Base/QAngle"
-import Vector3 from "../../Base/Vector3"
+import { Color } from "../../Base/Color"
+import { QAngle } from "../../Base/QAngle"
+import { Vector3 } from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
 import { MapArea } from "../../Enums/MapArea"
 import { RenderMode_t } from "../../Enums/RenderMode_t"
 import { Team } from "../../Enums/Team"
-import EntityManager from "../../Managers/EntityManager"
+import { EntityManager } from "../../Managers/EntityManager"
 import { CreateEntityInternal, DeleteEntity } from "../../Managers/EntityManagerLogic"
-import EventsSDK from "../../Managers/EventsSDK"
+import { EventsSDK } from "../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../Native/WASM"
 import { EntityDataLump } from "../../Resources/ParseEntityLump"
-import Entity from "./Entity"
-import LaneCreepSpawner from "./LaneCreepSpawner"
+import { Entity } from "./Entity"
+import { LaneCreepSpawner } from "./LaneCreepSpawner"
 
 @WrapperClass("CreepPathCorner")
-export default class CreepPathCorner extends Entity {
+export class CreepPathCorner extends Entity {
 	public Spawner: Nullable<LaneCreepSpawner>
 	public Referencing = new Set<CreepPathCorner>()
 	public Target: Nullable<CreepPathCorner>

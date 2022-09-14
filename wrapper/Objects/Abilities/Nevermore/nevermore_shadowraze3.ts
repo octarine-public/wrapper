@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("nevermore_shadowraze3")
-export default class nevermore_shadowraze3 extends Ability {
+export class nevermore_shadowraze3 extends Ability {
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue("shadowraze_range", level)
 	}

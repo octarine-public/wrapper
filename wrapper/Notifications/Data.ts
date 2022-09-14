@@ -1,5 +1,5 @@
-import EventsSDK from "../Managers/EventsSDK"
-import Notification from "./AbstractNotification"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { Notification } from "./AbstractNotification"
 
 export const Queue: Notification[] = []
 export const Notifications: Notification[] = []

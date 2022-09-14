@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("shadow_demon_demonic_purge")
-export default class shadow_demon_demonic_purge extends Ability {
+export class shadow_demon_demonic_purge extends Ability {
 	public get MaxCharges(): number {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("max_charges") : 0
 	}

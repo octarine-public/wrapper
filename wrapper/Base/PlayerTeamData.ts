@@ -1,6 +1,6 @@
 import { EntityPropertiesNode } from "./EntityProperties"
 
-export default class PlayerTeamData {
+export class PlayerTeamData {
 	constructor(public readonly properties: EntityPropertiesNode) { }
 
 	public get SelectedHeroID(): number {

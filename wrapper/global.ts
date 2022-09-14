@@ -1,31 +1,31 @@
 // @ts-nocheck
-import _AABB from "./Base/AABB"
-import _Color from "./Base/Color"
-import _NetworkedParticle from "./Base/NetworkedParticle"
-import _QAngle from "./Base/QAngle"
-import _Vector2 from "./Base/Vector2"
-import _Vector3 from "./Base/Vector3"
-import _Vector4 from "./Base/Vector4"
-import { default as _GUIInfo } from "./GUI/GUIInfo"
-import { default as _DotaMap } from "./Helpers/DotaMap"
-import _EntityManager from "./Managers/EntityManager"
-import _Events from "./Managers/Events"
-import _EventsSDK from "./Managers/EventsSDK"
-import _Input from "./Managers/InputManager"
-import _Manifest from "./Managers/Manifest"
-import _MinimapSDK from "./Managers/MinimapSDK"
-import _ParticlesSDK from "./Managers/ParticleManager"
-import _Menu from "./Menu/Menu"
-import _RendererSDK from "./Native/RendererSDK"
+import { AABB as _AABB } from "./Base/AABB"
+import { Color as _Color } from "./Base/Color"
+import { NetworkedParticle as _NetworkedParticle } from "./Base/NetworkedParticle"
+import { QAngle as _QAngle } from "./Base/QAngle"
+import { Vector2 as _Vector2 } from "./Base/Vector2"
+import { Vector3 as _Vector3 } from "./Base/Vector3"
+import { Vector4 as _Vector4 } from "./Base/Vector4"
+import { GUIInfo as _GUIInfo } from "./GUI/GUIInfo"
+import { DotaMap as _DotaMap } from "./Helpers/DotaMap"
+import { EntityManager as _EntityManager } from "./Managers/EntityManager"
+import { Events as _Events } from "./Managers/Events"
+import { EventsSDK as _EventsSDK } from "./Managers/EventsSDK"
+import { InputManager as _InputManager } from "./Managers/InputManager"
+import { Manifest as _Manifest } from "./Managers/Manifest"
+import { MinimapSDK as _MinimapSDK } from "./Managers/MinimapSDK"
+import { ParticlesSDK as _ParticlesSDK } from "./Managers/ParticleManager"
+import { MenuManager as _Menu } from "./Menu/Menu"
+import { RendererSDK as _RendererSDK } from "./Native/RendererSDK"
 import * as _WASM from "./Native/WASM"
-import _Workers from "./Native/Workers"
+import { Workers as _Workers } from "./Native/Workers"
 import { GameRules as _GameRules, LocalPlayer as _LocalPlayer } from "./Objects/Base/Entity"
 import { FakeUnits as _FakeUnits } from "./Objects/Base/FakeUnit"
 import { PlayerResource as _PlayerResource } from "./Objects/Base/PlayerResource"
 import { SDKClasses } from "./Objects/NativeToSDK"
 import { EntityDataLump as _EntityDataLump } from "./Resources/ParseEntityLump"
 import { GridNav as _GridNav } from "./Resources/ParseGNV"
-import _GameState from "./Utils/GameState"
+import { GameState as _GameState } from "./Utils/GameState"
 
 globalThis.Color = _Color
 globalThis.QAngle = _QAngle
@@ -93,7 +93,7 @@ globalThis.WASM = _WASM
 globalThis.Workers = _Workers
 globalThis.Manifest = _Manifest
 globalThis.MinimapSDK = _MinimapSDK
-globalThis.Input = _Input
+globalThis.InputManager = _InputManager
 globalThis.GUIInfo = _GUIInfo
 
 globalThis.Menu = _Menu

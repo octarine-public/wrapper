@@ -3,7 +3,7 @@ import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { Attributes } from "../../Enums/Attributes"
 import { DOTAHullSize } from "../../Enums/DOTAHullSize"
 import { DOTAUnitMoveCapability_t } from "../../Enums/DOTAUnitMoveCapability_t"
-import Workers from "../../Native/Workers"
+import { Workers } from "../../Native/Workers"
 import { parseKVFile } from "../../Resources/ParseKV"
 import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
 
@@ -57,7 +57,7 @@ function FixCombatClassDefend(type: DOTA_COMBAT_CLASS_DEFEND): ArmorType {
 	}
 }
 
-export default class UnitData {
+export class UnitData {
 	public static global_storage: Promise<Map<string, UnitData>> = Promise.resolve(new Map())
 	public static empty = new UnitData("", new Map())
 	public static unit_names_sorted: Promise<string[]> = Promise.resolve([])

@@ -1,11 +1,11 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAHUDVisibility_t } from "../../Enums/DOTAHUDVisibility_t"
-import EventsSDK from "../../Managers/EventsSDK"
+import { EventsSDK } from "../../Managers/EventsSDK"
 import { HasBitBigInt } from "../../Utils/BitsExtensions"
-import Entity from "./Entity"
+import { Entity } from "./Entity"
 
 @WrapperClass("CDOTABaseGameMode")
-export default class DOTABaseGameMode extends Entity {
+export class DOTABaseGameMode extends Entity {
 	@NetworkedBasicField("m_nHUDVisibilityBits")
 	public HUDVisibilityBits: bigint = 0xFFFFFFFFFFFFFFFFn
 

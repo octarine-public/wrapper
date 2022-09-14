@@ -1,11 +1,11 @@
-import Vector3 from "../../Base/Vector3"
+import { Vector3 } from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
-import EntityManager from "../../Managers/EntityManager"
-import Entity from "./Entity"
+import { EntityManager } from "../../Managers/EntityManager"
+import { Entity } from "./Entity"
 import { TempTreeIDOffset } from "./Tree"
 
 @WrapperClass("CDOTA_TempTree")
-export default class TempTree extends Entity {
+export class TempTree extends Entity {
 	@NetworkedBasicField("m_vecTreeCircleCenter")
 	public CircleCenter = new Vector3()
 	public BinaryID: number

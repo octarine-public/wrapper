@@ -1,10 +1,10 @@
-import Color from "../Base/Color"
-import Particle, { ControlPoint, ControlPointParam } from "../Base/Particle"
-import Vector3 from "../Base/Vector3"
+import { Color } from "../Base/Color"
+import { ControlPoint, ControlPointParam, Particle } from "../Base/Particle"
+import { Vector3 } from "../Base/Vector3"
 import { ParticleAttachment_t } from "../Enums/ParticleAttachment_t"
-import Entity from "../Objects/Base/Entity"
-import GameState from "../Utils/GameState"
-import EventsSDK from "./EventsSDK"
+import { Entity } from "../Objects/Base/Entity"
+import { GameState } from "../Utils/GameState"
+import { EventsSDK } from "./EventsSDK"
 
 export enum PARTICLE_RENDER_NAME {
 	NORMAL = "Normal",
@@ -66,7 +66,7 @@ export interface IDrawBoundingAreaOptions {
 	Width?: number
 }
 
-class ParticlesSDK {
+export class ParticlesSDK {
 	public static readonly Instances: ParticlesSDK[] = []
 	public readonly AllParticles = new Map<any, Particle>()
 	private readonly AllParticlesRange = new Map<Particle, number>()
@@ -285,5 +285,3 @@ EventsSDK.on("Draw", () => {
 		}
 	}))
 })
-
-export default ParticlesSDK

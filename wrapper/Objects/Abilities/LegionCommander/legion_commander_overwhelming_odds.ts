@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("legion_commander_overwhelming_odds")
-export default class legion_commander_overwhelming_odds extends Ability {
+export class legion_commander_overwhelming_odds extends Ability {
 }

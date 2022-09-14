@@ -1,8 +1,8 @@
-import Vector2 from "../Base/Vector2"
-import Vector3 from "../Base/Vector3"
-import Unit from "../Objects/Base/Unit"
+import { Vector2 } from "../Base/Vector2"
+import { Vector3 } from "../Base/Vector3"
+import { Unit } from "../Objects/Base/Unit"
 import { FixInt16 } from "../Utils/BitsExtensions"
-import Events, { EventEmitter } from "./Events"
+import { EventEmitter, Events } from "./Events"
 
 const KeysDown = new Map<VKeys, boolean>()
 const MouseDown = new Map<VMouseKeys, boolean>()
@@ -15,7 +15,7 @@ const HIWORD = (dw: bigint) => Number((dw >> 16n) & 0xffffn)
 const XMouseKey = (wParam: bigint) => HIWORD(wParam) === VXMouseKeys.XBUTTON1
 	? VMouseKeys.MK_XBUTTON1 : VMouseKeys.MK_XBUTTON2
 
-class CInput {
+export const InputManager = new (class CInputManager {
 	public IsShopOpen = false
 	public IsScoreboardOpen = false
 	public readonly SelectedEntities: Unit[] = []
@@ -48,10 +48,10 @@ class CInput {
 		this.x = x
 		this.y = y
 	}
-}
+})()
 
 Events.on("WndProc", async (msg, wParam, _lParam, x, y) => {
-	Input.UpdateCursorOnScreen(x, y)
+	InputManager.UpdateCursorOnScreen(x, y)
 	let mKey: VMouseKeys = 0
 	switch (msg) {
 		case InputMessage.WM_LBUTTONUP:
@@ -109,9 +109,6 @@ Events.on("WndProc", async (msg, wParam, _lParam, x, y) => {
 
 	return true
 })
-
-const Input = new CInput()
-export default Input
 
 export enum InputMessage {
 	WM_NULL = 0x0000,

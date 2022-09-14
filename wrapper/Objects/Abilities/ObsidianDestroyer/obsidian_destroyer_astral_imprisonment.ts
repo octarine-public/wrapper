@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("obsidian_destroyer_astral_imprisonment")
-export default class obsidian_destroyer_astral_imprisonment extends Ability {
+export class obsidian_destroyer_astral_imprisonment extends Ability {
 	public get MaxCharges(): number {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("max_charges_scepter") : 0
 	}

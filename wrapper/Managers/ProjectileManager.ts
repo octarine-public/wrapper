@@ -1,26 +1,25 @@
-import Vector3 from "../Base/Vector3"
+import { Vector3 } from "../Base/Vector3"
 import { GetPositionHeight } from "../Native/WASM"
-import Entity from "../Objects/Base/Entity"
+import { Entity } from "../Objects/Base/Entity"
 import { GetPredictionTarget } from "../Objects/Base/FakeUnit"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
-import Unit from "../Objects/Base/Unit"
+import { Unit } from "../Objects/Base/Unit"
 import { arrayRemove } from "../Utils/ArrayExtensions"
-import GameState from "../Utils/GameState"
+import { GameState } from "../Utils/GameState"
 import { CMsgVector2DToVector2, CMsgVectorToVector3, NumberToColor, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
-import ViewBinaryStream from "../Utils/ViewBinaryStream"
-import EntityManager from "./EntityManager"
-import Events from "./Events"
-import EventsSDK from "./EventsSDK"
-import Manifest from "./Manifest"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
+import { EntityManager } from "./EntityManager"
+import { Events } from "./Events"
+import { EventsSDK } from "./EventsSDK"
+import { Manifest } from "./Manifest"
 
-const ProjectileManager = new (class CProjectileManager {
+export const ProjectileManager = new (class CProjectileManager {
 	public readonly AllLinearProjectiles: LinearProjectile[] = []
 	public readonly AllTrackingProjectiles: TrackingProjectile[] = []
 
 	public readonly AllLinearProjectilesMap: Map<number, LinearProjectile> = new Map()
 	public readonly AllTrackingProjectilesMap: Map<number, TrackingProjectile> = new Map()
 })()
-export default ProjectileManager
 
 EventsSDK.on("GameEnded", () => {
 	ProjectileManager.AllLinearProjectiles.splice(0)

@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("snapfire_scatterblast")
-export default class snapfire_scatterblast extends Ability {
+export class snapfire_scatterblast extends Ability {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("blast_width_end")
 	}

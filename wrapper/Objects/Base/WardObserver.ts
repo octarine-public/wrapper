@@ -1,9 +1,9 @@
 import { WrapperClass } from "../../Decorators"
 import { GameActivity_t } from "../../Enums/GameActivity_t"
-import Unit from "./Unit"
+import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_NPC_Observer_Ward")
-export default class WardObserver extends Unit {
+export class WardObserver extends Unit {
 	public get RingRadius(): number {
 		return 64
 	}

@@ -1,11 +1,11 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { Team } from "../../Enums/Team"
-import EntityManager from "../../Managers/EntityManager"
-import Building from "./Building"
-import Unit from "./Unit"
+import { EntityManager } from "../../Managers/EntityManager"
+import { Building } from "./Building"
+import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Tower")
-export default class Tower extends Building {
+export class Tower extends Building {
 	@NetworkedBasicField("m_hTowerAttackTarget")
 	public TowerAttackTarget_ = 0
 

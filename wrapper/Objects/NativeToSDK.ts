@@ -1,9 +1,9 @@
 import { EntityPropertyType } from "../Base/EntityProperties"
-import Events from "../Managers/Events"
+import { Events } from "../Managers/Events"
 import { ParseProtobufNamed } from "../Utils/Protobuf"
 import { MapToObject } from "../Utils/Utils"
-import ViewBinaryStream from "../Utils/ViewBinaryStream"
-import Entity from "./Base/Entity"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
+import { Entity } from "./Base/Entity"
 
 export type FieldHandler = (entity: Entity, new_value: EntityPropertyType) => any
 export const ClassToEntities = new Map<Constructor<any>, Entity[]>(),
@@ -87,7 +87,7 @@ function FixClassNameForMap<T>(constructor_name: string, map: Map<string, T>): N
 	return undefined
 }
 
-export default function GetConstructorByName(class_name: string, constructor_name_hint?: string): Nullable<Constructor<Entity>> {
+export function GetConstructorByName(class_name: string, constructor_name_hint?: string): Nullable<Constructor<Entity>> {
 	if (constructor_name_hint !== undefined && constructors.has(constructor_name_hint))
 		return constructors.get(constructor_name_hint)
 
@@ -170,7 +170,7 @@ Events.on("ServerMessage", async (msg_id, buf) => {
 					}),
 				])
 				console.log("dump_CSVCMsg_FlattenedSerializer.d.ts", `\
-import { Vector2, Vector3, QAngle, Vector4 } from "github.com/octarine-public/wrapper/wrapper/Imports"
+import { Vector2, Vector3, QAngle, Vector4 } from "github.com/octarine-public/wrapper/index"
 
 type Color = number // 0xAABBGGRR?
 type HSequence = number

@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("nevermore_requiem")
-export default class nevermore_requiem extends Ability {
+export class nevermore_requiem extends Ability {
 	public get Speed() {
 		return this.GetSpecialValue("requiem_line_speed")
 	}

@@ -1,5 +1,5 @@
-import Vector2 from "../Base/Vector2"
-import Vector3 from "../Base/Vector3"
+import { Vector2 } from "../Base/Vector2"
+import { Vector3 } from "../Base/Vector3"
 import { GetPositionHeight } from "../Native/WASM"
 
 export function ParseTRMP(stream: ReadableBinaryStream): Vector3[] {

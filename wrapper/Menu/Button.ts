@@ -1,11 +1,11 @@
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import GUIInfo from "../GUI/GUIInfo"
-import EventsSDK from "../Managers/EventsSDK"
-import RendererSDK from "../Native/RendererSDK"
-import Base from "./Base"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { GUIInfo } from "../GUI/GUIInfo"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { RendererSDK } from "../Native/RendererSDK"
+import { Base } from "./Base"
 
-export default class Button extends Base {
+export class Button extends Base {
 	public static OnWindowSizeChanged(): void {
 		Button.text_button_gap = GUIInfo.ScaleWidth(8)
 		Button.text_vertical_button_gap = GUIInfo.ScaleHeight(8)

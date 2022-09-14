@@ -1,14 +1,14 @@
-import Color from "../Base/Color"
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import GUIInfo from "../GUI/GUIInfo"
+import { Color } from "../Base/Color"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { GUIInfo } from "../GUI/GUIInfo"
 import { Sleeper } from "../Helpers/Sleeper"
-import EventsSDK from "../Managers/EventsSDK"
-import InputManager, { InputEventSDK, VKeys } from "../Managers/InputManager"
-import RendererSDK from "../Native/RendererSDK"
-import AbilityData from "../Objects/DataBook/AbilityData"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { InputEventSDK, InputManager, VKeys } from "../Managers/InputManager"
+import { RendererSDK } from "../Native/RendererSDK"
+import { AbilityData } from "../Objects/DataBook/AbilityData"
 import { orderBy } from "../Utils/ArrayExtensions"
-import Base, { IMenu } from "./Base"
+import { Base, IMenu } from "./Base"
 
 type IDefaultValues = Map<string, [
 	boolean, /** default state */
@@ -18,7 +18,7 @@ type IDefaultValues = Map<string, [
 ]>
 
 // every icon: 32x32, 1x1 border
-export default class DynamicImageSelector extends Base {
+export class DynamicImageSelector extends Base {
 	public static ServicePriorityToggle = false
 
 	public static OnWindowSizeChanged(): void {

@@ -182,11 +182,11 @@ ability_list.forEach(abil => {
 	let class_name = TryFindClass(is_item ? "C_DOTA_Item_" : "C_DOTA_Ability_", search_str) || TryFindClass(is_item ? "CDOTA_Item_" : "CDOTA_Ability_", search_str)
 	if (!class_name && !ignore_list.includes(abil) && !abil.startsWith("greevil_") && !abil.startsWith("roshan_halloween_"))
 		console.log(`${abil} isn't exposed in classes`)
-	imports += `export { default as ${abil} } from "./Objects/${is_item ? "Items" : "Abilities/" + folder}/${abil}"\n`
+	imports += `export { ${abil} } from "./Objects/${is_item ? "Items" : "Abilities/" + folder}/${abil}"\n`
 })
 
 imports += "\n"
 
-heroes.forEach(hero => imports += `export { default as npc_dota_hero_${hero} } from "./Objects/Heroes/npc_dota_hero_${hero}"\n`)
+heroes.forEach(hero => imports += `export { npc_dota_hero_${hero} } from "./Objects/Heroes/npc_dota_hero_${hero}"\n`)
 
 fs.writeFileSync("Imports.ts", imports)

@@ -1,4 +1,4 @@
-import GameState from "../Utils/GameState"
+import { GameState } from "../Utils/GameState"
 
 /**
  * Sleeper by hrtime()

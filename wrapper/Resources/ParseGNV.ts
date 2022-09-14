@@ -1,8 +1,8 @@
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import Vector3 from "../Base/Vector3"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { Vector3 } from "../Base/Vector3"
 import { GridNavCellFlags } from "../Enums/GridNavCellFlags"
-import Tree from "../Objects/Base/Tree"
+import { Tree } from "../Objects/Base/Tree"
 
 class CGridNav {
 	public readonly Max: Vector2

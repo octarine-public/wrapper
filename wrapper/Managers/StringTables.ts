@@ -1,5 +1,5 @@
-import ViewBinaryStream from "../Utils/ViewBinaryStream"
-import EventsSDK from "./EventsSDK"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
+import { EventsSDK } from "./EventsSDK"
 
 const StringTables = new Map<string, Map<number, [string, ArrayBuffer]>>()
 declare global {

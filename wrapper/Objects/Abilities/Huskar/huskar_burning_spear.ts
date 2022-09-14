@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("huskar_burning_spear")
-export default class huskar_burning_spear extends Ability {
+export class huskar_burning_spear extends Ability {
 }

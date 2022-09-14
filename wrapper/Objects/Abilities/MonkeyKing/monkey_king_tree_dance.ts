@@ -1,18 +1,18 @@
-import Vector3 from "../../../Base/Vector3"
+import { Vector3 } from "../../../Base/Vector3"
 import { WrapperClass } from "../../../Decorators"
-import EntityManager from "../../../Managers/EntityManager"
-import EventsSDK from "../../../Managers/EventsSDK"
+import { EntityManager } from "../../../Managers/EntityManager"
+import { EventsSDK } from "../../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../../Native/WASM"
 import * as ArrayExtensions from "../../../Utils/ArrayExtensions"
-import GameState from "../../../Utils/GameState"
+import { GameState } from "../../../Utils/GameState"
 import { DegreesToRadian } from "../../../Utils/Math"
-import Ability from "../../Base/Ability"
-import TempTree, { TempTrees } from "../../Base/TempTree"
-import Tree, { Trees } from "../../Base/Tree"
-import Unit from "../../Base/Unit"
+import { Ability } from "../../Base/Ability"
+import { TempTree, TempTrees } from "../../Base/TempTree"
+import { Tree, Trees } from "../../Base/Tree"
+import { Unit } from "../../Base/Unit"
 
 @WrapperClass("monkey_king_tree_dance")
-export default class monkey_king_tree_dance extends Ability {
+export class monkey_king_tree_dance extends Ability {
 	public readonly StartPosition = new Vector3().Invalidate()
 	public TargetTree: Nullable<Tree | TempTree>
 	public PredictedPositionsPerTree: [Vector3, Tree | TempTree, number][] = [] // current position, tree, finished jumping at time

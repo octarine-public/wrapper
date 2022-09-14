@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("snapfire_mortimer_kisses")
-export default class snapfire_mortimer_kisses extends Ability {
+export class snapfire_mortimer_kisses extends Ability {
 	public get Speed() {
 		return this.GetSpecialValue("projectile_speed")
 	}

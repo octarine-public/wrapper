@@ -1,8 +1,8 @@
 import { Team } from "../Enums/Team"
-import AbilityData from "../Objects/DataBook/AbilityData"
+import { AbilityData } from "../Objects/DataBook/AbilityData"
 import { EntityPropertiesNode } from "./EntityProperties"
 
-export default class StockInfo {
+export class StockInfo {
 	constructor(public readonly properties: EntityPropertiesNode) { }
 
 	public get AbilityID(): number {

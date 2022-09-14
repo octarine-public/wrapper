@@ -1,4 +1,4 @@
-import Vector2 from "../Base/Vector2"
+import { Vector2 } from "../Base/Vector2"
 import * as WASM from "../Native/WASM"
 import { ParseRED2, ParseREDI } from "./ParseREDI"
 import { ParseResourceLayout } from "./ParseResource"

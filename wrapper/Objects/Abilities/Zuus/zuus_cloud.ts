@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("zuus_cloud")
-export default class zuus_cloud extends Ability {
+export class zuus_cloud extends Ability {
 	public GetBaseCastRangeForLevel(_level: number): number {
 		return Number.MAX_SAFE_INTEGER
 	}

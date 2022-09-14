@@ -1,13 +1,13 @@
-import Vector3 from "../../Base/Vector3"
-import EntityManager from "../../Managers/EntityManager"
-import EventsSDK from "../../Managers/EventsSDK"
+import { Vector3 } from "../../Base/Vector3"
+import { EntityManager } from "../../Managers/EntityManager"
+import { EventsSDK } from "../../Managers/EventsSDK"
 import { IModifier } from "../../Managers/ModifierManager"
 import * as StringTables from "../../Managers/StringTables"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
-import GameState from "../../Utils/GameState"
-import AbilityData from "../DataBook/AbilityData"
-import Ability from "./Ability"
-import Unit from "./Unit"
+import { GameState } from "../../Utils/GameState"
+import { AbilityData } from "../DataBook/AbilityData"
+import { Ability } from "./Ability"
+import { Unit } from "./Unit"
 
 // AllowIllusionDuplicate
 // CanParentBeAutoAttacked
@@ -45,7 +45,7 @@ export const REFLECTING_DAMAGE_MODIFIERS = [
 const ShardRegExp = /modifier_item_aghanims_shard/
 const ScepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
-export default class Modifier {
+export class Modifier {
 	public static HasTrueSightBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => TRUESIGHT_MODIFIERS.some(nameBuff => nameBuff === buff.Name))
 	}

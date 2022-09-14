@@ -1,10 +1,10 @@
-import Color from "../Base/Color"
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import RendererSDK from "../Native/RendererSDK"
+import { Color } from "../Base/Color"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { RendererSDK } from "../Native/RendererSDK"
 import { ScaleHeight, ScaleWidth } from "./Helpers"
 
-export default class CTopBar {
+export class CTopBar {
 	public readonly TopBar = new Rectangle()
 	public readonly TimeOfDay = new Rectangle()
 	public readonly TimeOfDayTimeUntil = new Rectangle()

@@ -1,13 +1,13 @@
 import { DamageAmplifyPerIntellectPrecent } from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { EPropertyType } from "../../Enums/PropertyType"
-import EntityManager from "../../Managers/EntityManager"
-import EventsSDK from "../../Managers/EventsSDK"
-import FakeUnit, { GetPredictionTarget } from "./FakeUnit"
-import Unit from "./Unit"
+import { EntityManager } from "../../Managers/EntityManager"
+import { EventsSDK } from "../../Managers/EventsSDK"
+import { FakeUnit, GetPredictionTarget } from "./FakeUnit"
+import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Hero")
-export default class Hero extends Unit {
+export class Hero extends Unit {
 	@NetworkedBasicField("m_iAbilityPoints")
 	public AbilityPoints = 0
 	@NetworkedBasicField("m_iCurrentXP")

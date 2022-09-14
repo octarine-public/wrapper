@@ -1,13 +1,13 @@
 import { ParticleAttachment_t } from "../Enums/ParticleAttachment_t"
 import * as EconHelper from "../Managers/EconHelper"
-import EventsSDK from "../Managers/EventsSDK"
-import FakeUnit from "../Objects/Base/FakeUnit"
-import Unit from "../Objects/Base/Unit"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { FakeUnit } from "../Objects/Base/FakeUnit"
+import { Unit } from "../Objects/Base/Unit"
 import { parseKVFile } from "../Resources/ParseKV"
 import { GetMapNumberProperty, GetMapStringProperty } from "../Resources/ParseUtils"
-import GameState from "../Utils/GameState"
-import QAngle from "./QAngle"
-import Vector3 from "./Vector3"
+import { GameState } from "../Utils/GameState"
+import { QAngle } from "./QAngle"
+import { Vector3 } from "./Vector3"
 
 function ApproximateParticleLifetimeInternal(path: string): number {
 	if (!path.endsWith("_c"))
@@ -88,7 +88,7 @@ function ApproximateParticleLifetime(path: string): number {
 	return res
 }
 
-export default class NetworkedParticle {
+export class NetworkedParticle {
 	public static readonly Instances = new Map<number, NetworkedParticle>()
 	public readonly ControlPoints = new Map<number, Vector3>()
 	public readonly ControlPointsSnapshot = new Map<number, string>()

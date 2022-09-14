@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("viper_viper_strike")
-export default class viper_viper_strike extends Ability {
+export class viper_viper_strike extends Ability {
 	public get MaxCharges(): number {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("max_charges") : 0
 	}

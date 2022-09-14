@@ -1,26 +1,26 @@
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import GUIInfo from "../GUI/GUIInfo"
-import Events from "../Managers/Events"
-import EventsSDK from "../Managers/EventsSDK"
-import InputManager, { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
-import RendererSDK from "../Native/RendererSDK"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { GUIInfo } from "../GUI/GUIInfo"
+import { Events } from "../Managers/Events"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { InputEventSDK, InputManager, VMouseKeys } from "../Managers/InputManager"
+import { RendererSDK } from "../Native/RendererSDK"
 import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
 import { readJSON } from "../Utils/Utils"
-import ViewBinaryStream from "../Utils/ViewBinaryStream"
-import Base from "./Base"
-import Dropdown from "./Dropdown"
-import Header from "./Header"
-import Localization from "./Localization"
-import Node from "./Node"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
+import { Base } from "./Base"
+import { Dropdown } from "./Dropdown"
+import { Header } from "./Header"
+import { Localization } from "./Localization"
+import { Node } from "./Node"
 
 const hardcoded_icons = new Map<string, string>(Object.entries(readJSON("hardcoded_icons.json"))),
 	hardcoded_priorities = new Map<string, number>(Object.entries(readJSON("hardcoded_priorities.json")))
-class MenuManager {
+class CMenuManager {
 	public static OnWindowSizeChanged(): void {
-		MenuManager.scrollbar_width = GUIInfo.ScaleWidth(3)
-		MenuManager.scrollbar_offset.x = GUIInfo.ScaleWidth(2)
-		MenuManager.scrollbar_offset.y = GUIInfo.ScaleHeight(2)
+		CMenuManager.scrollbar_width = GUIInfo.ScaleWidth(3)
+		CMenuManager.scrollbar_offset.x = GUIInfo.ScaleWidth(2)
+		CMenuManager.scrollbar_offset.y = GUIInfo.ScaleHeight(2)
 	}
 	private static readonly scrollbar_path = "menu/scrollbar.svg"
 	private static scrollbar_width = 0
@@ -293,23 +293,23 @@ class MenuManager {
 		return new Rectangle(
 			new Vector2(
 				elements_rect.pos1.x
-				+ MenuManager.scrollbar_offset.x,
+				+ CMenuManager.scrollbar_offset.x,
 				elements_rect.pos1.y
-				+ MenuManager.scrollbar_offset.y,
+				+ CMenuManager.scrollbar_offset.y,
 			),
 			new Vector2(
 				elements_rect.pos1.x
-				+ MenuManager.scrollbar_offset.x
-				+ MenuManager.scrollbar_width,
+				+ CMenuManager.scrollbar_offset.x
+				+ CMenuManager.scrollbar_width,
 				elements_rect.pos2.y
-				- MenuManager.scrollbar_offset.y,
+				- CMenuManager.scrollbar_offset.y,
 			),
 		)
 	}
 	private GetScrollbarRect(scrollbar_positions_rect: Rectangle): Rectangle {
 		const positions_size = scrollbar_positions_rect.Size
 		const scrollbar_size = new Vector2(
-			MenuManager.scrollbar_width,
+			CMenuManager.scrollbar_width,
 			positions_size.y * this.VisibleEntries / this.entries.length,
 		)
 		const scrollbar_pos = scrollbar_positions_rect.pos1.Clone().AddScalarY(
@@ -325,7 +325,7 @@ class MenuManager {
 			return
 		if (this.ScrollVisible) {
 			const rect = this.GetScrollbarRect(this.GetScrollbarPositionsRect(this.EntriesRect))
-			RendererSDK.Image(MenuManager.scrollbar_path, rect.pos1, -1, rect.Size)
+			RendererSDK.Image(CMenuManager.scrollbar_path, rect.pos1, -1, rect.Size)
 		}
 	}
 	private UpdateVisibleEntries() {
@@ -375,25 +375,25 @@ class MenuManager {
 		}
 	}
 }
-const Menu = new MenuManager()
-await Menu.LoadConfig()
+export const MenuManager = new CMenuManager()
+await MenuManager.LoadConfig()
 
 Events.after("Draw", async () => {
-	await Menu.Render()
+	await MenuManager.Render()
 	RendererSDK.EmitDraw()
 })
 
-EventsSDK.on("WindowSizeChanged", () => Menu.Update(true))
-EventsSDK.on("UnitAbilityDataUpdated", () => Menu.Update(true))
+EventsSDK.on("WindowSizeChanged", () => MenuManager.Update(true))
+EventsSDK.on("UnitAbilityDataUpdated", () => MenuManager.Update(true))
 
 InputEventSDK.on("MouseKeyDown", async key => {
 	if (key === VMouseKeys.MK_LBUTTON)
-		return Menu.OnMouseLeftDown()
+		return MenuManager.OnMouseLeftDown()
 	return true
 })
 InputEventSDK.on("MouseKeyUp", async key => {
 	if (key === VMouseKeys.MK_LBUTTON)
-		return Menu.OnMouseLeftUp()
+		return MenuManager.OnMouseLeftUp()
 	return true
 })
 
@@ -401,9 +401,7 @@ InputEventSDK.on("MouseWheel", up => {
 	const active_dropdown = Dropdown.active_dropdown
 	if (active_dropdown?.IsVisible && active_dropdown.OnMouseWheel(up))
 		return false
-	return !Menu.OnMouseWheel(up)
+	return !MenuManager.OnMouseWheel(up)
 })
 
-EventsSDK.on("WindowSizeChanged", () => MenuManager.OnWindowSizeChanged())
-
-export default Menu
+EventsSDK.on("WindowSizeChanged", () => CMenuManager.OnWindowSizeChanged())

@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("centaur_khan_war_stomp")
-export default class centaur_khan_war_stomp extends Ability {
+export class centaur_khan_war_stomp extends Ability {
 }

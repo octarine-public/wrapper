@@ -1,15 +1,15 @@
-import DataTeamPlayer from "../../Base/DataTeamPlayer"
+import { DataTeamPlayer } from "../../Base/DataTeamPlayer"
 import { EntityPropertiesNode } from "../../Base/EntityProperties"
-import TreeModelReplacement from "../../Base/TreeModelReplacement"
-import Vector2 from "../../Base/Vector2"
+import { TreeModelReplacement } from "../../Base/TreeModelReplacement"
+import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
-import EntityManager from "../../Managers/EntityManager"
+import { EntityManager } from "../../Managers/EntityManager"
 import { GridNav } from "../../Resources/ParseGNV"
-import Entity from "./Entity"
+import { Entity } from "./Entity"
 import { Trees } from "./Tree"
 
 @WrapperClass("CDOTA_DataNonSpectator")
-export default class TeamData extends Entity {
+export class TeamData extends Entity {
 	public DataTeam: DataTeamPlayer[] = []
 	public WorldTreeModelReplacements: TreeModelReplacement[] = []
 	@NetworkedBasicField("m_vDesiredWardPlacement")

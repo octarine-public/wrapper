@@ -1,4 +1,4 @@
-import Vector3 from "../../Base/Vector3"
+import { Vector3 } from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { AbilityLogicType } from "../../Enums/AbilityLogicType"
 import { ABILITY_TYPES } from "../../Enums/ABILITY_TYPES"
@@ -8,15 +8,15 @@ import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
 import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
-import ExecuteOrder from "../../Native/ExecuteOrder"
+import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { HasMask, MaskToArrayNumber } from "../../Utils/BitsExtensions"
-import GameState from "../../Utils/GameState"
-import AbilityData from "../DataBook/AbilityData"
-import Entity from "./Entity"
-import Unit from "./Unit"
+import { GameState } from "../../Utils/GameState"
+import { AbilityData } from "../DataBook/AbilityData"
+import { Entity } from "./Entity"
+import { Unit } from "./Unit"
 
 @WrapperClass("CDOTABaseAbility")
-export default class Ability extends Entity {
+export class Ability extends Entity {
 	public AbilityData = undefined as any as AbilityData // should be initialized in AsyncCreate
 	@NetworkedBasicField("m_bInIndefiniteCooldown")
 	public IsInIndefiniteCooldown = false

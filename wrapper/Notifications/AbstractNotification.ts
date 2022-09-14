@@ -1,10 +1,10 @@
-import Rectangle from "../Base/Rectangle"
-import Vector3 from "../Base/Vector3"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector3 } from "../Base/Vector3"
 import { BackgroundCover } from "../Enums/BackgroundCover"
-import SoundSDK from "../Native/SoundSDK"
-import Entity from "../Objects/Base/Entity"
+import { SoundSDK } from "../Native/SoundSDK"
+import { Entity } from "../Objects/Base/Entity"
 
-export default abstract class Notification {
+export abstract class Notification {
 	public readonly UniqueKey: any
 	public Cover = BackgroundCover.Octarine
 

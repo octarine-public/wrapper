@@ -1,4 +1,4 @@
-import Entity from "../Objects/Base/Entity"
+import { Entity } from "../Objects/Base/Entity"
 import { ClassToEntities } from "../Objects/NativeToSDK"
 
 export const AllEntitiesAsMap = new Map<number, Entity>()
@@ -28,7 +28,7 @@ class bitset {
 }
 
 export const TreeActiveMask = new bitset(0x4000)
-class CEntityManager {
+export const EntityManager = new (class CEntityManager {
 	public readonly INDEX_BITS = 14
 	public readonly INDEX_MASK = (1 << this.INDEX_BITS) - 1
 	public readonly SERIAL_BITS = 17
@@ -58,7 +58,4 @@ class CEntityManager {
 	public SetWorldTreeState(WorldTreeState: bigint[]): void {
 		TreeActiveMask.set_buf(new BigUint64Array(WorldTreeState).buffer)
 	}
-}
-
-const EntityManager = new CEntityManager()
-export default EntityManager
+})()

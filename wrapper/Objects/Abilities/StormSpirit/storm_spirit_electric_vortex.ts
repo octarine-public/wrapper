@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("storm_spirit_electric_vortex")
-export default class storm_spirit_electric_vortex extends Ability {
+export class storm_spirit_electric_vortex extends Ability {
 	public GetCastRangeForLevel(level: number): number {
 		if (this.Owner?.HasScepter)
 			return Number.MAX_SAFE_INTEGER

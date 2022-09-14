@@ -1,12 +1,12 @@
-import Color from "../Base/Color"
-import Rectangle from "../Base/Rectangle"
-import Vector2 from "../Base/Vector2"
-import ConVarsSDK from "../Native/ConVarsSDK"
-import RendererSDK from "../Native/RendererSDK"
+import { Color } from "../Base/Color"
+import { Rectangle } from "../Base/Rectangle"
+import { Vector2 } from "../Base/Vector2"
+import { ConVarsSDK } from "../Native/ConVarsSDK"
+import { RendererSDK } from "../Native/RendererSDK"
 import { ScaleHeight, ScaleWidth } from "./Helpers"
 
 let extra_large_minimap_setting = 0
-export default class CMinimap {
+export class CMinimap {
 	private static UpdateExtraLargeMinimapSetting(): boolean {
 		const setting = ConVarsSDK.GetInt("dota_hud_extra_large_minimap", 0)
 		if (

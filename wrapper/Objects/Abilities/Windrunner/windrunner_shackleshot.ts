@@ -1,7 +1,7 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("windrunner_shackleshot")
-export default class windrunner_shackleshot extends Ability {
+export class windrunner_shackleshot extends Ability {
 	public readonly ProjectilePath = "particles/units/heroes/hero_windrunner/windrunner_shackleshot.vpcf"
 }

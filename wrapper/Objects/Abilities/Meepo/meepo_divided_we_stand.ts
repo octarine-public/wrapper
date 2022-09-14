@@ -1,11 +1,11 @@
 import { NetworkedBasicField, WrapperClass } from "../../../Decorators"
-import EntityManager from "../../../Managers/EntityManager"
-import EventsSDK from "../../../Managers/EventsSDK"
-import Ability from "../../Base/Ability"
-import Unit from "../../Base/Unit"
+import { EntityManager } from "../../../Managers/EntityManager"
+import { EventsSDK } from "../../../Managers/EventsSDK"
+import { Ability } from "../../Base/Ability"
+import { Unit } from "../../Base/Unit"
 
 @WrapperClass("meepo_divided_we_stand")
-export default class meepo_divided_we_stand extends Ability {
+export class meepo_divided_we_stand extends Ability {
 	@NetworkedBasicField("m_nWhichDividedWeStand")
 	public WhichDividedWeStand = -1
 	@NetworkedBasicField("m_nNumDividedWeStand")

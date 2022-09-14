@@ -1,8 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
-import Ability from "../../Base/Ability"
+import { Ability } from "../../Base/Ability"
 
 @WrapperClass("pangolier_swashbuckle")
-export default class pangolier_swashbuckle extends Ability {
+export class pangolier_swashbuckle extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("dash_speed")
 	}

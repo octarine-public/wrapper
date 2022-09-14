@@ -1,12 +1,12 @@
-import Color from "../../Base/Color"
+import { Color } from "../../Base/Color"
 import { WrapperClass } from "../../Decorators"
 import { MapArea } from "../../Enums/MapArea"
 import { RenderMode_t } from "../../Enums/RenderMode_t"
-import CreepPathCorner from "./CreepPathCorner"
-import Entity from "./Entity"
+import { CreepPathCorner } from "./CreepPathCorner"
+import { Entity } from "./Entity"
 
 @WrapperClass("LaneCreepSpawner")
-export default class LaneCreepSpawner extends Entity {
+export class LaneCreepSpawner extends Entity {
 	public Target: Nullable<CreepPathCorner>
 	public Lane = MapArea.Middle
 

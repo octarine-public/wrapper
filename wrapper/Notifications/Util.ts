@@ -1,6 +1,6 @@
-import Rectangle from "../Base/Rectangle"
-import GUIInfo from "../GUI/GUIInfo"
-import RendererSDK from "../Native/RendererSDK"
+import { Rectangle } from "../Base/Rectangle"
+import { GUIInfo } from "../GUI/GUIInfo"
+import { RendererSDK } from "../Native/RendererSDK"
 import { NotificationsSDK } from "./Imports"
 
 export function GetPanel(panel: Rectangle): void {
