@@ -1,6 +1,5 @@
 import { SOType } from "../Enums/SOType"
 import { ParseProtobufDesc, ParseProtobufNamed } from "../Utils/Protobuf"
-import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { Events } from "./Events"
 import { EventsSDK } from "./EventsSDK"
 
@@ -831,6 +830,6 @@ Events.on("SharedObjectChanged", (type_id, reason, data) => {
 		false,
 		type_id,
 		reason,
-		ParseProtobufNamed(new ViewBinaryStream(new DataView(data)), name),
+		ParseProtobufNamed(new Uint8Array(data), name),
 	)
 })

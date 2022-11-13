@@ -10,7 +10,6 @@ import { RendererSDK } from "../Native/RendererSDK"
 import { GetPositionHeight } from "../Native/WASM"
 import { Entity, GameRules } from "../Objects/Base/Entity"
 import { EntityDataLump } from "../Resources/ParseEntityLump"
-import { parseKVFile } from "../Resources/ParseKV"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import { GameState } from "../Utils/GameState"
 import { EventsSDK } from "./EventsSDK"
@@ -99,7 +98,7 @@ class MinimapOverview {
 	) { }
 }
 function ParseMinimapOverview(): void {
-	const kv = [...parseKVFile(`resource/overviews/${GameState.MapName}.txt`).values()]
+	const kv = [...parseKV(`resource/overviews/${GameState.MapName}.txt`).values()]
 		.find(val => val instanceof Map) as Nullable<RecursiveMap>
 	if (kv === undefined) {
 		MinimapSDK.CurrentMinimapOverview = undefined
@@ -146,7 +145,7 @@ const minimap_icon_storage = new Map<string, MinimapIcon>()
 function LoadIcons(): void {
 	minimap_icon_storage.clear()
 	const TextureData = (
-		parseKVFile("scripts/mod_textures.txt").get("sprites/640_hud") as RecursiveMap
+		parseKV("scripts/mod_textures.txt").get("sprites/640_hud") as RecursiveMap
 	)?.get("TextureData") as RecursiveMap
 	if (TextureData === undefined)
 		return

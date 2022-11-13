@@ -160,6 +160,10 @@ export class FileBinaryStream implements ReadableBinaryStream {
 		this.ReadSliceTo(res)
 		return res
 	}
+	public ReadSliceNoCopy(size: number): Uint8Array {
+		// we can't do zero-copy with a file
+		return this.ReadSlice(size)
+	}
 	public ReadUtf8Char(size = this.Remaining): string {
 		const nPart = this.ReadUint8()
 		size--
@@ -257,6 +261,21 @@ export class FileBinaryStream implements ReadableBinaryStream {
 	}
 	public ReadVarString(): string {
 		return this.ReadUtf8String(this.ReadVarUintAsNumber())
+	}
+	public ParseKV(block: string | number = "DATA"): RecursiveMap {
+		return parseKV(
+			this.fileStream,
+			block,
+			this.offset + this.pos,
+			this.Remaining,
+		)
+	}
+	public ParseKVBlock(): RecursiveMap {
+		return parseKVBlock(
+			this.fileStream,
+			this.offset + this.pos,
+			this.Remaining,
+		)
 	}
 	public Empty(): boolean {
 		return this.pos >= this.size

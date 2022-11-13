@@ -1,5 +1,4 @@
 import { DecompressIndexBuffer, DecompressVertexBuffer } from "../Native/WASM"
-import { isStream } from "../Utils/ReadableBinaryStreamUtils"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { GetMapNumberProperty, MapToNumberArray } from "./ParseUtils"
 
@@ -27,20 +26,17 @@ export class VBIBBufferData {
 		public readonly ElementCount: number,
 		public readonly ElementSize: number,
 		public readonly InputLayout: VBIBLayoutField[],
-		private Data_: ReadableBinaryStream,
+		private Data_: Uint8Array,
 		private readonly IsVertexBuffer: boolean,
 	) { }
 
 	public get Data() {
 		if (this.CheckedData)
 			return this.Data_
-		if (this.ElementCount * this.ElementSize !== this.Data_.Size) {
-			this.Data_ = new ViewBinaryStream(new DataView(
-				this.IsVertexBuffer
-					? DecompressVertexBuffer(this.Data_, this.ElementCount, this.ElementSize).buffer
-					: DecompressIndexBuffer(this.Data_, this.ElementCount, this.ElementSize).buffer,
-			))
-		}
+		if (this.ElementCount * this.ElementSize !== this.Data_.byteLength)
+			this.Data_ = this.IsVertexBuffer
+				? DecompressVertexBuffer(this.Data_, this.ElementCount, this.ElementSize)
+				: DecompressIndexBuffer(this.Data_, this.ElementCount, this.ElementSize)
 		this.CheckedData = true
 		return this.Data_
 	}
@@ -78,7 +74,7 @@ function ReadOnDiskBufferData(stream: ReadableBinaryStream, isVertexBuffer: bool
 		))
 	}
 	stream.pos = data_position
-	const data = stream.CreateNestedStream(data_size)
+	const data = stream.ReadSliceNoCopy(data_size)
 	stream.pos = header_end_position
 	return new VBIBBufferData(
 		element_count,
@@ -115,11 +111,15 @@ function ReadBufferDataFromKV(kv: RecursiveMap, isVertexBuffer: boolean): VBIBBu
 				return
 			let name_array = fieldKV.get("m_pSemanticName")
 			if (name_array instanceof Map || Array.isArray(name_array))
-				name_array = new ViewBinaryStream(new DataView(new Uint8Array(MapToNumberArray(name_array)).buffer))
-			if (!isStream(name_array))
-				name_array = new ViewBinaryStream(new DataView(new ArrayBuffer(0)))
+				name_array = new Uint8Array(MapToNumberArray(name_array))
+			if (!(name_array instanceof Uint8Array))
+				name_array = new Uint8Array()
 			fields.push(new VBIBLayoutField(
-				name_array.ReadUtf8String(name_array.Size),
+				new ViewBinaryStream(new DataView(
+					name_array.buffer,
+					name_array.byteOffset,
+					name_array.byteLength,
+				)).ReadUtf8String(name_array.byteLength),
 				GetMapNumberProperty(fieldKV, "m_nSemanticIndex"),
 				GetMapNumberProperty(fieldKV, "m_Format"),
 				GetMapNumberProperty(fieldKV, "m_nOffset"),
@@ -130,9 +130,9 @@ function ReadBufferDataFromKV(kv: RecursiveMap, isVertexBuffer: boolean): VBIBBu
 		})
 	let dataKV = kv.get("m_pData")
 	if (dataKV instanceof Map || Array.isArray(dataKV))
-		dataKV = new ViewBinaryStream(new DataView(new Uint8Array(MapToNumberArray(dataKV)).buffer))
-	if (!isStream(dataKV))
-		dataKV = new ViewBinaryStream(new DataView(new ArrayBuffer(0)))
+		dataKV = new Uint8Array(MapToNumberArray(dataKV))
+	if (!(dataKV instanceof Uint8Array))
+		dataKV = new Uint8Array()
 	return new VBIBBufferData(
 		element_count,
 		element_size,

@@ -5,9 +5,7 @@ import { Manifest } from "../Managers/Manifest"
 import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
 import { HasBit } from "../Utils/BitsExtensions"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
-import { isStream } from "../Utils/ReadableBinaryStreamUtils"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
-import { parseKV } from "./ParseKV"
 import { GetMapNumberProperty, GetMapStringProperty } from "./ParseUtils"
 
 const enum EntsTypes {
@@ -52,7 +50,7 @@ function ReadTypedValue(stream: ReadableBinaryStream): EntityDataMapValue {
 }
 
 function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
-	const kv = parseKV(stream)
+	const kv = stream.ParseKV()
 
 	if (kv.has("m_childLumps")) {
 		const m_childLumps = kv.get("m_childLumps")
@@ -81,29 +79,34 @@ function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
 				if (kvData === undefined)
 					return
 				if (typeof kvData === "string")
-					kvData = new ViewBinaryStream(new DataView(StringToUTF8(kvData).buffer))
-				if (!isStream(kvData))
+					kvData = StringToUTF8(kvData)
+				if (!(kvData instanceof Uint8Array))
 					return
+				const kvDataStream = new ViewBinaryStream(new DataView(
+					kvData.buffer,
+					kvData.byteOffset,
+					kvData.byteLength,
+				))
 				{
-					const version = kvData.ReadUint32()
+					const version = kvDataStream.ReadUint32()
 					if (version !== 1)
 						throw `Unknown entity data version: ${version}`
 				}
-				const hashed_keys = kvData.ReadUint32(),
-					string_keys = kvData.ReadUint32()
+				const hashed_keys = kvDataStream.ReadUint32(),
+					string_keys = kvDataStream.ReadUint32()
 				const map: EntityDataMap = new Map()
 				for (let i = 0; i < hashed_keys; i++) {
-					const hash = kvData.ReadUint32(),
-						value = ReadTypedValue(kvData)
+					const hash = kvDataStream.ReadUint32(),
+						value = ReadTypedValue(kvDataStream)
 					let key = Manifest.LookupStringByToken(hash)
 					if (key === undefined)
 						key = hash.toString()
 					map.set(key, value)
 				}
 				for (let i = 0; i < string_keys; i++) {
-					kvData.RelativeSeek(4) // hash
-					const key = kvData.ReadNullTerminatedUtf8String(),
-						value = ReadTypedValue(kvData)
+					kvDataStream.RelativeSeek(4) // hash
+					const key = kvDataStream.ReadNullTerminatedUtf8String(),
+						value = ReadTypedValue(kvDataStream)
 					map.set(key, value)
 				}
 				if (

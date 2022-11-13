@@ -1,7 +1,7 @@
 import { Color } from "../Base/Color"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
-import { isStream } from "./ReadableBinaryStreamUtils"
+import { ViewBinaryStream } from "./ViewBinaryStream"
 
 export enum ProtoType {
 	// 0 is reserved for errors.
@@ -36,7 +36,7 @@ export enum ProtoType {
 	TYPE_SINT64 = 18,  // Uses ZigZag encoding.
 }
 
-export type ProtobufFieldType = string | number | bigint | boolean | RecursiveProtobuf | ReadableBinaryStream
+export type ProtobufFieldType = string | number | bigint | boolean | RecursiveProtobuf | Uint8Array
 export type RecursiveProtobuf = Map<string, ProtobufFieldType[] | ProtobufFieldType>
 export enum ProtoFieldType {
 	OPTIONAL,
@@ -75,62 +75,62 @@ const convert_uint32 = new Uint32Array(convert_buf),
 	convert_uint64 = new BigUint64Array(convert_buf),
 	convert_float32 = new Float32Array(convert_buf),
 	convert_float64 = new Float64Array(convert_buf)
-function ParseField(field: ProtoFieldDescription, value: ReadableBinaryStream | bigint): ProtobufFieldType {
+function ParseField(field: ProtoFieldDescription, value: Uint8Array | bigint): ProtobufFieldType {
 	switch (field.type) {
 		case ProtoType.TYPE_BOOL:
-			if (isStream(value))
+			if (value instanceof Uint8Array)
 				throw "Invalid proto [1]"
 			return value !== 0n
 		case ProtoType.TYPE_ENUM:
 		case ProtoType.TYPE_INT32:
 		case ProtoType.TYPE_SFIXED32:
-			if (isStream(value))
+			if (value instanceof Uint8Array)
 				throw "Invalid proto [2]"
 			convert_uint64[0] = value
 			return convert_int32[0]
 		case ProtoType.TYPE_INT64:
 		case ProtoType.TYPE_SFIXED64:
-			if (isStream(value))
+			if (value instanceof Uint8Array)
 				throw "Invalid proto [2]"
 			convert_uint64[0] = value
 			return convert_int64[0]
 		case ProtoType.TYPE_SINT32:
-			if (isStream(value) || value > 0xFFFFFFFFn)
+			if (value instanceof Uint8Array || value > 0xFFFFFFFFn)
 				throw "Invalid proto [3]"
 			return Number((value >> 1n) ^ -(value & 1n))
 		case ProtoType.TYPE_SINT64:
-			if (isStream(value))
+			if (value instanceof Uint8Array)
 				throw "Invalid proto [4]"
 			return (value >> 1n) ^ -(value & 1n)
 		case ProtoType.TYPE_FIXED32: case ProtoType.TYPE_UINT32:
-			if (isStream(value) || value > 0xFFFFFFFFn)
+			if (value instanceof Uint8Array || value > 0xFFFFFFFFn)
 				throw "Invalid proto [5]"
 			convert_uint64[0] = value
 			return convert_uint32[0]
 		case ProtoType.TYPE_FIXED64: case ProtoType.TYPE_UINT64:
-			if (isStream(value))
+			if (value instanceof Uint8Array)
 				throw "Invalid proto [6]"
 			return value
 		case ProtoType.TYPE_FLOAT:
-			if (isStream(value) || value > 0xFFFFFFFFn)
+			if (value instanceof Uint8Array || value > 0xFFFFFFFFn)
 				throw "Invalid proto [7]"
 			convert_uint64[0] = value
 			return convert_float32[0]
 		case ProtoType.TYPE_DOUBLE:
-			if (isStream(value))
+			if (value instanceof Uint8Array)
 				throw "Invalid proto [8]"
 			convert_int64[0] = value
 			return convert_float64[0]
 		case ProtoType.TYPE_MESSAGE:
-			if (!isStream(value))
+			if (!(value instanceof Uint8Array))
 				throw "Invalid proto [9]"
 			return ParseProtobuf(value, field.proto_desc!)
 		case ProtoType.TYPE_STRING:
-			if (!isStream(value))
+			if (!(value instanceof Uint8Array))
 				throw "Invalid proto [10]"
-			return value.ReadUtf8String(value.Remaining)
+			return new ViewBinaryStream(new DataView(value.buffer, value.byteOffset, value.byteLength)).ReadUtf8String(value.byteLength)
 		case ProtoType.TYPE_BYTES:
-			if (!isStream(value))
+			if (!(value instanceof Uint8Array))
 				throw "Invalid proto [11]"
 			return value
 		case ProtoType.TYPE_GROUP: // group
@@ -138,9 +138,10 @@ function ParseField(field: ProtoFieldDescription, value: ReadableBinaryStream | 
 	}
 }
 
-function ParsePacked(stream: ReadableBinaryStream, field: ProtoFieldDescription): ProtobufFieldType[] {
+function ParsePacked(data: Uint8Array, field: ProtoFieldDescription): ProtobufFieldType[] {
+	const stream = new ViewBinaryStream(new DataView(data.buffer, data.byteOffset, data.byteLength))
 	const array: ProtobufFieldType[] = []
-	let value2: ReadableBinaryStream | bigint
+	let value2: Uint8Array | bigint
 	while (!stream.Empty()) {
 		switch (field.type) {
 			case ProtoType.TYPE_INT32: // Varint: int32, int64, uint32, uint64, sint32, sint64, bool, enum
@@ -161,7 +162,7 @@ function ParsePacked(stream: ReadableBinaryStream, field: ProtoFieldDescription)
 			case ProtoType.TYPE_STRING: // Length-delimited: string, bytes, embedded messages
 			case ProtoType.TYPE_BYTES:
 			case ProtoType.TYPE_MESSAGE:
-				value2 = stream.CreateNestedStream(stream.ReadVarUintAsNumber())
+				value2 = stream.ReadSliceNoCopy(stream.ReadVarUintAsNumber())
 				break
 			case ProtoType.TYPE_GROUP: // group
 				throw "Groups are deprecated"
@@ -176,43 +177,42 @@ function ParsePacked(stream: ReadableBinaryStream, field: ProtoFieldDescription)
 	return array
 }
 
-function DecodeField(map: RecursiveProtobuf, field: ProtoFieldDescription, value: ReadableBinaryStream | bigint): void {
+function DecodeField(map: RecursiveProtobuf, field: ProtoFieldDescription, value: Uint8Array | bigint): void {
 	switch (field.proto_type) {
 		case ProtoFieldType.OPTIONAL:
 		case ProtoFieldType.REQUIRED:
 			map.set(field.name, ParseField(field, value))
 			break
 		case ProtoFieldType.REPEATED: {
-			const starting_pos = isStream(value) ? value.pos : -1
 			try {
 				if (!map.has(field.name))
 					map.set(field.name, [])
 				const array = map.get(field.name) as ProtobufFieldType[]
 				array.push(ParseField(field, value))
 			} catch (e) {
-				if (isStream(value)) {
-					value.pos = starting_pos
+				if (value instanceof Uint8Array)
 					map.set(field.name, ParsePacked(value, field))
-				} else
+				else
 					throw e
 			}
 			break
 		}
 		case ProtoFieldType.PACKED:
-			if (!isStream(value))
+			if (!(value instanceof Uint8Array))
 				throw `Invalid proto [packed] at field name ${field.name}`
 			map.set(field.name, ParsePacked(value, field))
 			break
 	}
 }
 
-export function ParseProtobuf(stream: ReadableBinaryStream, proto_desc: ProtoDescription): RecursiveProtobuf {
+export function ParseProtobuf(data: Uint8Array, proto_desc: ProtoDescription): RecursiveProtobuf {
+	const stream = new ViewBinaryStream(new DataView(data.buffer, data.byteOffset, data.byteLength))
 	const map: RecursiveProtobuf = new Map()
 	while (!stream.Empty()) {
 		const tag = stream.ReadVarUintAsNumber()
 		const field_num = tag >> 3,
 			wire_type = tag & ((1 << 3) - 1)
-		let value: ReadableBinaryStream | bigint
+		let value: Uint8Array | bigint
 		switch (wire_type) {
 			case 0: // Varint: int32, int64, uint32, uint64, sint32, sint64, bool, enum
 				value = stream.ReadVarUint()
@@ -221,7 +221,7 @@ export function ParseProtobuf(stream: ReadableBinaryStream, proto_desc: ProtoDes
 				value = stream.ReadUint64()
 				break
 			case 2: // Length-delimited: string, bytes, embedded messages, packed repeated fields
-				value = stream.CreateNestedStream(stream.ReadVarUintAsNumber())
+				value = stream.ReadSliceNoCopy(stream.ReadVarUintAsNumber())
 				break
 			case 3: // start group
 			case 4: // end group
@@ -239,13 +239,13 @@ export function ParseProtobuf(stream: ReadableBinaryStream, proto_desc: ProtoDes
 	}
 	return FillMessageDefaults(map, proto_desc)
 }
-export function ParseProtobufNamed(stream: ReadableBinaryStream, name: string): RecursiveProtobuf {
+export function ParseProtobufNamed(data: Uint8Array, name: string): RecursiveProtobuf {
 	const ProtoCache_entry = ProtoCache.get(name)
 	if (ProtoCache_entry === undefined)
 		throw `Unknown type name ${name}`
 	if (ProtoCache_entry[0] === ProtoType.TYPE_ENUM)
 		throw `Enum type name ${name} passed to ParseProtobuf`
-	return ParseProtobuf(stream, ProtoCache_entry[1] as ProtoDescription)
+	return ParseProtobuf(data, ProtoCache_entry[1] as ProtoDescription)
 }
 
 export function ParseProtobufDescLine(str: string): [/* field number */ number, ProtoFieldDescription] {

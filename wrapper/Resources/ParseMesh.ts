@@ -2,7 +2,6 @@ import { Matrix4x4 } from "../Base/Matrix4x4"
 import { Vector3 } from "../Base/Vector3"
 import { Vector4 } from "../Base/Vector4"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
-import { parseKVBlock } from "./ParseKV"
 import { CMaterial, ParseMaterial } from "./ParseMaterial"
 import { ParseResourceLayout } from "./ParseResource"
 import { GetMapNumberProperty, GetMapStringProperty, MapToBooleanArray, MapToNumberArray, MapToStringArray, MapToVector3, MapToVector3Array, MapToVector4Array } from "./ParseUtils"
@@ -169,11 +168,11 @@ export class CMesh {
 				indexBufferOffset += GetMapNumberProperty(drawCall, "m_nStartIndex") * indexBuffer.ElementSize
 				const vertexCount = Math.min(
 					GetMapNumberProperty(drawCall, "m_nVertexCount"),
-					Math.floor((vertexBuffer.Data.Size - vertexBufferOffset) / vertexBuffer.ElementSize),
+					Math.floor((vertexBuffer.Data.byteLength - vertexBufferOffset) / vertexBuffer.ElementSize),
 				)
 				const indexCount = Math.min(
 					GetMapNumberProperty(drawCall, "m_nIndexCount"),
-					Math.floor((indexBuffer.Data.Size - indexBufferOffset) / indexBuffer.ElementSize),
+					Math.floor((indexBuffer.Data.byteLength - indexBufferOffset) / indexBuffer.ElementSize),
 				)
 				let materialPath = GetMapStringProperty(drawCall, "m_material")
 				if (materialPath === "")
@@ -188,21 +187,19 @@ export class CMesh {
 					} finally {
 						materialBuf.close()
 					}
-				vertexBuffer.Data.pos = vertexBufferOffset
-				indexBuffer.Data.pos = indexBufferOffset
 				this.DrawCalls.push(new CMeshDrawCall(
 					new VBIBBufferData(
 						vertexCount,
 						vertexBuffer.ElementSize,
 						vertexBuffer.InputLayout,
-						vertexBuffer.Data.CreateNestedStream(vertexCount * vertexBuffer.ElementSize),
+						vertexBuffer.Data.subarray(vertexBufferOffset, vertexBufferOffset + vertexCount * vertexBuffer.ElementSize),
 						true,
 					),
 					new VBIBBufferData(
 						indexCount,
 						indexBuffer.ElementSize,
 						indexBuffer.InputLayout,
-						indexBuffer.Data.CreateNestedStream(indexCount * indexBuffer.ElementSize),
+						indexBuffer.Data.subarray(indexBufferOffset, indexBufferOffset + indexCount * indexBuffer.ElementSize),
 						false,
 					),
 					material?.Flags ?? 0,
@@ -216,8 +213,8 @@ export function ParseEmbeddedMesh(
 	data: Nullable<ReadableBinaryStream>,
 	vbib_data: Nullable<ReadableBinaryStream>,
 ): CMesh {
-	const kv = parseKVBlock(data)
-	if (kv === undefined)
+	const kv = data?.ParseKVBlock() ?? new Map()
+	if (kv.size === 0)
 		throw "Mesh without data"
 	const vbib = vbib_data !== undefined
 		? ParseVBIB(vbib_data)

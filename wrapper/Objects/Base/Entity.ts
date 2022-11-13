@@ -363,12 +363,7 @@ export class Entity {
 			min.y = -this.RingRadius
 			max.x = this.RingRadius
 			max.y = this.RingRadius
-		}, err => {
-			// parse error models/items/wards/rod_ward_2021/rod_ward_2021.vmdl
-			// catch Offset is outside the bounds of the DataView
-			// console.log(promise, this.ModelName)
-			console.error(this.ModelName, err)
-		})
+		}, err => console.error(this.ModelName, err))
 	}
 	public CalculateActivityModifiers(activity: GameActivity_t, ar: string[]): void {
 		// to be implemented in child classes

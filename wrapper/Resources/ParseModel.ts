@@ -1,7 +1,6 @@
 import { Vector3 } from "../Base/Vector3"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { CAnimation, ParseAnimationGroup, ParseEmbeddedAnimation } from "./ParseAnimation"
-import { parseKV, parseKVBlock } from "./ParseKV"
 import { CMesh, ParseEmbeddedMesh, ParseMesh } from "./ParseMesh"
 import { ParseResourceLayout } from "./ParseResource"
 import { GetMapNumberProperty, GetMapStringProperty, MapToNumberArray, MapToStringArray } from "./ParseUtils"
@@ -24,7 +23,7 @@ export class CModel {
 		const layout = ParseResourceLayout(stream)
 		if (layout === undefined)
 			throw "Model without resource format"
-		const kv = parseKV(stream)
+		const kv = stream.ParseKV()
 		if (kv.size === 0)
 			throw "Model without data"
 		this.LoadSkeletons(kv)
@@ -35,9 +34,9 @@ export class CModel {
 		this.LoadRefMeshes(kv)
 		this.LoadRefAnimations(kv)
 
-		const CTRL = parseKVBlock(layout[0].get("CTRL")) ?? new Map()
+		const CTRL = layout[0].get("CTRL")?.ParseKVBlock() ?? new Map()
 		this.LoadEmbeddedMeshes(CTRL, layout[1])
-		this.LoadEmbeddedAnimation(CTRL, layout[1], parseKVBlock(layout[0].get("ASEQ")) ?? new Map())
+		this.LoadEmbeddedAnimation(CTRL, layout[1], layout[0].get("ASEQ")?.ParseKVBlock() ?? new Map())
 
 		const first_mesh = this.Meshes[0]
 		if (first_mesh !== undefined) {

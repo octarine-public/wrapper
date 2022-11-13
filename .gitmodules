@@ -1,15 +1,6 @@
-[submodule "wasm_source/lodepng"]
-	path = wasm_source/lodepng
-	url = https://github.com/lvandeve/lodepng
 [submodule "wasm_source/meshoptimizer"]
 	path = wasm_source/meshoptimizer
 	url = https://github.com/zeux/meshoptimizer
-[submodule "wasm_source/zstd"]
-	path = wasm_source/zstd
-	url = https://github.com/facebook/zstd
 [submodule "wasm_source/bvh"]
 	path = wasm_source/bvh
 	url = https://github.com/madmann91/bvh
-[submodule "wasm_source/stb"]
-	path = wasm_source/stb
-	url = https://github.com/nothings/stb

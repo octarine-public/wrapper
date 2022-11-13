@@ -1,6 +1,4 @@
-import { parseKVFile } from "../Resources/ParseKV"
 import { ParseProtobufNamed } from "../Utils/Protobuf"
-import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { EventsSDK } from "./EventsSDK"
 
 class EconReplacements {
@@ -45,7 +43,7 @@ function LoadEconData() {
 	IconReplacementsMinimap.Clear()
 	ItemNames.clear()
 	ItemHealthBarOffsets.clear()
-	const items_game = parseKVFile("scripts/items/items_game.txt").get("items_game")
+	const items_game = parseKV("scripts/items/items_game.txt").get("items_game")
 	if (!(items_game instanceof Map))
 		return
 	const items = items_game.get("items")
@@ -114,7 +112,7 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 	if (name !== "EconItems")
 		return
 	for (const [index, [, item_serialized]] of update) {
-		const item = ParseProtobufNamed(new ViewBinaryStream(new DataView(item_serialized)), "CSOEconItem")
+		const item = ParseProtobufNamed(new Uint8Array(item_serialized), "CSOEconItem")
 		PresentEconItems.set(index, item)
 	}
 })

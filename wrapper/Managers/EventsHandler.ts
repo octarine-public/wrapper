@@ -15,7 +15,6 @@ import { AbilityData, ReloadGlobalAbilityStorage } from "../Objects/DataBook/Abi
 import { ReloadGlobalUnitStorage, UnitData } from "../Objects/DataBook/UnitData"
 import { DefaultWorldLayers, ParseEntityLump, ResetEntityLump } from "../Resources/ParseEntityLump"
 import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
-import { parseKVFile } from "../Resources/ParseKV"
 import { GetMapNumberProperty, GetMapStringProperty, MapToMatrix4x4, MapToNumberArray, MapToStringArray } from "../Resources/ParseUtils"
 import { HasBit } from "../Utils/BitsExtensions"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
@@ -908,7 +907,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 Events.on("ServerMessage", (msg_id, buf_) => {
 	switch (msg_id) {
 		case 4: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CNETMsg_Tick")
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CNETMsg_Tick")
 			EventsSDK.emit(
 				"ServerTick", false,
 				msg.get("tick") as number,
@@ -922,7 +921,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			break
 		}
 		case 40:
-			EventsSDK.emit("ServerInfo", false, ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CSVCMsg_ServerInfo"))
+			EventsSDK.emit("ServerInfo", false, ParseProtobufNamed(new Uint8Array(buf_), "CSVCMsg_ServerInfo"))
 			break
 		case 45: { // we have custom parsing for CSVCMsg_CreateStringTable & CSVCMsg_UpdateStringTable
 			const stream = new ViewBinaryStream(new DataView(buf_))
@@ -937,10 +936,10 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			EventsSDK.emit("RemoveAllStringTables", false)
 			break
 		case 145:
-			HandleParticleMsg(ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CUserMsg_ParticleManager"))
+			HandleParticleMsg(ParseProtobufNamed(new Uint8Array(buf_), "CUserMsg_ParticleManager"))
 			break
 		case 148: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CUserMsg_CustomGameEvent")
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CUserMsg_CustomGameEvent")
 			const event_name = (msg.get("event_name") as Nullable<string>) ?? ""
 			const data = msg.get("data") as Nullable<ReadableBinaryStream>
 			let parsed_data: Map<string, VBKV.BinaryKV>
@@ -956,7 +955,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			break
 		}
 		case 208: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CMsgSosStartSoundEvent")
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CMsgSosStartSoundEvent")
 			const hash = msg.get("soundevent_hash") as number
 			const sound_name = Manifest.LookupSoundNameByHash(hash)
 			if (sound_name === undefined) {
@@ -986,7 +985,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			break
 		}
 		case 488: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_UnitEvent")
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_UnitEvent")
 			const handle = msg.get("entity_index") as number
 			const ent = GetPredictionTarget(handle)
 			if (ent instanceof Entity && !(ent instanceof Unit))
@@ -1054,7 +1053,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			break
 		}
 		case 466: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_ChatEvent")
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_ChatEvent")
 			EventsSDK.emit(
 				"ChatEvent", false,
 				msg.get("type") as DOTA_CHAT_MESSAGE,
@@ -1071,7 +1070,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			break
 		}
 		case 520: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_TE_DotaBloodImpact")
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_TE_DotaBloodImpact")
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (ent === undefined)
 				break
@@ -1085,7 +1084,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			break
 		}
 		case 521: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_TE_UnitAnimation")
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_TE_UnitAnimation")
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (!(ent instanceof Unit))
 				break
@@ -1102,7 +1101,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			break
 		}
 		case 522: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_TE_UnitAnimationEnd")
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_TE_UnitAnimationEnd")
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (!(ent instanceof Unit))
 				break
@@ -1136,7 +1135,7 @@ Events.on("MatchmakingStatsUpdated", data => {
 	EventsSDK.emit(
 		"MatchmakingStatsUpdated",
 		false,
-		ParseProtobufNamed(new ViewBinaryStream(new DataView(data)), "CMsgDOTAMatchmakingStatsResponse"),
+		ParseProtobufNamed(new Uint8Array(data), "CMsgDOTAMatchmakingStatsResponse"),
 	)
 })
 
@@ -1165,7 +1164,7 @@ function TryLoadWorld(world_kv: RecursiveMap): void {
 		if (!(node instanceof Map))
 			return
 		const path = GetMapStringProperty(node, "m_worldNodePrefix")
-		const node_kv = parseKVFile(`${path}.vwnod_c`)
+		const node_kv = parseKV(`${path}.vwnod_c`)
 
 		const layerNames: string[] = []
 		const layerNamesMap = node_kv.get("m_layerNames")
@@ -1284,7 +1283,7 @@ function TryLoadMapFiles(): void {
 	{
 		ResetEntityLump()
 		WASM.ResetWorld()
-		const world_kv = parseKVFile(`maps/${map_name}/world.vwrld_c`)
+		const world_kv = parseKV(`maps/${map_name}/world.vwrld_c`)
 		const m_entityLumps = world_kv.get("m_entityLumps")
 		if (m_entityLumps instanceof Map || Array.isArray(m_entityLumps))
 			m_entityLumps.forEach((path: RecursiveMapValue) => {
@@ -1323,10 +1322,10 @@ EventsSDK.on("ServerInfo", info => {
 		// automatically localize units, abilities and items in menu
 		const namesMapping = new Map<string, string>()
 		const lang_tokens = ((createMapFromMergedIterators<string, RecursiveMapValue>(
-			parseKVFile(`resource/localization/abilities_${language}.txt`).entries(),
-			parseKVFile(`resource/localization/dota_${language}.txt`).entries(),
-			parseKVFile(`resource/addon_${language}.txt`).entries(),
-			parseKVFile(`panorama/localization/addon_${language}.txt`).entries(),
+			parseKV(`resource/localization/abilities_${language}.txt`).entries(),
+			parseKV(`resource/localization/dota_${language}.txt`).entries(),
+			parseKV(`resource/addon_${language}.txt`).entries(),
+			parseKV(`panorama/localization/addon_${language}.txt`).entries(),
 		).get("lang") as RecursiveMap)?.get("Tokens") ?? new Map()) as Map<string, string>
 		for (const [name, data] of UnitData.global_storage) {
 			const lang_token = lang_tokens.get(name)

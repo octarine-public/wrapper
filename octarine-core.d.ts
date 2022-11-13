@@ -107,15 +107,10 @@ declare interface Renderer {
 	 */
 	GetTextSize(text: string, font_id: number, size: number): void
 	/**
-	 * Pass size: Vector2 at IOBuffer offset 0
-	 * @returns texture_id
-	 */
-	CreateTexture(rgba: Uint8Array): number
-	/**
 	 * Returns size: Vector2 at IOBuffer offset 0
 	 * @returns texture_id
 	 */
-	CreateTextureSVG(svg: Uint8Array): number
+	CreateTexture(path: string): number
 	FreeTexture(texture_id: number): void
 	ExecuteCommandBuffer(buf: Uint8Array): void
 }
@@ -216,3 +211,12 @@ declare function IsShopOpen(): boolean
 declare function GetQueryUnit(): number
 declare function GetSelectedEntities(): number
 declare function LoadFont(path: string, is_fallback: boolean, weight?: number): boolean
+
+declare function parseKV(path: string, block?: string | number): RecursiveMap
+declare function parseKVBlock(path: string): RecursiveMap
+
+declare function parseKV(data: Uint8Array, block?: string | number): RecursiveMap
+declare function parseKVBlock(data: Uint8Array): RecursiveMap
+
+declare function parseKV(stream: FileStream, block: string | number, offset: number, size: number): RecursiveMap
+declare function parseKVBlock(stream: FileStream, offset: number, size: number): RecursiveMap

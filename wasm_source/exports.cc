@@ -1,11 +1,6 @@
 // https://github.com/MattRickS/NukeScript/blob/master/ParticleRenderer/ParticleRenderer_SINGLEPIXEL_V01_01.cpp#L35
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays
 #include "stdafx.h"
-#include <zstd.h>
-#include "lz4.h"
-
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb/stb_image_write.h>
 
 void ComputeViewMatrix(VMatrix* pViewMatrix, const Vector& origin, const QAngle& angles) {
 	static VMatrix baseRotation;
@@ -198,32 +193,6 @@ WASM_EXPORT(GetHeightForLocation) void GetHeightForLocation() {
 	JSIOBuffer[0] = GetHeightForLocation(UnwrapVector2(), flags);
 }
 
-WASM_EXPORT(SampleWorldHeight) void SampleWorldHeight() {
-	auto min_coords = UnwrapVector2();
-	auto world_size = UnwrapVector2(2);
-	auto step = JSIOBuffer[4];
-	auto flags = *(uint32_t*)&JSIOBuffer[5];
-
-	auto w = (uint32_t)std::ceil(world_size.x / step),
-		h = (uint32_t)std::ceil(world_size.y / step);
-	auto mem = (uint8_t*)malloc(w * h);
-	auto vec = min_coords;
-	for (uint32_t y = 0; y < h; y++) {
-		for (uint32_t x = 0; x < w; x++) {
-			mem[y * w + x] = (uint8_t)(std::max(std::min(GetHeightForLocation(vec, flags) / 512.f, 1.f), 0.f) * 255.f);
-			vec.x += step;
-		}
-		vec.y += step;
-		vec.x = min_coords.x;
-	}
-
-	int len = 0;
-	unsigned char* png = stbi_write_png_to_mem((const unsigned char*)mem, 0, w, h, 1, &len);
-	free(mem);
-	*(uint32_t*)&JSIOBuffer[0] = (uint32_t)png;
-	*(uint32_t*)&JSIOBuffer[1] = (uint32_t)len;
-}
-
 WASM_EXPORT(GetLocationAverageHeight) void GetLocationAverageHeight() {
 	auto pos = UnwrapVector2();
 	auto flags = *(uint32_t*)&JSIOBuffer[2];
@@ -322,57 +291,6 @@ WASM_EXPORT(malloc) void* my_malloc(size_t data_size) {
 
 WASM_EXPORT(free) void my_free(void* ptr) {
 	return free(ptr);
-}
-
-char* ParsePNGInternal(char* data, size_t data_size, int& w, int& h);
-WASM_EXPORT(ParsePNG) char* ParsePNG(char* data, size_t data_size) {
-	int w, h;
-	auto res = ParsePNGInternal(data, data_size, w, h);
-	*(uint32_t*)&JSIOBuffer[0] = w;
-	*(uint32_t*)&JSIOBuffer[1] = h;
-	free(data);
-	return res;
-}
-
-char* ParseVTexInternal(
-	char* data,
-	size_t data_size,
-	char* image_data,
-	int& w,
-	int& h,
-	bool is_YCoCg,
-	bool normalize,
-	bool is_inverted,
-	bool hemi_oct,
-	bool hemi_oct_RB
-);
-WASM_EXPORT(ParseVTex) char* ParseVTex(
-	char* data,
-	size_t data_size,
-	char* image_data,
-	bool is_YCoCg,
-	bool normalize,
-	bool is_inverted,
-	bool hemi_oct,
-	bool hemi_oct_RB
-) {
-	int w, h;
-	auto res = ParseVTexInternal(
-		data,
-		data_size,
-		image_data,
-		w,
-		h,
-		is_YCoCg,
-		normalize,
-		is_inverted,
-		hemi_oct,
-		hemi_oct_RB
-	);
-	*(uint32_t*)&JSIOBuffer[0] = w;
-	*(uint32_t*)&JSIOBuffer[1] = h;
-	free(data);
-	return res;
 }
 
 // https://github.com/ValveSoftware/source-sdk-2013/blob/0d8dceea4310fde5706b3ce1c70609d72a38efdf/sp/src/tier1/generichash.cpp#L313
@@ -482,55 +400,6 @@ WASM_EXPORT(CRC32) uint32_t CRC32(void* data, int len) {
 	auto ret = crc32((const char*)data, (size_t)len);
 	free(data);
 	return ret;
-}
-
-WASM_EXPORT(DecompressLZ4) void* DecompressLZ4(void* data, size_t size, size_t dst_len) {
-	auto dst = malloc(dst_len);
-	LZ4_decompress_safe((char*)data, (char*)dst, (int)size, (int)dst_len);
-	free(data);
-	return dst;
-}
-
-extern "C" {
-	unsigned long long ZSTD_decompressBound(const void* src, size_t srcSize);
-}
-WASM_EXPORT(DecompressZstd) void* DecompressZstd(void* data, size_t size) {
-	if (size < 12)
-		return nullptr;
-	auto dst_len = ZSTD_decompressBound(data, size);
-	if (dst_len == ZSTD_CONTENTSIZE_ERROR) {
-		*(uint32_t*)data = 0;
-		*GetPointer<uint32_t>(data, 4) = dst_len;
-		*GetPointer<uint32_t>(data, 8) = 0;
-		return nullptr;
-	}
-	auto dst = malloc(dst_len);
-	auto res = ZSTD_decompress(dst, dst_len, data, size);
-	*(uint32_t*)data = res;
-	*GetPointer<uint32_t>(data, 4) = 0;
-	*GetPointer<uint32_t>(data, 8) = 0;
-	return dst;
-}
-
-WASM_EXPORT(DecompressLZ4Chained) void* DecompressLZ4Chained(void* data, uint32_t* input_sizes, uint32_t* output_sizes, uint32_t count) {
-	size_t dst_len = 0;
-	for (uint32_t i = 0; i < count; i++)
-		dst_len += output_sizes[i];
-	auto dst = malloc(dst_len);
-	auto current_src = (char*)data;
-	auto current_dst = (char*)dst;
-    LZ4_streamDecode_t lz4StreamDecode{};
-	for (uint32_t i = 0; i < count; i++) {
-		auto input_size = input_sizes[i],
-			output_size = output_sizes[i];
-		LZ4_decompress_safe_continue(&lz4StreamDecode, current_src, current_dst, (int)input_size, (int)output_size);
-		current_src = GetPointer<char>(current_src, input_size);
-		current_dst = GetPointer<char>(current_dst, output_size);
-	}
-	free(data);
-	free(input_sizes);
-	free(output_sizes);
-	return dst;
 }
 
 VMatrix SavedWorldToProjection;

@@ -7,7 +7,6 @@ import { Unit } from "../Objects/Base/Unit"
 import { arrayRemove } from "../Utils/ArrayExtensions"
 import { GameState } from "../Utils/GameState"
 import { CMsgVector2DToVector2, CMsgVectorToVector3, NumberToColor, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
-import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { EntityManager } from "./EntityManager"
 import { Events } from "./Events"
 import { EventsSDK } from "./EventsSDK"
@@ -216,7 +215,7 @@ const projectile_attachments_names = [
 Events.on("ServerMessage", (msg_id, buf_) => {
 	switch (msg_id) {
 		case 471: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_CreateLinearProjectile")
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_CreateLinearProjectile")
 			const particle_system_handle = msg.get("particle_index") as bigint
 			const projectile = new LinearProjectile(
 				msg.get("handle") as number,
@@ -239,7 +238,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			break
 		}
 		case 472: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_DestroyLinearProjectile")
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_DestroyLinearProjectile")
 			const projectile = ProjectileManager.AllLinearProjectilesMap.get(msg.get("handle") as number)
 			if (projectile === undefined)
 				return
@@ -249,7 +248,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			break
 		}
 		case 473: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_DodgeTrackingProjectiles")
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_DodgeTrackingProjectiles")
 			const handle = msg.get("entindex") as number
 			const ent = EntityManager.EntityByIndex(handle)
 			EventsSDK.emit("TrackingProjectilesDodged", false, ent ?? handle)
@@ -264,7 +263,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			break
 		}
 		case 518: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_TE_Projectile")
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_TE_Projectile")
 			const particle_system_handle = msg.get("particleSystemHandle") as bigint
 			const projectile = new TrackingProjectile(
 				msg.get("handle") as number,
@@ -287,7 +286,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			break
 		}
 		case 519: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_TE_ProjectileLoc")
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_TE_ProjectileLoc")
 			const target = GetPredictionTarget(msg.get("hTarget") as number)
 			const handle = msg.get("handle") as number,
 				launch_tick = msg.get("launch_tick") as number,
@@ -338,7 +337,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			break
 		}
 		case 571: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_TE_DestroyProjectile")
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_TE_DestroyProjectile")
 			const projectile = ProjectileManager.AllTrackingProjectilesMap.get(msg.get("handle") as number)
 			if (projectile !== undefined)
 				DestroyTrackingProjectile(projectile)

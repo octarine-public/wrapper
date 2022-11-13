@@ -6,7 +6,6 @@ import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputManager } from "../Managers/InputManager"
-import { ParseImage } from "../Resources/ParseImage"
 import { ParseMaterial } from "../Resources/ParseMaterial"
 import { CMeshDrawCall, ParseMesh } from "../Resources/ParseMesh"
 import { ParseModel } from "../Resources/ParseModel"
@@ -16,7 +15,7 @@ import { HasMask } from "../Utils/BitsExtensions"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { fread } from "../Utils/fread"
 import { DegreesToRadian } from "../Utils/Math"
-import { readFile, tryFindFile } from "../Utils/readFile"
+import { tryFindFile } from "../Utils/readFile"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { ConVarsSDK } from "./ConVarsSDK"
 import * as WASM from "./WASM"
@@ -99,8 +98,7 @@ class CRendererSDK {
 	private commandCacheSize = 0
 	private smallCommandCacheFrames = 0
 	private readonly font_cache = new Map<string, Font[]>()
-	private readonly texture_cache = new Map</* path */string, [number, boolean]>()
-	private empty_texture: Nullable<[number, boolean]>
+	private readonly texture_cache = new Map</* path */string, number>()
 	private clear_texture_cache = false
 	private readonly tex2size = new Map</* texture_id */number, Vector2>()
 	private readonly queued_fonts: [string, string, number, boolean, string][] = []
@@ -327,13 +325,15 @@ class CRendererSDK {
 		subtexSize?: Vector2,
 	): void {
 		const texture_id = this.GetTexture(path) // better put it BEFORE new command
-		const orig_size = this.tex2size.get(texture_id[0])!
+		if (texture_id === -1)
+			return
+		const orig_size = this.tex2size.get(texture_id)!
 		const half_round = round / 2
 		if (vecSize.x <= 0)
 			vecSize.x = subtexSize?.x ?? orig_size.x
 		if (vecSize.y <= 0)
 			vecSize.y = subtexSize?.y ?? orig_size.y
-		if (texture_id[1]) {
+		if (path.endsWith(".svg")) {
 			if (round >= 0) {
 				this.BeginClip(false)
 				this.FilledCircle(
@@ -351,7 +351,7 @@ class CRendererSDK {
 			this.Translate(vecPos)
 			this.Rotate(rotation_deg)
 			this.AllocateCommandSpace(CommandID.SVG, 4 * 4 + 1)
-			this.commandStream.WriteUint32(texture_id[0])
+			this.commandStream.WriteUint32(texture_id)
 			this.commandStream.WriteFloat32(vecSize.x)
 			this.commandStream.WriteFloat32(vecSize.y)
 			this.commandStream.WriteColor(color)
@@ -385,7 +385,7 @@ class CRendererSDK {
 				grayscale,
 				LineCap.Square,
 				LineJoin.Round,
-				texture_id[0],
+				texture_id,
 				(subtexOffset?.x ?? 0) * (vecSize.x / size_x),
 				(subtexOffset?.y ?? 0) * (vecSize.x / size_y),
 				vecSize.x * (orig_size.x / size_x),
@@ -394,7 +394,7 @@ class CRendererSDK {
 		}
 	}
 	public GetImageSize(path: string): Vector2 {
-		return this.tex2size.get(this.GetTexture(path)[0])!
+		return this.tex2size.get(this.GetTexture(path))!
 	}
 	public Text(text: string, vecPos = new Vector2(), color = Color.White, font_name = this.DefaultFontName, font_size = this.DefaultTextSize, weight = 400, italic = false, outlined = true): void {
 		if (text === "")
@@ -486,15 +486,11 @@ class CRendererSDK {
 		if (this.WindowSize.x !== prev_width || this.WindowSize.y !== prev_height)
 			EventsSDK.emit("WindowSizeChanged", false)
 		if (this.clear_texture_cache) {
-			this.texture_cache.forEach(tex => {
-				if (tex !== this.empty_texture)
-					this.FreeTexture(tex[0])
-			})
-			if (this.empty_texture !== undefined)
-				this.FreeTexture(this.empty_texture[0])
+			for (const tex of this.texture_cache.values())
+				if (tex !== -1)
+					this.FreeTexture(tex)
 			this.texture_cache.clear()
 			this.tex2size.clear()
-			this.empty_texture = undefined
 			this.clear_texture_cache = false
 		}
 
@@ -756,31 +752,18 @@ class CRendererSDK {
 		this.commandStream.WriteFloat32(vecSize.y)
 		this.Path(width, color, color, pathFlags, grayscale)
 	}
-	private MakeTexture(rgba: Uint8Array, size: Vector2): number {
-		if (rgba.byteLength !== size.x * size.y * 4)
-			throw "Invalid RGBA buffer or size"
-		size.toIOBuffer()
-		const texture_id = Renderer.CreateTexture(rgba)
-		if (texture_id === -1)
-			throw "MakeTexture failed"
-		this.tex2size.set(texture_id, size)
-		return texture_id
-	}
 	private FreeTexture(texture_id: number): void {
 		Renderer.FreeTexture(texture_id)
 	}
-	private MakeTextureSVG(stream: ReadableBinaryStream): number {
-		const texture_id = Renderer.CreateTextureSVG(stream.ReadSlice(stream.Remaining))
-		if (texture_id === -1)
-			throw "MakeTextureSVG failed"
-		this.tex2size.set(texture_id, Vector2.fromIOBuffer())
-		return texture_id
-	}
-	private GetTexture(path: string): [number, boolean] {
+	private GetTexture(path: string): number {
 		if (this.texture_cache.has(path))
 			return this.texture_cache.get(path)!
-		let read_path = path
-		if (path.endsWith(".vmat_c")) {
+
+		let read_path = tryFindFile(path, 2)
+		if (read_path === undefined)
+			return -1 // It could be loaded afterwards - we don't know about that for sure
+
+		if (read_path.endsWith(".vmat_c")) {
 			const buf = fopen(path)
 			if (buf !== undefined)
 				try {
@@ -795,29 +778,12 @@ class CRendererSDK {
 					buf.close()
 				}
 		}
-		const read = readFile(read_path, 2) // 1 for ourselves, 1 for caller [Image]
-		if (read === undefined) {
-			// 1 white pixel for any rendering API to be happy
-			this.empty_texture ??= [this.MakeTexture(
-				new Uint8Array(new Array(4).fill(0xFF)),
-				new Vector2(1, 1),
-			), false]
-			this.texture_cache.set(path, this.empty_texture)
-			return this.empty_texture
-		} else
-			try {
-				const is_svg = read_path.endsWith(".svg")
-				const texture = [
-					is_svg
-						? this.MakeTextureSVG(new FileBinaryStream(read))
-						: this.MakeTexture(...ParseImage(new FileBinaryStream(read))),
-					is_svg,
-				] as [number, boolean]
-				this.texture_cache.set(path, texture)
-				return texture
-			} finally {
-				read.close()
-			}
+		const texture_id = Renderer.CreateTexture(read_path)
+		if (texture_id === -1)
+			console.error("CreateTexture failed for", path)
+		this.texture_cache.set(path, texture_id)
+		this.tex2size.set(texture_id, Vector2.fromIOBuffer())
+		return texture_id
 	}
 	private GetFont(font_name: string, weight: number, italic: boolean): number {
 		const font_ar = this.font_cache.get(font_name)
@@ -1016,6 +982,9 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 				)
 				path_meshes.push(mesh_id)
 			}
+		} catch (e: any) {
+			const err = e instanceof Error ? e : new Error(e)
+			throw `${path} ${err.message} ${err.stack ?? ""}`
 		} finally {
 			filesOpen.forEach(file => file.close())
 			buf.close()
@@ -1028,15 +997,15 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 				WASM.SpawnWorldMesh(mesh, transform)
 	})
 	{
-		const VB = new ViewBinaryStream(new DataView(new Float32Array([
+		const VB = new Uint8Array(new Float32Array([
 			-100000, -100000, -16384,
 			100000, -100000, -16384,
 			-100000, 100000, -16384,
 			100000, 100000, -16384,
-		]).buffer))
-		const IB = new ViewBinaryStream(new DataView(new Uint8Array([
+		]).buffer)
+		const IB = new Uint8Array(new Uint8Array([
 			0, 1, 2, 1, 2, 3,
-		]).buffer))
+		]).buffer)
 		const plate_mesh_id = next_mesh_id++
 		WASM.LoadWorldMesh(
 			plate_mesh_id,

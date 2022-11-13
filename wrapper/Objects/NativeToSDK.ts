@@ -2,7 +2,6 @@ import { EntityPropertyType } from "../Base/EntityProperties"
 import { Events } from "../Managers/Events"
 import { ParseProtobufNamed } from "../Utils/Protobuf"
 import { MapToObject } from "../Utils/Utils"
-import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { Entity } from "./Base/Entity"
 
 export type FieldHandler = (entity: Entity, new_value: EntityPropertyType) => any
@@ -156,7 +155,7 @@ export let entities_symbols: string[] = []
 Events.on("ServerMessage", (msg_id, buf) => {
 	switch (msg_id) {
 		case 41: {
-			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf)), "CSVCMsg_FlattenedSerializer")
+			const msg = ParseProtobufNamed(new Uint8Array(buf), "CSVCMsg_FlattenedSerializer")
 			if ((globalThis as any).dump_d_ts) {
 				const obj = MapToObject(msg)
 				const list = Object.values(obj.serializers).map((ser: any) => [

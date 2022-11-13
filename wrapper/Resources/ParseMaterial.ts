@@ -1,5 +1,4 @@
 import { MaterialFlags } from "../Enums/MaterialFlags"
-import { parseKV } from "./ParseKV"
 
 export class CMaterial {
 	public readonly TextureParams = new Map<string, string>()
@@ -7,8 +6,8 @@ export class CMaterial {
 	public readonly StringAttributes = new Map<string, string>()
 	public readonly Flags = MaterialFlags.None
 	constructor(stream: ReadableBinaryStream) {
-		const kv = parseKV(stream)
-		if (kv === undefined)
+		const kv = stream.ParseKV()
+		if (kv.size === 0)
 			throw "Material is an invalid KV"
 		const m_textureParams = kv.get("m_textureParams")
 		if (m_textureParams instanceof Map || Array.isArray(m_textureParams))

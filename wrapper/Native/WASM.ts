@@ -107,30 +107,15 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	ScreenToWorld: () => void,
 	WorldToScreen: () => boolean,
 	ParseVHCG: (ptr: number, size: number) => HeightMapParseError,
-	SampleWorldHeight: () => void,
 	GetHeightForLocation: () => void,
 	GetLocationAverageHeight: () => void,
 	GetCursorRay: () => void,
 	ScreenToWorldFar: () => void,
 	malloc: (size: number) => number,
 	free: (ptr: number) => void,
-	ParsePNG: (data: number, size: number) => number,
-	ParseVTex: (
-		data: number,
-		size: number,
-		image_data: number,
-		is_YCoCg: boolean,
-		normalize: boolean,
-		is_inverted: boolean,
-		hemi_oct: boolean,
-		hemi_oct_RB: boolean,
-	) => number,
 	MurmurHash2: (ptr: number, size: number, seed: number) => number,
 	MurmurHash64: (ptr: number, size: number, seed: number) => void,
 	CRC32: (ptr: number, size: number) => number,
-	DecompressLZ4: (ptr: number, size: number, dst_len: number) => number,
-	DecompressZstd: (ptr: number, size: number) => number,
-	DecompressLZ4Chained: (ptr: number, input_sizes_ptr: number, output_sizes_ptr: number, count: number) => number,
 	CloneWorldToProjection: () => void,
 	WorldToScreenNew: () => boolean,
 	DecompressVertexBuffer: (ptr: number, size: number, elem_count: number, elem_size: number) => number,
@@ -352,54 +337,6 @@ export function ScreenToWorld(
 	return new Vector3(WASMIOBuffer[0], WASMIOBuffer[1], WASMIOBuffer[2])
 }
 
-export function ParsePNG(stream: ReadableBinaryStream): [Uint8Array, Vector2] {
-	let addr = wasm.malloc(stream.Size)
-	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, stream.Size))
-
-	addr = wasm.ParsePNG(addr, stream.Size)
-	if (addr === 0)
-		throw "PNG Image conversion failed: WASM failure"
-	const image_size = new Vector2(WASMIOBufferU32[0], WASMIOBufferU32[1])
-	const copy = new Uint8Array(image_size.x * image_size.y * 4)
-	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
-	wasm.free(addr)
-
-	return [copy, image_size]
-}
-
-export function ParseVTex(
-	stream: ReadableBinaryStream,
-	data_block: ReadableBinaryStream,
-	is_YCoCg: boolean,
-	normalize: boolean,
-	is_inverted: boolean,
-	hemi_oct: boolean,
-	hemi_oct_RB: boolean,
-): [Uint8Array, Vector2] {
-	const data_size = stream.Remaining
-	let addr = wasm.malloc(data_size)
-	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, data_size))
-
-	addr = wasm.ParseVTex(
-		addr,
-		data_size,
-		addr + data_block.Size,
-		is_YCoCg,
-		normalize,
-		is_inverted,
-		hemi_oct,
-		hemi_oct_RB,
-	)
-	if (addr === 0)
-		throw "Image conversion failed: WASM failure"
-	const image_size = new Vector2(WASMIOBufferU32[0], WASMIOBufferU32[1])
-	const copy = new Uint8Array(image_size.x * image_size.y * 4)
-	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
-	wasm.free(addr)
-
-	return [copy, image_size]
-}
-
 export function ParseVHCG(stream: ReadableBinaryStream): void {
 	try {
 		const addr = wasm.malloc(stream.Size)
@@ -424,28 +361,6 @@ export function ParseVHCG(stream: ReadableBinaryStream): void {
 }
 export function ResetVHCG(): void {
 	HeightMap = undefined
-}
-
-export function SampleWorldHeight(
-	min_coords: Vector2,
-	world_size: Vector2,
-	step: number,
-	flags = MaterialFlags.Nonsolid | MaterialFlags.Water,
-): Uint8Array {
-	WASMIOBuffer[0] = min_coords.x
-	WASMIOBuffer[1] = min_coords.y
-	WASMIOBuffer[2] = world_size.x
-	WASMIOBuffer[3] = world_size.y
-	WASMIOBuffer[4] = step
-	WASMIOBufferU32[5] = flags
-	wasm.SampleWorldHeight()
-
-	const addr = WASMIOBufferU32[0]
-	const copy = new Uint8Array(WASMIOBufferU32[1])
-	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
-	wasm.free(addr)
-
-	return copy
 }
 
 export function GetPositionHeight(
@@ -507,66 +422,6 @@ export function CRC32(stream: ReadableBinaryStream): number {
 	return wasm.CRC32(buf_addr, size) >>> 0
 }
 
-export function DecompressLZ4(stream: ReadableBinaryStream, input_size: number, dst_len: number): Uint8Array {
-	let addr = wasm.malloc(input_size)
-	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, input_size))
-
-	addr = wasm.DecompressLZ4(addr, input_size, dst_len)
-	if (addr === 0)
-		throw "LZ4 decompression failed"
-	const copy = new Uint8Array(dst_len)
-	copy.set(new Uint8Array(wasm.memory.buffer, addr, dst_len))
-	wasm.free(addr)
-
-	return copy
-}
-
-export function DecompressZstd(stream: ReadableBinaryStream, input_size: number): Uint8Array {
-	if (input_size < 12)
-		throw `Zstd decompression failed: input_size < 12`
-	const addr = wasm.malloc(input_size)
-	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, input_size))
-
-	const decompressed_addr = wasm.DecompressZstd(addr, input_size)
-	const size = new Uint32Array(wasm.memory.buffer, addr)[0],
-		error = new Uint32Array(wasm.memory.buffer, addr)[1],
-		additional_data = new Uint32Array(wasm.memory.buffer, addr)[2]
-	wasm.free(addr)
-	if (error !== 0 || decompressed_addr === 0)
-		throw `Zstd decompression failed: ${size} ${error} ${additional_data}`
-	const copy = new Uint8Array(size)
-	copy.set(new Uint8Array(wasm.memory.buffer, decompressed_addr, copy.byteLength))
-	wasm.free(decompressed_addr)
-
-	return copy
-}
-
-export function DecompressLZ4Chained(
-	stream: ReadableBinaryStream,
-	input_size: number,
-	input_sizes: number[],
-	output_sizes: number[],
-): Uint8Array {
-	if (input_sizes.length !== output_sizes.length)
-		throw "Input and output count should match"
-	const count = input_sizes.length
-	let addr = wasm.malloc(input_size)
-	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, addr, input_size))
-	const inputs_addr = wasm.malloc(count * 4)
-	new Uint32Array(wasm.memory.buffer, inputs_addr).set(input_sizes)
-	const outputs_addr = wasm.malloc(count * 4)
-	new Uint32Array(wasm.memory.buffer, outputs_addr).set(output_sizes)
-
-	addr = wasm.DecompressLZ4Chained(addr, inputs_addr, outputs_addr, count)
-	if (addr === 0)
-		throw "LZ4 decompression failed"
-	const copy = new Uint8Array(output_sizes.reduce((prev, cur) => prev + cur, 0))
-	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
-	wasm.free(addr)
-
-	return copy
-}
-
 export function CloneWorldToProjection(mat: ArrayLike<number>): void {
 	WASMIOBuffer.set(mat)
 	wasm.CloneWorldToProjection()
@@ -589,15 +444,15 @@ export function WorldToScreenNew(
 }
 
 export function DecompressVertexBuffer(
-	stream: ReadableBinaryStream,
+	data: Uint8Array,
 	elem_count: number,
 	elem_size: number,
 ): Uint8Array {
-	const size = stream.Remaining
+	const size = data.byteLength
 	const buf_addr = wasm.malloc(size)
 	if (buf_addr === 0)
 		throw "Memory allocation for DecompressVertexBuffer raw data failed"
-	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, buf_addr, size))
+	new Uint8Array(wasm.memory.buffer, buf_addr, size).set(data)
 
 	const addr = wasm.DecompressVertexBuffer(buf_addr, size, elem_count, elem_size)
 	const copy = new Uint8Array(elem_count * elem_size)
@@ -608,15 +463,15 @@ export function DecompressVertexBuffer(
 }
 
 export function DecompressIndexBuffer(
-	stream: ReadableBinaryStream,
+	data: Uint8Array,
 	elem_count: number,
 	elem_size: number,
 ): Uint8Array {
-	const size = stream.Remaining
+	const size = data.byteLength
 	const buf_addr = wasm.malloc(size)
 	if (buf_addr === 0)
 		throw "Memory allocation for DecompressIndexBuffer raw data failed"
-	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, buf_addr, size))
+	new Uint8Array(wasm.memory.buffer, buf_addr, size).set(data)
 
 	const addr = wasm.DecompressIndexBuffer(buf_addr, size, elem_count, elem_size)
 	const copy = new Uint8Array(elem_count * elem_size)
@@ -632,27 +487,27 @@ export function ResetWorld(): void {
 
 export function LoadWorldMesh(
 	id: number,
-	vertexBuffer: ReadableBinaryStream,
+	vertexBuffer: Uint8Array,
 	vertexSize: number,
-	indexBuffer: ReadableBinaryStream,
+	indexBuffer: Uint8Array,
 	indexSize: number,
 	flags: number,
 	path_id: number,
 ): void {
-	const vertex_addr = wasm.malloc(vertexBuffer.Size)
+	const vertex_addr = wasm.malloc(vertexBuffer.byteLength)
 	if (vertex_addr === 0)
 		throw "Memory allocation for LoadWorldMesh vertexBuffer raw data failed"
-	vertexBuffer.ReadSliceTo(new Uint8Array(wasm.memory.buffer, vertex_addr, vertexBuffer.Size))
+	new Uint8Array(wasm.memory.buffer, vertex_addr, vertexBuffer.byteLength).set(vertexBuffer)
 
-	const index_addr = wasm.malloc(indexBuffer.Size)
+	const index_addr = wasm.malloc(indexBuffer.byteLength)
 	if (index_addr === 0)
 		throw "Memory allocation for LoadWorldMesh indexBuffer raw data failed"
-	indexBuffer.ReadSliceTo(new Uint8Array(wasm.memory.buffer, index_addr, indexBuffer.Size))
+	new Uint8Array(wasm.memory.buffer, index_addr, indexBuffer.byteLength).set(indexBuffer)
 
 	wasm.LoadWorldMesh(
 		id,
-		vertex_addr, vertexBuffer.Size, vertexSize,
-		index_addr, indexBuffer.Size, indexSize,
+		vertex_addr, vertexBuffer.byteLength, vertexSize,
+		index_addr, indexBuffer.byteLength, indexSize,
 		flags,
 		path_id,
 	)
