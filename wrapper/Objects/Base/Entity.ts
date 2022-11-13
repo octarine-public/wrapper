@@ -26,27 +26,27 @@ let player_slot = NaN
 EventsSDK.on("ServerInfo", info => player_slot = (info.get("player_slot") as number) ?? NaN)
 let gameInProgress = false
 const ModelDataCache = new Map<string, Promise<[ComputedAttachments, Vector3, Vector3]>>()
-async function SetGameInProgress(new_val: boolean) {
+function SetGameInProgress(new_val: boolean) {
 	if (!gameInProgress && new_val)
-		await EventsSDK.emit("GameStarted", false)
+		EventsSDK.emit("GameStarted", false)
 	else if (gameInProgress && !new_val) {
-		await EventsSDK.emit("GameEnded", false)
+		EventsSDK.emit("GameEnded", false)
 		if (IS_MAIN_WORKER)
 			Particles.DeleteAll()
 		RendererSDK.FreeTextureCache()
 	}
 	gameInProgress = new_val
 }
-EventsSDK.on("PreEntityCreated", async ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (ent.Index === player_slot + 1) {
 		LocalPlayer = ent as Player
-		await SetGameInProgress(true)
+		SetGameInProgress(true)
 	}
 })
-EventsSDK.on("EntityDestroyed", async ent => {
+EventsSDK.on("EntityDestroyed", ent => {
 	if (ent === LocalPlayer) {
 		LocalPlayer = undefined
-		await SetGameInProgress(false)
+		SetGameInProgress(false)
 	}
 })
 export let GameRules: Nullable<CGameRules>
@@ -232,9 +232,6 @@ export class Entity {
 		return (this.Serial << EntityManager.INDEX_BITS) | this.Index
 	}
 
-	public async AsyncCreate(): Promise<void> {
-		// TBD in child classes
-	}
 	public SerialMatches(serial: number): boolean {
 		return serial === 0 || this.Serial === 0 || serial === this.Serial
 	}
@@ -335,7 +332,7 @@ export class Entity {
 		return this.Team !== team
 	}
 
-	public async OnModelUpdated(): Promise<void> {
+	public OnModelUpdated(): void {
 		const initial_radius = this.RingRadius !== 0
 			? this.RingRadius
 			: 50
@@ -353,8 +350,7 @@ export class Entity {
 			ModelDataCache.set(this.ModelName, promise)
 		}
 
-		try {
-			const ar = await promise
+		promise.then(ar => {
 			this.Attachments = ar[0]
 			this.BoundingBox.MinOffset.CopyFrom(ar[1])
 			this.BoundingBox.MaxOffset.CopyFrom(ar[2])
@@ -365,12 +361,12 @@ export class Entity {
 			min.y = -this.RingRadius
 			max.x = this.RingRadius
 			max.y = this.RingRadius
-		} catch (err) {
+		}, err => {
 			// parse error models/items/wards/rod_ward_2021/rod_ward_2021.vmdl
 			// catch Offset is outside the bounds of the DataView
 			// console.log(promise, this.ModelName)
-			console.error(err)
-		}
+			console.error(this.ModelName, err)
+		})
 	}
 	public CalculateActivityModifiers(activity: GameActivity_t, ar: string[]): void {
 		// to be implemented in child classes
@@ -451,17 +447,17 @@ function QuantitizedVecCoordToCoord(cell: Nullable<number>, inside: Nullable<num
 
 import { Events } from "../../Managers/Events"
 import { FieldHandler, RegisterFieldHandler } from "../../Objects/NativeToSDK"
-RegisterFieldHandler(Entity, "m_iTeamNum", async (ent, new_val) => {
+RegisterFieldHandler(Entity, "m_iTeamNum", (ent, new_val) => {
 	const old_team = ent.Team
 	ent.Team = new_val as Team
 	if (ent.IsValid && old_team !== ent.Team)
-		await EventsSDK.emit("EntityTeamChanged", false, ent)
+		EventsSDK.emit("EntityTeamChanged", false, ent)
 })
-RegisterFieldHandler(Entity, "m_lifeState", async (ent, new_val) => {
+RegisterFieldHandler(Entity, "m_lifeState", (ent, new_val) => {
 	const old_state = ent.LifeState
 	ent.LifeState = new_val as LifeState_t
 	if (ent.IsValid && old_state !== ent.LifeState)
-		await EventsSDK.emit("LifeStateChanged", false, ent)
+		EventsSDK.emit("LifeStateChanged", false, ent)
 })
 RegisterFieldHandler(Entity, "m_hModel", (ent, new_val) => {
 	ent.ModelName = Manifest.GetPathByHash(new_val as bigint) ?? ""
@@ -473,7 +469,7 @@ RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => {
 	ent.NetworkedAngles.CopyFrom(m_angRotation)
 	ent.VisualAngles.CopyFrom(m_angRotation)
 })
-RegisterFieldHandler(Entity, "m_nameStringableIndex", async (ent, new_val) => {
+RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, new_val) => {
 	ent.Name_ = StringTables.GetString("EntityNames", new_val as number) ?? ent.Name_
 })
 
@@ -534,7 +530,7 @@ RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => {
 	)
 })
 
-EventsSDK.on("GameEvent", async (name, obj) => {
+EventsSDK.on("GameEvent", (name, obj) => {
 	switch (name) {
 		case "entity_hurt": {
 			const ent = EntityManager.EntityByIndex(obj.entindex_killed)
@@ -547,7 +543,7 @@ EventsSDK.on("GameEvent", async (name, obj) => {
 			if (ent !== undefined && !ent.IsVisible && ent.LifeState !== LifeState_t.LIFE_DEAD) {
 				ent.LifeState = LifeState_t.LIFE_DEAD
 				ent.HP = 0
-				await EventsSDK.emit("LifeStateChanged", false, ent)
+				EventsSDK.emit("LifeStateChanged", false, ent)
 			}
 			break
 		}
@@ -556,7 +552,7 @@ EventsSDK.on("GameEvent", async (name, obj) => {
 			if (ent !== undefined && ent.LifeState === LifeState_t.LIFE_DEAD) {
 				ent.LifeState = LifeState_t.LIFE_ALIVE
 				ent.HP = ent.MaxHP
-				await EventsSDK.emit("LifeStateChanged", false, ent)
+				EventsSDK.emit("LifeStateChanged", false, ent)
 			}
 		}
 		default:

@@ -137,10 +137,10 @@ class CMenuManager {
 				Localization.SelectedUnitName = this.config.SelectedLocalization
 				this.initialized_language = true
 			}
-			await this.Update(true)
+			this.Update(true)
 		}
 	}
-	public async Render(): Promise<void> {
+	public Render(): void {
 		if (this.config === undefined)
 			return
 		if (!this.initialized_language && Localization.PreferredUnitName !== "") {
@@ -149,7 +149,7 @@ class CMenuManager {
 		}
 		this.ForwardConfig()
 		if (Localization.was_changed) {
-			await this.Update(true)
+			this.Update(true)
 			Localization.was_changed = false
 			Base.SaveConfigASAP = true
 		}
@@ -161,23 +161,23 @@ class CMenuManager {
 			return
 		if (this.header.QueuedUpdate) {
 			this.header.QueuedUpdate = false
-			await this.header.Update(this.header.QueuedUpdateRecursive)
+			this.header.Update(this.header.QueuedUpdateRecursive)
 		}
 		let updatedEntries = false
 		for (const entry of this.entries) {
 			if (entry.QueuedUpdate) {
 				entry.QueuedUpdate = false
-				await entry.Update(entry.QueuedUpdateRecursive)
+				entry.Update(entry.QueuedUpdateRecursive)
 			}
 			updatedEntries = updatedEntries || entry.NeedsRootUpdate
 			entry.NeedsRootUpdate = false
 		}
 		if (updatedEntries) {
-			await this.Update()
+			this.Update()
 			updatedEntries = false
 		}
 		this.UpdateScrollbar()
-		await this.header.Render()
+		this.header.Render()
 		const position = this.header.Position.Clone().AddScalarY(this.header.Size.y)
 		let skip = this.ScrollPosition,
 			visibleEntries = this.VisibleEntries
@@ -187,48 +187,48 @@ class CMenuManager {
 			position.CopyTo(entry.Position)
 			if (entry.QueuedUpdate) {
 				entry.QueuedUpdate = false
-				await entry.Update(entry.QueuedUpdateRecursive)
+				entry.Update(entry.QueuedUpdateRecursive)
 			}
 			updatedEntries = updatedEntries || entry.NeedsRootUpdate
-			await entry.Render()
+			entry.Render()
 			position.AddScalarY(entry.Size.y)
 			if (--visibleEntries <= 0)
 				break
 		}
 		if (updatedEntries)
-			await this.Update()
+			this.Update()
 		for (const node of this.entries)
 			if (node.IsVisible)
-				await node.PostRender()
-		await this.PostRender()
+				node.PostRender()
+		this.PostRender()
 	}
-	public async Update(recursive = false): Promise<void> {
+	public Update(recursive = false): void {
 		if (recursive)
 			for (const entry of this.entries)
-				await entry.Update(true)
+				entry.Update(true)
 		this.UpdateScrollbar()
 		this.EntriesSizeX = this.EntriesSizeX_
 		this.EntriesSizeY = this.EntriesSizeY_
 	}
 
-	public async OnMouseLeftDown(): Promise<boolean> {
+	public OnMouseLeftDown(): boolean {
 		if (!this.is_open)
 			return true
-		if (!await this.header.OnMouseLeftDown()) {
+		if (!this.header.OnMouseLeftDown()) {
 			this.active_element = this.header
 			return false
 		}
 		for (const node of this.entries)
-			if (node.IsVisible && !await node.OnMouseLeftDown()) {
+			if (node.IsVisible && !node.OnMouseLeftDown()) {
 				this.active_element = node
 				return false
 			}
 		return true
 	}
-	public async OnMouseLeftUp(): Promise<boolean> {
+	public OnMouseLeftUp(): boolean {
 		if (!this.is_open || this.active_element === undefined)
 			return true
-		const ret = await this.active_element.OnMouseLeftUp()
+		const ret = this.active_element.OnMouseLeftUp()
 		if (this.active_element === this.header)
 			Base.SaveConfigASAP = true
 		this.active_element = undefined
@@ -320,7 +320,7 @@ class CMenuManager {
 			scrollbar_pos.Add(scrollbar_size),
 		)
 	}
-	private async PostRender(): Promise<void> {
+	private PostRender(): void {
 		if (!this.is_open)
 			return
 		if (this.ScrollVisible) {
@@ -378,20 +378,20 @@ class CMenuManager {
 export const MenuManager = new CMenuManager()
 await MenuManager.LoadConfig()
 
-Events.after("Draw", async () => {
-	await MenuManager.Render()
+Events.after("Draw", () => {
+	MenuManager.Render()
 	RendererSDK.EmitDraw()
 })
 
 EventsSDK.on("WindowSizeChanged", () => MenuManager.Update(true))
 EventsSDK.on("UnitAbilityDataUpdated", () => MenuManager.Update(true))
 
-InputEventSDK.on("MouseKeyDown", async key => {
+InputEventSDK.on("MouseKeyDown", key => {
 	if (key === VMouseKeys.MK_LBUTTON)
 		return MenuManager.OnMouseLeftDown()
 	return true
 })
-InputEventSDK.on("MouseKeyUp", async key => {
+InputEventSDK.on("MouseKeyUp", key => {
 	if (key === VMouseKeys.MK_LBUTTON)
 		return MenuManager.OnMouseLeftUp()
 	return true

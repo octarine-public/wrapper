@@ -36,8 +36,8 @@ export class Button extends Base {
 				.AddScalarX(2), // because text_button_gap includes bar size
 		)
 	}
-	public async Update(): Promise<boolean> {
-		if (!(await super.Update()))
+	public Update(): boolean {
+		if (!super.Update())
 			return false
 		Button.button_offset
 			.MultiplyScalar(2)
@@ -48,8 +48,8 @@ export class Button extends Base {
 			.CopyTo(this.Size)
 		return true
 	}
-	public async Render(): Promise<void> {
-		await super.Render()
+	public Render(): void {
+		super.Render()
 
 		const button_rect = this.ButtonRect
 		RendererSDK.Image(Button.button_path, button_rect.pos1, -1, button_rect.pos2.Subtract(button_rect.pos1))
@@ -61,12 +61,12 @@ export class Button extends Base {
 			),
 		)
 	}
-	public async OnMouseLeftDown(): Promise<boolean> {
+	public OnMouseLeftDown(): boolean {
 		return !this.IsHovered
 	}
-	public async OnMouseLeftUp(): Promise<boolean> {
+	public OnMouseLeftUp(): boolean {
 		if (this.ButtonRect.Contains(this.MousePosition))
-			await this.TriggerOnValueChangedCBs()
+			this.TriggerOnValueChangedCBs()
 		return false
 	}
 }

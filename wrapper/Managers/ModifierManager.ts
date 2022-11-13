@@ -143,13 +143,12 @@ export class IModifier {
 const ActiveModifiersRaw = new Map<number, IModifier>(),
 	ActiveModifiers = new Map<number, Modifier>()
 
-async function EmitModifierCreated(mod: IModifier) {
+function EmitModifierCreated(mod: IModifier) {
 	if (mod.Index === undefined || mod.SerialNum === undefined || mod.Parent === undefined)
 		return
 	const mod_ = new Modifier(mod)
-	await mod_.AsyncCreate()
 	ActiveModifiers.set(mod_.SerialNumber, mod_)
-	await mod_.Update()
+	mod_.Update()
 }
 const queued_ents: (Unit | Ability)[] = []
 EventsSDK.on("EntityCreated", ent => {
@@ -157,7 +156,7 @@ EventsSDK.on("EntityCreated", ent => {
 		queued_ents.push(ent)
 })
 EventsSDK.on("EntityDestroyed", ent => ArrayExtensions.arrayRemove(queued_ents, ent))
-EventsSDK.on("PostDataUpdate", async () => {
+EventsSDK.on("PostDataUpdate", () => {
 	if (queued_ents.length === 0)
 		return
 	for (const ent of queued_ents) {
@@ -169,26 +168,26 @@ EventsSDK.on("PostDataUpdate", async () => {
 					|| ent.HandleMatches(mod.m_pBuff.AuraOwner ?? 0)
 					|| ent.HandleMatches(mod.m_pBuff.CustomEntity ?? 0)
 				)
-					await mod.Update()
+					mod.Update()
 		if (ent instanceof Ability)
 			for (const mod of ActiveModifiers.values())
 				if (ent.HandleMatches(mod.m_pBuff.Ability ?? 0))
-					await mod.Update()
+					mod.Update()
 	}
 	queued_ents.splice(0)
 })
-async function EmitModifierRemoved(mod: Modifier) {
+function EmitModifierRemoved(mod: Modifier) {
 	ActiveModifiers.delete(mod.SerialNumber)
-	await mod.Remove()
+	mod.Remove()
 }
-EventsSDK.on("EntityDestroyed", async ent => {
+EventsSDK.on("EntityDestroyed", ent => {
 	for (const mod of ActiveModifiers.values())
 		if (mod.Parent === ent || mod.Ability === ent || mod.Caster === ent || mod.AuraOwner === ent)
-			await mod.Update()
+			mod.Update()
 })
-async function EmitModifierChanged(old_mod: Modifier, mod: IModifier) {
+function EmitModifierChanged(old_mod: Modifier, mod: IModifier) {
 	old_mod.m_pBuff = mod
-	await old_mod.Update()
+	old_mod.Update()
 }
 ParseProtobufDesc(`
 enum DOTA_MODIFIER_ENTRY_TYPE {
@@ -237,7 +236,7 @@ message CDOTAModifierBuffTableEntry {
 	optional uint32 custom_entity = 38;
 }
 `)
-EventsSDK.on("UpdateStringTable", async (name, update) => {
+EventsSDK.on("UpdateStringTable", (name, update) => {
 	if (name !== "ActiveModifiers")
 		return
 	for (const [index, [, mod_serialized]] of update) {
@@ -245,29 +244,29 @@ EventsSDK.on("UpdateStringTable", async (name, update) => {
 		if (mod_serialized.byteLength === 0 && replaced?.SerialNum !== undefined) {
 			const replaced_mod = ActiveModifiers.get(replaced.SerialNum)
 			if (replaced_mod !== undefined)
-				await EmitModifierRemoved(replaced_mod)
+				EmitModifierRemoved(replaced_mod)
 			continue
 		}
 		const mod = new IModifier(ParseProtobufNamed(new ViewBinaryStream(new DataView(mod_serialized)), "CDOTAModifierBuffTableEntry"))
 		if (replaced?.SerialNum !== undefined && replaced.SerialNum !== mod.SerialNum) {
 			const replaced_mod = ActiveModifiers.get(replaced.SerialNum)
 			if (replaced_mod !== undefined)
-				await EmitModifierRemoved(replaced_mod)
+				EmitModifierRemoved(replaced_mod)
 		}
 		ActiveModifiersRaw.set(index, mod)
 		const old_mod = ActiveModifiers.get(mod.SerialNum as number)
 		if (mod.EntryType === DOTA_MODIFIER_ENTRY_TYPE.DOTA_MODIFIER_ENTRY_TYPE_ACTIVE) {
 			if (old_mod === undefined)
-				await EmitModifierCreated(mod)
+				EmitModifierCreated(mod)
 			else
-				await EmitModifierChanged(old_mod, mod)
+				EmitModifierChanged(old_mod, mod)
 		} else if (old_mod !== undefined)
-			await EmitModifierRemoved(old_mod)
+			EmitModifierRemoved(old_mod)
 	}
 })
-EventsSDK.on("RemoveAllStringTables", async () => {
+EventsSDK.on("RemoveAllStringTables", () => {
 	for (const mod of ActiveModifiers.values())
-		await EmitModifierRemoved(mod)
+		EmitModifierRemoved(mod)
 	ActiveModifiers.clear()
 })
 

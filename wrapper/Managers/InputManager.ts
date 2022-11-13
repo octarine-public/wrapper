@@ -50,7 +50,7 @@ export const InputManager = new (class CInputManager {
 	}
 })()
 
-Events.on("WndProc", async (msg, wParam, _lParam, x, y) => {
+Events.on("WndProc", (msg, wParam, _lParam, x, y) => {
 	InputManager.UpdateCursorOnScreen(x, y)
 	let mKey: VMouseKeys = 0
 	switch (msg) {

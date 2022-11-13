@@ -59,8 +59,8 @@ export class Toggle extends Base {
 		return new Rectangle(base_pos.Subtract(Toggle.toggle_background_size), base_pos)
 	}
 
-	public async Update(): Promise<boolean> {
-		if (!(await super.Update()))
+	public Update(): boolean {
+		if (!super.Update())
 			return false
 		this.Size.x =
 			this.text_offset.x
@@ -72,19 +72,19 @@ export class Toggle extends Base {
 	}
 
 	public OnActivate(func: (caller: this) => any) {
-		return this.OnValue(async caller => {
+		return this.OnValue(caller => {
 			if (caller.value)
-				await func(caller)
+				func(caller)
 		})
 	}
 	public OnDeactivate(func: (caller: this) => any) {
-		return this.OnValue(async caller => {
+		return this.OnValue(caller => {
 			if (!caller.value)
-				await func(caller)
+				func(caller)
 		})
 	}
-	public async Render(): Promise<void> {
-		await super.Render()
+	public Render(): void {
+		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
 		const animation_state = Math.min(1, (hrtime() - this.animation_start_time) / Toggle.animation_time)
 		const primary_color = this.value ? Toggle.toggle_background_color_active : Toggle.toggle_background_color_inactive,
@@ -111,13 +111,13 @@ export class Toggle extends Base {
 		)
 	}
 
-	public async OnMouseLeftDown(): Promise<boolean> {
+	public OnMouseLeftDown(): boolean {
 		return !this.IsHovered
 	}
-	public async OnMouseLeftUp(): Promise<boolean> {
+	public OnMouseLeftUp(): boolean {
 		this.value = !this.value
 		this.animation_start_time = hrtime()
-		await this.TriggerOnValueChangedCBs()
+		this.TriggerOnValueChangedCBs()
 		return false
 	}
 }

@@ -161,7 +161,7 @@ declare function AcceptMatch(): void
 declare function ToggleOBSBypass(state: boolean): void
 declare function ToggleRequestUserCmd(state: boolean): void
 declare function setFireEvent(
-	func: (event_name: string, cancellable: boolean, ...args: any) => Promise<boolean>,
+	func: (event_name: string, cancellable: boolean, ...args: any) => boolean,
 ): void
 declare function require(absolute_path: string): any
 declare function hrtime(): number

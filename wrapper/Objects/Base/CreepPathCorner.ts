@@ -32,12 +32,12 @@ export class CreepPathCorner extends Entity {
 export const CreepPathCorners = EntityManager.GetEntitiesByClass(CreepPathCorner)
 
 let cur_local_id = 0x3000
-async function LoadCreepSpawnersAndPathCorners(): Promise<void> {
+function LoadCreepSpawnersAndPathCorners(): void {
 	while (cur_local_id > 0x3000) {
 		const id = --cur_local_id
 		const ent = EntityManager.EntityByIndex(id)
 		if (ent instanceof CreepPathCorner || ent instanceof LaneCreepSpawner)
-			await DeleteEntity(id)
+			DeleteEntity(id)
 	}
 	const ent2target = new Map<CreepPathCorner, string>(),
 		ent2name = new Map<CreepPathCorner, string>()
@@ -58,14 +58,13 @@ async function LoadCreepSpawnersAndPathCorners(): Promise<void> {
 		while (EntityManager.EntityByIndex(id) !== undefined)
 			id = cur_local_id++
 		const entity = new CreepPathCorner(id, 0)
-		await entity.AsyncCreate()
 		if (typeof target === "string")
 			ent2target.set(entity, target)
 		ent2name.set(entity, targetname)
 		entity.Name_ = "path_corner"
 		entity.Team = Team.Neutral
 		CreateEntityInternal(entity)
-		await EventsSDK.emit("PreEntityCreated", false, entity)
+		EventsSDK.emit("PreEntityCreated", false, entity)
 		const pos = Vector3.FromString(origin_str),
 			ang = QAngle.FromString(angles_str)
 		pos.SetZ(GetPositionHeight(pos))
@@ -124,7 +123,6 @@ async function LoadCreepSpawnersAndPathCorners(): Promise<void> {
 		while (EntityManager.EntityByIndex(id) !== undefined)
 			id = cur_local_id++
 		const entity = new LaneCreepSpawner(id, 0)
-		await entity.AsyncCreate()
 		entity.Name_ = "npc_dota_spawner"
 		entity.Team = team
 		entity.Lane = lane
@@ -140,7 +138,7 @@ async function LoadCreepSpawnersAndPathCorners(): Promise<void> {
 				break
 			}
 		CreateEntityInternal(entity)
-		await EventsSDK.emit("PreEntityCreated", false, entity)
+		EventsSDK.emit("PreEntityCreated", false, entity)
 		const pos = Vector3.FromString(origin_str),
 			ang = QAngle.FromString(angles_str)
 		pos.SetZ(GetPositionHeight(pos))
@@ -148,16 +146,16 @@ async function LoadCreepSpawnersAndPathCorners(): Promise<void> {
 		entity.NetworkedPosition.CopyFrom(pos)
 		entity.VisualAngles.CopyFrom(ang)
 		entity.NetworkedAngles.CopyFrom(ang)
-		await EventsSDK.emit("EntityCreated", false, entity)
+		EventsSDK.emit("EntityCreated", false, entity)
 	}
 	for (const [ent] of ent2name)
-		await EventsSDK.emit("EntityCreated", false, ent)
+		EventsSDK.emit("EntityCreated", false, ent)
 }
 
-EventsSDK.after("ServerInfo", async () => {
+EventsSDK.after("ServerInfo", () => {
 	try {
-		await LoadCreepSpawnersAndPathCorners()
+		LoadCreepSpawnersAndPathCorners()
 	} catch (e) {
-		console.error("Error in LoadCreepSpawnersAndPathCorners init", e)
+		console.error("Error in LoadCreepSpawnersAndPathCorners", e)
 	}
 })

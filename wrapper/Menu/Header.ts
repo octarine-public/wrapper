@@ -44,7 +44,7 @@ export class Header extends Base {
 		Vector2.fromArray(value).Max(0).CopyTo(this.Position)
 	}
 
-	public async Render(): Promise<void> {
+	public Render(): void {
 		const window_size = this.WindowSize
 		if (this.Position.IsZero())
 			this.Position.CopyFrom(window_size.DivideScalar(2))
@@ -78,14 +78,14 @@ export class Header extends Base {
 		)
 	}
 
-	public async OnMouseLeftDown(): Promise<boolean> {
+	public OnMouseLeftDown(): boolean {
 		if (!this.IsHovered)
 			return true
 		this.dragging = true
 		this.MousePosition.Subtract(this.Position).CopyTo(this.dragging_offset)
 		return false
 	}
-	public async OnMouseLeftUp(): Promise<boolean> {
+	public OnMouseLeftUp(): boolean {
 		if (!this.dragging)
 			return !this.IsHovered
 		this.dragging = false

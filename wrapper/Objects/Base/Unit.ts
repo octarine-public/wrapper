@@ -829,7 +829,7 @@ export class Unit extends Entity {
 		return testPoint
 	}
 
-	public async ChangeFieldsByEvents() {
+	public ChangeFieldsByEvents() {
 		const buffs = this.Buffs
 
 		{ // IsTrueSightedForEnemies
@@ -838,7 +838,7 @@ export class Unit extends Entity {
 
 			if (isTrueSighted !== lastIsTrueSighted) {
 				this.IsTrueSightedForEnemies = isTrueSighted
-				await EventsSDK.emit("TrueSightedChanged", false, this)
+				EventsSDK.emit("TrueSightedChanged", false, this)
 			}
 		}
 
@@ -848,7 +848,7 @@ export class Unit extends Entity {
 
 			if (hasScepter !== lastHasScepter) {
 				this.HasScepterModifier = hasScepter
-				await EventsSDK.emit("HasScepterChanged", false, this)
+				EventsSDK.emit("HasScepterChanged", false, this)
 			}
 		}
 
@@ -858,7 +858,7 @@ export class Unit extends Entity {
 
 			if (hasShard !== lastHasShard) {
 				this.HasScepterModifier = hasShard
-				await EventsSDK.emit("HasShardChanged", false, this)
+				EventsSDK.emit("HasShardChanged", false, this)
 			}
 		}
 	}
@@ -998,41 +998,41 @@ export class Unit extends Entity {
 }
 export const Units = EntityManager.GetEntitiesByClass(Unit)
 
-async function UnitNameChanged(unit: Unit) {
-	unit.UnitData = (await UnitData.global_storage).get(unit.Name) ?? UnitData.empty
+function UnitNameChanged(unit: Unit) {
+	unit.UnitData = UnitData.global_storage.get(unit.Name) ?? UnitData.empty
 }
 
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
-RegisterFieldHandler(Unit, "m_iUnitNameIndex", async (unit, new_value) => {
+RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, new_value) => {
 	const old_name = unit.Name
-	unit.UnitName_ = new_value >= 0 ? (await UnitData.GetUnitNameByNameIndex(new_value as number) ?? "") : ""
+	unit.UnitName_ = new_value >= 0 ? UnitData.GetUnitNameByNameIndex(new_value as number) ?? "" : ""
 	if (unit.UnitName_ === "")
 		unit.UnitName_ = unit.Name_
 	if (old_name !== unit.Name)
-		await UnitNameChanged(unit)
+		UnitNameChanged(unit)
 })
-RegisterFieldHandler(Unit, "m_nameStringableIndex", async (unit, new_val) => {
+RegisterFieldHandler(Unit, "m_nameStringableIndex", (unit, new_val) => {
 	if (unit.UnitName_ === "")
 		unit.UnitName_ = unit.Name_
-	await UnitNameChanged(unit)
+	UnitNameChanged(unit)
 })
-RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", async (unit, new_value) => {
+RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", (unit, new_value) => {
 	unit.IsControllableByPlayerMask = new_value as bigint
 	if (unit.IsValid)
-		await EventsSDK.emit("ControllableByPlayerMaskChanged", false, unit)
+		EventsSDK.emit("ControllableByPlayerMaskChanged", false, unit)
 })
-RegisterFieldHandler(Unit, "m_NetworkActivity", async (unit, new_value) => {
+RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, new_value) => {
 	unit.NetworkActivity = new_value as number
 	unit.NetworkActivityStartTime = GameState.RawGameTime
 	if (unit.IsValid)
-		await EventsSDK.emit("NetworkActivityChanged", false, unit)
+		EventsSDK.emit("NetworkActivityChanged", false, unit)
 })
-RegisterFieldHandler(Unit, "m_NetworkSequenceIndex", async (unit, new_value) => {
+RegisterFieldHandler(Unit, "m_NetworkSequenceIndex", (unit, new_value) => {
 	unit.NetworkSequenceIndex = new_value as number
 	if (unit.IsValid)
-		await EventsSDK.emit("NetworkActivityChanged", false, unit)
+		EventsSDK.emit("NetworkActivityChanged", false, unit)
 })
-RegisterFieldHandler(Unit, "m_hAbilities", async (unit, new_value) => {
+RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
 	const prevSpells = [...unit.Spells]
 	const ar = new_value as number[]
 	for (let i = 0; i < ar.length; i++) {
@@ -1045,9 +1045,9 @@ RegisterFieldHandler(Unit, "m_hAbilities", async (unit, new_value) => {
 		unit.Spells[i] = undefined
 	}
 	if (unit.Spells.some((abil, i) => prevSpells[i] !== abil))
-		await EventsSDK.emit("UnitAbilitiesChanged", false, unit)
+		EventsSDK.emit("UnitAbilitiesChanged", false, unit)
 })
-RegisterFieldHandler(Unit, "m_hItems", async (unit, new_value) => {
+RegisterFieldHandler(Unit, "m_hItems", (unit, new_value) => {
 	const prevTotalItems = [...unit.TotalItems]
 	const ar = new_value as number[]
 	for (let i = 0; i < ar.length; i++) {
@@ -1060,9 +1060,9 @@ RegisterFieldHandler(Unit, "m_hItems", async (unit, new_value) => {
 		unit.TotalItems[i] = undefined
 	}
 	if (unit.TotalItems.some((item, i) => prevTotalItems[i] !== item))
-		await EventsSDK.emit("UnitItemsChanged", false, unit)
+		EventsSDK.emit("UnitItemsChanged", false, unit)
 })
-RegisterFieldHandler(Unit, "m_hMyWearables", async (unit, new_value) => {
+RegisterFieldHandler(Unit, "m_hMyWearables", (unit, new_value) => {
 	unit.MyWearables_ = new_value as number[]
 	unit.MyWearables = unit.MyWearables_
 		.map(id => EntityManager.EntityByIndex(id) as Nullable<Wearable>)
@@ -1080,7 +1080,7 @@ RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, new_value) => {
 		unit.Spawner = ent
 })
 
-EventsSDK.on("PreEntityCreated", async ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof Unit) {
 		ent.PredictedPosition.CopyFrom(ent.NetworkedPosition)
 		ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
@@ -1098,27 +1098,27 @@ EventsSDK.on("PreEntityCreated", async ent => {
 		for (let i = 0, end = owner.TotalItems_.length; i < end; i++)
 			if (ent.HandleMatches(owner.TotalItems_[i])) {
 				owner.TotalItems[i] = ent
-				await EventsSDK.emit("UnitItemsChanged", false, owner)
+				EventsSDK.emit("UnitItemsChanged", false, owner)
 				break
 			}
 	} else if (ent instanceof Ability) {
 		for (let i = 0, end = owner.Spells_.length; i < end; i++)
 			if (ent.HandleMatches(owner.Spells_[i])) {
 				owner.Spells[i] = ent
-				await EventsSDK.emit("UnitAbilitiesChanged", false, owner)
+				EventsSDK.emit("UnitAbilitiesChanged", false, owner)
 				break
 			}
 	} else if (ent instanceof Wearable) {
 		for (let i = 0, end = owner.MyWearables_.length; i < end; i++)
 			if (ent.HandleMatches(owner.MyWearables_[i])) {
 				owner.MyWearables.push(ent)
-				await EventsSDK.emit("UnitWearablesChanged", false, owner)
+				EventsSDK.emit("UnitWearablesChanged", false, owner)
 				break
 			}
 	}
 })
 
-EventsSDK.on("EntityDestroyed", async ent => {
+EventsSDK.on("EntityDestroyed", ent => {
 	const owner = ent.Owner
 	if (!(owner instanceof Unit))
 		return
@@ -1126,19 +1126,19 @@ EventsSDK.on("EntityDestroyed", async ent => {
 		for (let i = 0, end = owner.TotalItems.length; i < end; i++)
 			if (ent === owner.TotalItems[i]) {
 				owner.TotalItems[i] = undefined
-				await EventsSDK.emit("UnitItemsChanged", false, owner)
+				EventsSDK.emit("UnitItemsChanged", false, owner)
 				break
 			}
 	} else if (ent instanceof Ability) {
 		for (let i = 0, end = owner.Spells.length; i < end; i++)
 			if (ent === owner.Spells[i]) {
 				owner.Spells[i] = undefined
-				await EventsSDK.emit("UnitAbilitiesChanged", false, owner)
+				EventsSDK.emit("UnitAbilitiesChanged", false, owner)
 				break
 			}
 	} else if (ent instanceof Wearable) {
 		if (arrayRemove(owner.MyWearables, ent))
-			await EventsSDK.emit("UnitWearablesChanged", false, owner)
+			EventsSDK.emit("UnitWearablesChanged", false, owner)
 	}
 })
 
@@ -1184,7 +1184,7 @@ EventsSDK.on("Tick", dt => {
 })
 
 const CYCLE_THRESHOLD = 2
-EventsSDK.on("PostDataUpdate", async () => {
+EventsSDK.on("PostDataUpdate", () => {
 	for (const unit of Units) {
 		unit.UnitStateMask = unit.UnitStateMask_
 		const old_ticks = unit.IsVisibleForEnemiesTicks
@@ -1197,7 +1197,7 @@ EventsSDK.on("PostDataUpdate", async () => {
 			(unit.IsVisibleForEnemiesTicks === 0 || unit.IsVisibleForEnemiesTicks === CYCLE_THRESHOLD)
 		) {
 			unit.IsVisibleForEnemies = unit.IsVisibleForEnemiesTicks !== 0
-			await EventsSDK.emit("UnitVisibilityChanged", false, unit)
+			EventsSDK.emit("UnitVisibilityChanged", false, unit)
 		}
 	}
 })

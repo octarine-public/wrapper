@@ -123,9 +123,9 @@ export class NetworkedParticle {
 			this.EndTime += GameState.RawGameTime
 	}
 
-	public async Destroy(): Promise<void> {
+	public Destroy(): void {
 		NetworkedParticle.Instances.delete(this.Index)
-		await EventsSDK.emit(
+		EventsSDK.emit(
 			"ParticleDestroyed",
 			false,
 			this,
@@ -133,7 +133,7 @@ export class NetworkedParticle {
 	}
 }
 
-EventsSDK.after("EntityCreated", async ent => {
+EventsSDK.after("EntityCreated", ent => {
 	if (!(ent instanceof Unit))
 		return
 	for (const par of NetworkedParticle.Instances.values()) {
@@ -148,20 +148,20 @@ EventsSDK.after("EntityCreated", async ent => {
 				changed_anything = true
 			}
 		if (changed_anything)
-			await EventsSDK.emit(
+			EventsSDK.emit(
 				"ParticleUpdated",
 				false,
 				par,
 			)
 	}
 })
-EventsSDK.on("EntityDestroyed", async ent => {
+EventsSDK.on("EntityDestroyed", ent => {
 	const destroyedParticles: NetworkedParticle[] = []
 	for (const par of NetworkedParticle.Instances.values())
 		if (par.AttachedTo === ent)
 			destroyedParticles.push(par)
 	for (const par of destroyedParticles)
-		await par.Destroy()
+		par.Destroy()
 	for (const par of NetworkedParticle.Instances.values()) {
 		let changed_anything = false
 		const destroyedCPsEnt: number[] = []
@@ -173,7 +173,7 @@ EventsSDK.on("EntityDestroyed", async ent => {
 		for (const cp of destroyedCPsEnt)
 			par.ControlPointsEnt.delete(cp)
 		if (changed_anything)
-			await EventsSDK.emit(
+			EventsSDK.emit(
 				"ParticleUpdated",
 				false,
 				par,
@@ -181,11 +181,11 @@ EventsSDK.on("EntityDestroyed", async ent => {
 	}
 })
 
-EventsSDK.on("Tick", async () => {
+EventsSDK.on("Tick", () => {
 	const destroyedParticles: NetworkedParticle[] = []
 	for (const par of NetworkedParticle.Instances.values())
 		if (par.Released && par.EndTime !== -1 && par.EndTime <= GameState.RawGameTime)
 			destroyedParticles.push(par)
 	for (const par of destroyedParticles)
-		await par.Destroy()
+		par.Destroy()
 })

@@ -2,7 +2,7 @@ import { SOType } from "../Enums/SOType"
 import { arrayRemoveCallback } from "../Utils/ArrayExtensions"
 import { BinaryKV } from "../Utils/VBKV"
 
-type Listener = (...args: any) => Promise<false | any> | false | any
+type Listener = (...args: any) => false | any
 export class EventEmitter {
 	protected readonly events = new Map<string, [Listener, number][]>()
 	protected readonly events_after = new Map<string, [Listener, number][]>()
@@ -37,14 +37,14 @@ export class EventEmitter {
 		return this
 	}
 
-	public async emit(name: string, cancellable = false, ...args: any[]): Promise<boolean> {
+	public emit(name: string, cancellable = false, ...args: any[]): boolean {
 		const listeners = this.events.get(name),
 			listeners_after = this.events_after.get(name)
 
 		if (listeners !== undefined)
 			for (const [listener] of listeners)
 				try {
-					if ((await listener(...args) === false) && cancellable)
+					if (listener(...args) === false && cancellable)
 						return false
 				} catch (e: any) {
 					console.error(e instanceof Error ? e : new Error(e), this.listener2line.get(listener))
@@ -52,7 +52,7 @@ export class EventEmitter {
 		if (listeners_after !== undefined)
 			for (const [listener] of listeners_after)
 				try {
-					await listener(...args)
+					listener(...args)
 				} catch (e: any) {
 					console.error(e instanceof Error ? e : new Error(e), this.listener2line.get(listener))
 				}
@@ -95,4 +95,4 @@ declare interface Events extends EventEmitter {
 }
 
 export const Events: Events = new EventEmitter()
-setFireEvent(async (name, cancellable, ...args) => Events.emit(name, cancellable, ...args))
+setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args))

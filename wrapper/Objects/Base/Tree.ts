@@ -34,8 +34,8 @@ export class Tree extends Entity {
 	public get RingRadius(): number {
 		return 128
 	}
-	public async OnModelUpdated(): Promise<void> {
-		await super.OnModelUpdated()
+	public OnModelUpdated(): void {
+		super.OnModelUpdated()
 		this.BoundingBox.MaxOffset.z = this.BoundingBox.MinOffset.z + 320
 	}
 }
@@ -43,13 +43,13 @@ export const Trees = EntityManager.GetEntitiesByClass(Tree)
 
 export let TempTreeIDOffset = 0
 let cur_local_id = 0x3000
-async function LoadTreeMap(stream: ReadableBinaryStream): Promise<void> {
+function LoadTreeMap(stream: ReadableBinaryStream): void {
 	TempTreeIDOffset = 0
 	while (cur_local_id > 0x3000) {
 		const id = --cur_local_id
 		const ent = EntityManager.EntityByIndex(id)
 		if (ent instanceof Tree) {
-			await DeleteEntity(id)
+			DeleteEntity(id)
 			GridNav?.UpdateTreeState(ent)
 		}
 	}
@@ -63,7 +63,6 @@ async function LoadTreeMap(stream: ReadableBinaryStream): Promise<void> {
 		while (EntityManager.EntityByIndex(id) !== undefined)
 			id = cur_local_id++
 		const entity = new Tree(id, 0)
-		await entity.AsyncCreate()
 		entity.Name_ = "ent_dota_tree"
 		entity.ClassName = "C_DOTA_MapTree"
 		pos.SetZ(GetPositionHeight(pos))
@@ -72,9 +71,9 @@ async function LoadTreeMap(stream: ReadableBinaryStream): Promise<void> {
 		entity.BinaryID = TempTreeIDOffset - 1
 		entity.Team = Team.Neutral
 		CreateEntityInternal(entity)
-		await EventsSDK.emit("PreEntityCreated", false, entity)
+		EventsSDK.emit("PreEntityCreated", false, entity)
 		GridNav?.UpdateTreeState(entity)
-		await EventsSDK.emit("EntityCreated", false, entity)
+		EventsSDK.emit("EntityCreated", false, entity)
 		trees.push(entity)
 	}
 	for (const data of EntityDataLump) {
@@ -104,11 +103,11 @@ async function LoadTreeMap(stream: ReadableBinaryStream): Promise<void> {
 	}
 }
 
-EventsSDK.after("ServerInfo", async () => {
+EventsSDK.after("ServerInfo", () => {
 	const buf = fopen(`maps/${GameState.MapName}.trm`)
 	if (buf !== undefined)
 		try {
-			await LoadTreeMap(new FileBinaryStream(buf))
+			LoadTreeMap(new FileBinaryStream(buf))
 		} catch (e) {
 			console.error("Error in TreeMap init", e)
 		} finally {

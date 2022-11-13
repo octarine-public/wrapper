@@ -784,7 +784,7 @@ message CSOEconGameAccountClient {
 	optional bool made_first_purchase = 9 [default = false];
 }
 `)
-Events.on("SharedObjectChanged", async (type_id, reason, data) => {
+Events.on("SharedObjectChanged", (type_id, reason, data) => {
 	let name: string
 	switch (type_id) {
 		// case SOType.EconItem:
@@ -826,7 +826,7 @@ Events.on("SharedObjectChanged", async (type_id, reason, data) => {
 		default:
 			return
 	}
-	await EventsSDK.emit(
+	EventsSDK.emit(
 		"SharedObjectChanged",
 		false,
 		type_id,

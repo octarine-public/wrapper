@@ -117,8 +117,8 @@ export class ColorPicker extends Base {
 		return colorpicker_rect
 	}
 
-	public async Update(): Promise<boolean> {
-		if (!(await super.Update()))
+	public Update(): boolean {
+		if (!super.Update())
 			return false
 		this.Size.x =
 			this.text_offset.x
@@ -129,9 +129,9 @@ export class ColorPicker extends Base {
 		return true
 	}
 
-	public async Render(): Promise<void> {
+	public Render(): void {
 		this.is_active = ColorPicker.active_colorpicker === this
-		await super.Render()
+		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
 		const selected_color_rect = this.SelectedColorRect
 		RendererSDK.Image(
@@ -148,7 +148,7 @@ export class ColorPicker extends Base {
 			this.selected_color,
 		)
 	}
-	public async PostRender(): Promise<void> {
+	public PostRender(): void {
 		if (!this.is_active)
 			return
 		const colorpicker_rect = this.ColorPickerRect,
@@ -273,14 +273,14 @@ export class ColorPicker extends Base {
 			this.selected_color.SetA(Math.round(alpha * 255))
 		}
 		if (this.dragging_color || this.dragging_hue || this.dragging_alpha)
-			await this.TriggerOnValueChangedCBs()
+			this.TriggerOnValueChangedCBs()
 	}
 	public OnParentNotVisible(): void {
 		if (ColorPicker.active_colorpicker === this)
 			ColorPicker.active_colorpicker = undefined
 		this.is_active = false
 	}
-	public async OnPreMouseLeftDown(): Promise<boolean> {
+	public OnPreMouseLeftDown(): boolean {
 		const colorpicker_rect = this.ColorPickerRect,
 			mouse_pos = this.MousePosition
 		if (!(this.is_active && colorpicker_rect.Contains(mouse_pos)))
@@ -318,7 +318,7 @@ export class ColorPicker extends Base {
 		}
 		return false
 	}
-	public async OnMouseLeftDown(): Promise<boolean> {
+	public OnMouseLeftDown(): boolean {
 		if (!this.IsHovered)
 			return true
 		if (ColorPicker.active_colorpicker !== this) {
@@ -330,7 +330,7 @@ export class ColorPicker extends Base {
 		}
 		return false
 	}
-	public async OnMouseLeftUp(): Promise<boolean> {
+	public OnMouseLeftUp(): boolean {
 		this.dragging_color = this.dragging_hue = this.dragging_alpha = false
 		return false
 	}

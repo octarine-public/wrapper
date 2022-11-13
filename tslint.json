@@ -86,7 +86,10 @@
 				"singleline": "never",
 				"esSpecCompliant": true
 			}
-		]
+		],
+		"await-promise": true,
+		"no-async-without-await": true,
+		"no-floating-promises": true
 	},
 	"rulesDirectory": [],
 	"linterOptions": {

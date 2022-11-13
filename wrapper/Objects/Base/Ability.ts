@@ -17,7 +17,7 @@ import { Unit } from "./Unit"
 
 @WrapperClass("CDOTABaseAbility")
 export class Ability extends Entity {
-	public AbilityData = undefined as any as AbilityData // should be initialized in AsyncCreate
+	public AbilityData: AbilityData
 	@NetworkedBasicField("m_bInIndefiniteCooldown")
 	public IsInIndefiniteCooldown = false
 	@NetworkedBasicField("m_bActivated")
@@ -61,6 +61,7 @@ export class Ability extends Entity {
 	constructor(Index: number, Serial: number, name: string) {
 		super(Index, Serial)
 		this.Name_ = name
+		this.AbilityData = AbilityData.global_storage.get(name) ?? AbilityData.empty
 	}
 
 	public get Owner(): Nullable<Unit> {
@@ -211,9 +212,6 @@ export class Ability extends Entity {
 	}
 	public set CurrentCharges(new_val: number) {
 		this.AbilityCurrentCharges = new_val
-	}
-	public async AsyncCreate(): Promise<void> {
-		this.AbilityData = (await AbilityData.global_storage).get(this.Name) ?? AbilityData.empty
 	}
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.AbilityData.GetCastRange(level)

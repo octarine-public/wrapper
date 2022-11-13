@@ -36,21 +36,20 @@ export function CreateEntityInternal(ent: Entity): void {
 		class_entities.push(ent)
 }
 
-async function CreateEntity(
+function CreateEntity(
 	id: number,
 	serial: number,
 	class_name: string,
 	entity_name: Nullable<string>,
-): Promise<Entity> {
+): Entity {
 	const entity = ClassFromNative(id, serial, class_name, entity_name)
 	entity.FieldHandlers_ = cached_field_handlers.get(entity.constructor as Constructor<Entity>)
-	await entity.AsyncCreate()
 	entity.ClassName = class_name
 	CreateEntityInternal(entity)
 	return entity
 }
 
-export async function DeleteEntity(id: number): Promise<void> {
+export function DeleteEntity(id: number): void {
 	const entity = AllEntitiesAsMap.get(id)
 	if (entity === undefined)
 		return
@@ -59,7 +58,7 @@ export async function DeleteEntity(id: number): Promise<void> {
 	entity.BecameDormantTime = GameState.RawGameTime
 	ArrayExtensions.arrayRemove(EntityManager.AllEntities, entity)
 
-	await EventsSDK.emit("EntityDestroyed", false, entity)
+	EventsSDK.emit("EntityDestroyed", false, entity)
 	entity.IsVisible = false
 	AllEntitiesAsMap.delete(id)
 	for (const class_entities of ClassToEntitiesAr.get(entity.constructor as any)!)
@@ -145,19 +144,19 @@ function DumpStreamPosition(
 	return ret
 }
 
-async function ParseEntityUpdate(
+function ParseEntityUpdate(
 	stream: ReadableBinaryStream,
 	ent_id: number,
 	created_entities: Entity[],
 	is_create = false,
-): Promise<void> {
+): void {
 	const ent_serial = is_create ? stream.ReadUint32() : 0
 	const m_nameStringableIndex = is_create ? stream.ReadInt32() : -1
 	const ent_class = entities_symbols[stream.ReadUint16()]
 	let ent_was_created = false
 	let ent = AllEntitiesAsMap.get(ent_id)
 	if (ent === undefined && is_create) {
-		ent = await CreateEntity(
+		ent = CreateEntity(
 			ent_id,
 			ent_serial,
 			ent_class,
@@ -230,10 +229,10 @@ async function ParseEntityUpdate(
 		}
 	}
 	for (let i = 0, end = changed_paths.length; i < end; i++)
-		await ent_handlers!.get(changed_paths[i])!(ent!, changed_paths_results[i])
+		ent_handlers!.get(changed_paths[i])!(ent!, changed_paths_results[i])
 	if (ent !== undefined && ent_was_created) {
 		ent.IsValid = true
-		await EventsSDK.emit("PreEntityCreated", false, ent)
+		EventsSDK.emit("PreEntityCreated", false, ent)
 		created_entities.push(ent)
 	}
 }
@@ -269,10 +268,9 @@ message CSVCMsg_FlattenedSerializer {
 	repeated .ProtoFlattenedSerializerField_t fields = 3;
 }
 `)
-let latest_entity_packet_promise = Promise.resolve()
 const NO_ENTITY_NATIVE_PROPS_ = (globalThis as any).NO_ENTITY_NATIVE_PROPS ?? false
-async function ParseEntityPacket(stream: ReadableBinaryStream): Promise<void> {
-	await EventsSDK.emit("PreDataUpdate", false)
+function ParseEntityPacket(stream: ReadableBinaryStream): void {
+	EventsSDK.emit("PreDataUpdate", false)
 	LatestTickDelta = 0
 	const native_changes: number[][] = []
 	if (!NO_ENTITY_NATIVE_PROPS_)
@@ -293,7 +291,7 @@ async function ParseEntityPacket(stream: ReadableBinaryStream): Promise<void> {
 		const pvs: EntityPVS = stream.ReadUint8()
 		switch (pvs) {
 			case EntityPVS.DELETE:
-				await DeleteEntity(ent_id)
+				DeleteEntity(ent_id)
 				break
 			case EntityPVS.LEAVE: {
 				const ent = EntityManager.EntityByIndex(ent_id)
@@ -304,10 +302,10 @@ async function ParseEntityPacket(stream: ReadableBinaryStream): Promise<void> {
 				break
 			}
 			case EntityPVS.CREATE:
-				await ParseEntityUpdate(stream, ent_id, created_entities, true)
+				ParseEntityUpdate(stream, ent_id, created_entities, true)
 				break
 			case EntityPVS.UPDATE:
-				await ParseEntityUpdate(stream, ent_id, created_entities)
+				ParseEntityUpdate(stream, ent_id, created_entities)
 				break
 		}
 	}
@@ -317,37 +315,24 @@ async function ParseEntityPacket(stream: ReadableBinaryStream): Promise<void> {
 			if (ent !== undefined)
 				ent.ForwardNativeProperties(m_iMoveCapabilities)
 		}
-	await EventsSDK.emit("MidDataUpdate", false)
+	EventsSDK.emit("MidDataUpdate", false)
 	for (const ent of created_entities)
-		await EventsSDK.emit("EntityCreated", false, ent)
-	await EventsSDK.emit("PostDataUpdate", false)
+		EventsSDK.emit("EntityCreated", false, ent)
+	EventsSDK.emit("PostDataUpdate", false)
 	if (LatestTickDelta !== 0)
-		await EventsSDK.emit("Tick", false, LatestTickDelta)
-}
-async function ParseEntityPacketWrapper(stream: ReadableBinaryStream): Promise<void> {
-	try {
-		await latest_entity_packet_promise
-	} catch (e) {
-		console.error(e)
-	}
-	latest_entity_packet_promise = ParseEntityPacket(stream)
-	try {
-		await latest_entity_packet_promise
-	} catch (e) {
-		console.error(e)
-	}
+		EventsSDK.emit("Tick", false, LatestTickDelta)
 }
 
-Events.on("ServerMessage", async (msg_id, buf) => {
+Events.on("ServerMessage", (msg_id, buf) => {
 	switch (msg_id) {
 		case 55: // we have custom parsing for CSVCMsg_PacketEntities
-			await ParseEntityPacketWrapper(new ViewBinaryStream(new DataView(buf)))
+			ParseEntityPacket(new ViewBinaryStream(new DataView(buf)))
 			break
 	}
 })
 
-Events.on("NewConnection", async () => {
+Events.on("NewConnection", () => {
 	for (const ent_id of AllEntitiesAsMap.keys())
-		await DeleteEntity(ent_id)
+		DeleteEntity(ent_id)
 	TreeActiveMask.reset()
 })

@@ -139,22 +139,22 @@ export class Base {
 			this.TriggerOnValueChangedCBs()
 	}
 
-	public async OnValue(func: (caller: this) => any): Promise<this> {
+	public OnValue(func: (caller: this) => any): this {
 		if (!IS_MAIN_WORKER)
 			return this // workers shouldn't propagate configs
 		this.OnValueChangedCBs.push(func as any)
 		if (this.execute_on_add)
-			await func(this)
+			func(this)
 		return this
 	}
 
-	public async Update(recursive = false): Promise<boolean> {
+	public Update(recursive = false): boolean {
 		if (!RendererSDK.IsInDraw) {
 			this.QueuedUpdate = true
 			this.QueuedUpdateRecursive = recursive
 			return false
 		}
-		await this.ApplyLocalization()
+		this.ApplyLocalization()
 		this.NeedsRootUpdate = true
 		this.Size.CopyFrom(Base.DefaultSize)
 		this.GetTextSizeDefault(this.Name).CopyTo(this.name_size)
@@ -177,7 +177,7 @@ export class Base {
 		return true
 	}
 
-	public async Render(draw_bar = true): Promise<void> {
+	public Render(draw_bar = true): void {
 		if (this.is_active)
 			RendererSDK.Image(Base.background_active_path, this.Position, -1, this.RenderSize)
 		else
@@ -193,7 +193,7 @@ export class Base {
 		if (is_hovered)
 			this.RenderTooltip()
 	}
-	public async PostRender(): Promise<void> {
+	public PostRender(): void {
 		// to be implemented in child classes
 	}
 
@@ -201,14 +201,14 @@ export class Base {
 		// to be implemented in child classes
 	}
 
-	public async OnPreMouseLeftDown(): Promise<boolean> {
+	public OnPreMouseLeftDown(): boolean {
 		return true
 	}
-	public async OnMouseLeftDown(): Promise<boolean> {
+	public OnMouseLeftDown(): boolean {
 		return true
 	}
 
-	public async OnMouseLeftUp(): Promise<boolean> {
+	public OnMouseLeftUp(): boolean {
 		return true
 	}
 
@@ -218,7 +218,7 @@ export class Base {
 	public DetachFromParent(): boolean {
 		return ArrayExtensions.arrayRemove(this.parent.entries, this)
 	}
-	protected async ApplyLocalization() {
+	protected ApplyLocalization() {
 		this.Name = Localization.Localize(this.InternalName)
 		this.Tooltip = Localization.Localize(this.InternalTooltipName)
 	}
@@ -244,9 +244,9 @@ export class Base {
 			false,
 		)
 	}
-	protected async TriggerOnValueChangedCBs(): Promise<void> {
+	protected TriggerOnValueChangedCBs(): void {
 		for (const cb of this.OnValueChangedCBs)
-			await cb(this)
+			cb(this)
 	}
 
 	private RenderTooltip(): void {

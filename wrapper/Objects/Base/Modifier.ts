@@ -74,7 +74,7 @@ export class Modifier {
 	public StackCount = 0
 	public Duration = 0
 	public AbilityLevel = 0
-	public DDAbilityName = "" // should be initialized in AsyncCreate
+	public DDAbilityName: string
 	public Parent: Nullable<Unit>
 	public Ability: Nullable<Ability>
 	public Caster: Nullable<Unit>
@@ -90,6 +90,12 @@ export class Modifier {
 		this.Name = lua_name === undefined || lua_name === ""
 			? StringTables.GetString("ModifierNames", this.m_pBuff.ModifierClass as number)
 			: lua_name
+
+		const DDAbilityID = this.m_pBuff.DDAbilityID
+		const DDAbilityName = DDAbilityID !== undefined
+			? AbilityData.GetAbilityNameByID(DDAbilityID)
+			: undefined
+		this.DDAbilityName = DDAbilityName ?? "ability_base"
 	}
 
 	public get InvisibilityLevel(): number {
@@ -162,15 +168,7 @@ export class Modifier {
 		return new Vector3(vec.x, vec.y, vec.z)
 	}
 
-	public async AsyncCreate(): Promise<void> {
-		const DDAbilityID = this.m_pBuff.DDAbilityID
-		const DDAbilityName = DDAbilityID !== undefined
-			? await AbilityData.GetAbilityNameByID(DDAbilityID)
-			: undefined
-		this.DDAbilityName = DDAbilityName ?? "ability_base"
-	}
-
-	public async Update(): Promise<void> {
+	public Update(): void {
 		const new_caster = EntityManager.EntityByIndex(this.m_pBuff.Caster) as Nullable<Unit>,
 			new_ability = EntityManager.EntityByIndex(this.m_pBuff.Ability) as Nullable<Ability>,
 			new_aura_owner = EntityManager.EntityByIndex(this.m_pBuff.AuraOwner) as Nullable<Unit>,
@@ -188,7 +186,7 @@ export class Modifier {
 			new_custom_entity = EntityManager.EntityByIndex(this.m_pBuff.CustomEntity) as Nullable<Unit>
 
 		if (this.Parent !== new_parent)
-			await this.Remove()
+			this.Remove()
 		let updated = false
 		if (this.Caster !== new_caster) {
 			this.Caster = new_caster
@@ -251,27 +249,27 @@ export class Modifier {
 			&& this.DieTime < GameState.RawGameTime
 			&& this.Name !== "modifier_legion_commander_overwhelming_odds"
 		) {
-			await this.Remove()
+			this.Remove()
 			return
 		}
 		if (this.Parent !== new_parent) {
 			this.Parent = new_parent
-			await this.AddModifier()
+			this.AddModifier()
 		} else if (this.Parent !== undefined && updated)
-			await EventsSDK.emit("ModifierChanged", false, this)
+			EventsSDK.emit("ModifierChanged", false, this)
 	}
-	public async Remove(): Promise<void> {
+	public Remove(): void {
 		if (this.Parent === undefined || !this.Parent.Buffs.includes(this))
 			return
 		arrayRemove(this.Parent.Buffs, this)
-		await EventsSDK.emit("ModifierRemoved", false, this)
-		await this.Parent.ChangeFieldsByEvents()
+		EventsSDK.emit("ModifierRemoved", false, this)
+		this.Parent.ChangeFieldsByEvents()
 	}
-	private async AddModifier(): Promise<void> {
+	private AddModifier(): void {
 		if (this.Parent === undefined || this.Parent.Buffs.includes(this))
 			return
 		this.Parent.Buffs.push(this)
-		await EventsSDK.emit("ModifierCreated", false, this)
-		await this.Parent.ChangeFieldsByEvents()
+		EventsSDK.emit("ModifierCreated", false, this)
+		this.Parent.ChangeFieldsByEvents()
 	}
 }

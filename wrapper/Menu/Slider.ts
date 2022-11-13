@@ -56,8 +56,8 @@ export class Slider extends Base {
 		)
 	}
 
-	public async Update(): Promise<boolean> {
-		if (!(await super.Update()))
+	public Update(): boolean {
+		if (!super.Update())
 			return false
 		const max_value_size = this.GetTextSizeDefault(
 			this.max.toFixed(this.precision),
@@ -78,10 +78,10 @@ export class Slider extends Base {
 		return true
 	}
 
-	public async Render(): Promise<void> {
-		await super.Render()
+	public Render(): void {
+		super.Render()
 		if (this.is_dragging)
-			await this.OnValueChanged()
+			this.OnValueChanged()
 
 		const rect = this.Rect,
 			value_text = this.value.toFixed(this.precision)
@@ -101,23 +101,23 @@ export class Slider extends Base {
 		if (slider_progress > 0)
 			RendererSDK.Image(Slider.slider_fill_path, slider_rect.pos1, -1, slider_rect.Size.MultiplyScalarX(slider_progress))
 	}
-	public async OnValueChanged(): Promise<void> {
+	public OnValueChanged(): void {
 		const slider_rect = this.SliderRect
 		const off = Math.max(slider_rect.GetOffset(this.MousePosition).x, 0)
 		const old_value = this.value
 		this.value = Math.min(this.max, this.Round(this.min + (off / slider_rect.Size.x) * (this.max - this.min)))
 		if (this.value !== old_value)
-			await this.TriggerOnValueChangedCBs()
+			this.TriggerOnValueChangedCBs()
 	}
 
-	public async OnMouseLeftDown(): Promise<boolean> {
+	public OnMouseLeftDown(): boolean {
 		if (this.SliderRect.Contains(this.MousePosition)) {
 			this.is_dragging = true
 			return false
 		}
 		return true
 	}
-	public async OnMouseLeftUp(): Promise<boolean> {
+	public OnMouseLeftUp(): boolean {
 		this.is_dragging = false
 		return false
 	}

@@ -23,10 +23,10 @@ export class CPlayerResource extends Entity {
 }
 
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
-RegisterFieldHandler(CPlayerResource, "m_vecPlayerTeamData", async (playerResource, new_val) => {
+RegisterFieldHandler(CPlayerResource, "m_vecPlayerTeamData", (playerResource, new_val) => {
 	playerResource.PlayerTeamData = (new_val as EntityPropertiesNode[]).map(map => new PlayerTeamData(map))
 	UpdateRespawnPositions(playerResource)
-	await EventsSDK.emit("PlayerResourceUpdated", false, playerResource)
+	EventsSDK.emit("PlayerResourceUpdated", false, playerResource)
 })
 RegisterFieldHandler(CPlayerResource, "m_vecPlayerData", (playerResource, new_val) => {
 	playerResource.PlayerData = (new_val as EntityPropertiesNode[]).map(map => new PlayerData(map))

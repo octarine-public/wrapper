@@ -24,7 +24,7 @@ export class meepo_divided_we_stand extends Ability {
 }
 
 let isInMeepoCrutch = false
-EventsSDK.on("LifeStateChanged", async ent => {
+EventsSDK.on("LifeStateChanged", ent => {
 	if (isInMeepoCrutch || !(ent instanceof Unit))
 		return
 	let abil = ent.GetAbilityByClass(meepo_divided_we_stand)
@@ -36,7 +36,7 @@ EventsSDK.on("LifeStateChanged", async ent => {
 			abil.Owner.LifeState = ent.LifeState
 			abil.Owner.HP = ent.IsAlive ? abil.Owner.MaxHP : 0
 			isInMeepoCrutch = true
-			await EventsSDK.emit("LifeStateChanged", false, abil.Owner)
+			EventsSDK.emit("LifeStateChanged", false, abil.Owner)
 			isInMeepoCrutch = false
 		}
 		abil = abil.NextDividedWeStand

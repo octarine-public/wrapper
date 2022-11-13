@@ -56,18 +56,18 @@ export class FakeUnit {
 	public EntityMatches(ent: Entity): boolean {
 		return ent.HandleMatches((this.Serial << EntityManager.INDEX_BITS) | this.Index)
 	}
-	public async UpdateName(): Promise<void> {
+	public UpdateName(): void {
 		if (this.Name !== "")
 			return
 		const data = PlayerResource?.PlayerTeamData?.find(x => x !== undefined && this.HandleMatches(x.SelectedHeroIndex))
 		if (data !== undefined)
-			this.Name = await UnitData.GetHeroNameByID(data.SelectedHeroID)
+			this.Name = UnitData.GetHeroNameByID(data.SelectedHeroID)
 	}
 }
 const FakeUnitsMap = new Map<number, FakeUnit>()
 export const FakeUnits: FakeUnit[] = []
 
-export async function GetPredictionTarget(handle: Nullable<Entity | number>): Promise<Nullable<Unit | FakeUnit>> {
+export function GetPredictionTarget(handle: Nullable<Entity | number>): Nullable<Unit | FakeUnit> {
 	if (handle === undefined)
 		return undefined
 	if (handle instanceof Entity)
@@ -88,7 +88,7 @@ export async function GetPredictionTarget(handle: Nullable<Entity | number>): Pr
 		fake_unit = new FakeUnit(index, serial)
 		FakeUnitsMap.set(index, fake_unit)
 		FakeUnits.push(fake_unit)
-		await fake_unit.UpdateName()
+		fake_unit.UpdateName()
 	}
 	return fake_unit
 }
@@ -112,7 +112,7 @@ EventsSDK.on("GameEnded", () => {
 	FakeUnits.splice(0)
 })
 
-EventsSDK.on("PostDataUpdate", async () => {
+EventsSDK.on("PostDataUpdate", () => {
 	for (const fake_unit of FakeUnits)
-		await fake_unit.UpdateName()
+		fake_unit.UpdateName()
 })

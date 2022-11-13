@@ -33,10 +33,6 @@ const SettingsReloadTree = SettingsTree.AddNode("Reload Scripts")
 const ReloadScriptsBind = SettingsReloadTree.AddKeybind("Key Bind")
 const ReloadScriptsBtn = SettingsReloadTree.AddButton("Reload")
 
-async function ReloadScripts() {
-	reload()
-}
-
 Events.on("SetLanguage", language => {
 	switch (language) {
 		default:
@@ -56,5 +52,5 @@ MainMenuKeyBind.OnPressed(() => {
 	Menu.MenuManager.is_open = !Menu.MenuManager.is_open
 })
 
-ReloadScriptsBtn.OnValue(ReloadScripts)
-ReloadScriptsBind.OnPressed(ReloadScripts)
+ReloadScriptsBtn.OnValue(reload)
+ReloadScriptsBind.OnPressed(reload)

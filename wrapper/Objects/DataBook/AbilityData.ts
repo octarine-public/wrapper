@@ -6,7 +6,6 @@ import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EDOTASpecialBonusOperation } from "../../Enums/EDOTASpecialBonusOperation"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
-import { Workers } from "../../Native/Workers"
 import { parseKVFile } from "../../Resources/ParseKV"
 import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
 import { Unit } from "../Base/Unit"
@@ -17,19 +16,19 @@ function LoadAbilityFile(path: string): RecursiveMap {
 }
 
 export class AbilityData {
-	public static global_storage: Promise<Map<string, AbilityData>> = Promise.resolve(new Map())
+	public static global_storage: Map<string, AbilityData> = new Map()
 	public static empty = new AbilityData("", new Map())
-	public static async GetAbilityByName(name: string): Promise<Nullable<AbilityData>> {
-		return (await AbilityData.global_storage).get(name)
+	public static GetAbilityByName(name: string): Nullable<AbilityData> {
+		return AbilityData.global_storage.get(name)
 	}
-	public static async GetAbilityNameByID(id: number): Promise<Nullable<string>> {
-		for (const [name, data] of await AbilityData.global_storage)
+	public static GetAbilityNameByID(id: number): Nullable<string> {
+		for (const [name, data] of AbilityData.global_storage)
 			if (data.ID === id)
 				return name
 		return undefined
 	}
-	public static async GetItemRecipeName(name: string): Promise<Nullable<string>> {
-		for (const [name_, data] of await AbilityData.global_storage)
+	public static GetItemRecipeName(name: string): Nullable<string> {
+		for (const [name_, data] of AbilityData.global_storage)
 			if (data.ItemResult === name)
 				return name_
 		return undefined
@@ -416,7 +415,6 @@ function AbilityNameToPath(name: string, strip = false): string {
 }
 
 function FixAbilityInheritance(
-	target_map: Map<string, AbilityData>,
 	abils_map: RecursiveMap,
 	fixed_cache: RecursiveMap,
 	map: RecursiveMap,
@@ -431,7 +429,7 @@ function FixAbilityInheritance(
 		if (typeof base_name === "string" && base_name !== abil_name) {
 			const base_map = abils_map.get(base_name)
 			if (base_map instanceof Map) {
-				const fixed_base_map = FixAbilityInheritance(target_map, abils_map, fixed_cache, base_map, base_name)
+				const fixed_base_map = FixAbilityInheritance(abils_map, fixed_cache, base_map, base_name)
 				fixed_base_map.forEach((v, k) => {
 					if (!map.has(k))
 						map.set(k, v)
@@ -457,45 +455,25 @@ function FixAbilityInheritance(
 		map.set("AbilityTexturePath", path)
 	}
 	fixed_cache.set(abil_name, map)
-	target_map.set(abil_name, new AbilityData(abil_name, map))
+	AbilityData.global_storage.set(abil_name, new AbilityData(abil_name, map))
 	return map
 }
 
-export async function ReloadGlobalAbilityStorage() {
-	await AbilityData.global_storage
-	AbilityData.global_storage = new Promise(resolve => {
-		const target_map = new Map<string, AbilityData>()
-		Workers.CallRPCEndPoint("LoadGlobalAbilityStorage", undefined)
-			.then(global_storage_ipc => {
-				if (!(global_storage_ipc instanceof Map))
-					return
-				const empty_map = new Map()
-				global_storage_ipc.forEach((val, key) => target_map.set(
-					key as string,
-					Object.assign(new AbilityData(key as string, empty_map), val),
-				))
-				resolve(target_map)
-			}, err => {
-				console.error(err)
-				resolve(target_map)
-			})
-	})
+export function ReloadGlobalAbilityStorage() {
+	AbilityData.global_storage.clear()
+	try {
+		const abils_map = createMapFromMergedIterators<string, RecursiveMapValue>(
+			LoadAbilityFile("scripts/npc/npc_abilities.txt").entries(),
+			LoadAbilityFile("scripts/npc/npc_abilities_custom.txt").entries(),
+			LoadAbilityFile("scripts/npc/items.txt").entries(),
+			LoadAbilityFile("scripts/npc/npc_items_custom.txt").entries(),
+		)
+		const fixed_cache: RecursiveMap = new Map()
+		abils_map.forEach((map, abil_name) => {
+			if (map instanceof Map)
+				FixAbilityInheritance(abils_map, fixed_cache, map, abil_name)
+		})
+	} catch (e) {
+		console.error("Error in ReloadGlobalAbilityStorage", e)
+	}
 }
-
-Workers.RegisterRPCEndPoint("LoadGlobalAbilityStorage", () => {
-	const target_map = new Map<string, AbilityData>()
-	const abils_map = createMapFromMergedIterators<string, RecursiveMapValue>(
-		LoadAbilityFile("scripts/npc/npc_abilities.txt").entries(),
-		LoadAbilityFile("scripts/npc/npc_abilities_custom.txt").entries(),
-		LoadAbilityFile("scripts/npc/items.txt").entries(),
-		LoadAbilityFile("scripts/npc/npc_items_custom.txt").entries(),
-	)
-	const fixed_cache: RecursiveMap = new Map()
-	abils_map.forEach((map, abil_name) => {
-		if (map instanceof Map)
-			FixAbilityInheritance(target_map, abils_map, fixed_cache, map, abil_name)
-	})
-	const ret = new Map<string, WorkerIPCType>()
-	target_map.forEach((v, k) => ret.set(k, { ...v }))
-	return ret
-})

@@ -55,9 +55,9 @@ export class Hero extends Unit {
 export const Heroes = EntityManager.GetEntitiesByClass(Hero)
 
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
-RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", async (ent, new_val) => {
+RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", (ent, new_val) => {
 	const id = new_val as number
-	ent.ReplicatingOtherHeroModel = await GetPredictionTarget(id)
+	ent.ReplicatingOtherHeroModel = GetPredictionTarget(id)
 })
 
 EventsSDK.on("PreEntityCreated", ent => {

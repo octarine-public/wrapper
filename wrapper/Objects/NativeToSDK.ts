@@ -153,7 +153,7 @@ function FixType(symbols: string[], field: any): string {
 }
 
 export let entities_symbols: string[] = []
-Events.on("ServerMessage", async (msg_id, buf) => {
+Events.on("ServerMessage", (msg_id, buf) => {
 	switch (msg_id) {
 		case 41: {
 			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf)), "CSVCMsg_FlattenedSerializer")

@@ -33,7 +33,7 @@ import * as WASM from "./WASM"
 
 let world_bounds: Nullable<[Vector2, Vector2]>
 
-EventsSDK.on("MapDataLoaded", async () => {
+EventsSDK.on("MapDataLoaded", () => {
 	try {
 		const world_bounds_data = EntityDataLump.find(data => data.get("classname") === "world_bounds")
 		if (world_bounds_data !== undefined) {
@@ -1061,12 +1061,12 @@ function deserializeOrder(): ExecuteOrder {
 	)
 }
 
-Events.on("PrepareUnitOrders", async () => {
+Events.on("PrepareUnitOrders", () => {
 	const order = deserializeOrder()
 	if (order === undefined)
 		return true
 
-	const ret = await EventsSDK.emit("PrepareUnitOrders", true, order)
+	const ret = EventsSDK.emit("PrepareUnitOrders", true, order)
 	if (!ret)
 		return false
 	if (!ExecuteOrder.disable_humanizer) {
@@ -1078,10 +1078,10 @@ Events.on("PrepareUnitOrders", async () => {
 	return true
 })
 
-Events.on("DebuggerPrepareUnitOrders", async (is_user_input: boolean, was_cancelled: boolean) => {
+Events.on("DebuggerPrepareUnitOrders", (is_user_input: boolean, was_cancelled: boolean) => {
 	const order = deserializeOrder()
 	if (order !== undefined)
-		await EventsSDK.emit(
+		EventsSDK.emit(
 			"DebuggerPrepareUnitOrders",
 			true,
 			order,

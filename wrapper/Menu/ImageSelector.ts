@@ -73,8 +73,8 @@ export class ImageSelector extends Base {
 		return 6
 	}
 
-	public async Update(): Promise<boolean> {
-		if (!(await super.Update()))
+	public Update(): boolean {
+		if (!super.Update())
 			return false
 		this.values.forEach(value => {
 			if (!this.enabled_values.has(value))
@@ -88,7 +88,7 @@ export class ImageSelector extends Base {
 			else if (path.startsWith("item_bottle_"))
 				path = `panorama/images/items/${path.substring(5)}_png.vtex_c`
 			else if (!path.startsWith("npc_dota_hero_")) {
-				const abil = await AbilityData.GetAbilityByName(path)
+				const abil = AbilityData.GetAbilityByName(path)
 				if (abil !== undefined)
 					path = abil.TexturePath
 			} else
@@ -120,8 +120,8 @@ export class ImageSelector extends Base {
 		return this.IsEnabled(this.values[id])
 	}
 
-	public async Render(): Promise<void> {
-		await super.Render()
+	public Render(): void {
+		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
 		const base_pos = this.IconsRect.pos1
 		for (let i = 0; i < this.values.length; i++) {
@@ -146,11 +146,11 @@ export class ImageSelector extends Base {
 		}
 	}
 
-	public async OnMouseLeftDown(): Promise<boolean> {
+	public OnMouseLeftDown(): boolean {
 		return !this.IconsRect.Contains(this.MousePosition)
 	}
 
-	public async OnMouseLeftUp(): Promise<boolean> {
+	public OnMouseLeftUp(): boolean {
 		const rect = this.IconsRect
 		if (!rect.Contains(this.MousePosition))
 			return false
@@ -164,7 +164,7 @@ export class ImageSelector extends Base {
 				continue
 			const value = this.values[i]
 			this.enabled_values.set(value, !this.IsEnabled(value))
-			await this.TriggerOnValueChangedCBs()
+			this.TriggerOnValueChangedCBs()
 			break
 		}
 		return false

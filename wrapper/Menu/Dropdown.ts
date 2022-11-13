@@ -96,8 +96,8 @@ export class Dropdown extends Base {
 		return 4
 	}
 
-	public async Update(): Promise<boolean> {
-		if (!(await super.Update()))
+	public Update(): boolean {
+		if (!super.Update())
 			return false
 		this.ValuesSizes = this.ValuesNames.map(value => this.GetTextSizeDefault(value))
 		this.ValuesSizes.reduce((prev, cur) => {
@@ -169,10 +169,10 @@ export class Dropdown extends Base {
 		return this.currently_at_id + Math.floor(popup_elements_rect.GetOffset(mouse_pos).y / this.PopupElementHeight)
 	}
 
-	public async Render(): Promise<void> {
+	public Render(): void {
 		this.is_active = Dropdown.active_dropdown === this
 		this.FixSelectedID()
-		await super.Render()
+		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
 		const dropdown_rect = this.DropdownRect
 		RendererSDK.Image(Dropdown.dropdown_path, dropdown_rect.pos1, -1, dropdown_rect.Size)
@@ -202,7 +202,7 @@ export class Dropdown extends Base {
 			)
 		}
 	}
-	public async PostRender(): Promise<void> {
+	public PostRender(): void {
 		if (!this.is_active)
 			return
 		const popup_rect = this.GetPopupRect(this.DropdownRect)
@@ -263,16 +263,16 @@ export class Dropdown extends Base {
 		this.is_active = false
 	}
 
-	public async OnPreMouseLeftDown(): Promise<boolean> {
+	public OnPreMouseLeftDown(): boolean {
 		return !(
 			this.is_active
 			&& this.GetPopupRect(this.DropdownRect).Contains(this.MousePosition)
 		)
 	}
-	public async OnMouseLeftDown(): Promise<boolean> {
+	public OnMouseLeftDown(): boolean {
 		return !this.IsHovered
 	}
-	public async OnMouseLeftUp(): Promise<boolean> {
+	public OnMouseLeftUp(): boolean {
 		const dropdown_rect = this.DropdownRect,
 			mouse_pos = this.MousePosition
 		if (this.is_active) {
@@ -281,7 +281,7 @@ export class Dropdown extends Base {
 				this.selected_id = this.GetHoveredID(popup_elements_rect)
 				this.is_active = false
 				Dropdown.active_dropdown = undefined
-				await this.TriggerOnValueChangedCBs()
+				this.TriggerOnValueChangedCBs()
 			}
 		}
 		if (dropdown_rect.Contains(mouse_pos)) {
@@ -303,9 +303,9 @@ export class Dropdown extends Base {
 		return true
 	}
 
-	protected async ApplyLocalization() {
+	protected ApplyLocalization() {
 		this.ValuesNames = this.InternalValuesNames.map(name => Localization.Localize(name))
-		await super.ApplyLocalization()
+		super.ApplyLocalization()
 	}
 	private GetScrollbarPositionsRect(popup_elements_rect: Rectangle): Rectangle {
 		return new Rectangle(

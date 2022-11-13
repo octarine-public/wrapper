@@ -167,8 +167,8 @@ export class Node extends Base {
 				entry.OnConfigLoaded()
 		})
 	}
-	public async Update(recursive = false): Promise<boolean> {
-		if (!(await super.Update(recursive)))
+	public Update(recursive = false): boolean {
+		if (!super.Update(recursive))
 			return false
 		this.Size.x =
 			this.name_size.x
@@ -181,7 +181,7 @@ export class Node extends Base {
 			this.Size.AddScalarX(this.text_offset.x)
 		if (recursive)
 			for (const entry of this.entries)
-				await entry.Update(true)
+				entry.Update(true)
 		this.SortEntries()
 		this.UpdateScrollbar()
 		this.EntriesSizeX = this.EntriesSizeX_
@@ -189,18 +189,18 @@ export class Node extends Base {
 		return true
 	}
 
-	public async Render(): Promise<void> {
+	public Render(): void {
 		let updatedEntries = false
 		for (const entry of this.entries) {
 			if (entry.QueuedUpdate) {
 				entry.QueuedUpdate = false
-				await entry.Update(entry.QueuedUpdateRecursive)
+				entry.Update(entry.QueuedUpdateRecursive)
 			}
 			updatedEntries = updatedEntries || entry.NeedsRootUpdate
 			entry.NeedsRootUpdate = false
 		}
 		if (updatedEntries) {
-			await this.Update()
+			this.Update()
 			updatedEntries = false
 		}
 		if (this.is_open) {
@@ -215,19 +215,19 @@ export class Node extends Base {
 				position.CopyTo(entry.Position)
 				if (entry.QueuedUpdate) {
 					entry.QueuedUpdate = false
-					await entry.Update(entry.QueuedUpdateRecursive)
+					entry.Update(entry.QueuedUpdateRecursive)
 				}
 				updatedEntries = updatedEntries || entry.NeedsRootUpdate
-				await entry.Render()
+				entry.Render()
 				position.AddScalarY(entry.Size.y)
 				if (--visibleEntries <= 0)
 					break
 			}
 			if (updatedEntries)
-				await this.Update()
+				this.Update()
 		}
 
-		await super.Render(this.parent instanceof Node) // only draw bars on non-root nodes
+		super.Render(this.parent instanceof Node) // only draw bars on non-root nodes
 
 		const TextPos = this.Position.Clone()
 		if (this.icon_path !== "") {
@@ -248,12 +248,12 @@ export class Node extends Base {
 		else
 			RendererSDK.Image(Node.arrow_inactive_path, arrow_pos, -1, Node.arrow_size)
 	}
-	public async PostRender(): Promise<void> {
+	public PostRender(): void {
 		if (!this.is_open)
 			return
 		for (const entry of this.entries)
 			if (entry.IsVisible)
-				await entry.PostRender()
+				entry.PostRender()
 		if (this.ScrollVisible) {
 			const rect = this.GetScrollbarRect(this.GetScrollbarPositionsRect(this.EntriesRect))
 			RendererSDK.Image(Node.scrollbar_path, rect.pos1, -1, rect.Size)
@@ -265,24 +265,24 @@ export class Node extends Base {
 			this.entries.forEach(entry => entry.OnParentNotVisible())
 	}
 
-	public async OnMouseLeftDown(): Promise<boolean> {
+	public OnMouseLeftDown(): boolean {
 		if (this.active_element !== undefined || this.IsHovered)
 			return false
 		if (!this.is_open)
 			return true
 		for (const entry of this.entries)
-			if (entry.IsVisible && !await entry.OnPreMouseLeftDown()) {
+			if (entry.IsVisible && !entry.OnPreMouseLeftDown()) {
 				this.active_element = entry
 				return false
 			}
 		for (const entry of this.entries)
-			if (entry.IsVisible && !await entry.OnMouseLeftDown()) {
+			if (entry.IsVisible && !entry.OnMouseLeftDown()) {
 				this.active_element = entry
 				return false
 			}
 		return true
 	}
-	public async OnMouseLeftUp(ignore_myself = false): Promise<boolean> {
+	public OnMouseLeftUp(ignore_myself = false): boolean {
 		if (!ignore_myself && this.IsHovered) {
 			this.is_open = !this.is_open
 			if (this.is_open)

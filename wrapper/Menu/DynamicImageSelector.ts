@@ -102,8 +102,8 @@ export class DynamicImageSelector extends Base {
 		return 6
 	}
 
-	public async Update(): Promise<boolean> {
-		if (!(await super.Update()))
+	public Update(): boolean {
+		if (!super.Update())
 			return false
 
 		this.values = [...orderBy(this.values.filter(name => this.GetPriority(name) >= 0), x => this.GetPriority(x))]
@@ -125,7 +125,7 @@ export class DynamicImageSelector extends Base {
 			else if (path.startsWith("item_bottle_"))
 				path = `panorama/images/items/${path.substring(5)}_png.vtex_c`
 			else if (!path.startsWith("npc_dota_hero_")) {
-				const abil = await AbilityData.GetAbilityByName(path)
+				const abil = AbilityData.GetAbilityByName(path)
 				if (abil !== undefined)
 					path = abil.TexturePath
 			} else
@@ -186,7 +186,7 @@ export class DynamicImageSelector extends Base {
 		return this.IsEnabled(this.values[id])
 	}
 
-	public async OnAddNewImage(name: string, default_state = true, default_show = false) {
+	public OnAddNewImage(name: string, default_state = true, default_show = false) {
 		if (this.QueuedUpdate && !this.values.includes(name)) {
 			this.QueueSleeper.Sleep(300, name)
 			this.QueueImages.set(name, [default_state, default_show])
@@ -202,12 +202,12 @@ export class DynamicImageSelector extends Base {
 			const enabled_values = this.enabled_values.get(name)
 			if (enabled_values === undefined || !Array.isArray(enabled_values)) {
 				this.enabled_values.set(name, [default_state, default_show, true, this.autoPriority++])
-				await this.Update()
+				this.Update()
 				return
 			}
 
 			enabled_values[2] = true
-			await this.Update()
+			this.Update()
 			return
 		}
 
@@ -216,15 +216,15 @@ export class DynamicImageSelector extends Base {
 		const enabled_values_ = this.enabled_values.get(name)
 		if (enabled_values_ === undefined || !Array.isArray(enabled_values_)) {
 			this.enabled_values.set(name, [default_state, default_show, true, this.autoPriority++])
-			await this.Update()
+			this.Update()
 			return
 		}
 
 		enabled_values_[2] = true
-		await this.Update()
+		this.Update()
 	}
 
-	public async OnHideImages(names?: string[]) {
+	public OnHideImages(names?: string[]) {
 
 		// boolean, /** default state */
 		// boolean, /** default static show */
@@ -237,7 +237,7 @@ export class DynamicImageSelector extends Base {
 				if (enabled_values === undefined || enabled_values[1])
 					continue
 				enabled_values[2] = false
-				await this.Update()
+				this.Update()
 			}
 			return
 		}
@@ -246,22 +246,22 @@ export class DynamicImageSelector extends Base {
 			const enabled_values = this.enabled_values.get(name)
 			if (enabled_values !== undefined && !enabled_values[1]) {
 				enabled_values[2] = false
-				await this.Update()
+				this.Update()
 			}
 		}
 
 		this.QueueImages.clear()
 	}
 
-	public async Render(): Promise<void> {
-		await super.Render()
+	public Render(): void {
+		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
 
 		for (const [value, [default_state, default_show]] of this.QueueImages) {
 			const time = this.QueueSleeper.RemainingSleepTime(value)
 			if (time > 50)
 				continue
-			await this.OnAddNewImage(value, default_state, default_show)
+			this.OnAddNewImage(value, default_state, default_show)
 			this.QueueImages.delete(value)
 			this.QueueSleeper.ResetKey(value)
 		}
@@ -310,12 +310,12 @@ export class DynamicImageSelector extends Base {
 		}
 	}
 
-	public async OnMouseLeftDown(): Promise<boolean> {
+	public OnMouseLeftDown(): boolean {
 		const rect = this.IconsRect,
 			off = rect.GetOffset(this.MousePosition)
 
 		if (InputManager.IsKeyDown(VKeys.CONTROL))
-			this.ImageValueChanged(off, async value => {
+			this.ImageValueChanged(off, value => {
 				const enabled_values = this.enabled_values.get(value)
 				if (enabled_values === undefined || !this.IsVisibleImage(value))
 					return
@@ -325,13 +325,12 @@ export class DynamicImageSelector extends Base {
 		return !rect.Contains(this.MousePosition)
 	}
 
-	public async OnMouseLeftUp(): Promise<boolean> {
+	public OnMouseLeftUp(): boolean {
 		const rect = this.IconsRect,
 			off = rect.GetOffset(this.MousePosition)
 
 		for (const [dragName, dragPriority] of this.item_drop) {
-			await this.ImageValueChanged(off, async (currName, _, currPriority) => {
-
+			this.ImageValueChanged(off, (currName, _, currPriority) => {
 				const dragNameValue = this.enabled_values.get(dragName)
 				const currNameValue = this.enabled_values.get(currName)
 
@@ -349,7 +348,7 @@ export class DynamicImageSelector extends Base {
 					this.InsertDecrease(currName, dragName, currPriority)
 				}
 
-				await this.Update()
+				this.Update()
 			})
 
 			this.item_drop.delete(dragName)
@@ -358,18 +357,18 @@ export class DynamicImageSelector extends Base {
 		if (!rect.Contains(this.MousePosition) || InputManager.IsKeyDown(VKeys.CONTROL))
 			return false
 
-		this.ImageValueChanged(off, async value => {
+		this.ImageValueChanged(off, value => {
 			const enabled_values = this.enabled_values.get(value)
 			if (enabled_values === undefined || !this.IsVisibleImage(value))
 				return
 			enabled_values[0] = !this.IsEnabled(value)
-			await this.TriggerOnValueChangedCBs()
+			this.TriggerOnValueChangedCBs()
 		})
 
 		return false
 	}
 
-	private async ImageValueChanged(off: Vector2, callback: (value: string, state: boolean, priority: number) => Promise<void>) {
+	private ImageValueChanged(off: Vector2, callback: (value: string, state: boolean, priority: number) => void) {
 		for (let i = 0; i < this.values.length; i++) {
 			const value = this.values[i]
 			const enabled_values = this.enabled_values.get(value)
@@ -381,7 +380,7 @@ export class DynamicImageSelector extends Base {
 			).Multiply(this.image_size.AddScalar(DynamicImageSelector.image_border_width * 2 + DynamicImageSelector.image_gap))
 			if (!new Rectangle(base_pos, base_pos.Add(this.image_size)).Contains(off))
 				continue
-			await callback(value, enabled_values[0], enabled_values[3])
+			callback(value, enabled_values[0], enabled_values[3])
 			break
 		}
 	}

@@ -476,7 +476,7 @@ class CRendererSDK {
 		this.Text(text, vecMouse, color, font_name, font_size, weight, italic, outlined)
 	}
 
-	public async BeforeDraw(w: number, h: number) {
+	public BeforeDraw(w: number, h: number) {
 		this.in_draw = true
 		const prev_width = this.WindowSize.x,
 			prev_height = this.WindowSize.y
@@ -484,7 +484,7 @@ class CRendererSDK {
 		this.WindowSize.x = w
 		this.WindowSize.y = h
 		if (this.WindowSize.x !== prev_width || this.WindowSize.y !== prev_height)
-			await EventsSDK.emit("WindowSizeChanged", false)
+			EventsSDK.emit("WindowSizeChanged", false)
 		if (this.clear_texture_cache) {
 			this.texture_cache.forEach(tex => {
 				if (tex !== this.empty_texture)

@@ -35,11 +35,11 @@ export class StockInfo {
 	public get BonusDelayedStockCount(): number {
 		return this.properties.get("iBonusDelayedStockCount") as number
 	}
-	public async GetAbilityData(): Promise<AbilityData> {
-		return await AbilityData.GetAbilityByName(await this.GetAbilityName()) ?? AbilityData.empty
+	public GetAbilityData(): AbilityData {
+		return AbilityData.GetAbilityByName(this.GetAbilityName()) ?? AbilityData.empty
 	}
-	public async GetAbilityName(): Promise<string> {
-		return (await AbilityData.GetAbilityNameByID(this.AbilityID))!
+	public GetAbilityName(): string {
+		return AbilityData.GetAbilityNameByID(this.AbilityID) ?? ""
 	}
 	public toJSON(): any {
 		return {

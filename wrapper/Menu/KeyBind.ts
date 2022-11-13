@@ -70,20 +70,20 @@ export class KeyBind extends Base {
 	}
 
 	public OnPressed(func: (caller: this) => any) {
-		return this.OnValue(async caller => {
+		return this.OnValue(caller => {
 			if (caller.is_pressed)
-				await func(caller)
+				func(caller)
 		})
 	}
 	public OnRelease(func: (caller: this) => any) {
-		return this.OnValue(async caller => {
+		return this.OnValue(caller => {
 			if (!caller.is_pressed)
-				await func(caller)
+				func(caller)
 		})
 	}
 
-	public async Update(_recursive = false, assign_key_str = true): Promise<boolean> {
-		if (!(await super.Update()))
+	public Update(_recursive = false, assign_key_str = true): boolean {
+		if (!super.Update())
 			return false
 		KeyBind.callbacks.forEach((keybinds, key) => {
 			if (arrayRemove(keybinds, this) && keybinds.length === 0)
@@ -113,8 +113,8 @@ export class KeyBind extends Base {
 			+ this.keybind_size.x
 		return true
 	}
-	public async Render(): Promise<void> {
-		await super.Render()
+	public Render(): void {
+		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
 		const keybind_rect = this.KeybindRect
 		if (KeyBind.changing_now === this)
@@ -130,28 +130,28 @@ export class KeyBind extends Base {
 		)
 	}
 
-	public async OnMouseLeftDown(): Promise<boolean> {
+	public OnMouseLeftDown(): boolean {
 		return !this.IsHovered
 	}
-	public async OnMouseLeftUp(): Promise<boolean> {
+	public OnMouseLeftUp(): boolean {
 		if (this.KeybindRect.Contains(this.MousePosition) && KeyBind.changing_now !== this) {
 			const old = KeyBind.changing_now
 			KeyBind.changing_now = this
 			this.assigned_key_str = "..."
-			await this.Update(false, false)
+			this.Update(false, false)
 			if (old !== undefined)
-				await old.Update()
+				old.Update()
 		}
 		return false
 	}
 }
 
 const IsPressing = new Map<VKeys, boolean>()
-async function KeyHandler(key: VKeys, pressed: boolean): Promise<boolean> {
+function KeyHandler(key: VKeys, pressed: boolean): boolean {
 	const changing_now = KeyBind.changing_now
 	if (changing_now !== undefined) {
 		changing_now.assigned_key = key !== 0x1B ? key : -1 // VK_ESCAPE === 0x1B
-		await changing_now.Update()
+		changing_now.Update()
 		changing_now.is_pressed = false
 		Base.SaveConfigASAP = true
 		KeyBind.changing_now = undefined
@@ -177,7 +177,7 @@ async function KeyHandler(key: VKeys, pressed: boolean): Promise<boolean> {
 	return true
 }
 
-async function MouseKeyHandler(key: VMouseKeys, pressed: boolean): Promise<boolean> {
+function MouseKeyHandler(key: VMouseKeys, pressed: boolean): boolean {
 	switch (key) {
 		case VMouseKeys.MK_XBUTTON1:
 			return KeyHandler(VKeys.XBUTTON1, pressed)

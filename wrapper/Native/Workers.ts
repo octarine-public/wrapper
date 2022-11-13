@@ -1,7 +1,7 @@
 import { Events } from "../Managers/Events"
 import { arrayRemove, orderBy } from "../Utils/ArrayExtensions"
 
-type RPCEndPoint = (data: WorkerIPCType) => Promise<WorkerIPCType> | WorkerIPCType
+type RPCEndPoint = (data: WorkerIPCType) => WorkerIPCType
 type PromiseResolver = [((data: WorkerIPCType) => void), (data: any) => void]
 type WorkerType = [
 	bigint,
@@ -14,16 +14,21 @@ export const Workers = new (class CWorkers {
 	private readonly workers: WorkerType[] = []
 	private readonly endpoints = new Map<string, RPCEndPoint>()
 	private queued_tasks: [string, WorkerIPCType, PromiseResolver][] = []
+	private workers_promises: Promise<void>[] = []
 	constructor() {
 		if (IS_MAIN_WORKER) {
 			// 2 general purpose workers
-			for (let i = 0; i < 2; i++)
-				this.AddWorkerWithOpts({
+			for (let i = 0; i < 2; i++) {
+				const prom = this.AddWorkerWithOpts({
 					forward_events: false,
 					forward_server_messages: false,
+				}).then(() => {
+					arrayRemove(this.workers_promises, prom)
 				})
+				this.workers_promises.push(prom)
+			}
 		}
-		Events.on("IPCMessage", async (source_worker_uid, name, data) => {
+		Events.on("IPCMessage", (source_worker_uid, name, data) => {
 			if (name !== "RPCCall" || !Array.isArray(data))
 				return
 			const [endpoint_name, real_data] = data
@@ -40,7 +45,7 @@ export const Workers = new (class CWorkers {
 				return
 			}
 			try {
-				const res = await endpoint(real_data)
+				const res = endpoint(real_data)
 				if (name === "RPCCall")
 					SendIPCMessage(
 						source_worker_uid,
@@ -93,23 +98,22 @@ export const Workers = new (class CWorkers {
 			return Promise.reject(["Local RPC Endpoint name not found", name])
 		return new Promise<WorkerIPCType>(async (resolve, reject) => {
 			if (exclusive_worker_options !== undefined) {
-				this.AddWorkerWithOpts(exclusive_worker_options, true).then(new_worker => {
-					new_worker[2].push([
-						val => {
-							DespawnWorker(new_worker[0])
-							resolve(val)
-						},
-						err => {
-							DespawnWorker(new_worker[0])
-							reject(err)
-						},
-					])
-					SendIPCMessage(
-						new_worker[0],
-						"RPCCall",
-						[name, data],
-					)
-				})
+				const new_worker = await this.AddWorkerWithOpts(exclusive_worker_options, true)
+				new_worker[2].push([
+					val => {
+						DespawnWorker(new_worker[0])
+						resolve(val)
+					},
+					err => {
+						DespawnWorker(new_worker[0])
+						reject(err)
+					},
+				])
+				SendIPCMessage(
+					new_worker[0],
+					"RPCCall",
+					[name, data],
+				)
 				return
 			}
 			const worker = orderBy(this.workers, ar => ar[2].length) // pick the least used worker
@@ -128,7 +132,7 @@ export const Workers = new (class CWorkers {
 				return
 			}
 			try {
-				resolve(await endpoint(data))
+				resolve(endpoint(data))
 			} catch (e: any) {
 				const err = e instanceof Error ? e : new Error(e)
 				reject([err.message, err.stack ?? ""])
@@ -171,8 +175,12 @@ export const Workers = new (class CWorkers {
 				ar[3] = false
 				ar[2].forEach(([, rej]) => rej("RPC Worker died"))
 				arrayRemove(this.workers, ar)
-				if (!exclusive)
-					this.AddWorkerWithOpts(fixed_opts)
+				if (!exclusive) {
+					const prom = this.AddWorkerWithOpts(fixed_opts).then(() => {
+						arrayRemove(this.workers_promises, prom)
+					})
+					this.workers_promises.push(prom)
+				}
 			}
 			Events.on("WorkerDespawned", despawn_cb)
 		})

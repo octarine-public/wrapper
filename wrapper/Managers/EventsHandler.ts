@@ -592,7 +592,7 @@ message CUserMsg_CustomGameEvent {
 }
 `)
 
-async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
+function HandleParticleMsg(msg: RecursiveProtobuf): void {
 	const index = msg.get("index") as number
 	const par = NetworkedParticle.Instances.get(index)
 	const msg_type = msg.get("type") as PARTICLE_MESSAGE
@@ -603,7 +603,7 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			const submsg = msg.get("update_entity_position") as RecursiveProtobuf
 			const position = CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf),
 				entID = submsg.get("entity_handle") as number
-			const ent = await GetPredictionTarget(entID)
+			const ent = GetPredictionTarget(entID)
 			if (ent !== undefined) {
 				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				ent.LastPredictedPositionUpdate = GameState.RawGameTime
@@ -617,7 +617,7 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			const submsg = msg.get("update_particle_ent") as RecursiveProtobuf
 			const entID = submsg.get("entity_handle") as number,
 				position = CMsgVectorToVector3(submsg.get("fallback_position") as RecursiveProtobuf)
-			const ent = await GetPredictionTarget(entID)
+			const ent = GetPredictionTarget(entID)
 			if (ent !== undefined) {
 				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				ent.LastPredictedPositionUpdate = GameState.RawGameTime
@@ -636,7 +636,7 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			entID = submsg.get("entity_handle") as number
 		const path = Manifest.GetPathByHash(particleSystemHandle ?? 0n)
 		if (path !== undefined)
-			await EventsSDK.emit(
+			EventsSDK.emit(
 				"ParticleCreated",
 				false,
 				new NetworkedParticle(
@@ -644,7 +644,7 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 					path,
 					particleSystemHandle,
 					submsg.get("attach_type") as number,
-					await GetPredictionTarget(entID),
+					GetPredictionTarget(entID),
 				),
 			)
 		else
@@ -655,7 +655,7 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 	}
 	if (par === undefined) {
 		if (changed_ent !== undefined)
-			await EventsSDK.emit(
+			EventsSDK.emit(
 				"ParticleUnitPositionUpdated",
 				false,
 				changed_ent,
@@ -669,13 +669,13 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			const destroy_immediately = submsg.get("destroy_immediately") as boolean
 			if (!destroy_immediately && par.EndTime !== -1) {
 				par.Released = true
-				await EventsSDK.emit(
+				EventsSDK.emit(
 					"ParticleReleased",
 					false,
 					par,
 				)
 			} else
-				await par.Destroy()
+				par.Destroy()
 			return
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY_INVOLVING: {
@@ -684,25 +684,25 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			// TODO: entity_handle?
 			if (!destroy_immediately && par.EndTime !== -1) {
 				par.Released = true
-				await EventsSDK.emit(
+				EventsSDK.emit(
 					"ParticleReleased",
 					false,
 					par,
 				)
 			} else
-				await par.Destroy()
+				par.Destroy()
 			return
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_RELEASE: {
 			if (par.EndTime !== -1) {
 				par.Released = true
-				await EventsSDK.emit(
+				EventsSDK.emit(
 					"ParticleReleased",
 					false,
 					par,
 				)
 			} else
-				await par.Destroy()
+				par.Destroy()
 			return
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE: {
@@ -753,7 +753,7 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			const entID = submsg.get("entity_handle") as number,
 				cp = submsg.get("control_point") as number,
 				position = CMsgVectorToVector3(submsg.get("fallback_position") as RecursiveProtobuf)
-			const ent = await GetPredictionTarget(entID)
+			const ent = GetPredictionTarget(entID)
 			if (ent !== undefined)
 				par.ControlPointsEnt.set(
 					cp,
@@ -891,13 +891,13 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 			)
 			return
 	}
-	await EventsSDK.emit(
+	EventsSDK.emit(
 		"ParticleUpdated",
 		false,
 		par,
 	)
 	if (changed_ent_pos)
-		await EventsSDK.emit(
+		EventsSDK.emit(
 			"ParticleUnitPositionUpdated",
 			false,
 			changed_ent,
@@ -905,12 +905,11 @@ async function HandleParticleMsg(msg: RecursiveProtobuf): Promise<void> {
 		)
 }
 
-Events.on("ServerMessage", async (msg_id, buf_) => {
-	const stream = new ViewBinaryStream(new DataView(buf_))
+Events.on("ServerMessage", (msg_id, buf_) => {
 	switch (msg_id) {
 		case 4: {
-			const msg = ParseProtobufNamed(stream, "CNETMsg_Tick")
-			await EventsSDK.emit(
+			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CNETMsg_Tick")
+			EventsSDK.emit(
 				"ServerTick", false,
 				msg.get("tick") as number,
 				msg.get("host_frametime") as number,
@@ -923,24 +922,25 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			break
 		}
 		case 40:
-			await EventsSDK.emit("ServerInfo", false, ParseProtobufNamed(stream, "CSVCMsg_ServerInfo"))
+			EventsSDK.emit("ServerInfo", false, ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CSVCMsg_ServerInfo"))
 			break
 		case 45: { // we have custom parsing for CSVCMsg_CreateStringTable & CSVCMsg_UpdateStringTable
+			const stream = new ViewBinaryStream(new DataView(buf_))
 			const table_name = stream.ReadVarString(),
 				update = new Map<number, [string, ArrayBuffer]>()
 			while (!stream.Empty())
 				update.set(stream.ReadVarUintAsNumber(), [stream.ReadVarString(), stream.ReadSlice(stream.ReadVarUintAsNumber()).buffer])
-			await EventsSDK.emit("UpdateStringTable", false, table_name, update)
+			EventsSDK.emit("UpdateStringTable", false, table_name, update)
 			break
 		}
 		case 51:
-			await EventsSDK.emit("RemoveAllStringTables", false)
+			EventsSDK.emit("RemoveAllStringTables", false)
 			break
 		case 145:
-			await HandleParticleMsg(ParseProtobufNamed(stream, "CUserMsg_ParticleManager"))
+			HandleParticleMsg(ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CUserMsg_ParticleManager"))
 			break
 		case 148: {
-			const msg = ParseProtobufNamed(stream, "CUserMsg_CustomGameEvent")
+			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CUserMsg_CustomGameEvent")
 			const event_name = (msg.get("event_name") as Nullable<string>) ?? ""
 			const data = msg.get("data") as Nullable<ReadableBinaryStream>
 			let parsed_data: Map<string, VBKV.BinaryKV>
@@ -952,11 +952,11 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 				}
 			else
 				parsed_data = new Map()
-			await EventsSDK.emit("CustomGameEvent", false, event_name, parsed_data)
+			EventsSDK.emit("CustomGameEvent", false, event_name, parsed_data)
 			break
 		}
 		case 208: {
-			const msg = ParseProtobufNamed(stream, "CMsgSosStartSoundEvent")
+			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CMsgSosStartSoundEvent")
 			const hash = msg.get("soundevent_hash") as number
 			const sound_name = Manifest.LookupSoundNameByHash(hash)
 			if (sound_name === undefined) {
@@ -967,7 +967,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 				seed = (msg.get("seed") as number) ?? 0,
 				start_time = (msg.get("start_time") as number) ?? -1,
 				packed_params = msg.get("packed_params") as Nullable<ReadableBinaryStream>
-			const ent = await GetPredictionTarget(handle),
+			const ent = GetPredictionTarget(handle),
 				position = new Vector3()
 			if (packed_params !== undefined && packed_params.Size >= 19) {
 				packed_params.RelativeSeek(7)
@@ -975,7 +975,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 				position.y = packed_params.ReadFloat32()
 				position.z = packed_params.ReadFloat32()
 			}
-			await EventsSDK.emit(
+			EventsSDK.emit(
 				"StartSound", false,
 				sound_name,
 				ent,
@@ -986,16 +986,16 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			break
 		}
 		case 488: {
-			const msg = ParseProtobufNamed(stream, "CDOTAUserMsg_UnitEvent")
+			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_UnitEvent")
 			const handle = msg.get("entity_index") as number
-			const ent = await GetPredictionTarget(handle)
+			const ent = GetPredictionTarget(handle)
 			if (ent instanceof Entity && !(ent instanceof Unit))
 				break
 			switch (msg.get("msg_type") as EDotaEntityMessages) {
 				case EDotaEntityMessages.DOTA_UNIT_SPEECH: {
 					const submsg = msg.get("speech") as RecursiveProtobuf,
 						predelay = submsg.get("predelay") as RecursiveProtobuf
-					await EventsSDK.emit(
+					EventsSDK.emit(
 						"UnitSpeech", false,
 						ent,
 						submsg.get("concept") as number,
@@ -1011,7 +1011,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 				}
 				case EDotaEntityMessages.DOTA_UNIT_SPEECH_MUTE: {
 					const submsg = msg.get("speech_mute") as RecursiveProtobuf
-					await EventsSDK.emit(
+					EventsSDK.emit(
 						"UnitSpeechMute", false,
 						ent,
 						submsg?.get("delay") as number ?? 0,
@@ -1020,7 +1020,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 				}
 				case EDotaEntityMessages.DOTA_UNIT_ADD_GESTURE: {
 					const submsg = msg.get("add_gesture") as RecursiveProtobuf
-					await EventsSDK.emit(
+					EventsSDK.emit(
 						"UnitAddGesture", false,
 						ent,
 						submsg.get("activity") as number,
@@ -1034,7 +1034,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 				}
 				case EDotaEntityMessages.DOTA_UNIT_REMOVE_GESTURE: {
 					const submsg = msg.get("remove_gesture") as RecursiveProtobuf
-					await EventsSDK.emit(
+					EventsSDK.emit(
 						"UnitRemoveGesture", false,
 						ent,
 						submsg.get("activity") as number,
@@ -1043,7 +1043,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 				}
 				case EDotaEntityMessages.DOTA_UNIT_FADE_GESTURE: {
 					const submsg = msg.get("fade_gesture") as RecursiveProtobuf
-					await EventsSDK.emit(
+					EventsSDK.emit(
 						"UnitFadeGesture", false,
 						ent,
 						submsg.get("activity") as number,
@@ -1054,8 +1054,8 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			break
 		}
 		case 466: {
-			const msg = ParseProtobufNamed(stream, "CDOTAUserMsg_ChatEvent")
-			await EventsSDK.emit(
+			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_ChatEvent")
+			EventsSDK.emit(
 				"ChatEvent", false,
 				msg.get("type") as DOTA_CHAT_MESSAGE,
 				msg.get("value") as number,
@@ -1071,11 +1071,11 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			break
 		}
 		case 520: {
-			const msg = ParseProtobufNamed(stream, "CDOTAUserMsg_TE_DotaBloodImpact")
+			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_TE_DotaBloodImpact")
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (ent === undefined)
 				break
-			await EventsSDK.emit(
+			EventsSDK.emit(
 				"BloodImpact", false,
 				ent,
 				msg.get("scale") as number,
@@ -1085,11 +1085,11 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			break
 		}
 		case 521: {
-			const msg = ParseProtobufNamed(stream, "CDOTAUserMsg_TE_UnitAnimation")
+			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_TE_UnitAnimation")
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (!(ent instanceof Unit))
 				break
-			await EventsSDK.emit(
+			EventsSDK.emit(
 				"UnitAnimation", false,
 				ent,
 				msg.get("sequenceVariant") as number,
@@ -1102,11 +1102,11 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 			break
 		}
 		case 522: {
-			const msg = ParseProtobufNamed(stream, "CDOTAUserMsg_TE_UnitAnimationEnd")
+			const msg = ParseProtobufNamed(new ViewBinaryStream(new DataView(buf_)), "CDOTAUserMsg_TE_UnitAnimationEnd")
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (!(ent instanceof Unit))
 				break
-			await EventsSDK.emit("UnitAnimationEnd", false, ent, msg.get("snap") as boolean)
+			EventsSDK.emit("UnitAnimationEnd", false, ent, msg.get("snap") as boolean)
 			break
 		}
 		default:
@@ -1132,23 +1132,23 @@ message CMsgDOTAMatchmakingStatsResponse {
 	repeated .CMsgMatchmakingMatchGroupInfo match_groups = 8;
 }
 `)
-Events.on("MatchmakingStatsUpdated", async data => {
-	await EventsSDK.emit(
+Events.on("MatchmakingStatsUpdated", data => {
+	EventsSDK.emit(
 		"MatchmakingStatsUpdated",
 		false,
 		ParseProtobufNamed(new ViewBinaryStream(new DataView(data)), "CMsgDOTAMatchmakingStatsResponse"),
 	)
 })
 
-Events.on("GameEvent", async (name, obj) => EventsSDK.emit("GameEvent", false, name, obj))
+Events.on("GameEvent", (name, obj) => EventsSDK.emit("GameEvent", false, name, obj))
 
 let input_capture_depth = 0
-Events.on("InputCaptured", async is_captured => {
+Events.on("InputCaptured", is_captured => {
 	if (is_captured)
 		input_capture_depth++
 	else
 		input_capture_depth = Math.max(input_capture_depth - 1, 0)
-	await EventsSDK.emit("InputCaptured", false, input_capture_depth !== 0)
+	EventsSDK.emit("InputCaptured", false, input_capture_depth !== 0)
 })
 
 EventsSDK.on("InputCaptured", is_captured => GameState.IsInputCaptured = is_captured)
@@ -1257,7 +1257,7 @@ function TryLoadWorld(world_kv: RecursiveMap): void {
 		WASM.FinishWorld(world_bvh)
 	}, console.error)
 }
-async function TryLoadMapFiles(): Promise<void> {
+function TryLoadMapFiles(): void {
 	const map_name = GameState.MapName
 	{
 		const buf = fopen(`maps/${map_name}.vhcg`)
@@ -1301,11 +1301,11 @@ async function TryLoadMapFiles(): Promise<void> {
 			})
 		if (IS_MAIN_WORKER)
 			TryLoadWorld(world_kv)
-		await EventsSDK.emit("MapDataLoaded", false)
+		EventsSDK.emit("MapDataLoaded", false)
 	}
 }
 
-EventsSDK.on("ServerInfo", async info => {
+EventsSDK.on("ServerInfo", info => {
 	let map_name = (info.get("map_name") as string) ?? "<empty>"
 	if (map_name === "start")
 		map_name = "dota"
@@ -1313,42 +1313,39 @@ EventsSDK.on("ServerInfo", async info => {
 	const addon_name = (info.get("addon_name") as string) ?? ""
 	GameState.AddonName = addon_name
 	LoadManifest()
-	await TryLoadMapFiles()
+	TryLoadMapFiles()
 
-	await ReloadGlobalUnitStorage()
-	await ReloadGlobalAbilityStorage()
-	UnitData.global_storage.then(unit_data_global_storage => {
-		AbilityData.global_storage.then(ability_data_global_storage => {
-			// TODO: load other languages as well
-			for (const language of ["russian", "english"]) {
-				// automatically localize units, abilities and items in menu
-				const namesMapping = new Map<string, string>()
-				const lang_tokens = ((createMapFromMergedIterators<string, RecursiveMapValue>(
-					parseKVFile(`resource/localization/abilities_${language}.txt`).entries(),
-					parseKVFile(`resource/localization/dota_${language}.txt`).entries(),
-					parseKVFile(`resource/addon_${language}.txt`).entries(),
-					parseKVFile(`panorama/localization/addon_${language}.txt`).entries(),
-				).get("lang") as RecursiveMap)?.get("Tokens") ?? new Map()) as Map<string, string>
-				unit_data_global_storage.forEach((data, name) => {
-					const lang_token = lang_tokens.get(name)
-					namesMapping.set(name, lang_token ?? data.WorkshopName)
-				})
-				ability_data_global_storage.forEach((_, name) => {
-					const lang_token = (
-						lang_tokens.get(`DOTA_Tooltip_ability_${name}`)
-						?? lang_tokens.get(`DOTA_Tooltip_Ability_${name}`)
-					)
-					if (lang_token !== undefined)
-						namesMapping.set(name, lang_token)
-				})
-				for (const [k, v] of lang_tokens)
-					if (k.startsWith("dota_matchgroup_") || k.startsWith("DOTA_TopBar_LaneSelection"))
-						namesMapping.set(k, v)
-				Localization.AddLocalizationUnit(language, namesMapping)
-			}
-			EventsSDK.emit("UnitAbilityDataUpdated", false)
-		})
-	})
+	ReloadGlobalUnitStorage()
+	ReloadGlobalAbilityStorage()
+
+	// TODO: load other languages as well
+	for (const language of ["russian", "english"]) {
+		// automatically localize units, abilities and items in menu
+		const namesMapping = new Map<string, string>()
+		const lang_tokens = ((createMapFromMergedIterators<string, RecursiveMapValue>(
+			parseKVFile(`resource/localization/abilities_${language}.txt`).entries(),
+			parseKVFile(`resource/localization/dota_${language}.txt`).entries(),
+			parseKVFile(`resource/addon_${language}.txt`).entries(),
+			parseKVFile(`panorama/localization/addon_${language}.txt`).entries(),
+		).get("lang") as RecursiveMap)?.get("Tokens") ?? new Map()) as Map<string, string>
+		for (const [name, data] of UnitData.global_storage) {
+			const lang_token = lang_tokens.get(name)
+			namesMapping.set(name, lang_token ?? data.WorkshopName)
+		}
+		for (const name of AbilityData.global_storage.keys()) {
+			const lang_token = (
+				lang_tokens.get(`DOTA_Tooltip_ability_${name}`)
+				?? lang_tokens.get(`DOTA_Tooltip_Ability_${name}`)
+			)
+			if (lang_token !== undefined)
+				namesMapping.set(name, lang_token)
+		}
+		for (const [k, v] of lang_tokens)
+			if (k.startsWith("dota_matchgroup_") || k.startsWith("DOTA_TopBar_LaneSelection"))
+				namesMapping.set(k, v)
+		Localization.AddLocalizationUnit(language, namesMapping)
+	}
+	EventsSDK.emit("UnitAbilityDataUpdated", false)
 })
 
 function GetLocalTeam(): Team {
@@ -1383,9 +1380,9 @@ EventsSDK.on("MidDataUpdate", () => {
 	EventsSDK.emit("LocalTeamChanged", false)
 })
 
-Events.on("Draw", async (visual_data, w, h, x, y) => {
+Events.on("Draw", (visual_data, w, h, x, y) => {
 	InputManager.UpdateCursorOnScreen(x, y)
-	await RendererSDK.BeforeDraw(w, h)
+	RendererSDK.BeforeDraw(w, h)
 	const stream = new ViewBinaryStream(new DataView(visual_data))
 	while (!stream.Empty()) {
 		const entity_id = stream.ReadUint32()
@@ -1402,7 +1399,7 @@ Events.on("Draw", async (visual_data, w, h, x, y) => {
 		ent.VisualAngles.z = stream.ReadFloat32()
 	}
 	GameState.IsInDraw = true
-	await EventsSDK.emit("PreDraw")
-	await EventsSDK.emit("Draw")
+	EventsSDK.emit("PreDraw")
+	EventsSDK.emit("Draw")
 	GameState.IsInDraw = false
 })
