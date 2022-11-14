@@ -163,7 +163,7 @@ export const Workers = new (class CWorkers {
 				this.queued_tasks.forEach(([name, data, promise]) => this.CallRPCEndPoint(
 					name,
 					data,
-				).then(promise[0]).catch(promise[1]))
+				).then(promise[0], promise[1]))
 				this.queued_tasks = []
 				resolve(ar)
 			}

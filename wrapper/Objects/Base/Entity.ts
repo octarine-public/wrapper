@@ -344,6 +344,8 @@ export class Entity {
 		max.x = initial_radius
 		max.y = initial_radius
 		max.z = initial_radius
+		if (this.ModelName === "<null>")
+			return
 		let promise = ModelDataCache.get(this.ModelName)
 		if (promise === undefined) {
 			promise = ComputeAttachmentsAndBoundsAsync(this.ModelName)
