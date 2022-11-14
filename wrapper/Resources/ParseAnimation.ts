@@ -147,12 +147,11 @@ export class CAnimation {
 	private readonly FrameBlockArray: [number, number, number[]][] = []
 	private readonly DataChannelArray: Nullable<[string[], number[], string]>[]
 	private readonly BoneCount: number
-	private readonly SegmentArray: Nullable<[number, Uint8Array]>[]
 	constructor(
 		animationDesc: RecursiveMap,
 		DecodeKey: RecursiveMap,
 		private readonly DecoderArray: AnimDecoderType[],
-		SegmentArray: RecursiveMap[],
+		private readonly SegmentArray: Nullable<[number, Uint8Array]>[],
 		hseq: Map<string, CAnimationActivity[]>,
 	) {
 		this.Name = GetMapStringProperty(animationDesc, "m_name")
@@ -191,19 +190,6 @@ export class CAnimation {
 			elementIndexArray.forEach((elementIndex, i) => elementBones[elementIndex] = i)
 			return [boneNames, elementBones, channelAttribute]
 		})
-		this.SegmentArray = SegmentArray.map(segment => {
-			let container = segment.get("m_container")
-			if (container === undefined)
-				return undefined
-			if (container instanceof Map || Array.isArray(container))
-				container = new Uint8Array(MapToNumberArray(container))
-			if (!(container instanceof Uint8Array))
-				return undefined
-			return [
-				GetMapNumberProperty(segment, "m_nLocalChannel"),
-				container,
-			]
-		})
 	}
 
 	public ReadFrame(frameNum: number): Nullable<CAnimationFrame> {
@@ -216,7 +202,7 @@ export class CAnimation {
 			segmentIndexArray.forEach(segmentIndex => this.ReadSegment(
 				Math.max(Math.min(frameNum - startFrame, this.FrameCount - 1), 0),
 				frame,
-				this.GetSegment(segmentIndex)!,
+				segmentIndex,
 			))
 		})
 		return frame
@@ -298,6 +284,8 @@ export class CAnimation {
 	}
 	private GetAnimDecoderTypeSize(type: AnimDecoderType): number {
 		switch (type) {
+			case AnimDecoderType.CCompressedFullQuaternion:
+				return 4 * 4
 			case AnimDecoderType.CCompressedFullVector3:
 				return 4 * 3
 			case AnimDecoderType.CCompressedStaticVector3:
@@ -308,12 +296,8 @@ export class CAnimation {
 				return 0
 		}
 	}
-	private ReadSegment(
-		frameNum: number,
-		frame: CAnimationFrame,
-		segment: [Uint8Array, string[], number[], string],
-	): void {
-		const [data, boneNames, elementBones, channelAttribute] = segment
+	private ReadSegment(frameNum: number, frame: CAnimationFrame, segmentIndex: number): void {
+		const [data, boneNames, elementBones, channelAttribute] = this.GetSegment(segmentIndex)!
 		const stream = new ViewBinaryStream(new DataView(data.buffer, data.byteOffset, data.byteLength))
 		const decoder = this.DecoderArray[stream.ReadUint16()]
 		stream.RelativeSeek(2) // cardinality?
@@ -356,12 +340,23 @@ export class CAnimation {
 					)
 					break
 				case AnimDecoderType.CCompressedAnimQuaternion:
-				case AnimDecoderType.CCompressedFullQuaternion:
 				case AnimDecoderType.CCompressedStaticQuaternion:
 					frame.SetAttribute(
 						bone,
 						channelAttribute,
 						this.ReadVector4(stream),
+					)
+					break
+				case AnimDecoderType.CCompressedFullQuaternion:
+					frame.SetAttribute(
+						bone,
+						channelAttribute,
+						new Vector4(
+							stream.ReadFloat32(),
+							stream.ReadFloat32(),
+							stream.ReadFloat32(),
+							stream.ReadFloat32(),
+						),
 					)
 					break
 				default:
@@ -445,11 +440,31 @@ export function ParseAnimationsFromData(
 		: []
 	const animArrayMap = animationData.get("m_animArray")
 	const segmentArrayMap = animationData.get("m_segmentArray")
-	const segmentArray: RecursiveMap[] = []
+	const segmentArray: Nullable<[number, Uint8Array]>[] = []
 	if (segmentArrayMap instanceof Map || Array.isArray(segmentArrayMap))
 		segmentArrayMap.forEach((segment: RecursiveMapValue) => {
-			if (segment instanceof Map)
-				segmentArray.push(segment)
+			if (!(segment instanceof Map)) {
+				segmentArray.push(undefined)
+				return
+			}
+
+			let container = segment.get("m_container")
+			if (container === undefined) {
+				segmentArray.push(undefined)
+				return
+			}
+
+			if (container instanceof Map || Array.isArray(container))
+				container = new Uint8Array(MapToNumberArray(container))
+			if (!(container instanceof Uint8Array)) {
+				segmentArray.push(undefined)
+				return
+			}
+
+			segmentArray.push([
+				GetMapNumberProperty(segment, "m_nLocalChannel"),
+				container,
+			])
 		})
 	const hseq = new Map<string, CAnimationActivity[]>()
 	const m_localS1SeqDescArray = hseq_data.get("m_localS1SeqDescArray")
