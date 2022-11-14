@@ -268,24 +268,20 @@ message CSVCMsg_FlattenedSerializer {
 	repeated .ProtoFlattenedSerializerField_t fields = 3;
 }
 `)
-const NO_ENTITY_NATIVE_PROPS_ = (globalThis as any).NO_ENTITY_NATIVE_PROPS ?? false
 function ParseEntityPacket(stream: ReadableBinaryStream): void {
 	EventsSDK.emit("PreDataUpdate", false)
 	LatestTickDelta = 0
 	const native_changes: [number, number, number][] = []
-	if (!NO_ENTITY_NATIVE_PROPS_)
-		while (!stream.Empty()) {
-			const ent_id = stream.ReadUint16()
-			if (ent_id === 0)
-				break
-			stream.RelativeSeek(6 * 4) // legacy
-			native_changes.push([
-				ent_id,
-				stream.ReadInt32(), // m_iHealthBarOffset
-				stream.ReadUint32(), // m_iMoveCapabilities
-			])
-			stream.RelativeSeek(2 * 4) // legacy
-		}
+	while (!stream.Empty()) {
+		const ent_id = stream.ReadUint16()
+		if (ent_id === 0)
+			break
+		native_changes.push([
+			ent_id,
+			stream.ReadInt32(), // m_iHealthBarOffset
+			stream.ReadUint32(), // m_iMoveCapabilities
+		])
+	}
 	const created_entities: Entity[] = []
 	while (!stream.Empty()) {
 		const ent_id = stream.ReadUint16()
@@ -310,12 +306,11 @@ function ParseEntityPacket(stream: ReadableBinaryStream): void {
 				break
 		}
 	}
-	if (!NO_ENTITY_NATIVE_PROPS_)
-		for (const [ent_id, m_iHealthBarOffset, m_iMoveCapabilities] of native_changes) {
-			const ent = EntityManager.EntityByIndex(ent_id)
-			if (ent !== undefined)
-				ent.ForwardNativeProperties(m_iHealthBarOffset, m_iMoveCapabilities)
-		}
+	for (const [ent_id, m_iHealthBarOffset, m_iMoveCapabilities] of native_changes) {
+		const ent = EntityManager.EntityByIndex(ent_id)
+		if (ent !== undefined)
+			ent.ForwardNativeProperties(m_iHealthBarOffset, m_iMoveCapabilities)
+	}
 	EventsSDK.emit("MidDataUpdate", false)
 	for (const ent of created_entities)
 		EventsSDK.emit("EntityCreated", false, ent)
