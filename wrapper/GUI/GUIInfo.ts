@@ -21,15 +21,27 @@ import { GetHeightScale, GetWidthScale, ScaleHeight, ScaleWidth } from "./Helper
 const latest_screen_size = new Vector2()
 export const GUIInfo = new (class CGUIInfo {
 	public debug_draw = false
-	public Minimap = undefined as any as CMinimap
-	public Shop = undefined as any as CShop
-	public OpenShopMini = undefined as any as COpenShop
-	public OpenShopLarge = undefined as any as COpenShop
-	public TopBar = undefined as any as CTopBar
-	public PreGame = undefined as any as CPreGame
-	public Scoreboard = undefined as any as CScoreboard
+	public TopBar: CTopBar
+	public Minimap: CMinimap
+	public Shop: CShop
+	public OpenShopMini: COpenShop
+	public OpenShopLarge: COpenShop
+	public PreGame: CPreGame
+	public Scoreboard: CScoreboard
 	public HUDFlipped = false
 	private LowerHUD_ = new Map<boolean, Map<number, Map<number, CLowerHUD>>>()
+
+	constructor() {
+		const fake_screen_size = new Vector2(1, 1),
+			fake_hud_flipped = false
+		this.TopBar = new CTopBar(fake_screen_size)
+		this.Minimap = new CMinimap(fake_screen_size, fake_hud_flipped)
+		this.Shop = new CShop(fake_screen_size, fake_hud_flipped)
+		this.OpenShopMini = new COpenShop(false, fake_screen_size, fake_hud_flipped)
+		this.OpenShopLarge = new COpenShop(true, fake_screen_size, fake_hud_flipped)
+		this.PreGame = new CPreGame(fake_screen_size)
+		this.Scoreboard = new CScoreboard(fake_screen_size)
+	}
 
 	public OnDraw(): void {
 		const screen_size = RendererSDK.WindowSize
@@ -64,8 +76,7 @@ export const GUIInfo = new (class CGUIInfo {
 			abil !== undefined
 			&& abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES
 			&& abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_HIDDEN
-			&& abil.Name !== "plus_high_five"
-			&& abil.Name !== "plus_guild_banner"
+			&& !abil.Name.startsWith("plus_")
 			&& !abil.Name.startsWith("seasonal_")
 			&& !abil.IsHidden
 		)) as Ability[]

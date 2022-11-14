@@ -88,7 +88,7 @@ class CRendererSDK {
 	 */
 	public readonly DefaultShapeSize: Vector2 = new Vector2(32, 32)
 
-	public readonly WindowSize = new Vector2()
+	public readonly WindowSize = new Vector2(1, 1)
 
 	private commandCache = new Uint8Array()
 	private commandStream = new ViewBinaryStream(new DataView(
