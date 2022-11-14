@@ -425,7 +425,7 @@ export class Entity {
 	/**
 	 * @deprecated
 	 */
-	public ForwardNativeProperties(m_iMoveCapabilities: number) {
+	public ForwardNativeProperties(m_iHealthBarOffset: number, m_iMoveCapabilities: number) {
 		// To be implemented in child classes
 	}
 

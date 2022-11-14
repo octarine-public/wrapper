@@ -119,6 +119,7 @@ export class Unit extends Entity {
 	public UnitStateNetworked = 0n
 	@NetworkedBasicField("m_nHealthBarOffsetOverride")
 	public HealthBarOffsetOverride = 0
+	public HealthBarOffset_: Nullable<number>
 	public readonly Spells_ = new Array<number>(MAX_SPELLS).fill(0)
 	public readonly Spells = new Array<Nullable<Ability>>(MAX_SPELLS).fill(undefined)
 	public readonly TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
@@ -291,7 +292,9 @@ export class Unit extends Entity {
 	public get HealthBarOffset(): number {
 		let offset = this.HealthBarOffsetOverride
 		if (offset === -1)
-			offset = this.MyWearables.find(wearable => wearable.HealthBarOffset !== undefined)?.HealthBarOffset ?? this.UnitData.HealthBarOffset
+			offset = this.HealthBarOffset_
+				?? this.MyWearables.find(wearable => wearable.HealthBarOffset !== undefined)?.HealthBarOffset
+				?? this.UnitData.HealthBarOffset
 		return this.DeltaZ + offset
 	}
 	public get WorkshopName(): string {
@@ -496,7 +499,8 @@ export class Unit extends Entity {
 	/**
 	 * @deprecated
 	 */
-	public ForwardNativeProperties(m_iMoveCapabilities: number) {
+	public ForwardNativeProperties(m_iHealthBarOffset: number, m_iMoveCapabilities: number) {
+		this.HealthBarOffset_ = m_iHealthBarOffset
 		this.MoveCapabilities = m_iMoveCapabilities
 	}
 
