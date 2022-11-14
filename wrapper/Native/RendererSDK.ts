@@ -394,7 +394,7 @@ class CRendererSDK {
 		}
 	}
 	public GetImageSize(path: string): Vector2 {
-		return this.tex2size.get(this.GetTexture(path))!
+		return this.tex2size.get(this.GetTexture(path)) ?? new Vector2()
 	}
 	public Text(text: string, vecPos = new Vector2(), color = Color.White, font_name = this.DefaultFontName, font_size = this.DefaultTextSize, weight = 400, italic = false, outlined = true): void {
 		if (text === "")
