@@ -52,5 +52,5 @@ MainMenuKeyBind.OnPressed(() => {
 	Menu.MenuManager.is_open = !Menu.MenuManager.is_open
 })
 
-ReloadScriptsBtn.OnValue(reload)
-ReloadScriptsBind.OnPressed(reload)
+ReloadScriptsBtn.OnValue(() => reload())
+ReloadScriptsBind.OnPressed(() => reload())
