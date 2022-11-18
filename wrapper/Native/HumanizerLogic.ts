@@ -679,17 +679,18 @@ function getParams() {
 		])
 	return res
 }
-let params = getParams()
+let paramsX = getParams(),
+	paramsY = getParams()
 function ApplyParams(vec: Vector2, currentTime: number): void {
-	const [cos, sin] = params.reduce((prev, cur) => {
-		const param = currentTime * cur[0] + cur[1]
-		prev[0] += (Math.cos(param) ** 2)
-		prev[1] += (Math.sin(param) ** 2)
-		return prev
-	}, [0, 0])
 	vec
-		.MultiplyScalarX(cos / params.length)
-		.MultiplyScalarY(sin / params.length)
+		.MultiplyScalarX(paramsX.reduce(
+			(prev, cur) => prev + Math.cos(currentTime * cur[0] + cur[1]) ** 2,
+			0,
+		) / paramsX.length)
+		.MultiplyScalarY(paramsY.reduce(
+			(prev, cur) => prev + Math.sin(currentTime * cur[0] + cur[1]) ** 2,
+			0,
+		) / paramsY.length)
 }
 
 const min_ProcessUserCmd_window = 1 / 60
@@ -1108,7 +1109,8 @@ function ClearHumanizerState() {
 	InputManager.IsShopOpen = false
 	InputManager.IsScoreboardOpen = false
 	InputManager.SelectedEntities.splice(0)
-	params = getParams()
+	paramsX = getParams()
+	paramsY = getParams()
 }
 
 Events.on("NewConnection", ClearHumanizerState)
