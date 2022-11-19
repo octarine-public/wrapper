@@ -123,7 +123,7 @@ export class Unit extends Entity {
 	public readonly Spells_ = new Array<number>(MAX_SPELLS).fill(0)
 	public readonly Spells = new Array<Nullable<Ability>>(MAX_SPELLS).fill(undefined)
 	public readonly TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
-	public readonly TotalItems = new Array<Nullable<Item>>(MAX_SPELLS).fill(undefined)
+	public readonly TotalItems = new Array<Nullable<Item>>(MAX_ITEMS).fill(undefined)
 	public readonly Buffs: Modifier[] = []
 	public MyWearables: Wearable[] = []
 	public MyWearables_: number[] = []

@@ -44,6 +44,7 @@ function WillInterruptOrderQueue(order: ExecuteOrder): boolean {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK:
+		case dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM:
 			return true
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
@@ -229,17 +230,8 @@ export class ExecuteOrder {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_PATROL:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM:
 				set_z = true
-				break
-			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_GIVE_ITEM:
-				if (!(this.Target instanceof Entity))
-					set_z = true
 				break
 			default:
 				break
@@ -250,7 +242,7 @@ export class ExecuteOrder {
 			if (this.Position.z < -1024 || (height_map !== undefined && !height_map.Contains(this.Position)))
 				return
 		}
-		if (!this.Queue) {
+		if (!this.Queue && !ORDERS_WITHOUT_SIDE_EFFECTS.includes(this.OrderType)) {
 			if (!WillInterruptOrderQueue(this)) {
 				this.Execute()
 				return

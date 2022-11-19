@@ -81,7 +81,7 @@ export const GUIInfo = new (class CGUIInfo {
 			&& !abil.IsHidden
 		)) as Ability[]
 	}
-	public GetLowerHUDForUnit(unit: Nullable<Unit> = InputManager.SelectedUnit): Nullable<CLowerHUD> {
+	public GetLowerHUDForUnit(unit: Nullable<Unit> = InputManager.SelectedUnit): CLowerHUD {
 		const abils = unit !== undefined ? this.GetVisibleAbilitiesForUnit(unit) : undefined
 		const abils_count = abils !== undefined
 			? abils.length
