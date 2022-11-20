@@ -8,7 +8,6 @@ add_subdirectory(bvh)
 # Source groups
 ################################################################################
 set(Header_Files
-	crc32.h
 	reader.h
 	stdafx.h
 	Vector.h

@@ -1,6 +1,5 @@
 import { SOType } from "../Enums/SOType"
 import { arrayRemoveCallback } from "../Utils/ArrayExtensions"
-import { BinaryKV } from "../Utils/VBKV"
 
 type Listener = (...args: any) => false | any
 export class EventEmitter {
@@ -80,7 +79,7 @@ declare interface Events extends EventEmitter {
 	on(name: "PrepareUnitOrders", callback: () => false | any, priority?: number): Events
 	on(name: "DebuggerPrepareUnitOrders", callback: (is_user_input: boolean, was_cancelled: boolean) => void, priority?: number): Events
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void, priority?: number): Events
-	on(name: "CustomGameEvent", listener: (event_name: string, data: Map<string, BinaryKV>) => void, priority?: number): Events
+	on(name: "CustomGameEvent", listener: (event_name: string, data: RecursiveMap) => void, priority?: number): Events
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void, priority?: number): Events
 	on(name: "SharedObjectChanged", listener: (type_id: SOType, reason: number, msg: ArrayBuffer) => void, priority?: number): Events
 	on(name: "NewConnection", listener: () => void, priority?: number): Events

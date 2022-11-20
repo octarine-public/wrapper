@@ -37,7 +37,6 @@ template<typename T = void, typename X = T> FORCEINLINE T* GetPointer(X* base, i
 #include "Vector.h"
 #include "vhcg.h"
 #include "vmatrix.h"
-#include "crc32.h"
 #include <bvh/bvh.hpp>
 
 struct MeshData {

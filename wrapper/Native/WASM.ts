@@ -113,9 +113,6 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	ScreenToWorldFar: () => void,
 	malloc: (size: number) => number,
 	free: (ptr: number) => void,
-	MurmurHash2: (ptr: number, size: number, seed: number) => number,
-	MurmurHash64: (ptr: number, size: number, seed: number) => void,
-	CRC32: (ptr: number, size: number) => number,
 	CloneWorldToProjection: () => void,
 	WorldToScreenNew: () => boolean,
 	DecompressVertexBuffer: (ptr: number, size: number, elem_count: number, elem_size: number) => number,
@@ -389,37 +386,6 @@ export function GetLocationAverageHeight(
 
 	wasm.GetLocationAverageHeight()
 	return WASMIOBuffer[0]
-}
-
-export function MurmurHash2(buf: Uint8Array, seed = 0x31415926): number {
-	const buf_addr = wasm.malloc(buf.byteLength)
-	if (buf_addr === 0)
-		throw "Memory allocation for MurmurHash2 raw data failed"
-	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
-
-	return wasm.MurmurHash2(buf_addr, buf.byteLength, seed) >>> 0
-}
-
-export function MurmurHash64(buf: Uint8Array, seed = 0xEDABCDEF): bigint {
-	const buf_addr = wasm.malloc(buf.byteLength)
-	if (buf_addr === 0)
-		throw "Memory allocation for MurmurHash64 raw data failed"
-	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
-
-	wasm.MurmurHash64(buf_addr, buf.byteLength, seed)
-	return WASMIOBufferBU64[0]
-}
-
-export function CRC32(stream: ReadableBinaryStream): number {
-	const size = stream.Remaining
-	const buf_addr = wasm.malloc(size)
-	if (buf_addr === 0)
-		throw "Memory allocation for MurmurHash2 raw data failed"
-	const old_pos = stream.pos
-	stream.ReadSliceTo(new Uint8Array(wasm.memory.buffer, buf_addr, size))
-	stream.pos = old_pos
-
-	return wasm.CRC32(buf_addr, size) >>> 0
 }
 
 export function CloneWorldToProjection(mat: ArrayLike<number>): void {

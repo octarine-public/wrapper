@@ -1,5 +1,3 @@
-import { MurmurHash2, MurmurHash64 } from "../Native/WASM"
-import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { ParseExternalReferences, readJSON } from "../Utils/Utils"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
@@ -29,7 +27,7 @@ export const Manifest = new (class CManifest {
 	}
 	public SaveStringToken(str: string): number {
 		str = str.toLowerCase()
-		const hash = MurmurHash2(StringToUTF8(str))
+		const hash = MurmurHash2(str, 0x31415926) >>> 0
 		if (!this.PathHash32To64.has(hash) && !this.Hash32ToString.has(hash))
 			this.Hash32ToString.set(hash, str)
 		return hash
@@ -93,7 +91,7 @@ export const Manifest = new (class CManifest {
 		}
 	}
 	public SoundNameToHash(name: string, is_loading = false): number {
-		const hash = MurmurHash2(StringToUTF8(name.toLowerCase()), 0x53524332)
+		const hash = MurmurHash2(name.toLowerCase(), 0x53524332) >>> 0
 		if (!is_loading && !this.SoundHashToString.has(hash))
 			console.log(`Sound path "${name}" isn't in SoundHashToString and will likely fail`)
 		return hash
@@ -141,9 +139,9 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 				const path = `${Manifest.Directories[dir_id]}${Manifest.FileNames[file_id]}.${Manifest.Extensions[ext_id]}`
 				if (Manifest.Extensions[ext_id] === "vsndevts")
 					Manifest.LoadSoundFile(`${path}_c`)
-				const hash64 = MurmurHash64(StringToUTF8(path))
+				const hash64 = MurmurHash64(path, 0xEDABCDEF)
 				Manifest.Paths.set(hash64, [dir_id, file_id, ext_id])
-				Manifest.PathHash32To64.set(MurmurHash2(StringToUTF8(path.toLowerCase())), hash64)
+				Manifest.PathHash32To64.set(MurmurHash2(path.toLowerCase(), 0x31415926) >>> 0, hash64)
 			}
 			break
 		}

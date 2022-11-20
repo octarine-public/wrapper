@@ -21,7 +21,6 @@ import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { GameState } from "../Utils/GameState"
 import { CMsgVectorToVector3, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
 import { createMapFromMergedIterators } from "../Utils/Utils"
-import * as VBKV from "../Utils/VBKV"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { EntityManager } from "./EntityManager"
 import { Events } from "./Events"
@@ -586,11 +585,6 @@ message CMsgSosSetLibraryStackFields {
 	optional fixed32 stack_hash = 1;
 	optional bytes packed_fields = 5;
 }
-
-message CUserMsg_CustomGameEvent {
-	optional string event_name = 1;
-	optional bytes data = 2;
-}
 `)
 
 function HandleParticleMsg(msg: RecursiveProtobuf): void {
@@ -940,22 +934,6 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 		case 145:
 			HandleParticleMsg(ParseProtobufNamed(new Uint8Array(buf_), "CUserMsg_ParticleManager"))
 			break
-		case 148: {
-			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CUserMsg_CustomGameEvent")
-			const event_name = (msg.get("event_name") as Nullable<string>) ?? ""
-			const data = msg.get("data") as Nullable<ReadableBinaryStream>
-			let parsed_data: Map<string, VBKV.BinaryKV>
-			if (data !== undefined)
-				try {
-					parsed_data = VBKV.parseVBKV(data)
-				} catch {
-					parsed_data = new Map()
-				}
-			else
-				parsed_data = new Map()
-			EventsSDK.emit("CustomGameEvent", false, event_name, parsed_data)
-			break
-		}
 		case 208: {
 			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CMsgSosStartSoundEvent")
 			const hash = msg.get("soundevent_hash") as number

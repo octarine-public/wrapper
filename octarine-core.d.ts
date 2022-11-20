@@ -86,9 +86,9 @@ declare interface ConVars {
 }
 
 declare interface CustomGameEvents {
-	FireEventToClient(name: string, player_ent_id: number, data: Uint8Array): void
-	FireEventToAllClients(name: string, data: Uint8Array): void
-	FireEventToServer(name: string, data: Uint8Array): void
+	FireEventToClient(name: string, player_ent_id: number, data: RecursiveMap): void
+	FireEventToAllClients(name: string, data: RecursiveMap): void
+	FireEventToServer(name: string, data: RecursiveMap): void
 }
 
 declare interface Particles {
@@ -220,3 +220,6 @@ declare function parseKVBlock(data: Uint8Array): RecursiveMap
 
 declare function parseKV(stream: FileStream, block: string | number, offset: number, size: number): RecursiveMap
 declare function parseKVBlock(stream: FileStream, offset: number, size: number): RecursiveMap
+
+declare function MurmurHash2(str: string, seed: number): number
+declare function MurmurHash64(str: string, seed: number): bigint
