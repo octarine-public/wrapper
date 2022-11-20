@@ -138,8 +138,8 @@ declare function requestPlayerData(player_id: number, hero_id: number): Promise<
 /**
  * @param path pass empty to read from confings/../settings.json
  */
-declare function readConfig(path: string): Promise<ArrayBuffer>
-declare function writeConfig(path: string, data: Uint8Array): void
+declare function readConfig(): Promise<string>
+declare function writeConfig(data: string): void
 declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer offset 0
 	OrderType: number,
 	Target?: number,

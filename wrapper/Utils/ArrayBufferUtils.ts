@@ -32,13 +32,6 @@ export function StringToUTF8(str: string): Uint8Array {
 	return new Uint8Array(ar)
 }
 
-export function StringToUTF16(str: string): Uint16Array {
-	const buf = new Uint16Array(str.length)
-	for (let i = str.length; i--;)
-		buf[i] = str.charCodeAt(i)
-	return buf
-}
-
 export function ArrayBuffersEqual(ab1: ArrayBuffer, ab2: ArrayBuffer): boolean {
 	if (ab1.byteLength !== ab2.byteLength)
 		return false

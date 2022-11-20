@@ -26,7 +26,6 @@ declare interface ReadableBinaryStream {
 	ReadChar(): string
 	SeekLine(): void
 	ReadUtf8String(size: number): string
-	ReadUtf16String(size: number): string
 	ReadNullTerminatedString(): string
 	ReadNullTerminatedUtf8String(): string
 	ReadNullTerminatedUtf16String(): string

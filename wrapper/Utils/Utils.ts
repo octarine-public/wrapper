@@ -161,14 +161,9 @@ export function readJSON(path: string): any {
 		throw `Failed to read JSON file at path ${path}`
 	const stream = new FileBinaryStream(buf)
 	try {
-		return JSON.parse(stream.ReadUtf16String(stream.Remaining))
+		return JSON.parse(stream.ReadUtf8String(stream.Remaining))
 	} catch {
-		try {
-			stream.pos = 0
-			return JSON.parse(stream.ReadUtf8String(stream.Remaining))
-		} catch {
-			throw `invalid JSON at path ${path}`
-		}
+		throw `invalid JSON at path ${path}`
 	} finally {
 		buf.close()
 	}

@@ -237,16 +237,6 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 		}
 		return out
 	}
-	public ReadUtf16String(size: number): string {
-		if ((size % 2) !== 0)
-			throw "Invalid size for ReadUtf16String"
-		let out = ""
-		while (size > 0) {
-			out += String.fromCharCode(this.ReadUint16())
-			size -= 2
-		}
-		return out
-	}
 	public ReadNullTerminatedString(): string {
 		let str = ""
 		while (true) {
