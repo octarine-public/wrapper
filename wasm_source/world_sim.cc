@@ -63,10 +63,10 @@ public:
 			bvh::LocallyOrderedClusteringBuilder<bvh::Bvh<vec_t>, Morton> builder{ this->accel };
 			builder.build(this->bbox, bboxes.get(), centers.get(), this->triangles.size());
 		}
-		{
-			bvh::ParallelReinsertionOptimizer<bvh::Bvh<vec_t>> reinsertion_optimizer{ this->accel };
-			reinsertion_optimizer.optimize();
-		}
+		// {
+		// 	bvh::ParallelReinsertionOptimizer<bvh::Bvh<vec_t>> reinsertion_optimizer{ this->accel };
+		// 	reinsertion_optimizer.optimize();
+		// }
 		{
 			bvh::LeafCollapser leaf_collapser{ this->accel };
 			leaf_collapser.collapse();
@@ -227,10 +227,10 @@ public:
 			bvh::LocallyOrderedClusteringBuilder<bvh::Bvh<vec_t>, Morton> builder{ this->toplevel_accel };
 			builder.build(global_bbox, bboxes.get(), centers.get(), this->nodes.size());
 		}
-		{
-			bvh::ParallelReinsertionOptimizer<bvh::Bvh<vec_t>> reinsertion_optimizer{ this->toplevel_accel };
-			reinsertion_optimizer.optimize();
-		}
+		// {
+		// 	bvh::ParallelReinsertionOptimizer<bvh::Bvh<vec_t>> reinsertion_optimizer{ this->toplevel_accel };
+		// 	reinsertion_optimizer.optimize();
+		// }
 		{
 			bvh::LeafCollapser leaf_collapser{ this->toplevel_accel };
 			leaf_collapser.collapse();
