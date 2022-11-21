@@ -32,6 +32,7 @@ public:
 		return this->GetMinMapCoords() + this->GetMapSize();
 	}
 	float GetHeightForLocation(Vector2D loc);
+	float GetSecondaryHeightForLocation(Vector2D loc);
 
 private:
 	FORCEINLINE HeightMapCell* GetCellByBasicCoords(Vector2D basic_coords) {

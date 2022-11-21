@@ -177,11 +177,12 @@ WASM_EXPORT(ParseVHCG) int ParseVHCG(uint8_t* data, size_t data_size) {
 
 extern bool RayTraceInitialized();
 extern std::optional<RayTraceResult> TryRayTrace(Vector camera_position, Vector ray_direction, uint32_t flags);
-float GetHeightForLocation(Vector2D loc, uint32_t flags) {
+constexpr uint32_t material_flags = 2 | 4; // Nonsolid | Water
+float GetHeightForLocation(Vector2D loc) {
 	if (RayTraceInitialized()) {
-		Vector camera_position{ loc.x, loc.y, 10000 };
+		Vector camera_position{ loc.x, loc.y, 16384 };
 		Vector ray_direction{ 0.f, 0.f, -1.f };
-		auto res = TryRayTrace(camera_position, ray_direction, flags);
+		auto res = TryRayTrace(camera_position, ray_direction, material_flags);
 		return res ? res->pos.z : -16384.f;
 	}
 	return height_map_initialized
@@ -189,15 +190,28 @@ float GetHeightForLocation(Vector2D loc, uint32_t flags) {
 		: -16384.f;
 }
 WASM_EXPORT(GetHeightForLocation) void GetHeightForLocation() {
-	auto flags = *(uint32_t*)&JSIOBuffer[2];
-	JSIOBuffer[0] = GetHeightForLocation(UnwrapVector2(), flags);
+	JSIOBuffer[0] = GetHeightForLocation(UnwrapVector2());
+}
+
+bool IsPointUnderWater(Vector2D loc) {
+	auto main_height = GetHeightForLocation(loc);
+	if (height_map_initialized)
+		return height_map.GetSecondaryHeightForLocation(loc) > main_height;
+	if (!RayTraceInitialized())
+		return false;
+	Vector camera_position{ loc.x, loc.y, 16384 };
+	Vector ray_direction{ 0.f, 0.f, -1.f };
+	auto res = TryRayTrace(camera_position, ray_direction, 0);
+	return res ? res->pos.z > main_height : false;
+}
+WASM_EXPORT(IsPointUnderWater) bool IsPointUnderWater() {
+	return IsPointUnderWater(UnwrapVector2());
 }
 
 WASM_EXPORT(GetLocationAverageHeight) void GetLocationAverageHeight() {
 	auto pos = UnwrapVector2();
-	auto flags = *(uint32_t*)&JSIOBuffer[2];
-	auto count = (int)JSIOBuffer[3];
-	auto dist = JSIOBuffer[4];
+	auto count = (int)JSIOBuffer[2];
+	auto dist = JSIOBuffer[3];
 
 	float height_sum = 0.f;
 	int height_count = 0;
@@ -206,7 +220,7 @@ WASM_EXPORT(GetLocationAverageHeight) void GetLocationAverageHeight() {
 			auto height = GetHeightForLocation({
 				pos.x + x * dist,
 				pos.y + y * dist,
-			}, flags);
+			});
 			if (height > -1000.f) {
 				height_sum += height;
 				height_count++;
@@ -242,8 +256,7 @@ WASM_EXPORT(ScreenToWorldFar) void ScreenToWorldFar() {
 	auto camera_angles = UnwrapVector3(5);
 	auto camera_distance = JSIOBuffer[8];
 	auto fov = JSIOBuffer[9];
-	auto flags = *(uint32_t*)&JSIOBuffer[10];
-	auto screens_count = (uint16_t)JSIOBuffer[11];
+	auto screens_count = (uint16_t)JSIOBuffer[10];
 	
 	Vector vForward, vRight, vUp;
 	CameraAngleVectors(*(QAngle*)&camera_angles, &vForward, &vRight, &vUp);
@@ -255,7 +268,7 @@ WASM_EXPORT(ScreenToWorldFar) void ScreenToWorldFar() {
 	auto screens_results = new Vector[screens_count];
 	bool initialized = RayTraceInitialized();
 	for (int i = 0; i < screens_count; i++) {
-		auto screen = UnwrapVector2(12 + i * 2);
+		auto screen = UnwrapVector2(11 + i * 2);
 		screen.x = screen.x * 2.f - 1.f;
 		screen.y = 1.f - screen.y * 2.f;
 		Vector ray = vForward + vRight * (far_size.x * screen.x) + vUp * (far_size.y * screen.y);
@@ -274,7 +287,7 @@ WASM_EXPORT(ScreenToWorldFar) void ScreenToWorldFar() {
 			} else
 				cur_pos.Invalidate();
 		} else {
-			auto res = TryRayTrace(camera_position, ray, flags);
+			auto res = TryRayTrace(camera_position, ray, material_flags);
 			if (res)
 				cur_pos = res->pos;
 			else

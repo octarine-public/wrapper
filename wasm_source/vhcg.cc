@@ -82,16 +82,16 @@ int HeightMap::Parse(uint8_t* data, uint32_t size) {
 
 float HeightMap::GetHeightForLocation(Vector2D loc) {
 	if (this->m_pHeightMap == nullptr)
-		return 0.f;
+		return -16384.f;
 	auto basic_coords = (loc - this->GetMinMapCoords()) / this->m_flHeightMapAccuracy;
 	auto cell_ptr = this->GetCellByBasicCoords(basic_coords);
 	if (cell_ptr == nullptr)
-		return 0.f;
-	
+		return -16384.f;
+
 	auto& cell = *cell_ptr;
 	if (cell.m_iHeightMapID == -1)
 		return cell.m_flDefaultFirstHeight;
-	
+
 	auto fraction_vec = basic_coords - basic_coords.Floor();
 	float v16 = this->m_iHeightMapCellAccuracy - 1.f;
 	auto fraction_vec_mul = fraction_vec.Max(0.f).Min(0.999f) * v16;
@@ -105,4 +105,15 @@ float HeightMap::GetHeightForLocation(Vector2D loc) {
 	float v24 = fraction_vec.x * v16 - fraction_vec_mul_x;
 	float v25 = ((b - a) * v24) + a;
 	return (((d - c) * v24) + c - v25) * (fraction_vec.y * v16 - fraction_vec_mul_y) + v25;
+}
+
+float HeightMap::GetSecondaryHeightForLocation(Vector2D loc) {
+	if (this->m_pHeightMap == nullptr)
+		return -16384.f;
+	auto basic_coords = (loc - this->GetMinMapCoords()) / this->m_flHeightMapAccuracy;
+	auto cell_ptr = this->GetCellByBasicCoords(basic_coords);
+	if (cell_ptr == nullptr)
+		return -16384.f;
+
+	return cell_ptr->m_flSecondaryHeight;
 }

@@ -81,7 +81,7 @@ export * as Menu from "./Menu/Imports"
 
 export { GUIInfo } from "./GUI/GUIInfo"
 
-export { DotaMap } from "./Helpers/DotaMap"
+export * as DotaMap from "./Helpers/DotaMap"
 export { Sleeper, GameSleeper, TickSleeper } from "./Helpers/Sleeper"
 
 export { Particle } from "./Base/Particle"

@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../Decorators"
 import { MapArea } from "../../Enums/MapArea"
-import { DotaMap } from "../../Helpers/DotaMap"
+import { GetMapArea } from "../../Helpers/DotaMap"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { Unit } from "./Unit"
@@ -40,7 +40,7 @@ export class Creep extends Unit {
 	public TryAssignLane(): void {
 		if (this.IsNeutral || this.Owner !== undefined || this.Lane !== MapArea.Unknown)
 			return
-		const area = DotaMap.GetMapArea(this.Position, true)
+		const area = GetMapArea(this.Position, true)
 		switch (area[0]) {
 			case MapArea.Top:
 			case MapArea.Bottom:

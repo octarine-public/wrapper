@@ -419,7 +419,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 		)
 			return cursor_pos.Divide(RendererSDK.WindowSize)
 		const pos = InputManager.CursorOnWorld
-		if (pos.IsValid && pos.z > -1000) {
+		if (pos.IsValid && pos.z >= -1024) {
 			const w2s = RendererSDK.WorldToScreenCustom(pos, camera_vec)
 			if (
 				w2s === undefined
@@ -1109,6 +1109,7 @@ function ClearHumanizerState() {
 	InputManager.IsShopOpen = false
 	InputManager.IsScoreboardOpen = false
 	InputManager.SelectedEntities.splice(0)
+	InputManager.CursorOnWorld = new Vector3()
 	paramsX = getParams()
 	paramsY = getParams()
 }

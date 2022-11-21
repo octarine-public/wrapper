@@ -2,7 +2,6 @@ import { AABB } from "../Base/AABB"
 import { QAngle } from "../Base/QAngle"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
-import { MaterialFlags } from "../Enums/MaterialFlags"
 import { fread } from "../Utils/fread"
 import { DegreesToRadian } from "../Utils/Math"
 import { tryFindFile } from "../Utils/readFile"
@@ -105,16 +104,17 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	GetIOBuffer: () => number,
 	memory: WebAssembly.Memory,
 	ScreenToWorld: () => void,
-	WorldToScreen: () => boolean,
+	WorldToScreen: () => number,
 	ParseVHCG: (ptr: number, size: number) => HeightMapParseError,
 	GetHeightForLocation: () => void,
+	IsPointUnderWater: () => number,
 	GetLocationAverageHeight: () => void,
 	GetCursorRay: () => void,
 	ScreenToWorldFar: () => void,
 	malloc: (size: number) => number,
 	free: (ptr: number) => void,
 	CloneWorldToProjection: () => void,
-	WorldToScreenNew: () => boolean,
+	WorldToScreenNew: () => number,
 	DecompressVertexBuffer: (ptr: number, size: number, elem_count: number, elem_size: number) => number,
 	DecompressIndexBuffer: (ptr: number, size: number, elem_count: number, elem_size: number) => number,
 	ResetWorld: () => void,
@@ -230,7 +230,6 @@ export function ScreenToWorldFar(
 	camera_distance: number,
 	camera_angles: QAngle,
 	fov: number,
-	flags = MaterialFlags.Nonsolid | MaterialFlags.Water,
 ): Vector3[] {
 	if (screens.length > max_screens) {
 		let res: Vector3[] = []
@@ -242,7 +241,6 @@ export function ScreenToWorldFar(
 				camera_distance,
 				camera_angles,
 				fov,
-				flags,
 			)]
 		}
 		return res
@@ -262,12 +260,11 @@ export function ScreenToWorldFar(
 
 	WASMIOBuffer[9] = fov
 
-	WASMIOBufferU32[10] = flags
-	WASMIOBuffer[11] = screens.length
+	WASMIOBuffer[10] = screens.length
 
 	screens.forEach((screen, i) => {
-		WASMIOBuffer[12 + i * 2 + 0] = screen.x
-		WASMIOBuffer[12 + i * 2 + 1] = screen.y
+		WASMIOBuffer[11 + i * 2 + 0] = screen.x
+		WASMIOBuffer[11 + i * 2 + 1] = screen.y
 	})
 
 	wasm.ScreenToWorldFar()
@@ -302,7 +299,7 @@ export function WorldToScreen(
 	WASMIOBuffer[10] = window_size.x
 	WASMIOBuffer[11] = window_size.y
 
-	if (!wasm.WorldToScreen())
+	if (wasm.WorldToScreen() === 0)
 		return undefined
 	return new Vector2(WASMIOBuffer[0], WASMIOBuffer[1])
 }
@@ -360,29 +357,30 @@ export function ResetVHCG(): void {
 	HeightMap = undefined
 }
 
-export function GetPositionHeight(
-	loc: Vector2 | Vector3,
-	flags = MaterialFlags.Nonsolid | MaterialFlags.Water,
-): number {
+export function GetPositionHeight(loc: Vector2 | Vector3): number {
 	WASMIOBuffer[0] = loc.x
 	WASMIOBuffer[1] = loc.y
-	WASMIOBufferU32[2] = flags
 
 	wasm.GetHeightForLocation()
 	return WASMIOBuffer[0]
+}
+
+export function IsPointUnderWater(loc: Vector2 | Vector3): boolean {
+	WASMIOBuffer[0] = loc.x
+	WASMIOBuffer[1] = loc.y
+
+	return wasm.IsPointUnderWater() !== 0
 }
 
 export function GetLocationAverageHeight(
 	position: Vector2,
 	count: number,
 	distance: number,
-	flags = MaterialFlags.Nonsolid | MaterialFlags.Water,
 ): number {
 	WASMIOBuffer[0] = position.x
 	WASMIOBuffer[1] = position.y
-	WASMIOBufferU32[2] = flags
-	WASMIOBuffer[3] = count
-	WASMIOBuffer[4] = distance
+	WASMIOBuffer[2] = count
+	WASMIOBuffer[3] = distance
 
 	wasm.GetLocationAverageHeight()
 	return WASMIOBuffer[0]
@@ -404,7 +402,7 @@ export function WorldToScreenNew(
 	WASMIOBuffer[3] = window_size.x
 	WASMIOBuffer[4] = window_size.y
 
-	if (!wasm.WorldToScreenNew())
+	if (wasm.WorldToScreenNew() === 0)
 		return undefined
 	return new Vector2(WASMIOBuffer[0], WASMIOBuffer[1])
 }

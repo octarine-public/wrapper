@@ -42,8 +42,8 @@ export const InputManager = new (class CInputManager {
 	}
 	public UpdateCursorOnScreen(x?: number, y?: number) {
 		if (x === undefined || y === undefined) {
-			x = globalThis.CursorPosition[0]
-			y = globalThis.CursorPosition[1]
+			x = CursorPosition[0]
+			y = CursorPosition[1]
 		}
 		this.x = x
 		this.y = y
