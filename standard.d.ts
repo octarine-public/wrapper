@@ -1,11 +1,10 @@
 type BufferSource = ArrayBufferView | ArrayBuffer
 declare namespace WebAssembly {
-	interface CompileError {
-	}
+	interface CompileError {}
 
 	var CompileError: {
 		prototype: CompileError
-		new(): CompileError
+		new (): CompileError
 	}
 
 	interface Global {
@@ -15,7 +14,7 @@ declare namespace WebAssembly {
 
 	var Global: {
 		prototype: Global
-		new(descriptor: GlobalDescriptor, v?: any): Global
+		new (descriptor: GlobalDescriptor, v?: any): Global
 	}
 
 	interface Instance {
@@ -24,15 +23,14 @@ declare namespace WebAssembly {
 
 	var Instance: {
 		prototype: Instance
-		new(module: Module, importObject?: Imports): Instance
+		new (module: Module, importObject?: Imports): Instance
 	}
 
-	interface LinkError {
-	}
+	interface LinkError {}
 
 	var LinkError: {
 		prototype: LinkError
-		new(): LinkError
+		new (): LinkError
 	}
 
 	interface Memory {
@@ -42,26 +40,24 @@ declare namespace WebAssembly {
 
 	var Memory: {
 		prototype: Memory
-		new(descriptor: MemoryDescriptor): Memory
+		new (descriptor: MemoryDescriptor): Memory
 	}
 
-	interface Module {
-	}
+	interface Module {}
 
 	var Module: {
 		prototype: Module
-		new(bytes: BufferSource): Module
+		new (bytes: BufferSource): Module
 		customSections(moduleObject: Module, sectionName: string): ArrayBuffer[]
 		exports(moduleObject: Module): ModuleExportDescriptor[]
 		imports(moduleObject: Module): ModuleImportDescriptor[]
 	}
 
-	interface RuntimeError {
-	}
+	interface RuntimeError {}
 
 	var RuntimeError: {
 		prototype: RuntimeError
-		new(): RuntimeError
+		new (): RuntimeError
 	}
 
 	interface Table {
@@ -73,7 +69,7 @@ declare namespace WebAssembly {
 
 	var Table: {
 		prototype: Table
-		new(descriptor: TableDescriptor): Table
+		new (descriptor: TableDescriptor): Table
 	}
 
 	interface GlobalDescriptor {
@@ -118,8 +114,14 @@ declare namespace WebAssembly {
 	type ModuleImports = Record<string, ImportValue>
 	type Imports = Record<string, ModuleImports>
 	function compile(bytes: BufferSource): Promise<Module>
-	function instantiate(bytes: BufferSource, importObject?: Imports): Promise<WebAssemblyInstantiatedSource>
-	function instantiate(moduleObject: Module, importObject?: Imports): Promise<Instance>
+	function instantiate(
+		bytes: BufferSource,
+		importObject?: Imports
+	): Promise<WebAssemblyInstantiatedSource>
+	function instantiate(
+		moduleObject: Module,
+		importObject?: Imports
+	): Promise<Instance>
 	function validate(bytes: BufferSource): boolean
 }
 

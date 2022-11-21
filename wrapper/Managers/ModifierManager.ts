@@ -5,14 +5,17 @@ import { Modifier } from "../Objects/Base/Modifier"
 import { Unit } from "../Objects/Base/Unit"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import { GameState } from "../Utils/GameState"
-import { ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
-import { EntityManager } from "./EntityManager"
+import {
+	ParseProtobufDesc,
+	ParseProtobufNamed,
+	RecursiveProtobuf,
+} from "../Utils/Protobuf"
 import { EventsSDK } from "./EventsSDK"
 
 export class IModifier {
-	constructor(public readonly m_Protobuf: RecursiveProtobuf) {
-		if (!this.m_Protobuf.has("creation_time"))
-			this.m_Protobuf.set("creation_time", GameState.RawGameTime)
+	constructor(public readonly kv: RecursiveProtobuf) {
+		if (!this.kv.has("creation_time"))
+			this.kv.set("creation_time", GameState.RawGameTime)
 	}
 	public get EntryType(): Nullable<DOTA_MODIFIER_ENTRY_TYPE> {
 		return this.GetProperty("entry_type")
@@ -129,64 +132,71 @@ export class IModifier {
 		return this.GetProperty("custom_entity")
 	}
 	public GetProperty<T>(name: string): Nullable<T> {
-		return this.m_Protobuf.get(name) as any as T
+		return this.kv.get(name) as any as T
 	}
 	public GetVector(name: string): Nullable<Vector3> {
 		const vec = this.GetProperty<Map<string, number>>(name)
-		if (vec === undefined)
-			return undefined
+		if (vec === undefined) return undefined
 		return new Vector3(vec.get("x"), vec.get("y"), vec.get("z"))
 	}
 }
 
-const ActiveModifiersRaw = new Map<number, IModifier>(),
-	ActiveModifiers = new Map<number, Modifier>()
+const activeModifiersRaw = new Map<number, IModifier>(),
+	activeModifiers = new Map<number, Modifier>()
 
-function EmitModifierCreated(mod: IModifier) {
-	if (mod.Index === undefined || mod.SerialNum === undefined || mod.Parent === undefined)
+function EmitModifierCreated(modKV: IModifier) {
+	if (
+		modKV.Index === undefined ||
+		modKV.SerialNum === undefined ||
+		modKV.Parent === undefined
+	)
 		return
-	const mod_ = new Modifier(mod)
-	ActiveModifiers.set(mod_.SerialNumber, mod_)
-	mod_.Update()
+	const mod = new Modifier(modKV)
+	activeModifiers.set(mod.SerialNumber, mod)
+	mod.Update()
 }
-const queued_ents: (Unit | Ability)[] = []
+const queuedEnts: (Unit | Ability)[] = []
 EventsSDK.on("EntityCreated", ent => {
-	if (ent instanceof Unit || ent instanceof Ability)
-		queued_ents.push(ent)
+	if (ent instanceof Unit || ent instanceof Ability) queuedEnts.push(ent)
 })
-EventsSDK.on("EntityDestroyed", ent => ArrayExtensions.arrayRemove(queued_ents, ent))
+EventsSDK.on("EntityDestroyed", ent =>
+	ArrayExtensions.arrayRemove(queuedEnts, ent)
+)
 EventsSDK.on("PostDataUpdate", () => {
-	if (queued_ents.length === 0)
-		return
-	for (const ent of queued_ents) {
+	if (queuedEnts.length === 0) return
+	for (const ent of queuedEnts) {
 		if (ent instanceof Unit)
-			for (const mod of ActiveModifiers.values())
+			for (const mod of activeModifiers.values())
 				if (
-					ent.HandleMatches(mod.m_pBuff.Parent ?? 0)
-					|| ent.HandleMatches(mod.m_pBuff.Caster ?? 0)
-					|| ent.HandleMatches(mod.m_pBuff.AuraOwner ?? 0)
-					|| ent.HandleMatches(mod.m_pBuff.CustomEntity ?? 0)
+					ent.HandleMatches(mod.kv.Parent ?? 0) ||
+					ent.HandleMatches(mod.kv.Caster ?? 0) ||
+					ent.HandleMatches(mod.kv.AuraOwner ?? 0) ||
+					ent.HandleMatches(mod.kv.CustomEntity ?? 0)
 				)
 					mod.Update()
 		if (ent instanceof Ability)
-			for (const mod of ActiveModifiers.values())
-				if (ent.HandleMatches(mod.m_pBuff.Ability ?? 0))
-					mod.Update()
+			for (const mod of activeModifiers.values())
+				if (ent.HandleMatches(mod.kv.Ability ?? 0)) mod.Update()
 	}
-	queued_ents.splice(0)
+	queuedEnts.splice(0)
 })
 function EmitModifierRemoved(mod: Modifier) {
-	ActiveModifiers.delete(mod.SerialNumber)
+	activeModifiers.delete(mod.SerialNumber)
 	mod.Remove()
 }
 EventsSDK.on("EntityDestroyed", ent => {
-	for (const mod of ActiveModifiers.values())
-		if (mod.Parent === ent || mod.Ability === ent || mod.Caster === ent || mod.AuraOwner === ent)
+	for (const mod of activeModifiers.values())
+		if (
+			mod.Parent === ent ||
+			mod.Ability === ent ||
+			mod.Caster === ent ||
+			mod.AuraOwner === ent
+		)
 			mod.Update()
 })
-function EmitModifierChanged(old_mod: Modifier, mod: IModifier) {
-	old_mod.m_pBuff = mod
-	old_mod.Update()
+function EmitModifierChanged(oldMod: Modifier, mod: IModifier) {
+	oldMod.kv = mod
+	oldMod.Update()
 }
 ParseProtobufDesc(`
 enum DOTA_MODIFIER_ENTRY_TYPE {
@@ -236,55 +246,38 @@ message CDOTAModifierBuffTableEntry {
 }
 `)
 EventsSDK.on("UpdateStringTable", (name, update) => {
-	if (name !== "ActiveModifiers")
-		return
-	for (const [index, [, mod_serialized]] of update) {
-		const replaced = ActiveModifiersRaw.get(index)
-		if (mod_serialized.byteLength === 0 && replaced?.SerialNum !== undefined) {
-			const replaced_mod = ActiveModifiers.get(replaced.SerialNum)
-			if (replaced_mod !== undefined)
-				EmitModifierRemoved(replaced_mod)
+	if (name !== "ActiveModifiers") return
+	for (const [index, [, modSerialized]] of update) {
+		const replaced = activeModifiersRaw.get(index)
+		if (modSerialized.byteLength === 0 && replaced?.SerialNum !== undefined) {
+			const replacedMod = activeModifiers.get(replaced.SerialNum)
+			if (replacedMod !== undefined) EmitModifierRemoved(replacedMod)
 			continue
 		}
-		const mod = new IModifier(ParseProtobufNamed(new Uint8Array(mod_serialized), "CDOTAModifierBuffTableEntry"))
-		if (replaced?.SerialNum !== undefined && replaced.SerialNum !== mod.SerialNum) {
-			const replaced_mod = ActiveModifiers.get(replaced.SerialNum)
-			if (replaced_mod !== undefined)
-				EmitModifierRemoved(replaced_mod)
+		const mod = new IModifier(
+			ParseProtobufNamed(
+				new Uint8Array(modSerialized),
+				"CDOTAModifierBuffTableEntry"
+			)
+		)
+		if (
+			replaced?.SerialNum !== undefined &&
+			replaced.SerialNum !== mod.SerialNum
+		) {
+			const replacedMod = activeModifiers.get(replaced.SerialNum)
+			if (replacedMod !== undefined) EmitModifierRemoved(replacedMod)
 		}
-		ActiveModifiersRaw.set(index, mod)
-		const old_mod = ActiveModifiers.get(mod.SerialNum as number)
-		if (mod.EntryType === DOTA_MODIFIER_ENTRY_TYPE.DOTA_MODIFIER_ENTRY_TYPE_ACTIVE) {
-			if (old_mod === undefined)
-				EmitModifierCreated(mod)
-			else
-				EmitModifierChanged(old_mod, mod)
-		} else if (old_mod !== undefined)
-			EmitModifierRemoved(old_mod)
+		activeModifiersRaw.set(index, mod)
+		const oldMod = activeModifiers.get(mod.SerialNum as number)
+		if (
+			mod.EntryType === DOTA_MODIFIER_ENTRY_TYPE.DOTA_MODIFIER_ENTRY_TYPE_ACTIVE
+		) {
+			if (oldMod === undefined) EmitModifierCreated(mod)
+			else EmitModifierChanged(oldMod, mod)
+		} else if (oldMod !== undefined) EmitModifierRemoved(oldMod)
 	}
 })
 EventsSDK.on("RemoveAllStringTables", () => {
-	for (const mod of ActiveModifiers.values())
-		EmitModifierRemoved(mod)
-	ActiveModifiers.clear()
+	for (const mod of activeModifiers.values()) EmitModifierRemoved(mod)
+	activeModifiers.clear()
 })
-
-declare global {
-	var DebugBuffsParents: () => void
-	var DebugBuffs: () => void
-}
-
-globalThis.DebugBuffsParents = () => {
-	ActiveModifiers.forEach(mod => {
-		const parent = EntityManager.EntityByIndex(mod.m_pBuff.Parent)
-		if (parent instanceof Unit)
-			return
-		console.log(parent?.ClassName, mod.m_pBuff.Parent, mod.Name, mod.ElapsedTime, mod.m_pBuff.EntryType)
-	})
-}
-
-globalThis.DebugBuffs = () => {
-	ActiveModifiers.forEach(mod => {
-		console.log(mod.Parent?.constructor?.name, mod.Name, mod.ElapsedTime, mod.Duration, mod.m_pBuff.EntryType)
-	})
-}

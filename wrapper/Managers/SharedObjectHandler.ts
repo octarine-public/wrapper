@@ -783,9 +783,9 @@ message CSOEconGameAccountClient {
 	optional bool made_first_purchase = 9 [default = false];
 }
 `)
-Events.on("SharedObjectChanged", (type_id, reason, data) => {
+Events.on("SharedObjectChanged", (typeID, reason, data) => {
 	let name: string
-	switch (type_id) {
+	switch (typeID) {
 		// case SOType.EconItem:
 		// 	name = "CSOEconItem"
 		// 	break
@@ -828,8 +828,8 @@ Events.on("SharedObjectChanged", (type_id, reason, data) => {
 	EventsSDK.emit(
 		"SharedObjectChanged",
 		false,
-		type_id,
+		typeID,
 		reason,
-		ParseProtobufNamed(new Uint8Array(data), name),
+		ParseProtobufNamed(new Uint8Array(data), name)
 	)
 })

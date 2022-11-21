@@ -1,5 +1,5 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
-import { GameActivity_t } from "../../Enums/GameActivity_t"
+import { GameActivity } from "../../Enums/GameActivity"
 import { ConVarsSDK } from "../../Native/ConVarsSDK"
 import { Hero } from "../Base/Hero"
 
@@ -8,9 +8,15 @@ export class npc_dota_hero_dawnbreaker extends Hero {
 	@NetworkedBasicField("m_nAttackState")
 	public AttackState = 0
 
-	public CalculateActivityModifiers(activity: GameActivity_t, ar: string[]): void {
+	public CalculateActivityModifiers(
+		activity: GameActivity,
+		ar: string[]
+	): void {
 		super.CalculateActivityModifiers(activity, ar)
-		const cooldown = ConVarsSDK.GetFloat("dota_dawnbreaker_attack_combo_cooldown_time", 0)
+		const cooldown = ConVarsSDK.GetFloat(
+			"dota_dawnbreaker_attack_combo_cooldown_time",
+			0
+		)
 		if (cooldown >= 0)
 			switch (this.AttackState) {
 				case 0:

@@ -33,314 +33,404 @@ export class CTopBar {
 	public readonly RadiantTeamBackground = new Rectangle()
 	public readonly DireTeamBackground = new Rectangle()
 
-	constructor(screen_size: Vector2) {
-		this.CalculateTopBar(screen_size)
-		this.CalculateTimeOfDay(screen_size)
-		this.CalculateTimeOfDayTimeUntil(screen_size)
-		this.CalculateSpectatorGoldDisplay(screen_size)
-		this.CalculateTeamScoreAndPlayers(screen_size)
-		this.CalculateHealthbars(screen_size)
-		this.CalculateManabars(screen_size)
-		this.CalculateBuybacks(screen_size)
-		this.CalculateRespawnTimers(screen_size)
-		this.CalculateTPIndicators(screen_size)
-		this.CalculateUltReadyIndicators(screen_size)
-		this.CalculateHeroImages(screen_size)
+	constructor(screenSize: Vector2) {
+		this.CalculateTopBar(screenSize)
+		this.CalculateTimeOfDay(screenSize)
+		this.CalculateTimeOfDayTimeUntil(screenSize)
+		this.CalculateSpectatorGoldDisplay(screenSize)
+		this.CalculateTeamScoreAndPlayers(screenSize)
+		this.CalculateHealthbars(screenSize)
+		this.CalculateManabars(screenSize)
+		this.CalculateBuybacks(screenSize)
+		this.CalculateRespawnTimers(screenSize)
+		this.CalculateTPIndicators(screenSize)
+		this.CalculateUltReadyIndicators(screenSize)
+		this.CalculateHeroImages(screenSize)
 	}
 
 	public DebugDraw(): void {
-		RendererSDK.FilledRect(this.TimeOfDay.pos1, this.TimeOfDay.Size, Color.Aqua.SetA(128))
-		RendererSDK.FilledRect(this.TimeOfDayTimeUntil.pos1, this.TimeOfDayTimeUntil.Size, Color.White.SetA(128))
-		RendererSDK.FilledRect(this.RadiantTeamScore.pos1, this.RadiantTeamScore.Size, Color.Green.SetA(128))
-		RendererSDK.FilledRect(this.DireTeamScore.pos1, this.DireTeamScore.Size, Color.Green.SetA(128))
-		RendererSDK.FilledRect(this.RadiantTeamImage.pos1, this.RadiantTeamImage.Size, Color.White.SetA(128))
-		RendererSDK.FilledRect(this.DireTeamImage.pos1, this.DireTeamImage.Size, Color.White.SetA(128))
-		RendererSDK.FilledRect(this.RadiantSpectatorGoldDisplay.pos1, this.RadiantSpectatorGoldDisplay.Size, Color.BlackGray.SetA(128))
-		RendererSDK.FilledRect(this.DireSpectatorGoldDisplay.pos1, this.DireSpectatorGoldDisplay.Size, Color.BlackGray.SetA(128))
+		RendererSDK.FilledRect(
+			this.TimeOfDay.pos1,
+			this.TimeOfDay.Size,
+			Color.Aqua.SetA(128)
+		)
+		RendererSDK.FilledRect(
+			this.TimeOfDayTimeUntil.pos1,
+			this.TimeOfDayTimeUntil.Size,
+			Color.White.SetA(128)
+		)
+		RendererSDK.FilledRect(
+			this.RadiantTeamScore.pos1,
+			this.RadiantTeamScore.Size,
+			Color.Green.SetA(128)
+		)
+		RendererSDK.FilledRect(
+			this.DireTeamScore.pos1,
+			this.DireTeamScore.Size,
+			Color.Green.SetA(128)
+		)
+		RendererSDK.FilledRect(
+			this.RadiantTeamImage.pos1,
+			this.RadiantTeamImage.Size,
+			Color.White.SetA(128)
+		)
+		RendererSDK.FilledRect(
+			this.DireTeamImage.pos1,
+			this.DireTeamImage.Size,
+			Color.White.SetA(128)
+		)
+		RendererSDK.FilledRect(
+			this.RadiantSpectatorGoldDisplay.pos1,
+			this.RadiantSpectatorGoldDisplay.Size,
+			Color.BlackGray.SetA(128)
+		)
+		RendererSDK.FilledRect(
+			this.DireSpectatorGoldDisplay.pos1,
+			this.DireSpectatorGoldDisplay.Size,
+			Color.BlackGray.SetA(128)
+		)
 
-		this.RadiantPlayersHealthbars.forEach(rect => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Red.SetA(128)))
-		this.DirePlayersHealthbars.forEach(rect => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Red.SetA(128)))
+		this.RadiantPlayersHealthbars.forEach(rect =>
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Red.SetA(128))
+		)
+		this.DirePlayersHealthbars.forEach(rect =>
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Red.SetA(128))
+		)
 
-		this.RadiantPlayersManabars.forEach(rect => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Aqua.SetA(128)))
-		this.DirePlayersManabars.forEach(rect => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Aqua.SetA(128)))
+		this.RadiantPlayersManabars.forEach(rect =>
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Aqua.SetA(128))
+		)
+		this.DirePlayersManabars.forEach(rect =>
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Aqua.SetA(128))
+		)
 
-		this.RadiantPlayersBuybacks.forEach(rect => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Yellow.SetA(128)))
-		this.DirePlayersBuybacks.forEach(rect => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Yellow.SetA(128)))
+		this.RadiantPlayersBuybacks.forEach(rect =>
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Yellow.SetA(128))
+		)
+		this.DirePlayersBuybacks.forEach(rect =>
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Yellow.SetA(128))
+		)
 
-		this.RadiantPlayersTPIndicators.forEach(rect => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Fuchsia.SetA(128)))
-		this.DirePlayersTPIndicators.forEach(rect => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Fuchsia.SetA(128)))
+		this.RadiantPlayersTPIndicators.forEach(rect =>
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Fuchsia.SetA(128))
+		)
+		this.DirePlayersTPIndicators.forEach(rect =>
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Fuchsia.SetA(128))
+		)
 
-		this.RadiantPlayersHeroImages.forEach((rect, i) => RendererSDK.FilledRect(rect.pos1, rect.Size, new Color(50, 50 * i, 0, 128)))
-		this.DirePlayersHeroImages.forEach((rect, i) => RendererSDK.FilledRect(rect.pos1, rect.Size, new Color(50 * i, 0, 50, 128)))
+		this.RadiantPlayersHeroImages.forEach((rect, i) =>
+			RendererSDK.FilledRect(
+				rect.pos1,
+				rect.Size,
+				new Color(50, 50 * i, 0, 128)
+			)
+		)
+		this.DirePlayersHeroImages.forEach((rect, i) =>
+			RendererSDK.FilledRect(
+				rect.pos1,
+				rect.Size,
+				new Color(50 * i, 0, 50, 128)
+			)
+		)
 
-		this.RadiantPlayersUltReadyIndicators.forEach(rect => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Green.SetA(128)))
-		this.DirePlayersUltReadyIndicators.forEach(rect => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Green.SetA(128)))
+		this.RadiantPlayersUltReadyIndicators.forEach(rect =>
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Green.SetA(128))
+		)
+		this.DirePlayersUltReadyIndicators.forEach(rect =>
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Green.SetA(128))
+		)
 	}
 	public HasChanged(): boolean {
 		return false
 	}
 
-	private CalculateTopBar(screen_size: Vector2): void {
-		this.TopBar.Width = ScaleWidth(1240, screen_size)
-		this.TopBar.Height = ScaleHeight(165, screen_size)
-		this.TopBar.x = Math.round((screen_size.x - this.TopBar.Width) / 2)
+	private CalculateTopBar(screenSize: Vector2): void {
+		this.TopBar.Width = ScaleWidth(1240, screenSize)
+		this.TopBar.Height = ScaleHeight(165, screenSize)
+		this.TopBar.x = Math.round((screenSize.x - this.TopBar.Width) / 2)
 
 		// These resolutions have incorrect centering - they assign more pixels to the right side
 		// instead of the left one.
 		// Leave as-is unless anything breaks.
 		if (
-			(screen_size.x === 1280 && (screen_size.y === 800 || screen_size.y === 720))
-			|| ((screen_size.x === 720 || screen_size.x === 640) && screen_size.y === 480)
+			(screenSize.x === 1280 &&
+				(screenSize.y === 800 || screenSize.y === 720)) ||
+			((screenSize.x === 720 || screenSize.x === 640) && screenSize.y === 480)
 		)
 			this.TopBar.x -= 1
 	}
-	private CalculateTimeOfDay(screen_size: Vector2): void {
-		this.TimeOfDay.Width = ScaleWidth(80, screen_size)
-		this.TimeOfDay.Height = ScaleHeight(45, screen_size)
-		this.TimeOfDay.x = this.TopBar.x + Math.round((this.TopBar.Width - this.TimeOfDay.Width) / 2)
+	private CalculateTimeOfDay(screenSize: Vector2): void {
+		this.TimeOfDay.Width = ScaleWidth(80, screenSize)
+		this.TimeOfDay.Height = ScaleHeight(45, screenSize)
+		this.TimeOfDay.x =
+			this.TopBar.x + Math.round((this.TopBar.Width - this.TimeOfDay.Width) / 2)
 	}
-	private CalculateTimeOfDayTimeUntil(screen_size: Vector2): void {
-		this.TimeOfDayTimeUntil.Width = ScaleWidth(150, screen_size)
-		this.TimeOfDayTimeUntil.Height = ScaleWidth(18, screen_size)
-		this.TimeOfDayTimeUntil.x = this.TopBar.x + Math.round((this.TopBar.Width - this.TimeOfDayTimeUntil.Width) / 2)
-		this.TimeOfDayTimeUntil.y = this.TopBar.Height - ScaleHeight(64, screen_size) - this.TimeOfDayTimeUntil.Height
+	private CalculateTimeOfDayTimeUntil(screenSize: Vector2): void {
+		this.TimeOfDayTimeUntil.Width = ScaleWidth(150, screenSize)
+		this.TimeOfDayTimeUntil.Height = ScaleWidth(18, screenSize)
+		this.TimeOfDayTimeUntil.x =
+			this.TopBar.x +
+			Math.round((this.TopBar.Width - this.TimeOfDayTimeUntil.Width) / 2)
+		this.TimeOfDayTimeUntil.y =
+			this.TopBar.Height -
+			ScaleHeight(64, screenSize) -
+			this.TimeOfDayTimeUntil.Height
 	}
-	private CalculateSpectatorGoldDisplay(screen_size: Vector2): void {
-		const DisplayWidth = ScaleWidth(62, screen_size),
-			DisplayHeight = ScaleHeight(24, screen_size),
-			DisplayMargin = ScaleWidth(3, screen_size)
-		const SpectatorGoldDisplayContainer = new Rectangle()
-		SpectatorGoldDisplayContainer.Width = ScaleWidth(210, screen_size)
-		SpectatorGoldDisplayContainer.Height = ScaleHeight(50, screen_size)
-		SpectatorGoldDisplayContainer.x = (
-			this.TopBar.x
-			+ Math.round((this.TopBar.Width - SpectatorGoldDisplayContainer.Width) / 2)
-		)
-		SpectatorGoldDisplayContainer.y = this.TopBar.y + ScaleHeight(40, screen_size)
+	private CalculateSpectatorGoldDisplay(screenSize: Vector2): void {
+		const displayWidth = ScaleWidth(62, screenSize),
+			displayHeight = ScaleHeight(24, screenSize),
+			displayMargin = ScaleWidth(3, screenSize)
+		const spectatorGoldDisplayContainer = new Rectangle()
+		spectatorGoldDisplayContainer.Width = ScaleWidth(210, screenSize)
+		spectatorGoldDisplayContainer.Height = ScaleHeight(50, screenSize)
+		spectatorGoldDisplayContainer.x =
+			this.TopBar.x +
+			Math.round((this.TopBar.Width - spectatorGoldDisplayContainer.Width) / 2)
+		spectatorGoldDisplayContainer.y =
+			this.TopBar.y + ScaleHeight(40, screenSize)
 
-		this.RadiantSpectatorGoldDisplay.Width = DisplayWidth
-		this.RadiantSpectatorGoldDisplay.Height = DisplayHeight
-		this.RadiantSpectatorGoldDisplay.x = SpectatorGoldDisplayContainer.x + DisplayMargin
-		this.RadiantSpectatorGoldDisplay.y = SpectatorGoldDisplayContainer.y
+		this.RadiantSpectatorGoldDisplay.Width = displayWidth
+		this.RadiantSpectatorGoldDisplay.Height = displayHeight
+		this.RadiantSpectatorGoldDisplay.x =
+			spectatorGoldDisplayContainer.x + displayMargin
+		this.RadiantSpectatorGoldDisplay.y = spectatorGoldDisplayContainer.y
 
-		this.DireSpectatorGoldDisplay.Width = DisplayWidth
-		this.DireSpectatorGoldDisplay.Height = DisplayHeight
-		this.DireSpectatorGoldDisplay.x = (
-			SpectatorGoldDisplayContainer.x
-			+ SpectatorGoldDisplayContainer.Width
-			- this.DireSpectatorGoldDisplay.Width
-			- DisplayMargin
-		)
-		this.DireSpectatorGoldDisplay.y = SpectatorGoldDisplayContainer.y
+		this.DireSpectatorGoldDisplay.Width = displayWidth
+		this.DireSpectatorGoldDisplay.Height = displayHeight
+		this.DireSpectatorGoldDisplay.x =
+			spectatorGoldDisplayContainer.x +
+			spectatorGoldDisplayContainer.Width -
+			this.DireSpectatorGoldDisplay.Width -
+			displayMargin
+		this.DireSpectatorGoldDisplay.y = spectatorGoldDisplayContainer.y
 	}
-	private CalculateTeamScoreAndPlayers(screen_size: Vector2): void {
-		const ContainerWidth = ScaleWidth(620, screen_size),
-			TeamBackgroundWidth = ScaleWidth(410, screen_size),
-			TeamBackgroundHeight = ScaleWidth(40, screen_size),
-			TeamScoreAndPlayersWidth = ScaleWidth(540, screen_size),
-			TeamScoreAndPlayersMargin1 = ScaleWidth(10, screen_size),
-			TeamScoreAndPlayersMargin2 = ScaleWidth(40, screen_size),
-			ScoreWidth = ScaleWidth(58, screen_size),
-			ScoreHeight = ScaleHeight(38, screen_size),
-			ScoreMargin = ScaleWidth(4, screen_size),
-			ScoreMarginTop = ScaleHeight(7, screen_size),
-			PlayerWidth = ScaleWidth(66, screen_size),
-			PlayerHeight = ScaleHeight(165, screen_size),
-			PlayerMargin = ScaleWidth(4, screen_size),
-			ProTeamInfoMargin = ScaleWidth(2, screen_size),
-			TeamImageWidth = ScaleWidth(66, screen_size),
-			TeamImageHeight = ScaleHeight(40, screen_size)
+	private CalculateTeamScoreAndPlayers(screenSize: Vector2): void {
+		const containerWidth = ScaleWidth(620, screenSize),
+			teamBackgroundWidth = ScaleWidth(410, screenSize),
+			teamBackgroundHeight = ScaleWidth(40, screenSize),
+			teamScoreAndPlayersWidth = ScaleWidth(540, screenSize),
+			teamScoreAndPlayersMargin1 = ScaleWidth(10, screenSize),
+			teamScoreAndPlayersMargin2 = ScaleWidth(40, screenSize),
+			scoreWidth = ScaleWidth(58, screenSize),
+			scoreHeight = ScaleHeight(38, screenSize),
+			scoreMargin = ScaleWidth(4, screenSize),
+			scoreMarginTop = ScaleHeight(7, screenSize),
+			playerWidth = ScaleWidth(66, screenSize),
+			playerHeight = ScaleHeight(165, screenSize),
+			playerMargin = ScaleWidth(4, screenSize),
+			proTeamInfoMargin = ScaleWidth(2, screenSize),
+			teamImageWidth = ScaleWidth(66, screenSize),
+			teamImageHeight = ScaleHeight(40, screenSize)
 
 		{
-			this.RadiantTeamBackground.Width = TeamBackgroundWidth
-			this.RadiantTeamBackground.Height = TeamBackgroundHeight
-			this.RadiantTeamBackground.x = this.TopBar.x + ContainerWidth - TeamBackgroundWidth
+			this.RadiantTeamBackground.Width = teamBackgroundWidth
+			this.RadiantTeamBackground.Height = teamBackgroundHeight
+			this.RadiantTeamBackground.x =
+				this.TopBar.x + containerWidth - teamBackgroundWidth
 
-			this.DireTeamBackground.Width = TeamBackgroundWidth
-			this.DireTeamBackground.Height = TeamBackgroundHeight
-			this.DireTeamBackground.x = this.TopBar.x + this.TopBar.Width - ContainerWidth
+			this.DireTeamBackground.Width = teamBackgroundWidth
+			this.DireTeamBackground.Height = teamBackgroundHeight
+			this.DireTeamBackground.x =
+				this.TopBar.x + this.TopBar.Width - containerWidth
 		}
 		{
-			const RadiantTeamScoreAndPlayers = new Rectangle()
-			RadiantTeamScoreAndPlayers.Width = TeamScoreAndPlayersWidth - TeamScoreAndPlayersMargin1 - TeamScoreAndPlayersMargin2
-			RadiantTeamScoreAndPlayers.Height = this.TopBar.Height
-			RadiantTeamScoreAndPlayers.x = this.TopBar.x + ContainerWidth - TeamScoreAndPlayersWidth + TeamScoreAndPlayersMargin1
+			const radiantTeamScoreAndPlayers = new Rectangle()
+			radiantTeamScoreAndPlayers.Width =
+				teamScoreAndPlayersWidth -
+				teamScoreAndPlayersMargin1 -
+				teamScoreAndPlayersMargin2
+			radiantTeamScoreAndPlayers.Height = this.TopBar.Height
+			radiantTeamScoreAndPlayers.x =
+				this.TopBar.x +
+				containerWidth -
+				teamScoreAndPlayersWidth +
+				teamScoreAndPlayersMargin1
 
-			this.RadiantTeamScore.Width = ScoreWidth
-			this.RadiantTeamScore.Height = ScoreHeight
-			this.RadiantTeamScore.x = (
-				RadiantTeamScoreAndPlayers.x
-				+ RadiantTeamScoreAndPlayers.Width
-				- ScoreMargin
-				- this.RadiantTeamScore.Width
-			)
-			this.RadiantTeamScore.y = ScoreMarginTop
+			this.RadiantTeamScore.Width = scoreWidth
+			this.RadiantTeamScore.Height = scoreHeight
+			this.RadiantTeamScore.x =
+				radiantTeamScoreAndPlayers.x +
+				radiantTeamScoreAndPlayers.Width -
+				scoreMargin -
+				this.RadiantTeamScore.Width
+			this.RadiantTeamScore.y = scoreMarginTop
 
-			let current_x = this.RadiantTeamScore.x - PlayerWidth
+			let currentX = this.RadiantTeamScore.x - playerWidth
 			for (let i = 0; i < 5; i++) {
-				const PlayerRect = new Rectangle()
-				PlayerRect.Width = PlayerWidth
-				PlayerRect.Height = PlayerHeight
-				PlayerRect.x = current_x
-				current_x -= PlayerRect.Width - PlayerMargin
+				const playerRect = new Rectangle()
+				playerRect.Width = playerWidth
+				playerRect.Height = playerHeight
+				playerRect.x = currentX
+				currentX -= playerRect.Width - playerMargin
 
-				this.RadiantPlayers.push(PlayerRect)
+				this.RadiantPlayers.push(playerRect)
 			}
 			this.RadiantPlayers.reverse()
-			current_x += PlayerWidth
+			currentX += playerWidth
 
-			this.RadiantTeamImage.Width = TeamImageWidth
-			this.RadiantTeamImage.Height = TeamImageHeight
-			this.RadiantTeamImage.x = current_x + ProTeamInfoMargin - this.RadiantTeamImage.Width
+			this.RadiantTeamImage.Width = teamImageWidth
+			this.RadiantTeamImage.Height = teamImageHeight
+			this.RadiantTeamImage.x =
+				currentX + proTeamInfoMargin - this.RadiantTeamImage.Width
 		}
 
 		{
-			const DireTeamScoreAndPlayers = new Rectangle()
-			DireTeamScoreAndPlayers.Width = TeamScoreAndPlayersWidth - TeamScoreAndPlayersMargin2 - TeamScoreAndPlayersMargin1
-			DireTeamScoreAndPlayers.Height = this.TopBar.Height
-			DireTeamScoreAndPlayers.x = this.TopBar.x + this.TopBar.Width - ContainerWidth + TeamScoreAndPlayersMargin2
+			const direTeamScoreAndPlayers = new Rectangle()
+			direTeamScoreAndPlayers.Width =
+				teamScoreAndPlayersWidth -
+				teamScoreAndPlayersMargin2 -
+				teamScoreAndPlayersMargin1
+			direTeamScoreAndPlayers.Height = this.TopBar.Height
+			direTeamScoreAndPlayers.x =
+				this.TopBar.x +
+				this.TopBar.Width -
+				containerWidth +
+				teamScoreAndPlayersMargin2
 
-			this.DireTeamScore.Width = ScoreWidth
-			this.DireTeamScore.Height = ScoreHeight
-			this.DireTeamScore.x = (
-				DireTeamScoreAndPlayers.x
-				+ ScoreMargin
-			)
-			this.DireTeamScore.y = ScoreMarginTop
+			this.DireTeamScore.Width = scoreWidth
+			this.DireTeamScore.Height = scoreHeight
+			this.DireTeamScore.x = direTeamScoreAndPlayers.x + scoreMargin
+			this.DireTeamScore.y = scoreMarginTop
 
-			let current_x = this.DireTeamScore.x + this.DireTeamScore.Width
+			let currentX = this.DireTeamScore.x + this.DireTeamScore.Width
 			for (let i = 0; i < 5; i++) {
-				const PlayerRect = new Rectangle()
-				PlayerRect.Width = PlayerWidth
-				PlayerRect.Height = PlayerHeight
-				PlayerRect.x = current_x
-				current_x += PlayerRect.Width - PlayerMargin
+				const playerRect = new Rectangle()
+				playerRect.Width = playerWidth
+				playerRect.Height = playerHeight
+				playerRect.x = currentX
+				currentX += playerRect.Width - playerMargin
 
-				this.DirePlayers.push(PlayerRect)
+				this.DirePlayers.push(playerRect)
 			}
 
-			this.DireTeamImage.Width = TeamImageWidth
-			this.DireTeamImage.Height = TeamImageHeight
-			this.DireTeamImage.x = current_x - ProTeamInfoMargin
+			this.DireTeamImage.Width = teamImageWidth
+			this.DireTeamImage.Height = teamImageHeight
+			this.DireTeamImage.x = currentX - proTeamInfoMargin
 		}
 	}
 	private CalculateBar(
-		PlayerRect: Rectangle,
-		RectWidth: number,
-		RectHeight: number,
-		RectMarginBottom: number,
-		RectMargin: number,
-		CenterWidth: boolean,
+		playerRect: Rectangle,
+		rectWidth: number,
+		rectHeight: number,
+		rectMarginBottom: number,
+		rectMargin: number,
+		centerWidth: boolean
 	): Rectangle {
-		const BarRect = new Rectangle()
-		BarRect.Width = RectWidth
-		BarRect.Height = RectHeight
-		BarRect.x = PlayerRect.x + RectMargin
-		if (CenterWidth)
-			BarRect.x += Math.sign(RectMargin) * Math.round((PlayerRect.Width - RectWidth - Math.abs(RectMargin)) / 2)
-		if (RectMargin < 0)
-			BarRect.x += PlayerRect.Width - RectWidth
-		BarRect.y = PlayerRect.y - RectMarginBottom
-		if (RectMarginBottom > 0)
-			BarRect.y += PlayerRect.Height - RectHeight
-		return BarRect
+		const barRect = new Rectangle()
+		barRect.Width = rectWidth
+		barRect.Height = rectHeight
+		barRect.x = playerRect.x + rectMargin
+		if (centerWidth)
+			barRect.x +=
+				Math.sign(rectMargin) *
+				Math.round((playerRect.Width - rectWidth - Math.abs(rectMargin)) / 2)
+		if (rectMargin < 0) barRect.x += playerRect.Width - rectWidth
+		barRect.y = playerRect.y - rectMarginBottom
+		if (rectMarginBottom > 0) barRect.y += playerRect.Height - rectHeight
+		return barRect
 	}
 	private CalculateBasicRects(
-		BarWidth: number,
-		BarHeight: number,
-		BarMarginBottom: number,
-		BarMargin: number,
-		RadiantBarArray: Rectangle[],
-		DireBarArray: Rectangle[],
-		CenterWidth = false,
+		barWidth: number,
+		barHeight: number,
+		barMarginBottom: number,
+		barMargin: number,
+		radiantBarArray: Rectangle[],
+		direBarArray: Rectangle[],
+		centerWidth = false
 	): void {
-		this.RadiantPlayers.forEach(PlayerRect => RadiantBarArray.push(this.CalculateBar(
-			PlayerRect,
-			BarWidth,
-			BarHeight,
-			BarMarginBottom,
-			BarMargin,
-			CenterWidth,
-		)))
-		this.DirePlayers.forEach(PlayerRect => DireBarArray.push(this.CalculateBar(
-			PlayerRect,
-			BarWidth,
-			BarHeight,
-			BarMarginBottom,
-			-BarMargin,
-			CenterWidth,
-		)))
+		for (const playerRect of this.RadiantPlayers)
+			radiantBarArray.push(
+				this.CalculateBar(
+					playerRect,
+					barWidth,
+					barHeight,
+					barMarginBottom,
+					barMargin,
+					centerWidth
+				)
+			)
+		for (const playerRect of this.DirePlayers)
+			direBarArray.push(
+				this.CalculateBar(
+					playerRect,
+					barWidth,
+					barHeight,
+					barMarginBottom,
+					-barMargin,
+					centerWidth
+				)
+			)
 	}
-	private CalculateHealthbars(screen_size: Vector2): void {
+	private CalculateHealthbars(screenSize: Vector2): void {
 		this.CalculateBasicRects(
-			ScaleWidth(60, screen_size),
-			ScaleHeight(8, screen_size),
-			ScaleHeight(129, screen_size) - ScaleHeight(11, screen_size),
-			ScaleWidth(6, screen_size),
+			ScaleWidth(60, screenSize),
+			ScaleHeight(8, screenSize),
+			ScaleHeight(129, screenSize) - ScaleHeight(11, screenSize),
+			ScaleWidth(6, screenSize),
 			this.RadiantPlayersHealthbars,
-			this.DirePlayersHealthbars,
+			this.DirePlayersHealthbars
 		)
 	}
-	private CalculateManabars(screen_size: Vector2): void {
+	private CalculateManabars(screenSize: Vector2): void {
 		this.CalculateBasicRects(
-			ScaleWidth(60, screen_size),
-			ScaleHeight(8, screen_size),
-			ScaleHeight(121, screen_size) - ScaleHeight(11, screen_size),
-			ScaleWidth(6, screen_size),
+			ScaleWidth(60, screenSize),
+			ScaleHeight(8, screenSize),
+			ScaleHeight(121, screenSize) - ScaleHeight(11, screenSize),
+			ScaleWidth(6, screenSize),
 			this.RadiantPlayersManabars,
-			this.DirePlayersManabars,
+			this.DirePlayersManabars
 		)
 	}
-	private CalculateBuybacks(screen_size: Vector2): void {
+	private CalculateBuybacks(screenSize: Vector2): void {
 		this.CalculateBasicRects(
-			ScaleWidth(60, screen_size),
-			ScaleHeight(4, screen_size),
-			ScaleHeight(106, screen_size),
-			ScaleWidth(6, screen_size),
+			ScaleWidth(60, screenSize),
+			ScaleHeight(4, screenSize),
+			ScaleHeight(106, screenSize),
+			ScaleWidth(6, screenSize),
 			this.RadiantPlayersBuybacks,
-			this.DirePlayersBuybacks,
+			this.DirePlayersBuybacks
 		)
 	}
-	private CalculateRespawnTimers(screen_size: Vector2): void {
+	private CalculateRespawnTimers(screenSize: Vector2): void {
 		this.CalculateBasicRects(
-			ScaleWidth(60, screen_size),
-			ScaleHeight(26, screen_size),
-			ScaleHeight(99, screen_size),
-			ScaleWidth(6, screen_size),
+			ScaleWidth(60, screenSize),
+			ScaleHeight(26, screenSize),
+			ScaleHeight(99, screenSize),
+			ScaleWidth(6, screenSize),
 			this.RadiantPlayersRespawnTimers,
-			this.DirePlayersRespawnTimers,
+			this.DirePlayersRespawnTimers
 		)
 	}
-	private CalculateTPIndicators(screen_size: Vector2): void {
+	private CalculateTPIndicators(screenSize: Vector2): void {
 		this.CalculateBasicRects(
-			ScaleWidth(48, screen_size),
-			ScaleHeight(48, screen_size),
-			ScaleHeight(40, screen_size),
-			ScaleWidth(6, screen_size),
+			ScaleWidth(48, screenSize),
+			ScaleHeight(48, screenSize),
+			ScaleHeight(40, screenSize),
+			ScaleWidth(6, screenSize),
 			this.RadiantPlayersTPIndicators,
 			this.DirePlayersTPIndicators,
-			true,
+			true
 		)
 	}
-	private CalculateUltReadyIndicators(screen_size: Vector2): void {
+	private CalculateUltReadyIndicators(screenSize: Vector2): void {
 		this.CalculateBasicRects(
-			ScaleWidth(38, screen_size),
-			ScaleHeight(20, screen_size),
-			ScaleHeight(-28, screen_size),
-			ScaleWidth(6, screen_size),
+			ScaleWidth(38, screenSize),
+			ScaleHeight(20, screenSize),
+			ScaleHeight(-28, screenSize),
+			ScaleWidth(6, screenSize),
 			this.RadiantPlayersUltReadyIndicators,
 			this.DirePlayersUltReadyIndicators,
-			true,
+			true
 		)
 	}
-	private CalculateHeroImages(screen_size: Vector2): void {
+	private CalculateHeroImages(screenSize: Vector2): void {
 		this.CalculateBasicRects(
-			ScaleWidth(66, screen_size),
-			ScaleHeight(36, screen_size),
-			ScaleHeight(-4, screen_size),
+			ScaleWidth(66, screenSize),
+			ScaleHeight(36, screenSize),
+			ScaleHeight(-4, screenSize),
 			0,
 			this.RadiantPlayersHeroImages,
-			this.DirePlayersHeroImages,
+			this.DirePlayersHeroImages
 		)
 	}
 }

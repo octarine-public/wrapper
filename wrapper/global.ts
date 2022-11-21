@@ -19,7 +19,10 @@ import { MenuManager as _Menu } from "./Menu/Menu"
 import { RendererSDK as _RendererSDK } from "./Native/RendererSDK"
 import * as _WASM from "./Native/WASM"
 import { Workers as _Workers } from "./Native/Workers"
-import { GameRules as _GameRules, LocalPlayer as _LocalPlayer } from "./Objects/Base/Entity"
+import {
+	GameRules as _GameRules,
+	LocalPlayer as _LocalPlayer,
+} from "./Objects/Base/Entity"
 import { FakeUnits as _FakeUnits } from "./Objects/Base/FakeUnit"
 import { PlayerResource as _PlayerResource } from "./Objects/Base/PlayerResource"
 import { SDKClasses } from "./Objects/NativeToSDK"
@@ -98,9 +101,7 @@ globalThis.GUIInfo = _GUIInfo
 
 globalThis.Menu = _Menu
 globalThis.GetEntityClassByName = (name: string) => {
-	for (const [class_] of SDKClasses)
-		if (class_.name === name)
-			return class_
+	for (const [constr] of SDKClasses) if (constr.name === name) return constr
 	return undefined
 }
 

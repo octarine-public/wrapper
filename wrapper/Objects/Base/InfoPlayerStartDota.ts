@@ -9,4 +9,5 @@ export class InfoPlayerStartDota extends Entity {
 		return this.Name_ === "Spawner_bad" ? Team.Dire : Team.Radiant
 	}
 }
-export const PlayerSpawners = EntityManager.GetEntitiesByClass(InfoPlayerStartDota)
+export const PlayerSpawners =
+	EntityManager.GetEntitiesByClass(InfoPlayerStartDota)

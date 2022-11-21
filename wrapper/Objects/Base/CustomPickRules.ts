@@ -1,12 +1,12 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
-import { DOTACustomHeroPickRulesPhase_t } from "../../Enums/DOTACustomHeroPickRulesPhase_t"
+import { DOTACustomHeroPickRulesPhase } from "../../Enums/DOTACustomHeroPickRulesPhase"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { Entity } from "./Entity"
 
 @WrapperClass("CDOTACustomGameHeroPickRules")
 export class CCustomHeroPickRules extends Entity {
 	@NetworkedBasicField("m_Phase")
-	public Phase: DOTACustomHeroPickRulesPhase_t = DOTACustomHeroPickRulesPhase_t.PHASE_Ban
+	public Phase: DOTACustomHeroPickRulesPhase = DOTACustomHeroPickRulesPhase.Ban
 	@NetworkedBasicField("m_nNumBansPerTeam")
 	public NumBansPerTeam: number = 0
 	@NetworkedBasicField("m_flEnterTime")
@@ -15,11 +15,9 @@ export class CCustomHeroPickRules extends Entity {
 
 export let CustomHeroPickRules: Nullable<CCustomHeroPickRules>
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent instanceof CCustomHeroPickRules)
-		CustomHeroPickRules = ent
+	if (ent instanceof CCustomHeroPickRules) CustomHeroPickRules = ent
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (CustomHeroPickRules === ent)
-		CustomHeroPickRules = undefined
+	if (CustomHeroPickRules === ent) CustomHeroPickRules = undefined
 })

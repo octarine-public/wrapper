@@ -1,7 +1,7 @@
 import { Color } from "../../Base/Color"
 import { WrapperClass } from "../../Decorators"
 import { MapArea } from "../../Enums/MapArea"
-import { RenderMode_t } from "../../Enums/RenderMode_t"
+import { RenderMode } from "../../Enums/RenderMode"
 import { CreepPathCorner } from "./CreepPathCorner"
 import { Entity } from "./Entity"
 
@@ -16,7 +16,7 @@ export class LaneCreepSpawner extends Entity {
 	public set CustomGlowColor(_: Nullable<Color>) {
 		// N/A for non-networked entities
 	}
-	public set CustomDrawColor(_: Nullable<[Color, RenderMode_t]>) {
+	public set CustomDrawColor(_: Nullable<[Color, RenderMode]>) {
 		// N/A for non-networked entities
 	}
 }

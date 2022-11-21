@@ -1,35 +1,36 @@
 export class FileBinaryStream implements ReadableBinaryStream {
-	private readonly is_utf16: boolean
-	private readonly is_utf16_be: boolean
+	private readonly isUtf16: boolean
+	private readonly isUtf16BE: boolean
 	private readonly cache: Uint8Array
 	private readonly cacheView: DataView
 	private cachePos: number
 	constructor(
 		private readonly fileStream: FileStream,
 		public pos = 0,
-		detect_encoding = false,
+		detectEncoding = false,
 		private readonly size = fileStream.byteLength,
-		private readonly offset = 0,
+		private readonly offset = 0
 	) {
 		// make cache sized minimum of 64KB and nearest ceiled power of 2 to size
 		// that way we won't allocate 64KB cache for files <=32KB
-		this.cache = new Uint8Array(Math.min(64 * 1024, 2 ** Math.ceil(Math.log2(this.size))))
+		this.cache = new Uint8Array(
+			Math.min(64 * 1024, 2 ** Math.ceil(Math.log2(this.size)))
+		)
 		this.cacheView = new DataView(this.cache.buffer)
 		this.cachePos = -this.cache.byteLength
-		this.is_utf16 = false
-		this.is_utf16_be = false
-		if (!detect_encoding)
-			return
+		this.isUtf16 = false
+		this.isUtf16BE = false
+		if (!detectEncoding) return
 		if (this.Remaining >= 2) {
 			const ch1 = this.ReadUint8(),
 				ch2 = this.ReadUint8()
-			if (ch1 === 0xFF && ch2 === 0xFE) {
-				this.is_utf16 = true
+			if (ch1 === 0xff && ch2 === 0xfe) {
+				this.isUtf16 = true
 				return
 			}
-			if (ch1 === 0xFE && ch2 === 0xFF) {
-				this.is_utf16 = true
-				this.is_utf16_be = true
+			if (ch1 === 0xfe && ch2 === 0xff) {
+				this.isUtf16 = true
+				this.isUtf16BE = true
 				return
 			}
 			this.RelativeSeek(-2)
@@ -38,8 +39,8 @@ export class FileBinaryStream implements ReadableBinaryStream {
 			const ch1 = this.ReadUint8(),
 				ch2 = this.ReadUint8(),
 				ch3 = this.ReadUint8()
-			if (ch1 === 0xEF && ch2 === 0xBB && ch3 === 0xBF) {
-				this.is_utf16 = false
+			if (ch1 === 0xef && ch2 === 0xbb && ch3 === 0xbf) {
+				this.isUtf16 = false
 				return
 			}
 			this.RelativeSeek(-3)
@@ -72,7 +73,7 @@ export class FileBinaryStream implements ReadableBinaryStream {
 			b: number
 		do {
 			b = this.ReadUint8()
-			val |= (b & 0x7F) << shift
+			val |= (b & 0x7f) << shift
 			shift += 7
 		} while ((b & 0x80) !== 0)
 		return val
@@ -83,7 +84,7 @@ export class FileBinaryStream implements ReadableBinaryStream {
 			b: number
 		do {
 			b = this.ReadUint8()
-			val |= BigInt(b & 0x7F) << shift
+			val |= BigInt(b & 0x7f) << shift
 			shift += 7n
 		} while ((b & 0x80) !== 0)
 		return val
@@ -114,25 +115,37 @@ export class FileBinaryStream implements ReadableBinaryStream {
 	}
 	public ReadUint64(littleEndian = true): bigint {
 		this.PopulateCache(8)
-		const res = this.cacheView.getBigUint64(this.pos - this.cachePos, littleEndian)
+		const res = this.cacheView.getBigUint64(
+			this.pos - this.cachePos,
+			littleEndian
+		)
 		this.pos += 8
 		return res
 	}
 	public ReadInt64(littleEndian = true): bigint {
 		this.PopulateCache(8)
-		const res = this.cacheView.getBigInt64(this.pos - this.cachePos, littleEndian)
+		const res = this.cacheView.getBigInt64(
+			this.pos - this.cachePos,
+			littleEndian
+		)
 		this.pos += 8
 		return res
 	}
 	public ReadFloat32(littleEndian = true): number {
 		this.PopulateCache(4)
-		const res = this.cacheView.getFloat32(this.pos - this.cachePos, littleEndian)
+		const res = this.cacheView.getFloat32(
+			this.pos - this.cachePos,
+			littleEndian
+		)
 		this.pos += 4
 		return res
 	}
 	public ReadFloat64(littleEndian = true): number {
 		this.PopulateCache(8)
-		const res = this.cacheView.getFloat64(this.pos - this.cachePos, littleEndian)
+		const res = this.cacheView.getFloat64(
+			this.pos - this.cachePos,
+			littleEndian
+		)
 		this.pos += 8
 		return res
 	}
@@ -144,13 +157,15 @@ export class FileBinaryStream implements ReadableBinaryStream {
 			throw `Failed reading slice of size ${out.byteLength}`
 		// if cache fully contains required bytes - grab them from there, otherwise bypass cache
 		if (
-			this.pos >= this.cachePos
-			&& this.cachePos + this.cache.byteLength >= this.pos + out.byteLength
+			this.pos >= this.cachePos &&
+			this.cachePos + this.cache.byteLength >= this.pos + out.byteLength
 		)
-			out.set(this.cache.subarray(
-				this.pos - this.cachePos,
-				this.pos - this.cachePos + out.byteLength,
-			))
+			out.set(
+				this.cache.subarray(
+					this.pos - this.cachePos,
+					this.pos - this.cachePos + out.byteLength
+				)
+			)
 		else if (this.fileStream.read(this.offset + this.pos, out) < out.byteLength)
 			throw `Failed reading slice of size ${out.byteLength} (native)`
 		this.pos += out.byteLength
@@ -168,33 +183,47 @@ export class FileBinaryStream implements ReadableBinaryStream {
 		const nPart = this.ReadUint8()
 		size--
 		return String.fromCharCode(
-			nPart > 251 && nPart < 254 && size >= 5 ? /* six bytes */
-				/* (nPart - 252 << 30) may be not so safe in ECMAScript! So...: */
-				(nPart - 252) * 1073741824 + (this.ReadUint8() - 128 << 24) + (this.ReadUint8() - 128 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
-				: nPart > 247 && nPart < 252 && size >= 4 ? /* five bytes */
-					(nPart - 248 << 24) + (this.ReadUint8() - 128 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
-					: nPart > 239 && nPart < 248 && size >= 3 ? /* four bytes */
-						(nPart - 240 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
-						: nPart > 223 && nPart < 240 && size >= 2 ? /* three bytes */
-							(nPart - 224 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
-							: nPart > 191 && nPart < 224 && size >= 1 ? /* two bytes */
-								(nPart - 192 << 6) + this.ReadUint8() - 128
-								: /* nPart < 127 ? */ /* one byte */
-								nPart,
+			nPart > 251 && nPart < 254 && size >= 5 /* six bytes */
+				? /* (nPart - 252 << 30) may be not so safe in ECMAScript! So...: */
+				  (nPart - 252) * 1073741824 +
+						((this.ReadUint8() - 128) << 24) +
+						((this.ReadUint8() - 128) << 18) +
+						((this.ReadUint8() - 128) << 12) +
+						((this.ReadUint8() - 128) << 6) +
+						this.ReadUint8() -
+						128
+				: nPart > 247 && nPart < 252 && size >= 4 /* five bytes */
+				? ((nPart - 248) << 24) +
+				  ((this.ReadUint8() - 128) << 18) +
+				  ((this.ReadUint8() - 128) << 12) +
+				  ((this.ReadUint8() - 128) << 6) +
+				  this.ReadUint8() -
+				  128
+				: nPart > 239 && nPart < 248 && size >= 3 /* four bytes */
+				? ((nPart - 240) << 18) +
+				  ((this.ReadUint8() - 128) << 12) +
+				  ((this.ReadUint8() - 128) << 6) +
+				  this.ReadUint8() -
+				  128
+				: nPart > 223 && nPart < 240 && size >= 2 /* three bytes */
+				? ((nPart - 224) << 12) +
+				  ((this.ReadUint8() - 128) << 6) +
+				  this.ReadUint8() -
+				  128
+				: nPart > 191 && nPart < 224 && size >= 1 /* two bytes */
+				? ((nPart - 192) << 6) + this.ReadUint8() - 128
+				: /* nPart < 127 ? */ /* one byte */
+				  nPart
 		)
 	}
 	public ReadUtf16Char(): string {
-		return String.fromCharCode(this.ReadUint16(!this.is_utf16_be))
+		return String.fromCharCode(this.ReadUint16(!this.isUtf16BE))
 	}
 	public ReadChar(): string {
-		return this.is_utf16
-			? this.ReadUtf16Char()
-			: this.ReadUtf8Char()
+		return this.isUtf16 ? this.ReadUtf16Char() : this.ReadUtf8Char()
 	}
 	public SeekLine(): void {
-		while (!this.Empty())
-			if (this.ReadChar() === "\n")
-				break
+		while (!this.Empty()) if (this.ReadChar() === "\n") break
 	}
 	public ReadUtf8String(size: number): string {
 		let out = ""
@@ -208,20 +237,17 @@ export class FileBinaryStream implements ReadableBinaryStream {
 	public ReadNullTerminatedString(): string {
 		let str = ""
 		while (true) {
-			if (this.Empty())
-				return str
+			if (this.Empty()) return str
 			const b = this.ReadUint8()
-			if (b === 0)
-				return str
+			if (b === 0) return str
 			str += String.fromCharCode(b)
 		}
 	}
 	public ReadNullTerminatedUtf8String(): string {
-		const orig_pos = this.pos
+		const savedPos = this.pos
 		let size = 0
-		while (this.ReadUint8() !== 0)
-			size++
-		this.pos = orig_pos
+		while (this.ReadUint8() !== 0) size++
+		this.pos = savedPos
 
 		const str = this.ReadUtf8String(size)
 		this.pos++ // skip remaining null byte
@@ -230,23 +256,20 @@ export class FileBinaryStream implements ReadableBinaryStream {
 	public ReadNullTerminatedUtf16String(): string {
 		let str = ""
 		while (true) {
-			if (this.Empty())
-				return str
+			if (this.Empty()) return str
 			const b = this.ReadUint16()
-			if (b === 0)
-				return str
+			if (b === 0) return str
 			str += String.fromCharCode(b)
 		}
 	}
 	// https://github.com/SteamDatabase/ValveResourceFormat/blob/cceba491d7bb60890a53236a90970b24d0a4aba9/ValveResourceFormat/Utils/StreamHelpers.cs#L43
 	public ReadOffsetString(): string {
 		const offset = this.ReadUint32()
-		if (offset === 0)
-			return ""
-		const saved_pos = this.pos
+		if (offset === 0) return ""
+		const savedPos = this.pos
 		this.pos += offset - 4 // offset from offset
 		const ret = this.ReadNullTerminatedUtf8String()
-		this.pos = saved_pos
+		this.pos = savedPos
 		return ret
 	}
 	public ReadVarString(): string {
@@ -257,26 +280,25 @@ export class FileBinaryStream implements ReadableBinaryStream {
 			this.fileStream,
 			block,
 			this.offset + this.pos,
-			this.Remaining,
+			this.Remaining
 		)
 	}
 	public ParseKVBlock(): RecursiveMap {
-		return parseKVBlock(
-			this.fileStream,
-			this.offset + this.pos,
-			this.Remaining,
-		)
+		return parseKVBlock(this.fileStream, this.offset + this.pos, this.Remaining)
 	}
 	public Empty(): boolean {
 		return this.pos >= this.size
 	}
-	public CreateNestedStream(size: number, detectEncoding = false): FileBinaryStream {
+	public CreateNestedStream(
+		size: number,
+		detectEncoding = false
+	): FileBinaryStream {
 		const res = new FileBinaryStream(
 			this.fileStream,
 			0,
 			detectEncoding,
 			Math.min(this.Remaining, size),
-			this.offset + this.pos,
+			this.offset + this.pos
 		)
 		this.pos += size
 		return res
@@ -286,7 +308,10 @@ export class FileBinaryStream implements ReadableBinaryStream {
 		const remaining = this.Remaining
 		if (remaining < bytes || bytes > this.cache.byteLength)
 			throw `Failed populating cache with ${bytes} bytes`
-		if (this.pos >= this.cachePos && this.cachePos + this.cache.byteLength >= this.pos + bytes)
+		if (
+			this.pos >= this.cachePos &&
+			this.cachePos + this.cache.byteLength >= this.pos + bytes
+		)
 			return
 		this.cachePos = this.pos
 		const read = this.fileStream.read(this.offset + this.pos, this.cache)

@@ -1,39 +1,28 @@
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { EventsSDK } from "./EventsSDK"
 
-const StringTables = new Map<string, Map<number, [string, ArrayBuffer]>>()
-declare global {
-	var DumpStringTables: () => void
-	var StringTables_: typeof StringTables
-}
-globalThis.StringTables_ = StringTables
+const stringTables = new Map<string, Map<number, [string, ArrayBuffer]>>()
 
-EventsSDK.on("RemoveAllStringTables", () => StringTables.clear())
+const globalThisAny = globalThis as any
+globalThisAny.StringTables = stringTables
+
+EventsSDK.on("RemoveAllStringTables", () => stringTables.clear())
 EventsSDK.on("UpdateStringTable", (name, update) => {
-	if (!StringTables.has(name))
-		StringTables.set(name, new Map())
-	const table = StringTables.get(name)!
+	if (!stringTables.has(name)) stringTables.set(name, new Map())
+	const table = stringTables.get(name)!
 	update.forEach((val, key) => table.set(key, [val[0], val[1]]))
 })
 
-globalThis.DumpStringTables = () => {
-	StringTables.forEach((map, name) => {
-		console.log(name)
-		map.forEach((pair, index) => console.log(index, pair[0], pair[1]))
-	})
+export function GetTable(tableName: string) {
+	return stringTables.get(tableName)
 }
-
-export function GetTable(table_name: string) {
-	return StringTables.get(table_name)
-}
-export function GetString(table_name: string, index: number): string {
-	const ar = GetTable(table_name)?.get(index)
+export function GetString(tableName: string, index: number): string {
+	const ar = GetTable(tableName)?.get(index)
 	return ar !== undefined ? ar[0] : ""
 }
-export function GetValue(table_name: string, index: number): string {
-	const ar = GetTable(table_name)?.get(index)
-	if (ar === undefined)
-		return ""
+export function GetValue(tableName: string, index: number): string {
+	const ar = GetTable(tableName)?.get(index)
+	if (ar === undefined) return ""
 	const stream = new ViewBinaryStream(new DataView(ar[1]))
 	return stream.ReadUtf8String(stream.Remaining)
 }

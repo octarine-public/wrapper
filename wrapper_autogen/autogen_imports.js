@@ -38,8 +38,8 @@ function StandartifyString(str) {
 	return str.toLowerCase().split("_").join("")
 }
 
-function MakeKnownClass(abil_name, class_name) {
-	return [StandartifyString(abil_name), class_name]
+function MakeKnownClass(abilName, class_name) {
+	return [StandartifyString(abilName), class_name]
 }
 
 let known_classes = new Map([

@@ -2,7 +2,12 @@ import { Matrix4x4 } from "../Base/Matrix4x4"
 import { Vector3 } from "../Base/Vector3"
 import { Vector4 } from "../Base/Vector4"
 import { HasBit } from "../Utils/BitsExtensions"
-import { MapToNumberArray, MapToStringArray, MapToVector3Array, MapToVector4Array } from "./ParseUtils"
+import {
+	MapToNumberArray,
+	MapToStringArray,
+	MapToVector3Array,
+	MapToVector4Array,
+} from "./ParseUtils"
 
 export class CBone {
 	public Parent: Nullable<CBone>
@@ -11,11 +16,11 @@ export class CBone {
 	constructor(
 		public readonly Name: string,
 		public readonly SkinIndices: number[],
-		Position: Vector3,
-		Angle: Vector4,
+		position: Vector3,
+		angle: Vector4
 	) {
-		this.InverseBindPose = Matrix4x4.CreateFromVector4(Angle)
-		this.InverseBindPose.Translation = Position
+		this.InverseBindPose = Matrix4x4.CreateFromVector4(angle)
+		this.InverseBindPose.Translation = position
 		this.InverseBindPose.Invert()
 	}
 	public SetParent(parent: CBone): void {
@@ -52,46 +57,44 @@ export class CSkeleton {
 			throw "Skeleton without boneRotations"
 		const boneRotations = MapToVector4Array(boneRotationsMap)
 
-		this.AnimationTextureSize = boneNames.length !== 0 && remapTable.size !== 0
-			? this.ComputeAnimationTextureSize(remapTable)
-			: 0
+		this.AnimationTextureSize =
+			boneNames.length !== 0 && remapTable.size !== 0
+				? this.ComputeAnimationTextureSize(remapTable)
+				: 0
 
 		for (let i = 0; i < boneNames.length; i++) {
-			if (!HasBit(boneFlags[i], 10))
-				continue
+			if (!HasBit(boneFlags[i], 10)) continue
 			const bone = new CBone(
 				boneNames[i] ?? "",
 				remapTable.get(i) ?? [],
 				bonePositions[i] ?? new Vector3(),
-				boneRotations[i] ?? new Vector4(),
+				boneRotations[i] ?? new Vector4()
 			)
 			this.Bones.set(bone.Name, bone)
 		}
 		for (let i = 0; i < boneNames.length; i++) {
-			if (boneParents[i] === -1 || !HasBit(boneFlags[i], 10))
-				continue
-			const child_name = boneNames[i]
-			const parent_name = boneNames[boneParents[i]]
-			if (child_name === undefined || parent_name === undefined)
-				continue
-			const child = this.Bones.get(child_name),
-				parent = this.Bones.get(parent_name)
-			if (child === undefined || parent === undefined)
-				continue
+			if (boneParents[i] === -1 || !HasBit(boneFlags[i], 10)) continue
+			const childName = boneNames[i]
+			const parentName = boneNames[boneParents[i]]
+			if (childName === undefined || parentName === undefined) continue
+			const child = this.Bones.get(childName),
+				parent = this.Bones.get(parentName)
+			if (child === undefined || parent === undefined) continue
 			child.SetParent(parent)
 			parent.AddChild(child)
 		}
 		this.FindRoots()
 	}
-	private ComputeAnimationTextureSize(remapTable: Map<number, number[]>): number {
+	private ComputeAnimationTextureSize(
+		remapTable: Map<number, number[]>
+	): number {
 		let max = 0
-		remapTable.forEach(ar => max = ar.reduce((a, b) => Math.max(a, b), max))
+		remapTable.forEach(ar => (max = ar.reduce((a, b) => Math.max(a, b), max)))
 		return max + 1
 	}
 	private FindRoots(): void {
 		this.Bones.forEach(bone => {
-			if (bone.Parent === undefined)
-				this.Roots.push(bone)
+			if (bone.Parent === undefined) this.Roots.push(bone)
 		})
 	}
 }

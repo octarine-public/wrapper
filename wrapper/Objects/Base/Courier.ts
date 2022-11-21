@@ -1,5 +1,5 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
-import { CourierState_t } from "../../Enums/CourierState_t"
+import { CourierState } from "../../Enums/CourierState"
 import { EntityManager } from "../../Managers/EntityManager"
 import { Hero } from "./Hero"
 import { Unit } from "./Unit"
@@ -11,7 +11,7 @@ export class Courier extends Unit {
 	@NetworkedBasicField("m_flRespawnTime")
 	public RespawnTime = 0
 	@NetworkedBasicField("m_nCourierState")
-	public State = CourierState_t.COURIER_STATE_INIT
+	public State = CourierState.COURIER_STATE_INIT
 	@NetworkedBasicField("m_hCourierStateEntity")
 	public StateHero_ = 0
 

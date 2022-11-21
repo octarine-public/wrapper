@@ -5,40 +5,50 @@ import { QAngle } from "../../Base/QAngle"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
-import { GameActivity_t } from "../../Enums/GameActivity_t"
-import { LifeState_t } from "../../Enums/LifeState_t"
-import { RenderMode_t } from "../../Enums/RenderMode_t"
+import { GameActivity } from "../../Enums/GameActivity"
+import { LifeState } from "../../Enums/LifeState"
+import { RenderMode } from "../../Enums/RenderMode"
 import { Team } from "../../Enums/Team"
 import { EntityManager } from "../../Managers/EntityManager"
+import { Events } from "../../Managers/Events"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { Manifest } from "../../Managers/Manifest"
 import * as StringTables from "../../Managers/StringTables"
 import { RendererSDK } from "../../Native/RendererSDK"
 import { Player } from "../../Objects/Base/Player"
-import { ComputeAttachmentsAndBoundsAsync, ComputedAttachment, ComputedAttachments } from "../../Resources/ComputeAttachments"
+import { FieldHandler, RegisterFieldHandler } from "../../Objects/NativeToSDK"
+import {
+	ComputeAttachmentsAndBoundsAsync,
+	ComputedAttachment,
+	ComputedAttachments,
+} from "../../Resources/ComputeAttachments"
 import { GameState } from "../../Utils/GameState"
 import { DegreesToRadian } from "../../Utils/Math"
 import { CGameRules } from "./GameRules"
 import { Item } from "./Item"
 
 export var LocalPlayer: Nullable<Player>
-let player_slot = NaN
-EventsSDK.on("ServerInfo", info => player_slot = (info.get("player_slot") as number) ?? NaN)
+let playerSlot = NaN
+EventsSDK.on(
+	"ServerInfo",
+	info => (playerSlot = (info.get("player_slot") as number) ?? NaN)
+)
 let gameInProgress = false
-const ModelDataCache = new Map<string, Promise<[ComputedAttachments, Vector3, Vector3]>>()
-function SetGameInProgress(new_val: boolean) {
-	if (!gameInProgress && new_val)
-		EventsSDK.emit("GameStarted", false)
-	else if (gameInProgress && !new_val) {
+const modelDataCache = new Map<
+	string,
+	Promise<[ComputedAttachments, Vector3, Vector3]>
+>()
+function SetGameInProgress(newVal: boolean) {
+	if (!gameInProgress && newVal) EventsSDK.emit("GameStarted", false)
+	else if (gameInProgress && !newVal) {
 		EventsSDK.emit("GameEnded", false)
-		if (IS_MAIN_WORKER)
-			Particles.DeleteAll()
+		if (IS_MAIN_WORKER) Particles.DeleteAll()
 		RendererSDK.FreeTextureCache()
 	}
-	gameInProgress = new_val
+	gameInProgress = newVal
 }
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent.Index === player_slot + 1) {
+	if (ent.Index === playerSlot + 1) {
 		LocalPlayer = ent as Player
 		SetGameInProgress(true)
 	}
@@ -51,19 +61,16 @@ EventsSDK.on("EntityDestroyed", ent => {
 })
 export let GameRules: Nullable<CGameRules>
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent.IsGameRules)
-		GameRules = ent as CGameRules
+	if (ent.IsGameRules) GameRules = ent as CGameRules
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	if (!ent.IsGameRules)
-		return
+	if (!ent.IsGameRules) return
 	GameRules = undefined
 	GameState.RawGameTime = 0
 })
 
-const activity2name = new Map<GameActivity_t, string>(
-	Object.entries(GameActivity_t)
-		.map(([k, v]) => [v as GameActivity_t, k]),
+const activity2name = new Map<GameActivity, string>(
+	Object.entries(GameActivity).map(([k, v]) => [v as GameActivity, k])
 )
 @WrapperClass("CBaseEntity")
 export class Entity {
@@ -73,7 +80,7 @@ export class Entity {
 	public CreateTime_ = 0
 	public FakeCreateTime_ = GameState.RawGameTime
 	public Team = Team.None
-	public LifeState = LifeState_t.LIFE_DEAD
+	public LifeState = LifeState.LIFE_DEAD
 	@NetworkedBasicField("m_iHealth")
 	public HP = 0
 	@NetworkedBasicField("m_iMaxHealth")
@@ -108,31 +115,26 @@ export class Entity {
 	public readonly SpawnPosition = new Vector3()
 	public Attachments: Nullable<ComputedAttachments>
 	private CustomGlowColor_: Nullable<Color>
-	private CustomDrawColor_: Nullable<[Color, RenderMode_t]>
+	private CustomDrawColor_: Nullable<[Color, RenderMode]>
 	private RingRadius_ = 30
 
-	constructor(
-		public readonly Index: number,
-		private readonly Serial: number,
-	) { }
+	constructor(public readonly Index: number, private readonly Serial: number) {}
 
 	public get CustomGlowColor(): Nullable<Color> {
 		return this.CustomGlowColor_
 	}
 	public set CustomGlowColor(val: Nullable<Color>) {
-		if (this.CustomGlowColor_ === undefined && val === undefined)
-			return
+		if (this.CustomGlowColor_ === undefined && val === undefined) return
 		this.CustomGlowColor_ = val
-		last_glow_ents.add(this)
+		lastGlowEnts.add(this)
 	}
-	public get CustomDrawColor(): Nullable<[Color, RenderMode_t]> {
+	public get CustomDrawColor(): Nullable<[Color, RenderMode]> {
 		return this.CustomDrawColor_
 	}
-	public set CustomDrawColor(val: Nullable<[Color, RenderMode_t]>) {
-		if (this.CustomDrawColor_ === undefined && val === undefined)
-			return
+	public set CustomDrawColor(val: Nullable<[Color, RenderMode]>) {
+		if (this.CustomDrawColor_ === undefined && val === undefined) return
 		this.CustomDrawColor_ = val
-		last_colored_ents.add(this)
+		lastColoredEnts.add(this)
 	}
 	public get Name(): string {
 		return this.Name_
@@ -143,11 +145,10 @@ export class Entity {
 	public get RootOwner(): Nullable<Entity> {
 		let owner = this.Owner
 		while (true) {
-			const root_owner = owner?.Owner
-			if (root_owner === undefined)
-				break
+			const rootOwner = owner?.Owner
+			if (rootOwner === undefined) break
 
-			owner = root_owner
+			owner = rootOwner
 		}
 		return owner
 	}
@@ -155,37 +156,32 @@ export class Entity {
 		return this.RealPosition
 	}
 	public get RealPosition(): Vector3 {
-		return GameState.IsInDraw
-			? this.VisualPosition
-			: this.NetworkedPosition
+		return GameState.IsInDraw ? this.VisualPosition : this.NetworkedPosition
 	}
 	public get Angles(): QAngle {
-		return GameState.IsInDraw
-			? this.VisualAngles
-			: this.NetworkedAngles
+		return GameState.IsInDraw ? this.VisualAngles : this.NetworkedAngles
 	}
 	public get NetworkedRotation(): number {
 		const ang = this.NetworkedAngles.y
-		if (ang >= 180)
-			return ang - 360
+		if (ang >= 180) return ang - 360
 		return ang
 	}
 	public get Rotation(): number {
 		const ang = this.Angles.y
-		if (ang >= 180)
-			return ang - 360
+		if (ang >= 180) return ang - 360
 		return ang
 	}
 	public get CreateTime() {
-		return this.CreateTime_ !== 0
-			? this.CreateTime_
-			: this.FakeCreateTime_
+		return this.CreateTime_ !== 0 ? this.CreateTime_ : this.FakeCreateTime_
 	}
 	public get HPPercent(): number {
-		return Math.floor(this.HP / this.MaxHP * 100) || 0
+		return Math.floor((this.HP / this.MaxHP) * 100) || 0
 	}
 	public get IsAlive(): boolean {
-		return this.LifeState === LifeState_t.LIFE_ALIVE || this.LifeState === LifeState_t.LIFE_RESPAWNING
+		return (
+			this.LifeState === LifeState.LIFE_ALIVE ||
+			this.LifeState === LifeState.LIFE_RESPAWNING
+		)
 	}
 	public get Forward(): Vector3 {
 		return Vector3.FromAngle(this.RotationRad)
@@ -237,30 +233,27 @@ export class Entity {
 	}
 	public HandleMatches(handle: number): boolean {
 		const index = handle & EntityManager.INDEX_MASK
-		const serial = (handle >> EntityManager.INDEX_BITS) & EntityManager.SERIAL_MASK
+		const serial =
+			(handle >> EntityManager.INDEX_BITS) & EntityManager.SERIAL_MASK
 		return this.Index === index && this.SerialMatches(serial)
 	}
 	public EntityMatches(ent: Entity): boolean {
 		return this === ent
 	}
 	public Distance(vec: Vector3 | Entity): number {
-		if (vec instanceof Entity)
-			vec = vec.Position
+		if (vec instanceof Entity) vec = vec.Position
 		return this.Position.Distance(vec)
 	}
 	public Distance2D(vec: Vector3 | Vector2 | Entity): number {
-		if (vec instanceof Entity)
-			vec = vec.Position
+		if (vec instanceof Entity) vec = vec.Position
 		return this.Position.Distance2D(vec)
 	}
 	public DistanceSqr(vec: Vector3 | Entity): number {
-		if (vec instanceof Entity)
-			vec = vec.Position
+		if (vec instanceof Entity) vec = vec.Position
 		return this.Position.DistanceSqr(vec)
 	}
 	public DistanceSqr2D(vec: Vector3 | Vector2 | Entity): number {
-		if (vec instanceof Entity)
-			vec = vec.Position
+		if (vec instanceof Entity) vec = vec.Position
 		return this.Position.DistanceSqr2D(vec)
 	}
 	public AngleBetweenFaces(front: Vector3): number {
@@ -273,8 +266,7 @@ export class Entity {
 		return this.Position.InFrontFromAngle(this.RotationRad + angle, distance)
 	}
 	public FindRotationAngle(vec: Vector3 | Entity): number {
-		if (vec instanceof Entity)
-			vec = vec.Position
+		if (vec instanceof Entity) vec = vec.Position
 		return this.Position.FindRotationAngle(vec, this.RotationRad)
 	}
 	/**
@@ -305,7 +297,10 @@ export class Entity {
 	 * @example
 	 * unit.ClosestGroup(groups, group => Vector3.GetCenterType(creeps, creep => creep.InFront(200)))
 	 */
-	public ClosestGroup(groups: Entity[][], callback: (entity: Entity[]) => Vector3): [Entity[], Vector3] {
+	public ClosestGroup(
+		groups: Entity[][],
+		callback: (entity: Entity[]) => Vector3
+	): [Entity[], Vector3] {
 		const thisPos = this.Position
 
 		let entities: Entity[] = []
@@ -333,99 +328,109 @@ export class Entity {
 	}
 
 	public OnModelUpdated(): void {
-		const initial_radius = this.RingRadius !== 0
-			? this.RingRadius
-			: 50
+		const initialRadius = this.RingRadius !== 0 ? this.RingRadius : 50
 		const min = this.BoundingBox.MinOffset,
 			max = this.BoundingBox.MaxOffset
-		min.x = -initial_radius
-		min.y = -initial_radius
+		min.x = -initialRadius
+		min.y = -initialRadius
 		min.z = 0
-		max.x = initial_radius
-		max.y = initial_radius
-		max.z = initial_radius
-		if (this.ModelName === "<null>")
-			return
-		let promise = ModelDataCache.get(this.ModelName)
+		max.x = initialRadius
+		max.y = initialRadius
+		max.z = initialRadius
+		if (this.ModelName === "<null>") return
+		let promise = modelDataCache.get(this.ModelName)
 		if (promise === undefined) {
 			promise = ComputeAttachmentsAndBoundsAsync(this.ModelName)
-			ModelDataCache.set(this.ModelName, promise)
+			modelDataCache.set(this.ModelName, promise)
 		}
 
-		promise.then(ar => {
-			this.Attachments = ar[0]
-			this.BoundingBox.MinOffset.CopyFrom(ar[1])
-			this.BoundingBox.MaxOffset.CopyFrom(ar[2])
-			const min_xy = Math.min(min.x, min.y, max.x, max.y),
-				max_xy = Math.max(min.x, min.y, max.x, max.y)
-			this.RingRadius_ = Math.max(Math.abs(min_xy), Math.abs(max_xy))
-			min.x = -this.RingRadius
-			min.y = -this.RingRadius
-			max.x = this.RingRadius
-			max.y = this.RingRadius
-		}, err => console.error(this.ModelName, err))
+		promise.then(
+			ar => {
+				this.Attachments = ar[0]
+				this.BoundingBox.MinOffset.CopyFrom(ar[1])
+				this.BoundingBox.MaxOffset.CopyFrom(ar[2])
+				const minXY = Math.min(min.x, min.y, max.x, max.y),
+					maxXY = Math.max(min.x, min.y, max.x, max.y)
+				this.RingRadius_ = Math.max(Math.abs(minXY), Math.abs(maxXY))
+				min.x = -this.RingRadius
+				min.y = -this.RingRadius
+				max.x = this.RingRadius
+				max.y = this.RingRadius
+			},
+			err => console.error(this.ModelName, err)
+		)
 	}
-	public CalculateActivityModifiers(activity: GameActivity_t, ar: string[]): void {
+	public CalculateActivityModifiers(
+		_activity: GameActivity,
+		_ar: string[]
+	): void {
 		// to be implemented in child classes
 	}
-	public GetAttachments(activity = GameActivity_t.ACT_DOTA_IDLE, sequence_num = -1): Nullable<Map<string, ComputedAttachment>> {
+	public GetAttachments(
+		activity = GameActivity.ACT_DOTA_IDLE,
+		sequenceNum = -1
+	): Nullable<Map<string, ComputedAttachment>> {
 		if (this.Attachments === undefined || this.Attachments.length === 0)
 			return undefined
-		const activity_name = activity2name.get(activity)
-		if (sequence_num >= 0 && activity_name !== undefined) {
+		const activityName = activity2name.get(activity)
+		if (sequenceNum >= 0 && activityName !== undefined) {
 			let i = 0
 			for (const attachment of this.Attachments)
-				if (attachment[0].has(activity_name) && i++ === sequence_num)
+				if (attachment[0].has(activityName) && i++ === sequenceNum)
 					return attachment[1]
 		}
 		const modifiers: string[] = []
-		if (activity_name !== undefined)
-			modifiers.push(activity_name)
+		if (activityName !== undefined) modifiers.push(activityName)
 		this.CalculateActivityModifiers(activity, modifiers)
-		let highest_score = 0,
-			highest_scored: Nullable<Map<string, ComputedAttachment>>
+		let highestScore = 0,
+			highestScored: Nullable<Map<string, ComputedAttachment>>
 		for (const ar of this.Attachments) {
-			const score = modifiers.reduce((prev, name) => prev + (ar[0].get(name) ?? 0), 0) / ar[0].size
-			if (score > highest_score) {
-				highest_score = score
-				highest_scored = ar[1]
+			const score =
+				modifiers.reduce((prev, name) => prev + (ar[0].get(name) ?? 0), 0) /
+				ar[0].size
+			if (score > highestScore) {
+				highestScore = score
+				highestScored = ar[1]
 			}
 		}
-		if (highest_scored !== undefined) {
-			const default_ar = this.Attachments.find(ar => ar[0].has("ACT_DOTA_CONSTANT_LAYER"))
-			if (default_ar !== undefined)
-				highest_scored = default_ar[1]
+		if (highestScored !== undefined) {
+			const defaultAr = this.Attachments.find(ar =>
+				ar[0].has("ACT_DOTA_CONSTANT_LAYER")
+			)
+			if (defaultAr !== undefined) highestScored = defaultAr[1]
 		}
-		return highest_scored
+		return highestScored
 	}
 	public GetAttachment(
 		name: string,
-		activity = GameActivity_t.ACT_DOTA_IDLE,
-		sequence_num = -1,
+		activity = GameActivity.ACT_DOTA_IDLE,
+		sequenceNum = -1
 	): Nullable<ComputedAttachment> {
-		return this.GetAttachments(activity, sequence_num)?.get(name)
+		return this.GetAttachments(activity, sequenceNum)?.get(name)
 	}
 	/**
 	 * @returns attachment position mid-animation
 	 */
 	public GetAttachmentPosition(
 		name: string,
-		activity = GameActivity_t.ACT_DOTA_IDLE,
-		sequence_num = -1,
+		activity = GameActivity.ACT_DOTA_IDLE,
+		sequenceNum = -1
 	): Nullable<Vector3> {
-		const attachment = this.GetAttachment(name, activity, sequence_num)
-		if (attachment === undefined)
-			return undefined
+		const attachment = this.GetAttachment(name, activity, sequenceNum)
+		if (attachment === undefined) return undefined
 		return attachment.GetPosition(
-			(attachment.FrameCount / attachment.FPS) / 2,
+			attachment.FrameCount / attachment.FPS / 2,
 			this.RotationRad,
-			this.ModelScale,
+			this.ModelScale
 		)
 	}
 	/**
 	 * @deprecated
 	 */
-	public ForwardNativeProperties(m_iHealthBarOffset: number, m_iMoveCapabilities: number) {
+	public ForwardNativeProperties(
+		_healthBarOffset: number,
+		_moveCapabilities: number
+	) {
 		// To be implemented in child classes
 	}
 
@@ -438,92 +443,90 @@ export class Entity {
 	}
 }
 
-function QuantitizedVecCoordToCoord(cell: Nullable<number>, inside: Nullable<number>): number {
+function QuantitizedVecCoordToCoord(
+	cell: Nullable<number>,
+	inside: Nullable<number>
+): number {
 	return ((cell ?? 0) - 128) * 128 + (inside ?? 0)
 }
 
-import { Events } from "../../Managers/Events"
-import { FieldHandler, RegisterFieldHandler } from "../../Objects/NativeToSDK"
-RegisterFieldHandler(Entity, "m_iTeamNum", (ent, new_val) => {
-	const old_team = ent.Team
-	ent.Team = new_val as Team
-	if (ent.IsValid && old_team !== ent.Team)
+RegisterFieldHandler(Entity, "m_iTeamNum", (ent, newVal) => {
+	const oldTeam = ent.Team
+	ent.Team = newVal as Team
+	if (ent.IsValid && oldTeam !== ent.Team)
 		EventsSDK.emit("EntityTeamChanged", false, ent)
 })
-RegisterFieldHandler(Entity, "m_lifeState", (ent, new_val) => {
-	const old_state = ent.LifeState
-	ent.LifeState = new_val as LifeState_t
-	if (ent.IsValid && old_state !== ent.LifeState)
+RegisterFieldHandler(Entity, "m_lifeState", (ent, newVal) => {
+	const oldState = ent.LifeState
+	ent.LifeState = newVal as LifeState
+	if (ent.IsValid && oldState !== ent.LifeState)
 		EventsSDK.emit("LifeStateChanged", false, ent)
 })
-RegisterFieldHandler(Entity, "m_hModel", (ent, new_val) => {
-	ent.ModelName = Manifest.GetPathByHash(new_val as bigint) ?? ""
+RegisterFieldHandler(Entity, "m_hModel", (ent, newVal) => {
+	ent.ModelName = Manifest.GetPathByHash(newVal as bigint) ?? ""
 	ent.OnModelUpdated()
 })
-EventsSDK.on("GameEnded", () => ModelDataCache.clear())
-RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => {
-	const m_angRotation = new_val as QAngle
-	ent.NetworkedAngles.CopyFrom(m_angRotation)
-	ent.VisualAngles.CopyFrom(m_angRotation)
+EventsSDK.on("GameEnded", () => modelDataCache.clear())
+RegisterFieldHandler(Entity, "m_angRotation", (ent, newVal) => {
+	const angRotation = newVal as QAngle
+	ent.NetworkedAngles.CopyFrom(angRotation)
+	ent.VisualAngles.CopyFrom(angRotation)
 })
-RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, new_val) => {
-	ent.Name_ = StringTables.GetString("EntityNames", new_val as number) ?? ent.Name_
+RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, newVal) => {
+	ent.Name_ =
+		StringTables.GetString("EntityNames", newVal as number) ?? ent.Name_
 })
 
-RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, new_val) => {
-	ent.Owner_ = new_val as number
+RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, newVal) => {
+	ent.Owner_ = newVal as number
 	ent.OwnerEntity = EntityManager.EntityByIndex(ent.Owner_)
 })
 EventsSDK.on("PreEntityCreated", ent => {
 	ent.SpawnPosition.CopyFrom(ent.NetworkedPosition)
-	if (ent.Index === 0)
-		return
+	if (ent.Index === 0) return
 	for (const iter of EntityManager.AllEntities)
-		if (ent.HandleMatches(iter.Owner_))
-			iter.OwnerEntity = ent
+		if (ent.HandleMatches(iter.Owner_)) iter.OwnerEntity = ent
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	if (ent.Index === 0)
-		return
+	if (ent.Index === 0) return
 	for (const iter of EntityManager.AllEntities)
-		if (ent.HandleMatches(iter.Owner_))
-			iter.OwnerEntity = undefined
+		if (ent.HandleMatches(iter.Owner_)) iter.OwnerEntity = undefined
 })
 
-RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => {
+RegisterFieldHandler(Entity, "m_cellX", (ent, newVal) => {
 	ent.NetworkedPosition.x = ent.VisualPosition.x = QuantitizedVecCoordToCoord(
-		new_val as number,
-		ent.CBodyComponent_?.get("m_vecX") as Nullable<number>,
+		newVal as number,
+		ent.CBodyComponent_?.get("m_vecX") as Nullable<number>
 	)
 })
-RegisterFieldHandler(Entity, "m_vecX", (ent, new_val) => {
+RegisterFieldHandler(Entity, "m_vecX", (ent, newVal) => {
 	ent.NetworkedPosition.x = ent.VisualPosition.x = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellX") as Nullable<number>,
-		new_val as number,
+		newVal as number
 	)
 })
-RegisterFieldHandler(Entity, "m_cellY", (ent, new_val) => {
+RegisterFieldHandler(Entity, "m_cellY", (ent, newVal) => {
 	ent.NetworkedPosition.y = ent.VisualPosition.y = QuantitizedVecCoordToCoord(
-		new_val as number,
-		ent.CBodyComponent_?.get("m_vecY") as Nullable<number>,
+		newVal as number,
+		ent.CBodyComponent_?.get("m_vecY") as Nullable<number>
 	)
 })
-RegisterFieldHandler(Entity, "m_vecY", (ent, new_val) => {
+RegisterFieldHandler(Entity, "m_vecY", (ent, newVal) => {
 	ent.NetworkedPosition.y = ent.VisualPosition.y = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellY") as Nullable<number>,
-		new_val as number,
+		newVal as number
 	)
 })
-RegisterFieldHandler(Entity, "m_cellZ", (ent, new_val) => {
+RegisterFieldHandler(Entity, "m_cellZ", (ent, newVal) => {
 	ent.NetworkedPosition.z = ent.VisualPosition.z = QuantitizedVecCoordToCoord(
-		new_val as number,
-		ent.CBodyComponent_?.get("m_vecZ") as Nullable<number>,
+		newVal as number,
+		ent.CBodyComponent_?.get("m_vecZ") as Nullable<number>
 	)
 })
-RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => {
+RegisterFieldHandler(Entity, "m_vecZ", (ent, newVal) => {
 	ent.NetworkedPosition.z = ent.VisualPosition.z = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellZ") as Nullable<number>,
-		new_val as number,
+		newVal as number
 	)
 })
 
@@ -537,8 +540,12 @@ EventsSDK.on("GameEvent", (name, obj) => {
 		}
 		case "entity_killed": {
 			const ent = EntityManager.EntityByIndex(obj.entindex_killed)
-			if (ent !== undefined && !ent.IsVisible && ent.LifeState !== LifeState_t.LIFE_DEAD) {
-				ent.LifeState = LifeState_t.LIFE_DEAD
+			if (
+				ent !== undefined &&
+				!ent.IsVisible &&
+				ent.LifeState !== LifeState.LIFE_DEAD
+			) {
+				ent.LifeState = LifeState.LIFE_DEAD
 				ent.HP = 0
 				EventsSDK.emit("LifeStateChanged", false, ent)
 			}
@@ -546,8 +553,8 @@ EventsSDK.on("GameEvent", (name, obj) => {
 		}
 		case "dota_buyback": {
 			const ent = EntityManager.EntityByIndex(obj.entindex)
-			if (ent !== undefined && ent.LifeState === LifeState_t.LIFE_DEAD) {
-				ent.LifeState = LifeState_t.LIFE_ALIVE
+			if (ent !== undefined && ent.LifeState === LifeState.LIFE_DEAD) {
+				ent.LifeState = LifeState.LIFE_ALIVE
 				ent.HP = ent.MaxHP
 				EventsSDK.emit("LifeStateChanged", false, ent)
 			}
@@ -557,42 +564,40 @@ EventsSDK.on("GameEvent", (name, obj) => {
 	}
 })
 
-const last_glow_ents = new Set<Entity>()
+const lastGlowEnts = new Set<Entity>()
 function CustomGlowEnts(): void {
-	last_glow_ents.forEach(ent => {
+	lastGlowEnts.forEach(ent => {
 		if (!ent.IsValid) {
-			last_glow_ents.delete(ent)
+			lastGlowEnts.delete(ent)
 			return
 		}
-		const custom_id = ent.CustomNativeID
-		const CustomGlowColor = ent.CustomGlowColor
-		let color_u32 = 0
-		if (CustomGlowColor !== undefined)
-			color_u32 = CustomGlowColor.toUint32()
-		else
-			last_glow_ents.delete(ent)
-		SetEntityGlow(custom_id, color_u32)
+		const customID = ent.CustomNativeID
+		const customGlowColor = ent.CustomGlowColor
+		let colorU32 = 0
+		if (customGlowColor !== undefined) colorU32 = customGlowColor.toUint32()
+		else lastGlowEnts.delete(ent)
+		SetEntityGlow(customID, colorU32)
 	})
 }
 
-const last_colored_ents = new Set<Entity>()
+const lastColoredEnts = new Set<Entity>()
 function CustomColorEnts(): void {
-	last_colored_ents.forEach(ent => {
+	lastColoredEnts.forEach(ent => {
 		if (!ent.IsValid) {
-			last_colored_ents.delete(ent)
+			lastColoredEnts.delete(ent)
 			return
 		}
-		const CustomDrawColor = ent.CustomDrawColor
-		let color_u32 = 0,
-			renderMode = RenderMode_t.kRenderNormal
-		if (CustomDrawColor !== undefined) {
-			color_u32 = CustomDrawColor[0].toUint32()
-			renderMode = CustomDrawColor[1]
+		const customDrawColor = ent.CustomDrawColor
+		let colorU32 = 0,
+			renderMode = RenderMode.Normal
+		if (customDrawColor !== undefined) {
+			colorU32 = customDrawColor[0].toUint32()
+			renderMode = customDrawColor[1]
 		} else {
-			color_u32 = Color.White.toUint32()
-			last_colored_ents.delete(ent)
+			colorU32 = Color.White.toUint32()
+			lastColoredEnts.delete(ent)
 		}
-		SetEntityColor(ent.CustomNativeID, color_u32, renderMode)
+		SetEntityColor(ent.CustomNativeID, colorU32, renderMode)
 	})
 }
 
@@ -601,6 +606,6 @@ Events.after("Draw", () => {
 	CustomGlowEnts()
 })
 Events.on("NewConnection", () => {
-	last_glow_ents.clear()
-	last_colored_ents.clear()
+	lastGlowEnts.clear()
+	lastColoredEnts.clear()
 })

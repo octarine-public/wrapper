@@ -3,5 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("abaddon_death_coil")
 export class abaddon_death_coil extends Ability {
-	public readonly ProjectilePath = "particles/units/heroes/hero_abaddon/abaddon_death_coil.vpcf"
+	public readonly ProjectilePath =
+		"particles/units/heroes/hero_abaddon/abaddon_death_coil.vpcf"
 }

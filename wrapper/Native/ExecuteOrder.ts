@@ -9,7 +9,7 @@ import { Unit } from "../Objects/Base/Unit"
 import { arrayRemoveCallback } from "../Utils/ArrayExtensions"
 import * as WASM from "./WASM"
 
-export const ORDERS_WITHOUT_SIDE_EFFECTS = [
+const ordersWithoutSideEffects = [
 	dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
 	dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE,
 	dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO,
@@ -49,8 +49,11 @@ function WillInterruptOrderQueue(order: ExecuteOrder): boolean {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET: {
-			const abil = order.Ability
-			return abil instanceof Ability && (abil.CastPoint > 0 || abil.MaxChannelTime > 0)
+			const abil = order.Ability_
+			return (
+				abil instanceof Ability &&
+				(abil.CastPoint > 0 || abil.MaxChannelTime > 0)
+			)
 		}
 		default:
 			return false
@@ -76,99 +79,49 @@ function CanBeIgnored(order: ExecuteOrder): boolean {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION: {
 			const issuer = order.Issuers[0],
-				abil = order.Ability
-			if (issuer === undefined || !(abil instanceof Ability) || abil.IsCastRangeFake)
+				abil = order.Ability_
+			if (
+				issuer === undefined ||
+				!(abil instanceof Ability) ||
+				abil.IsCastRangeFake
+			)
 				return false
 			const target = order.Target
-			if (typeof target === "number")
-				return false
-			const target_pos = target !== undefined
-				? target.Position
-				: order.Position
-			return issuer.Distance2D(target_pos) > abil.CastRange
+			if (typeof target === "number") return false
+			const targetPos = target !== undefined ? target.Position : order.Position
+			return issuer.Distance2D(targetPos) > abil.CastRange
 		}
 		default:
 			return order.Queue
 	}
 }
 
-const same_move_position_threshold = 30
+const sameMovePositionThreshold = 30
 export class ExecuteOrder {
-	public static readonly order_queue: [ExecuteOrder, number, boolean, boolean][] = []
-	public static last_move: Nullable<[Vector3, number]>
-	public static debug_orders = false
-	public static debug_draw = false
-	public static hold_orders = 0
-	public static hold_orders_target: Nullable<Vector3 | Entity>
-	public static camera_minimap_spaces = 3 // 2 => 5
-	public static camera_speed = 8000 // 5000 => 20000
-	public static cursor_speed = 6 // ?
-	public static cursor_speed_min_accel = 1 //?
-	public static cursor_speed_max_accel = 2 // ?
-	public static prefire_orders = true
-	public static is_standalone = false
-	public static unsafe_mode = false
-	public static get disable_humanizer() {
-		return this.disable_humanizer_
-	}
-	public static set disable_humanizer(new_val: boolean) {
-		if (this.disable_humanizer_ === new_val)
-			return
-		this.disable_humanizer_ = new_val
-		ToggleRequestUserCmd(!this.disable_humanizer_)
-		EventsSDK.emit("HumanizerStateChanged", false)
-	}
-	public static PrepareOrder(order: {
-		orderType: dotaunitorder_t,
-		target?: Entity | number,
-		position?: Vector3,
-		ability?: Ability | number,
-		issuers?: Unit[],
-		queue?: boolean,
-		showEffects?: boolean,
-	}): void {
-		ExecuteOrder.fromObject(order).ExecuteQueued()
-	}
-	public static Buyback(queue?: boolean, showEffects?: boolean): void {
-		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK, queue, showEffects })
-	}
-	public static Glyph(queue?: boolean, showEffects?: boolean): void {
-		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH, queue, showEffects })
-	}
-	public static CastRiverPaint(position: Vector3, queue?: boolean, showEffects?: boolean): void {
-		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RIVER_PAINT, position, queue, showEffects })
-	}
-	public static PreGameAdjustItemAssigment(ItemID: number, queue?: boolean, showEffects?: boolean): void {
-		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT, target: ItemID, queue, showEffects })
-	}
-	public static Scan(position: Vector3, queue?: boolean, showEffects?: boolean): void {
-		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR, position, queue, showEffects })
-	}
-
-	public static fromObject(order: {
-		orderType: dotaunitorder_t,
-		target?: Entity | number,
-		position?: Vector3,
-		ability?: Ability | number,
-		issuers?: Unit[],
-		queue?: boolean,
-		showEffects?: boolean,
-	}): ExecuteOrder {
-		return new ExecuteOrder(
-			order.orderType,
-			order.target,
-			order.position,
-			order.ability,
-			order.issuers ?? [],
-			order.queue,
-			order.showEffects,
-		)
-	}
-
-	private static disable_humanizer_ = false
+	public static readonly orderQueue: [
+		ExecuteOrder,
+		number,
+		boolean,
+		boolean
+	][] = []
+	public static lastMove: Nullable<[Vector3, number]>
+	public static DebugOrders = false
+	public static DebugDraw = false
+	public static HoldOrders = 0
+	public static HoldOrdersTarget: Nullable<Vector3 | Entity>
+	public static cameraMinimapSpaces = 3 // 2 => 5
+	public static cameraSpeed = 8000 // 5000 => 20000
+	public static cursorSpeed = 6 // ?
+	public static cursorSpeedMinAccel = 1 //?
+	public static cursorSpeedMaxAccel = 2 // ?
+	public static PrefireOrders = true
+	public static IsStandalone = false
+	public static unsafeMode = false
+	private static DisableHumanizer_ = false
 
 	/**
 	 * Orders by native CUnitOrder
+	 *
 	 * @param position default: new Vector3(0,0,0)
 	 * @param issuer default: DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY
 	 */
@@ -177,13 +130,105 @@ export class ExecuteOrder {
 		public readonly Target: Nullable<Entity | number>,
 		public readonly Position: Vector3 = new Vector3(),
 		// tslint:disable-next-line: no-shadowed-variable
-		public readonly Ability: Nullable<Ability | number>,
+		public readonly Ability_: Nullable<Ability | number>,
 		public readonly Issuers: Unit[],
 		public readonly Queue: boolean = false,
 		public readonly ShowEffects: boolean = false,
-		public IsPlayerInput: boolean = true,
+		public IsPlayerInput: boolean = true
 	) {
 		this.Position = this.Position.Clone()
+	}
+
+	public static get DisableHumanizer() {
+		return this.DisableHumanizer_
+	}
+	public static set DisableHumanizer(newVal: boolean) {
+		if (this.DisableHumanizer_ === newVal) return
+		this.DisableHumanizer_ = newVal
+		ToggleRequestUserCmd(!this.DisableHumanizer_)
+		EventsSDK.emit("HumanizerStateChanged", false)
+	}
+
+	public static PrepareOrder(order: {
+		orderType: dotaunitorder_t
+		target?: Entity | number
+		position?: Vector3
+		ability?: Ability | number
+		issuers?: Unit[]
+		queue?: boolean
+		showEffects?: boolean
+	}): void {
+		ExecuteOrder.fromObject(order).ExecuteQueued()
+	}
+	public static Buyback(queue?: boolean, showEffects?: boolean): void {
+		return ExecuteOrder.PrepareOrder({
+			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK,
+			queue,
+			showEffects,
+		})
+	}
+	public static Glyph(queue?: boolean, showEffects?: boolean): void {
+		return ExecuteOrder.PrepareOrder({
+			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH,
+			queue,
+			showEffects,
+		})
+	}
+	public static CastRiverPaint(
+		position: Vector3,
+		queue?: boolean,
+		showEffects?: boolean
+	): void {
+		return ExecuteOrder.PrepareOrder({
+			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RIVER_PAINT,
+			position,
+			queue,
+			showEffects,
+		})
+	}
+	public static PreGameAdjustItemAssigment(
+		itemID: number,
+		queue?: boolean,
+		showEffects?: boolean
+	): void {
+		return ExecuteOrder.PrepareOrder({
+			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT,
+			target: itemID,
+			queue,
+			showEffects,
+		})
+	}
+	public static Scan(
+		position: Vector3,
+		queue?: boolean,
+		showEffects?: boolean
+	): void {
+		return ExecuteOrder.PrepareOrder({
+			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR,
+			position,
+			queue,
+			showEffects,
+		})
+	}
+
+	public static fromObject(order: {
+		orderType: dotaunitorder_t
+		target?: Entity | number
+		position?: Vector3
+		ability?: Ability | number
+		issuers?: Unit[]
+		queue?: boolean
+		showEffects?: boolean
+	}): ExecuteOrder {
+		return new ExecuteOrder(
+			order.orderType,
+			order.target,
+			order.position,
+			order.ability,
+			order.issuers ?? [],
+			order.queue,
+			order.showEffects
+		)
 	}
 
 	/**
@@ -191,15 +236,16 @@ export class ExecuteOrder {
 	 */
 	public toNative() {
 		const target = this.Target,
-			ability = this.Ability
+			ability = this.Ability_
 
 		return {
 			OrderType: this.OrderType,
-			Target: target instanceof Entity
-				? target instanceof Tree || target instanceof TempTree
-					? target.BinaryID
-					: target.Index
-				: target,
+			Target:
+				target instanceof Entity
+					? target instanceof Tree || target instanceof TempTree
+						? target.BinaryID
+						: target.Index
+					: target,
 			Ability: ability instanceof Ability ? ability.Index : ability,
 			Issuers: this.Issuers.map(ent => ent.Index),
 			Queue: this.Queue,
@@ -214,11 +260,11 @@ export class ExecuteOrder {
 		PrepareUnitOrders(this.toNative())
 	}
 	public ExecuteQueued(): void {
-		if (ExecuteOrder.unsafe_mode) {
+		if (ExecuteOrder.unsafeMode) {
 			this.Execute()
 			return
 		}
-		if (ExecuteOrder.disable_humanizer) {
+		if (ExecuteOrder.DisableHumanizer) {
 			if (this.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET)
 				this.Execute()
 			return
@@ -227,7 +273,7 @@ export class ExecuteOrder {
 			this.Execute()
 			return
 		}
-		let set_z = false
+		let setZ = false
 		switch (this.OrderType) {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
@@ -237,70 +283,50 @@ export class ExecuteOrder {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM:
-				set_z = true
+				setZ = true
 				break
 			default:
 				break
 		}
-		if (set_z) {
+		if (setZ) {
 			this.Position.SetZ(WASM.GetPositionHeight(this.Position))
-			const height_map = WASM.HeightMap
-			if (this.Position.z < -1024 || (height_map !== undefined && !height_map.Contains(this.Position)))
-				return
-		}
-
-		const current_time = hrtime()
-		if (this.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION) {
+			const heightMap = WASM.HeightMap
 			if (
-				ExecuteOrder.last_move !== undefined
-				&& ExecuteOrder.last_move[0].Equals(this.Position)
-				&& current_time - ExecuteOrder.last_move[1] < same_move_position_threshold
+				this.Position.z < -1024 ||
+				(heightMap !== undefined && !heightMap.Contains(this.Position))
 			)
 				return
-			ExecuteOrder.last_move = [this.Position, current_time]
 		}
 
-		if (!this.Queue && !ORDERS_WITHOUT_SIDE_EFFECTS.includes(this.OrderType)) {
+		const currentTime = hrtime()
+		if (this.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION) {
+			if (
+				ExecuteOrder.lastMove !== undefined &&
+				ExecuteOrder.lastMove[0].Equals(this.Position) &&
+				currentTime - ExecuteOrder.lastMove[1] < sameMovePositionThreshold
+			)
+				return
+			ExecuteOrder.lastMove = [this.Position, currentTime]
+		}
+
+		if (!this.Queue && !ordersWithoutSideEffects.includes(this.OrderType)) {
 			if (!WillInterruptOrderQueue(this)) {
 				this.Execute()
 				return
 			} else
-				while (arrayRemoveCallback(
-					ExecuteOrder.order_queue,
-					([order], i) => (
-						i !== 0
-						&& (
-							order.Issuers.every(unit => this.Issuers.includes(unit))
-							|| (
-								order.Issuers.length === 1
-								&& this.Issuers.includes(order.Issuers[0])
-							)
-						)
-						&& CanBeIgnored(order)
-					),
-				))
+				while (
+					arrayRemoveCallback(
+						ExecuteOrder.orderQueue,
+						([order], i) =>
+							i !== 0 &&
+							(order.Issuers.every(unit => this.Issuers.includes(unit)) ||
+								(order.Issuers.length === 1 &&
+									this.Issuers.includes(order.Issuers[0]))) &&
+							CanBeIgnored(order)
+					)
+				)
 					continue
 		}
-		ExecuteOrder.order_queue.push([this, current_time, false, false])
-	}
-
-	public toJSON(): {
-		OrderType: dotaunitorder_t,
-		Target: Nullable<Entity | number>,
-		Position: Vector3,
-		Ability: Nullable<Ability | number>,
-		Issuers: Unit[],
-		Queue: boolean,
-		ShowEffects: boolean,
-	} {
-		return {
-			OrderType: this.OrderType,
-			Target: this.Target,
-			Position: this.Position,
-			Ability: this.Ability,
-			Issuers: this.Issuers,
-			Queue: this.Queue,
-			ShowEffects: this.ShowEffects,
-		}
+		ExecuteOrder.orderQueue.push([this, hrtime(), false, false])
 	}
 }

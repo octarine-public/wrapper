@@ -1,121 +1,135 @@
 import { EntityPropertyType } from "../Base/EntityProperties"
 import { Events } from "../Managers/Events"
-import { ParseProtobufNamed } from "../Utils/Protobuf"
+import { ParseProtobufDesc, ParseProtobufNamed } from "../Utils/Protobuf"
 import { MapToObject } from "../Utils/Utils"
 import { Entity } from "./Base/Entity"
 
-export type FieldHandler = (entity: Entity, new_value: EntityPropertyType) => any
+export type FieldHandler = (entity: Entity, newValue: EntityPropertyType) => any
 export const ClassToEntities = new Map<Constructor<any>, Entity[]>(),
 	ClassToEntitiesAr = new Map<Constructor<any>, Entity[][]>(),
 	SDKClasses: [Constructor<Entity>, Entity[]][] = [],
 	FieldHandlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>()
 const constructors = new Map<string, Constructor<Entity>>()
-export const cached_field_handlers = new Map<Constructor<Entity>, Map<number, FieldHandler>>()
+export const CachedFieldHandlers = new Map<
+	Constructor<Entity>,
+	Map<number, FieldHandler>
+>()
 
 function RegisterClassInternal(constructor: Constructor<Entity>) {
 	const prototype = constructor.prototype
 	if (!ClassToEntities.has(constructor)) {
 		const ar: Entity[][] = [[]]
 		ClassToEntities.set(constructor, ar[0])
-		for (const [constructor_, ar_] of SDKClasses)
-			if (prototype instanceof constructor_)
-				ar.push(ar_)
+		for (const [constr, entitiesAr] of SDKClasses)
+			if (prototype instanceof constr) ar.push(entitiesAr)
 		ClassToEntitiesAr.set(constructor, ar)
 	}
-	if (!cached_field_handlers.has(constructor))
-		cached_field_handlers.set(constructor, new Map())
+	if (!CachedFieldHandlers.has(constructor))
+		CachedFieldHandlers.set(constructor, new Map())
 	SDKClasses.push([constructor, ClassToEntities.get(constructor)!])
 	const map = new Map<string, FieldHandler>()
-	for (const [constructor_, map_] of FieldHandlers)
-		if (prototype instanceof constructor_)
-			for (const [k, v] of map_)
-				map.set(k, v)
+	for (const [constr, classFieldHandlers] of FieldHandlers)
+		if (prototype instanceof constr)
+			for (const [k, v] of classFieldHandlers) map.set(k, v)
 	FieldHandlers.set(constructor, map)
 }
 
 export function RegisterClass(name: string, constructor: Constructor<Entity>) {
 	constructors.set(name, constructor)
-	if (!FieldHandlers.has(constructor))
-		RegisterClassInternal(constructor)
+	if (!FieldHandlers.has(constructor)) RegisterClassInternal(constructor)
 }
 
 function GenerateChainedFieldHandler(old: FieldHandler, new_: FieldHandler) {
-	return (ent: Entity, new_val: EntityPropertyType) => {
-		old(ent, new_val)
-		new_(ent, new_val)
+	return (ent: Entity, newVal: EntityPropertyType) => {
+		old(ent, newVal)
+		new_(ent, newVal)
 	}
 }
 export function RegisterFieldHandler<T extends Entity>(
 	constructor: Constructor<T>,
-	field_name: string,
-	handler: (entity: T, new_value: EntityPropertyType) => any,
+	fieldName: string,
+	handler: (entity: T, newValue: EntityPropertyType) => any
 ) {
-	if (!FieldHandlers.has(constructor))
-		RegisterClassInternal(constructor)
+	if (!FieldHandlers.has(constructor)) RegisterClassInternal(constructor)
 	const map = FieldHandlers.get(constructor)!
 	let handler_ = handler as FieldHandler
-	if (map.has(field_name))
-		handler_ = GenerateChainedFieldHandler(map.get(field_name)!, handler_)
-	map.set(field_name, handler_)
+	if (map.has(fieldName))
+		handler_ = GenerateChainedFieldHandler(map.get(fieldName)!, handler_)
+	map.set(fieldName, handler_)
 
-	const map2 = cached_field_handlers.get(constructor)!
-	const id = entities_symbols.indexOf(field_name)
+	const map2 = CachedFieldHandlers.get(constructor)!
+	const id = EntitiesSymbols.indexOf(fieldName)
 	if (id === -1) {
-		if (entities_symbols.length !== 0)
-			console.log(`[WARNING] Index of "${field_name}" not found in CSVCMsg_FlattenedSerializer.`)
+		if (EntitiesSymbols.length !== 0)
+			console.log(
+				`[WARNING] Index of "${fieldName}" not found in CSVCMsg_FlattenedSerializer.`
+			)
 		return
 	}
 	map2.set(id, handler_)
 }
 
-function FixClassNameForMap<T>(constructor_name: string, map: Map<string, T>): Nullable<string> {
-	if (map.has(constructor_name))
-		return constructor_name
+function FixClassNameForMap<T>(
+	constructorName: string,
+	map: Map<string, T>
+): Nullable<string> {
+	if (map.has(constructorName)) return constructorName
 
-	if (constructor_name[0] === "C" && constructor_name[1] !== "_") {
-		constructor_name = `C_${constructor_name.substring(1)}`
-		if (map.has(constructor_name))
-			return constructor_name
+	if (constructorName[0] === "C" && constructorName[1] !== "_") {
+		constructorName = `C_${constructorName.substring(1)}`
+		if (map.has(constructorName)) return constructorName
 	}
-	if (constructor_name[0] === "C" && constructor_name[1] === "_") {
-		constructor_name = `C${constructor_name.substring(2)}`
-		if (map.has(constructor_name))
-			return constructor_name
+	if (constructorName[0] === "C" && constructorName[1] === "_") {
+		constructorName = `C${constructorName.substring(2)}`
+		if (map.has(constructorName)) return constructorName
 	}
 
 	return undefined
 }
 
-export function GetConstructorByName(class_name: string, constructor_name_hint?: string): Nullable<Constructor<Entity>> {
-	if (constructor_name_hint !== undefined && constructors.has(constructor_name_hint))
-		return constructors.get(constructor_name_hint)
+export function GetConstructorByName(
+	className: string,
+	constructorNameHint?: string
+): Nullable<Constructor<Entity>> {
+	if (
+		constructorNameHint !== undefined &&
+		constructors.has(constructorNameHint)
+	)
+		return constructors.get(constructorNameHint)
 
-	const fixed_wrapper_name = FixClassNameForMap(class_name, constructors)
-	if (fixed_wrapper_name !== undefined)
-		return constructors.get(fixed_wrapper_name)
+	const fixedWrapperName = FixClassNameForMap(className, constructors)
+	if (fixedWrapperName !== undefined) return constructors.get(fixedWrapperName)
 
-	const fixed_class_name = FixClassNameForMap(class_name, SchemaClassesInheritance)
-	if (fixed_class_name === undefined) {
-		console.error(`Can't fix classname ${class_name}, so we can't walk its' inheritance, and class isn't declared in wrapper.`)
+	const fixedClassName = FixClassNameForMap(className, SchemaClassesInheritance)
+	if (fixedClassName === undefined) {
+		console.error(
+			`Can't fix classname ${className}, so we can't walk its' inheritance, and class isn't declared in wrapper.`
+		)
 		return undefined
 	}
 
 	// if neither fixed or original class name have got wrapped entities - try to walk up inherited classes
-	const inherited = SchemaClassesInheritance.get(fixed_class_name)!
-	for (const inherited_class_name of inherited) {
-		const constructor = GetConstructorByName(inherited_class_name)
-		if (constructor !== undefined)
-			return constructor
+	const inherited = SchemaClassesInheritance.get(fixedClassName)!
+	for (const inheritedClassName of inherited) {
+		const constructor = GetConstructorByName(inheritedClassName)
+		if (constructor !== undefined) return constructor
 	}
-	console.error(`Can't find wrapper declared inherited classes for classname ${class_name}, [${inherited}]`)
+	console.error(
+		`Can't find wrapper declared inherited classes for classname ${className}, [${inherited}]`
+	)
 	return undefined
 }
 
 function FixType(symbols: string[], field: any): string {
 	{
-		const field_serializer_name_sym = field.field_serializer_name_sym
-		if (field_serializer_name_sym !== undefined)
-			return symbols[field_serializer_name_sym] + (field.field_serializer_version !== 0 ? field.field_serializer_version : "")
+		const fieldSerializerNameSym = field.field_serializer_name_sym
+		if (fieldSerializerNameSym !== undefined)
+			return (
+				symbols[fieldSerializerNameSym] +
+				(field.field_serializer_version !== 0
+					? field.field_serializer_version
+					: "")
+			)
 	}
 	let type = symbols[field.var_type_sym]
 	// types
@@ -151,24 +165,56 @@ function FixType(symbols: string[], field: any): string {
 	return type
 }
 
-export let entities_symbols: string[] = []
-Events.on("ServerMessage", (msg_id, buf) => {
-	switch (msg_id) {
+ParseProtobufDesc(`
+message ProtoFlattenedSerializerField_t {
+	optional int32 var_type_sym = 1;
+	optional int32 var_name_sym = 2;
+	optional int32 bit_count = 3;
+	optional float low_value = 4;
+	optional float high_value = 5;
+	optional int32 encode_flags = 6;
+	optional int32 field_serializer_name_sym = 7;
+	optional int32 field_serializer_version = 8;
+	optional int32 send_node_sym = 9;
+	optional int32 var_encoder_sym = 10;
+}
+
+message ProtoFlattenedSerializer_t {
+	optional int32 serializer_name_sym = 1;
+	optional int32 serializer_version = 2;
+	repeated int32 fields_index = 3;
+}
+
+message CSVCMsg_FlattenedSerializer {
+	repeated .ProtoFlattenedSerializer_t serializers = 1;
+	repeated string symbols = 2;
+	repeated .ProtoFlattenedSerializerField_t fields = 3;
+}
+`)
+export let EntitiesSymbols: string[] = []
+Events.on("ServerMessage", (msgID, buf) => {
+	switch (msgID) {
 		case 41: {
-			const msg = ParseProtobufNamed(new Uint8Array(buf), "CSVCMsg_FlattenedSerializer")
+			const msg = ParseProtobufNamed(
+				new Uint8Array(buf),
+				"CSVCMsg_FlattenedSerializer"
+			)
 			if ((globalThis as any).dump_d_ts) {
 				const obj = MapToObject(msg)
 				const list = Object.values(obj.serializers).map((ser: any) => [
-					obj.symbols[ser.serializer_name_sym] + (ser.serializer_version !== 0 ? ser.serializer_version : ""),
-					Object.values(ser.fields_index).map((field_id: any) => {
-						const field = obj.fields[field_id]
+					obj.symbols[ser.serializer_name_sym] +
+						(ser.serializer_version !== 0 ? ser.serializer_version : ""),
+					Object.values(ser.fields_index).map((fieldID: any) => {
+						const field = obj.fields[fieldID]
 						return [
 							FixType(obj.symbols as string[], field),
 							obj.symbols[field.var_name_sym],
 						]
 					}),
 				])
-				console.log("dump_CSVCMsg_FlattenedSerializer.d.ts", `\
+				console.log(
+					"dump_CSVCMsg_FlattenedSerializer.d.ts",
+					`\
 import { Vector2, Vector3, QAngle, Vector4 } from "github.com/octarine-public/wrapper/index"
 
 type Color = number // 0xAABBGGRR?
@@ -177,26 +223,34 @@ type item_definition_index_t = number
 type itemid_t = number
 type style_index_t = number
 
-${list.map(([name, fields]) => `\
+${list
+	.map(
+		([name, fields]) => `\
 declare class ${name} {
-	${(fields as [string, string][]).map(([type, f_name]) => `${f_name}: ${type}`).join("\n\t")}
-}`).join("\n\n")}
-`)
+	${(fields as [string, string][])
+		.map(([type, fName]) => `${fName}: ${type}`)
+		.join("\n\t")}
+}`
+	)
+	.join("\n\n")}
+`
+				)
 			}
-			entities_symbols = (msg.get("symbols") as string[]).map(sym => {
-				if (sym.startsWith("DOTA"))
-					return `C${sym}`
+			EntitiesSymbols = (msg.get("symbols") as string[]).map(sym => {
+				if (sym.startsWith("DOTA")) return `C${sym}`
 				return sym
 			})
 			for (const [construct, map] of FieldHandlers) {
-				const map2 = cached_field_handlers.get(construct)!
-				for (const [field_name, field_handler] of map) {
-					const id = entities_symbols.indexOf(field_name)
+				const map2 = CachedFieldHandlers.get(construct)!
+				for (const [fieldName, fieldHandler] of map) {
+					const id = EntitiesSymbols.indexOf(fieldName)
 					if (id === -1) {
-						console.log(`[WARNING] Index of "${field_name}" not found in CSVCMsg_FlattenedSerializer.`)
+						console.log(
+							`[WARNING] Index of "${fieldName}" not found in CSVCMsg_FlattenedSerializer.`
+						)
 						continue
 					}
-					map2.set(id, field_handler)
+					map2.set(id, fieldHandler)
 				}
 			}
 			break

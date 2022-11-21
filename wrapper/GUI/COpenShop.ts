@@ -10,7 +10,8 @@ export class COpenShop {
 
 	private static readonly HeaderAndItemsHeight = 650
 	private static readonly HeaderHeight = 84
-	private static readonly ItemsHeight = COpenShop.HeaderAndItemsHeight - COpenShop.HeaderHeight
+	private static readonly ItemsHeight =
+		COpenShop.HeaderAndItemsHeight - COpenShop.HeaderHeight
 	// TODO: this only works correctly on FulLHD
 	private static readonly PinnedItemsHeight = 74
 	private static readonly ItemCombinesHeight = 90
@@ -21,67 +22,93 @@ export class COpenShop {
 	public readonly ItemCombines = new Rectangle()
 	public readonly GuideFlyout = new Rectangle()
 
-	constructor(large: boolean, screen_size: Vector2, hud_flipped: boolean) {
-		this.CalculateMainPanel(large, screen_size, hud_flipped)
+	constructor(large: boolean, screenSize: Vector2, hudFlipped: boolean) {
+		this.CalculateMainPanel(large, screenSize, hudFlipped)
 	}
 
 	public DebugDraw(): void {
-		RendererSDK.FilledRect(this.Header.pos1, this.Header.Size, Color.White.SetA(128))
-		RendererSDK.FilledRect(this.Items.pos1, this.Items.Size, Color.Green.SetA(128))
-		RendererSDK.FilledRect(this.PinnedItems.pos1, this.PinnedItems.Size, Color.Yellow.SetA(128))
-		RendererSDK.FilledRect(this.ItemCombines.pos1, this.ItemCombines.Size, Color.Blue.SetA(128))
-		RendererSDK.FilledRect(this.GuideFlyout.pos1, this.GuideFlyout.Size, Color.BlackGray.SetA(128))
+		RendererSDK.FilledRect(
+			this.Header.pos1,
+			this.Header.Size,
+			Color.White.SetA(128)
+		)
+		RendererSDK.FilledRect(
+			this.Items.pos1,
+			this.Items.Size,
+			Color.Green.SetA(128)
+		)
+		RendererSDK.FilledRect(
+			this.PinnedItems.pos1,
+			this.PinnedItems.Size,
+			Color.Yellow.SetA(128)
+		)
+		RendererSDK.FilledRect(
+			this.ItemCombines.pos1,
+			this.ItemCombines.Size,
+			Color.Blue.SetA(128)
+		)
+		RendererSDK.FilledRect(
+			this.GuideFlyout.pos1,
+			this.GuideFlyout.Size,
+			Color.BlackGray.SetA(128)
+		)
 	}
 	public HasChanged(): boolean {
 		return false
 	}
 
-	private CalculateMainPanel(large: boolean, screen_size: Vector2, hud_flip: boolean): void {
-		const HeaderHeight = ScaleHeight(COpenShop.HeaderHeight, screen_size),
-			ItemsHeight = ScaleHeight(COpenShop.ItemsHeight, screen_size),
-			PinnedItemsHeight = ScaleHeight(COpenShop.PinnedItemsHeight, screen_size),
-			ItemCombinesHeight = ScaleHeight(COpenShop.ItemCombinesHeight, screen_size),
-			ShopBottomMargin = ScaleHeight(206, screen_size)
+	private CalculateMainPanel(
+		large: boolean,
+		screenSize: Vector2,
+		hudFlip: boolean
+	): void {
+		const headerHeight = ScaleHeight(COpenShop.HeaderHeight, screenSize),
+			itemsHeight = ScaleHeight(COpenShop.ItemsHeight, screenSize),
+			pinnedItemsHeight = ScaleHeight(COpenShop.PinnedItemsHeight, screenSize),
+			itemCombinesHeight = ScaleHeight(
+				COpenShop.ItemCombinesHeight,
+				screenSize
+			),
+			shopBottomMargin = ScaleHeight(206, screenSize)
 
-		const MainPanel = new Rectangle()
-		MainPanel.Width = ScaleWidth(
-			large
-				? COpenShop.MainPanelLargeWidth
-				: COpenShop.MainPanelMiniWidth,
-			screen_size,
+		const mainPanel = new Rectangle()
+		mainPanel.Width = ScaleWidth(
+			large ? COpenShop.MainPanelLargeWidth : COpenShop.MainPanelMiniWidth,
+			screenSize
 		)
-		MainPanel.Height = HeaderHeight + ItemsHeight + PinnedItemsHeight + ItemCombinesHeight
+		mainPanel.Height =
+			headerHeight + itemsHeight + pinnedItemsHeight + itemCombinesHeight
 
-		MainPanel.x = hud_flip ? 0 : screen_size.x - MainPanel.Width
-		MainPanel.y = screen_size.y - ShopBottomMargin - MainPanel.Height
+		mainPanel.x = hudFlip ? 0 : screenSize.x - mainPanel.Width
+		mainPanel.y = screenSize.y - shopBottomMargin - mainPanel.Height
 
 		if (large) {
-			this.GuideFlyout.Width = ScaleWidth(210, screen_size)
-			this.GuideFlyout.Height = ScaleHeight(814, screen_size)
-			this.GuideFlyout.x = hud_flip
-				? MainPanel.pos2.x
-				: MainPanel.x - this.GuideFlyout.Width
-			this.GuideFlyout.y = MainPanel.y
+			this.GuideFlyout.Width = ScaleWidth(210, screenSize)
+			this.GuideFlyout.Height = ScaleHeight(814, screenSize)
+			this.GuideFlyout.x = hudFlip
+				? mainPanel.pos2.x
+				: mainPanel.x - this.GuideFlyout.Width
+			this.GuideFlyout.y = mainPanel.y
 		}
 
-		this.Header.Width = MainPanel.Width
-		this.Header.Height = HeaderHeight
-		this.Header.x = MainPanel.x
-		this.Header.y = MainPanel.y
+		this.Header.Width = mainPanel.Width
+		this.Header.Height = headerHeight
+		this.Header.x = mainPanel.x
+		this.Header.y = mainPanel.y
 
-		this.Items.Width = MainPanel.Width
-		this.Items.Height = ItemsHeight
-		this.Items.x = MainPanel.x
+		this.Items.Width = mainPanel.Width
+		this.Items.Height = itemsHeight
+		this.Items.x = mainPanel.x
 		this.Items.y = this.Header.y + this.Header.Height
 
-		this.PinnedItems.Width = MainPanel.Width
-		this.PinnedItems.Height = PinnedItemsHeight
-		this.PinnedItems.x = MainPanel.x
+		this.PinnedItems.Width = mainPanel.Width
+		this.PinnedItems.Height = pinnedItemsHeight
+		this.PinnedItems.x = mainPanel.x
 		this.PinnedItems.y = this.Items.y + this.Items.Height
 
-		this.ItemCombines.Width = MainPanel.Width
-		this.ItemCombines.Height = ItemCombinesHeight
-		this.ItemCombines.x = MainPanel.x
+		this.ItemCombines.Width = mainPanel.Width
+		this.ItemCombines.Height = itemCombinesHeight
+		this.ItemCombines.x = mainPanel.x
 		this.ItemCombines.y = this.PinnedItems.y + this.PinnedItems.Height
 	}
 }

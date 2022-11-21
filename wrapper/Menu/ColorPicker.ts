@@ -8,87 +8,149 @@ import { HSVToRGB, RGBToHSV } from "../Utils/Math"
 import { Base, IMenu } from "./Base"
 
 export class ColorPicker extends Base {
-	public static active_colorpicker: Nullable<ColorPicker>
+	public static activeColorpicker: Nullable<ColorPicker>
 	public static OnWindowSizeChanged(): void {
-		ColorPicker.selected_color_size.x = GUIInfo.ScaleWidth(ColorPicker.orig_selected_color_size.x)
-		ColorPicker.selected_color_size.y = GUIInfo.ScaleHeight(ColorPicker.orig_selected_color_size.y)
-		ColorPicker.color_offset.x = GUIInfo.ScaleWidth(12)
-		ColorPicker.color_offset.y = GUIInfo.ScaleHeight(12)
-		ColorPicker.text_color_gap = GUIInfo.ScaleWidth(10)
-		ColorPicker.colorpicker_background_size.x = GUIInfo.ScaleWidth(ColorPicker.orig_colorpicker_background_size.x)
-		ColorPicker.colorpicker_background_size.y = GUIInfo.ScaleHeight(ColorPicker.orig_colorpicker_background_size.y)
-		ColorPicker.text_colorpicker_gap = GUIInfo.ScaleHeight(4)
-		ColorPicker.colorpicker_color_offset.x = GUIInfo.ScaleWidth(4)
-		ColorPicker.colorpicker_color_offset.y = GUIInfo.ScaleHeight(4)
-		ColorPicker.colorpicker_color_size = ColorPicker.colorpicker_background_size.x - (ColorPicker.colorpicker_color_offset.x * 2)
-		ColorPicker.colorpicker_hue_size.x = GUIInfo.ScaleWidth(ColorPicker.orig_colorpicker_hue_size.x)
-		ColorPicker.colorpicker_hue_size.y = GUIInfo.ScaleHeight(ColorPicker.orig_colorpicker_hue_size.y)
-		ColorPicker.colorpicker_color_hue_gap = GUIInfo.ScaleHeight(6)
-		ColorPicker.colorpicker_alpha_size.x = GUIInfo.ScaleWidth(ColorPicker.orig_colorpicker_alpha_size.x)
-		ColorPicker.colorpicker_alpha_size.y = GUIInfo.ScaleHeight(ColorPicker.orig_colorpicker_alpha_size.y)
-		ColorPicker.colorpicker_color_alpha_gap = GUIInfo.ScaleHeight(6)
-		ColorPicker.colorpicker_picker_circle_size.x = GUIInfo.ScaleWidth(ColorPicker.orig_colorpicker_picker_circle_size.x)
-		ColorPicker.colorpicker_picker_circle_size.y = GUIInfo.ScaleHeight(ColorPicker.orig_colorpicker_picker_circle_size.y)
-		ColorPicker.colorpicker_picker_rect_size.x = GUIInfo.ScaleWidth(ColorPicker.orig_colorpicker_picker_rect_size.x)
-		ColorPicker.colorpicker_picker_rect_size.y = GUIInfo.ScaleHeight(ColorPicker.orig_colorpicker_picker_rect_size.y)
-		ColorPicker.colorpicker_text_y_offset = GUIInfo.ScaleHeight(10)
-		ColorPicker.colorpicker_text_x_size = GUIInfo.ScaleWidth(43)
-		ColorPicker.colorpicker_text_x_gap = GUIInfo.ScaleWidth(3)
+		ColorPicker.selectedColorSize.x = GUIInfo.ScaleWidth(
+			ColorPicker.origSelectedColorSize.x
+		)
+		ColorPicker.selectedColorSize.y = GUIInfo.ScaleHeight(
+			ColorPicker.origSelectedColorSize.y
+		)
+		ColorPicker.colorOffset.x = GUIInfo.ScaleWidth(12)
+		ColorPicker.colorOffset.y = GUIInfo.ScaleHeight(12)
+		ColorPicker.textColorGap = GUIInfo.ScaleWidth(10)
+		ColorPicker.colorpickerBackgroundSize.x = GUIInfo.ScaleWidth(
+			ColorPicker.origColorpickerBackgroundSize.x
+		)
+		ColorPicker.colorpickerBackgroundSize.y = GUIInfo.ScaleHeight(
+			ColorPicker.origColorpickerBackgroundSize.y
+		)
+		ColorPicker.textColorpickerGap = GUIInfo.ScaleHeight(4)
+		ColorPicker.colorpickerColorOffset.x = GUIInfo.ScaleWidth(4)
+		ColorPicker.colorpickerColorOffset.y = GUIInfo.ScaleHeight(4)
+		ColorPicker.colorpickerColorSize =
+			ColorPicker.colorpickerBackgroundSize.x -
+			ColorPicker.colorpickerColorOffset.x * 2
+		ColorPicker.colorpickerHueSize.x = GUIInfo.ScaleWidth(
+			ColorPicker.origColorpickerHueSize.x
+		)
+		ColorPicker.colorpickerHueSize.y = GUIInfo.ScaleHeight(
+			ColorPicker.origColorpickerHueSize.y
+		)
+		ColorPicker.colorpickerColorHueGap = GUIInfo.ScaleHeight(6)
+		ColorPicker.colorpickerAlphaSize.x = GUIInfo.ScaleWidth(
+			ColorPicker.origColorpickerAlphaSize.x
+		)
+		ColorPicker.colorpickerAlphaSize.y = GUIInfo.ScaleHeight(
+			ColorPicker.origColorpickerAlphaSize.y
+		)
+		ColorPicker.colorpickerColorAlphaGap = GUIInfo.ScaleHeight(6)
+		ColorPicker.colorpickerPickerCircleSize.x = GUIInfo.ScaleWidth(
+			ColorPicker.origColorpickerPickerCircleSize.x
+		)
+		ColorPicker.colorpickerPickerCircleSize.y = GUIInfo.ScaleHeight(
+			ColorPicker.origColorpickerPickerCircleSize.y
+		)
+		ColorPicker.colorpickerPickerRectSize.x = GUIInfo.ScaleWidth(
+			ColorPicker.origColorpickerPickerRectSize.x
+		)
+		ColorPicker.colorpickerPickerRectSize.y = GUIInfo.ScaleHeight(
+			ColorPicker.origColorpickerPickerRectSize.y
+		)
+		ColorPicker.colorpickerTextYOffset = GUIInfo.ScaleHeight(10)
+		ColorPicker.colorpickerTextXSize = GUIInfo.ScaleWidth(43)
+		ColorPicker.colorpickerTextXGap = GUIInfo.ScaleWidth(3)
 	}
 
-	private static readonly selected_color_path = "menu/colorpicker_selected_color.svg"
-	private static readonly selected_color_transparency_path = "menu/colorpicker_selected_color_transparency.svg"
-	private static readonly orig_selected_color_size = RendererSDK.GetImageSize(ColorPicker.selected_color_path)
-	private static readonly selected_color_size = new Vector2()
-	private static readonly color_offset = new Vector2()
-	private static text_color_gap = 0
-	private static readonly colorpicker_background_path = "menu/colorpicker_background.svg"
-	private static readonly orig_colorpicker_background_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_background_path)
-	private static readonly colorpicker_background_size = new Vector2()
-	private static text_colorpicker_gap = 4
-	private static readonly colorpicker_color_offset = new Vector2()
-	private static colorpicker_color_size = 0
-	private static readonly colorpicker_color_path = "menu/colorpicker_color.svg"
-	private static readonly colorpicker_overlay_path = "menu/colorpicker_overlay.svg"
-	private static readonly colorpicker_hue_path = "menu/colorpicker_hue.svg"
-	private static readonly orig_colorpicker_hue_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_hue_path)
-	private static readonly colorpicker_hue_size = new Vector2()
-	private static colorpicker_color_hue_gap = 0
-	private static readonly colorpicker_alpha_path = "menu/colorpicker_alpha.svg"
-	private static readonly orig_colorpicker_alpha_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_alpha_path)
-	private static readonly colorpicker_alpha_size = new Vector2()
-	private static colorpicker_color_alpha_gap = 0
-	private static readonly colorpicker_picker_circle_path = "menu/colorpicker_picker_circle.svg"
-	private static readonly orig_colorpicker_picker_circle_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_picker_circle_path)
-	private static readonly colorpicker_picker_circle_size = new Vector2()
-	private static readonly colorpicker_picker_rect_path = "menu/colorpicker_picker_rect.svg"
-	private static readonly orig_colorpicker_picker_rect_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_picker_rect_path)
-	private static readonly colorpicker_picker_rect_size = new Vector2()
-	private static colorpicker_text_y_offset = 0
-	private static colorpicker_text_x_size = 0
-	private static colorpicker_text_x_gap = 0
+	private static readonly selectedColorPath =
+		"menu/colorpicker_selected_color.svg"
+	private static readonly selectedColorTransparencyPath =
+		"menu/colorpicker_selected_color_transparency.svg"
+	private static readonly origSelectedColorSize = RendererSDK.GetImageSize(
+		ColorPicker.selectedColorPath
+	)
+	private static readonly selectedColorSize = new Vector2()
+	private static readonly colorOffset = new Vector2()
+	private static textColorGap = 0
+	private static readonly colorpickerBackgroundPath =
+		"menu/colorpicker_background.svg"
+	private static readonly origColorpickerBackgroundSize =
+		RendererSDK.GetImageSize(ColorPicker.colorpickerBackgroundPath)
+	private static readonly colorpickerBackgroundSize = new Vector2()
+	private static textColorpickerGap = 4
+	private static readonly colorpickerColorOffset = new Vector2()
+	private static colorpickerColorSize = 0
+	private static readonly colorpickerColorPath = "menu/colorpicker_color.svg"
+	private static readonly colorpickerOverlayPath =
+		"menu/colorpicker_overlay.svg"
+	private static readonly colorpickerHuePath = "menu/colorpicker_hue.svg"
+	private static readonly origColorpickerHueSize = RendererSDK.GetImageSize(
+		ColorPicker.colorpickerHuePath
+	)
+	private static readonly colorpickerHueSize = new Vector2()
+	private static colorpickerColorHueGap = 0
+	private static readonly colorpickerAlphaPath = "menu/colorpicker_alpha.svg"
+	private static readonly origColorpickerAlphaSize = RendererSDK.GetImageSize(
+		ColorPicker.colorpickerAlphaPath
+	)
+	private static readonly colorpickerAlphaSize = new Vector2()
+	private static colorpickerColorAlphaGap = 0
+	private static readonly colorpickerPickerCirclePath =
+		"menu/colorpickerPickerCircle.svg"
+	private static readonly origColorpickerPickerCircleSize =
+		RendererSDK.GetImageSize(ColorPicker.colorpickerPickerCirclePath)
+	private static readonly colorpickerPickerCircleSize = new Vector2()
+	private static readonly colorpickerPickerRectPath =
+		"menu/colorpickerPickerRect.svg"
+	private static readonly origColorpickerPickerRectSize =
+		RendererSDK.GetImageSize(ColorPicker.colorpickerPickerRectPath)
+	private static readonly colorpickerPickerRectSize = new Vector2()
+	private static colorpickerTextYOffset = 0
+	private static colorpickerTextXSize = 0
+	private static colorpickerTextXGap = 0
 
-	public readonly selected_color = new Color()
-	protected dragging_color = false
-	protected dragging_hue = false
-	protected dragging_alpha = false
-	protected readonly dragging_offset = new Vector2()
+	public readonly SelectedColor = new Color()
+	protected draggingColor = false
+	protected draggingHue = false
+	protected draggingAlpha = false
+	protected readonly draggingOffset = new Vector2()
 
-	constructor(parent: IMenu, name: string, default_color = Color.White, tooltip = "") {
+	constructor(
+		parent: IMenu,
+		name: string,
+		defaultColor = Color.White,
+		tooltip = ""
+	) {
 		super(parent, name, tooltip)
-		default_color.CopyTo(this.selected_color)
+		defaultColor.CopyTo(this.SelectedColor)
 	}
 
 	public get ConfigValue() {
-		return this.selected_color.toArray()
+		return this.SelectedColor.toArray()
 	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || value === undefined || !Array.isArray(value))
+		if (
+			this.ShouldIgnoreNewConfigValue ||
+			value === undefined ||
+			!Array.isArray(value)
+		)
 			return
-		this.selected_color.r = Math.max(0, Math.min(255, value[0] ?? this.selected_color.r))
-		this.selected_color.g = Math.max(0, Math.min(255, value[1] ?? this.selected_color.g))
-		this.selected_color.b = Math.max(0, Math.min(255, value[2] ?? this.selected_color.b))
-		this.selected_color.a = Math.max(0, Math.min(255, value[3] ?? this.selected_color.a))
+		this.SelectedColor.r = Math.max(
+			0,
+			Math.min(255, value[0] ?? this.SelectedColor.r)
+		)
+		this.SelectedColor.g = Math.max(
+			0,
+			Math.min(255, value[1] ?? this.SelectedColor.g)
+		)
+		this.SelectedColor.b = Math.max(
+			0,
+			Math.min(255, value[2] ?? this.SelectedColor.b)
+		)
+		this.SelectedColor.a = Math.max(
+			0,
+			Math.min(255, value[3] ?? this.SelectedColor.a)
+		)
 	}
 
 	public get ClassPriority(): number {
@@ -96,300 +158,370 @@ export class ColorPicker extends Base {
 	}
 
 	private get SelectedColorRect() {
-		const base_pos = this.Position
-			.Clone()
+		const basePos = this.Position.Clone()
 			.AddScalarX(this.parent.EntriesSizeX)
 			.AddScalarY(this.Size.y)
-			.SubtractForThis(ColorPicker.color_offset)
-		return new Rectangle(base_pos.Subtract(ColorPicker.selected_color_size), base_pos)
+			.SubtractForThis(ColorPicker.colorOffset)
+		return new Rectangle(
+			basePos.Subtract(ColorPicker.selectedColorSize),
+			basePos
+		)
 	}
 	private get ColorPickerRect(): Rectangle {
-		const base_pos = this.Position.Add(this.text_offset).AddScalarY(this.name_size.y + ColorPicker.text_colorpicker_gap)
-		const colorpicker_rect = new Rectangle(
-			base_pos,
-			base_pos.Add(ColorPicker.colorpicker_background_size),
+		const basePos = this.Position.Add(this.textOffset).AddScalarY(
+			this.nameSize.y + ColorPicker.textColorpickerGap
 		)
-		if (colorpicker_rect.pos2.y > this.WindowSize.y) {
-			const move_y = this.name_size.y + ColorPicker.colorpicker_background_size.y + ColorPicker.text_colorpicker_gap * 2
-			colorpicker_rect.pos1.SubtractScalarY(move_y)
-			colorpicker_rect.pos2.SubtractScalarY(move_y)
+		const colorpickerRect = new Rectangle(
+			basePos,
+			basePos.Add(ColorPicker.colorpickerBackgroundSize)
+		)
+		if (colorpickerRect.pos2.y > this.WindowSize.y) {
+			const moveY =
+				this.nameSize.y +
+				ColorPicker.colorpickerBackgroundSize.y +
+				ColorPicker.textColorpickerGap * 2
+			colorpickerRect.pos1.SubtractScalarY(moveY)
+			colorpickerRect.pos2.SubtractScalarY(moveY)
 		}
-		return colorpicker_rect
+		return colorpickerRect
 	}
 
 	public Update(): boolean {
-		if (!super.Update())
-			return false
+		if (!super.Update()) return false
 		this.Size.x =
-			this.text_offset.x
-			+ this.name_size.x
-			+ ColorPicker.text_color_gap
-			+ ColorPicker.selected_color_size.x
-			+ ColorPicker.color_offset.x
+			this.textOffset.x +
+			this.nameSize.x +
+			ColorPicker.textColorGap +
+			ColorPicker.selectedColorSize.x +
+			ColorPicker.colorOffset.x
 		return true
 	}
 
 	public Render(): void {
-		this.is_active = ColorPicker.active_colorpicker === this
+		this.isActive = ColorPicker.activeColorpicker === this
 		super.Render()
-		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
-		const selected_color_rect = this.SelectedColorRect
+		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
+		const selectedColorRect = this.SelectedColorRect
 		RendererSDK.Image(
-			ColorPicker.selected_color_transparency_path,
-			selected_color_rect.pos1,
+			ColorPicker.selectedColorTransparencyPath,
+			selectedColorRect.pos1,
 			-1,
-			selected_color_rect.Size,
+			selectedColorRect.Size
 		)
 		RendererSDK.Image(
-			ColorPicker.selected_color_path,
-			selected_color_rect.pos1,
+			ColorPicker.selectedColorPath,
+			selectedColorRect.pos1,
 			-1,
-			selected_color_rect.Size,
-			this.selected_color,
+			selectedColorRect.Size,
+			this.SelectedColor
 		)
 	}
 	public PostRender(): void {
-		if (!this.is_active)
-			return
-		const colorpicker_rect = this.ColorPickerRect,
-			selected_color_no_alpha = this.selected_color.Clone().SetA(255)
-		RendererSDK.Image(ColorPicker.colorpicker_background_path, colorpicker_rect.pos1, -1, colorpicker_rect.Size)
-		const [h] = RGBToHSV(this.selected_color.r, this.selected_color.g, this.selected_color.b)
-		const hue_color = new Color(...HSVToRGB(h, 1, 1))
-		const colorpicker_color_rect = this.GetColorPickerColorRect(colorpicker_rect)
+		if (!this.isActive) return
+		const colorpickerRect = this.ColorPickerRect,
+			selectedColorNoAlpha = this.SelectedColor.Clone().SetA(255)
 		RendererSDK.Image(
-			ColorPicker.colorpicker_color_path,
-			colorpicker_color_rect.pos1,
+			ColorPicker.colorpickerBackgroundPath,
+			colorpickerRect.pos1,
 			-1,
-			colorpicker_color_rect.Size,
-			hue_color,
+			colorpickerRect.Size
+		)
+		const [h] = RGBToHSV(
+			this.SelectedColor.r,
+			this.SelectedColor.g,
+			this.SelectedColor.b
+		)
+		const hueColor = new Color(...HSVToRGB(h, 1, 1))
+		const colorpickerColorRect = this.GetColorPickerColorRect(colorpickerRect)
+		RendererSDK.Image(
+			ColorPicker.colorpickerColorPath,
+			colorpickerColorRect.pos1,
+			-1,
+			colorpickerColorRect.Size,
+			hueColor
 		)
 		RendererSDK.Image(
-			ColorPicker.colorpicker_overlay_path,
-			colorpicker_color_rect.pos1,
+			ColorPicker.colorpickerOverlayPath,
+			colorpickerColorRect.pos1,
 			-1,
-			colorpicker_color_rect.Size,
+			colorpickerColorRect.Size
 		)
 
-		const colorpicker_circle_rect = this.GetColorPickerCircleRect(colorpicker_color_rect)
+		const colorpickerCircleRect =
+			this.GetColorPickerCircleRect(colorpickerColorRect)
 		RendererSDK.FilledRect(
-			colorpicker_circle_rect.pos1.AddScalar(4),
-			colorpicker_circle_rect.Size.SubtractScalarForThis(8),
-			selected_color_no_alpha,
+			colorpickerCircleRect.pos1.AddScalar(4),
+			colorpickerCircleRect.Size.SubtractScalarForThis(8),
+			selectedColorNoAlpha
 		)
 		RendererSDK.Image(
-			ColorPicker.colorpicker_picker_circle_path,
-			colorpicker_circle_rect.pos1,
+			ColorPicker.colorpickerPickerCirclePath,
+			colorpickerCircleRect.pos1,
 			-1,
-			colorpicker_circle_rect.Size,
+			colorpickerCircleRect.Size
 		)
 
-		const colorpicker_hue_rect = this.GetColorPickerHueRect(colorpicker_color_rect)
-		RendererSDK.Image(ColorPicker.colorpicker_hue_path, colorpicker_hue_rect.pos1, -1, colorpicker_hue_rect.Size)
+		const colorpickerHueRect = this.GetColorPickerHueRect(colorpickerColorRect)
+		RendererSDK.Image(
+			ColorPicker.colorpickerHuePath,
+			colorpickerHueRect.pos1,
+			-1,
+			colorpickerHueRect.Size
+		)
 
-		const colorpicker_hue_picker_rect = this.GetColorPickerHuePickerRect(colorpicker_hue_rect)
+		const colorpickerHuePickerRect =
+			this.GetColorPickerHuePickerRect(colorpickerHueRect)
 		RendererSDK.FilledRect(
-			colorpicker_hue_picker_rect.pos1.AddScalar(1),
-			colorpicker_hue_picker_rect.Size.SubtractScalarForThis(2),
-			hue_color,
+			colorpickerHuePickerRect.pos1.AddScalar(1),
+			colorpickerHuePickerRect.Size.SubtractScalarForThis(2),
+			hueColor
 		)
 		RendererSDK.Image(
-			ColorPicker.colorpicker_picker_rect_path,
-			colorpicker_hue_picker_rect.pos1,
+			ColorPicker.colorpickerPickerRectPath,
+			colorpickerHuePickerRect.pos1,
 			-1,
-			colorpicker_hue_picker_rect.Size,
+			colorpickerHuePickerRect.Size
 		)
 
-		const colorpicker_alpha_rect = this.GetColorPickerAlphaRect(colorpicker_hue_rect)
+		const colorpickerAlphaRect =
+			this.GetColorPickerAlphaRect(colorpickerHueRect)
 		RendererSDK.Image(
-			ColorPicker.colorpicker_alpha_path,
-			colorpicker_alpha_rect.pos1,
+			ColorPicker.colorpickerAlphaPath,
+			colorpickerAlphaRect.pos1,
 			-1,
-			colorpicker_alpha_rect.Size,
-			selected_color_no_alpha,
+			colorpickerAlphaRect.Size,
+			selectedColorNoAlpha
 		)
 
-		const colorpicker_alpha_picker_rect = this.GetColorPickerAlphaPickerRect(colorpicker_alpha_rect)
+		const colorpickerAlphaPickerRect =
+			this.GetColorPickerAlphaPickerRect(colorpickerAlphaRect)
 		RendererSDK.FilledRect(
-			colorpicker_alpha_picker_rect.pos1.AddScalar(1),
-			colorpicker_alpha_picker_rect.Size.SubtractScalarForThis(2),
-			this.selected_color,
+			colorpickerAlphaPickerRect.pos1.AddScalar(1),
+			colorpickerAlphaPickerRect.Size.SubtractScalarForThis(2),
+			this.SelectedColor
 		)
 		RendererSDK.Image(
-			ColorPicker.colorpicker_picker_rect_path,
-			colorpicker_alpha_picker_rect.pos1,
+			ColorPicker.colorpickerPickerRectPath,
+			colorpickerAlphaPickerRect.pos1,
 			-1,
-			colorpicker_alpha_picker_rect.Size,
+			colorpickerAlphaPickerRect.Size
 		)
 
-		const text_base_pos = colorpicker_rect.pos1
+		const textBasePos = colorpickerRect.pos1
 			.Clone()
-			.AddScalarX(ColorPicker.colorpicker_color_offset.x)
-			.AddScalarY(colorpicker_rect.Height - ColorPicker.colorpicker_text_y_offset)
-		const r_text = Math.round(this.selected_color.r).toString(),
-			g_text = Math.round(this.selected_color.g).toString(),
-			b_text = Math.round(this.selected_color.b).toString()
-		const r_text_size = this.GetTextSizeDefault(r_text),
-			g_text_size = this.GetTextSizeDefault(g_text),
-			b_text_size = this.GetTextSizeDefault(b_text)
+			.AddScalarX(ColorPicker.colorpickerColorOffset.x)
+			.AddScalarY(colorpickerRect.Height - ColorPicker.colorpickerTextYOffset)
+		const rText = Math.round(this.SelectedColor.r).toString(),
+			gText = Math.round(this.SelectedColor.g).toString(),
+			bText = Math.round(this.SelectedColor.b).toString()
+		const rTextSize = this.GetTextSizeDefault(rText),
+			gTextSize = this.GetTextSizeDefault(gText),
+			bTextSize = this.GetTextSizeDefault(bText)
 		this.RenderTextDefault(
-			r_text,
-			text_base_pos
+			rText,
+			textBasePos
 				.Clone()
-				.AddScalarX((ColorPicker.colorpicker_text_x_size - r_text_size.x) / 2)
-				.SubtractScalarY(r_text_size.y + r_text_size.z),
+				.AddScalarX((ColorPicker.colorpickerTextXSize - rTextSize.x) / 2)
+				.SubtractScalarY(rTextSize.y + rTextSize.z)
 		)
-		text_base_pos.AddScalarX(ColorPicker.colorpicker_text_x_size + ColorPicker.colorpicker_text_x_gap)
-		this.RenderTextDefault(
-			g_text,
-			text_base_pos
-				.Clone()
-				.AddScalarX((ColorPicker.colorpicker_text_x_size - g_text_size.x) / 2)
-				.SubtractScalarY(g_text_size.y + g_text_size.z),
+		textBasePos.AddScalarX(
+			ColorPicker.colorpickerTextXSize + ColorPicker.colorpickerTextXGap
 		)
-		text_base_pos.AddScalarX(ColorPicker.colorpicker_text_x_size + ColorPicker.colorpicker_text_x_gap)
 		this.RenderTextDefault(
-			b_text,
-			text_base_pos
+			gText,
+			textBasePos
 				.Clone()
-				.AddScalarX((ColorPicker.colorpicker_text_x_size - b_text_size.x) / 2)
-				.SubtractScalarY(b_text_size.y + b_text_size.z),
+				.AddScalarX((ColorPicker.colorpickerTextXSize - gTextSize.x) / 2)
+				.SubtractScalarY(gTextSize.y + gTextSize.z)
+		)
+		textBasePos.AddScalarX(
+			ColorPicker.colorpickerTextXSize + ColorPicker.colorpickerTextXGap
+		)
+		this.RenderTextDefault(
+			bText,
+			textBasePos
+				.Clone()
+				.AddScalarX((ColorPicker.colorpickerTextXSize - bTextSize.x) / 2)
+				.SubtractScalarY(bTextSize.y + bTextSize.z)
 		)
 
-		const mouse_pos = this.MousePosition.SubtractForThis(this.dragging_offset)
-		if (this.dragging_color) {
-			const sv = mouse_pos.SubtractForThis(colorpicker_color_rect.pos1).DivideForThis(colorpicker_color_rect.Size)
+		const mousePos = this.MousePosition.SubtractForThis(this.draggingOffset)
+		if (this.draggingColor) {
+			const sv = mousePos
+				.SubtractForThis(colorpickerColorRect.pos1)
+				.DivideForThis(colorpickerColorRect.Size)
 			const s = Math.min(Math.max(sv.x, 0), 1),
 				v = 1 - Math.min(Math.max(sv.y, 0), 1)
 			const [r, g, b] = HSVToRGB(h, s, v)
-			this.selected_color.SetColor(r, g, b, this.selected_color.a)
-		} else if (this.dragging_hue) {
-			const hue = Math.min(Math.max((mouse_pos.x - colorpicker_hue_rect.pos1.x) / colorpicker_hue_rect.Width, 0), 0.99)
-			const [, s, v] = RGBToHSV(this.selected_color.r, this.selected_color.g, this.selected_color.b)
+			this.SelectedColor.SetColor(r, g, b, this.SelectedColor.a)
+		} else if (this.draggingHue) {
+			const hue = Math.min(
+				Math.max(
+					(mousePos.x - colorpickerHueRect.pos1.x) / colorpickerHueRect.Width,
+					0
+				),
+				0.99
+			)
+			const [, s, v] = RGBToHSV(
+				this.SelectedColor.r,
+				this.SelectedColor.g,
+				this.SelectedColor.b
+			)
 			const [r, g, b] = HSVToRGB(hue, s, v)
-			this.selected_color.SetColor(r, g, b, this.selected_color.a)
-		} else if (this.dragging_alpha) {
-			const alpha = Math.min(Math.max((mouse_pos.x - colorpicker_hue_rect.pos1.x) / colorpicker_hue_rect.Width, 0), 1)
-			this.selected_color.SetA(Math.round(alpha * 255))
+			this.SelectedColor.SetColor(r, g, b, this.SelectedColor.a)
+		} else if (this.draggingAlpha) {
+			const alpha = Math.min(
+				Math.max(
+					(mousePos.x - colorpickerHueRect.pos1.x) / colorpickerHueRect.Width,
+					0
+				),
+				1
+			)
+			this.SelectedColor.SetA(Math.round(alpha * 255))
 		}
-		if (this.dragging_color || this.dragging_hue || this.dragging_alpha)
+		if (this.draggingColor || this.draggingHue || this.draggingAlpha)
 			this.TriggerOnValueChangedCBs()
 	}
 	public OnParentNotVisible(): void {
-		if (ColorPicker.active_colorpicker === this)
-			ColorPicker.active_colorpicker = undefined
-		this.is_active = false
+		if (ColorPicker.activeColorpicker === this)
+			ColorPicker.activeColorpicker = undefined
+		this.isActive = false
 	}
 	public OnPreMouseLeftDown(): boolean {
-		const colorpicker_rect = this.ColorPickerRect,
-			mouse_pos = this.MousePosition
-		if (!(this.is_active && colorpicker_rect.Contains(mouse_pos)))
-			return true
-		const colorpicker_color_rect = this.GetColorPickerColorRect(colorpicker_rect)
-		const colorpicker_color_picker_rect = this.GetColorPickerCircleRect(colorpicker_color_rect)
-		const colorpicker_hue_rect = this.GetColorPickerHueRect(colorpicker_color_rect)
-		const colorpicker_hue_picker_rect = this.GetColorPickerHuePickerRect(colorpicker_hue_rect)
-		const colorpicker_alpha_rect = this.GetColorPickerAlphaRect(colorpicker_hue_rect)
-		const colorpicker_alpha_picker_rect = this.GetColorPickerAlphaPickerRect(colorpicker_alpha_rect)
-		if (colorpicker_color_picker_rect.Contains(mouse_pos)) {
-			this.dragging_color = true
-			this.dragging_hue = this.dragging_alpha = false
-			mouse_pos.SubtractForThis(colorpicker_color_picker_rect.Center).CopyTo(this.dragging_offset)
-		} else if (colorpicker_color_rect.Contains(mouse_pos)) {
-			this.dragging_color = true
-			this.dragging_hue = this.dragging_alpha = false
-			this.dragging_offset.SetX(0).SetY(0)
-		} else if (colorpicker_hue_picker_rect.Contains(mouse_pos)) {
-			this.dragging_hue = true
-			this.dragging_color = this.dragging_alpha = false
-			mouse_pos.SubtractForThis(colorpicker_hue_picker_rect.Center).CopyTo(this.dragging_offset)
-		} else if (colorpicker_hue_rect.Contains(mouse_pos)) {
-			this.dragging_hue = true
-			this.dragging_color = this.dragging_alpha = false
-			this.dragging_offset.SetX(0).SetY(0)
-		} else if (colorpicker_alpha_picker_rect.Contains(mouse_pos)) {
-			this.dragging_alpha = true
-			this.dragging_color = this.dragging_hue = false
-			mouse_pos.SubtractForThis(colorpicker_alpha_picker_rect.Center).CopyTo(this.dragging_offset)
-		} else if (colorpicker_alpha_rect.Contains(mouse_pos)) {
-			this.dragging_alpha = true
-			this.dragging_color = this.dragging_hue = false
-			this.dragging_offset.SetX(0).SetY(0)
+		const colorpickerRect = this.ColorPickerRect,
+			mousePos = this.MousePosition
+		if (!(this.isActive && colorpickerRect.Contains(mousePos))) return true
+		const colorpickerColorRect = this.GetColorPickerColorRect(colorpickerRect)
+		const colorpickerColorPickerRect =
+			this.GetColorPickerCircleRect(colorpickerColorRect)
+		const colorpickerHueRect = this.GetColorPickerHueRect(colorpickerColorRect)
+		const colorpickerHuePickerRect =
+			this.GetColorPickerHuePickerRect(colorpickerHueRect)
+		const colorpickerAlphaRect =
+			this.GetColorPickerAlphaRect(colorpickerHueRect)
+		const colorpickerAlphaPickerRect =
+			this.GetColorPickerAlphaPickerRect(colorpickerAlphaRect)
+		if (colorpickerColorPickerRect.Contains(mousePos)) {
+			this.draggingColor = true
+			this.draggingHue = this.draggingAlpha = false
+			mousePos
+				.SubtractForThis(colorpickerColorPickerRect.Center)
+				.CopyTo(this.draggingOffset)
+		} else if (colorpickerColorRect.Contains(mousePos)) {
+			this.draggingColor = true
+			this.draggingHue = this.draggingAlpha = false
+			this.draggingOffset.SetX(0).SetY(0)
+		} else if (colorpickerHuePickerRect.Contains(mousePos)) {
+			this.draggingHue = true
+			this.draggingColor = this.draggingAlpha = false
+			mousePos
+				.SubtractForThis(colorpickerHuePickerRect.Center)
+				.CopyTo(this.draggingOffset)
+		} else if (colorpickerHueRect.Contains(mousePos)) {
+			this.draggingHue = true
+			this.draggingColor = this.draggingAlpha = false
+			this.draggingOffset.SetX(0).SetY(0)
+		} else if (colorpickerAlphaPickerRect.Contains(mousePos)) {
+			this.draggingAlpha = true
+			this.draggingColor = this.draggingHue = false
+			mousePos
+				.SubtractForThis(colorpickerAlphaPickerRect.Center)
+				.CopyTo(this.draggingOffset)
+		} else if (colorpickerAlphaRect.Contains(mousePos)) {
+			this.draggingAlpha = true
+			this.draggingColor = this.draggingHue = false
+			this.draggingOffset.SetX(0).SetY(0)
 		}
 		return false
 	}
 	public OnMouseLeftDown(): boolean {
-		if (!this.IsHovered)
-			return true
-		if (ColorPicker.active_colorpicker !== this) {
-			ColorPicker.active_colorpicker = this
-			this.is_active = true
+		if (!this.IsHovered) return true
+		if (ColorPicker.activeColorpicker !== this) {
+			ColorPicker.activeColorpicker = this
+			this.isActive = true
 		} else {
-			ColorPicker.active_colorpicker = undefined
-			this.is_active = false
+			ColorPicker.activeColorpicker = undefined
+			this.isActive = false
 		}
 		return false
 	}
 	public OnMouseLeftUp(): boolean {
-		this.dragging_color = this.dragging_hue = this.dragging_alpha = false
+		this.draggingColor = this.draggingHue = this.draggingAlpha = false
 		return false
 	}
-	private GetColorPickerColorRect(colorpicker_rect: Rectangle): Rectangle {
-		const base_pos = colorpicker_rect.pos1.Add(ColorPicker.colorpicker_color_offset)
+	private GetColorPickerColorRect(colorpickerRect: Rectangle): Rectangle {
+		const basePos = colorpickerRect.pos1.Add(ColorPicker.colorpickerColorOffset)
 		return new Rectangle(
-			base_pos,
-			base_pos.AddScalar(ColorPicker.colorpicker_color_size),
+			basePos,
+			basePos.AddScalar(ColorPicker.colorpickerColorSize)
 		)
 	}
-	private GetColorPickerCircleRect(colorpicker_color_rect: Rectangle): Rectangle {
-		const [, s, v] = RGBToHSV(this.selected_color.r, this.selected_color.g, this.selected_color.b)
-		const base_pos = colorpicker_color_rect.pos1
-			.Add(colorpicker_color_rect.Size.MultiplyScalarX(s).MultiplyScalarY(1 - v))
-			.SubtractForThis(ColorPicker.colorpicker_picker_circle_size.DivideScalar(2))
+	private GetColorPickerCircleRect(colorpickerColorRect: Rectangle): Rectangle {
+		const [, s, v] = RGBToHSV(
+			this.SelectedColor.r,
+			this.SelectedColor.g,
+			this.SelectedColor.b
+		)
+		const basePos = colorpickerColorRect.pos1
+			.Add(colorpickerColorRect.Size.MultiplyScalarX(s).MultiplyScalarY(1 - v))
+			.SubtractForThis(ColorPicker.colorpickerPickerCircleSize.DivideScalar(2))
 		return new Rectangle(
-			base_pos,
-			base_pos.Add(ColorPicker.colorpicker_picker_circle_size),
+			basePos,
+			basePos.Add(ColorPicker.colorpickerPickerCircleSize)
 		)
 	}
-	private GetColorPickerHueRect(colorpicker_color_rect: Rectangle): Rectangle {
-		const base_pos = colorpicker_color_rect.pos1
+	private GetColorPickerHueRect(colorpickerColorRect: Rectangle): Rectangle {
+		const basePos = colorpickerColorRect.pos1
 			.Clone()
-			.AddScalarY(colorpicker_color_rect.Height + ColorPicker.colorpicker_color_hue_gap)
+			.AddScalarY(
+				colorpickerColorRect.Height + ColorPicker.colorpickerColorHueGap
+			)
+		return new Rectangle(basePos, basePos.Add(ColorPicker.colorpickerHueSize))
+	}
+	private GetColorPickerHuePickerRect(
+		colorpickerHueRect: Rectangle
+	): Rectangle {
+		const [h] = RGBToHSV(
+			this.SelectedColor.r,
+			this.SelectedColor.g,
+			this.SelectedColor.b
+		)
+		const basePos = colorpickerHueRect.pos1
+			.Clone()
+			.AddScalarX(colorpickerHueRect.Size.x * h)
+			.SubtractScalarX(ColorPicker.colorpickerPickerRectSize.x / 2)
+			.AddScalarY(
+				(colorpickerHueRect.Height - ColorPicker.colorpickerPickerRectSize.y) /
+					2
+			)
 		return new Rectangle(
-			base_pos,
-			base_pos.Add(ColorPicker.colorpicker_hue_size),
+			basePos,
+			basePos.Add(ColorPicker.colorpickerPickerRectSize)
 		)
 	}
-	private GetColorPickerHuePickerRect(colorpicker_hue_rect: Rectangle): Rectangle {
-		const [h] = RGBToHSV(this.selected_color.r, this.selected_color.g, this.selected_color.b)
-		const base_pos = colorpicker_hue_rect.pos1
+	private GetColorPickerAlphaRect(colorpickerHueRect: Rectangle): Rectangle {
+		const basePos = colorpickerHueRect.pos1
 			.Clone()
-			.AddScalarX(colorpicker_hue_rect.Size.x * h)
-			.SubtractScalarX(ColorPicker.colorpicker_picker_rect_size.x / 2)
-			.AddScalarY((colorpicker_hue_rect.Height - ColorPicker.colorpicker_picker_rect_size.y) / 2)
-		return new Rectangle(
-			base_pos,
-			base_pos.Add(ColorPicker.colorpicker_picker_rect_size),
-		)
+			.AddScalarY(
+				colorpickerHueRect.Height + ColorPicker.colorpickerColorAlphaGap
+			)
+		return new Rectangle(basePos, basePos.Add(ColorPicker.colorpickerAlphaSize))
 	}
-	private GetColorPickerAlphaRect(colorpicker_hue_rect: Rectangle): Rectangle {
-		const base_pos = colorpicker_hue_rect.pos1
+	private GetColorPickerAlphaPickerRect(
+		colorpickerAlphaRect: Rectangle
+	): Rectangle {
+		const basePos = colorpickerAlphaRect.pos1
 			.Clone()
-			.AddScalarY(colorpicker_hue_rect.Height + ColorPicker.colorpicker_color_alpha_gap)
+			.AddScalarX((colorpickerAlphaRect.Size.x * this.SelectedColor.a) / 255)
+			.SubtractScalarX(ColorPicker.colorpickerPickerRectSize.x / 2)
+			.AddScalarY(
+				(colorpickerAlphaRect.Height -
+					ColorPicker.colorpickerPickerRectSize.y) /
+					2
+			)
 		return new Rectangle(
-			base_pos,
-			base_pos.Add(ColorPicker.colorpicker_alpha_size),
-		)
-	}
-	private GetColorPickerAlphaPickerRect(colorpicker_alpha_rect: Rectangle): Rectangle {
-		const base_pos = colorpicker_alpha_rect.pos1
-			.Clone()
-			.AddScalarX(colorpicker_alpha_rect.Size.x * this.selected_color.a / 255)
-			.SubtractScalarX(ColorPicker.colorpicker_picker_rect_size.x / 2)
-			.AddScalarY((colorpicker_alpha_rect.Height - ColorPicker.colorpicker_picker_rect_size.y) / 2)
-		return new Rectangle(
-			base_pos,
-			base_pos.Add(ColorPicker.colorpicker_picker_rect_size),
+			basePos,
+			basePos.Add(ColorPicker.colorpickerPickerRectSize)
 		)
 	}
 }

@@ -8,14 +8,17 @@ const SettingsTree = Menu.AddEntry("Settings")
 
 /** Node Menu  */
 const MainMenuKeyBind = SettingsTree.AddKeybind("Menu Bind", "Insert")
-MainMenuKeyBind.activates_in_menu = true
-MainMenuKeyBind.trigger_on_chat = true
+MainMenuKeyBind.ActivatesInMenu = true
+MainMenuKeyBind.TriggerOnChat = true
 
-const SettingsLanguage = SettingsTree.AddDropdown("Language", ["English", "Russian"], 1)
+const SettingsLanguage = SettingsTree.AddDropdown(
+	"Language",
+	["English", "Russian"],
+	1
+)
 SettingsLanguage.OnValue(change => {
-	if (Menu.MenuManager.empty_config)
-		return
-	switch (change.selected_id) {
+	if (Menu.MenuManager.emptyConfig) return
+	switch (change.SelectedID) {
 		case 0:
 			Menu.Localization.SelectedUnitName = "english"
 			break
@@ -49,7 +52,7 @@ Events.on("SetLanguage", language => {
 })
 
 MainMenuKeyBind.OnPressed(() => {
-	Menu.MenuManager.is_open = !Menu.MenuManager.is_open
+	Menu.MenuManager.IsOpen = !Menu.MenuManager.IsOpen
 })
 
 ReloadScriptsBtn.OnValue(() => reload())

@@ -1,4 +1,4 @@
-export enum DOTAScriptInventorySlot_t {
+export enum DOTAScriptInventorySlot {
 	DOTA_ITEM_SLOT_1 = 0,
 	DOTA_ITEM_SLOT_2 = 1,
 	DOTA_ITEM_SLOT_3 = 2,

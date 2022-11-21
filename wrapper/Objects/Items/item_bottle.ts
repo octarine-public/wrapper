@@ -1,5 +1,6 @@
 import { WrapperClass } from "../../Decorators"
 import { DOTA_RUNES } from "../../Enums/DOTA_RUNES"
+import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GameState } from "../../Utils/GameState"
 import { Item } from "../Base/Item"
 
@@ -56,9 +57,7 @@ export class item_bottle extends Item {
 		return this.CurrentCharges !== 0 && super.CanBeCasted(bonusMana)
 	}
 }
-
-import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
-RegisterFieldHandler(item_bottle, "m_iStoredRuneType", (bottle, new_val) => {
-	bottle.StoredRune = new_val as DOTA_RUNES
+RegisterFieldHandler(item_bottle, "m_iStoredRuneType", (bottle, newVal) => {
+	bottle.StoredRune = newVal as DOTA_RUNES
 	bottle.LastRuneTypeChangeTime = GameState.RawGameTime
 })

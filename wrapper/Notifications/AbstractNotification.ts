@@ -20,9 +20,9 @@ export abstract class Notification {
 	constructor(options?: {
 		timeToShow?: number
 		playSoundName?: string
-		uniqueKey?: any,
-		position?: Vector3,
-		sourceEntity?: Entity,
+		uniqueKey?: any
+		position?: Vector3
+		sourceEntity?: Entity
 	}) {
 		this.UniqueKey = options?.uniqueKey
 		this.playSoundName = options?.playSoundName
@@ -49,13 +49,13 @@ export abstract class Notification {
 	 * @example Color.White.SetA(this.Opacity)
 	 */
 	protected get Opacity() {
-		let time_since = 1000
-		const current_time = hrtime()
-		if (this.startDisplayTime + 500 > current_time)
-			time_since = current_time - this.startDisplayTime
-		else if (current_time + 500 > this.stopDisplayTime)
-			time_since = this.stopDisplayTime - current_time
-		return Math.min(Math.max(time_since, 0) / 1000 * 2, 1) * 255
+		let timeSince = 1000
+		const currentTime = hrtime()
+		if (this.startDisplayTime + 500 > currentTime)
+			timeSince = currentTime - this.startDisplayTime
+		else if (currentTime + 500 > this.stopDisplayTime)
+			timeSince = this.stopDisplayTime - currentTime
+		return Math.min((Math.max(timeSince, 0) / 1000) * 2, 1) * 255
 	}
 
 	/**
@@ -74,12 +74,11 @@ export abstract class Notification {
 	}
 
 	public PlaySound() {
-		if (this.playSoundName === undefined || this.IsPlaying)
-			return
+		if (this.playSoundName === undefined || this.IsPlaying) return
 		SoundSDK.EmitStartSoundEvent(
 			this.playSoundName,
 			this.position,
-			this.sourceEntity,
+			this.sourceEntity
 		)
 		this.IsPlaying = true
 	}

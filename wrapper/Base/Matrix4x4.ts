@@ -37,10 +37,7 @@ export class Matrix4x4 {
 		])
 	}
 	private static Identity_ = new Matrix4x4([
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1,
+		1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
 	])
 
 	public readonly values = new Float32Array(16)
@@ -51,7 +48,7 @@ export class Matrix4x4 {
 		return new Vector3(
 			this.GetRowValue(3, 0),
 			this.GetRowValue(3, 1),
-			this.GetRowValue(3, 2),
+			this.GetRowValue(3, 2)
 		)
 	}
 	public set Translation(vec: Vector3) {
@@ -63,10 +60,10 @@ export class Matrix4x4 {
 		return this.values[pos]
 	}
 	public GetRowValue(row: number, col: number): number {
-		return this.at((row * 4) + col)
+		return this.at(row * 4 + col)
 	}
 	public SetRowValue(row: number, col: number, val: number): Matrix4x4 {
-		this.values[(row * 4) + col] = val
+		this.values[row * 4 + col] = val
 		return this
 	}
 	public Multiply(matrix: Matrix4x4): Matrix4x4 {
@@ -160,7 +157,13 @@ export class Matrix4x4 {
 		const det10 = a21 * a33 - a23 * a31
 		const det11 = a22 * a33 - a23 * a32
 
-		let det = (det00 * det11 - det01 * det10 + det02 * det09 + det03 * det08 - det04 * det07 + det05 * det06)
+		let det =
+			det00 * det11 -
+			det01 * det10 +
+			det02 * det09 +
+			det03 * det08 -
+			det04 * det07 +
+			det05 * det06
 
 		if (det !== 0) {
 			det = 1 / det

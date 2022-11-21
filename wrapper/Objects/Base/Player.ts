@@ -28,10 +28,18 @@ export class Player extends Entity {
 	public Pawn_ = -1
 
 	public get IsSpectator(): boolean {
-		return this.Team === Team.Observer || this.Team === Team.Neutral || this.Team === Team.None || this.Team === Team.Shop
+		return (
+			this.Team === Team.Observer ||
+			this.Team === Team.Neutral ||
+			this.Team === Team.None ||
+			this.Team === Team.Shop
+		)
 	}
 	public CannotUseItem(item: Item): boolean {
-		return item.Shareability === EShareAbility.ITEM_NOT_SHAREABLE && this.PlayerID !== item.PurchaserID
+		return (
+			item.Shareability === EShareAbility.ITEM_NOT_SHAREABLE &&
+			this.PlayerID !== item.PurchaserID
+		)
 	}
 	public Buyback(queue?: boolean, showEffects?: boolean): void {
 		return ExecuteOrder.Buyback(queue, showEffects)
@@ -39,11 +47,19 @@ export class Player extends Entity {
 	public Glyph(queue?: boolean, showEffects?: boolean): void {
 		return ExecuteOrder.Glyph(queue, showEffects)
 	}
-	public CastRiverPaint(position: Vector3, queue?: boolean, showEffects?: boolean): void {
+	public CastRiverPaint(
+		position: Vector3,
+		queue?: boolean,
+		showEffects?: boolean
+	): void {
 		return ExecuteOrder.CastRiverPaint(position, queue, showEffects)
 	}
-	public PreGameAdjustItemAssigment(ItemID: number, queue?: boolean, showEffects?: boolean): void {
-		return ExecuteOrder.PreGameAdjustItemAssigment(ItemID, queue, showEffects)
+	public PreGameAdjustItemAssigment(
+		itemID: number,
+		queue?: boolean,
+		showEffects?: boolean
+	): void {
+		return ExecuteOrder.PreGameAdjustItemAssigment(itemID, queue, showEffects)
 	}
 	public Scan(position: Vector3, queue?: boolean, showEffects?: boolean): void {
 		return ExecuteOrder.Scan(position, queue, showEffects)
@@ -51,13 +67,10 @@ export class Player extends Entity {
 
 	public UpdateHero(playerResource: Nullable<CPlayerResource>): void {
 		const teamDataAr = playerResource?.PlayerTeamData
-		if (teamDataAr === undefined)
-			return
+		if (teamDataAr === undefined) return
 		this.Hero_ = teamDataAr[this.PlayerID]?.SelectedHeroIndex ?? this.Hero_
 		const ent = EntityManager.EntityByIndex(this.Hero_)
-		this.Hero = ent instanceof Hero
-			? ent
-			: undefined
+		this.Hero = ent instanceof Hero ? ent : undefined
 	}
 }
 export const Players = EntityManager.GetEntitiesByClass(Player)
@@ -68,25 +81,20 @@ EventsSDK.on("PreEntityCreated", ent => {
 		return
 	}
 	for (const player of Players)
-		if (ent.HandleMatches(player.Pawn_))
-			player.Pawn = ent
+		if (ent.HandleMatches(player.Pawn_)) player.Pawn = ent
 	if (ent instanceof Hero && ent.CanBeMainHero)
 		for (const player of Players)
-			if (ent.HandleMatches(player.Hero_))
-				player.Hero = ent
+			if (ent.HandleMatches(player.Hero_)) player.Hero = ent
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
 	for (const player of Players)
-		if (ent.HandleMatches(player.Pawn_))
-			player.Pawn = undefined
+		if (ent.HandleMatches(player.Pawn_)) player.Pawn = undefined
 	if (ent instanceof Hero)
 		for (const player of Players)
-			if (ent.HandleMatches(player.Hero_))
-				player.Hero = undefined
+			if (ent.HandleMatches(player.Hero_)) player.Hero = undefined
 })
 
 EventsSDK.on("PlayerResourceUpdated", playerResource => {
-	for (const player of Players)
-		player.UpdateHero(playerResource)
+	for (const player of Players) player.UpdateHero(playerResource)
 })

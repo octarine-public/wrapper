@@ -13,13 +13,17 @@ export class NeutralSpawner extends Entity {
 
 	public get SpawnBox(): Nullable<NeutralSpawnBox> {
 		if (this.SpawnBox_ === undefined) {
-			const my_pos = Vector2.FromVector3(this.Position)
-			this.SpawnBox_ = GameRules?.NeutralSpawnBoxes?.find(box => box.Includes2D(my_pos))
+			const myPos = Vector2.FromVector3(this.Position)
+			this.SpawnBox_ = GameRules?.NeutralSpawnBoxes?.find(box =>
+				box.Includes2D(myPos)
+			)
 		}
 		return this.SpawnBox_
 	}
 	public get SpawnerTeam(): Team {
-		return this.SpawnBox?.CampName?.includes("_evil_") ? Team.Dire : Team.Radiant
+		return this.SpawnBox?.CampName?.includes("_evil_")
+			? Team.Dire
+			: Team.Radiant
 	}
 	public get Name(): string {
 		return this.SpawnBox?.CampName ?? ""

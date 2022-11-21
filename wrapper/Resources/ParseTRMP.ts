@@ -5,7 +5,8 @@ import { GetPositionHeight } from "../Native/WASM"
 export function ParseTRMP(stream: ReadableBinaryStream): Vector3[] {
 	{
 		const magic = stream.ReadUint32(false)
-		if (magic !== 0x74726D70) { // trmp
+		if (magic !== 0x74726d70) {
+			// trmp
 			console.log(`Invalid TRMP magic: 0x${magic.toString(16)}`)
 			return []
 		}
@@ -17,16 +18,15 @@ export function ParseTRMP(stream: ReadableBinaryStream): Vector3[] {
 			return []
 		}
 	}
-	const data_offset = stream.ReadUint32(),
-		lump_names_count = stream.ReadUint32(),
-		tree_count = stream.ReadUint32()
-	stream.pos = data_offset
+	const dataOffset = stream.ReadUint32(),
+		lumpNamesCount = stream.ReadUint32(),
+		treeCount = stream.ReadUint32()
+	stream.pos = dataOffset
 
-	for (let i = 0; i < lump_names_count; i++)
-		stream.ReadNullTerminatedUtf8String()
+	for (let i = 0; i < lumpNamesCount; i++) stream.ReadNullTerminatedUtf8String()
 
 	const trees: Vector3[] = []
-	for (let i = 0; i < tree_count; i++) {
+	for (let i = 0; i < treeCount; i++) {
 		const x = stream.ReadInt32(),
 			y = stream.ReadInt32()
 		stream.RelativeSeek(4) // lump ID

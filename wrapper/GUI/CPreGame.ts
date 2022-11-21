@@ -9,10 +9,18 @@ import { ScaleHeight, ScaleWidth } from "./Helpers"
 
 export class CPreGame {
 	private static get HasRadiantCoach(): boolean {
-		return PlayerResource?.PlayerData?.some(data => data !== undefined && data.CoachTeam === Team.Radiant) ?? false
+		return (
+			PlayerResource?.PlayerData?.some(
+				data => data !== undefined && data.CoachTeam === Team.Radiant
+			) ?? false
+		)
 	}
 	private static get HasDireCoach(): boolean {
-		return PlayerResource?.PlayerData?.some(data => data !== undefined && data.CoachTeam === Team.Dire) ?? false
+		return (
+			PlayerResource?.PlayerData?.some(
+				data => data !== undefined && data.CoachTeam === Team.Dire
+			) ?? false
+		)
 	}
 	private static get IsEmptyGameMode(): boolean {
 		return (GameRules?.GameMode ?? 0) === 0
@@ -33,188 +41,223 @@ export class CPreGame {
 	private readonly DirePlayers: Rectangle[] = []
 	private readonly IsEmptyGameMode = CPreGame.IsEmptyGameMode
 
-	constructor(screen_size: Vector2) {
-		const aspect_ratio = RendererSDK.GetAspectRatio(screen_size)
-		this.CalculateCenter(screen_size, aspect_ratio)
-		this.CalculateCoachesAndPlayers(screen_size, aspect_ratio)
-		this.CalculateNames(screen_size, aspect_ratio)
-		this.CalculateHeroImages(screen_size, aspect_ratio)
-		this.CalculateRoles(screen_size)
+	constructor(screenSize: Vector2) {
+		const aspectRatio = RendererSDK.GetAspectRatio(screenSize)
+		this.CalculateCenter(screenSize, aspectRatio)
+		this.CalculateCoachesAndPlayers(screenSize, aspectRatio)
+		this.CalculateNames(screenSize, aspectRatio)
+		this.CalculateHeroImages(screenSize, aspectRatio)
+		this.CalculateRoles(screenSize)
 	}
 
 	public DebugDraw(): void {
-		RendererSDK.FilledRect(this.Center.pos1, this.Center.Size, Color.White.SetA(128))
-		RendererSDK.FilledRect(this.RadiantCoach.pos1, this.RadiantCoach.Size, Color.Aqua.SetA(128))
-		RendererSDK.FilledRect(this.DireCoach.pos1, this.DireCoach.Size, Color.Aqua.SetA(128))
+		RendererSDK.FilledRect(
+			this.Center.pos1,
+			this.Center.Size,
+			Color.White.SetA(128)
+		)
+		RendererSDK.FilledRect(
+			this.RadiantCoach.pos1,
+			this.RadiantCoach.Size,
+			Color.Aqua.SetA(128)
+		)
+		RendererSDK.FilledRect(
+			this.DireCoach.pos1,
+			this.DireCoach.Size,
+			Color.Aqua.SetA(128)
+		)
 
-		this.RadiantPlayersNames.forEach((rect, i) => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Yellow.SetA(128)))
-		this.DirePlayersNames.forEach((rect, i) => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Yellow.SetA(128)))
+		for (const rect of this.RadiantPlayersNames)
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Yellow.SetA(128))
+		for (const rect of this.DirePlayersNames)
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Yellow.SetA(128))
 
-		this.RadiantPlayersHeroImages.forEach((rect, i) => RendererSDK.FilledRect(rect.pos1, rect.Size, new Color(50, 50 * i, 0, 128)))
-		this.DirePlayersHeroImages.forEach((rect, i) => RendererSDK.FilledRect(rect.pos1, rect.Size, new Color(50 * i, 0, 50, 128)))
+		this.RadiantPlayersHeroImages.forEach((rect, i) =>
+			RendererSDK.FilledRect(
+				rect.pos1,
+				rect.Size,
+				new Color(50, 50 * i, 0, 128)
+			)
+		)
+		this.DirePlayersHeroImages.forEach((rect, i) =>
+			RendererSDK.FilledRect(
+				rect.pos1,
+				rect.Size,
+				new Color(50 * i, 0, 50, 128)
+			)
+		)
 
-		this.RadiantPlayersRoles.forEach((rect, i) => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Green.SetA(128)))
-		this.DirePlayersRoles.forEach((rect, i) => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Green.SetA(128)))
+		for (const rect of this.RadiantPlayersRoles)
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Green.SetA(128))
+		for (const rect of this.DirePlayersRoles)
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Green.SetA(128))
 	}
 	public HasChanged(): boolean {
 		return (
-			this.HasRadiantCoach !== CPreGame.HasRadiantCoach
-			|| this.HasDireCoach !== CPreGame.HasDireCoach
-			|| this.IsEmptyGameMode !== CPreGame.IsEmptyGameMode
+			this.HasRadiantCoach !== CPreGame.HasRadiantCoach ||
+			this.HasDireCoach !== CPreGame.HasDireCoach ||
+			this.IsEmptyGameMode !== CPreGame.IsEmptyGameMode
 		)
 	}
 
-	private CalculateCenter(screen_size: Vector2, aspect_ratio: string): void {
-		this.Center.Width = ScaleWidth(aspect_ratio === "16x10" ? 300 : 250, screen_size)
-		this.Center.Height = ScaleHeight(88, screen_size)
-		this.Center.x = Math.round((screen_size.x - this.Center.Width) / 2)
+	private CalculateCenter(screenSize: Vector2, aspectRatio: string): void {
+		this.Center.Width = ScaleWidth(
+			aspectRatio === "16x10" ? 300 : 250,
+			screenSize
+		)
+		this.Center.Height = ScaleHeight(88, screenSize)
+		this.Center.x = Math.round((screenSize.x - this.Center.Width) / 2)
 
 		// No clue how pregame aligns center, but this seem to fix it for several resolutions
 		if (this.IsEmptyGameMode) {
-			if (aspect_ratio === "4x3")
-				this.Center.x += ScaleWidth(4, screen_size)
+			if (aspectRatio === "4x3") this.Center.x += ScaleWidth(4, screenSize)
 			if (
-				(screen_size.x === 720 && screen_size.y === 576)
-				|| (screen_size.x === 720 && screen_size.y === 480)
-				|| (screen_size.x === 640 && screen_size.y === 480)
+				(screenSize.x === 720 && screenSize.y === 576) ||
+				(screenSize.x === 720 && screenSize.y === 480) ||
+				(screenSize.x === 640 && screenSize.y === 480)
 			)
 				this.Center.x -= 1
 		}
 	}
 	private CalculateCoachesAndPlayers(
-		screen_size: Vector2,
-		aspect_ratio: string,
+		screenSize: Vector2,
+		aspectRatio: string
 	): void {
-		const CoachMargin = ScaleWidth(10, screen_size),
-			CoachWidth = ScaleHeight(80, screen_size),
-			CoachHeight = ScaleHeight(50, screen_size),
-			PlayersContainerMargin = ScaleWidth(8, screen_size),
-			PlayerMargin = ScaleWidth(aspect_ratio === "4x3" ? -4 : -2, screen_size),
-			PlayerWidth = ScaleWidth(aspect_ratio === "4x3" ? 110 : 128, screen_size)
+		const coachMargin = ScaleWidth(10, screenSize),
+			coachWidth = ScaleHeight(80, screenSize),
+			coachHeight = ScaleHeight(50, screenSize),
+			playersContainerMargin = ScaleWidth(8, screenSize),
+			playerMargin = ScaleWidth(aspectRatio === "4x3" ? -4 : -2, screenSize),
+			playerWidth = ScaleWidth(aspectRatio === "4x3" ? 110 : 128, screenSize)
 
 		{
-			let current_pos = this.Center.x
+			let currentPos = this.Center.x
 			if (this.HasRadiantCoach) {
-				this.RadiantCoach.Width = CoachWidth
-				this.RadiantCoach.Height = CoachHeight
+				this.RadiantCoach.Width = coachWidth
+				this.RadiantCoach.Height = coachHeight
 
-				this.RadiantCoach.x = current_pos - this.RadiantCoach.Width + CoachMargin
-				current_pos = this.RadiantCoach.x + CoachMargin
+				this.RadiantCoach.x = currentPos - this.RadiantCoach.Width + coachMargin
+				currentPos = this.RadiantCoach.x + coachMargin
 			}
-			current_pos -= PlayersContainerMargin
+			currentPos -= playersContainerMargin
 			for (let i = 0; i < 5; i++) {
-				const PlayerRect = new Rectangle()
-				PlayerRect.Width = PlayerWidth
-				PlayerRect.Height = 0
+				const playerRect = new Rectangle()
+				playerRect.Width = playerWidth
+				playerRect.Height = 0
 				// No clue why, but on 4:3 resolutions gap between 1st and 2nd radiant players
 				// is bigger than other ones.
-				if (aspect_ratio === "4x3" && i === 4 && this.IsEmptyGameMode)
-					current_pos -= ScaleWidth(9, screen_size)
-				PlayerRect.x = current_pos - PlayerRect.Width - PlayerMargin
-				current_pos = PlayerRect.x - PlayerMargin
-				this.RadiantPlayers.push(PlayerRect)
+				if (aspectRatio === "4x3" && i === 4 && this.IsEmptyGameMode)
+					currentPos -= ScaleWidth(9, screenSize)
+				playerRect.x = currentPos - playerRect.Width - playerMargin
+				currentPos = playerRect.x - playerMargin
+				this.RadiantPlayers.push(playerRect)
 			}
 			this.RadiantPlayers.reverse()
 		}
 
 		{
-			let current_pos = this.Center.x + this.Center.Width
+			let currentPos = this.Center.x + this.Center.Width
 			if (this.HasDireCoach) {
-				this.DireCoach.Width = CoachWidth
-				this.DireCoach.Height = CoachHeight
+				this.DireCoach.Width = coachWidth
+				this.DireCoach.Height = coachHeight
 
-				this.DireCoach.x = current_pos - CoachMargin
-				current_pos = this.DireCoach.x + this.DireCoach.Width - CoachMargin
+				this.DireCoach.x = currentPos - coachMargin
+				currentPos = this.DireCoach.x + this.DireCoach.Width - coachMargin
 			}
-			current_pos += PlayersContainerMargin
+			currentPos += playersContainerMargin
 			for (let i = 0; i < 5; i++) {
-				const PlayerRect = new Rectangle()
-				PlayerRect.Width = PlayerWidth
-				PlayerRect.Height = 0
-				PlayerRect.x = current_pos + PlayerMargin
-				current_pos = PlayerRect.x + PlayerMargin + PlayerWidth
-				this.DirePlayers.push(PlayerRect)
+				const playerRect = new Rectangle()
+				playerRect.Width = playerWidth
+				playerRect.Height = 0
+				playerRect.x = currentPos + playerMargin
+				currentPos = playerRect.x + playerMargin + playerWidth
+				this.DirePlayers.push(playerRect)
 			}
 		}
 	}
 	private CalculateBar(
-		PlayerRect: Rectangle,
-		RectWidth: number,
-		RectHeight: number,
-		RectMarginBottom: number,
-		RectMargin: number,
-		CenterWidth: boolean,
+		playerRect: Rectangle,
+		rectWidth: number,
+		rectHeight: number,
+		rectMarginBottom: number,
+		rectMargin: number,
+		centerWidth: boolean
 	): Rectangle {
-		const BarRect = new Rectangle()
-		if (RectWidth === 0)
-			RectWidth = PlayerRect.Width - Math.abs(RectMargin)
-		BarRect.Width = RectWidth
-		BarRect.Height = RectHeight
-		BarRect.x = PlayerRect.x + RectMargin
-		if (CenterWidth)
-			BarRect.x += Math.sign(RectMargin) * Math.round((PlayerRect.Width - RectWidth - Math.abs(RectMargin)) / 2)
-		if (RectMargin < 0)
-			BarRect.x += PlayerRect.Width - RectWidth
-		BarRect.y = PlayerRect.y - RectMarginBottom
-		if (RectMarginBottom > 0)
-			BarRect.y += PlayerRect.Height - RectHeight
-		return BarRect
+		const barRect = new Rectangle()
+		if (rectWidth === 0) rectWidth = playerRect.Width - Math.abs(rectMargin)
+		barRect.Width = rectWidth
+		barRect.Height = rectHeight
+		barRect.x = playerRect.x + rectMargin
+		if (centerWidth)
+			barRect.x +=
+				Math.sign(rectMargin) *
+				Math.round((playerRect.Width - rectWidth - Math.abs(rectMargin)) / 2)
+		if (rectMargin < 0) barRect.x += playerRect.Width - rectWidth
+		barRect.y = playerRect.y - rectMarginBottom
+		if (rectMarginBottom > 0) barRect.y += playerRect.Height - rectHeight
+		return barRect
 	}
 	private CalculateBasicRects(
-		BarWidth: number,
-		BarHeight: number,
-		BarMarginBottom: number,
-		BarMargin: number,
-		RadiantBarArray: Rectangle[],
-		DireBarArray: Rectangle[],
-		CenterWidth = false,
+		barWidth: number,
+		barHeight: number,
+		barMarginBottom: number,
+		barMargin: number,
+		radiantBarArray: Rectangle[],
+		direBarArray: Rectangle[],
+		centerWidth = false
 	): void {
-		this.RadiantPlayers.forEach(PlayerRect => RadiantBarArray.push(this.CalculateBar(
-			PlayerRect,
-			BarWidth,
-			BarHeight,
-			BarMarginBottom,
-			BarMargin,
-			CenterWidth,
-		)))
-		this.DirePlayers.forEach(PlayerRect => DireBarArray.push(this.CalculateBar(
-			PlayerRect,
-			BarWidth,
-			BarHeight,
-			BarMarginBottom,
-			-BarMargin,
-			CenterWidth,
-		)))
+		for (const playerRect of this.RadiantPlayers)
+			radiantBarArray.push(
+				this.CalculateBar(
+					playerRect,
+					barWidth,
+					barHeight,
+					barMarginBottom,
+					barMargin,
+					centerWidth
+				)
+			)
+		for (const playerRect of this.DirePlayers)
+			direBarArray.push(
+				this.CalculateBar(
+					playerRect,
+					barWidth,
+					barHeight,
+					barMarginBottom,
+					-barMargin,
+					centerWidth
+				)
+			)
 	}
-	private CalculateNames(screen_size: Vector2, aspect_ratio: string): void {
+	private CalculateNames(screenSize: Vector2, aspectRatio: string): void {
 		this.CalculateBasicRects(
 			0,
-			ScaleHeight(27, screen_size),
-			ScaleHeight(-(aspect_ratio === "4x3" ? 68 : 78), screen_size),
+			ScaleHeight(27, screenSize),
+			ScaleHeight(-(aspectRatio === "4x3" ? 68 : 78), screenSize),
 			0,
 			this.RadiantPlayersNames,
-			this.DirePlayersNames,
+			this.DirePlayersNames
 		)
 	}
-	private CalculateHeroImages(screen_size: Vector2, aspect_ratio: string): void {
-		const width = ScaleWidth(aspect_ratio === "4x3" ? 100 : 118, screen_size)
+	private CalculateHeroImages(screenSize: Vector2, aspectRatio: string): void {
+		const width = ScaleWidth(aspectRatio === "4x3" ? 100 : 118, screenSize)
 		this.CalculateBasicRects(
 			width,
 			Math.round(width * 0.5625),
 			-0,
-			ScaleWidth(4, screen_size),
+			ScaleWidth(4, screenSize),
 			this.RadiantPlayersHeroImages,
-			this.DirePlayersHeroImages,
+			this.DirePlayersHeroImages
 		)
 	}
-	private CalculateRoles(screen_size: Vector2): void {
+	private CalculateRoles(screenSize: Vector2): void {
 		this.CalculateBasicRects(
 			0,
-			ScaleHeight(16, screen_size),
-			ScaleHeight(-104, screen_size),
-			ScaleWidth(6, screen_size),
+			ScaleHeight(16, screenSize),
+			ScaleHeight(-104, screenSize),
+			ScaleWidth(6, screenSize),
 			this.RadiantPlayersRoles,
-			this.DirePlayersRoles,
+			this.DirePlayersRoles
 		)
 	}
 }

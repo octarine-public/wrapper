@@ -7,36 +7,50 @@ import { Base, IMenu } from "./Base"
 
 export class Slider extends Base {
 	public static OnWindowSizeChanged(): void {
-		Slider.slider_background_height = GUIInfo.ScaleHeight(Slider.orig_slider_background_height)
-		Slider.slider_background_offset.x = GUIInfo.ScaleWidth(13)
-		Slider.slider_background_offset.y = GUIInfo.ScaleHeight(12)
-		Slider.text_value_gap = GUIInfo.ScaleWidth(20)
-		Slider.text_slider_vertical_gap = GUIInfo.ScaleHeight(10)
+		Slider.sliderBackgroundHeight = GUIInfo.ScaleHeight(
+			Slider.origSliderBackgroundHeight
+		)
+		Slider.sliderBackgroundOffset.x = GUIInfo.ScaleWidth(13)
+		Slider.sliderBackgroundOffset.y = GUIInfo.ScaleHeight(12)
+		Slider.textValueGap = GUIInfo.ScaleWidth(20)
+		Slider.textSliderVerticalGap = GUIInfo.ScaleHeight(10)
 	}
 
-	private static readonly slider_background_path = "menu/slider_background.svg"
-	private static readonly slider_fill_path = "menu/slider_fill.svg"
-	private static readonly orig_slider_background_height = RendererSDK.GetImageSize(Slider.slider_background_path).y
-	private static slider_background_height = 0
-	private static readonly slider_background_offset = new Vector2()
-	private static text_value_gap = 0
-	private static text_slider_vertical_gap = 0
+	private static readonly sliderBackgroundPath = "menu/slider_background.svg"
+	private static readonly sliderFillPath = "menu/slider_fill.svg"
+	private static readonly origSliderBackgroundHeight = RendererSDK.GetImageSize(
+		Slider.sliderBackgroundPath
+	).y
+	private static sliderBackgroundHeight = 0
+	private static readonly sliderBackgroundOffset = new Vector2()
+	private static textValueGap = 0
+	private static textSliderVerticalGap = 0
 
 	public value = 0
-	public is_dragging = false
+	public isDragging = false
 
-	constructor(parent: IMenu, name: string, default_value = 0, public min = 0, public max = 100, public precision = 0, tooltip = "") {
+	constructor(
+		parent: IMenu,
+		name: string,
+		defaultValue = 0,
+		public min = 0,
+		public max = 100,
+		public precision = 0,
+		tooltip = ""
+	) {
 		super(parent, name, tooltip)
-		this.value = default_value
+		this.value = defaultValue
 	}
 
 	public get ConfigValue() {
 		return this.value
 	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number")
-			return
-		this.value = value !== undefined ? Math.min(Math.max(value, this.min), this.max) : this.value
+		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number") return
+		this.value =
+			value !== undefined
+				? Math.min(Math.max(value, this.min), this.max)
+				: this.value
 	}
 
 	public get ClassPriority(): number {
@@ -47,78 +61,98 @@ export class Slider extends Base {
 		const rect = this.Rect
 		return new Rectangle(
 			new Vector2(
-				rect.pos1.x + Slider.slider_background_offset.x,
-				rect.pos2.y - Slider.slider_background_offset.y - Slider.slider_background_height,
+				rect.pos1.x + Slider.sliderBackgroundOffset.x,
+				rect.pos2.y -
+					Slider.sliderBackgroundOffset.y -
+					Slider.sliderBackgroundHeight
 			),
-			rect.pos2.Clone()
-				.SubtractForThis(Slider.slider_background_offset)
-				.AddScalarX(1), // because slider_background_offset includes bar size (?)
+			rect.pos2
+				.Clone()
+				.SubtractForThis(Slider.sliderBackgroundOffset)
+				.AddScalarX(1) // because sliderBackgroundOffset includes bar size (?)
 		)
 	}
 
 	public Update(): boolean {
-		if (!super.Update())
-			return false
-		const max_value_size = this.GetTextSizeDefault(
-			this.max.toFixed(this.precision),
-		).Max(this.GetTextSizeDefault(
-			this.min.toFixed(this.precision),
-		))
+		if (!super.Update()) return false
+		const maxValueSize = this.GetTextSizeDefault(
+			this.max.toFixed(this.precision)
+		).Max(this.GetTextSizeDefault(this.min.toFixed(this.precision)))
 		this.Size.x =
-			this.name_size.x
-			+ this.text_offset.x * 2
-			+ Slider.text_value_gap
-			+ max_value_size.x
+			this.nameSize.x +
+			this.textOffset.x * 2 +
+			Slider.textValueGap +
+			maxValueSize.x
 		this.Size.y =
-			this.text_offset.y
-			+ Math.max(max_value_size.y - max_value_size.z, this.name_size.y - this.name_size.z)
-			+ Slider.text_slider_vertical_gap
-			+ Slider.slider_background_offset.y
-			+ Slider.slider_background_height
+			this.textOffset.y +
+			Math.max(
+				maxValueSize.y - maxValueSize.z,
+				this.nameSize.y - this.nameSize.z
+			) +
+			Slider.textSliderVerticalGap +
+			Slider.sliderBackgroundOffset.y +
+			Slider.sliderBackgroundHeight
 		return true
 	}
 
 	public Render(): void {
 		super.Render()
-		if (this.is_dragging)
-			this.OnValueChanged()
+		if (this.isDragging) this.OnValueChanged()
 
 		const rect = this.Rect,
-			value_text = this.value.toFixed(this.precision)
-		const value_text_size = this.GetTextSizeDefault(value_text)
-		const name_height = this.name_size.y - this.name_size.z,
-			value_height = value_text_size.y - value_text_size.z
-		const max_text_size = Math.max(name_height, value_height)
-		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset).AddScalarY(max_text_size - name_height))
-		this.RenderTextDefault(value_text, new Vector2(
-			rect.pos2.x - this.text_offset.x + 2 - value_text_size.x, // +2 because text_offset includes bar size
-			rect.pos1.y + this.text_offset.y + max_text_size - value_height,
-		))
+			valueText = this.value.toFixed(this.precision)
+		const valueTextSize = this.GetTextSizeDefault(valueText)
+		const nameHeight = this.nameSize.y - this.nameSize.z,
+			valueHeight = valueTextSize.y - valueTextSize.z
+		const maxTextSize = Math.max(nameHeight, valueHeight)
+		this.RenderTextDefault(
+			this.Name,
+			this.Position.Add(this.textOffset).AddScalarY(maxTextSize - nameHeight)
+		)
+		this.RenderTextDefault(
+			valueText,
+			new Vector2(
+				rect.pos2.x - this.textOffset.x + 2 - valueTextSize.x, // +2 because textOffset includes bar size
+				rect.pos1.y + this.textOffset.y + maxTextSize - valueHeight
+			)
+		)
 
-		const slider_rect = this.SliderRect,
-			slider_progress = (this.value - this.min) / (this.max - this.min)
-		RendererSDK.Image(Slider.slider_background_path, slider_rect.pos1, -1, slider_rect.Size)
-		if (slider_progress > 0)
-			RendererSDK.Image(Slider.slider_fill_path, slider_rect.pos1, -1, slider_rect.Size.MultiplyScalarX(slider_progress))
+		const sliderRect = this.SliderRect,
+			sliderProgress = (this.value - this.min) / (this.max - this.min)
+		RendererSDK.Image(
+			Slider.sliderBackgroundPath,
+			sliderRect.pos1,
+			-1,
+			sliderRect.Size
+		)
+		if (sliderProgress > 0)
+			RendererSDK.Image(
+				Slider.sliderFillPath,
+				sliderRect.pos1,
+				-1,
+				sliderRect.Size.MultiplyScalarX(sliderProgress)
+			)
 	}
 	public OnValueChanged(): void {
-		const slider_rect = this.SliderRect
-		const off = Math.max(slider_rect.GetOffset(this.MousePosition).x, 0)
-		const old_value = this.value
-		this.value = Math.min(this.max, this.Round(this.min + (off / slider_rect.Size.x) * (this.max - this.min)))
-		if (this.value !== old_value)
-			this.TriggerOnValueChangedCBs()
+		const sliderRect = this.SliderRect
+		const off = Math.max(sliderRect.GetOffset(this.MousePosition).x, 0)
+		const oldValue = this.value
+		this.value = Math.min(
+			this.max,
+			this.Round(this.min + (off / sliderRect.Size.x) * (this.max - this.min))
+		)
+		if (this.value !== oldValue) this.TriggerOnValueChangedCBs()
 	}
 
 	public OnMouseLeftDown(): boolean {
 		if (this.SliderRect.Contains(this.MousePosition)) {
-			this.is_dragging = true
+			this.isDragging = true
 			return false
 		}
 		return true
 	}
 	public OnMouseLeftUp(): boolean {
-		this.is_dragging = false
+		this.isDragging = false
 		return false
 	}
 	private Round(num: number): number {

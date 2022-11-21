@@ -2,7 +2,7 @@ import { Team } from "../Enums/Team"
 import { EntityPropertiesNode } from "./EntityProperties"
 
 export class PlayerData {
-	constructor(public readonly properties: EntityPropertiesNode) { }
+	constructor(public readonly properties: EntityPropertiesNode) {}
 
 	public get IsValid(): boolean {
 		return this.properties.get("m_bIsValid") as boolean

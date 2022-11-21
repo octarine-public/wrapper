@@ -3,5 +3,6 @@ import { Item } from "../Base/Item"
 
 @WrapperClass("item_assault")
 export class item_assault extends Item {
-	public static readonly AuraModifierName: string = "modifier_item_assault_negative_armor"
+	public static readonly AuraModifierName: string =
+		"modifier_item_assault_negative_armor"
 }

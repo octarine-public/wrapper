@@ -1,5 +1,5 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
-import { DOTAScriptInventorySlot_t } from "../../Enums/DOTAScriptInventorySlot_t"
+import { DOTAScriptInventorySlot } from "../../Enums/DOTAScriptInventorySlot"
 import { EShareAbility } from "../../Enums/EShareAbility"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { Ability } from "./Ability"
@@ -58,7 +58,11 @@ export class Item extends Ability {
 
 	public get IsReady(): boolean {
 		const unit = this.Owner
-		return this.IsCooldownReady && this.Level !== 0 && (unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsMuted))
+		return (
+			this.IsCooldownReady &&
+			this.Level !== 0 &&
+			(unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsMuted))
+		)
 	}
 	public get IsMuted(): boolean {
 		return this.EnableTime !== 0 && this.EnableTime > GameRules!.RawGameTime
@@ -87,13 +91,13 @@ export class Item extends Ability {
 	public get CurrentCharges() {
 		return this.ItemCurrentCharges
 	}
-	public set CurrentCharges(new_val: number) {
-		this.ItemCurrentCharges = new_val
+	public set CurrentCharges(newVal: number) {
+		this.ItemCurrentCharges = newVal
 	}
 	public DisassembleItem(queue?: boolean) {
 		return this.Owner?.DisassembleItem(this, queue)
 	}
-	public MoveItem(slot: DOTAScriptInventorySlot_t) {
+	public MoveItem(slot: DOTAScriptInventorySlot) {
 		return this.Owner?.MoveItem(this, slot)
 	}
 	public DropAtFountain() {
@@ -113,19 +117,18 @@ export class Item extends Ability {
 	}
 
 	public CanBeCasted(bonusMana: number = 0): boolean {
-		if (!this.IsValid || this.IsMuted)
-			return false
+		if (!this.IsValid || this.IsMuted) return false
 
-		const root_owner = this.RootOwner
-		if (root_owner?.CannotUseItem(this))
-			return false
+		const rootOwner = this.RootOwner
+		if (rootOwner?.CannotUseItem(this)) return false
 
-		if (this.RequiresCharges && this.CurrentCharges < 1)
-			return false
+		if (this.RequiresCharges && this.CurrentCharges < 1) return false
 
-		return this.Level !== 0
-			&& !this.Owner?.IsMuted
-			&& this.IsManaEnough(bonusMana)
-			&& this.IsCooldownReady
+		return (
+			this.Level !== 0 &&
+			!this.Owner?.IsMuted &&
+			this.IsManaEnough(bonusMana) &&
+			this.IsCooldownReady
+		)
 	}
 }

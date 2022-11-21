@@ -17,16 +17,15 @@ export class Projectile {
 		public ParticleSystemHandle: bigint,
 		public Source: Nullable<Unit | FakeUnit>,
 		public readonly ColorGemColor: Color,
-		public Speed: number,
+		public Speed: number
 	) {
 		this.UpdateParticlePathNoEcon()
 	}
 
 	public UpdateParticlePathNoEcon(): void {
 		const orig = EconHelper.Particles.repl2orig.get(this.ParticlePath)
-		this.ParticlePathNoEcon = orig !== undefined && orig.length !== 0
-			? orig[0]
-			: this.ParticlePath
+		this.ParticlePathNoEcon =
+			orig !== undefined && orig.length !== 0 ? orig[0] : this.ParticlePath
 	}
 }
 
@@ -47,9 +46,16 @@ export class LinearProjectile extends Projectile {
 		public readonly Origin: Vector3,
 		public readonly Velocity: Vector2,
 		public readonly Acceleration: Vector2,
-		colorgemcolor: Color,
+		colorgemcolor: Color
 	) {
-		super(projID, path, particleSystemHandle, ent, colorgemcolor, Math.round(Velocity.Length))
+		super(
+			projID,
+			path,
+			particleSystemHandle,
+			ent,
+			colorgemcolor,
+			Math.round(Velocity.Length)
+		)
 		this.Position = this.Origin.Clone()
 
 		this.Forward = Vector3.FromAngle(this.Velocity.Angle)
@@ -74,22 +80,37 @@ export class TrackingProjectile extends Projectile {
 		public readonly MaxImpactTime: number | undefined,
 		public LaunchTick: number,
 		public readonly TargetLoc = new Vector3(),
-		colorgemcolor: Color,
+		colorgemcolor: Color
 	) {
 		super(projID, path, particleSystemHandle, source, colorgemcolor, speed)
 		if (this.Source instanceof Entity)
 			this.Source.Position.CopyTo(this.Position)
-		else
-			this.Position.Invalidate()
+		else this.Position.Invalidate()
 	}
 
-	public get IsDodgeable(): boolean { return this.dodgeable }
-	public get IsAttack(): boolean { return this.isAttack }
-	public get ExpireTime(): number { return this.expireTime }
+	public get IsDodgeable(): boolean {
+		return this.dodgeable
+	}
+	public get IsAttack(): boolean {
+		return this.isAttack
+	}
+	public get ExpireTime(): number {
+		return this.expireTime
+	}
 
-	public Update(TargetEntity: Nullable<Unit | FakeUnit>, Speed: number, path: string, particleSystemHandle: bigint, dodgeable: boolean, isAttack: boolean, expireTime: number, launchTick: number, targetLoc: Vector3) {
-		this.Target = TargetEntity
-		this.Speed = Speed
+	public Update(
+		targetEntity: Nullable<Unit | FakeUnit>,
+		speed: number,
+		path: string,
+		particleSystemHandle: bigint,
+		dodgeable: boolean,
+		isAttack: boolean,
+		expireTime: number,
+		launchTick: number,
+		targetLoc: Vector3
+	) {
+		this.Target = targetEntity
+		this.Speed = speed
 		this.ParticlePath = path
 		this.UpdateParticlePathNoEcon()
 		this.ParticleSystemHandle = particleSystemHandle
@@ -100,20 +121,18 @@ export class TrackingProjectile extends Projectile {
 		targetLoc.CopyTo(this.TargetLoc)
 	}
 	public UpdateTargetLoc(): void {
-		if (this.IsDodged)
-			return
+		if (this.IsDodged) return
 
 		const target = this.Target
 		if (target instanceof Entity) {
 			const attachment = target.GetAttachment("attach_hitloc")
-			const attachment_off = attachment?.GetPosition(
+			const attachmentOff = attachment?.GetPosition(
 				target.AnimationTime,
 				target.RotationRad,
-				target.ModelScale,
+				target.ModelScale
 			)
 			this.TargetLoc.CopyFrom(target.Position)
-			if (attachment_off !== undefined)
-				this.TargetLoc.AddForThis(attachment_off)
+			if (attachmentOff !== undefined) this.TargetLoc.AddForThis(attachmentOff)
 		}
 	}
 }

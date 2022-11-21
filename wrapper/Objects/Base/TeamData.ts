@@ -4,6 +4,7 @@ import { TreeModelReplacement } from "../../Base/TreeModelReplacement"
 import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { Events } from "../../Managers/Events"
+import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GridNav } from "../../Resources/ParseGNV"
 import { Entity } from "./Entity"
 import { Tree, Trees } from "./Tree"
@@ -55,21 +56,26 @@ export class TeamData extends Entity {
 	}
 }
 
-import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
-
-RegisterFieldHandler(TeamData, "m_vecDataTeam", (data, new_val) => {
-	data.DataTeam = (new_val as EntityPropertiesNode[]).map(map => new DataTeamPlayer(map))
+RegisterFieldHandler(TeamData, "m_vecDataTeam", (data, newVal) => {
+	data.DataTeam = (newVal as EntityPropertiesNode[]).map(
+		map => new DataTeamPlayer(map)
+	)
 })
 
-RegisterFieldHandler(TeamData, "m_vecWorldTreeModelReplacements", (data, new_val) => {
-	data.WorldTreeModelReplacements = (new_val as EntityPropertiesNode[]).map(map => new TreeModelReplacement(map))
-})
+RegisterFieldHandler(
+	TeamData,
+	"m_vecWorldTreeModelReplacements",
+	(data, newVal) => {
+		data.WorldTreeModelReplacements = (newVal as EntityPropertiesNode[]).map(
+			map => new TreeModelReplacement(map)
+		)
+	}
+)
 
 RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, newValue) => {
 	Tree.TreeActiveMask = newValue as bigint[]
 	if (GridNav !== undefined)
-		for (const tree of Trees)
-			GridNav.UpdateTreeState(tree)
+		for (const tree of Trees) GridNav.UpdateTreeState(tree)
 })
 
 Events.on("NewConnection", () => (Tree.TreeActiveMask = []))

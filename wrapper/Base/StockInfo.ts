@@ -3,7 +3,7 @@ import { AbilityData } from "../Objects/DataBook/AbilityData"
 import { EntityPropertiesNode } from "./EntityProperties"
 
 export class StockInfo {
-	constructor(public readonly properties: EntityPropertiesNode) { }
+	constructor(public readonly properties: EntityPropertiesNode) {}
 
 	public get AbilityID(): number {
 		return this.properties.get("nItemAbilityID") as number
@@ -36,7 +36,9 @@ export class StockInfo {
 		return this.properties.get("iBonusDelayedStockCount") as number
 	}
 	public GetAbilityData(): AbilityData {
-		return AbilityData.GetAbilityByName(this.GetAbilityName()) ?? AbilityData.empty
+		return (
+			AbilityData.GetAbilityByName(this.GetAbilityName()) ?? AbilityData.empty
+		)
 	}
 	public GetAbilityName(): string {
 		return AbilityData.GetAbilityNameByID(this.AbilityID) ?? ""

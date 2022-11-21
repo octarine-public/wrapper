@@ -5,17 +5,13 @@ import { ConVarsSDK } from "../Native/ConVarsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import { ScaleHeight, ScaleWidth } from "./Helpers"
 
-let extra_large_minimap_setting = 0
+let extraLargeMinimapSetting = 0
 export class CMinimap {
 	private static UpdateExtraLargeMinimapSetting(): boolean {
 		const setting = ConVarsSDK.GetInt("dota_hud_extra_large_minimap", 0)
-		if (
-			setting < 0
-			|| setting > 2
-			|| extra_large_minimap_setting === setting
-		)
+		if (setting < 0 || setting > 2 || extraLargeMinimapSetting === setting)
 			return false
-		extra_large_minimap_setting = setting
+		extraLargeMinimapSetting = setting
 		return true
 	}
 
@@ -24,17 +20,14 @@ export class CMinimap {
 	public readonly Glyph = new Rectangle()
 	public readonly Scan = new Rectangle()
 
-	constructor(
-		screen_size = new Vector2(),
-		hud_flipped = false,
-	) {
+	constructor(screenSize = new Vector2(), hudFlipped = false) {
 		CMinimap.UpdateExtraLargeMinimapSetting()
-		this.CalculateMinimapBlock(screen_size, hud_flipped)
-		this.CalculateGlyphScan(screen_size, hud_flipped)
+		this.CalculateMinimapBlock(screenSize, hudFlipped)
+		this.CalculateGlyphScan(screenSize, hudFlipped)
 	}
 
 	private get MinimapBlockSize(): number {
-		switch (extra_large_minimap_setting) {
+		switch (extraLargeMinimapSetting) {
 			case 0: // Large (default)
 				return 244
 			case 1: // ExtraLarge
@@ -44,7 +37,7 @@ export class CMinimap {
 		}
 	}
 	private get MinimapSize(): number {
-		switch (extra_large_minimap_setting) {
+		switch (extraLargeMinimapSetting) {
 			case 0: // Large (default)
 				return 260
 			case 1: // ExtraLarge
@@ -55,57 +48,73 @@ export class CMinimap {
 	}
 
 	public DebugDraw(): void {
-		RendererSDK.FilledRect(this.Minimap.pos1, this.Minimap.Size, Color.Green.SetA(128))
-		RendererSDK.FilledRect(this.Glyph.pos1, this.Glyph.Size, Color.Yellow.SetA(128))
+		RendererSDK.FilledRect(
+			this.Minimap.pos1,
+			this.Minimap.Size,
+			Color.Green.SetA(128)
+		)
+		RendererSDK.FilledRect(
+			this.Glyph.pos1,
+			this.Glyph.Size,
+			Color.Yellow.SetA(128)
+		)
 		RendererSDK.FilledRect(this.Scan.pos1, this.Scan.Size, Color.Gray.SetA(128))
 	}
 	public HasChanged(): boolean {
 		return CMinimap.UpdateExtraLargeMinimapSetting()
 	}
-	private CalculateMinimapBlock(screen_size: Vector2, hud_flip: boolean): void {
-		const block_size = this.MinimapBlockSize
-		this.Minimap.Width = ScaleWidth(block_size, screen_size)
-		this.Minimap.Height = ScaleHeight(block_size, screen_size)
-		this.Minimap.x = hud_flip
-			? screen_size.x - this.Minimap.Width
-			: 0
-		this.Minimap.y = screen_size.y - this.Minimap.Height
+	private CalculateMinimapBlock(screenSize: Vector2, hudFlip: boolean): void {
+		const blockSize = this.MinimapBlockSize
+		this.Minimap.Width = ScaleWidth(blockSize, screenSize)
+		this.Minimap.Height = ScaleHeight(blockSize, screenSize)
+		this.Minimap.x = hudFlip ? screenSize.x - this.Minimap.Width : 0
+		this.Minimap.y = screenSize.y - this.Minimap.Height
 
 		const size = this.MinimapSize
-		this.MinimapRenderBounds.Width = ScaleWidth(size, screen_size)
-		this.MinimapRenderBounds.Height = ScaleHeight(size, screen_size)
-		this.MinimapRenderBounds.x = this.Minimap.x + Math.round(
-			(this.Minimap.Width - this.MinimapRenderBounds.Width) / 2,
-		)
-		this.MinimapRenderBounds.y = this.Minimap.y + Math.round(
-			(this.Minimap.Height - this.MinimapRenderBounds.Height) / 2,
-		)
+		this.MinimapRenderBounds.Width = ScaleWidth(size, screenSize)
+		this.MinimapRenderBounds.Height = ScaleHeight(size, screenSize)
+		this.MinimapRenderBounds.x =
+			this.Minimap.x +
+			Math.round((this.Minimap.Width - this.MinimapRenderBounds.Width) / 2)
+		this.MinimapRenderBounds.y =
+			this.Minimap.y +
+			Math.round((this.Minimap.Height - this.MinimapRenderBounds.Height) / 2)
 	}
-	private CalculateGlyphScan(screen_size: Vector2, hud_flip: boolean): void {
+	private CalculateGlyphScan(screenSize: Vector2, hudFlip: boolean): void {
 		const GlyphScan = new Rectangle()
-		GlyphScan.Width = ScaleWidth(74, screen_size)
-		GlyphScan.Height = ScaleHeight(this.MinimapBlockSize, screen_size)
-		GlyphScan.y = screen_size.y - GlyphScan.Height
-		GlyphScan.x = hud_flip
+		GlyphScan.Width = ScaleWidth(74, screenSize)
+		GlyphScan.Height = ScaleHeight(this.MinimapBlockSize, screenSize)
+		GlyphScan.y = screenSize.y - GlyphScan.Height
+		GlyphScan.x = hudFlip
 			? this.Minimap.x - GlyphScan.Width
 			: this.Minimap.x + this.Minimap.Width
 
-		const Glyph_offset_x = ScaleWidth(24, screen_size)
-		this.Glyph.Width = ScaleWidth(44, screen_size)
-		this.Glyph.Height = ScaleHeight(44, screen_size)
-		this.Glyph.y = GlyphScan.y + GlyphScan.Height - ScaleHeight(6, screen_size) - this.Glyph.Height
+		const glyphOffsetX = ScaleWidth(24, screenSize)
+		this.Glyph.Width = ScaleWidth(44, screenSize)
+		this.Glyph.Height = ScaleHeight(44, screenSize)
+		this.Glyph.y =
+			GlyphScan.y +
+			GlyphScan.Height -
+			ScaleHeight(6, screenSize) -
+			this.Glyph.Height
 
-		const Scan_offset_x = ScaleWidth(24, screen_size)
-		this.Scan.Width = ScaleWidth(44, screen_size)
-		this.Scan.Height = ScaleHeight(44, screen_size)
-		this.Scan.y = GlyphScan.y + GlyphScan.Height - ScaleHeight(50, screen_size) - this.Scan.Height
+		const scanOffsetX = ScaleWidth(24, screenSize)
+		this.Scan.Width = ScaleWidth(44, screenSize)
+		this.Scan.Height = ScaleHeight(44, screenSize)
+		this.Scan.y =
+			GlyphScan.y +
+			GlyphScan.Height -
+			ScaleHeight(50, screenSize) -
+			this.Scan.Height
 
-		if (hud_flip) {
-			this.Glyph.x = GlyphScan.x + Glyph_offset_x
-			this.Scan.x = GlyphScan.x + Scan_offset_x
+		if (hudFlip) {
+			this.Glyph.x = GlyphScan.x + glyphOffsetX
+			this.Scan.x = GlyphScan.x + scanOffsetX
 		} else {
-			this.Glyph.x = GlyphScan.x + GlyphScan.Width - Glyph_offset_x - this.Glyph.Width
-			this.Scan.x = GlyphScan.x + GlyphScan.Width - Scan_offset_x - this.Scan.Width
+			this.Glyph.x =
+				GlyphScan.x + GlyphScan.Width - glyphOffsetX - this.Glyph.Width
+			this.Scan.x =
+				GlyphScan.x + GlyphScan.Width - scanOffsetX - this.Scan.Width
 		}
 	}
 }

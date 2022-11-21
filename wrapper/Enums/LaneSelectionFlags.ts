@@ -1,4 +1,4 @@
-export enum LaneSelectionFlags_t {
+export enum LaneSelectionFlags {
 	SAFE_LANE = 1 << 0,
 	OFF_LANE = 1 << 1,
 	MID_LANE = 1 << 2,

@@ -1,26 +1,16 @@
-import { EventsSDK, Menu as MenuSDK, NotificationsSDK } from "./wrapper/Imports"
+import { EventsSDK, Menu, NotificationsSDK } from "./wrapper/Imports"
 
-const Menu = MenuSDK.AddEntryDeep(["Settings", "Notifications"])
-Menu.AddSlider(
-	"Width",
-	NotificationsSDK.size,
-	175,
-	350,
-).OnValue(slider => NotificationsSDK.size = slider.value)
-Menu.AddSlider(
-	"New Height offset",
-	NotificationsSDK.y_offset,
-	0,
-	700,
-).OnValue(slider => NotificationsSDK.y_offset = slider.value)
-Menu.AddSlider(
-	"Limit",
-	NotificationsSDK.limit,
-	2,
-	6,
-).OnValue(slider => NotificationsSDK.limit = slider.value)
-Menu.AddDropdown(
-	"Background cover",
-	["Octarine", "Dota 2"],
-).OnValue(slider => NotificationsSDK.backgroundCover = slider.selected_id)
-EventsSDK.on("Draw", () => NotificationsSDK.debug = Menu.is_open)
+const menu = Menu.AddEntryDeep(["Settings", "Notifications"])
+menu
+	.AddSlider("Width", NotificationsSDK.size, 175, 350)
+	.OnValue(slider => (NotificationsSDK.size = slider.value))
+menu
+	.AddSlider("New Height offset", NotificationsSDK.yOffset, 0, 700)
+	.OnValue(slider => (NotificationsSDK.yOffset = slider.value))
+menu
+	.AddSlider("Limit", NotificationsSDK.limit, 2, 6)
+	.OnValue(slider => (NotificationsSDK.limit = slider.value))
+menu
+	.AddDropdown("Background cover", ["Octarine", "Dota 2"])
+	.OnValue(slider => (NotificationsSDK.backgroundCover = slider.SelectedID))
+EventsSDK.on("Draw", () => (NotificationsSDK.debug = menu.IsOpen))

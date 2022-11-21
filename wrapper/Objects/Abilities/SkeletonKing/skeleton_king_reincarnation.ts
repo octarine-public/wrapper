@@ -5,10 +5,8 @@ import { Ability } from "../../Base/Ability"
 export class skeleton_king_reincarnation extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue(
-			this.Owner?.HasScepter
-				? "aura_radius"
-				: "slow_radius",
-			level,
+			this.Owner?.HasScepter ? "aura_radius" : "slow_radius",
+			level
 		)
 	}
 }

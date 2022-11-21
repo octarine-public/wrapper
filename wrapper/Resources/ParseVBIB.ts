@@ -16,8 +16,8 @@ export class VBIBLayoutField {
 		public readonly Offset: number,
 		public readonly Slot: number,
 		public readonly SlotType: RenderSlotType,
-		public readonly InstanceStepRate: number,
-	) { }
+		public readonly InstanceStepRate: number
+	) {}
 }
 
 export class VBIBBufferData {
@@ -27,15 +27,18 @@ export class VBIBBufferData {
 		public readonly ElementSize: number,
 		public readonly InputLayout: VBIBLayoutField[],
 		private Data_: Uint8Array,
-		private readonly IsVertexBuffer: boolean,
-	) { }
+		private readonly IsVertexBuffer: boolean
+	) {}
 
 	public get Data() {
-		if (this.CheckedData)
-			return this.Data_
+		if (this.CheckedData) return this.Data_
 		if (this.ElementCount * this.ElementSize !== this.Data_.byteLength)
 			this.Data_ = this.IsVertexBuffer
-				? DecompressVertexBuffer(this.Data_, this.ElementCount, this.ElementSize)
+				? DecompressVertexBuffer(
+						this.Data_,
+						this.ElementCount,
+						this.ElementSize
+				  )
 				: DecompressIndexBuffer(this.Data_, this.ElementCount, this.ElementSize)
 		this.CheckedData = true
 		return this.Data_
@@ -45,43 +48,48 @@ export class VBIBBufferData {
 export class VBIB {
 	constructor(
 		public readonly VertexBuffers: VBIBBufferData[] = [],
-		public readonly IndexBuffers: VBIBBufferData[] = [],
-	) { }
+		public readonly IndexBuffers: VBIBBufferData[] = []
+	) {}
 }
 
-function ReadOnDiskBufferData(stream: ReadableBinaryStream, isVertexBuffer: boolean): VBIBBufferData {
-	const element_count = stream.ReadUint32(),
-		element_size = stream.ReadUint32(),
-		attribute_position = stream.pos + stream.ReadInt32(),
-		attribute_count = stream.ReadUint32(),
-		data_position = stream.pos + stream.ReadUint32(),
-		data_size = stream.ReadUint32(),
-		header_end_position = stream.pos
+function ReadOnDiskBufferData(
+	stream: ReadableBinaryStream,
+	isVertexBuffer: boolean
+): VBIBBufferData {
+	const elementCount = stream.ReadUint32(),
+		elementSize = stream.ReadUint32(),
+		attributePosition = stream.pos + stream.ReadInt32(),
+		attributeCount = stream.ReadUint32(),
+		dataPosition = stream.pos + stream.ReadUint32(),
+		dataSize = stream.ReadUint32(),
+		headerEndPosition = stream.pos
 	const fields: VBIBLayoutField[] = []
-	stream.pos = attribute_position
-	for (let i = 0; i < attribute_count; i++) {
-		const start_pos = stream.pos
+	stream.pos = attributePosition
+	for (let i = 0; i < attributeCount; i++) {
+		const startPos = stream.pos
 		const name = stream.ReadNullTerminatedUtf8String()
-		stream.pos = start_pos + 32
-		fields.push(new VBIBLayoutField(
-			name,
-			stream.ReadUint32(),
-			stream.ReadUint32(),
-			stream.ReadUint32(),
-			stream.ReadInt32(),
-			stream.ReadUint32(),
-			stream.ReadInt32(),
-		))
+		stream.pos = startPos + 32
+		fields.push(
+			new VBIBLayoutField(
+				name,
+				stream.ReadUint32(),
+				stream.ReadUint32(),
+				stream.ReadUint32(),
+				stream.ReadInt32(),
+				stream.ReadUint32(),
+				stream.ReadInt32()
+			)
+		)
 	}
-	stream.pos = data_position
-	const data = stream.ReadSliceNoCopy(data_size)
-	stream.pos = header_end_position
+	stream.pos = dataPosition
+	const data = stream.ReadSliceNoCopy(dataSize)
+	stream.pos = headerEndPosition
 	return new VBIBBufferData(
-		element_count,
-		element_size,
+		elementCount,
+		elementSize,
 		fields,
 		data,
-		isVertexBuffer,
+		isVertexBuffer
 	)
 }
 
@@ -100,45 +108,49 @@ export function ParseVBIB(stream: ReadableBinaryStream): VBIB {
 	return vbib
 }
 
-function ReadBufferDataFromKV(kv: RecursiveMap, isVertexBuffer: boolean): VBIBBufferData {
-	const element_count = GetMapNumberProperty(kv, "m_nElementCount"),
-		element_size = GetMapNumberProperty(kv, "m_nElementSizeInBytes"),
+function ReadBufferDataFromKV(
+	kv: RecursiveMap,
+	isVertexBuffer: boolean
+): VBIBBufferData {
+	const elementCount = GetMapNumberProperty(kv, "m_nElementCount"),
+		elementSize = GetMapNumberProperty(kv, "m_nElementSizeInBytes"),
 		fieldsKV = kv.get("m_inputLayoutFields")
 	const fields: VBIBLayoutField[] = []
 	if (fieldsKV instanceof Map || Array.isArray(fieldsKV))
 		fieldsKV.forEach((fieldKV: RecursiveMapValue) => {
-			if (!(fieldKV instanceof Map))
-				return
-			let name_array = fieldKV.get("m_pSemanticName")
-			if (name_array instanceof Map || Array.isArray(name_array))
-				name_array = new Uint8Array(MapToNumberArray(name_array))
-			if (!(name_array instanceof Uint8Array))
-				name_array = new Uint8Array()
-			fields.push(new VBIBLayoutField(
-				new ViewBinaryStream(new DataView(
-					name_array.buffer,
-					name_array.byteOffset,
-					name_array.byteLength,
-				)).ReadUtf8String(name_array.byteLength),
-				GetMapNumberProperty(fieldKV, "m_nSemanticIndex"),
-				GetMapNumberProperty(fieldKV, "m_Format"),
-				GetMapNumberProperty(fieldKV, "m_nOffset"),
-				GetMapNumberProperty(fieldKV, "m_nSlot"),
-				GetMapNumberProperty(fieldKV, "m_nSlotType"),
-				GetMapNumberProperty(fieldKV, "m_nInstanceStepRate"),
-			))
+			if (!(fieldKV instanceof Map)) return
+			let nameArray = fieldKV.get("m_pSemanticName")
+			if (nameArray instanceof Map || Array.isArray(nameArray))
+				nameArray = new Uint8Array(MapToNumberArray(nameArray))
+			if (!(nameArray instanceof Uint8Array)) nameArray = new Uint8Array()
+			fields.push(
+				new VBIBLayoutField(
+					new ViewBinaryStream(
+						new DataView(
+							nameArray.buffer,
+							nameArray.byteOffset,
+							nameArray.byteLength
+						)
+					).ReadUtf8String(nameArray.byteLength),
+					GetMapNumberProperty(fieldKV, "m_nSemanticIndex"),
+					GetMapNumberProperty(fieldKV, "m_Format"),
+					GetMapNumberProperty(fieldKV, "m_nOffset"),
+					GetMapNumberProperty(fieldKV, "m_nSlot"),
+					GetMapNumberProperty(fieldKV, "m_nSlotType"),
+					GetMapNumberProperty(fieldKV, "m_nInstanceStepRate")
+				)
+			)
 		})
 	let dataKV = kv.get("m_pData")
 	if (dataKV instanceof Map || Array.isArray(dataKV))
 		dataKV = new Uint8Array(MapToNumberArray(dataKV))
-	if (!(dataKV instanceof Uint8Array))
-		dataKV = new Uint8Array()
+	if (!(dataKV instanceof Uint8Array)) dataKV = new Uint8Array()
 	return new VBIBBufferData(
-		element_count,
-		element_size,
+		elementCount,
+		elementSize,
 		fields,
 		dataKV,
-		isVertexBuffer,
+		isVertexBuffer
 	)
 }
 

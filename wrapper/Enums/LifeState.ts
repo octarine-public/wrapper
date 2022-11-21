@@ -1,4 +1,4 @@
-export enum LifeState_t {
+export enum LifeState {
 	LIFE_ALIVE = 0,
 	LIFE_DYING = 1,
 	LIFE_DEAD = 2,

@@ -1,27 +1,26 @@
 import { Color } from "../Base/Color"
 
 export class ViewBinaryStream implements ReadableBinaryStream {
-	private readonly is_utf16: boolean
-	private readonly is_utf16_be: boolean
+	private readonly isUtf16: boolean
+	private readonly isUtf16BE: boolean
 	constructor(
 		private readonly view: DataView,
 		public pos = 0,
-		detect_encoding = false,
+		detectEncoding = false
 	) {
-		this.is_utf16 = false
-		this.is_utf16_be = false
-		if (!detect_encoding)
-			return
+		this.isUtf16 = false
+		this.isUtf16BE = false
+		if (!detectEncoding) return
 		if (this.Remaining >= 2) {
 			const ch1 = this.ReadUint8(),
 				ch2 = this.ReadUint8()
-			if (ch1 === 0xFF && ch2 === 0xFE) {
-				this.is_utf16 = true
+			if (ch1 === 0xff && ch2 === 0xfe) {
+				this.isUtf16 = true
 				return
 			}
-			if (ch1 === 0xFE && ch2 === 0xFF) {
-				this.is_utf16 = true
-				this.is_utf16_be = true
+			if (ch1 === 0xfe && ch2 === 0xff) {
+				this.isUtf16 = true
+				this.isUtf16BE = true
 				return
 			}
 			this.RelativeSeek(-2)
@@ -30,8 +29,8 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 			const ch1 = this.ReadUint8(),
 				ch2 = this.ReadUint8(),
 				ch3 = this.ReadUint8()
-			if (ch1 === 0xEF && ch2 === 0xBB && ch3 === 0xBF) {
-				this.is_utf16 = false
+			if (ch1 === 0xef && ch2 === 0xbb && ch3 === 0xbf) {
+				this.isUtf16 = false
 				return
 			}
 			this.RelativeSeek(-3)
@@ -74,14 +73,14 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 			b: number
 		do {
 			b = this.ReadUint8()
-			val |= (b & 0x7F) << shift
+			val |= (b & 0x7f) << shift
 			shift += 7
 		} while ((b & 0x80) !== 0)
 		return val
 	}
 	public WriteVarUintAsNumber(val: number): void {
 		while (val >= 0x80) {
-			this.WriteUint8((val | 0x80) & 0xFF)
+			this.WriteUint8((val | 0x80) & 0xff)
 			val >>= 7
 		}
 		this.WriteUint8(val)
@@ -92,14 +91,14 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 			b: number
 		do {
 			b = this.ReadUint8()
-			val |= BigInt(b & 0x7F) << shift
+			val |= BigInt(b & 0x7f) << shift
 			shift += 7n
 		} while ((b & 0x80) !== 0)
 		return val
 	}
 	public WriteVarUint(val: bigint): void {
 		while (val >= 0x80n) {
-			this.WriteUint8(Number((val | 0x80n) & 0xFFn))
+			this.WriteUint8(Number((val | 0x80n) & 0xffn))
 			val >>= 7n
 		}
 		this.WriteUint8(Number(val))
@@ -183,7 +182,13 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 		this.WriteUint8(val ? 1 : 0)
 	}
 	public ReadSliceTo(output: Uint8Array): void {
-		output.set(new Uint8Array(this.view.buffer, this.view.byteOffset + this.pos, output.byteLength))
+		output.set(
+			new Uint8Array(
+				this.view.buffer,
+				this.view.byteOffset + this.pos,
+				output.byteLength
+			)
+		)
 		this.RelativeSeek(output.byteLength)
 	}
 	public ReadSlice(size: number): Uint8Array {
@@ -192,7 +197,11 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 		return res
 	}
 	public ReadSliceNoCopy(size: number): Uint8Array {
-		const res = new Uint8Array(this.view.buffer, this.view.byteOffset + this.pos, size)
+		const res = new Uint8Array(
+			this.view.buffer,
+			this.view.byteOffset + this.pos,
+			size
+		)
 		this.RelativeSeek(size)
 		return res
 	}
@@ -200,33 +209,47 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 		const nPart = this.ReadUint8()
 		size--
 		return String.fromCharCode(
-			nPart > 251 && nPart < 254 && size >= 5 ? /* six bytes */
-				/* (nPart - 252 << 30) may be not so safe in ECMAScript! So...: */
-				(nPart - 252) * 1073741824 + (this.ReadUint8() - 128 << 24) + (this.ReadUint8() - 128 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
-				: nPart > 247 && nPart < 252 && size >= 4 ? /* five bytes */
-					(nPart - 248 << 24) + (this.ReadUint8() - 128 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
-					: nPart > 239 && nPart < 248 && size >= 3 ? /* four bytes */
-						(nPart - 240 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
-						: nPart > 223 && nPart < 240 && size >= 2 ? /* three bytes */
-							(nPart - 224 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
-							: nPart > 191 && nPart < 224 && size >= 1 ? /* two bytes */
-								(nPart - 192 << 6) + this.ReadUint8() - 128
-								: /* nPart < 127 ? */ /* one byte */
-								nPart,
+			nPart > 251 && nPart < 254 && size >= 5 /* six bytes */
+				? /* (nPart - 252 << 30) may be not so safe in ECMAScript! So...: */
+				  (nPart - 252) * 1073741824 +
+						((this.ReadUint8() - 128) << 24) +
+						((this.ReadUint8() - 128) << 18) +
+						((this.ReadUint8() - 128) << 12) +
+						((this.ReadUint8() - 128) << 6) +
+						this.ReadUint8() -
+						128
+				: nPart > 247 && nPart < 252 && size >= 4 /* five bytes */
+				? ((nPart - 248) << 24) +
+				  ((this.ReadUint8() - 128) << 18) +
+				  ((this.ReadUint8() - 128) << 12) +
+				  ((this.ReadUint8() - 128) << 6) +
+				  this.ReadUint8() -
+				  128
+				: nPart > 239 && nPart < 248 && size >= 3 /* four bytes */
+				? ((nPart - 240) << 18) +
+				  ((this.ReadUint8() - 128) << 12) +
+				  ((this.ReadUint8() - 128) << 6) +
+				  this.ReadUint8() -
+				  128
+				: nPart > 223 && nPart < 240 && size >= 2 /* three bytes */
+				? ((nPart - 224) << 12) +
+				  ((this.ReadUint8() - 128) << 6) +
+				  this.ReadUint8() -
+				  128
+				: nPart > 191 && nPart < 224 && size >= 1 /* two bytes */
+				? ((nPart - 192) << 6) + this.ReadUint8() - 128
+				: /* nPart < 127 ? */ /* one byte */
+				  nPart
 		)
 	}
 	public ReadUtf16Char(): string {
-		return String.fromCharCode(this.ReadUint16(!this.is_utf16_be))
+		return String.fromCharCode(this.ReadUint16(!this.isUtf16BE))
 	}
 	public ReadChar(): string {
-		return this.is_utf16
-			? this.ReadUtf16Char()
-			: this.ReadUtf8Char()
+		return this.isUtf16 ? this.ReadUtf16Char() : this.ReadUtf8Char()
 	}
 	public SeekLine(): void {
-		while (!this.Empty())
-			if (this.ReadChar() === "\n")
-				break
+		while (!this.Empty()) if (this.ReadChar() === "\n") break
 	}
 	public ReadUtf8String(size: number): string {
 		let out = ""
@@ -240,20 +263,17 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 	public ReadNullTerminatedString(): string {
 		let str = ""
 		while (true) {
-			if (this.Empty())
-				return str
+			if (this.Empty()) return str
 			const b = this.ReadUint8()
-			if (b === 0)
-				return str
+			if (b === 0) return str
 			str += String.fromCharCode(b)
 		}
 	}
 	public ReadNullTerminatedUtf8String(): string {
-		const orig_pos = this.pos
+		const savedPos = this.pos
 		let size = 0
-		while (this.ReadUint8() !== 0)
-			size++
-		this.pos = orig_pos
+		while (this.ReadUint8() !== 0) size++
+		this.pos = savedPos
 
 		const str = this.ReadUtf8String(size)
 		this.pos++ // skip remaining null byte
@@ -262,23 +282,20 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 	public ReadNullTerminatedUtf16String(): string {
 		let str = ""
 		while (true) {
-			if (this.Empty())
-				return str
+			if (this.Empty()) return str
 			const b = this.ReadUint16()
-			if (b === 0)
-				return str
+			if (b === 0) return str
 			str += String.fromCharCode(b)
 		}
 	}
 	// https://github.com/SteamDatabase/ValveResourceFormat/blob/cceba491d7bb60890a53236a90970b24d0a4aba9/ValveResourceFormat/Utils/StreamHelpers.cs#L43
 	public ReadOffsetString(): string {
 		const offset = this.ReadUint32()
-		if (offset === 0)
-			return ""
-		const saved_pos = this.pos
+		if (offset === 0) return ""
+		const savedPos = this.pos
 		this.pos += offset - 4 // offset from offset
 		const ret = this.ReadNullTerminatedUtf8String()
-		this.pos = saved_pos
+		this.pos = savedPos
 		return ret
 	}
 	public ReadVarString(): string {
@@ -289,9 +306,9 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 			new Uint8Array(
 				this.view.buffer,
 				this.view.byteOffset + this.pos,
-				this.Remaining,
+				this.Remaining
 			),
-			block,
+			block
 		)
 	}
 	public ParseKVBlock(): RecursiveMap {
@@ -299,19 +316,22 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 			new Uint8Array(
 				this.view.buffer,
 				this.view.byteOffset + this.pos,
-				this.Remaining,
-			),
+				this.Remaining
+			)
 		)
 	}
 	public Empty(): boolean {
 		return this.pos >= this.view.byteLength
 	}
-	public CreateNestedStream(size: number, detectEncoding = false): ViewBinaryStream {
-		const res = new ViewBinaryStream(new DataView(
-			this.view.buffer,
-			this.view.byteOffset + this.pos,
-			size,
-		), 0, detectEncoding)
+	public CreateNestedStream(
+		size: number,
+		detectEncoding = false
+	): ViewBinaryStream {
+		const res = new ViewBinaryStream(
+			new DataView(this.view.buffer, this.view.byteOffset + this.pos, size),
+			0,
+			detectEncoding
+		)
 		this.pos += size
 		return res
 	}

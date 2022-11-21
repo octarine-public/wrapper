@@ -1,9 +1,18 @@
 import { Vector3 } from "../Base/Vector3"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
-import { CAnimation, ParseAnimationGroup, ParseEmbeddedAnimation } from "./ParseAnimation"
+import {
+	CAnimation,
+	ParseAnimationGroup,
+	ParseEmbeddedAnimation,
+} from "./ParseAnimation"
 import { CMesh, ParseEmbeddedMesh, ParseMesh } from "./ParseMesh"
 import { ParseResourceLayout } from "./ParseResource"
-import { GetMapNumberProperty, GetMapStringProperty, MapToNumberArray, MapToStringArray } from "./ParseUtils"
+import {
+	GetMapNumberProperty,
+	GetMapStringProperty,
+	MapToNumberArray,
+	MapToStringArray,
+} from "./ParseUtils"
 import { CSkeleton } from "./Skeleton"
 
 export class CModel {
@@ -21,11 +30,9 @@ export class CModel {
 	public readonly FilesOpen: FileStream[] = []
 	constructor(stream: ReadableBinaryStream) {
 		const layout = ParseResourceLayout(stream)
-		if (layout === undefined)
-			throw "Model without resource format"
+		if (layout === undefined) throw "Model without resource format"
 		const kv = stream.ParseKV()
-		if (kv.size === 0)
-			throw "Model without data"
+		if (kv.size === 0) throw "Model without data"
 		this.LoadSkeletons(kv)
 		this.LoadMeshGroups(kv)
 		this.LoadMeshGroupsMasks(kv)
@@ -34,26 +41,34 @@ export class CModel {
 		this.LoadRefMeshes(kv)
 		this.LoadRefAnimations(kv)
 
-		const CTRL = layout[0].get("CTRL")?.ParseKVBlock() ?? new Map()
-		this.LoadEmbeddedMeshes(CTRL, layout[1])
-		this.LoadEmbeddedAnimation(CTRL, layout[1], layout[0].get("ASEQ")?.ParseKVBlock() ?? new Map())
+		const ctrl = layout[0].get("CTRL")?.ParseKVBlock() ?? new Map()
+		this.LoadEmbeddedMeshes(ctrl, layout[1])
+		this.LoadEmbeddedAnimation(
+			ctrl,
+			layout[1],
+			layout[0].get("ASEQ")?.ParseKVBlock() ?? new Map()
+		)
 
-		const first_mesh = this.Meshes[0]
-		if (first_mesh !== undefined) {
-			this.MinBounds.CopyFrom(first_mesh.MinBounds)
-			this.MaxBounds.CopyFrom(first_mesh.MaxBounds)
+		const firstMesh = this.Meshes[0]
+		if (firstMesh !== undefined) {
+			this.MinBounds.CopyFrom(firstMesh.MinBounds)
+			this.MaxBounds.CopyFrom(firstMesh.MaxBounds)
 		}
 	}
 
 	private LoadSkeletons(kv: RecursiveMap): void {
 		const modelSkeleton = kv.get("m_modelSkeleton")
-		if (!(modelSkeleton instanceof Map))
-			return
+		if (!(modelSkeleton instanceof Map)) return
 		const remappingTableMap = kv.get("m_remappingTable")
 		if (!(remappingTableMap instanceof Map || Array.isArray(remappingTableMap)))
 			return
 		const remappingTableStartsMap = kv.get("m_remappingTableStarts")
-		if (!(remappingTableStartsMap instanceof Map || Array.isArray(remappingTableStartsMap)))
+		if (
+			!(
+				remappingTableStartsMap instanceof Map ||
+				Array.isArray(remappingTableStartsMap)
+			)
+		)
 			return
 		const remappingTable = MapToNumberArray(remappingTableMap),
 			remappingTableStarts = MapToNumberArray(remappingTableStartsMap)
@@ -73,98 +88,111 @@ export class CModel {
 		})
 	}
 	private LoadMeshGroups(kv: RecursiveMap): void {
-		const MeshGroups = kv.get("m_meshGroups")
-		if (MeshGroups instanceof Map || Array.isArray(MeshGroups))
-			this.MeshGroups.push(...MapToStringArray(MeshGroups))
+		const meshGroups = kv.get("m_meshGroups")
+		if (meshGroups instanceof Map || Array.isArray(meshGroups))
+			this.MeshGroups.push(...MapToStringArray(meshGroups))
 	}
 	private LoadMeshGroupsMasks(kv: RecursiveMap): void {
-		const MeshGroups = kv.get("m_refMeshGroupMasks")
-		if (MeshGroups instanceof Map || Array.isArray(MeshGroups))
-			this.MeshGroupsMasks.push(...MapToNumberArray(MeshGroups))
+		const meshGroupMasks = kv.get("m_refMeshGroupMasks")
+		if (meshGroupMasks instanceof Map || Array.isArray(meshGroupMasks))
+			this.MeshGroupsMasks.push(...MapToNumberArray(meshGroupMasks))
 	}
 	private LoadLODGroupMasks(kv: RecursiveMap): number {
-		const LODGroupMasks = kv.get("m_refLODGroupMasks")
-		if (!(LODGroupMasks instanceof Map || Array.isArray(LODGroupMasks)))
+		const lodGroupMasks = kv.get("m_refLODGroupMasks")
+		if (!(lodGroupMasks instanceof Map || Array.isArray(lodGroupMasks)))
 			return 0
-		this.LODGroupMasks.push(...MapToNumberArray(LODGroupMasks))
+		this.LODGroupMasks.push(...MapToNumberArray(lodGroupMasks))
 		return GetMapNumberProperty(kv, "m_nDefaultMeshGroupMask")
 	}
 	private LoadMaterialGroups(kv: RecursiveMap): void {
-		const m_materialGroups = kv.get("m_materialGroups")
-		if (!(m_materialGroups instanceof Map || Array.isArray(m_materialGroups)))
+		const materialGroups = kv.get("m_materialGroups")
+		if (!(materialGroups instanceof Map || Array.isArray(materialGroups)))
 			return
-		m_materialGroups.forEach((group: RecursiveMapValue) => {
-			if (!(group instanceof Map))
-				return
+		materialGroups.forEach((group: RecursiveMapValue) => {
+			if (!(group instanceof Map)) return
 			const materials = group.get("m_materials")
-			const materials_ar = materials instanceof Map || Array.isArray(materials)
-				? MapToStringArray(materials)
-				: []
+			const materialsAr =
+				materials instanceof Map || Array.isArray(materials)
+					? MapToStringArray(materials)
+					: []
 			if (this.DefaultSkinMaterials.length === 0) {
-				materials_ar.forEach(material => this.DefaultSkinMaterials.push(material))
+				materialsAr.forEach(material =>
+					this.DefaultSkinMaterials.push(material)
+				)
 				return
 			}
-			const group_name = GetMapStringProperty(group, "m_name")
+			const groupName = GetMapStringProperty(group, "m_name")
 			const map = new Map<string, string>()
-			this.SkinMaterials.set(group_name, map)
-			this.DefaultSkinMaterials.forEach((default_mat, i) => {
-				if (i > materials_ar.length)
-					return
-				map.set(default_mat, materials_ar[i])
+			this.SkinMaterials.set(groupName, map)
+			this.DefaultSkinMaterials.forEach((defaultMat, i) => {
+				if (i > materialsAr.length) return
+				map.set(defaultMat, materialsAr[i])
 			})
 		})
 	}
 	private LoadRefMeshes(kv: RecursiveMap): void {
 		const refMeshes = kv.get("m_refMeshes")
 		if (refMeshes instanceof Map || Array.isArray(refMeshes))
-			refMeshes.forEach((mesh_path: RecursiveMapValue) => {
-				if (typeof mesh_path !== "string")
-					return
-				if (!mesh_path.endsWith("_c"))
-					mesh_path += "_c"
-				const buf = fopen(mesh_path)
+			refMeshes.forEach((meshPath: RecursiveMapValue) => {
+				if (typeof meshPath !== "string") return
+				if (!meshPath.endsWith("_c")) meshPath += "_c"
+				const buf = fopen(meshPath)
 				if (buf !== undefined) {
 					this.FilesOpen.push(buf)
 					this.Meshes.push(ParseMesh(new FileBinaryStream(buf)))
 				}
 			})
 	}
-	private LoadEmbeddedMeshes(kv: RecursiveMap, blocks: ReadableBinaryStream[]): void {
-		const embedded_meshes = kv.get("embedded_meshes")
-		if (!(embedded_meshes instanceof Map || Array.isArray(embedded_meshes)))
+	private LoadEmbeddedMeshes(
+		kv: RecursiveMap,
+		blocks: ReadableBinaryStream[]
+	): void {
+		const embeddedMeshes = kv.get("embedded_meshes")
+		if (!(embeddedMeshes instanceof Map || Array.isArray(embeddedMeshes)))
 			return
-		embedded_meshes.forEach((embedded_mesh: RecursiveMapValue) => {
-			if (!(embedded_mesh instanceof Map))
-				return
-			const data_block = GetMapNumberProperty(embedded_mesh, "data_block"),
-				vbib_block = GetMapNumberProperty(embedded_mesh, "vbib_block")
-			this.Meshes.push(ParseEmbeddedMesh(blocks[data_block], blocks[vbib_block]))
+		embeddedMeshes.forEach((embeddedMesh: RecursiveMapValue) => {
+			if (!(embeddedMesh instanceof Map)) return
+			const dataBlock = GetMapNumberProperty(embeddedMesh, "data_block"),
+				vbibBlock = GetMapNumberProperty(embeddedMesh, "vbib_block")
+			this.Meshes.push(ParseEmbeddedMesh(blocks[dataBlock], blocks[vbibBlock]))
 		})
 	}
 	private LoadRefAnimations(kv: RecursiveMap): void {
 		const refAnimGroups = kv.get("m_refAnimGroups")
 		if (refAnimGroups instanceof Map || Array.isArray(refAnimGroups))
-			refAnimGroups.forEach((animation_group_path: RecursiveMapValue) => {
-				if (typeof animation_group_path !== "string")
-					return
-				if (!animation_group_path.endsWith("_c"))
-					animation_group_path += "_c"
-				const buf = fopen(animation_group_path)
+			refAnimGroups.forEach((animationGroupPath: RecursiveMapValue) => {
+				if (typeof animationGroupPath !== "string") return
+				if (!animationGroupPath.endsWith("_c")) animationGroupPath += "_c"
+				const buf = fopen(animationGroupPath)
 				if (buf !== undefined)
 					try {
-						this.Animations.push(...ParseAnimationGroup(new FileBinaryStream(buf)))
+						this.Animations.push(
+							...ParseAnimationGroup(new FileBinaryStream(buf))
+						)
 					} finally {
 						buf.close()
 					}
 			})
 	}
-	private LoadEmbeddedAnimation(kv: RecursiveMap, blocks: ReadableBinaryStream[], hseq: RecursiveMap): void {
-		const embedded_animation = kv.get("embedded_animation")
-		if (!(embedded_animation instanceof Map))
-			return
-		const group_data_block = GetMapNumberProperty(embedded_animation, "group_data_block"),
-			anim_data_block = GetMapNumberProperty(embedded_animation, "anim_data_block")
-		this.Animations.push(...ParseEmbeddedAnimation(blocks[group_data_block], blocks[anim_data_block], hseq))
+	private LoadEmbeddedAnimation(
+		kv: RecursiveMap,
+		blocks: ReadableBinaryStream[],
+		hseq: RecursiveMap
+	): void {
+		const embeddedAnimation = kv.get("embedded_animation")
+		if (!(embeddedAnimation instanceof Map)) return
+		const groupDataBlock = GetMapNumberProperty(
+				embeddedAnimation,
+				"group_data_block"
+			),
+			animDataBlock = GetMapNumberProperty(embeddedAnimation, "anim_data_block")
+		this.Animations.push(
+			...ParseEmbeddedAnimation(
+				blocks[groupDataBlock],
+				blocks[animDataBlock],
+				hseq
+			)
+		)
 	}
 }
 

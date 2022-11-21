@@ -7,11 +7,16 @@ export const SoundSDK = new (class CSoundSDK {
 		name: string,
 		position = new Vector3().Invalidate(),
 		sourceEntity?: Entity,
-		guid = ((Math.random() * (2 ** 32 - 1)) | 0),
-		seed = ((Math.random() * (2 ** 32 - 1)) | 0),
+		guid = (Math.random() * (2 ** 32 - 1)) | 0,
+		seed = (Math.random() * (2 ** 32 - 1)) | 0
 	): void {
 		position.toIOBuffer()
-		EmitStartSoundEventNew(guid, Manifest.SoundNameToHash(name), sourceEntity?.Index ?? -1, seed)
+		EmitStartSoundEventNew(
+			guid,
+			Manifest.SoundNameToHash(name),
+			sourceEntity?.Index ?? -1,
+			seed
+		)
 	}
 
 	public EmitStopSoundEvent(guid: number): void {
@@ -19,6 +24,10 @@ export const SoundSDK = new (class CSoundSDK {
 	}
 
 	public EmitStopSoundEventByName(name: string, sourceEntity?: Entity): void {
-		EmitStopSoundEvent(0, Manifest.SoundNameToHash(name), sourceEntity?.Index ?? -1)
+		EmitStopSoundEvent(
+			0,
+			Manifest.SoundNameToHash(name),
+			sourceEntity?.Index ?? -1
+		)
 	}
 })()

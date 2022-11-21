@@ -26,57 +26,65 @@ export class monkey_king_tree_dance extends Ability {
 	}
 }
 
-function FilterValidTrees(ar: (Tree | TempTree)[], pos: Vector3, cast_range: number): [Vector3, Tree | TempTree, number][] {
+function FilterValidTrees(
+	ar: (Tree | TempTree)[],
+	pos: Vector3,
+	castRange: number
+): [Vector3, Tree | TempTree, number][] {
 	return ar
-		.filter(tree => tree.IsAlive && tree.IsInRange(pos, cast_range) && tree.Distance2D(pos) > 32)
+		.filter(
+			tree =>
+				tree.IsAlive &&
+				tree.IsInRange(pos, castRange) &&
+				tree.Distance2D(pos) > 32
+		)
 		.map(tree => [pos.Clone(), tree, 0])
 }
 
 EventsSDK.on("ParticleUpdated", par => {
-	if (par.PathNoEcon !== "particles/units/heroes/hero_monkey_king/monkey_king_jump_trail.vpcf")
+	if (
+		par.PathNoEcon !==
+		"particles/units/heroes/hero_monkey_king/monkey_king_jump_trail.vpcf"
+	)
 		return
 
 	const cpEnt = par.ControlPointsEnt.get(1)
-	if (cpEnt === undefined)
-		return
+	if (cpEnt === undefined) return
 
 	const ent = cpEnt[0],
 		pos = par.ControlPointsFallback.get(1)
-	if (pos === undefined || !(ent instanceof Unit))
-		return
+	if (pos === undefined || !(ent instanceof Unit)) return
 	const abil = ent.GetAbilityByClass(monkey_king_tree_dance)
-	if (abil === undefined)
-		return
+	if (abil === undefined) return
 	abil.StartedJumpingTime = GameState.RawGameTime
 	pos.CopyTo(abil.StartPosition)
 	abil.IsJumping = true
-	abil.IsJumpingToTree = (
-		ent.LastActivity === ent.GetActivityForAbilityClass(monkey_king_tree_dance)
-		&& Math.abs(GameState.RawGameTime - ent.LastActivityEndTime - (1 / 30)) < 0.04
-	)
+	abil.IsJumpingToTree =
+		ent.LastActivity === abil.AbilityData.CastAnimation &&
+		Math.abs(GameState.RawGameTime - ent.LastActivityEndTime - 1 / 30) < 0.04
 	abil.TargetTree = undefined
-	const cast_range = abil.CastRange
+	const castRange = abil.CastRange
 	abil.PredictedPositionsPerTree = [
-		...FilterValidTrees(Trees, pos, cast_range),
-		...FilterValidTrees(TempTrees, pos, cast_range),
+		...FilterValidTrees(Trees, pos, castRange),
+		...FilterValidTrees(TempTrees, pos, castRange),
 	]
 })
 
 EventsSDK.on("ParticleDestroyed", par => {
-	if (par.PathNoEcon !== "particles/units/heroes/hero_monkey_king/monkey_king_jump_trail.vpcf")
+	if (
+		par.PathNoEcon !==
+		"particles/units/heroes/hero_monkey_king/monkey_king_jump_trail.vpcf"
+	)
 		return
 	const cpEnt = par.ControlPointsEnt.get(1)
-	if (cpEnt === undefined)
-		return
+	if (cpEnt === undefined) return
 
 	const ent = cpEnt[0]
-	if (!(ent instanceof Unit))
-		return
+	if (!(ent instanceof Unit)) return
 	const abil = ent.GetAbilityByClass(monkey_king_tree_dance)
-	if (abil === undefined)
-		return
+	if (abil === undefined) return
 	abil.IsJumping = false
-	abil.EndedJumpingTime = GameState.RawGameTime + (1 / 30)
+	abil.EndedJumpingTime = GameState.RawGameTime + 1 / 30
 })
 
 const abils = EntityManager.GetEntitiesByClass(monkey_king_tree_dance)
@@ -89,67 +97,79 @@ EventsSDK.on("Tick", dt => {
 		}
 
 		if (
-			abil.TargetTree !== undefined
-			|| !abil.IsJumpingToTree
-			|| GameState.RawGameTime === abil.StartedJumpingTime
+			abil.TargetTree !== undefined ||
+			!abil.IsJumpingToTree ||
+			GameState.RawGameTime === abil.StartedJumpingTime
 		)
 			continue
 
-		const start_pos = abil.StartPosition
-		if (!start_pos.IsValid)
-			continue
-		if (owner.IsVisible && owner.HasBuffByName("modifier_monkey_king_arc_to_ground")) {
+		const startPos = abil.StartPosition
+		if (!startPos.IsValid) continue
+		if (
+			owner.IsVisible &&
+			owner.HasBuffByName("modifier_monkey_king_arc_to_ground")
+		) {
 			abil.TargetTree = undefined
 			abil.PredictedPositionsPerTree = []
 			continue
 		}
-		const finished_jumping = !abil.IsJumping && Math.abs(GameState.RawGameTime - abil.EndedJumpingTime) < 0.01,
-			finished_jumping_trees: (Tree | TempTree)[] = []
-		for (const predicted_ar of abil.PredictedPositionsPerTree) {
-			const [current_pos, tree, time_finished] = predicted_ar
-			if (time_finished !== 0)
-				continue
-			const target_pos = tree.Position
-			{ // update horizontal motion
-				const leap_speed = 700 + abil.StartPosition.Distance2D(target_pos) * 0.4
-				const distance_left = current_pos.Distance2D(target_pos)
-				const velocity = current_pos.GetDirection2DTo(target_pos).MultiplyScalarForThis(leap_speed * dt)
-				current_pos.AddForThis(velocity)
-				if (velocity.Length + owner.HullRadius + /* valve(tm) magic */5 >= distance_left) {
-					current_pos.z = GetPositionHeight(current_pos)
-					predicted_ar[2] = GameState.RawGameTime
-					if (finished_jumping)
-						finished_jumping_trees.push(tree)
+		const finishedJumping =
+				!abil.IsJumping &&
+				Math.abs(GameState.RawGameTime - abil.EndedJumpingTime) < 0.01,
+			finishedJumpingTrees: (Tree | TempTree)[] = []
+		for (const predictedAr of abil.PredictedPositionsPerTree) {
+			const [currentPos, tree, timeFinished] = predictedAr
+			if (timeFinished !== 0) continue
+			const targetPos = tree.Position
+			{
+				// update horizontal motion
+				const leapSpeed = 700 + abil.StartPosition.Distance2D(targetPos) * 0.4
+				const distanceLeft = currentPos.Distance2D(targetPos)
+				const velocity = currentPos
+					.GetDirection2DTo(targetPos)
+					.MultiplyScalarForThis(leapSpeed * dt)
+				currentPos.AddForThis(velocity)
+				if (
+					velocity.Length + owner.HullRadius + /* valve(tm) magic */ 5 >=
+					distanceLeft
+				) {
+					currentPos.z = GetPositionHeight(currentPos)
+					predictedAr[2] = GameState.RawGameTime
+					if (finishedJumping) finishedJumpingTrees.push(tree)
 				}
 			}
-			if (predicted_ar[2] === 0) { // update vertical motion
-				const mul = 1 - (target_pos.Distance2D(current_pos) / target_pos.Distance2D(start_pos))
-				current_pos.z = start_pos.z + ((target_pos.z - start_pos.z) * mul) + Math.sin(mul * Math.PI) * Math.min(200, target_pos.Distance2D(start_pos) / 3)
-				const ground_height = GetPositionHeight(current_pos)
-				if (current_pos.z < ground_height)
-					current_pos.z = ground_height
+			if (predictedAr[2] === 0) {
+				// update vertical motion
+				const mul =
+					1 - targetPos.Distance2D(currentPos) / targetPos.Distance2D(startPos)
+				currentPos.z =
+					startPos.z +
+					(targetPos.z - startPos.z) * mul +
+					Math.sin(mul * Math.PI) *
+						Math.min(200, targetPos.Distance2D(startPos) / 3)
+				const groundHeight = GetPositionHeight(currentPos)
+				if (currentPos.z < groundHeight) currentPos.z = groundHeight
 			}
 		}
-		if (finished_jumping_trees.length === 1)
-			abil.TargetTree = finished_jumping_trees[0]
+		if (finishedJumpingTrees.length === 1)
+			abil.TargetTree = finishedJumpingTrees[0]
 
-		if (!abil.IsJumping)
-			continue
+		if (!abil.IsJumping) continue
 
 		// further code relies on owner visibility, so we should skip it if owner isn't visible
-		if (!owner.IsVisible)
-			continue
-		const hero_angle = owner.NetworkedRotationRad - DegreesToRadian(owner.RotationDifference)
-		const best_predicted_pos = ArrayExtensions.orderByFirst(
-			abil.PredictedPositionsPerTree.filter(ar =>
-				ar[2] === 0
-				&& Math.abs(
-					hero_angle - abil.StartPosition.GetDirectionTo(ar[1].Position).Angle,
-				) < 0.05, // 0.05rad = 2.8deg
+		if (!owner.IsVisible) continue
+		const heroAngle =
+			owner.NetworkedRotationRad - DegreesToRadian(owner.RotationDifference)
+		const bestPredictedPos = ArrayExtensions.orderByFirst(
+			abil.PredictedPositionsPerTree.filter(
+				ar =>
+					ar[2] === 0 &&
+					Math.abs(
+						heroAngle - abil.StartPosition.GetDirectionTo(ar[1].Position).Angle
+					) < 0.05 // 0.05rad = 2.8deg
 			),
-			ar => owner.NetworkedPosition.Distance(ar[0]),
+			ar => owner.NetworkedPosition.Distance(ar[0])
 		)
-		if (best_predicted_pos !== undefined)
-			abil.TargetTree = best_predicted_pos[1]
+		if (bestPredictedPos !== undefined) abil.TargetTree = bestPredictedPos[1]
 	}
 })

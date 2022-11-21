@@ -4,7 +4,16 @@ import { Vector4 } from "../Base/Vector4"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { CMaterial, ParseMaterial } from "./ParseMaterial"
 import { ParseResourceLayout } from "./ParseResource"
-import { GetMapNumberProperty, GetMapStringProperty, MapToBooleanArray, MapToNumberArray, MapToStringArray, MapToVector3, MapToVector3Array, MapToVector4Array } from "./ParseUtils"
+import {
+	GetMapNumberProperty,
+	GetMapStringProperty,
+	MapToBooleanArray,
+	MapToNumberArray,
+	MapToStringArray,
+	MapToVector3,
+	MapToVector3Array,
+	MapToVector4Array,
+} from "./ParseUtils"
 import { ParseVBIB, ParseVBIBFromKV, VBIB, VBIBBufferData } from "./ParseVBIB"
 
 export class CMeshAttachment {
@@ -17,33 +26,35 @@ export class CMeshAttachment {
 	constructor(kv: RecursiveMap) {
 		this.Name = GetMapStringProperty(kv, "m_name")
 		this.LoadInfluenceNames(kv)
-		let InfluenceRotations = this.LoadInfluenceRotations(kv)
-		let InfluenceOffsets = this.LoadInfluenceOffsets(kv)
+		let influenceRotations = this.LoadInfluenceRotations(kv)
+		let influenceOffsets = this.LoadInfluenceOffsets(kv)
 		this.LoadInfluenceWeights(kv)
 		this.LoadInfluenceRootTransforms(kv)
 
-		const Influences = GetMapNumberProperty(kv, "m_nInfluences")
-		this.InfluenceNames = this.InfluenceNames.slice(0, Influences)
-		InfluenceOffsets = InfluenceOffsets.slice(0, Influences)
-		InfluenceRotations = InfluenceRotations.slice(0, Influences)
-		this.InfluenceWeights = this.InfluenceWeights.slice(0, Influences)
-		this.InfluenceRootTransforms = this.InfluenceRootTransforms.slice(0, Influences)
+		const influences = GetMapNumberProperty(kv, "m_nInfluences")
+		this.InfluenceNames = this.InfluenceNames.slice(0, influences)
+		influenceOffsets = influenceOffsets.slice(0, influences)
+		influenceRotations = influenceRotations.slice(0, influences)
+		this.InfluenceWeights = this.InfluenceWeights.slice(0, influences)
+		this.InfluenceRootTransforms = this.InfluenceRootTransforms.slice(
+			0,
+			influences
+		)
 
-		for (let i = 0; i < Influences; i++) {
-			const rotation = InfluenceRotations[i],
-				offset = InfluenceOffsets[i]
-			const bindPose = rotation !== undefined
-				? Matrix4x4.CreateFromVector4(rotation)
-				: Matrix4x4.Identity
-			if (offset !== undefined)
-				bindPose.Translation = offset
+		for (let i = 0; i < influences; i++) {
+			const rotation = influenceRotations[i],
+				offset = influenceOffsets[i]
+			const bindPose =
+				rotation !== undefined
+					? Matrix4x4.CreateFromVector4(rotation)
+					: Matrix4x4.Identity
+			if (offset !== undefined) bindPose.Translation = offset
 			this.InfluenceBindPoses.push(bindPose)
 		}
 
-		const m_bIgnoreRotation = kv.get("m_bIgnoreRotation")
-		this.IgnoreRotation = typeof m_bIgnoreRotation === "boolean"
-			? m_bIgnoreRotation
-			: false
+		const bIgnoreRotation = kv.get("m_bIgnoreRotation")
+		this.IgnoreRotation =
+			typeof bIgnoreRotation === "boolean" ? bIgnoreRotation : false
 	}
 
 	private LoadInfluenceNames(kv: RecursiveMap): void {
@@ -72,8 +83,13 @@ export class CMeshAttachment {
 	}
 	private LoadInfluenceRootTransforms(kv: RecursiveMap): void {
 		const influenceRootTransforms = kv.get("m_bInfluenceRootTransform")
-		if (influenceRootTransforms instanceof Map || Array.isArray(influenceRootTransforms))
-			this.InfluenceRootTransforms.push(...MapToBooleanArray(influenceRootTransforms))
+		if (
+			influenceRootTransforms instanceof Map ||
+			Array.isArray(influenceRootTransforms)
+		)
+			this.InfluenceRootTransforms.push(
+				...MapToBooleanArray(influenceRootTransforms)
+			)
 	}
 }
 
@@ -81,8 +97,8 @@ export class CMeshDrawCall {
 	constructor(
 		public readonly VertexBuffer: VBIBBufferData,
 		public readonly IndexBuffer: VBIBBufferData,
-		public readonly Flags: number,
-	) { }
+		public readonly Flags: number
+	) {}
 }
 
 export class CMesh {
@@ -104,14 +120,13 @@ export class CMesh {
 		const sceneObjects = kv.get("m_sceneObjects")
 		if (sceneObjects instanceof Map || Array.isArray(sceneObjects))
 			sceneObjects.forEach((sceneObject: RecursiveMapValue) => {
-				if (!(sceneObject instanceof Map))
-					return
-				const m_vMinBounds = sceneObject.get("m_vMinBounds"),
-					m_vMaxBounds = sceneObject.get("m_vMaxBounds")
-				if (m_vMinBounds instanceof Map || Array.isArray(m_vMinBounds))
-					min = MapToVector3(m_vMinBounds).Min(min)
-				if (m_vMaxBounds instanceof Map || Array.isArray(m_vMaxBounds))
-					max = MapToVector3(m_vMaxBounds).Max(max)
+				if (!(sceneObject instanceof Map)) return
+				const vMinBounds = sceneObject.get("m_vMinBounds"),
+					vMaxBounds = sceneObject.get("m_vMaxBounds")
+				if (vMinBounds instanceof Map || Array.isArray(vMinBounds))
+					min = MapToVector3(vMinBounds).Min(min)
+				if (vMaxBounds instanceof Map || Array.isArray(vMaxBounds))
+					max = MapToVector3(vMaxBounds).Max(max)
 			})
 		return [min, max]
 	}
@@ -119,66 +134,76 @@ export class CMesh {
 		const attachments = kv.get("m_attachments")
 		if (attachments instanceof Map || Array.isArray(attachments))
 			attachments.forEach((attachment: RecursiveMapValue) => {
-				if (!(attachment instanceof Map))
-					return
+				if (!(attachment instanceof Map)) return
 				const key = attachment.get("key")
-				if (typeof key !== "string")
-					return
+				if (typeof key !== "string") return
 				const value = attachment.get("value")
-				if (!(value instanceof Map))
-					return
+				if (!(value instanceof Map)) return
 				this.Attachments.set(key, new CMeshAttachment(value))
 			})
 	}
 	private LoadDrawCalls(kv: RecursiveMap, vbib: VBIB): void {
 		const sceneObjects = kv.get("m_sceneObjects")
-		if (!(sceneObjects instanceof Map || Array.isArray(sceneObjects)))
-			return
+		if (!(sceneObjects instanceof Map || Array.isArray(sceneObjects))) return
 		sceneObjects.forEach((sceneObject: RecursiveMapValue) => {
-			if (!(sceneObject instanceof Map))
-				return
+			if (!(sceneObject instanceof Map)) return
 			const drawCalls = sceneObject.get("m_drawCalls")
-			if (!(drawCalls instanceof Map || Array.isArray(drawCalls)))
-				return
+			if (!(drawCalls instanceof Map || Array.isArray(drawCalls))) return
 			drawCalls.forEach((drawCall: RecursiveMapValue) => {
-				if (!(drawCall instanceof Map))
-					return
+				if (!(drawCall instanceof Map)) return
 				const indexBufferData = drawCall.get("m_indexBuffer")
-				if (!(indexBufferData instanceof Map))
-					return
+				if (!(indexBufferData instanceof Map)) return
 				const indexBufferID = GetMapNumberProperty(indexBufferData, "m_hBuffer")
-				let indexBufferOffset = GetMapNumberProperty(indexBufferData, "m_nBindOffsetBytes")
+				let indexBufferOffset = GetMapNumberProperty(
+					indexBufferData,
+					"m_nBindOffsetBytes"
+				)
 				const indexBuffer = vbib.IndexBuffers[indexBufferID]
-				if (indexBuffer === undefined)
-					return
+				if (indexBuffer === undefined) return
 				let vertexBufferData = drawCall.get("m_vertexBuffers")
-				if (!(vertexBufferData instanceof Map || Array.isArray(vertexBufferData)))
+				if (
+					!(vertexBufferData instanceof Map || Array.isArray(vertexBufferData))
+				)
 					return
-				vertexBufferData = vertexBufferData instanceof Map
-					? vertexBufferData.get("0") // TODO: Not just 1 VB
-					: vertexBufferData[0]
-				if (!(vertexBufferData instanceof Map))
-					return
-				const vertexBufferID = GetMapNumberProperty(vertexBufferData, "m_hBuffer")
-				let vertexBufferOffset = GetMapNumberProperty(vertexBufferData, "m_nBindOffsetBytes")
+				vertexBufferData =
+					vertexBufferData instanceof Map
+						? vertexBufferData.get("0") // TODO: Not just 1 VB
+						: vertexBufferData[0]
+				if (!(vertexBufferData instanceof Map)) return
+				const vertexBufferID = GetMapNumberProperty(
+					vertexBufferData,
+					"m_hBuffer"
+				)
+				let vertexBufferOffset = GetMapNumberProperty(
+					vertexBufferData,
+					"m_nBindOffsetBytes"
+				)
 				const vertexBuffer = vbib.VertexBuffers[vertexBufferID]
-				if (vertexBuffer === undefined)
-					return
-				vertexBufferOffset += GetMapNumberProperty(drawCall, "m_nBaseVertex") * vertexBuffer.ElementSize
-				indexBufferOffset += GetMapNumberProperty(drawCall, "m_nStartIndex") * indexBuffer.ElementSize
+				if (vertexBuffer === undefined) return
+				vertexBufferOffset +=
+					GetMapNumberProperty(drawCall, "m_nBaseVertex") *
+					vertexBuffer.ElementSize
+				indexBufferOffset +=
+					GetMapNumberProperty(drawCall, "m_nStartIndex") *
+					indexBuffer.ElementSize
 				const vertexCount = Math.min(
 					GetMapNumberProperty(drawCall, "m_nVertexCount"),
-					Math.floor((vertexBuffer.Data.byteLength - vertexBufferOffset) / vertexBuffer.ElementSize),
+					Math.floor(
+						(vertexBuffer.Data.byteLength - vertexBufferOffset) /
+							vertexBuffer.ElementSize
+					)
 				)
 				const indexCount = Math.min(
 					GetMapNumberProperty(drawCall, "m_nIndexCount"),
-					Math.floor((indexBuffer.Data.byteLength - indexBufferOffset) / indexBuffer.ElementSize),
+					Math.floor(
+						(indexBuffer.Data.byteLength - indexBufferOffset) /
+							indexBuffer.ElementSize
+					)
 				)
 				let materialPath = GetMapStringProperty(drawCall, "m_material")
 				if (materialPath === "")
 					materialPath = GetMapStringProperty(drawCall, "m_pMaterial")
-				if (!materialPath.endsWith("_c"))
-					materialPath += "_c"
+				if (!materialPath.endsWith("_c")) materialPath += "_c"
 				let material: CMaterial | undefined
 				const materialBuf = fopen(materialPath)
 				if (materialBuf !== undefined)
@@ -187,23 +212,31 @@ export class CMesh {
 					} finally {
 						materialBuf.close()
 					}
-				this.DrawCalls.push(new CMeshDrawCall(
-					new VBIBBufferData(
-						vertexCount,
-						vertexBuffer.ElementSize,
-						vertexBuffer.InputLayout,
-						vertexBuffer.Data.subarray(vertexBufferOffset, vertexBufferOffset + vertexCount * vertexBuffer.ElementSize),
-						true,
-					),
-					new VBIBBufferData(
-						indexCount,
-						indexBuffer.ElementSize,
-						indexBuffer.InputLayout,
-						indexBuffer.Data.subarray(indexBufferOffset, indexBufferOffset + indexCount * indexBuffer.ElementSize),
-						false,
-					),
-					material?.Flags ?? 0,
-				))
+				this.DrawCalls.push(
+					new CMeshDrawCall(
+						new VBIBBufferData(
+							vertexCount,
+							vertexBuffer.ElementSize,
+							vertexBuffer.InputLayout,
+							vertexBuffer.Data.subarray(
+								vertexBufferOffset,
+								vertexBufferOffset + vertexCount * vertexBuffer.ElementSize
+							),
+							true
+						),
+						new VBIBBufferData(
+							indexCount,
+							indexBuffer.ElementSize,
+							indexBuffer.InputLayout,
+							indexBuffer.Data.subarray(
+								indexBufferOffset,
+								indexBufferOffset + indexCount * indexBuffer.ElementSize
+							),
+							false
+						),
+						material?.Flags ?? 0
+					)
+				)
 			})
 		})
 	}
@@ -211,20 +244,17 @@ export class CMesh {
 
 export function ParseEmbeddedMesh(
 	data: Nullable<ReadableBinaryStream>,
-	vbib_data: Nullable<ReadableBinaryStream>,
+	vbibData: Nullable<ReadableBinaryStream>
 ): CMesh {
 	const kv = data?.ParseKVBlock() ?? new Map()
-	if (kv.size === 0)
-		throw "Mesh without data"
-	const vbib = vbib_data !== undefined
-		? ParseVBIB(vbib_data)
-		: ParseVBIBFromKV(kv)
+	if (kv.size === 0) throw "Mesh without data"
+	const vbib =
+		vbibData !== undefined ? ParseVBIB(vbibData) : ParseVBIBFromKV(kv)
 	return new CMesh(kv, vbib)
 }
 
 export function ParseMesh(stream: ReadableBinaryStream): CMesh {
 	const layout = ParseResourceLayout(stream)
-	if (layout === undefined)
-		throw "Mesh without resource layout"
+	if (layout === undefined) throw "Mesh without resource layout"
 	return ParseEmbeddedMesh(layout[0].get("DATA"), layout[0].get("VBIB"))
 }

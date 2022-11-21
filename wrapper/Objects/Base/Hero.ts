@@ -3,6 +3,7 @@ import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
+import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { FakeUnit, GetPredictionTarget } from "./FakeUnit"
 import { Unit } from "./Unit"
 
@@ -48,29 +49,29 @@ export class Hero extends Unit {
 		return this.ReplicatingOtherHeroModel !== undefined
 	}
 	public get SpellAmplification(): number {
-		return super.SpellAmplification + (this.TotalIntellect * DamageAmplifyPerIntellectPrecent / 100)
+		return (
+			super.SpellAmplification +
+			(this.TotalIntellect * DamageAmplifyPerIntellectPrecent) / 100
+		)
 	}
 }
 
 export const Heroes = EntityManager.GetEntitiesByClass(Hero)
 
-import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
-RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", (ent, new_val) => {
-	const id = new_val as number
+RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", (ent, newVal) => {
+	const id = newVal as number
 	ent.ReplicatingOtherHeroModel = GetPredictionTarget(id)
 })
 
 EventsSDK.on("PreEntityCreated", ent => {
-	if (!(ent instanceof Unit))
-		return
+	if (!(ent instanceof Unit)) return
 	for (const hero of Heroes)
 		if (hero.ReplicatingOtherHeroModel?.EntityMatches(ent))
 			hero.ReplicatingOtherHeroModel = ent
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (!(ent instanceof Unit))
-		return
+	if (!(ent instanceof Unit)) return
 	for (const hero of Heroes)
 		if (hero.ReplicatingOtherHeroModel === ent)
 			hero.ReplicatingOtherHeroModel = undefined

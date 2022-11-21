@@ -6,8 +6,8 @@ export class AABB {
 		public readonly Base = new Vector3(),
 		public readonly MinOffset = new Vector3(),
 		public readonly MaxOffset = new Vector3(),
-		public DeltaZ = 0,
-	) { }
+		public DeltaZ = 0
+	) {}
 
 	public get Min(): Vector3 {
 		return this.Base.Add(this.MinOffset).AddScalarZ(this.DeltaZ)
@@ -26,25 +26,25 @@ export class AABB {
 		]
 	}
 	public get Polygon(): WorldPolygon {
-		const max_z = this.Base.z + this.MaxOffset.z + this.DeltaZ
-		const base_points = this.Points
+		const maxZ = this.Base.z + this.MaxOffset.z + this.DeltaZ
+		const basePoints = this.Points
 		return new WorldPolygon(
-			base_points[0],
-			base_points[1],
-			base_points[2],
-			base_points[3],
-			base_points[0],
-			base_points[0].Clone().SetZ(max_z),
-			base_points[1].Clone().SetZ(max_z),
-			base_points[1],
-			base_points[1].Clone().SetZ(max_z),
-			base_points[2].Clone().SetZ(max_z),
-			base_points[2],
-			base_points[2].Clone().SetZ(max_z),
-			base_points[3].Clone().SetZ(max_z),
-			base_points[3],
-			base_points[3].Clone().SetZ(max_z),
-			base_points[0].Clone().SetZ(max_z),
+			basePoints[0],
+			basePoints[1],
+			basePoints[2],
+			basePoints[3],
+			basePoints[0],
+			basePoints[0].Clone().SetZ(maxZ),
+			basePoints[1].Clone().SetZ(maxZ),
+			basePoints[1],
+			basePoints[1].Clone().SetZ(maxZ),
+			basePoints[2].Clone().SetZ(maxZ),
+			basePoints[2],
+			basePoints[2].Clone().SetZ(maxZ),
+			basePoints[3].Clone().SetZ(maxZ),
+			basePoints[3],
+			basePoints[3].Clone().SetZ(maxZ),
+			basePoints[0].Clone().SetZ(maxZ)
 		)
 	}
 	public Distance(vec: Vector3): number {

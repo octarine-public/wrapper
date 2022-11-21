@@ -1,43 +1,74 @@
 export class Color {
-	public static get Black() { return new Color(0, 0, 0) }
-	public static get Red() { return new Color(255, 0, 0) }
-	public static get Green() { return new Color(0, 255, 0) }
-	public static get Blue() { return new Color(0, 0, 255) }
-	public static get RoyalBlue() { return new Color(78, 121, 248) }
-	public static get Yellow() { return new Color(255, 255) }
-	public static get Orange() { return new Color(255, 128) }
-	public static get Fuchsia() { return new Color(255, 0, 255) }
-	public static get Aqua() { return new Color(0, 255, 255) }
-	public static get BlackGray() { return new Color(90, 90, 90) }
-	public static get Gray() { return new Color(128, 128, 128) }
-	public static get LightGray() { return new Color(190, 190, 190) }
-	public static get White() { return new Color(255, 255, 255) }
-
-	// reverse toUint32
-	public static fromUint32(num: number): Color {
-		const color = new Color()
-		color.r = num & 0xFF
-		num >>= 8
-		color.g = num & 0xFF
-		num >>= 8
-		color.b = num & 0xFF
-		num >>= 8
-		color.a = num & 0xFF
-		return color
-	}
-
 	/**
 	 * Create new Color with r, g, b, a
 	 *
 	 * @example
 	 * let color = new Color(1, 2, 3)
 	 */
-	constructor(public r: number = 0, public g: number = 0, public b: number = 0, public a: number = 255) { }
+	constructor(public r = 0, public g = 0, public b = 0, public a = 255) {}
+
+	public static get Black() {
+		return new Color(0, 0, 0)
+	}
+	public static get Red() {
+		return new Color(255, 0, 0)
+	}
+	public static get Green() {
+		return new Color(0, 255, 0)
+	}
+	public static get Blue() {
+		return new Color(0, 0, 255)
+	}
+	public static get RoyalBlue() {
+		return new Color(78, 121, 248)
+	}
+	public static get Yellow() {
+		return new Color(255, 255)
+	}
+	public static get Orange() {
+		return new Color(255, 128)
+	}
+	public static get Fuchsia() {
+		return new Color(255, 0, 255)
+	}
+	public static get Aqua() {
+		return new Color(0, 255, 255)
+	}
+	public static get BlackGray() {
+		return new Color(90, 90, 90)
+	}
+	public static get Gray() {
+		return new Color(128, 128, 128)
+	}
+	public static get LightGray() {
+		return new Color(190, 190, 190)
+	}
+	public static get White() {
+		return new Color(255, 255, 255)
+	}
+
+	// reverse toUint32
+	public static fromUint32(num: number): Color {
+		const color = new Color()
+		color.r = num & 0xff
+		num >>= 8
+		color.g = num & 0xff
+		num >>= 8
+		color.b = num & 0xff
+		num >>= 8
+		color.a = num & 0xff
+		return color
+	}
 
 	/**
 	 * Set Color by numbers
 	 */
-	public SetColor(r: number = 0, g: number = 0, b: number = 0, a: number = 255): Color {
+	public SetColor(
+		r: number = 0,
+		g: number = 0,
+		b: number = 0,
+		a: number = 255
+	): Color {
 		this.r = r
 		this.g = g
 		this.b = b
@@ -78,7 +109,12 @@ export class Color {
 	}
 
 	public Equals(col: Color): boolean {
-		return this.r === col.r && this.g === col.g && this.b === col.b && this.a === col.a
+		return (
+			this.r === col.r &&
+			this.g === col.g &&
+			this.b === col.b &&
+			this.a === col.a
+		)
 	}
 
 	public Clone(): Color {
@@ -87,6 +123,7 @@ export class Color {
 
 	/**
 	 * Copy this color to another color and return it
+	 *
 	 * @param vec The another color
 	 * @returns another color
 	 */
@@ -100,6 +137,7 @@ export class Color {
 
 	/**
 	 * Copy from another color to this color and return it
+	 *
 	 * @param vec The another color
 	 * @returns this color
 	 */

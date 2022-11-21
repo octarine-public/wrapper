@@ -11,122 +11,133 @@ import { KeyNames } from "./KeyNames"
 
 export class KeyBind extends Base {
 	public static readonly callbacks = new Map<number, KeyBind[]>()
-	public static changing_now?: KeyBind
+	public static changingNow?: KeyBind
 	public static OnWindowSizeChanged(): void {
-		KeyBind.keybind_offset.x = GUIInfo.ScaleWidth(12)
-		KeyBind.keybind_offset.y = GUIInfo.ScaleHeight(7)
-		KeyBind.keybind_text_offset.x = GUIInfo.ScaleWidth(7)
-		KeyBind.keybind_text_offset.y = GUIInfo.ScaleHeight(7)
-		KeyBind.text_keybind_gap = GUIInfo.ScaleWidth(15)
+		KeyBind.keybindOffset.x = GUIInfo.ScaleWidth(12)
+		KeyBind.keybindOffset.y = GUIInfo.ScaleHeight(7)
+		KeyBind.keybindTextOffset.x = GUIInfo.ScaleWidth(7)
+		KeyBind.keybindTextOffset.y = GUIInfo.ScaleHeight(7)
+		KeyBind.textKeybindGap = GUIInfo.ScaleWidth(15)
 	}
 
-	private static readonly keybind_active_path = "menu/keybind_active.svg"
-	private static readonly keybind_inactive_path = "menu/keybind_inactive.svg"
-	private static readonly keybind_offset = new Vector2()
-	private static readonly keybind_text_offset = new Vector2()
-	private static text_keybind_gap = 15
+	private static readonly keybindActivePath = "menu/keybind_active.svg"
+	private static readonly keybindInactivePath = "menu/keybind_inactive.svg"
+	private static readonly keybindOffset = new Vector2()
+	private static readonly keybindTextOffset = new Vector2()
+	private static textKeybindGap = 15
 
-	public activates_in_menu = false
-	public assigned_key = 0
-	public assigned_key_str = "None"
-	public trigger_on_chat = false
-	protected is_pressed_ = false
-	protected readonly keybind_size = RendererSDK.GetImageSize(KeyBind.keybind_inactive_path).Clone()
-	protected readonly keybind_text_size = new Vector2()
-	protected readonly execute_on_add = false
+	public ActivatesInMenu = false
+	public assignedKey = 0
+	public assignedKeyStr = "None"
+	public TriggerOnChat = false
+	protected IsPressed_ = false
+	protected readonly keybindSize = RendererSDK.GetImageSize(
+		KeyBind.keybindInactivePath
+	).Clone()
+	protected readonly keybindTextSize = new Vector2()
+	protected readonly executeOnAdd = false
 
-	constructor(parent: IMenu, name: string, default_key = "None", tooltip = "") {
+	constructor(parent: IMenu, name: string, defaultKey = "None", tooltip = "") {
 		super(parent, name, tooltip)
-		this.assigned_key = KeyNames.indexOf(default_key)
+		this.assignedKey = KeyNames.indexOf(defaultKey)
 	}
 	public get ConfigValue() {
-		return this.assigned_key
+		return this.assignedKey
 	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number")
-			return
-		this.assigned_key = value !== undefined ? value : this.assigned_key
+		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number") return
+		this.assignedKey = value !== undefined ? value : this.assignedKey
 	}
-	public get is_pressed(): boolean {
-		return this.is_pressed_
+	public get isPressed(): boolean {
+		return this.IsPressed_
 	}
-	public set is_pressed(new_val: boolean) {
-		this.is_pressed_ = new_val
+	public set isPressed(newVal: boolean) {
+		this.IsPressed_ = newVal
 		this.TriggerOnValueChangedCBs()
 	}
 	public get ClassPriority(): number {
 		return 2
 	}
 	private get KeybindRect() {
-		const base_pos = this.Position
-			.Clone()
+		const basePos = this.Position.Clone()
 			.AddScalarX(this.parent.EntriesSizeX)
 			.AddScalarY(this.Size.y)
-			.SubtractForThis(KeyBind.keybind_offset)
-		return new Rectangle(
-			base_pos.Subtract(this.keybind_size),
-			base_pos,
-		)
+			.SubtractForThis(KeyBind.keybindOffset)
+		return new Rectangle(basePos.Subtract(this.keybindSize), basePos)
 	}
 
 	public OnPressed(func: (caller: this) => any) {
 		return this.OnValue(caller => {
-			if (caller.is_pressed)
-				func(caller)
+			if (caller.isPressed) func(caller)
 		})
 	}
 	public OnRelease(func: (caller: this) => any) {
 		return this.OnValue(caller => {
-			if (!caller.is_pressed)
-				func(caller)
+			if (!caller.isPressed) func(caller)
 		})
 	}
 
-	public Update(_recursive = false, assign_key_str = true): boolean {
-		if (!super.Update())
-			return false
+	public Update(_recursive = false, assignKeyStr = true): boolean {
+		if (!super.Update()) return false
 		KeyBind.callbacks.forEach((keybinds, key) => {
 			if (arrayRemove(keybinds, this) && keybinds.length === 0)
 				KeyBind.callbacks.delete(key)
 		})
-		if (this.assigned_key > 0) {
-			let ar = KeyBind.callbacks.get(this.assigned_key)
+		if (this.assignedKey > 0) {
+			let ar = KeyBind.callbacks.get(this.assignedKey)
 			if (ar === undefined) {
 				ar = []
-				KeyBind.callbacks.set(this.assigned_key, ar)
+				KeyBind.callbacks.set(this.assignedKey, ar)
 			}
 			ar.push(this)
 		}
-		if (assign_key_str)
-			this.assigned_key_str = this.assigned_key >= KeyNames.length ? "Unknown" : KeyNames[Math.max(this.assigned_key, 0)]
-		Vector2.FromVector3(this.GetTextSizeDefault(this.assigned_key_str)).CopyTo(this.keybind_text_size)
-		this.keybind_text_size
-			.Add(KeyBind.keybind_text_offset.MultiplyScalar(2))
-			.SetY(this.Size.y - KeyBind.keybind_offset.y * 2)
-			.CopyTo(this.keybind_size)
+		if (assignKeyStr)
+			this.assignedKeyStr =
+				this.assignedKey >= KeyNames.length
+					? "Unknown"
+					: KeyNames[Math.max(this.assignedKey, 0)]
+		Vector2.FromVector3(this.GetTextSizeDefault(this.assignedKeyStr)).CopyTo(
+			this.keybindTextSize
+		)
+		this.keybindTextSize
+			.Add(KeyBind.keybindTextOffset.MultiplyScalar(2))
+			.SetY(this.Size.y - KeyBind.keybindOffset.y * 2)
+			.CopyTo(this.keybindSize)
 
 		this.Size.x =
-			this.name_size.x
-			+ this.text_offset.x
-			+ KeyBind.text_keybind_gap
-			+ KeyBind.keybind_offset.x
-			+ this.keybind_size.x
+			this.nameSize.x +
+			this.textOffset.x +
+			KeyBind.textKeybindGap +
+			KeyBind.keybindOffset.x +
+			this.keybindSize.x
 		return true
 	}
 	public Render(): void {
 		super.Render()
-		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
-		const keybind_rect = this.KeybindRect
-		if (KeyBind.changing_now === this)
-			RendererSDK.Image(KeyBind.keybind_active_path, keybind_rect.pos1, -1, keybind_rect.Size)
+		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
+		const keybindRect = this.KeybindRect
+		if (KeyBind.changingNow === this)
+			RendererSDK.Image(
+				KeyBind.keybindActivePath,
+				keybindRect.pos1,
+				-1,
+				keybindRect.Size
+			)
 		else
-			RendererSDK.Image(KeyBind.keybind_inactive_path, keybind_rect.pos1, -1, keybind_rect.Size)
+			RendererSDK.Image(
+				KeyBind.keybindInactivePath,
+				keybindRect.pos1,
+				-1,
+				keybindRect.Size
+			)
 		this.RenderTextDefault(
-			this.assigned_key_str,
+			this.assignedKeyStr,
 			new Vector2(
-				keybind_rect.pos1.x + KeyBind.keybind_text_offset.x,
-				keybind_rect.pos2.y - KeyBind.keybind_text_offset.y - this.keybind_text_size.y,
-			),
+				keybindRect.pos1.x + KeyBind.keybindTextOffset.x,
+				keybindRect.pos2.y -
+					KeyBind.keybindTextOffset.y -
+					this.keybindTextSize.y
+			)
 		)
 	}
 
@@ -134,45 +145,50 @@ export class KeyBind extends Base {
 		return !this.IsHovered
 	}
 	public OnMouseLeftUp(): boolean {
-		if (this.KeybindRect.Contains(this.MousePosition) && KeyBind.changing_now !== this) {
-			const old = KeyBind.changing_now
-			KeyBind.changing_now = this
-			this.assigned_key_str = "..."
+		if (
+			this.KeybindRect.Contains(this.MousePosition) &&
+			KeyBind.changingNow !== this
+		) {
+			const old = KeyBind.changingNow
+			KeyBind.changingNow = this
+			this.assignedKeyStr = "..."
 			this.Update(false, false)
-			if (old !== undefined)
-				old.Update()
+			if (old !== undefined) old.Update()
 		}
 		return false
 	}
 }
 
-const IsPressing = new Map<VKeys, boolean>()
+const isPressing = new Map<VKeys, boolean>()
 function KeyHandler(key: VKeys, pressed: boolean): boolean {
-	const changing_now = KeyBind.changing_now
-	if (changing_now !== undefined) {
-		changing_now.assigned_key = key !== 0x1B ? key : -1 // VK_ESCAPE === 0x1B
-		changing_now.Update()
-		changing_now.is_pressed = false
+	const changingNow = KeyBind.changingNow
+	if (changingNow !== undefined) {
+		changingNow.assignedKey = key !== 0x1b ? key : -1 // VK_ESCAPE === 0x1B
+		changingNow.Update()
+		changingNow.isPressed = false
 		Base.SaveConfigASAP = true
-		KeyBind.changing_now = undefined
+		KeyBind.changingNow = undefined
 		return true
 	}
 
-	if (IsPressing.get(key) === pressed)
-		return true
-	IsPressing.set(key, pressed)
+	if (isPressing.get(key) === pressed) return true
+	isPressing.set(key, pressed)
 
 	const onExecute = KeyBind.callbacks.get(key)
-	if (onExecute === undefined)
-		return true
+	if (onExecute === undefined) return true
 
 	const uniqueOnExecute = [...new Set(onExecute)]
 	uniqueOnExecute.forEach(keybind => {
-		if (!Base.trigger_on_chat && GameState.IsInputCaptured && !keybind.trigger_on_chat)
+		if (
+			!Base.triggerOnChat &&
+			GameState.IsInputCaptured &&
+			!keybind.TriggerOnChat
+		)
 			return
-		if (!GameState.IsConnected && !keybind.activates_in_menu && pressed) // pass un-press even in menu
+		if (!GameState.IsConnected && !keybind.ActivatesInMenu && pressed)
+			// pass un-press even in menu
 			return
-		keybind.is_pressed = pressed
+		keybind.isPressed = pressed
 	})
 	return true
 }

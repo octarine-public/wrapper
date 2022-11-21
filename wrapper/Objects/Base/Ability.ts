@@ -1,7 +1,7 @@
 import { Vector3 } from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
-import { AbilityLogicType } from "../../Enums/AbilityLogicType"
 import { ABILITY_TYPES } from "../../Enums/ABILITY_TYPES"
+import { AbilityLogicType } from "../../Enums/AbilityLogicType"
 import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
 import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
 import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
@@ -9,6 +9,7 @@ import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
+import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { HasMask, MaskToArrayNumber } from "../../Utils/BitsExtensions"
 import { GameState } from "../../Utils/GameState"
 import { AbilityData } from "../DataBook/AbilityData"
@@ -37,11 +38,11 @@ export class Ability extends Entity {
 	@NetworkedBasicField("m_iLevel")
 	public Level = 0
 	public Cooldown_ = 0
-	public Cooldown_ChangeTime = 0
+	public CooldownChangeTime = 0
 	@NetworkedBasicField("m_flCooldownLength")
 	public CooldownLength_ = 0
 	public IsInAbilityPhase_ = false
-	public IsInAbilityPhase_ChangeTime = 0
+	public IsInAbilityPhaseChangeTime = 0
 	@NetworkedBasicField("m_flCastStartTime")
 	public CastStartTime = 0
 	@NetworkedBasicField("m_flChannelStartTime")
@@ -58,10 +59,10 @@ export class Ability extends Entity {
 	public AbilityChargeRestoreTimeRemaining = 0
 	public readonly ProjectilePath: Nullable<string>
 
-	constructor(Index: number, Serial: number, name: string) {
-		super(Index, Serial)
+	constructor(index: number, serial: number, name: string) {
+		super(index, serial)
 		this.Name_ = name
-		this.AbilityData = AbilityData.global_storage.get(name) ?? AbilityData.empty
+		this.AbilityData = AbilityData.globalStorage.get(name) ?? AbilityData.empty
 	}
 
 	public get Owner(): Nullable<Unit> {
@@ -77,7 +78,10 @@ export class Ability extends Entity {
 		return AbilityLogicType.None
 	}
 	public get AbilityDamage(): number {
-		return this.AbilityData.GetAbilityDamage(this.Level) || this.GetSpecialValue("damage")
+		return (
+			this.AbilityData.GetAbilityDamage(this.Level) ||
+			this.GetSpecialValue("damage")
+		)
 	}
 	public get AbilityType(): ABILITY_TYPES {
 		return this.AbilityData.AbilityType
@@ -90,9 +94,11 @@ export class Ability extends Entity {
 	}
 	public get CastPoint(): number {
 		let castpoint = this.AbilityData.GetCastPoint(this.Level)
-		const arcane_blink = this.Owner?.GetBuffByName("modifier_item_arcane_blink_buff")?.Ability
-		if (arcane_blink !== undefined)
-			castpoint *= 1 - (arcane_blink.GetSpecialValue("cast_pct_improvement") / 100)
+		const arcaneBlink = this.Owner?.GetBuffByName(
+			"modifier_item_arcane_blink_buff"
+		)?.Ability
+		if (arcaneBlink !== undefined)
+			castpoint *= 1 - arcaneBlink.GetSpecialValue("cast_pct_improvement") / 100
 		return castpoint
 	}
 	public get MaxChannelTime(): number {
@@ -102,10 +108,16 @@ export class Ability extends Entity {
 		return Math.max(GameState.RawGameTime - this.ChannelStartTime, 0)
 	}
 	public get MaxCharges(): number {
-		return this.AbilityData.GetMaxCharges(this.Level) + this.GetSpecialValue("AbilityCharges")
+		return (
+			this.AbilityData.GetMaxCharges(this.Level) +
+			this.GetSpecialValue("AbilityCharges")
+		)
 	}
 	public get ChargeRestoreTime(): number {
-		return this.AbilityData.GetChargeRestoreTime(this.Level) + this.GetSpecialValue("AbilityChargeRestoreTime")
+		return (
+			this.AbilityData.GetChargeRestoreTime(this.Level) +
+			this.GetSpecialValue("AbilityChargeRestoreTime")
+		)
 	}
 	public get DamageType(): DAMAGE_TYPES {
 		return this.AbilityData.DamageType
@@ -117,12 +129,14 @@ export class Ability extends Entity {
 		return this.ChannelStartTime > 0 && this.ChannelTime <= this.MaxChannelTime
 	}
 	public get IsInAbilityPhase(): boolean {
-		return this.IsInAbilityPhase_ && (GameState.RawGameTime - this.IsInAbilityPhase_ChangeTime <= this.CastPoint)
+		return (
+			this.IsInAbilityPhase_ &&
+			GameState.RawGameTime - this.IsInAbilityPhaseChangeTime <= this.CastPoint
+		)
 	}
 	public get CooldownLength(): number {
-		const charge_restore_time = this.ChargeRestoreTime
-		if (charge_restore_time !== 0)
-			return charge_restore_time // workaround of bad m_flCooldownLength, TODO: use cooldown reductions
+		const chargeRestoreTime = this.ChargeRestoreTime
+		if (chargeRestoreTime !== 0) return chargeRestoreTime // workaround of bad m_flCooldownLength, TODO: use cooldown reductions
 		return this.CooldownLength_
 	}
 	public get IsCooldownReady(): boolean {
@@ -130,7 +144,11 @@ export class Ability extends Entity {
 	}
 	public get IsReady(): boolean {
 		const unit = this.Owner
-		return this.IsCooldownReady && this.Level !== 0 && (unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsSilenced))
+		return (
+			this.IsCooldownReady &&
+			this.Level !== 0 &&
+			(unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsSilenced))
+		)
 	}
 	public get IsGrantedByScepter(): boolean {
 		return this.AbilityData.IsGrantedByScepter
@@ -174,7 +192,10 @@ export class Ability extends Entity {
 	 * In real time cooldown (in fog)
 	 */
 	public get Cooldown(): number {
-		return Math.max(this.Cooldown_ - (GameState.RawGameTime - this.Cooldown_ChangeTime), 0)
+		return Math.max(
+			this.Cooldown_ - (GameState.RawGameTime - this.CooldownChangeTime),
+			0
+		)
 	}
 	public get MaxDuration(): number {
 		return this.AbilityData.GetMaxDurationForLevel(this.Level)
@@ -210,21 +231,21 @@ export class Ability extends Entity {
 	public get CurrentCharges() {
 		return this.AbilityCurrentCharges
 	}
-	public set CurrentCharges(new_val: number) {
-		this.AbilityCurrentCharges = new_val
+	public set CurrentCharges(newVal: number) {
+		this.AbilityCurrentCharges = newVal
 	}
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.AbilityData.GetCastRange(level)
 	}
 	public GetBaseManaCostForLevel(level: number) {
-		if (level === 0)
-			return 0
+		if (level === 0) return 0
 		return this.AbilityData.GetManaCost(level)
 	}
 	public GetCastRangeForLevel(level: number): number {
-		if (level === 0)
-			return 0
-		return this.GetBaseCastRangeForLevel(level) + (this.Owner?.CastRangeBonus ?? 0)
+		if (level === 0) return 0
+		return (
+			this.GetBaseCastRangeForLevel(level) + (this.Owner?.CastRangeBonus ?? 0)
+		)
 	}
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
@@ -235,25 +256,41 @@ export class Ability extends Entity {
 	 * @returns Time in ms until the cast.
 	 */
 	public GetCastDelay(position: Vector3, turnRate: boolean = true): number {
-		return this?.Owner ? ((this.CastPoint + (turnRate ? this.Owner.TurnTime(position) : 0)) * 1000 + GameState.Ping / 2) : 0
+		return this?.Owner
+			? (this.CastPoint + (turnRate ? this.Owner.TurnTime(position) : 0)) *
+					1000 +
+					GameState.Ping / 2
+			: 0
 	}
 	/**
 	 * @param position Vector3
 	 * @returns Time in ms until the cast.
 	 */
 	public GetHitTime(position: Vector3): number {
-		if (this.Owner === undefined)
-			return 0
+		if (this.Owner === undefined) return 0
 
 		if (this.Speed === Number.MAX_SAFE_INTEGER || this.Speed === 0)
-			return this.GetCastDelay(position) + (this.ActivationDelay * 1000)
+			return this.GetCastDelay(position) + this.ActivationDelay * 1000
 
 		const time = this.Owner.Distance2D(position) / this.Speed
-		return this.GetCastDelay(position) + ((time + this.ActivationDelay) * 1000)
+		return this.GetCastDelay(position) + (time + this.ActivationDelay) * 1000
 	}
 
-	public UseAbility(target?: Vector3 | Entity, checkAutoCast: boolean = false, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
-		return this.Owner?.UseSmartAbility(this, target, checkAutoCast, checkToggled, queue, showEffects)
+	public UseAbility(
+		target?: Vector3 | Entity,
+		checkAutoCast: boolean = false,
+		checkToggled: boolean = false,
+		queue?: boolean,
+		showEffects?: boolean
+	) {
+		return this.Owner?.UseSmartAbility(
+			this,
+			target,
+			checkAutoCast,
+			checkToggled,
+			queue,
+			showEffects
+		)
 	}
 
 	public UpgradeAbility() {
@@ -264,17 +301,16 @@ export class Ability extends Entity {
 		return this.Owner?.PingAbility(this)
 	}
 
-	public GetSpecialValue(special_name: string, level = this.Level): number {
+	public GetSpecialValue(specialName: string, level = this.Level): number {
 		const owner = this.Owner
 		if (owner === undefined)
-			return this.AbilityData.GetSpecialValue(special_name, level)
-		return this.AbilityData.GetSpecialValueWithTalent(owner, special_name, level)
+			return this.AbilityData.GetSpecialValue(specialName, level)
+		return this.AbilityData.GetSpecialValueWithTalent(owner, specialName, level)
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {
 		const owner = this.Owner
-		if (owner === undefined)
-			return true
-		return (owner.Mana + bonusMana) >= this.ManaCost
+		if (owner === undefined) return true
+		return owner.Mana + bonusMana >= this.ManaCost
 	}
 	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
 		return HasMask(this.AbilityData.AbilityBehavior, flag)
@@ -289,45 +325,49 @@ export class Ability extends Entity {
 		return HasMask(this.AbilityData.TargetType, flag)
 	}
 	public CanHit(target: Unit): boolean {
-		if (this.Owner === undefined)
-			return false
+		if (this.Owner === undefined) return false
 
 		let range = 0
 		if (
-			!this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)
-			&& !this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)
+			!this.HasBehavior(
+				DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET
+			) &&
+			!this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)
 		) {
 			range = this.CastRange
-			if (range === 0)
-				range = this.AOERadius
-		} else
-			range += this.SkillshotRange + this.Owner.HullRadius
-		if (range > 0)
-			range += target.HullRadius
+			if (range === 0) range = this.AOERadius
+		} else range += this.SkillshotRange + this.Owner.HullRadius
+		if (range > 0) range += target.HullRadius
 		return this.Owner.Distance2D(target) < range
 	}
 	public CanBeCasted(bonusMana: number = 0): boolean {
-		return this.IsValid
-			&& this.Level !== 0
-			&& this.IsCooldownReady
-			&& !this.Owner?.IsSilenced
-			&& this.IsManaEnough(bonusMana)
+		return (
+			this.IsValid &&
+			this.Level !== 0 &&
+			this.IsCooldownReady &&
+			!this.Owner?.IsSilenced &&
+			this.IsManaEnough(bonusMana)
+		)
 	}
-	public IsDoubleTap(order: ExecuteOrder): boolean {
+	public IsDoubleTap(_order: ExecuteOrder): boolean {
 		return false
 	}
 }
 
-import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
-RegisterFieldHandler(Ability, "m_fAbilityChargeRestoreTimeRemaining", (abil, new_value) => {
-	abil.Cooldown_ = abil.CurrentCharges !== 0 ? 0 : Math.max(new_value as number, 0)
-	abil.Cooldown_ChangeTime = GameState.RawGameTime
+RegisterFieldHandler(
+	Ability,
+	"m_fAbilityChargeRestoreTimeRemaining",
+	(abil, newValue) => {
+		abil.Cooldown_ =
+			abil.CurrentCharges !== 0 ? 0 : Math.max(newValue as number, 0)
+		abil.CooldownChangeTime = GameState.RawGameTime
+	}
+)
+RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, newValue) => {
+	abil.IsInAbilityPhase_ = newValue as boolean
+	abil.IsInAbilityPhaseChangeTime = GameState.RawGameTime
 })
-RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, new_value) => {
-	abil.IsInAbilityPhase_ = new_value as boolean
-	abil.IsInAbilityPhase_ChangeTime = GameState.RawGameTime
-})
-RegisterFieldHandler(Ability, "m_fCooldown", (abil, new_value) => {
-	abil.Cooldown_ = new_value as number
-	abil.Cooldown_ChangeTime = GameState.RawGameTime
+RegisterFieldHandler(Ability, "m_fCooldown", (abil, newValue) => {
+	abil.Cooldown_ = newValue as number
+	abil.CooldownChangeTime = GameState.RawGameTime
 })

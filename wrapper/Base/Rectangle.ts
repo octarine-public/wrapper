@@ -63,12 +63,17 @@ export class Rectangle {
 	}
 	public get Center(): Vector2 {
 		return new Vector2(
-			this.pos1.x + (this.Width / 2),
-			this.pos1.y + (this.Height / 2),
+			this.pos1.x + this.Width / 2,
+			this.pos1.y + this.Height / 2
 		)
 	}
 	public Contains(pos: Vector2): boolean {
-		return this.pos1.x <= pos.x && this.pos1.y <= pos.y && this.pos2.x > pos.x && this.pos2.y > pos.y
+		return (
+			this.pos1.x <= pos.x &&
+			this.pos1.y <= pos.y &&
+			this.pos2.x > pos.x &&
+			this.pos2.y > pos.y
+		)
 	}
 	public GetOffset(pos: Vector2): Vector2 {
 		return pos.Subtract(this.pos1)
@@ -104,9 +109,6 @@ export class Rectangle {
 		return this
 	}
 	public Clone(): Rectangle {
-		return new Rectangle(
-			this.pos1.Clone(),
-			this.pos2.Clone(),
-		)
+		return new Rectangle(this.pos1.Clone(), this.pos2.Clone())
 	}
 }

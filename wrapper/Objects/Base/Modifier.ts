@@ -18,42 +18,27 @@ import { Unit } from "./Unit"
 // IsValid
 // TextureName
 
-export const TRUESIGHT_MODIFIERS = [
-	"modifier_truesight",
-	"modifier_item_dustofappearance",
-	"modifier_bloodseeker_thirst_vision",
-	"modifier_bounty_hunter_track",
-]
-
-export const SCEPTER_MODIFIERS = [
-	"modifier_item_ultimate_scepter",
-	"modifier_item_ultimate_scepter_consumed",
-	"modifier_wisp_tether_scepter",
-]
-
-export const BLOCKING_DAMAGE_MODIFIERS = [
-	"modifier_nyx_assassin_spiked_carapace",
-	"modifier_item_combo_breaker_buff",
-	"modifier_templar_assassin_refraction_absorb",
-]
-
-export const REFLECTING_DAMAGE_MODIFIERS = [
-	"modifier_nyx_assassin_spiked_carapace",
-	"modifier_item_blade_mail_reflect",
-]
-
-const ShardRegExp = /modifier_item_aghanims_shard/
-const ScepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
+const scepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
 export class Modifier {
 	public static HasTrueSightBuff(buffs: Modifier[]): boolean {
-		return buffs.some(buff => TRUESIGHT_MODIFIERS.some(nameBuff => nameBuff === buff.Name))
+		return buffs.some(buff => {
+			switch (buff.Name) {
+				case "modifier_truesight":
+				case "modifier_item_dustofappearance":
+				case "modifier_bloodseeker_thirst_vision":
+				case "modifier_bounty_hunter_track":
+					return true
+				default:
+					return false
+			}
+		})
 	}
 	public static HasScepterBuff(buffs: Modifier[]): boolean {
-		return buffs.some(buff => ScepterRegExp.test(buff.Name))
+		return buffs.some(buff => scepterRegExp.test(buff.Name))
 	}
 	public static HasShardBuff(buffs: Modifier[]): boolean {
-		return buffs.some(buff => ShardRegExp.test(buff.Name))
+		return buffs.some(buff => buff.Name === "modifier_item_aghanims_shard")
 	}
 
 	public IsValid = true
@@ -80,46 +65,48 @@ export class Modifier {
 	public Caster: Nullable<Unit>
 	public AuraOwner: Nullable<Unit>
 
-	constructor(public m_pBuff: IModifier) {
-		this.Index = this.m_pBuff.Index as number
-		this.SerialNumber = this.m_pBuff.SerialNum as number
+	constructor(public kv: IModifier) {
+		this.Index = this.kv.Index as number
+		this.SerialNumber = this.kv.SerialNum as number
 
-		this.IsAura = this.m_pBuff.IsAura as boolean
+		this.IsAura = this.kv.IsAura as boolean
 
-		const lua_name = this.m_pBuff.LuaName
-		this.Name = lua_name === undefined || lua_name === ""
-			? StringTables.GetString("ModifierNames", this.m_pBuff.ModifierClass as number)
-			: lua_name
+		const luaName = this.kv.LuaName
+		this.Name =
+			luaName === undefined || luaName === ""
+				? StringTables.GetString(
+						"ModifierNames",
+						this.kv.ModifierClass as number
+				  )
+				: luaName
 
-		const DDAbilityID = this.m_pBuff.DDAbilityID
-		const DDAbilityName = DDAbilityID !== undefined
-			? AbilityData.GetAbilityNameByID(DDAbilityID)
-			: undefined
-		this.DDAbilityName = DDAbilityName ?? "ability_base"
+		const ddAbilityID = this.kv.DDAbilityID
+		const ddAbilityName =
+			ddAbilityID !== undefined
+				? AbilityData.GetAbilityNameByID(ddAbilityID)
+				: undefined
+		this.DDAbilityName = ddAbilityName ?? "ability_base"
 	}
 
 	public get InvisibilityLevel(): number {
 		if (
-			this.Name === "modifier_monkey_king_bounce_leap"
-			|| this.Name === "modifier_monkey_king_arc_to_ground"
+			this.Name === "modifier_monkey_king_bounce_leap" ||
+			this.Name === "modifier_monkey_king_arc_to_ground"
 		)
 			return 0
-		const fade_time = this.m_pBuff.FadeTime
-		if (fade_time === undefined)
-			return 0
-		if (fade_time === 0)
-			return 1
-		return Math.min(this.ElapsedTime / (fade_time * 2), 1)
+		const fadeTime = this.kv.FadeTime
+		if (fadeTime === undefined) return 0
+		if (fadeTime === 0) return 1
+		return Math.min(this.ElapsedTime / (fadeTime * 2), 1)
 	}
 
 	public get DeltaZ(): number {
 		if (
-			(
-				this.Name === "modifier_monkey_king_bounce_leap"
-				|| this.Name === "modifier_monkey_king_arc_to_ground"
-			) && this.ElapsedTime < 10 // just in case buff bugs out
+			(this.Name === "modifier_monkey_king_bounce_leap" ||
+				this.Name === "modifier_monkey_king_arc_to_ground") &&
+			this.ElapsedTime < 10 // just in case buff bugs out
 		)
-			return this.m_pBuff.FadeTime ?? 0
+			return this.kv.FadeTime ?? 0
 		switch (this.Name) {
 			case "modifier_rattletrap_jetpack":
 				return 260
@@ -133,10 +120,10 @@ export class Modifier {
 
 	public get ShouldDoFlyHeightVisual(): boolean {
 		return (
-			this.Name === "modifier_winter_wyvern_arctic_burn_flight"
-			|| this.Name === "modifier_courier_flying"
-			|| this.Name === "modifier_night_stalker_darkness"
-			|| this.Name === "modifier_monkey_king_bounce_perch"
+			this.Name === "modifier_winter_wyvern_arctic_burn_flight" ||
+			this.Name === "modifier_courier_flying" ||
+			this.Name === "modifier_night_sttalker_darkness" ||
+			this.Name === "modifier_monkey_king_bounce_perch"
 		)
 	}
 	public get DieTime(): number {
@@ -149,125 +136,128 @@ export class Modifier {
 		return Math.max(this.DieTime - GameState.RawGameTime, 0)
 	}
 	public get DDModifierID(): Nullable<number> {
-		return this.m_pBuff.DDModifierID
+		return this.kv.DDModifierID
 	}
 	public get vStart(): Vector3 {
-		const vec = this.m_pBuff.vStart
+		const vec = this.kv.vStart
 
-		if (vec === undefined)
-			return new Vector3().Invalidate()
+		if (vec === undefined) return new Vector3().Invalidate()
 
 		return new Vector3(vec.x, vec.y, vec.z)
 	}
 	public get vEnd(): Vector3 {
-		const vec = this.m_pBuff.vEnd
+		const vec = this.kv.vEnd
 
-		if (vec === undefined)
-			return new Vector3().Invalidate()
+		if (vec === undefined) return new Vector3().Invalidate()
 
 		return new Vector3(vec.x, vec.y, vec.z)
 	}
 
 	public Update(): void {
-		const new_caster = EntityManager.EntityByIndex(this.m_pBuff.Caster) as Nullable<Unit>,
-			new_ability = EntityManager.EntityByIndex(this.m_pBuff.Ability) as Nullable<Ability>,
-			new_aura_owner = EntityManager.EntityByIndex(this.m_pBuff.AuraOwner) as Nullable<Unit>,
-			new_parent = EntityManager.EntityByIndex(this.m_pBuff.Parent) as Nullable<Unit>,
-			new_ability_level = this.m_pBuff.AbilityLevel ?? 0,
-			new_duration = this.m_pBuff.Duration ?? 0,
-			new_stack_count = this.m_pBuff.StackCount ?? 0,
-			new_creation_time = this.m_pBuff.CreationTime ?? 0,
-			new_armor = this.m_pBuff.Armor ?? 0,
-			new_attack_speed = this.m_pBuff.AttackSpeed ?? 0,
-			new_movement_speed = this.m_pBuff.MovementSpeed ?? 0,
-			new_bonus_all_stats = this.m_pBuff.BonusAllStats ?? 0,
-			new_bonus_health = this.m_pBuff.BonusHealth ?? 0,
-			new_bonus_mana = this.m_pBuff.BonusMana ?? 0,
-			new_custom_entity = EntityManager.EntityByIndex(this.m_pBuff.CustomEntity) as Nullable<Unit>
+		const newCaster = EntityManager.EntityByIndex(
+				this.kv.Caster
+			) as Nullable<Unit>,
+			newAbility = EntityManager.EntityByIndex(
+				this.kv.Ability
+			) as Nullable<Ability>,
+			newAuraOwner = EntityManager.EntityByIndex(
+				this.kv.AuraOwner
+			) as Nullable<Unit>,
+			newParent = EntityManager.EntityByIndex(this.kv.Parent) as Nullable<Unit>,
+			newAbilityLevel = this.kv.AbilityLevel ?? 0,
+			newDuration = this.kv.Duration ?? 0,
+			newStackCount = this.kv.StackCount ?? 0,
+			newCreationTime = this.kv.CreationTime ?? 0,
+			newArmor = this.kv.Armor ?? 0,
+			newAttackSpeed = this.kv.AttackSpeed ?? 0,
+			newMovementSpeed = this.kv.MovementSpeed ?? 0,
+			newBonusAllStats = this.kv.BonusAllStats ?? 0,
+			newBonusHealth = this.kv.BonusHealth ?? 0,
+			newBonusMana = this.kv.BonusMana ?? 0,
+			newCustomEntity = EntityManager.EntityByIndex(
+				this.kv.CustomEntity
+			) as Nullable<Unit>
 
-		if (this.Parent !== new_parent)
-			this.Remove()
+		if (this.Parent !== newParent) this.Remove()
 		let updated = false
-		if (this.Caster !== new_caster) {
-			this.Caster = new_caster
+		if (this.Caster !== newCaster) {
+			this.Caster = newCaster
 			updated = true
 		}
-		if (this.Ability !== new_ability) {
-			this.Ability = new_ability
+		if (this.Ability !== newAbility) {
+			this.Ability = newAbility
 			updated = true
 		}
-		if (this.AuraOwner !== new_aura_owner) {
-			this.AuraOwner = new_aura_owner
+		if (this.AuraOwner !== newAuraOwner) {
+			this.AuraOwner = newAuraOwner
 			updated = true
 		}
-		if (this.AbilityLevel !== new_ability_level) {
-			this.AbilityLevel = new_ability_level
+		if (this.AbilityLevel !== newAbilityLevel) {
+			this.AbilityLevel = newAbilityLevel
 			updated = true
 		}
-		if (this.Duration !== new_duration) {
-			this.Duration = new_duration
+		if (this.Duration !== newDuration) {
+			this.Duration = newDuration
 			updated = true
 		}
-		if (this.StackCount !== new_stack_count) {
-			this.StackCount = new_stack_count
+		if (this.StackCount !== newStackCount) {
+			this.StackCount = newStackCount
 			updated = true
 		}
-		if (this.CreationTime !== new_creation_time) {
-			this.CreationTime = new_creation_time
+		if (this.CreationTime !== newCreationTime) {
+			this.CreationTime = newCreationTime
 			updated = true
 		}
-		if (this.Armor !== new_armor) {
-			this.Armor = new_armor
+		if (this.Armor !== newArmor) {
+			this.Armor = newArmor
 			updated = true
 		}
-		if (this.AttackSpeed !== new_attack_speed) {
-			this.AttackSpeed = new_attack_speed
+		if (this.AttackSpeed !== newAttackSpeed) {
+			this.AttackSpeed = newAttackSpeed
 			updated = true
 		}
-		if (this.MovementSpeed !== new_movement_speed) {
-			this.MovementSpeed = new_movement_speed
+		if (this.MovementSpeed !== newMovementSpeed) {
+			this.MovementSpeed = newMovementSpeed
 			updated = true
 		}
-		if (this.BonusAllStats !== new_bonus_all_stats) {
-			this.BonusAllStats = new_bonus_all_stats
+		if (this.BonusAllStats !== newBonusAllStats) {
+			this.BonusAllStats = newBonusAllStats
 			updated = true
 		}
-		if (this.BonusHealth !== new_bonus_health) {
-			this.BonusHealth = new_bonus_health
+		if (this.BonusHealth !== newBonusHealth) {
+			this.BonusHealth = newBonusHealth
 			updated = true
 		}
-		if (this.BonusMana !== new_bonus_mana) {
-			this.BonusMana = new_bonus_mana
+		if (this.BonusMana !== newBonusMana) {
+			this.BonusMana = newBonusMana
 			updated = true
 		}
-		if (this.CustomEntity !== new_custom_entity) {
-			this.CustomEntity = new_custom_entity
+		if (this.CustomEntity !== newCustomEntity) {
+			this.CustomEntity = newCustomEntity
 			updated = true
 		}
 		if (
-			this.Duration !== -1
-			&& this.DieTime < GameState.RawGameTime
-			&& this.Name !== "modifier_legion_commander_overwhelming_odds"
+			this.Duration !== -1 &&
+			this.DieTime < GameState.RawGameTime &&
+			this.Name !== "modifier_legion_commander_overwhelming_odds"
 		) {
 			this.Remove()
 			return
 		}
-		if (this.Parent !== new_parent) {
-			this.Parent = new_parent
+		if (this.Parent !== newParent) {
+			this.Parent = newParent
 			this.AddModifier()
 		} else if (this.Parent !== undefined && updated)
 			EventsSDK.emit("ModifierChanged", false, this)
 	}
 	public Remove(): void {
-		if (this.Parent === undefined || !this.Parent.Buffs.includes(this))
-			return
+		if (this.Parent === undefined || !this.Parent.Buffs.includes(this)) return
 		arrayRemove(this.Parent.Buffs, this)
 		EventsSDK.emit("ModifierRemoved", false, this)
 		this.Parent.ChangeFieldsByEvents()
 	}
 	private AddModifier(): void {
-		if (this.Parent === undefined || this.Parent.Buffs.includes(this))
-			return
+		if (this.Parent === undefined || this.Parent.Buffs.includes(this)) return
 		this.Parent.Buffs.push(this)
 		EventsSDK.emit("ModifierCreated", false, this)
 		this.Parent.ChangeFieldsByEvents()

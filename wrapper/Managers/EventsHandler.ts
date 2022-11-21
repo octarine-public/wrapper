@@ -3,7 +3,7 @@ import { NetworkedParticle } from "../Base/NetworkedParticle"
 import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { Team } from "../Enums/Team"
-import { Localization } from "../Menu/Imports"
+import { Localization } from "../Menu/index"
 import { RendererSDK } from "../Native/RendererSDK"
 import * as WASM from "../Native/WASM"
 import { Workers } from "../Native/Workers"
@@ -11,15 +11,33 @@ import { Entity, LocalPlayer } from "../Objects/Base/Entity"
 import { FakeUnit, GetPredictionTarget } from "../Objects/Base/FakeUnit"
 import { PlayerResource } from "../Objects/Base/PlayerResource"
 import { Unit } from "../Objects/Base/Unit"
-import { AbilityData, ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
+import {
+	AbilityData,
+	ReloadGlobalAbilityStorage,
+} from "../Objects/DataBook/AbilityData"
 import { ReloadGlobalUnitStorage, UnitData } from "../Objects/DataBook/UnitData"
-import { DefaultWorldLayers, ParseEntityLump, ResetEntityLump } from "../Resources/ParseEntityLump"
+import {
+	DefaultWorldLayers,
+	ParseEntityLump,
+	ResetEntityLump,
+} from "../Resources/ParseEntityLump"
 import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
-import { GetMapNumberProperty, GetMapStringProperty, MapToMatrix4x4, MapToNumberArray, MapToStringArray } from "../Resources/ParseUtils"
+import {
+	GetMapNumberProperty,
+	GetMapStringProperty,
+	MapToMatrix4x4,
+	MapToNumberArray,
+	MapToStringArray,
+} from "../Resources/ParseUtils"
 import { HasBit } from "../Utils/BitsExtensions"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { GameState } from "../Utils/GameState"
-import { CMsgVectorToVector3, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
+import {
+	CMsgVectorToVector3,
+	ParseProtobufDesc,
+	ParseProtobufNamed,
+	RecursiveProtobuf,
+} from "../Utils/Protobuf"
 import { createMapFromMergedIterators } from "../Utils/Utils"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { EntityManager } from "./EntityManager"
@@ -590,42 +608,49 @@ message CMsgSosSetLibraryStackFields {
 function HandleParticleMsg(msg: RecursiveProtobuf): void {
 	const index = msg.get("index") as number
 	const par = NetworkedParticle.Instances.get(index)
-	const msg_type = msg.get("type") as PARTICLE_MESSAGE
-	let changed_ent_pos = false,
-		changed_ent: Nullable<FakeUnit | Unit>
-	switch (msg_type) {
+	const msgType = msg.get("type") as PARTICLE_MESSAGE
+	let changedEntPos = false,
+		changedEnt: Nullable<FakeUnit | Unit>
+	switch (msgType) {
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENTITY_POSITION: {
 			const submsg = msg.get("update_entity_position") as RecursiveProtobuf
-			const position = CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf),
+			const position = CMsgVectorToVector3(
+					submsg.get("position") as RecursiveProtobuf
+				),
 				entID = submsg.get("entity_handle") as number
 			const ent = GetPredictionTarget(entID)
 			if (ent !== undefined) {
 				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				ent.LastPredictedPositionUpdate = GameState.RawGameTime
 				ent.PredictedPosition.CopyFrom(position)
-				changed_ent_pos = true
-				changed_ent = ent
+				changedEntPos = true
+				changedEnt = ent
 			}
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENT: {
 			const submsg = msg.get("update_particle_ent") as RecursiveProtobuf
 			const entID = submsg.get("entity_handle") as number,
-				position = CMsgVectorToVector3(submsg.get("fallback_position") as RecursiveProtobuf)
+				position = CMsgVectorToVector3(
+					submsg.get("fallback_position") as RecursiveProtobuf
+				)
 			const ent = GetPredictionTarget(entID)
 			if (ent !== undefined) {
 				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				ent.LastPredictedPositionUpdate = GameState.RawGameTime
 				ent.PredictedPosition.CopyFrom(position)
-				changed_ent_pos = true
-				changed_ent = ent
+				changedEntPos = true
+				changedEnt = ent
 			}
 			break
 		}
 		default:
 			break
 	}
-	if (par === undefined && msg_type === PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE) {
+	if (
+		par === undefined &&
+		msgType === PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE
+	) {
 		const submsg = msg.get("create_particle") as RecursiveProtobuf
 		const particleSystemHandle = submsg.get("particle_name_index") as bigint,
 			entID = submsg.get("entity_handle") as number
@@ -639,72 +664,57 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 					path,
 					particleSystemHandle,
 					submsg.get("attach_type") as number,
-					GetPredictionTarget(entID),
-				),
+					GetPredictionTarget(entID)
+				)
 			)
 		else
 			console.log(
 				GameState.RawGameTime,
-				`Received unknown particleSystemHandle ${particleSystemHandle} for particle ${index}`,
+				`Received unknown particleSystemHandle ${particleSystemHandle} for particle ${index}`
 			)
 	}
 	if (par === undefined) {
-		if (changed_ent !== undefined)
+		if (changedEnt !== undefined)
 			EventsSDK.emit(
 				"ParticleUnitPositionUpdated",
 				false,
-				changed_ent,
-				undefined,
+				changedEnt,
+				undefined
 			)
 		return
 	}
-	switch (msg_type) {
+	switch (msgType) {
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY: {
 			const submsg = msg.get("destroy_particle") as RecursiveProtobuf
-			const destroy_immediately = submsg.get("destroy_immediately") as boolean
-			if (!destroy_immediately && par.EndTime !== -1) {
+			const destroyImmediately = submsg.get("destroy_immediately") as boolean
+			if (!destroyImmediately && par.EndTime !== -1) {
 				par.Released = true
-				EventsSDK.emit(
-					"ParticleReleased",
-					false,
-					par,
-				)
-			} else
-				par.Destroy()
+				EventsSDK.emit("ParticleReleased", false, par)
+			} else par.Destroy()
 			return
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY_INVOLVING: {
 			const submsg = msg.get("destroy_particle_involving") as RecursiveProtobuf
-			const destroy_immediately = submsg.get("destroy_immediately") as boolean
+			const destroyImmediately = submsg.get("destroy_immediately") as boolean
 			// TODO: entity_handle?
-			if (!destroy_immediately && par.EndTime !== -1) {
+			if (!destroyImmediately && par.EndTime !== -1) {
 				par.Released = true
-				EventsSDK.emit(
-					"ParticleReleased",
-					false,
-					par,
-				)
-			} else
-				par.Destroy()
+				EventsSDK.emit("ParticleReleased", false, par)
+			} else par.Destroy()
 			return
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_RELEASE: {
 			if (par.EndTime !== -1) {
 				par.Released = true
-				EventsSDK.emit(
-					"ParticleReleased",
-					false,
-					par,
-				)
-			} else
-				par.Destroy()
+				EventsSDK.emit("ParticleReleased", false, par)
+			} else par.Destroy()
 			return
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE: {
 			const submsg = msg.get("update_particle") as RecursiveProtobuf
 			par.ControlPoints.set(
 				submsg.get("control_point") as number,
-				CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf),
+				CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf)
 			)
 			break
 		}
@@ -712,34 +722,33 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			const submsg = msg.get("update_particle_fwd") as RecursiveProtobuf
 			par.ControlPointsForward.set(
 				submsg.get("control_point") as number,
-				CMsgVectorToVector3(submsg.get("forward") as RecursiveProtobuf),
+				CMsgVectorToVector3(submsg.get("forward") as RecursiveProtobuf)
 			)
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ORIENTATION: {
 			const submsg = msg.get("update_particle_orient") as RecursiveProtobuf
-			par.ControlPointsOrient.set(
-				submsg.get("control_point") as number,
-				[
-					CMsgVectorToVector3(submsg.get("forward") as RecursiveProtobuf),
-					CMsgVectorToVector3(submsg.get("up") as RecursiveProtobuf),
-					CMsgVectorToVector3(submsg.get("left") as RecursiveProtobuf),
-				],
-			)
+			par.ControlPointsOrient.set(submsg.get("control_point") as number, [
+				CMsgVectorToVector3(submsg.get("forward") as RecursiveProtobuf),
+				CMsgVectorToVector3(submsg.get("up") as RecursiveProtobuf),
+				CMsgVectorToVector3(submsg.get("left") as RecursiveProtobuf),
+			])
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_FALLBACK: {
 			const submsg = msg.get("update_particle_fallback") as RecursiveProtobuf,
 				cp = submsg.get("control_point") as number,
-				position = CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf)
+				position = CMsgVectorToVector3(
+					submsg.get("position") as RecursiveProtobuf
+				)
 			par.ControlPointsFallback.set(cp, position)
 			const cpEnt = par.ControlPointsEnt.get(cp)
 			if (cpEnt !== undefined) {
 				cpEnt[0].LastRealPredictedPositionUpdate = GameState.RawGameTime
 				cpEnt[0].LastPredictedPositionUpdate = GameState.RawGameTime
 				cpEnt[0].PredictedPosition.CopyFrom(position)
-				changed_ent_pos = true
-				changed_ent = cpEnt[0]
+				changedEntPos = true
+				changedEnt = cpEnt[0]
 			}
 			break
 		}
@@ -747,18 +756,17 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			const submsg = msg.get("update_particle_ent") as RecursiveProtobuf
 			const entID = submsg.get("entity_handle") as number,
 				cp = submsg.get("control_point") as number,
-				position = CMsgVectorToVector3(submsg.get("fallback_position") as RecursiveProtobuf)
+				position = CMsgVectorToVector3(
+					submsg.get("fallback_position") as RecursiveProtobuf
+				)
 			const ent = GetPredictionTarget(entID)
 			if (ent !== undefined)
-				par.ControlPointsEnt.set(
-					cp,
-					[
-						ent,
-						submsg.get("attach_type") as number,
-						submsg.get("attachment") as number,
-						submsg.get("include_wearables") as boolean,
-					],
-				)
+				par.ControlPointsEnt.set(cp, [
+					ent,
+					submsg.get("attach_type") as number,
+					submsg.get("attachment") as number,
+					submsg.get("include_wearables") as boolean,
+				])
 			par.ControlPointsFallback.set(cp, position)
 			break
 		}
@@ -769,7 +777,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 				[
 					CMsgVectorToVector3(submsg.get("origin_offset") as RecursiveProtobuf),
 					CMsgVectorToVector3(submsg.get("angle_offset") as RecursiveProtobuf),
-				],
+				]
 			)
 			break
 		}
@@ -781,41 +789,41 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_FROZEN: {
 			const submsg = msg.get("update_particle_set_frozen") as RecursiveProtobuf
 			if (submsg.get("set_frozen") as boolean) {
-				if (par.FrozenAt === -1)
-					par.FrozenAt = GameState.RawGameTime
-			} else
-				par.FrozenAt = -1
+				if (par.FrozenAt === -1) par.FrozenAt = GameState.RawGameTime
+			} else par.FrozenAt = -1
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CHANGE_CONTROL_POINT_ATTACHMENT: {
-			const submsg = msg.get("change_control_point_attachment") as RecursiveProtobuf
+			const submsg = msg.get(
+				"change_control_point_attachment"
+			) as RecursiveProtobuf
 			const attachmentOld = (submsg.get("attachment_old") as number) ?? 0,
 				attachmentNew = (submsg.get("attachment_new") as number) ?? 0,
 				entID = submsg.get("entity_handle") as number
 			const ent = EntityManager.EntityByIndex(entID) ?? entID
-			let changed_anything = false
+			let changedAnything = false
 			for (const data of par.ControlPointsEnt.values())
 				if (data[2] === attachmentOld && data[0] === ent) {
 					data[2] = attachmentNew
-					changed_anything = true
+					changedAnything = true
 				}
-			if (!changed_anything)
-				return
+			if (!changedAnything) return
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENTITY_POSITION: {
 			const submsg = msg.get("update_entity_position") as RecursiveProtobuf
-			const position = CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf),
+			const position = CMsgVectorToVector3(
+					submsg.get("position") as RecursiveProtobuf
+				),
 				entID = submsg.get("entity_handle") as number
 			const ent = EntityManager.EntityByIndex(entID) ?? entID
-			let changed_anything = false
+			let changedAnything = false
 			for (const [cp, data] of par.ControlPointsEnt)
 				if (data[0] === ent) {
 					par.ControlPointsFallback.set(cp, position)
-					changed_anything = true
+					changedAnything = true
 				}
-			if (!changed_anything)
-				return
+			if (!changedAnything) return
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_FOW_PROPERTIES: {
@@ -835,7 +843,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			const submsg = msg.get("set_control_point_model") as RecursiveProtobuf
 			par.ControlPointsModel.set(
 				(submsg.get("control_point") as number) ?? 0,
-				(submsg.get("model_name") as string) ?? "",
+				(submsg.get("model_name") as string) ?? ""
 			)
 			break
 		}
@@ -843,7 +851,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			const submsg = msg.get("set_control_point_snapshot") as RecursiveProtobuf
 			par.ControlPointsSnapshot.set(
 				(submsg.get("control_point") as number) ?? 0,
-				(submsg.get("snapshot_name") as string) ?? "",
+				(submsg.get("snapshot_name") as string) ?? ""
 			)
 			break
 		}
@@ -851,7 +859,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			const submsg = msg.get("set_texture_attribute") as RecursiveProtobuf
 			par.TextureAttributes.set(
 				(submsg.get("attribute_name") as string) ?? "",
-				(submsg.get("texture_name") as string) ?? "",
+				(submsg.get("texture_name") as string) ?? ""
 			)
 			break
 		}
@@ -882,150 +890,165 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 		default:
 			console.log(
 				GameState.RawGameTime,
-				`Received unknown PARTICLE_MESSAGE ${msg_type} for particle ${index}`,
+				`Received unknown PARTICLE_MESSAGE ${msgType} for particle ${index}`
 			)
 			return
 	}
-	EventsSDK.emit(
-		"ParticleUpdated",
-		false,
-		par,
-	)
-	if (changed_ent_pos)
-		EventsSDK.emit(
-			"ParticleUnitPositionUpdated",
-			false,
-			changed_ent,
-			par,
-		)
+	EventsSDK.emit("ParticleUpdated", false, par)
+	if (changedEntPos)
+		EventsSDK.emit("ParticleUnitPositionUpdated", false, changedEnt, par)
 }
 
-Events.on("ServerMessage", (msg_id, buf_) => {
-	switch (msg_id) {
+Events.on("ServerMessage", (msgID, buf_) => {
+	switch (msgID) {
 		case 4: {
 			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CNETMsg_Tick")
 			EventsSDK.emit(
-				"ServerTick", false,
+				"ServerTick",
+				false,
 				msg.get("tick") as number,
 				msg.get("host_frametime") as number,
 				msg.get("host_frametime_std_deviation") as number,
 				msg.get("host_computationtime") as number,
 				msg.get("host_computationtime_std_deviation") as number,
 				msg.get("host_framestarttime_std_deviation") as number,
-				msg.get("host_loss") as number,
+				msg.get("host_loss") as number
 			)
 			break
 		}
 		case 40:
-			EventsSDK.emit("ServerInfo", false, ParseProtobufNamed(new Uint8Array(buf_), "CSVCMsg_ServerInfo"))
+			EventsSDK.emit(
+				"ServerInfo",
+				false,
+				ParseProtobufNamed(new Uint8Array(buf_), "CSVCMsg_ServerInfo")
+			)
 			break
-		case 45: { // we have custom parsing for CSVCMsg_CreateStringTable & CSVCMsg_UpdateStringTable
+		case 45: {
+			// we have custom parsing for CSVCMsg_CreateStringTable & CSVCMsg_UpdateStringTable
 			const stream = new ViewBinaryStream(new DataView(buf_))
-			const table_name = stream.ReadVarString(),
+			const tableName = stream.ReadVarString(),
 				update = new Map<number, [string, ArrayBuffer]>()
 			while (!stream.Empty())
-				update.set(stream.ReadVarUintAsNumber(), [stream.ReadVarString(), stream.ReadSlice(stream.ReadVarUintAsNumber()).buffer])
-			EventsSDK.emit("UpdateStringTable", false, table_name, update)
+				update.set(stream.ReadVarUintAsNumber(), [
+					stream.ReadVarString(),
+					stream.ReadSlice(stream.ReadVarUintAsNumber()).buffer,
+				])
+			EventsSDK.emit("UpdateStringTable", false, tableName, update)
 			break
 		}
 		case 51:
 			EventsSDK.emit("RemoveAllStringTables", false)
 			break
 		case 145:
-			HandleParticleMsg(ParseProtobufNamed(new Uint8Array(buf_), "CUserMsg_ParticleManager"))
+			HandleParticleMsg(
+				ParseProtobufNamed(new Uint8Array(buf_), "CUserMsg_ParticleManager")
+			)
 			break
 		case 208: {
-			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CMsgSosStartSoundEvent")
+			const msg = ParseProtobufNamed(
+				new Uint8Array(buf_),
+				"CMsgSosStartSoundEvent"
+			)
 			const hash = msg.get("soundevent_hash") as number
-			const sound_name = Manifest.LookupSoundNameByHash(hash)
-			if (sound_name === undefined) {
+			const soundName = Manifest.LookupSoundNameByHash(hash)
+			if (soundName === undefined) {
 				// console.log(`Unknown soundname hash: ${hash}`)
 				break
 			}
 			const handle = (msg.get("source_entity_index") as number) ?? 0,
 				seed = (msg.get("seed") as number) ?? 0,
-				start_time = (msg.get("start_time") as number) ?? -1,
-				packed_params = msg.get("packed_params") as Nullable<ReadableBinaryStream>
+				startTime = (msg.get("start_time") as number) ?? -1,
+				packedParams = msg.get(
+					"packed_params"
+				) as Nullable<ReadableBinaryStream>
 			const ent = GetPredictionTarget(handle),
 				position = new Vector3()
-			if (packed_params !== undefined && packed_params.Size >= 19) {
-				packed_params.RelativeSeek(7)
-				position.x = packed_params.ReadFloat32()
-				position.y = packed_params.ReadFloat32()
-				position.z = packed_params.ReadFloat32()
+			if (packedParams !== undefined && packedParams.Size >= 19) {
+				packedParams.RelativeSeek(7)
+				position.x = packedParams.ReadFloat32()
+				position.y = packedParams.ReadFloat32()
+				position.z = packedParams.ReadFloat32()
 			}
 			EventsSDK.emit(
-				"StartSound", false,
-				sound_name,
+				"StartSound",
+				false,
+				soundName,
 				ent,
 				position,
 				seed,
-				start_time,
+				startTime
 			)
 			break
 		}
 		case 488: {
-			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_UnitEvent")
+			const msg = ParseProtobufNamed(
+				new Uint8Array(buf_),
+				"CDOTAUserMsg_UnitEvent"
+			)
 			const handle = msg.get("entity_index") as number
 			const ent = GetPredictionTarget(handle)
-			if (ent instanceof Entity && !(ent instanceof Unit))
-				break
+			if (ent instanceof Entity && !(ent instanceof Unit)) break
 			switch (msg.get("msg_type") as EDotaEntityMessages) {
 				case EDotaEntityMessages.DOTA_UNIT_SPEECH: {
 					const submsg = msg.get("speech") as RecursiveProtobuf,
 						predelay = submsg.get("predelay") as RecursiveProtobuf
 					EventsSDK.emit(
-						"UnitSpeech", false,
+						"UnitSpeech",
+						false,
 						ent,
 						submsg.get("concept") as number,
 						submsg.get("response") as string,
 						submsg.get("recipient_type") as number,
 						submsg.get("level") as number,
 						submsg.get("muteable") as boolean,
-						predelay?.get("start") as number ?? 0,
-						predelay?.get("range") as number ?? 0,
-						submsg.get("flags") as number,
+						(predelay?.get("start") as number) ?? 0,
+						(predelay?.get("range") as number) ?? 0,
+						submsg.get("flags") as number
 					)
 					break
 				}
 				case EDotaEntityMessages.DOTA_UNIT_SPEECH_MUTE: {
 					const submsg = msg.get("speech_mute") as RecursiveProtobuf
 					EventsSDK.emit(
-						"UnitSpeechMute", false,
+						"UnitSpeechMute",
+						false,
 						ent,
-						submsg?.get("delay") as number ?? 0,
+						(submsg?.get("delay") as number) ?? 0
 					)
 					break
 				}
 				case EDotaEntityMessages.DOTA_UNIT_ADD_GESTURE: {
 					const submsg = msg.get("add_gesture") as RecursiveProtobuf
 					EventsSDK.emit(
-						"UnitAddGesture", false,
+						"UnitAddGesture",
+						false,
 						ent,
 						submsg.get("activity") as number,
 						submsg.get("slot") as number,
 						submsg.get("fade_in") as number,
 						submsg.get("fade_out") as number,
 						submsg.get("playback_rate") as number,
-						submsg.get("sequence_variant") as number,
+						submsg.get("sequence_variant") as number
 					)
 					break
 				}
 				case EDotaEntityMessages.DOTA_UNIT_REMOVE_GESTURE: {
 					const submsg = msg.get("remove_gesture") as RecursiveProtobuf
 					EventsSDK.emit(
-						"UnitRemoveGesture", false,
+						"UnitRemoveGesture",
+						false,
 						ent,
-						submsg.get("activity") as number,
+						submsg.get("activity") as number
 					)
 					break
 				}
 				case EDotaEntityMessages.DOTA_UNIT_FADE_GESTURE: {
 					const submsg = msg.get("fade_gesture") as RecursiveProtobuf
 					EventsSDK.emit(
-						"UnitFadeGesture", false,
+						"UnitFadeGesture",
+						false,
 						ent,
-						submsg.get("activity") as number,
+						submsg.get("activity") as number
 					)
 					break
 				}
@@ -1033,9 +1056,13 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			break
 		}
 		case 466: {
-			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_ChatEvent")
+			const msg = ParseProtobufNamed(
+				new Uint8Array(buf_),
+				"CDOTAUserMsg_ChatEvent"
+			)
 			EventsSDK.emit(
-				"ChatEvent", false,
+				"ChatEvent",
+				false,
 				msg.get("type") as DOTA_CHAT_MESSAGE,
 				msg.get("value") as number,
 				msg.get("playerid_1") as number,
@@ -1045,46 +1072,54 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 				msg.get("playerid_5") as number,
 				msg.get("playerid_6") as number,
 				msg.get("value2") as number,
-				msg.get("value3") as number,
+				msg.get("value3") as number
 			)
 			break
 		}
 		case 520: {
-			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_TE_DotaBloodImpact")
+			const msg = ParseProtobufNamed(
+				new Uint8Array(buf_),
+				"CDOTAUserMsg_TE_DotaBloodImpact"
+			)
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
-			if (ent === undefined)
-				break
+			if (ent === undefined) break
 			EventsSDK.emit(
-				"BloodImpact", false,
+				"BloodImpact",
+				false,
 				ent,
 				msg.get("scale") as number,
 				msg.get("xnormal") as number,
-				msg.get("ynormal") as number,
+				msg.get("ynormal") as number
 			)
 			break
 		}
 		case 521: {
-			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_TE_UnitAnimation")
+			const msg = ParseProtobufNamed(
+				new Uint8Array(buf_),
+				"CDOTAUserMsg_TE_UnitAnimation"
+			)
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
-			if (!(ent instanceof Unit))
-				break
+			if (!(ent instanceof Unit)) break
 			EventsSDK.emit(
-				"UnitAnimation", false,
+				"UnitAnimation",
+				false,
 				ent,
 				msg.get("sequenceVariant") as number,
 				msg.get("playbackrate") as number,
 				msg.get("castpoint") as number,
 				msg.get("type") as number,
 				msg.get("activity") as number,
-				msg.get("lag_compensation_time") as number,
+				msg.get("lag_compensation_time") as number
 			)
 			break
 		}
 		case 522: {
-			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_TE_UnitAnimationEnd")
+			const msg = ParseProtobufNamed(
+				new Uint8Array(buf_),
+				"CDOTAUserMsg_TE_UnitAnimationEnd"
+			)
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
-			if (!(ent instanceof Unit))
-				break
+			if (!(ent instanceof Unit)) break
 			EventsSDK.emit("UnitAnimationEnd", false, ent, msg.get("snap") as boolean)
 			break
 		}
@@ -1115,77 +1150,80 @@ Events.on("MatchmakingStatsUpdated", data => {
 	EventsSDK.emit(
 		"MatchmakingStatsUpdated",
 		false,
-		ParseProtobufNamed(new Uint8Array(data), "CMsgDOTAMatchmakingStatsResponse"),
+		ParseProtobufNamed(new Uint8Array(data), "CMsgDOTAMatchmakingStatsResponse")
 	)
 })
 
-Events.on("GameEvent", (name, obj) => EventsSDK.emit("GameEvent", false, name, obj))
+Events.on("GameEvent", (name, obj) =>
+	EventsSDK.emit("GameEvent", false, name, obj)
+)
 
-let input_capture_depth = 0
-Events.on("InputCaptured", is_captured => {
-	if (is_captured)
-		input_capture_depth++
-	else
-		input_capture_depth = Math.max(input_capture_depth - 1, 0)
-	EventsSDK.emit("InputCaptured", false, input_capture_depth !== 0)
+let inputCaptureDepth = 0
+Events.on("InputCaptured", isCaptured => {
+	if (isCaptured) inputCaptureDepth++
+	else inputCaptureDepth = Math.max(inputCaptureDepth - 1, 0)
+	EventsSDK.emit("InputCaptured", false, inputCaptureDepth !== 0)
 })
 
-EventsSDK.on("InputCaptured", is_captured => GameState.IsInputCaptured = is_captured)
-EventsSDK.on("ServerTick", tick => GameState.CurrentServerTick = tick)
-Events.on("UIStateChanged", new_state => GameState.UIState = new_state)
+EventsSDK.on(
+	"InputCaptured",
+	isCaptured => (GameState.IsInputCaptured = isCaptured)
+)
+EventsSDK.on("ServerTick", tick => (GameState.CurrentServerTick = tick))
+Events.on("UIStateChanged", newState => (GameState.UIState = newState))
 
-let current_world_promise: Nullable<Promise<WorkerIPCType>>
-function TryLoadWorld(world_kv: RecursiveMap): void {
-	const worldNodes = world_kv.get("m_worldNodes")
-	if (!(worldNodes instanceof Map || Array.isArray(worldNodes)))
-		return
+let currentWorldPromise: Nullable<Promise<WorkerIPCType>>
+function TryLoadWorld(worldKV: RecursiveMap): void {
+	const worldNodes = worldKV.get("m_worldNodes")
+	if (!(worldNodes instanceof Map || Array.isArray(worldNodes))) return
 	const objects: [string, number[]][] = []
 	worldNodes.forEach((node: RecursiveMapValue) => {
-		if (!(node instanceof Map))
-			return
+		if (!(node instanceof Map)) return
 		const path = GetMapStringProperty(node, "m_worldNodePrefix")
-		const node_kv = parseKV(`${path}.vwnod_c`)
+		const nodeKV = parseKV(`${path}.vwnod_c`)
 
 		const layerNames: string[] = []
-		const layerNamesMap = node_kv.get("m_layerNames")
+		const layerNamesMap = nodeKV.get("m_layerNames")
 		if (layerNamesMap instanceof Map || Array.isArray(layerNamesMap))
 			layerNames.push(...MapToStringArray(layerNamesMap))
 
 		const sceneObjectLayers: string[] = []
-		const sceneObjectLayerIndicesMap = node_kv.get("m_sceneObjectLayerIndices")
-		if (sceneObjectLayerIndicesMap instanceof Map || Array.isArray(sceneObjectLayerIndicesMap))
+		const sceneObjectLayerIndicesMap = nodeKV.get("m_sceneObjectLayerIndices")
+		if (
+			sceneObjectLayerIndicesMap instanceof Map ||
+			Array.isArray(sceneObjectLayerIndicesMap)
+		)
 			sceneObjectLayers.push(
-				...MapToNumberArray(sceneObjectLayerIndicesMap)
-					.map(index => layerNames[index]),
+				...MapToNumberArray(sceneObjectLayerIndicesMap).map(
+					index => layerNames[index]
+				)
 			)
 
-		const sceneObjects = node_kv.get("m_sceneObjects")
-		if (!(sceneObjects instanceof Map || Array.isArray(sceneObjects)))
-			return
+		const sceneObjects = nodeKV.get("m_sceneObjects")
+		if (!(sceneObjects instanceof Map || Array.isArray(sceneObjects))) return
 		let i = 0
 		sceneObjects.forEach((sceneObject: RecursiveMapValue) => {
-			if (!(sceneObject instanceof Map))
-				return
+			if (!(sceneObject instanceof Map)) return
 			const layerName = sceneObjectLayers[i++] ?? "world_layer_base"
-			if (!DefaultWorldLayers.includes(layerName))
-				return
+			if (!DefaultWorldLayers.includes(layerName)) return
 			const transformMap = sceneObject.get("m_vTransform")
-			const transform = transformMap instanceof Map || Array.isArray(transformMap)
-				? [...MapToMatrix4x4(transformMap).values]
-				: [...Matrix4x4.Identity.values]
-			const model_path = GetMapStringProperty(sceneObject, "m_renderableModel"),
-				mesh_path = GetMapStringProperty(sceneObject, "m_renderable"),
-				objectTypeFlags = GetMapNumberProperty(sceneObject, "m_nObjectTypeFlags")
+			const transform =
+				transformMap instanceof Map || Array.isArray(transformMap)
+					? [...MapToMatrix4x4(transformMap).values]
+					: [...Matrix4x4.Identity.values]
+			const modelPath = GetMapStringProperty(sceneObject, "m_renderableModel"),
+				meshPath = GetMapStringProperty(sceneObject, "m_renderable"),
+				objectTypeFlags = GetMapNumberProperty(
+					sceneObject,
+					"m_nObjectTypeFlags"
+				)
 			// visual only, doesn't affect height calculations/etc
-			if (HasBit(objectTypeFlags, 7))
-				return
-			if (model_path !== "")
-				objects.push([model_path, transform])
-			if (mesh_path !== "")
-				objects.push([mesh_path, transform])
+			if (HasBit(objectTypeFlags, 7)) return
+			if (modelPath !== "") objects.push([modelPath, transform])
+			if (meshPath !== "") objects.push([meshPath, transform])
 		})
 	})
-	const world_promise = current_world_promise = Workers.CallRPCEndPoint(
+	const worldPromise = (currentWorldPromise = Workers.CallRPCEndPoint(
 		"LoadAndOptimizeWorld",
 		objects,
 		false,
@@ -1193,104 +1231,100 @@ function TryLoadWorld(world_kv: RecursiveMap): void {
 			forward_events: false,
 			forward_server_messages: false,
 			display_name: "LoadAndOptimizeWorld",
-		},
-	)
-	world_promise.then(data => {
+		}
+	))
+	worldPromise.then(data => {
 		if (
-			world_promise !== current_world_promise
-			|| !Array.isArray(data)
-			|| !Array.isArray(data[0])
-			|| !Array.isArray(data[1])
-			|| !Array.isArray(data[2])
+			worldPromise !== currentWorldPromise ||
+			!Array.isArray(data) ||
+			!Array.isArray(data[0]) ||
+			!Array.isArray(data[1]) ||
+			!Array.isArray(data[2])
 		)
 			return
-		current_world_promise = undefined
-		const world_bvh = data[0] as [Uint8Array, Uint8Array],
-			paths_data = data[1] as [string, [number, Uint8Array, Uint8Array, Uint8Array, number, number][]][],
+		currentWorldPromise = undefined
+		const worldBVH = data[0] as [Uint8Array, Uint8Array],
+			pathsData = data[1] as [
+				string,
+				[number, Uint8Array, Uint8Array, Uint8Array, number, number][]
+			][],
 			// paths = data[2] as string[],
 			path2meshes = new Map<string, number[]>()
-		paths_data.forEach(([path, meshes_data]) => {
+		pathsData.forEach(([path, meshesData]) => {
 			const meshes: number[] = []
-			for (const mesh_data of meshes_data) {
+			for (const meshData of meshesData) {
 				WASM.LoadWorldMeshCached(
-					mesh_data[0],
-					mesh_data[1],
-					mesh_data[2],
-					mesh_data[3],
-					mesh_data[4],
-					mesh_data[5],
+					meshData[0],
+					meshData[1],
+					meshData[2],
+					meshData[3],
+					meshData[4],
+					meshData[5]
 				)
-				meshes.push(mesh_data[0])
+				meshes.push(meshData[0])
 			}
 			path2meshes.set(path, meshes)
 		})
 		objects.forEach(([path, transform]) => {
 			const meshes = path2meshes.get(path)
 			if (meshes !== undefined)
-				for (const mesh of meshes)
-					WASM.SpawnWorldMesh(mesh, transform)
+				for (const mesh of meshes) WASM.SpawnWorldMesh(mesh, transform)
 		})
-		const plate_mesh_id = path2meshes.get("")
-		if (plate_mesh_id !== undefined && plate_mesh_id.length !== 0)
-			WASM.SpawnWorldMesh(plate_mesh_id[0], Matrix4x4.Identity.values)
-		WASM.FinishWorld(world_bvh)
+		const plateMeshID = path2meshes.get("")
+		if (plateMeshID !== undefined && plateMeshID.length !== 0)
+			WASM.SpawnWorldMesh(plateMeshID[0], Matrix4x4.Identity.values)
+		WASM.FinishWorld(worldBVH)
 	}, console.error)
 }
 function TryLoadMapFiles(): void {
-	const map_name = GameState.MapName
+	const mapName = GameState.MapName
 	{
-		const buf = fopen(`maps/${map_name}.vhcg`)
+		const buf = fopen(`maps/${mapName}.vhcg`)
 		if (buf !== undefined)
 			try {
 				WASM.ParseVHCG(new FileBinaryStream(buf))
 			} finally {
 				buf.close()
 			}
-		else
-			WASM.ResetVHCG()
+		else WASM.ResetVHCG()
 	}
 	{
-		const buf = fopen(`maps/${map_name}.gnv`)
+		const buf = fopen(`maps/${mapName}.gnv`)
 		if (buf !== undefined)
 			try {
 				ParseGNV(new FileBinaryStream(buf))
 			} finally {
 				buf.close()
 			}
-		else
-			ResetGNV()
+		else ResetGNV()
 	}
 	{
 		ResetEntityLump()
 		WASM.ResetWorld()
-		const world_kv = parseKV(`maps/${map_name}/world.vwrld_c`)
-		const m_entityLumps = world_kv.get("m_entityLumps")
-		if (m_entityLumps instanceof Map || Array.isArray(m_entityLumps))
-			m_entityLumps.forEach((path: RecursiveMapValue) => {
-				if (typeof path !== "string")
-					return
+		const worldKV = parseKV(`maps/${mapName}/world.vwrld_c`)
+		const entityLumps = worldKV.get("m_entityLumps")
+		if (entityLumps instanceof Map || Array.isArray(entityLumps))
+			entityLumps.forEach((path: RecursiveMapValue) => {
+				if (typeof path !== "string") return
 				const buf = fopen(`${path}_c`)
-				if (buf === undefined)
-					return
+				if (buf === undefined) return
 				try {
 					ParseEntityLump(new FileBinaryStream(buf))
 				} finally {
 					buf.close()
 				}
 			})
-		if (IS_MAIN_WORKER)
-			TryLoadWorld(world_kv)
+		if (IS_MAIN_WORKER) TryLoadWorld(worldKV)
 		EventsSDK.emit("MapDataLoaded", false)
 	}
 }
 
 EventsSDK.on("ServerInfo", info => {
-	let map_name = (info.get("map_name") as string) ?? "<empty>"
-	if (map_name === "start")
-		map_name = "dota"
-	GameState.MapName = map_name
-	const addon_name = (info.get("addon_name") as string) ?? ""
-	GameState.AddonName = addon_name
+	let mapName = (info.get("map_name") as string) ?? "<empty>"
+	if (mapName === "start") mapName = "dota"
+	GameState.MapName = mapName
+	const addonName = (info.get("addon_name") as string) ?? ""
+	GameState.AddonName = addonName
 	LoadManifest()
 	TryLoadMapFiles()
 
@@ -1301,26 +1335,29 @@ EventsSDK.on("ServerInfo", info => {
 	for (const language of ["russian", "english"]) {
 		// automatically localize units, abilities and items in menu
 		const namesMapping = new Map<string, string>()
-		const lang_tokens = ((createMapFromMergedIterators<string, RecursiveMapValue>(
-			parseKV(`resource/localization/abilities_${language}.txt`).entries(),
-			parseKV(`resource/localization/dota_${language}.txt`).entries(),
-			parseKV(`resource/addon_${language}.txt`).entries(),
-			parseKV(`panorama/localization/addon_${language}.txt`).entries(),
-		).get("lang") as RecursiveMap)?.get("Tokens") ?? new Map()) as Map<string, string>
-		for (const [name, data] of UnitData.global_storage) {
-			const lang_token = lang_tokens.get(name)
-			namesMapping.set(name, lang_token ?? data.WorkshopName)
+		const langTokens = ((
+			createMapFromMergedIterators<string, RecursiveMapValue>(
+				parseKV(`resource/localization/abilities_${language}.txt`).entries(),
+				parseKV(`resource/localization/dota_${language}.txt`).entries(),
+				parseKV(`resource/addon_${language}.txt`).entries(),
+				parseKV(`panorama/localization/addon_${language}.txt`).entries()
+			).get("lang") as RecursiveMap
+		)?.get("Tokens") ?? new Map()) as Map<string, string>
+		for (const [name, data] of UnitData.globalStorage) {
+			const langToken = langTokens.get(name)
+			namesMapping.set(name, langToken ?? data.WorkshopName)
 		}
-		for (const name of AbilityData.global_storage.keys()) {
-			const lang_token = (
-				lang_tokens.get(`DOTA_Tooltip_ability_${name}`)
-				?? lang_tokens.get(`DOTA_Tooltip_Ability_${name}`)
+		for (const name of AbilityData.globalStorage.keys()) {
+			const langToken =
+				langTokens.get(`DOTA_Tooltip_ability_${name}`) ??
+				langTokens.get(`DOTA_Tooltip_Ability_${name}`)
+			if (langToken !== undefined) namesMapping.set(name, langToken)
+		}
+		for (const [k, v] of langTokens)
+			if (
+				k.startsWith("dota_matchgroup_") ||
+				k.startsWith("DOTA_TopBar_LaneSelection")
 			)
-			if (lang_token !== undefined)
-				namesMapping.set(name, lang_token)
-		}
-		for (const [k, v] of lang_tokens)
-			if (k.startsWith("dota_matchgroup_") || k.startsWith("DOTA_TopBar_LaneSelection"))
 				namesMapping.set(k, v)
 		Localization.AddLocalizationUnit(language, namesMapping)
 	}
@@ -1329,8 +1366,7 @@ EventsSDK.on("ServerInfo", info => {
 
 function GetLocalTeam(): Team {
 	const player = LocalPlayer
-	if (player === undefined)
-		return Team.Observer
+	if (player === undefined) return Team.Observer
 
 	let team = player.Team
 	if (team === Team.Observer) {
@@ -1338,13 +1374,11 @@ function GetLocalTeam(): Team {
 		if (playerid !== -1) {
 			const data = PlayerResource?.PlayerData[playerid]
 			if (data !== undefined) {
-				const coach_team = data.CoachTeam
-				if (coach_team === Team.Invalid || coach_team === Team.None) {
+				const coachTeam = data.CoachTeam
+				if (coachTeam === Team.Invalid || coachTeam === Team.None) {
 					team = data.LiveSpectatorTeam
-					if (team === Team.Invalid || team === Team.None)
-						team = Team.Observer
-				} else
-					team = coach_team
+					if (team === Team.Invalid || team === Team.None) team = Team.Observer
+				} else team = coachTeam
 			}
 		}
 	}
@@ -1353,19 +1387,18 @@ function GetLocalTeam(): Team {
 
 EventsSDK.on("MidDataUpdate", () => {
 	const team = GetLocalTeam()
-	if (GameState.LocalTeam === team)
-		return
+	if (GameState.LocalTeam === team) return
 	GameState.LocalTeam = team
 	EventsSDK.emit("LocalTeamChanged", false)
 })
 
-Events.on("Draw", (visual_data, w, h, x, y) => {
+Events.on("Draw", (visualData, w, h, x, y) => {
 	InputManager.UpdateCursorOnScreen(x, y)
 	RendererSDK.BeforeDraw(w, h)
-	const stream = new ViewBinaryStream(new DataView(visual_data))
+	const stream = new ViewBinaryStream(new DataView(visualData))
 	while (!stream.Empty()) {
-		const entity_id = stream.ReadUint32()
-		const ent = EntityManager.EntityByIndex(entity_id)
+		const entID = stream.ReadUint32()
+		const ent = EntityManager.EntityByIndex(entID)
 		if (ent === undefined) {
 			stream.RelativeSeek(2 * 3 * 4)
 			continue

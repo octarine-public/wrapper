@@ -3,11 +3,11 @@ import { QAngle } from "../Base/QAngle"
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
-import { DOTAGameUIState_t } from "../Enums/DOTAGameUIState_t"
-import { DOTAScriptInventorySlot_t } from "../Enums/DOTAScriptInventorySlot_t"
-import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
-import { DOTA_GameState } from "../Enums/DOTA_GameState"
 import { DOTA_SHOP_TYPE } from "../Enums/DOTA_SHOP_TYPE"
+import { DOTAGameState } from "../Enums/DOTAGameState"
+import { DOTAGameUIState } from "../Enums/DOTAGameUIState"
+import { DOTAScriptInventorySlot } from "../Enums/DOTAScriptInventorySlot"
+import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import { WorldPolygon } from "../Geometry/WorldPolygon"
 import { CLowerHUD } from "../GUI/CLowerHUD"
 import { GUIInfo } from "../GUI/GUIInfo"
@@ -34,22 +34,24 @@ import { RendererSDK } from "./RendererSDK"
 import { UserCmd } from "./UserCmd"
 import * as WASM from "./WASM"
 
-let world_bounds: Nullable<[Vector2, Vector2]>
+let worldBounds: Nullable<[Vector2, Vector2]>
 
 EventsSDK.on("MapDataLoaded", () => {
 	try {
-		const world_bounds_data = EntityDataLump.find(data => data.get("classname") === "world_bounds")
-		if (world_bounds_data !== undefined) {
-			const min = world_bounds_data.get("min"),
-				max = world_bounds_data.get("max")
-			world_bounds = typeof min === "string" && typeof max === "string"
-				? [Vector2.FromString(min), Vector2.FromString(max)]
-				: undefined
-		} else
-			world_bounds = undefined
+		const worldBoundsData = EntityDataLump.find(
+			data => data.get("classname") === "world_bounds"
+		)
+		if (worldBoundsData !== undefined) {
+			const min = worldBoundsData.get("min"),
+				max = worldBoundsData.get("max")
+			worldBounds =
+				typeof min === "string" && typeof max === "string"
+					? [Vector2.FromString(min), Vector2.FromString(max)]
+					: undefined
+		} else worldBounds = undefined
 	} catch (e) {
-		console.error("Error in world_bounds_data init", e)
-		world_bounds = undefined
+		console.error("Error in worldBoundsData init", e)
+		worldBounds = undefined
 	}
 })
 
@@ -60,20 +62,18 @@ class Polygon2D {
 		this.Points = points
 	}
 	public get Center(): Vector2 {
-		return this.Points.reduce((a, b) => a.AddForThis(b), new Vector2())
-			.DivideScalarForThis(this.Points.length)
+		return this.Points.reduce(
+			(a, b) => a.AddForThis(b),
+			new Vector2()
+		).DivideScalarForThis(this.Points.length)
 	}
 	public Add(polygon: Polygon2D | Vector2): void {
 		if (polygon instanceof Polygon2D)
 			polygon.Points.forEach(point => this.AddPoint(point))
-		else
-			this.AddPoint(polygon)
+		else this.AddPoint(polygon)
 	}
 
-	public Draw(
-		color: Color,
-		width = 10,
-	): void {
+	public Draw(color: Color, width = 10): void {
 		for (let i = 0; i < this.Points.length; i++) {
 			const nextIndex = this.Points.length - 1 === i ? 0 : i + 1
 			const point1 = this.Points[i],
@@ -87,16 +87,20 @@ class Polygon2D {
 		return !this.IsOutside(point)
 	}
 	public IsOutside(point: Vector2): boolean {
-		let is_outside = true
+		let isOutside = true
 		for (let i = 0; i < this.Points.length; i++) {
 			const j = i === 0 ? this.Points.length - 1 : i - 1
 			if (
-				(this.Points[i].y > point.y) !== (this.Points[j].y > point.y)
-				&& point.x < (this.Points[j].x - this.Points[i].x) * (point.y - this.Points[i].y) / (this.Points[j].y - this.Points[i].y) + this.Points[i].x
+				this.Points[i].y > point.y !== this.Points[j].y > point.y &&
+				point.x <
+					((this.Points[j].x - this.Points[i].x) *
+						(point.y - this.Points[i].y)) /
+						(this.Points[j].y - this.Points[i].y) +
+						this.Points[i].x
 			)
-				is_outside = !is_outside
+				isOutside = !isOutside
 		}
-		return is_outside
+		return isOutside
 	}
 
 	private AddPoint(point: Vector2): void {
@@ -104,106 +108,111 @@ class Polygon2D {
 	}
 }
 
-const latest_cursor = new Vector2(),
-	latest_camera_poly = new WorldPolygon(),
-	debug_camera_poly = new WorldPolygon(),
-	latest_camera_green_zone_poly_screen = new Polygon2D(),
-	latest_camera_yellow_zone_poly_screen = new Polygon2D(),
-	latest_camera_red_zone_poly_screen = new Polygon2D(),
-	latest_camera_green_zone_poly_world = new WorldPolygon(),
-	latest_camera_yellow_zone_poly_world = new WorldPolygon(),
-	latest_camera_red_zone_poly_world = new WorldPolygon(),
-	default_camera_dist = 1200, // default camera distance
-	default_camera_angles = new QAngle(60, 90, 0)
-function UpdateCameraBounds(camera_vec_2d: Vector2) {
-	const camera_vec = WASM.GetCameraPosition(camera_vec_2d, default_camera_dist, default_camera_angles)
-	latest_camera_poly.Points = RendererSDK.ScreenToWorldFar(
+const latestCursor = new Vector2(),
+	latestCameraPoly = new WorldPolygon(),
+	debugCameraPoly = new WorldPolygon(),
+	latestCameraGreenZonePolyScreen = new Polygon2D(),
+	latestCameraYellowZonePolyScreen = new Polygon2D(),
+	latestCameraRedZonePolyScreen = new Polygon2D(),
+	latestCameraGreenZonePolyWorld = new WorldPolygon(),
+	latestCameraYellowZonePolyWorld = new WorldPolygon(),
+	latestCameraRedZonePolyWorld = new WorldPolygon(),
+	defaultCameraDist = 1200, // default camera distance
+	defaultCameraAngles = new QAngle(60, 90, 0)
+function UpdateCameraBounds(cameraVec2D: Vector2) {
+	const cameraVec = WASM.GetCameraPosition(
+		cameraVec2D,
+		defaultCameraDist,
+		defaultCameraAngles
+	)
+	latestCameraPoly.Points = RendererSDK.ScreenToWorldFar(
 		[
 			new Vector2(1, 1),
 			new Vector2(0, 1),
 			new Vector2(0, 0),
 			new Vector2(1, 0),
 		],
-		camera_vec,
-		default_camera_dist,
+		cameraVec,
+		defaultCameraDist
 	)
-	debug_camera_poly.Points = [
-		latest_camera_poly.Points[0],
-		camera_vec,
-		latest_camera_poly.Points[1],
-		camera_vec,
-		latest_camera_poly.Points[2],
-		camera_vec,
-		latest_camera_poly.Points[3],
-		camera_vec,
-		latest_camera_poly.Points[0],
-		latest_camera_poly.Points[1],
-		latest_camera_poly.Points[2],
-		latest_camera_poly.Points[3],
+	debugCameraPoly.Points = [
+		latestCameraPoly.Points[0],
+		cameraVec,
+		latestCameraPoly.Points[1],
+		cameraVec,
+		latestCameraPoly.Points[2],
+		cameraVec,
+		latestCameraPoly.Points[3],
+		cameraVec,
+		latestCameraPoly.Points[0],
+		latestCameraPoly.Points[1],
+		latestCameraPoly.Points[2],
+		latestCameraPoly.Points[3],
 	]
-	const screen_size = RendererSDK.WindowSize,
+	const screenSize = RendererSDK.WindowSize,
 		minimap = GUIInfo.Minimap.Minimap
-	const camera_limit_x1 = (GUIInfo.HUDFlipped ? minimap.Left : minimap.Right) / screen_size.x,
-		camera_limit_x2 = GUIInfo.HUDFlipped ? 0.05 : 0.95
-	let camera_limit_y_min = Math.min(
-		GUIInfo.TopBar.RadiantPlayersHeroImages[0].Bottom * 2 / screen_size.y,
-		0.1,
+	const cameraLimitX1 =
+			(GUIInfo.HUDFlipped ? minimap.Left : minimap.Right) / screenSize.x,
+		cameraLimitX2 = GUIInfo.HUDFlipped ? 0.05 : 0.95
+	let cameraLimitYMin = Math.min(
+		(GUIInfo.TopBar.RadiantPlayersHeroImages[0].Bottom * 2) / screenSize.y,
+		0.1
 	)
-	let camera_limit_y_max = minimap.Top / screen_size.y,
-		camera_limit_x_min = Math.min(camera_limit_x1, camera_limit_x2),
-		camera_limit_x_max = Math.max(camera_limit_x1, camera_limit_x2)
-	latest_camera_red_zone_poly_screen.Points = [
-		new Vector2(camera_limit_x_max, camera_limit_y_max),
-		new Vector2(camera_limit_x_min, camera_limit_y_max),
-		new Vector2(camera_limit_x_min, camera_limit_y_min),
-		new Vector2(camera_limit_x_max, camera_limit_y_min),
+	let cameraLimitYMax = minimap.Top / screenSize.y,
+		cameraLimitXMin = Math.min(cameraLimitX1, cameraLimitX2),
+		cameraLimitXMax = Math.max(cameraLimitX1, cameraLimitX2)
+	latestCameraRedZonePolyScreen.Points = [
+		new Vector2(cameraLimitXMax, cameraLimitYMax),
+		new Vector2(cameraLimitXMin, cameraLimitYMax),
+		new Vector2(cameraLimitXMin, cameraLimitYMin),
+		new Vector2(cameraLimitXMax, cameraLimitYMin),
 	]
-	const x_offset_minimap = 1 / 25,
-		x_offset_non_minimap = 1 / 15,
-		y_offset_min = 1 / 8,
-		y_offset_max = 1 / 15
-	camera_limit_y_min += y_offset_min
-	camera_limit_y_max -= y_offset_max
+	const xOffsetMinimap = 1 / 25,
+		xOffsetNonMinimap = 1 / 15,
+		yOffsetMin = 1 / 8,
+		yOffsetMax = 1 / 15
+	cameraLimitYMin += yOffsetMin
+	cameraLimitYMax -= yOffsetMax
 	if (GUIInfo.HUDFlipped) {
-		camera_limit_x_min += x_offset_non_minimap
-		camera_limit_x_max -= x_offset_minimap
+		cameraLimitXMin += xOffsetNonMinimap
+		cameraLimitXMax -= xOffsetMinimap
 	} else {
-		camera_limit_x_min += x_offset_minimap
-		camera_limit_x_max -= x_offset_non_minimap
+		cameraLimitXMin += xOffsetMinimap
+		cameraLimitXMax -= xOffsetNonMinimap
 	}
-	latest_camera_yellow_zone_poly_screen.Points = [
-		new Vector2(camera_limit_x_max, camera_limit_y_max),
-		new Vector2(camera_limit_x_min, camera_limit_y_max),
-		new Vector2(camera_limit_x_min, camera_limit_y_min),
-		new Vector2(camera_limit_x_max, camera_limit_y_min),
+	latestCameraYellowZonePolyScreen.Points = [
+		new Vector2(cameraLimitXMax, cameraLimitYMax),
+		new Vector2(cameraLimitXMin, cameraLimitYMax),
+		new Vector2(cameraLimitXMin, cameraLimitYMin),
+		new Vector2(cameraLimitXMax, cameraLimitYMin),
 	]
-	const x_available = camera_limit_x_max - camera_limit_x_min,
-		y_available = camera_limit_y_max - camera_limit_y_min
-	camera_limit_x_min += x_available / 6
-	camera_limit_x_max -= x_available / 6
-	camera_limit_y_min += y_available / 6
-	camera_limit_y_max -= y_available / 6
-	latest_camera_green_zone_poly_screen.Points = [
-		new Vector2(camera_limit_x_max, camera_limit_y_max),
-		new Vector2(camera_limit_x_min, camera_limit_y_max),
-		new Vector2(camera_limit_x_min, camera_limit_y_min),
-		new Vector2(camera_limit_x_max, camera_limit_y_min),
+	const xAvailable = cameraLimitXMax - cameraLimitXMin,
+		yAvailable = cameraLimitYMax - cameraLimitYMin
+	cameraLimitXMin += xAvailable / 6
+	cameraLimitXMax -= xAvailable / 6
+	cameraLimitYMin += yAvailable / 6
+	cameraLimitYMax -= yAvailable / 6
+	latestCameraGreenZonePolyScreen.Points = [
+		new Vector2(cameraLimitXMax, cameraLimitYMax),
+		new Vector2(cameraLimitXMin, cameraLimitYMax),
+		new Vector2(cameraLimitXMin, cameraLimitYMin),
+		new Vector2(cameraLimitXMax, cameraLimitYMin),
 	]
 
-	latest_camera_green_zone_poly_world.Points = RendererSDK.ScreenToWorldFar(
-		latest_camera_green_zone_poly_screen.Points,
-		camera_vec,
-		default_camera_dist,
+	latestCameraGreenZonePolyWorld.Points = RendererSDK.ScreenToWorldFar(
+		latestCameraGreenZonePolyScreen.Points,
+		cameraVec,
+		defaultCameraDist
 	)
-	latest_camera_yellow_zone_poly_world.Points = RendererSDK.ScreenToWorldFar(
-		latest_camera_yellow_zone_poly_screen.Points,
-		camera_vec,
-		default_camera_dist,
+	latestCameraYellowZonePolyWorld.Points = RendererSDK.ScreenToWorldFar(
+		latestCameraYellowZonePolyScreen.Points,
+		cameraVec,
+		defaultCameraDist
 	)
-	latest_camera_red_zone_poly_world.Points = RendererSDK.ScreenToWorldFar(
-		latest_camera_red_zone_poly_screen.Points,
-		camera_vec,
-		default_camera_dist,
+	latestCameraRedZonePolyWorld.Points = RendererSDK.ScreenToWorldFar(
+		latestCameraRedZonePolyScreen.Points,
+		cameraVec,
+		defaultCameraDist
 	)
 }
 
@@ -212,9 +221,8 @@ function CanOrderBeSkipped(order: ExecuteOrder): boolean {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE: {
-			const abil = order.Ability
-			if (abil instanceof Ability && abil.IsDoubleTap(order))
-				return true
+			const abil = order.Ability_
+			if (abil instanceof Ability && abil.IsDoubleTap(order)) return true
 			break
 		}
 		default:
@@ -222,10 +230,11 @@ function CanOrderBeSkipped(order: ExecuteOrder): boolean {
 	}
 	switch (order.OrderType) {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
-			return Units.some(ent => (
-				ent.IsGloballyTargetable
-				&& order.Position.Distance2D(ent.Position) < 200
-			))
+			return Units.some(
+				ent =>
+					ent.IsGloballyTargetable &&
+					order.Position.Distance2D(ent.Position) < 200
+			)
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
 			return order.Target instanceof Entity && order.Target === order.Issuers[0]
 		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
@@ -247,320 +256,378 @@ function CanOrderBeSkipped(order: ExecuteOrder): boolean {
 	}
 }
 
-function GetEntityHitBox(ent: Entity, camera_vec: Vector2): Nullable<Polygon2D> {
+function GetEntityHitBox(ent: Entity, cameraVec: Vector2): Nullable<Polygon2D> {
 	const points = ent.BoundingBox.Polygon.Points
-	const w2s = points.map(point => RendererSDK.WorldToScreenCustom(point, camera_vec)).filter(point => (
-		point !== undefined
-		&& point.x >= 0
-		&& point.y >= 0
-		&& point.x <= 1
-		&& point.y <= 1
-	))
-	if (w2s.length < 2)
-		return undefined
-	return new Polygon2D(...w2s as Vector2[])
+	const w2s = points
+		.map(point => RendererSDK.WorldToScreenCustom(point, cameraVec))
+		.filter(
+			point =>
+				point !== undefined &&
+				point.x >= 0 &&
+				point.y >= 0 &&
+				point.x <= 1 &&
+				point.y <= 1
+		)
+	if (w2s.length < 2) return undefined
+	return new Polygon2D(...(w2s as Vector2[]))
 }
 
 function EntityHitBoxesIntersect(
 	ents: Entity[],
-	camera_vec: Vector3 | Vector2,
-	cursor_vec: Vector2,
+	cameraVec: Vector3 | Vector2,
+	cursorVec: Vector2
 ): boolean[] {
-	if (camera_vec instanceof Vector2)
-		camera_vec = WASM.GetCameraPosition(
-			camera_vec,
-			default_camera_dist,
-			default_camera_angles,
+	if (cameraVec instanceof Vector2)
+		cameraVec = WASM.GetCameraPosition(
+			cameraVec,
+			defaultCameraDist,
+			defaultCameraAngles
 		)
 	const ray = WASM.GetCursorRay(
-		cursor_vec,
+		cursorVec,
 		RendererSDK.WindowSize,
-		default_camera_angles,
-		-1,
+		defaultCameraAngles,
+		-1
 	)
-	return WASM.BatchCheckRayBox(camera_vec, ray, ents.map(ent => ent.BoundingBox))
+	return WASM.BatchCheckRayBox(
+		cameraVec,
+		ray,
+		ents.map(ent => ent.BoundingBox)
+	)
 }
 
-function GetRectForSlot(hud: CLowerHUD, slot: DOTAScriptInventorySlot_t): Rectangle {
-	const currentSlot: DOTAScriptInventorySlot_t = Math.min(
-		Math.max(
-			slot,
-			DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_1,
-		),
-		DOTAScriptInventorySlot_t.DOTA_ITEM_NEUTRAL_SLOT,
+function GetRectForSlot(
+	hud: CLowerHUD,
+	slot: DOTAScriptInventorySlot
+): Rectangle {
+	const currentSlot: DOTAScriptInventorySlot = Math.min(
+		Math.max(slot, DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1),
+		DOTAScriptInventorySlot.DOTA_ITEM_NEUTRAL_SLOT
 	)
 	if (
-		currentSlot >= DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_1
-		&& currentSlot <= DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_6
+		currentSlot >= DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1 &&
+		currentSlot <= DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6
 	)
-		return hud.MainInventorySlots[currentSlot - DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_1]
+		return hud.MainInventorySlots[
+			currentSlot - DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1
+		]
 	else if (
-		currentSlot >= DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_7
-		&& currentSlot <= DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_9
+		currentSlot >= DOTAScriptInventorySlot.DOTA_ITEM_SLOT_7 &&
+		currentSlot <= DOTAScriptInventorySlot.DOTA_ITEM_SLOT_9
 	)
-		return hud.BackpackSlots[currentSlot - DOTAScriptInventorySlot_t.DOTA_ITEM_SLOT_7]
+		return hud.BackpackSlots[
+			currentSlot - DOTAScriptInventorySlot.DOTA_ITEM_SLOT_7
+		]
 	else if (
-		currentSlot >= DOTAScriptInventorySlot_t.DOTA_STASH_SLOT_1
-		&& currentSlot <= DOTAScriptInventorySlot_t.DOTA_STASH_SLOT_6
+		currentSlot >= DOTAScriptInventorySlot.DOTA_STASH_SLOT_1 &&
+		currentSlot <= DOTAScriptInventorySlot.DOTA_STASH_SLOT_6
 	)
-		return GUIInfo.Shop.StashSlots[currentSlot - DOTAScriptInventorySlot_t.DOTA_STASH_SLOT_1]
-	else if (currentSlot === DOTAScriptInventorySlot_t.DOTA_ITEM_TP_SCROLL)
+		return GUIInfo.Shop.StashSlots[
+			currentSlot - DOTAScriptInventorySlot.DOTA_STASH_SLOT_1
+		]
+	else if (currentSlot === DOTAScriptInventorySlot.DOTA_ITEM_TP_SCROLL)
 		return hud.TPSlot
-	else if (currentSlot === DOTAScriptInventorySlot_t.DOTA_ITEM_NEUTRAL_SLOT)
+	else if (currentSlot === DOTAScriptInventorySlot.DOTA_ITEM_NEUTRAL_SLOT)
 		return hud.NeutralSlot
-	else
-		throw `Unexpected currentSlot ${currentSlot}`
-
+	else throw `Unexpected currentSlot ${currentSlot}`
 }
 
-function ComputeTargetPosVector3(camera_vec: Vector2, current_time: number, pos: Vector3): Vector3 | Vector2 {
-	const yellow_zone_reached = yellow_zone_out_at < current_time - yellow_zone_max_duration,
-		green_zone_reached = green_zone_out_at < current_time - green_zone_max_duration
-	const current_pos = latest_usercmd.MousePosition
+function ComputeTargetPosVector3(
+	cameraVec: Vector2,
+	currentTime: number,
+	pos: Vector3
+): Vector3 | Vector2 {
+	const yellowZoneReached =
+			yellowZoneOutAt < currentTime - yellowZoneMaxDuration,
+		greenZoneReached = greenZoneOutAt < currentTime - greenZoneMaxDuration
+	const currentPos = latestUsercmd.MousePosition
 
-	const w2s = RendererSDK.WorldToScreenCustom(pos, camera_vec)
+	const w2s = RendererSDK.WorldToScreenCustom(pos, cameraVec)
 	if (
-		w2s === undefined
-		|| w2s.x < 0
-		|| w2s.y < 0
-		|| w2s.x > 1
-		|| w2s.y > 1
-		|| ((
-			latest_camera_red_zone_poly_screen.IsOutside(w2s)
-			|| (
-				(yellow_zone_reached || green_zone_reached)
-				&& latest_camera_green_zone_poly_screen.IsOutside(w2s)
-			)
-		) && CanMoveCamera(camera_vec, w2s))
+		w2s === undefined ||
+		w2s.x < 0 ||
+		w2s.y < 0 ||
+		w2s.x > 1 ||
+		w2s.y > 1 ||
+		((latestCameraRedZonePolyScreen.IsOutside(w2s) ||
+			((yellowZoneReached || greenZoneReached) &&
+				latestCameraGreenZonePolyScreen.IsOutside(w2s))) &&
+			CanMoveCamera(cameraVec, w2s))
 	)
 		return pos
 	// allow 0.25% error (i.e. 9x5 area or 4x2 error for 1920x1080)
 	const min = w2s.SubtractScalar(0.0025).Max(0).Min(1),
 		max = w2s.AddScalar(0.0025).Max(0).Min(1)
-	if (new Rectangle(min, max).Contains(current_pos))
-		return current_pos
-	return min.AddForThis(max.SubtractForThis(min).MultiplyScalarForThis(Math.random()))
+	if (new Rectangle(min, max).Contains(currentPos)) return currentPos
+	return min.AddForThis(
+		max.SubtractForThis(min).MultiplyScalarForThis(Math.random())
+	)
 }
 
-function ComputeTargetPosEntity(camera_vec: Vector2, current_time: number, ent: Entity): Vector3 | Vector2 {
-	const yellow_zone_reached = yellow_zone_out_at < current_time - yellow_zone_max_duration,
-		green_zone_reached = green_zone_out_at < current_time - green_zone_max_duration
-	const current_pos = latest_usercmd.MousePosition
+function ComputeTargetPosEntity(
+	cameraVec: Vector2,
+	currentTime: number,
+	ent: Entity
+): Vector3 | Vector2 {
+	const yellowZoneReached =
+			yellowZoneOutAt < currentTime - yellowZoneMaxDuration,
+		greenZoneReached = greenZoneOutAt < currentTime - greenZoneMaxDuration
+	const currentPos = latestUsercmd.MousePosition
 
 	if (
-		EntityHitBoxesIntersect([ent], camera_vec, current_pos)[0]
-		&& (
-			latest_camera_red_zone_poly_screen.IsInside(current_pos)
-			|| !CanMoveCamera(camera_vec, current_pos)
+		EntityHitBoxesIntersect([ent], cameraVec, currentPos)[0] &&
+		(latestCameraRedZonePolyScreen.IsInside(currentPos) ||
+			!CanMoveCamera(cameraVec, currentPos))
+	)
+		return currentPos
+	const hitbox = GetEntityHitBox(ent, cameraVec)
+	if (
+		hitbox === undefined ||
+		hitbox.Points.some(
+			point =>
+				(latestCameraRedZonePolyScreen.IsOutside(point) ||
+					((yellowZoneReached || greenZoneReached) &&
+						latestCameraGreenZonePolyScreen.IsOutside(point))) &&
+				CanMoveCamera(cameraVec, point)
 		)
 	)
-		return current_pos
-	const hitbox = GetEntityHitBox(ent, camera_vec)
-	if (hitbox === undefined || hitbox.Points.some(point => (
-		(
-			latest_camera_red_zone_poly_screen.IsOutside(point)
-			|| (
-				(yellow_zone_reached || green_zone_reached)
-				&& latest_camera_green_zone_poly_screen.IsOutside(point)
-			)
-		) && CanMoveCamera(camera_vec, point)
-	)))
 		return ent.Position
 	// TODO: try to find best spot between other entities' hitboxes, i.e. between creeps
 	const center = hitbox.Center,
-		min = hitbox.Points.reduce((prev, cur) => prev.Min(cur), new Vector2()).SubtractForThis(center),
-		max = hitbox.Points.reduce((prev, cur) => prev.Max(cur), new Vector2()).SubtractForThis(center)
+		min = hitbox.Points.reduce(
+			(prev, cur) => prev.Min(cur),
+			new Vector2()
+		).SubtractForThis(center),
+		max = hitbox.Points.reduce(
+			(prev, cur) => prev.Max(cur),
+			new Vector2()
+		).SubtractForThis(center)
 	for (let i = 0; i < 1000; i++) {
 		const generated = center
 			.Add(min.MultiplyScalar(Math.random() / 2))
 			.AddForThis(max.MultiplyScalar(Math.random() / 2))
 		if (
-			EntityHitBoxesIntersect([ent], camera_vec, generated)[0]
-			&& (
-				latest_camera_red_zone_poly_screen.IsInside(generated)
-				|| !CanMoveCamera(camera_vec, generated)
-			)
+			EntityHitBoxesIntersect([ent], cameraVec, generated)[0] &&
+			(latestCameraRedZonePolyScreen.IsInside(generated) ||
+				!CanMoveCamera(cameraVec, generated))
 		)
 			return generated
 	}
 	if (
-		latest_camera_red_zone_poly_screen.IsOutside(center)
-		&& CanMoveCamera(camera_vec, center)
+		latestCameraRedZonePolyScreen.IsOutside(center) &&
+		CanMoveCamera(cameraVec, center)
 	)
 		return ent.Position
 	return center
 }
 
-let initialized_mouse_position = false,
-	standalone_moving_to: Nullable<Vector3>
-function ComputeTargetPos(camera_vec: Vector2, current_time: number): [Vector3 | Vector2, boolean, boolean] {
-	const yellow_zone_reached = yellow_zone_out_at < current_time - yellow_zone_max_duration,
-		green_zone_reached = green_zone_out_at < current_time - green_zone_max_duration
-	const current_pos = latest_usercmd.MousePosition
-	if (last_order_target instanceof Entity)
-		return [ComputeTargetPosEntity(camera_vec, current_time, last_order_target), true, false]
-	else if (last_order_target instanceof Vector3)
-		return [ComputeTargetPosVector3(camera_vec, current_time, last_order_target), true, false]
-	else if (typeof last_order_target === "object") {
-		if (last_order_target.finishedSrc) {
-			if (last_order_target.dst instanceof Vector3)
-				return [ComputeTargetPosVector3(camera_vec, current_time, last_order_target.dst), true, false]
-			if (last_order_target.dst instanceof Entity)
-				return [ComputeTargetPosEntity(camera_vec, current_time, last_order_target.dst), true, false]
+let initializedMousePosition = false,
+	standaloneMovingTo: Nullable<Vector3>
+function ComputeTargetPos(
+	cameraVec: Vector2,
+	currentTime: number
+): [Vector3 | Vector2, boolean, boolean] {
+	const yellowZoneReached =
+			yellowZoneOutAt < currentTime - yellowZoneMaxDuration,
+		greenZoneReached = greenZoneOutAt < currentTime - greenZoneMaxDuration
+	const currentPos = latestUsercmd.MousePosition
+	if (lastOrderTarget instanceof Entity)
+		return [
+			ComputeTargetPosEntity(cameraVec, currentTime, lastOrderTarget),
+			true,
+			false,
+		]
+	else if (lastOrderTarget instanceof Vector3)
+		return [
+			ComputeTargetPosVector3(cameraVec, currentTime, lastOrderTarget),
+			true,
+			false,
+		]
+	else if (typeof lastOrderTarget === "object") {
+		if (lastOrderTarget.finishedSrc) {
+			if (lastOrderTarget.dst instanceof Vector3)
+				return [
+					ComputeTargetPosVector3(cameraVec, currentTime, lastOrderTarget.dst),
+					true,
+					false,
+				]
+			if (lastOrderTarget.dst instanceof Entity)
+				return [
+					ComputeTargetPosEntity(cameraVec, currentTime, lastOrderTarget.dst),
+					true,
+					false,
+				]
 		}
-		const hud = GUIInfo.GetLowerHUDForUnit(last_order_target.unit)
+		const hud = GUIInfo.GetLowerHUDForUnit(lastOrderTarget.unit)
 		let currentRect = GetRectForSlot(
 			hud,
-			last_order_target.finishedSrc
-				? last_order_target.dst as DOTAScriptInventorySlot_t
-				: last_order_target.src,
+			lastOrderTarget.finishedSrc
+				? (lastOrderTarget.dst as DOTAScriptInventorySlot)
+				: lastOrderTarget.src
 		)
 
-		if (currentRect.Contains(current_pos.Multiply(RendererSDK.WindowSize))) {
-			if (!last_order_target.finishedSrc) {
-				last_order_target.finishedSrc = true
-				if (last_order_target.dst instanceof Vector3)
-					return [ComputeTargetPosVector3(camera_vec, current_time, last_order_target.dst), true, false]
-				if (last_order_target.dst instanceof Entity)
-					return [ComputeTargetPosEntity(camera_vec, current_time, last_order_target.dst), true, false]
-				currentRect = GetRectForSlot(
-					hud,
-					last_order_target.dst,
-				)
-			} else
-				return [current_pos, true, true]
+		if (currentRect.Contains(currentPos.Multiply(RendererSDK.WindowSize))) {
+			if (!lastOrderTarget.finishedSrc) {
+				lastOrderTarget.finishedSrc = true
+				if (lastOrderTarget.dst instanceof Vector3)
+					return [
+						ComputeTargetPosVector3(
+							cameraVec,
+							currentTime,
+							lastOrderTarget.dst
+						),
+						true,
+						false,
+					]
+				if (lastOrderTarget.dst instanceof Entity)
+					return [
+						ComputeTargetPosEntity(cameraVec, currentTime, lastOrderTarget.dst),
+						true,
+						false,
+					]
+				currentRect = GetRectForSlot(hud, lastOrderTarget.dst)
+			} else return [currentPos, true, true]
 		}
 		return [
 			currentRect.pos1
-				.Add(currentRect.Size.MultiplyScalarForThis(
-					last_order_target.finishedSrc
-						? last_order_target.dstRng
-						: last_order_target.srcRng,
-				))
+				.Add(
+					currentRect.Size.MultiplyScalarForThis(
+						lastOrderTarget.finishedSrc
+							? lastOrderTarget.dstRng
+							: lastOrderTarget.srcRng
+					)
+				)
 				.DivideForThis(RendererSDK.WindowSize),
-			last_order_target.finishedSrc,
-			!last_order_target.finishedSrc || typeof last_order_target.dst === "number",
+			lastOrderTarget.finishedSrc,
+			!lastOrderTarget.finishedSrc || typeof lastOrderTarget.dst === "number",
 		]
 	} else {
-		if (ExecuteOrder.is_standalone) {
-			const w2s = latest_usercmd.MousePosition
+		if (ExecuteOrder.IsStandalone) {
+			const w2s = latestUsercmd.MousePosition
 			if (
-				((
-					latest_camera_red_zone_poly_screen.IsOutside(w2s)
-					|| (
-						(yellow_zone_reached || green_zone_reached)
-						&& latest_camera_green_zone_poly_screen.IsOutside(w2s)
-					)
-				) && CanMoveCamera(camera_vec, w2s))
+				(latestCameraRedZonePolyScreen.IsOutside(w2s) ||
+					((yellowZoneReached || greenZoneReached) &&
+						latestCameraGreenZonePolyScreen.IsOutside(w2s))) &&
+				CanMoveCamera(cameraVec, w2s)
 			) {
-				if (standalone_moving_to === undefined)
-					standalone_moving_to = latest_usercmd.VectorUnderCursor.Clone()
-				return [standalone_moving_to, true, true]
+				if (standaloneMovingTo === undefined)
+					standaloneMovingTo = latestUsercmd.VectorUnderCursor.Clone()
+				return [standaloneMovingTo, true, true]
 			}
-			standalone_moving_to = undefined
+			standaloneMovingTo = undefined
 			return [w2s, true, true]
 		}
-		latest_usercmd.ScoreboardOpened = InputManager.IsScoreboardOpen
-		const local_hero = LocalPlayer?.Hero
-		if (InputManager.IsShopOpen && local_hero !== undefined)
-			switch ((EntityManager.AllEntities.find(ent => (
-				ent.IsShop
-				&& ent.Distance2D(local_hero) < 720
-			)) as Shop)?.ShopType) {
+		latestUsercmd.ScoreboardOpened = InputManager.IsScoreboardOpen
+		const localHero = LocalPlayer?.Hero
+		if (InputManager.IsShopOpen && localHero !== undefined)
+			switch (
+				(
+					EntityManager.AllEntities.find(
+						ent => ent.IsShop && ent.Distance2D(localHero) < 720
+					) as Shop
+				)?.ShopType
+			) {
 				case DOTA_SHOP_TYPE.DOTA_SHOP_SECRET:
-					latest_usercmd.ShopMask = 12
+					latestUsercmd.ShopMask = 12
 					break
 				default:
-					latest_usercmd.ShopMask = 13
+					latestUsercmd.ShopMask = 13
 					break
 			}
-		const cursor_pos = InputManager.CursorOnScreen,
-			game_state = GameRules?.GameState ?? DOTA_GameState.DOTA_GAMERULES_STATE_INIT,
-			selected_ent = InputManager.SelectedUnit
+		const cursorPos = InputManager.CursorOnScreen,
+			gameState =
+				GameRules?.GameState ?? DOTAGameState.DOTA_GAMERULES_STATE_INIT,
+			selectedEnt = InputManager.SelectedUnit
 		if (
-			game_state < DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME
-			|| game_state === DOTA_GameState.DOTA_GAMERULES_STATE_POST_GAME
-			|| GUIInfo.Minimap.Minimap.Contains(cursor_pos)
-			|| GUIInfo.Shop.Sticky_2Rows.Contains(cursor_pos)
-			|| GUIInfo.Shop.Quickbuy_2Rows.Contains(cursor_pos)
-			|| GUIInfo.Shop.ClearQuickBuy_2Rows.Contains(cursor_pos)
-			|| GUIInfo.Shop.CourierGold.Contains(cursor_pos)
-			|| (InputManager.IsScoreboardOpen && GUIInfo.Scoreboard.Background.Contains(current_pos))
-			|| (InputManager.IsShopOpen && (
-				GUIInfo.OpenShopLarge.Header.Contains(cursor_pos)
-				|| GUIInfo.OpenShopLarge.ItemCombines.Contains(cursor_pos)
-				|| GUIInfo.OpenShopLarge.Items.Contains(cursor_pos)
-				|| GUIInfo.OpenShopLarge.PinnedItems.Contains(cursor_pos)
-				|| GUIInfo.OpenShopLarge.GuideFlyout.Contains(cursor_pos)
-			))
-			|| (
-				(
-					InputManager.IsShopOpen
-					|| (selected_ent?.Inventory?.Stash?.length ?? 0) !== 0
-				) && (
-					GUIInfo.Shop.Stash.Contains(cursor_pos)
-					|| GUIInfo.Shop.StashGrabAll.Contains(cursor_pos)
-				)
-			)
+			gameState < DOTAGameState.DOTA_GAMERULES_STATE_PRE_GAME ||
+			gameState === DOTAGameState.DOTA_GAMERULES_STATE_POST_GAME ||
+			GUIInfo.Minimap.Minimap.Contains(cursorPos) ||
+			GUIInfo.Shop.Sticky2Rows.Contains(cursorPos) ||
+			GUIInfo.Shop.Quickbuy2Rows.Contains(cursorPos) ||
+			GUIInfo.Shop.ClearQuickBuy2Rows.Contains(cursorPos) ||
+			GUIInfo.Shop.CourierGold.Contains(cursorPos) ||
+			(InputManager.IsScoreboardOpen &&
+				GUIInfo.Scoreboard.Background.Contains(currentPos)) ||
+			(InputManager.IsShopOpen &&
+				(GUIInfo.OpenShopLarge.Header.Contains(cursorPos) ||
+					GUIInfo.OpenShopLarge.ItemCombines.Contains(cursorPos) ||
+					GUIInfo.OpenShopLarge.Items.Contains(cursorPos) ||
+					GUIInfo.OpenShopLarge.PinnedItems.Contains(cursorPos) ||
+					GUIInfo.OpenShopLarge.GuideFlyout.Contains(cursorPos))) ||
+			((InputManager.IsShopOpen ||
+				(selectedEnt?.Inventory?.Stash?.length ?? 0) !== 0) &&
+				(GUIInfo.Shop.Stash.Contains(cursorPos) ||
+					GUIInfo.Shop.StashGrabAll.Contains(cursorPos)))
 		)
-			return [cursor_pos.Divide(RendererSDK.WindowSize), true, true]
-		const hud = GUIInfo.GetLowerHUDForUnit(selected_ent)
+			return [cursorPos.Divide(RendererSDK.WindowSize), true, true]
+		const hud = GUIInfo.GetLowerHUDForUnit(selectedEnt)
 		if (
-			hud.InventoryContainer.Contains(cursor_pos)
-			|| hud.NeutralAndTPContainer.Contains(cursor_pos)
-			|| hud.XP.Contains(cursor_pos)
+			hud.InventoryContainer.Contains(cursorPos) ||
+			hud.NeutralAndTPContainer.Contains(cursorPos) ||
+			hud.XP.Contains(cursorPos)
 		)
-			return [cursor_pos.Divide(RendererSDK.WindowSize), true, true]
+			return [cursorPos.Divide(RendererSDK.WindowSize), true, true]
 		const pos = InputManager.CursorOnWorld
 		if (pos.IsValid && pos.z >= -1024) {
-			const w2s = RendererSDK.WorldToScreenCustom(pos, camera_vec)
+			const w2s = RendererSDK.WorldToScreenCustom(pos, cameraVec)
 			if (
-				w2s === undefined
-				|| w2s.x < 0
-				|| w2s.y < 0
-				|| w2s.x > 1
-				|| w2s.y > 1
-				|| ((
-					latest_camera_red_zone_poly_screen.IsOutside(w2s)
-					|| (
-						(yellow_zone_reached || green_zone_reached)
-						&& latest_camera_green_zone_poly_screen.IsOutside(w2s)
-					)
-				) && CanMoveCamera(camera_vec, w2s))
+				w2s === undefined ||
+				w2s.x < 0 ||
+				w2s.y < 0 ||
+				w2s.x > 1 ||
+				w2s.y > 1 ||
+				((latestCameraRedZonePolyScreen.IsOutside(w2s) ||
+					((yellowZoneReached || greenZoneReached) &&
+						latestCameraGreenZonePolyScreen.IsOutside(w2s))) &&
+					CanMoveCamera(cameraVec, w2s))
 			)
 				return [pos.Clone(), true, true]
 			return [w2s, true, true]
-		} else
-			return [cursor_pos.Divide(RendererSDK.WindowSize), true, true]
+		} else return [cursorPos.Divide(RendererSDK.WindowSize), true, true]
 	}
 }
 
-let last_order_target: Nullable<Vector3 | Entity | {
-	unit: Unit,
-	src: DOTAScriptInventorySlot_t,
-	dst: DOTAScriptInventorySlot_t | Vector3 | Entity,
-	finishedSrc: boolean,
-	srcRng: number,
-	dstRng: number,
-}>,
-	current_order: Nullable<[ExecuteOrder, number, boolean, boolean]>
-function ProcessOrderQueue(current_time: number) {
-	let order = ExecuteOrder.order_queue[0] as Nullable<[ExecuteOrder, number, boolean, boolean]>
+let lastOrderTarget: Nullable<
+		| Vector3
+		| Entity
+		| {
+				unit: Unit
+				src: DOTAScriptInventorySlot
+				dst: DOTAScriptInventorySlot | Vector3 | Entity
+				finishedSrc: boolean
+				srcRng: number
+				dstRng: number
+		  }
+	>,
+	currentOrder: Nullable<[ExecuteOrder, number, boolean, boolean]>
+function ProcessOrderQueue(currentTime: number) {
+	let order = ExecuteOrder.orderQueue[0] as Nullable<
+		[ExecuteOrder, number, boolean, boolean]
+	>
 	while (order !== undefined && CanOrderBeSkipped(order[0])) {
-		if (ExecuteOrder.debug_orders)
-			console.log(`Executing order ${order[0].OrderType} after ${current_time - order[1]}ms`)
+		if (ExecuteOrder.DebugOrders)
+			console.log(
+				`Executing order ${order[0].OrderType} after ${
+					currentTime - order[1]
+				}ms`
+			)
 		order[0].Execute()
 		order[3] = true
-		ExecuteOrder.order_queue.splice(0, 1)
-		current_order = undefined
-		order = ExecuteOrder.order_queue[0] as Nullable<[ExecuteOrder, number, boolean, boolean]>
+		ExecuteOrder.orderQueue.splice(0, 1)
+		currentOrder = undefined
+		order = ExecuteOrder.orderQueue[0] as Nullable<
+			[ExecuteOrder, number, boolean, boolean]
+		>
 	}
-	if (order === undefined || current_order === order)
-		return order
-	current_order = order
-	if (ExecuteOrder.prefire_orders) {
-		if (ExecuteOrder.debug_orders)
-			console.log(`Prefiring order ${order[0].OrderType} after ${current_time - order[1]}ms at ${GameState.RawGameTime}`)
+	if (order === undefined || currentOrder === order) return order
+	currentOrder = order
+	if (ExecuteOrder.PrefireOrders) {
+		if (ExecuteOrder.DebugOrders)
+			console.log(
+				`Prefiring order ${order[0].OrderType} after ${
+					currentTime - order[1]
+				}ms at ${GameState.RawGameTime}`
+			)
 		order[0].Execute()
 		order[3] = true
 	}
@@ -572,7 +639,7 @@ function ProcessOrderQueue(current_time: number) {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_PATROL:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION:
-			last_order_target = order[0].Position
+			lastOrderTarget = order[0].Position
 			break
 		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
@@ -580,255 +647,285 @@ function ProcessOrderQueue(current_time: number) {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE:
-			last_order_target = order[0].Target instanceof Entity
-				? order[0].Target
-				: undefined
+			lastOrderTarget =
+				order[0].Target instanceof Entity ? order[0].Target : undefined
 			break
 		case dotaunitorder_t.DOTA_UNIT_ORDER_GIVE_ITEM:
-			if (
-				order[0].Ability instanceof Item
-				&& order[0].Ability.Owner instanceof Unit
-				&& order[0].Target instanceof Entity
-			)
-				last_order_target = {
-					unit: order[0].Ability.Owner,
-					src: order[0].Ability.Owner.TotalItems.indexOf(order[0].Ability),
-					dst: order[0].Target,
-					finishedSrc: false,
-					srcRng: Math.random(),
-					dstRng: Math.random(),
-				}
-			else
-				last_order_target = undefined
+			lastOrderTarget =
+				order[0].Ability_ instanceof Item &&
+				order[0].Ability_.Owner instanceof Unit &&
+				order[0].Target instanceof Entity
+					? {
+							unit: order[0].Ability_.Owner,
+							src: order[0].Ability_.Owner.TotalItems.indexOf(
+								order[0].Ability_
+							),
+							dst: order[0].Target,
+							finishedSrc: false,
+							srcRng: Math.random(),
+							dstRng: Math.random(),
+					  }
+					: undefined
 			break
 		case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM:
-			if (
-				order[0].Ability instanceof Item
-				&& order[0].Ability.Owner instanceof Unit
-				&& typeof order[0].Target === "number"
-			)
-				last_order_target = {
-					unit: order[0].Ability.Owner,
-					src: order[0].Ability.Owner.TotalItems.indexOf(order[0].Ability),
-					dst: order[0].Target,
-					finishedSrc: false,
-					srcRng: Math.random(),
-					dstRng: Math.random(),
-				}
-			else
-				last_order_target = undefined
+			lastOrderTarget =
+				order[0].Ability_ instanceof Item &&
+				order[0].Ability_.Owner instanceof Unit &&
+				typeof order[0].Target === "number"
+					? {
+							unit: order[0].Ability_.Owner,
+							src: order[0].Ability_.Owner.TotalItems.indexOf(
+								order[0].Ability_
+							),
+							dst: order[0].Target,
+							finishedSrc: false,
+							srcRng: Math.random(),
+							dstRng: Math.random(),
+					  }
+					: undefined
 			break
 		case dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM:
-			if (
-				order[0].Ability instanceof Item
-				&& order[0].Ability.Owner instanceof Unit
-			)
-				last_order_target = {
-					unit: order[0].Ability.Owner,
-					src: order[0].Ability.Owner.TotalItems.indexOf(order[0].Ability),
-					dst: order[0].Position,
-					finishedSrc: false,
-					srcRng: Math.random(),
-					dstRng: Math.random(),
-				}
-			else
-				last_order_target = undefined
+			lastOrderTarget =
+				order[0].Ability_ instanceof Item &&
+				order[0].Ability_.Owner instanceof Unit
+					? {
+							unit: order[0].Ability_.Owner,
+							src: order[0].Ability_.Owner.TotalItems.indexOf(
+								order[0].Ability_
+							),
+							dst: order[0].Position,
+							finishedSrc: false,
+							srcRng: Math.random(),
+							dstRng: Math.random(),
+					  }
+					: undefined
 			break
 		default:
-			last_order_target = undefined
+			lastOrderTarget = undefined
 			break
 	}
 	return order
 }
 
-const camera_move_linger_duration = 100,
-	order_linger_duration = 150,
-	order_linger_duration_minimap = 250,
-	camera_move_seed_expiry = 300,
-	yellow_zone_max_duration = 700,
-	green_zone_max_duration = yellow_zone_max_duration * 2,
-	camera_direction = new Vector2(),
-	debug_cursor = new Vector3()
-let last_order_finish = 0,
-	last_order_used_minimap = false,
-	latest_camera_x = 0,
-	latest_camera_y = 0,
-	camera_move_end = 0,
-	were_moving_camera = false,
-	latest_update = 0,
-	latest_usercmd = new UserCmd(),
-	last_camera_move_seed = 0,
-	yellow_zone_out_at = 0,
-	green_zone_out_at = 0,
-	cursor_at_minimap_at = 0,
-	cursor_entered_minimap_at = 0
-function CanMoveCamera(camera_vec: Vector2, target_pos: Vector2): boolean {
-	if (latest_camera_red_zone_poly_screen.IsInside(target_pos))
-		return true
-	const bounds_min = CameraBounds?.BoundsMin
-		?? (world_bounds !== undefined ? world_bounds[0] : undefined)
-	const bounds_max = CameraBounds?.BoundsMax
-		?? (world_bounds !== undefined ? world_bounds[1] : undefined)
-	if (bounds_min === undefined || bounds_max === undefined)
-		return true
-	if (target_pos.x < 0.5) {
+const cameraMoveLingerDuration = 100,
+	orderLingerDuration = 150,
+	orderLingerDurationMinimap = 250,
+	cameraMoveSeedExpiry = 300,
+	yellowZoneMaxDuration = 700,
+	greenZoneMaxDuration = yellowZoneMaxDuration * 2,
+	cameraDirection = new Vector2(),
+	debugCursor = new Vector3()
+let lastOrderFinish = 0,
+	lastOrderUsedMinimap = false,
+	latestCameraX = 0,
+	latestCameraY = 0,
+	cameraMoveEnd = 0,
+	wereMovingCamera = false,
+	latestUpdate = 0,
+	latestUsercmd = new UserCmd(),
+	lastcameraMoveSeed = 0,
+	yellowZoneOutAt = 0,
+	greenZoneOutAt = 0,
+	cursorAtMinimapAt = 0,
+	cursorEnteredMinimapAt = 0
+function CanMoveCamera(cameraVec: Vector2, targetPos: Vector2): boolean {
+	if (latestCameraRedZonePolyScreen.IsInside(targetPos)) return true
+	const boundsMin =
+		CameraBounds?.BoundsMin ??
+		(worldBounds !== undefined ? worldBounds[0] : undefined)
+	const boundsMax =
+		CameraBounds?.BoundsMax ??
+		(worldBounds !== undefined ? worldBounds[1] : undefined)
+	if (boundsMin === undefined || boundsMax === undefined) return true
+	if (targetPos.x < 0.5) {
 		if (
-			Math.abs(camera_vec.x - bounds_min.x) < 1 // left
-			|| camera_vec.x < bounds_min.x
+			Math.abs(cameraVec.x - boundsMin.x) < 1 || // left
+			cameraVec.x < boundsMin.x
 		)
 			return false
 	} else {
 		if (
-			Math.abs(camera_vec.x - bounds_max.x) < 1 // right
-			|| camera_vec.x > bounds_max.x
+			Math.abs(cameraVec.x - boundsMax.x) < 1 || // right
+			cameraVec.x > boundsMax.x
 		)
 			return false
 	}
-	if (target_pos.y < 0.5) {
+	if (targetPos.y < 0.5) {
 		if (
-			Math.abs(camera_vec.y - bounds_max.y) < 1 // top
-			|| camera_vec.y > bounds_max.y
+			Math.abs(cameraVec.y - boundsMax.y) < 1 || // top
+			cameraVec.y > boundsMax.y
 		)
 			return false
 	} else {
 		if (
-			Math.abs(camera_vec.y - bounds_min.y) < 1 // bot
-			|| camera_vec.y < bounds_min.y
+			Math.abs(cameraVec.y - boundsMin.y) < 1 || // bot
+			cameraVec.y < boundsMin.y
 		)
 			return false
 	}
 	return true
 }
-function MoveCameraByScreen(camera_vec: Vector2, target_pos: Vector3, current_time: number): Vector2 {
-	const dist_right_bot = target_pos.DistanceSqr2D(latest_camera_green_zone_poly_world.Points[0]),
-		dist_left_bot = target_pos.DistanceSqr2D(latest_camera_green_zone_poly_world.Points[1]),
-		dist_left_top = target_pos.DistanceSqr2D(latest_camera_green_zone_poly_world.Points[2]),
-		dist_right_top = target_pos.DistanceSqr2D(latest_camera_green_zone_poly_world.Points[3]),
-		dist_center_bot = target_pos.DistanceSqr2D(
-			latest_camera_green_zone_poly_world.Points[0]
-				.Add(latest_camera_green_zone_poly_world.Points[1])
-				.DivideScalarForThis(2),
+function MoveCameraByScreen(
+	cameraVec: Vector2,
+	targetPos: Vector3,
+	currentTime: number
+): Vector2 {
+	const distRightBot = targetPos.DistanceSqr2D(
+			latestCameraGreenZonePolyWorld.Points[0]
 		),
-		dist_center_left = target_pos.DistanceSqr2D(
-			latest_camera_green_zone_poly_world.Points[1]
-				.Add(latest_camera_green_zone_poly_world.Points[2])
-				.DivideScalarForThis(2),
+		distLeftBot = targetPos.DistanceSqr2D(
+			latestCameraGreenZonePolyWorld.Points[1]
 		),
-		dist_center_top = target_pos.DistanceSqr2D(
-			latest_camera_green_zone_poly_world.Points[2]
-				.Add(latest_camera_green_zone_poly_world.Points[3])
-				.DivideScalarForThis(2),
+		distLeftTop = targetPos.DistanceSqr2D(
+			latestCameraGreenZonePolyWorld.Points[2]
 		),
-		dist_center_right = target_pos.DistanceSqr2D(
-			latest_camera_green_zone_poly_world.Points[0]
-				.Add(latest_camera_green_zone_poly_world.Points[3])
-				.DivideScalarForThis(2),
+		distRightTop = targetPos.DistanceSqr2D(
+			latestCameraGreenZonePolyWorld.Points[3]
+		),
+		distCenterBot = targetPos.DistanceSqr2D(
+			latestCameraGreenZonePolyWorld.Points[0]
+				.Add(latestCameraGreenZonePolyWorld.Points[1])
+				.DivideScalarForThis(2)
+		),
+		distCenterLeft = targetPos.DistanceSqr2D(
+			latestCameraGreenZonePolyWorld.Points[1]
+				.Add(latestCameraGreenZonePolyWorld.Points[2])
+				.DivideScalarForThis(2)
+		),
+		distCenterTop = targetPos.DistanceSqr2D(
+			latestCameraGreenZonePolyWorld.Points[2]
+				.Add(latestCameraGreenZonePolyWorld.Points[3])
+				.DivideScalarForThis(2)
+		),
+		distCenterRight = targetPos.DistanceSqr2D(
+			latestCameraGreenZonePolyWorld.Points[0]
+				.Add(latestCameraGreenZonePolyWorld.Points[3])
+				.DivideScalarForThis(2)
 		)
-	const min_corner_dist = Math.min(
-		dist_right_bot,
-		dist_left_bot,
-		dist_left_top,
-		dist_right_top,
+	const minCornerDist = Math.min(
+		distRightBot,
+		distLeftBot,
+		distLeftTop,
+		distRightTop
 	)
-	const min_center_dist = Math.min(
-		dist_center_bot,
-		dist_center_left,
-		dist_center_top,
-		dist_center_right,
+	const minCenterDist = Math.min(
+		distCenterBot,
+		distCenterLeft,
+		distCenterTop,
+		distCenterRight
 	)
-	if (min_corner_dist < min_center_dist) {
-		if (min_corner_dist === dist_right_bot) {
-			camera_direction.x = 1
-			camera_direction.y = 1
-		} else if (min_corner_dist === dist_left_bot) {
-			camera_direction.x = 0
-			camera_direction.y = 1
-		} else if (min_corner_dist === dist_left_top) {
-			camera_direction.x = 0
-			camera_direction.y = 0
-		} else if (min_corner_dist === dist_right_top) {
-			camera_direction.x = 1
-			camera_direction.y = 0
+	if (minCornerDist < minCenterDist) {
+		if (minCornerDist === distRightBot) {
+			cameraDirection.x = 1
+			cameraDirection.y = 1
+		} else if (minCornerDist === distLeftBot) {
+			cameraDirection.x = 0
+			cameraDirection.y = 1
+		} else if (minCornerDist === distLeftTop) {
+			cameraDirection.x = 0
+			cameraDirection.y = 0
+		} else if (minCornerDist === distRightTop) {
+			cameraDirection.x = 1
+			cameraDirection.y = 0
 		}
 	} else {
-		if (min_center_dist === dist_center_bot) {
-			camera_direction.x = 0.5
-			camera_direction.y = 1
-		} else if (min_center_dist === dist_center_left) {
-			camera_direction.x = 0
-			camera_direction.y = 0.5
-		} else if (min_center_dist === dist_center_top) {
-			camera_direction.x = 0.5
-			camera_direction.y = 0
-		} else if (min_center_dist === dist_center_right) {
-			camera_direction.x = 1
-			camera_direction.y = 0.5
+		if (minCenterDist === distCenterBot) {
+			cameraDirection.x = 0.5
+			cameraDirection.y = 1
+		} else if (minCenterDist === distCenterLeft) {
+			cameraDirection.x = 0
+			cameraDirection.y = 0.5
+		} else if (minCenterDist === distCenterTop) {
+			cameraDirection.x = 0.5
+			cameraDirection.y = 0
+		} else if (minCenterDist === distCenterRight) {
+			cameraDirection.x = 1
+			cameraDirection.y = 0.5
 		}
 	}
 
-	if (last_camera_move_seed < current_time - camera_move_seed_expiry)
-		last_camera_move_seed = current_time
-	if (!CanMoveCamera(camera_vec, camera_direction))
+	if (lastcameraMoveSeed < currentTime - cameraMoveSeedExpiry)
+		lastcameraMoveSeed = currentTime
+	if (!CanMoveCamera(cameraVec, cameraDirection))
 		return new Vector2().Invalidate()
 	return new Vector2(
-		camera_direction.x === 0.5
-			? Math.min(0.9, Math.max(0.1, 0.5 + (Math.cos(last_camera_move_seed) ** 3) * 0.2 - 0.1))
-			: camera_direction.x,
-		camera_direction.y === 0.5
-			? Math.min(0.9, Math.max(0.1, 0.5 + (Math.sin(last_camera_move_seed) ** 3) * 0.2 - 0.1))
-			: camera_direction.y,
+		cameraDirection.x === 0.5
+			? Math.min(
+					0.9,
+					Math.max(0.1, 0.5 + Math.cos(lastcameraMoveSeed) ** 3 * 0.2 - 0.1)
+			  )
+			: cameraDirection.x,
+		cameraDirection.y === 0.5
+			? Math.min(
+					0.9,
+					Math.max(0.1, 0.5 + Math.sin(lastcameraMoveSeed) ** 3 * 0.2 - 0.1)
+			  )
+			: cameraDirection.y
 	)
 }
 
-const short_unit_switch_delay = 300
-let last_unit_switch = 0
+const shortUnitSwitchDelay = 300
+let lastUnitSwitch = 0
 function MoveCamera(
-	camera_vec: Vector2,
-	target_pos: Vector3,
-	current_time: number,
+	cameraVec: Vector2,
+	targetPos: Vector3,
+	currentTime: number
 ): [Vector2, boolean] {
-	const eye_vector = WASM.GetEyeVector(default_camera_angles)
-	const lookatpos = camera_vec.Clone()
-		.AddScalarX(eye_vector.x * default_camera_dist)
-		.AddScalarY(eye_vector.y * default_camera_dist)
-	const lookatposDist = target_pos.Distance2D(lookatpos)
-	if (lookatposDist > default_camera_dist || current_time - last_unit_switch > short_unit_switch_delay) {
-		const nearest = orderByFirst(Units.filter(ent => (
-			ent.IsControllable
-			&& ent.RootOwner === LocalPlayer
-			&& (ent.IsAlive || ent === LocalPlayer?.Hero)
-			&& !ent.IsEnemy()
-		)), ent => ent.DistanceSqr2D(target_pos))
+	const eyeVector = WASM.GetEyeVector(defaultCameraAngles)
+	const lookatpos = cameraVec
+		.Clone()
+		.AddScalarX(eyeVector.x * defaultCameraDist)
+		.AddScalarY(eyeVector.y * defaultCameraDist)
+	const lookatposDist = targetPos.Distance2D(lookatpos)
+	if (
+		lookatposDist > defaultCameraDist ||
+		currentTime - lastUnitSwitch > shortUnitSwitchDelay
+	) {
+		const nearest = orderByFirst(
+			Units.filter(
+				ent =>
+					ent.IsControllable &&
+					ent.RootOwner === LocalPlayer &&
+					(ent.IsAlive || ent === LocalPlayer?.Hero) &&
+					!ent.IsEnemy()
+			),
+			ent => ent.DistanceSqr2D(targetPos)
+		)
 		if (nearest !== undefined) {
-			const nearestDist = target_pos.Distance2D(nearest.Position)
+			const nearestDist = targetPos.Distance2D(nearest.Position)
 			if (nearestDist < lookatposDist) {
-				const new_camera_vec = Vector2.FromVector3(
+				const newCameraVec = Vector2.FromVector3(
 					nearest.Position.Clone()
-						.SubtractScalarX(eye_vector.x * default_camera_dist)
-						.SubtractScalarY(eye_vector.y * default_camera_dist),
+						.SubtractScalarX(eyeVector.x * defaultCameraDist)
+						.SubtractScalarY(eyeVector.y * defaultCameraDist)
 				)
-				UpdateCameraBounds(new_camera_vec)
-				const [target_pos_new] = ComputeTargetPos(new_camera_vec, current_time)
+				UpdateCameraBounds(newCameraVec)
+				const [targetPosNew] = ComputeTargetPos(newCameraVec, currentTime)
 				if (
-					target_pos_new instanceof Vector2
-					|| target_pos_new.Distance2D(nearest.Position) < default_camera_dist
+					targetPosNew instanceof Vector2 ||
+					targetPosNew.Distance2D(nearest.Position) < defaultCameraDist
 				) {
-					camera_vec.CopyFrom(new_camera_vec)
-					last_unit_switch = current_time
-					return [latest_usercmd.MousePosition.Clone(), false]
+					cameraVec.CopyFrom(newCameraVec)
+					lastUnitSwitch = currentTime
+					return [latestUsercmd.MousePosition.Clone(), false]
 				}
-				UpdateCameraBounds(camera_vec)
+				UpdateCameraBounds(cameraVec)
 			}
 		}
 	}
-	if (lookatposDist > ExecuteOrder.camera_minimap_spaces * default_camera_dist) {
-		const minimap_target = MinimapSDK
-			.WorldToMinimap(target_pos)
-			.DivideForThis(RendererSDK.WindowSize)
-		if (minimap_target.x <= 1 && minimap_target.x >= 0 && minimap_target.y <= 1 && minimap_target.y >= 0)
-			return [minimap_target, true]
+	if (lookatposDist > ExecuteOrder.cameraMinimapSpaces * defaultCameraDist) {
+		const minimapTarget = MinimapSDK.WorldToMinimap(targetPos).DivideForThis(
+			RendererSDK.WindowSize
+		)
+		if (
+			minimapTarget.x <= 1 &&
+			minimapTarget.x >= 0 &&
+			minimapTarget.y <= 1 &&
+			minimapTarget.y >= 0
+		)
+			return [minimapTarget, true]
 	}
-	return [MoveCameraByScreen(camera_vec, target_pos, current_time), false]
+	return [MoveCameraByScreen(cameraVec, targetPos, currentTime), false]
 }
 
 function getParams() {
@@ -845,404 +942,478 @@ let paramsX = getParams(),
 	paramsY = getParams()
 function ApplyParams(vec: Vector2, currentTime: number): void {
 	vec
-		.MultiplyScalarX(paramsX.reduce(
-			(prev, cur) => prev + Math.cos(currentTime * cur[0] + cur[1]) ** 2,
-			0.5,
-		) / paramsX.length)
-		.MultiplyScalarY(paramsY.reduce(
-			(prev, cur) => prev + Math.sin(currentTime * cur[0] + cur[1]) ** 2,
-			0.5,
-		) / paramsY.length)
+		.MultiplyScalarX(
+			paramsX.reduce(
+				(prev, cur) => prev + Math.cos(currentTime * cur[0] + cur[1]) ** 2,
+				0.5
+			) / paramsX.length
+		)
+		.MultiplyScalarY(
+			paramsY.reduce(
+				(prev, cur) => prev + Math.sin(currentTime * cur[0] + cur[1]) ** 2,
+				0.5
+			) / paramsY.length
+		)
 }
 
-const min_ProcessUserCmd_window = 1 / 60
+const minProcessUserCmdWindow = 1 / 60
 function ProcessUserCmd(force = false): void {
-	const current_time = hrtime()
-	const dt = Math.min(current_time - latest_update, 100) / 1000
-	if (RendererSDK.WindowSize.IsZero())
-		return
-	latest_usercmd.SpectatorStatsCategoryID = 0
-	latest_usercmd.SpectatorStatsSortMethod = 0
-	latest_usercmd.Pawn = LocalPlayer?.Pawn
-	if (ExecuteOrder.is_standalone) {
-		if (!initialized_mouse_position) {
-			latest_usercmd.MousePosition.x = 0.1 + Math.random() / 2
-			latest_usercmd.MousePosition.y = 0.1 + Math.random() / 2
-			initialized_mouse_position = true
+	const currentTime = hrtime()
+	const dt = Math.min(currentTime - latestUpdate, 100) / 1000
+	if (RendererSDK.WindowSize.IsZero()) return
+	latestUsercmd.SpectatorStatsCategoryID = 0
+	latestUsercmd.SpectatorStatsSortMethod = 0
+	latestUsercmd.Pawn = LocalPlayer?.Pawn
+	if (ExecuteOrder.IsStandalone) {
+		if (!initializedMousePosition) {
+			latestUsercmd.MousePosition.x = 0.1 + Math.random() / 2
+			latestUsercmd.MousePosition.y = 0.1 + Math.random() / 2
+			initializedMousePosition = true
 		}
 	} else
-		latest_usercmd.MousePosition.CopyFrom(InputManager.CursorOnScreen.DivideForThis(RendererSDK.WindowSize))
+		latestUsercmd.MousePosition.CopyFrom(
+			InputManager.CursorOnScreen.DivideForThis(RendererSDK.WindowSize)
+		)
 	InputManager.IsShopOpen = IsShopOpen()
-	InputManager.IsScoreboardOpen = ConVarsSDK.GetInt("dota_spectator_stats_panel", 0) === 1
-	const num_selected = GetSelectedEntities()
+	InputManager.IsScoreboardOpen =
+		ConVarsSDK.GetInt("dota_spectator_stats_panel", 0) === 1
+	const numSelected = GetSelectedEntities()
 	InputManager.SelectedEntities.splice(0)
-	for (let i = 0; i < num_selected; i++) {
+	for (let i = 0; i < numSelected; i++) {
 		const ent = EntityManager.EntityByIndex(IOBufferView.getUint32(i * 4, true))
-		if (ent !== undefined)
-			InputManager.SelectedEntities.push(ent as Unit)
+		if (ent !== undefined) InputManager.SelectedEntities.push(ent as Unit)
 	}
 	if (InputManager.SelectedEntities.length === 0) {
 		const ent = LocalPlayer?.Hero
-		if (ent !== undefined)
-			InputManager.SelectedEntities.push(ent)
+		if (ent !== undefined) InputManager.SelectedEntities.push(ent)
 	}
-	InputManager.QueryUnit = EntityManager.EntityByIndex(GetQueryUnit()) as Nullable<Unit>
-	InputManager.SelectedUnit = !ConVarsSDK.GetBoolean("dota_hud_new_query_panel", false)
+	InputManager.QueryUnit = EntityManager.EntityByIndex(
+		GetQueryUnit()
+	) as Nullable<Unit>
+	InputManager.SelectedUnit = !ConVarsSDK.GetBoolean(
+		"dota_hud_new_query_panel",
+		false
+	)
 		? InputManager.QueryUnit ?? InputManager.SelectedEntities[0]
 		: InputManager.SelectedEntities[0] ?? InputManager.QueryUnit
 	InputManager.CursorOnWorld = RendererSDK.ScreenToWorldFar(
-		[latest_usercmd.MousePosition],
+		[latestUsercmd.MousePosition],
 		Camera.Position ? Vector3.fromIOBuffer() : new Vector3(),
 		RendererSDK.CameraDistance,
 		Camera.Angles ? QAngle.fromIOBuffer() : new QAngle(),
 		RendererSDK.WindowSize,
-		Camera.FoV,
+		Camera.FoV
 	)[0]
-	if (!force && dt < min_ProcessUserCmd_window)
-		return
-	latest_update = current_time
-	if (ExecuteOrder.disable_humanizer)
-		return
-	latest_usercmd.ShopMask = 15
-	let order = ProcessOrderQueue(current_time)
-	latest_usercmd.CameraPosition.x = latest_camera_x
-	latest_usercmd.CameraPosition.y = latest_camera_y
-	latest_usercmd.MousePosition.CopyFrom(latest_cursor)
-	const camera_vec = latest_usercmd.CameraPosition
-	UpdateCameraBounds(latest_usercmd.CameraPosition)
-	if (ExecuteOrder.hold_orders > 0 && ExecuteOrder.hold_orders_target !== undefined && last_order_target === undefined)
-		last_order_target = ExecuteOrder.hold_orders_target instanceof Vector3
-			? ExecuteOrder.hold_orders_target.Clone().SetZ(WASM.GetPositionHeight(ExecuteOrder.hold_orders_target))
-			: ExecuteOrder.hold_orders_target
+	if (!force && dt < minProcessUserCmdWindow) return
+	latestUpdate = currentTime
+	if (ExecuteOrder.DisableHumanizer) return
+	latestUsercmd.ShopMask = 15
+	let order = ProcessOrderQueue(currentTime)
+	latestUsercmd.CameraPosition.x = latestCameraX
+	latestUsercmd.CameraPosition.y = latestCameraY
+	latestUsercmd.MousePosition.CopyFrom(latestCursor)
+	const cameraVec = latestUsercmd.CameraPosition
+	UpdateCameraBounds(latestUsercmd.CameraPosition)
 	if (
-		(order === undefined || !order[3])
-		&& (
-			(last_order_target instanceof Entity && (!last_order_target.IsValid || !last_order_target.IsVisible))
-			|| (
-				last_order_target !== undefined
-				&& !(last_order_target instanceof Entity || last_order_target instanceof Vector3)
-				&& (!last_order_target.unit.IsValid || !last_order_target.unit.IsVisible)
-			)
-		)
+		ExecuteOrder.HoldOrders > 0 &&
+		ExecuteOrder.HoldOrdersTarget !== undefined &&
+		lastOrderTarget === undefined
+	)
+		lastOrderTarget =
+			ExecuteOrder.HoldOrdersTarget instanceof Vector3
+				? ExecuteOrder.HoldOrdersTarget.Clone().SetZ(
+						WASM.GetPositionHeight(ExecuteOrder.HoldOrdersTarget)
+				  )
+				: ExecuteOrder.HoldOrdersTarget
+	if (
+		(order === undefined || !order[3]) &&
+		((lastOrderTarget instanceof Entity &&
+			(!lastOrderTarget.IsValid || !lastOrderTarget.IsVisible)) ||
+			(lastOrderTarget !== undefined &&
+				!(
+					lastOrderTarget instanceof Entity ||
+					lastOrderTarget instanceof Vector3
+				) &&
+				(!lastOrderTarget.unit.IsValid || !lastOrderTarget.unit.IsVisible)))
 	) {
-		if (ExecuteOrder.debug_orders)
-			console.log(`Skipping order due to invalid entity after ${current_time - (order !== undefined ? order[1] : 0)}ms`)
-		last_order_target = undefined
+		if (ExecuteOrder.DebugOrders)
+			console.log(
+				`Skipping order due to invalid entity after ${
+					currentTime - (order !== undefined ? order[1] : 0)
+				}ms`
+			)
+		lastOrderTarget = undefined
 		if (order !== undefined) {
-			last_order_finish = current_time
-			ExecuteOrder.order_queue.splice(0, 1)
-			order = ProcessOrderQueue(current_time)
+			lastOrderFinish = currentTime
+			ExecuteOrder.orderQueue.splice(0, 1)
+			order = ProcessOrderQueue(currentTime)
 		}
 	}
-	let [target_pos, can_finish_now, is_ui_order] = ComputeTargetPos(camera_vec, current_time)
-	let interacting_with_minimap = false
-	if (target_pos instanceof Vector3) {
-		let ar = MoveCamera(camera_vec, target_pos, current_time)
-		if (ar[1] && last_order_used_minimap && last_order_finish > current_time - order_linger_duration_minimap) {
+	let [targetPos, canFinishNow, isUIOrder] = ComputeTargetPos(
+		cameraVec,
+		currentTime
+	)
+	let interactingWithMinimap = false
+	if (targetPos instanceof Vector3) {
+		let ar = MoveCamera(cameraVec, targetPos, currentTime)
+		if (
+			ar[1] &&
+			lastOrderUsedMinimap &&
+			lastOrderFinish > currentTime - orderLingerDurationMinimap
+		) {
 			order = undefined
-			const target_pos_ = ComputeTargetPos(camera_vec, current_time)
-			target_pos = target_pos_[0]
-			can_finish_now = target_pos_[1]
-			is_ui_order = target_pos_[2]
-			if (target_pos instanceof Vector3)
-				ar = MoveCamera(camera_vec, target_pos, current_time)
+			const targetPosAr = ComputeTargetPos(cameraVec, currentTime)
+			targetPos = targetPosAr[0]
+			canFinishNow = targetPosAr[1]
+			isUIOrder = targetPosAr[2]
+			if (targetPos instanceof Vector3)
+				ar = MoveCamera(cameraVec, targetPos, currentTime)
 		}
-		target_pos = ar[0]
-		interacting_with_minimap = ar[1]
-		if (interacting_with_minimap && order !== undefined)
-			order[2] = true
+		targetPos = ar[0]
+		interactingWithMinimap = ar[1]
+		if (interactingWithMinimap && order !== undefined) order[2] = true
 	}
 	if (order !== undefined)
 		switch (order[0].OrderType) {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
-				latest_usercmd.ClickBehaviors = 2
+				latestUsercmd.ClickBehaviors = 2
 				break
 			case dotaunitorder_t.DOTA_UNIT_ORDER_PATROL:
-				latest_usercmd.ClickBehaviors = 8
+				latestUsercmd.ClickBehaviors = 8
 				break
 			case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
-				latest_usercmd.ClickBehaviors = 11
+				latestUsercmd.ClickBehaviors = 11
 				break
 			default:
-				latest_usercmd.ClickBehaviors = 0
+				latestUsercmd.ClickBehaviors = 0
 				break
 		}
-	let cursor_at_target = false
-	if (target_pos.IsValid) { // move cursor
-		const dist = latest_usercmd.MousePosition.Distance(target_pos)
-		const extend = ExecuteOrder.cursor_speed_min_accel + Math.min(Math.sqrt(dist), 1) * (
-			ExecuteOrder.cursor_speed_max_accel
-			- ExecuteOrder.cursor_speed_min_accel
-		) * ExecuteOrder.cursor_speed * dt
-		const dir = latest_usercmd.MousePosition
-			.GetDirectionTo(target_pos)
-			.MultiplyScalarForThis(Math.min(extend, dist))
-		ApplyParams(dir, current_time)
-		latest_usercmd.MousePosition.AddForThis(dir)
-		cursor_at_target = dist < (is_ui_order ? 0.0005 : 0.0025)
+	let cursorAtTarget = false
+	if (targetPos.IsValid) {
+		// move cursor
+		const dist = latestUsercmd.MousePosition.Distance(targetPos)
+		const extend =
+			ExecuteOrder.cursorSpeedMinAccel +
+			Math.min(Math.sqrt(dist), 1) *
+				(ExecuteOrder.cursorSpeedMaxAccel - ExecuteOrder.cursorSpeedMinAccel) *
+				ExecuteOrder.cursorSpeed *
+				dt
+		const dir = latestUsercmd.MousePosition.GetDirectionTo(
+			targetPos
+		).MultiplyScalarForThis(Math.min(extend, dist))
+		ApplyParams(dir, currentTime)
+		latestUsercmd.MousePosition.AddForThis(dir)
+		cursorAtTarget = dist < (isUIOrder ? 0.0005 : 0.0025)
 	}
-	const order_suits = !target_pos.IsValid || (
-		cursor_at_target
-		&& (
-			is_ui_order
-			|| latest_camera_red_zone_poly_screen.IsInside(target_pos)
-			|| !CanMoveCamera(camera_vec, target_pos)
-		)
-	)
+	const orderSuits =
+		!targetPos.IsValid ||
+		(cursorAtTarget &&
+			(isUIOrder ||
+				latestCameraRedZonePolyScreen.IsInside(targetPos) ||
+				!CanMoveCamera(cameraVec, targetPos)))
 	if (order !== undefined)
-		interacting_with_minimap ||= order[2] && current_time - cursor_at_minimap_at < order_linger_duration
+		interactingWithMinimap ||=
+			order[2] && currentTime - cursorAtMinimapAt < orderLingerDuration
 	// move camera via minimap
-	if (interacting_with_minimap) {
-		if (cursor_entered_minimap_at === 0 && GUIInfo.Minimap.Minimap.Contains(target_pos))
-			cursor_entered_minimap_at = current_time
+	if (interactingWithMinimap) {
 		if (
-			current_time - cursor_entered_minimap_at > ConVarsSDK.GetFloat("dota_minimap_misclick_time", 0.2)
-			&& cursor_at_target
+			cursorEnteredMinimapAt === 0 &&
+			GUIInfo.Minimap.Minimap.Contains(targetPos)
+		)
+			cursorEnteredMinimapAt = currentTime
+		if (
+			currentTime - cursorEnteredMinimapAt >
+				ConVarsSDK.GetFloat("dota_minimap_misclick_time", 0.2) &&
+			cursorAtTarget
 		) {
-			const eye_vector = WASM.GetEyeVector(default_camera_angles)
-			const lookatpos = MinimapSDK.MinimapToWorld(latest_usercmd.MousePosition.Multiply(RendererSDK.WindowSize))
-				.SubtractScalarX(eye_vector.x * default_camera_dist)
-				.SubtractScalarY(eye_vector.y * default_camera_dist)
-			camera_vec.x = lookatpos.x
-			camera_vec.y = lookatpos.y
-			if (cursor_at_minimap_at === 0)
-				cursor_at_minimap_at = current_time
+			const eyeVector = WASM.GetEyeVector(defaultCameraAngles)
+			const lookatpos = MinimapSDK.MinimapToWorld(
+				latestUsercmd.MousePosition.Multiply(RendererSDK.WindowSize)
+			)
+				.SubtractScalarX(eyeVector.x * defaultCameraDist)
+				.SubtractScalarY(eyeVector.y * defaultCameraDist)
+			cameraVec.x = lookatpos.x
+			cameraVec.y = lookatpos.y
+			if (cursorAtMinimapAt === 0) cursorAtMinimapAt = currentTime
 		}
 	} else {
-		cursor_at_minimap_at = 0
-		cursor_entered_minimap_at = 0
+		cursorAtMinimapAt = 0
+		cursorEnteredMinimapAt = 0
 	}
-	let moving_camera = false,
-		moved_x = false,
-		moved_y = false
-	const can_move_camera = CanMoveCamera(camera_vec, latest_usercmd.MousePosition)
-	{ // move camera via screen bounds
-		const threshold = 0.008 * RendererSDK.WindowSize.y / RendererSDK.WindowSize.x
-		const extend_dist = ExecuteOrder.camera_speed * dt
-		if (can_move_camera) {
-			if (latest_usercmd.MousePosition.x <= threshold) {
-				camera_vec.x -= extend_dist
-				moved_x = true
-				moving_camera = true
-			} else if (latest_usercmd.MousePosition.x >= 1 - threshold) {
-				camera_vec.x += extend_dist
-				moved_x = true
-				moving_camera = true
-			}
-			if (latest_usercmd.MousePosition.y <= threshold) {
-				camera_vec.y += extend_dist
-				moved_y = true
-				moving_camera = true
-			} else if (latest_usercmd.MousePosition.y >= 1 - threshold) {
-				camera_vec.y -= extend_dist
-				moved_y = true
-				moving_camera = true
-			}
-		}
-		if (!moving_camera && were_moving_camera)
-			camera_move_end = current_time
-		if (camera_move_end > current_time - camera_move_linger_duration) {
-			camera_vec.x += extend_dist * (camera_direction.x - 0.5)
-			camera_vec.y -= extend_dist * (camera_direction.y - 0.5)
-			if (camera_direction.x !== 0.5)
-				moved_x = true
-			if (camera_direction.y !== 0.5)
-				moved_y = true
-		}
-		were_moving_camera = moving_camera
-	}
-	if (
-		moving_camera
-		|| latest_camera_yellow_zone_poly_screen.IsInside(latest_usercmd.MousePosition)
-	)
-		yellow_zone_out_at = current_time
-	if (
-		moving_camera
-		|| latest_camera_green_zone_poly_screen.IsInside(latest_usercmd.MousePosition)
-	)
-		green_zone_out_at = current_time
-	let camera_limited_x = false,
-		camera_limited_y = false
+	let movingCamera = false,
+		movedX = false,
+		movedY = false
+	const canMoveCamera = CanMoveCamera(cameraVec, latestUsercmd.MousePosition)
 	{
-		const bounds_min = CameraBounds?.BoundsMin
-			?? (world_bounds !== undefined ? world_bounds[0] : undefined)
-		const bounds_max = CameraBounds?.BoundsMax
-			?? (world_bounds !== undefined ? world_bounds[1] : undefined)
-		if (bounds_min !== undefined && bounds_max !== undefined) {
-			const old_x = camera_vec.x,
-				old_y = camera_vec.y
-			camera_vec.x = Math.min(
-				Math.max(camera_vec.x, bounds_min.x),
-				bounds_max.x,
-			)
-			camera_vec.y = Math.min(
-				Math.max(camera_vec.y, bounds_min.y),
-				bounds_max.y,
-			)
-			camera_limited_x = Math.abs(camera_vec.x - old_x) > 0.01
-			camera_limited_y = Math.abs(camera_vec.y - old_y) > 0.01
-		}
-		UpdateCameraBounds(camera_vec)
-		{
-			const ar = ComputeTargetPos(camera_vec, current_time)
-			target_pos = ar[0]
-			can_finish_now = ar[1]
-			is_ui_order = ar[2]
-		}
-		if (target_pos instanceof Vector3) {
-			let ar = MoveCamera(camera_vec, target_pos, current_time)
-			if (ar[1] && last_order_used_minimap && last_order_finish > current_time - order_linger_duration_minimap) {
-				order = undefined
-				const target_pos_ = ComputeTargetPos(camera_vec, current_time)
-				target_pos = target_pos_[0]
-				can_finish_now = target_pos_[1]
-				is_ui_order = target_pos_[2]
-				if (target_pos instanceof Vector3)
-					ar = MoveCamera(camera_vec, target_pos, current_time)
+		// move camera via screen bounds
+		const threshold =
+			(0.008 * RendererSDK.WindowSize.y) / RendererSDK.WindowSize.x
+		const extendDist = ExecuteOrder.cameraSpeed * dt
+		if (canMoveCamera) {
+			if (latestUsercmd.MousePosition.x <= threshold) {
+				cameraVec.x -= extendDist
+				movedX = true
+				movingCamera = true
+			} else if (latestUsercmd.MousePosition.x >= 1 - threshold) {
+				cameraVec.x += extendDist
+				movedX = true
+				movingCamera = true
 			}
-			target_pos = ar[0]
-			interacting_with_minimap = ar[1]
-			if (interacting_with_minimap && order !== undefined)
-				order[2] = true
+			if (latestUsercmd.MousePosition.y <= threshold) {
+				cameraVec.y += extendDist
+				movedY = true
+				movingCamera = true
+			} else if (latestUsercmd.MousePosition.y >= 1 - threshold) {
+				cameraVec.y -= extendDist
+				movedY = true
+				movingCamera = true
+			}
+		}
+		if (!movingCamera && wereMovingCamera) cameraMoveEnd = currentTime
+		if (cameraMoveEnd > currentTime - cameraMoveLingerDuration) {
+			cameraVec.x += extendDist * (cameraDirection.x - 0.5)
+			cameraVec.y -= extendDist * (cameraDirection.y - 0.5)
+			if (cameraDirection.x !== 0.5) movedX = true
+			if (cameraDirection.y !== 0.5) movedY = true
+		}
+		wereMovingCamera = movingCamera
+	}
+	if (
+		movingCamera ||
+		latestCameraYellowZonePolyScreen.IsInside(latestUsercmd.MousePosition)
+	)
+		yellowZoneOutAt = currentTime
+	if (
+		movingCamera ||
+		latestCameraGreenZonePolyScreen.IsInside(latestUsercmd.MousePosition)
+	)
+		greenZoneOutAt = currentTime
+	let cameraLimitedX = false,
+		cameraLimitedY = false
+	{
+		const boundsMin =
+			CameraBounds?.BoundsMin ??
+			(worldBounds !== undefined ? worldBounds[0] : undefined)
+		const boundsMax =
+			CameraBounds?.BoundsMax ??
+			(worldBounds !== undefined ? worldBounds[1] : undefined)
+		if (boundsMin !== undefined && boundsMax !== undefined) {
+			const oldX = cameraVec.x,
+				oldY = cameraVec.y
+			cameraVec.x = Math.min(Math.max(cameraVec.x, boundsMin.x), boundsMax.x)
+			cameraVec.y = Math.min(Math.max(cameraVec.y, boundsMin.y), boundsMax.y)
+			cameraLimitedX = Math.abs(cameraVec.x - oldX) > 0.01
+			cameraLimitedY = Math.abs(cameraVec.y - oldY) > 0.01
+		}
+		UpdateCameraBounds(cameraVec)
+		{
+			const ar = ComputeTargetPos(cameraVec, currentTime)
+			targetPos = ar[0]
+			canFinishNow = ar[1]
+			isUIOrder = ar[2]
+		}
+		if (targetPos instanceof Vector3) {
+			let ar = MoveCamera(cameraVec, targetPos, currentTime)
+			if (
+				ar[1] &&
+				lastOrderUsedMinimap &&
+				lastOrderFinish > currentTime - orderLingerDurationMinimap
+			) {
+				order = undefined
+				const targetPosAr = ComputeTargetPos(cameraVec, currentTime)
+				targetPos = targetPosAr[0]
+				canFinishNow = targetPosAr[1]
+				isUIOrder = targetPosAr[2]
+				if (targetPos instanceof Vector3)
+					ar = MoveCamera(cameraVec, targetPos, currentTime)
+			}
+			targetPos = ar[0]
+			interactingWithMinimap = ar[1]
+			if (interactingWithMinimap && order !== undefined) order[2] = true
 		}
 	}
-	const camera_limited = !can_move_camera || (moving_camera && camera_limited_x === moved_x && camera_limited_y === moved_y)
+	const cameraLimited =
+		!canMoveCamera ||
+		(movingCamera && cameraLimitedX === movedX && cameraLimitedY === movedY)
 	if (
-		(!moving_camera && !interacting_with_minimap)
-		|| camera_limited
-		|| !target_pos.IsValid
+		(!movingCamera && !interactingWithMinimap) ||
+		cameraLimited ||
+		!targetPos.IsValid
 	) {
-		let execute_order = camera_limited || !target_pos.IsValid
-		if (target_pos instanceof Vector2)
-			execute_order ||= order_suits || (
-				cursor_at_target
-				&& (
-					is_ui_order
-					|| latest_camera_red_zone_poly_screen.IsInside(target_pos)
-				)
-			)
-		if ((can_finish_now || !target_pos.IsValid) && execute_order && order !== undefined) {
-			if (!ExecuteOrder.prefire_orders) {
+		let executeOrder = cameraLimited || !targetPos.IsValid
+		if (targetPos instanceof Vector2)
+			executeOrder ||=
+				orderSuits ||
+				(cursorAtTarget &&
+					(isUIOrder || latestCameraRedZonePolyScreen.IsInside(targetPos)))
+		if (
+			(canFinishNow || !targetPos.IsValid) &&
+			executeOrder &&
+			order !== undefined
+		) {
+			if (!ExecuteOrder.PrefireOrders) {
 				order[0].Execute()
 				order[3] = true
 			}
-			if (ExecuteOrder.debug_orders)
-				console.log(`Finished order ${order[0].OrderType} after ${current_time - order[1]}ms at ${GameState.RawGameTime}`)
-			last_order_finish = current_time
-			last_order_used_minimap = order[2]
-			ExecuteOrder.order_queue.splice(0, 1)
+			if (ExecuteOrder.DebugOrders)
+				console.log(
+					`Finished order ${order[0].OrderType} after ${
+						currentTime - order[1]
+					}ms at ${GameState.RawGameTime}`
+				)
+			lastOrderFinish = currentTime
+			lastOrderUsedMinimap = order[2]
+			ExecuteOrder.orderQueue.splice(0, 1)
 		}
 	}
-	if (order === undefined && last_order_finish < current_time - (last_order_used_minimap ? order_linger_duration_minimap : order_linger_duration))
-		last_order_target = undefined
-	latest_camera_x = latest_usercmd.CameraPosition.x = camera_vec.x
-	latest_camera_y = latest_usercmd.CameraPosition.y = camera_vec.y
+	if (
+		order === undefined &&
+		lastOrderFinish <
+			currentTime -
+				(lastOrderUsedMinimap
+					? orderLingerDurationMinimap
+					: orderLingerDuration)
+	)
+		lastOrderTarget = undefined
+	latestCameraX = latestUsercmd.CameraPosition.x = cameraVec.x
+	latestCameraY = latestUsercmd.CameraPosition.y = cameraVec.y
 
-	latest_cursor.CopyFrom(latest_usercmd.MousePosition)
-	latest_usercmd.MousePosition
-		.MultiplyForThis(RendererSDK.WindowSize)
+	latestCursor.CopyFrom(latestUsercmd.MousePosition)
+	latestUsercmd.MousePosition.MultiplyForThis(RendererSDK.WindowSize)
 		.RoundForThis()
 		.DivideForThis(RendererSDK.WindowSize)
-	latest_usercmd.VectorUnderCursor.CopyFrom(debug_cursor.CopyFrom(RendererSDK.ScreenToWorldFar(
-		[latest_cursor],
-		camera_vec,
-		default_camera_dist,
-	)[0]))
-	const units = Units.filter(ent => ent.IsVisible && ent.IsSpawned)
-	const intersected_units_mask = EntityHitBoxesIntersect(units, camera_vec, latest_usercmd.MousePosition)
-	const intersected_units = units.filter((_, i) => intersected_units_mask[i])
-	latest_usercmd.WeaponSelect = (
-		(order !== undefined || ExecuteOrder.hold_orders > 0)
-		&& last_order_target instanceof Unit
-		&& intersected_units.includes(last_order_target)
-	) ? last_order_target : orderByFirst(
-		intersected_units,
-		ent => latest_usercmd.VectorUnderCursor.DistanceSqr(ent.Position),
+	latestUsercmd.VectorUnderCursor.CopyFrom(
+		debugCursor.CopyFrom(
+			RendererSDK.ScreenToWorldFar(
+				[latestCursor],
+				cameraVec,
+				defaultCameraDist
+			)[0]
+		)
 	)
+	const units = Units.filter(ent => ent.IsVisible && ent.IsSpawned)
+	const intersectedUnitsMask = EntityHitBoxesIntersect(
+		units,
+		cameraVec,
+		latestUsercmd.MousePosition
+	)
+	const intersectedUnits = units.filter((_, i) => intersectedUnitsMask[i])
+	latestUsercmd.WeaponSelect =
+		(order !== undefined || ExecuteOrder.HoldOrders > 0) &&
+		lastOrderTarget instanceof Unit &&
+		intersectedUnits.includes(lastOrderTarget)
+			? lastOrderTarget
+			: orderByFirst(intersectedUnits, ent =>
+					latestUsercmd.VectorUnderCursor.DistanceSqr(ent.Position)
+			  )
 
-	latest_usercmd.Write()
+	latestUsercmd.Write()
 	WriteUserCmd()
 }
 EventsSDK.on("Draw", ProcessUserCmd)
 Events.on("RequestUserCmd", () => {
-	if (!ExecuteOrder.disable_humanizer)
-		ProcessUserCmd(true)
+	if (!ExecuteOrder.DisableHumanizer) ProcessUserCmd(true)
 })
 
 const debugParticles = new ParticlesSDK()
 EventsSDK.on("Draw", () => {
 	if (
-		!ExecuteOrder.debug_draw
-		|| ExecuteOrder.disable_humanizer
-		|| GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME
+		!ExecuteOrder.DebugDraw ||
+		ExecuteOrder.DisableHumanizer ||
+		GameState.UIState !== DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME
 	) {
 		debugParticles.DestroyAll()
 		return
 	}
 	const hero = LocalPlayer?.Hero
 	if (hero !== undefined) {
-		debug_camera_poly.Draw("1", hero, debugParticles, Color.Aqua, 40, 40, false)
-		latest_camera_green_zone_poly_world.Draw("2", hero, debugParticles, Color.Green, 40, 40, false)
-		latest_camera_yellow_zone_poly_world.Draw("3", hero, debugParticles, Color.Yellow, 40, 40, false)
-		latest_camera_red_zone_poly_world.Draw("4", hero, debugParticles, Color.Red, 40, 40, false)
+		debugCameraPoly.Draw("1", hero, debugParticles, Color.Aqua, 40, 40, false)
+		latestCameraGreenZonePolyWorld.Draw(
+			"2",
+			hero,
+			debugParticles,
+			Color.Green,
+			40,
+			40,
+			false
+		)
+		latestCameraYellowZonePolyWorld.Draw(
+			"3",
+			hero,
+			debugParticles,
+			Color.Yellow,
+			40,
+			40,
+			false
+		)
+		latestCameraRedZonePolyWorld.Draw(
+			"4",
+			hero,
+			debugParticles,
+			Color.Red,
+			40,
+			40,
+			false
+		)
 	}
 
-	const screen_size = RendererSDK.WindowSize,
-		debug_point = RendererSDK.WorldToScreen(debug_cursor)
-	if (debug_point !== undefined)
+	const windowSize = RendererSDK.WindowSize,
+		debugPoint = RendererSDK.WorldToScreen(debugCursor)
+	if (debugPoint !== undefined)
 		RendererSDK.Image(
 			"resource/cursor/source/cursor_default.png",
-			debug_point,
+			debugPoint,
 			-1,
 			new Vector2(
-				GUIInfo.ScaleWidth(28, screen_size),
-				GUIInfo.ScaleHeight(28, screen_size),
-			),
+				GUIInfo.ScaleWidth(28, windowSize),
+				GUIInfo.ScaleHeight(28, windowSize)
+			)
 		)
 })
 
-let ctrl_down = false,
-	shift_down = false
+let ctrlDown = false,
+	shiftDown = false
 InputEventSDK.on("KeyDown", key => {
 	if (key === VKeys.CONTROL || key === VKeys.LCONTROL || key === VKeys.RCONTROL)
-		ctrl_down = true
+		ctrlDown = true
 	if (key === VKeys.SHIFT || key === VKeys.LSHIFT || key === VKeys.RSHIFT)
-		shift_down = true
+		shiftDown = true
 })
 InputEventSDK.on("KeyUp", key => {
 	if (key === VKeys.CONTROL || key === VKeys.LCONTROL || key === VKeys.RCONTROL)
-		ctrl_down = false
+		ctrlDown = false
 	if (key === VKeys.SHIFT || key === VKeys.LSHIFT || key === VKeys.RSHIFT)
-		shift_down = false
+		shiftDown = false
 })
-const LatestUnitOrder_view = new DataView(LatestUnitOrder.buffer)
+const latestUnitOrderView = new DataView(LatestUnitOrder.buffer)
 function deserializeOrder(): ExecuteOrder {
-	const issuers_size = LatestUnitOrder_view.getUint32(26, true)
+	const issuersSize = latestUnitOrderView.getUint32(26, true)
 	let issuers: Unit[] = []
-	for (let i = 0; i < issuers_size; i++) {
-		const ent_id = LatestUnitOrder_view.getUint32(30 + (i * 4), true)
-		const ent = EntityManager.EntityByIndex(ent_id)
-		if (ent instanceof Unit)
-			issuers.push(ent)
+	for (let i = 0; i < issuersSize; i++) {
+		const entID = latestUnitOrderView.getUint32(30 + i * 4, true)
+		const ent = EntityManager.EntityByIndex(entID)
+		if (ent instanceof Unit) issuers.push(ent)
 	}
 	issuers = [...new Set([...issuers, ...InputManager.SelectedEntities])]
 
-	const target = LatestUnitOrder_view.getUint32(16, true),
-		ability = LatestUnitOrder_view.getUint32(20, true),
-		order_type = LatestUnitOrder_view.getUint32(0, true) as dotaunitorder_t
+	const target = latestUnitOrderView.getUint32(16, true),
+		ability = latestUnitOrderView.getUint32(20, true),
+		orderType = latestUnitOrderView.getUint32(0, true) as dotaunitorder_t
 	let target_: Entity | number = target,
 		ability_: Ability | number = ability
-	if (order_type === dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE)
-		target_ = EntityManager.AllEntities.find(ent => (
-			(ent instanceof Tree || ent instanceof TempTree)
-			&& ent.BinaryID === target
-		)) ?? target_
-	else if (order_type !== dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM)
+	if (orderType === dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE)
+		target_ =
+			EntityManager.AllEntities.find(
+				ent =>
+					(ent instanceof Tree || ent instanceof TempTree) &&
+					ent.BinaryID === target
+			) ?? target_
+	else if (orderType !== dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM)
 		target_ = EntityManager.EntityByIndex(target_) ?? target_
-	if (order_type !== dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM)
+	if (orderType !== dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM)
 		ability_ = (EntityManager.EntityByIndex(ability_) as Ability) ?? ability_
-	switch (order_type) {
+	switch (orderType) {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
@@ -1258,40 +1429,47 @@ function deserializeOrder(): ExecuteOrder {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_GIVE_ITEM:
 			break
 		default:
-			if (ctrl_down && ConVarsSDK.GetBoolean("dota_player_multipler_orders", false))
-				issuers = [...new Set([...issuers, ...Units.filter(ent => (
-					ent.IsControllable
-					&& ent.RootOwner === LocalPlayer
-					&& ent.IsAlive
-					&& !ent.IsEnemy()
-					&& ent.ShouldUnifyOrders
-				))])]
+			if (
+				ctrlDown &&
+				ConVarsSDK.GetBoolean("dota_player_multipler_orders", false)
+			)
+				issuers = [
+					...new Set([
+						...issuers,
+						...Units.filter(
+							ent =>
+								ent.IsControllable &&
+								ent.RootOwner === LocalPlayer &&
+								ent.IsAlive &&
+								!ent.IsEnemy() &&
+								ent.ShouldUnifyOrders
+						),
+					]),
+				]
 			break
 	}
 	return new ExecuteOrder(
-		order_type,
+		orderType,
 		target_,
 		new Vector3(
-			LatestUnitOrder_view.getFloat32(4, true),
-			LatestUnitOrder_view.getFloat32(8, true),
-			LatestUnitOrder_view.getFloat32(12, true),
+			latestUnitOrderView.getFloat32(4, true),
+			latestUnitOrderView.getFloat32(8, true),
+			latestUnitOrderView.getFloat32(12, true)
 		),
 		ability_,
 		issuers,
-		(LatestUnitOrder_view.getUint8(25) !== 0) || shift_down,
-		LatestUnitOrder_view.getUint8(24) !== 0,
+		latestUnitOrderView.getUint8(25) !== 0 || shiftDown,
+		latestUnitOrderView.getUint8(24) !== 0
 	)
 }
 
 Events.on("PrepareUnitOrders", () => {
 	const order = deserializeOrder()
-	if (order === undefined)
-		return true
+	if (order === undefined) return true
 
 	const ret = EventsSDK.emit("PrepareUnitOrders", true, order)
-	if (!ret)
-		return false
-	if (!ExecuteOrder.disable_humanizer) {
+	if (!ret) return false
+	if (!ExecuteOrder.DisableHumanizer) {
 		order.ExecuteQueued()
 		ProcessUserCmd(true)
 		return false
@@ -1299,36 +1477,36 @@ Events.on("PrepareUnitOrders", () => {
 	return true
 })
 
-Events.on("DebuggerPrepareUnitOrders", (is_user_input: boolean, was_cancelled: boolean) => {
+Events.on("DebuggerPrepareUnitOrders", (isUserInput, wasCancelled) => {
 	const order = deserializeOrder()
 	if (order !== undefined)
 		EventsSDK.emit(
 			"DebuggerPrepareUnitOrders",
 			true,
 			order,
-			is_user_input,
-			was_cancelled,
+			isUserInput,
+			wasCancelled
 		)
 })
 
 function ClearHumanizerState() {
-	ExecuteOrder.order_queue.splice(0)
-	ExecuteOrder.last_move = undefined
-	last_order_finish = 0
-	latest_camera_x = 0
-	latest_camera_y = 0
-	current_order = undefined
-	debug_cursor.toZero()
-	latest_update = 0
-	latest_usercmd = new UserCmd()
-	camera_move_end = 0
-	camera_direction.toZero()
-	yellow_zone_out_at = 0
-	green_zone_out_at = 0
-	cursor_at_minimap_at = 0
-	cursor_entered_minimap_at = 0
-	last_unit_switch = 0
-	initialized_mouse_position = false
+	ExecuteOrder.orderQueue.splice(0)
+	ExecuteOrder.lastMove = undefined
+	lastOrderFinish = 0
+	latestCameraX = 0
+	latestCameraY = 0
+	currentOrder = undefined
+	debugCursor.toZero()
+	latestUpdate = 0
+	latestUsercmd = new UserCmd()
+	cameraMoveEnd = 0
+	cameraDirection.toZero()
+	yellowZoneOutAt = 0
+	greenZoneOutAt = 0
+	cursorAtMinimapAt = 0
+	cursorEnteredMinimapAt = 0
+	lastUnitSwitch = 0
+	initializedMousePosition = false
 	InputManager.IsShopOpen = false
 	InputManager.IsScoreboardOpen = false
 	InputManager.SelectedEntities.splice(0)

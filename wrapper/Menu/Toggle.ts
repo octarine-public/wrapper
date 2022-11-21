@@ -8,42 +8,56 @@ import { Base, IMenu } from "./Base"
 
 export class Toggle extends Base {
 	public static OnWindowSizeChanged(): void {
-		Toggle.toggle_background_size.x = GUIInfo.ScaleWidth(Toggle.orig_toggle_background_size.x)
-		Toggle.toggle_background_size.y = GUIInfo.ScaleHeight(Toggle.orig_toggle_background_size.y)
-		Toggle.toggle_size.x = GUIInfo.ScaleWidth(Toggle.orig_toggle_size.x)
-		Toggle.toggle_size.y = GUIInfo.ScaleHeight(Toggle.orig_toggle_size.y)
-		Toggle.toggle_background_offset.x = GUIInfo.ScaleWidth(12)
-		Toggle.toggle_background_offset.y = GUIInfo.ScaleHeight(12)
-		Toggle.toggle_offset.x = GUIInfo.ScaleWidth(3)
-		Toggle.toggle_offset.y = GUIInfo.ScaleHeight(3)
+		Toggle.toggleBackgroundSize.x = GUIInfo.ScaleWidth(
+			Toggle.origToggleBackgroundSize.x
+		)
+		Toggle.toggleBackgroundSize.y = GUIInfo.ScaleHeight(
+			Toggle.origToggleBackgroundSize.y
+		)
+		Toggle.toggleSize.x = GUIInfo.ScaleWidth(Toggle.origToggleSize.x)
+		Toggle.toggleSize.y = GUIInfo.ScaleHeight(Toggle.origToggleSize.y)
+		Toggle.toggleBackgroundOffset.x = GUIInfo.ScaleWidth(12)
+		Toggle.toggleBackgroundOffset.y = GUIInfo.ScaleHeight(12)
+		Toggle.toggleOffset.x = GUIInfo.ScaleWidth(3)
+		Toggle.toggleOffset.y = GUIInfo.ScaleHeight(3)
 	}
 
-	private static readonly toggle_background_path = "menu/toggle_background.svg"
-	private static readonly toggle_path = "menu/toggle.svg"
-	private static readonly orig_toggle_background_size = RendererSDK.GetImageSize(Toggle.toggle_background_path)
-	private static readonly toggle_background_size = new Vector2()
-	private static readonly orig_toggle_size = RendererSDK.GetImageSize(Toggle.toggle_path)
-	private static readonly toggle_size = new Vector2()
-	private static readonly toggle_background_offset = new Vector2()
-	private static readonly toggle_offset = new Vector2()
-	private static readonly toggle_background_color_active = new Color(104, 4, 255)
-	private static readonly toggle_background_color_inactive = new Color(31, 30, 53)
-	private static readonly text_toggle_gap = 10
-	private static readonly animation_time = 150
+	private static readonly toggleBackgroundPath = "menu/toggle_background.svg"
+	private static readonly togglePath = "menu/toggle.svg"
+	private static readonly origToggleBackgroundSize = RendererSDK.GetImageSize(
+		Toggle.toggleBackgroundPath
+	)
+	private static readonly toggleBackgroundSize = new Vector2()
+	private static readonly origToggleSize = RendererSDK.GetImageSize(
+		Toggle.togglePath
+	)
+	private static readonly toggleSize = new Vector2()
+	private static readonly toggleBackgroundOffset = new Vector2()
+	private static readonly toggleOffset = new Vector2()
+	private static readonly toggleBackgroundColorActive = new Color(104, 4, 255)
+	private static readonly toggleBackgroundColorInactive = new Color(31, 30, 53)
+	private static readonly textToggleGap = 10
+	private static readonly animationTime = 150
 
 	public value = true
-	private animation_start_time = 0
-	private readonly current_color = new Color()
+	private animationStartTime = 0
+	private readonly currentColor = new Color()
 
-	constructor(parent: IMenu, name: string, default_value: boolean, tooltip = "") {
+	constructor(
+		parent: IMenu,
+		name: string,
+		defaultValue: boolean,
+		tooltip = ""
+	) {
 		super(parent, name, tooltip)
-		this.value = default_value
+		this.value = defaultValue
 	}
 
-	public get ConfigValue() { return this.value }
+	public get ConfigValue() {
+		return this.value
+	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || typeof value !== "boolean")
-			return
+		if (this.ShouldIgnoreNewConfigValue || typeof value !== "boolean") return
 		this.value = value ?? this.value
 	}
 	public get ClassPriority(): number {
@@ -51,63 +65,74 @@ export class Toggle extends Base {
 	}
 
 	private get ToggleRect() {
-		const base_pos = this.Position
-			.Clone()
+		const basePos = this.Position.Clone()
 			.AddScalarX(this.parent.EntriesSizeX)
 			.AddScalarY(this.Size.y)
-			.SubtractForThis(Toggle.toggle_background_offset)
-		return new Rectangle(base_pos.Subtract(Toggle.toggle_background_size), base_pos)
+			.SubtractForThis(Toggle.toggleBackgroundOffset)
+		return new Rectangle(basePos.Subtract(Toggle.toggleBackgroundSize), basePos)
 	}
 
 	public Update(): boolean {
-		if (!super.Update())
-			return false
+		if (!super.Update()) return false
 		this.Size.x =
-			this.text_offset.x
-			+ this.name_size.x
-			+ Toggle.text_toggle_gap
-			+ Toggle.toggle_background_size.x
-			+ Toggle.toggle_background_offset.x
+			this.textOffset.x +
+			this.nameSize.x +
+			Toggle.textToggleGap +
+			Toggle.toggleBackgroundSize.x +
+			Toggle.toggleBackgroundOffset.x
 		return true
 	}
 
 	public OnActivate(func: (caller: this) => any) {
 		return this.OnValue(caller => {
-			if (caller.value)
-				func(caller)
+			if (caller.value) func(caller)
 		})
 	}
 	public OnDeactivate(func: (caller: this) => any) {
 		return this.OnValue(caller => {
-			if (!caller.value)
-				func(caller)
+			if (!caller.value) func(caller)
 		})
 	}
 	public Render(): void {
 		super.Render()
-		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
-		const animation_state = Math.min(1, (hrtime() - this.animation_start_time) / Toggle.animation_time)
-		const primary_color = this.value ? Toggle.toggle_background_color_active : Toggle.toggle_background_color_inactive,
-			secondary_color = this.value ? Toggle.toggle_background_color_inactive : Toggle.toggle_background_color_active
-		const toggle_rect = this.ToggleRect
-		this.current_color.r = (primary_color.r * animation_state) + (secondary_color.r * (1 - animation_state))
-		this.current_color.g = (primary_color.g * animation_state) + (secondary_color.g * (1 - animation_state))
-		this.current_color.b = (primary_color.b * animation_state) + (secondary_color.b * (1 - animation_state))
-		RendererSDK.Image(
-			Toggle.toggle_background_path,
-			toggle_rect.pos1,
-			-1,
-			Toggle.toggle_background_size,
-			this.current_color,
+		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
+		const animationState = Math.min(
+			1,
+			(hrtime() - this.animationStartTime) / Toggle.animationTime
 		)
-		const toggle_pos = this.value ? animation_state : 1 - animation_state
+		const primaryColor = this.value
+				? Toggle.toggleBackgroundColorActive
+				: Toggle.toggleBackgroundColorInactive,
+			secondaryColor = this.value
+				? Toggle.toggleBackgroundColorInactive
+				: Toggle.toggleBackgroundColorActive
+		const toggleRect = this.ToggleRect
+		this.currentColor.r =
+			primaryColor.r * animationState + secondaryColor.r * (1 - animationState)
+		this.currentColor.g =
+			primaryColor.g * animationState + secondaryColor.g * (1 - animationState)
+		this.currentColor.b =
+			primaryColor.b * animationState + secondaryColor.b * (1 - animationState)
 		RendererSDK.Image(
-			Toggle.toggle_path,
-			toggle_rect.pos1
-				.Add(Toggle.toggle_offset)
-				.AddScalarX((toggle_rect.Size.x - Toggle.toggle_size.x - (Toggle.toggle_offset.x * 2)) * toggle_pos),
+			Toggle.toggleBackgroundPath,
+			toggleRect.pos1,
 			-1,
-			Toggle.toggle_size,
+			Toggle.toggleBackgroundSize,
+			this.currentColor
+		)
+		const togglePos = this.value ? animationState : 1 - animationState
+		RendererSDK.Image(
+			Toggle.togglePath,
+			toggleRect.pos1
+				.Add(Toggle.toggleOffset)
+				.AddScalarX(
+					(toggleRect.Size.x -
+						Toggle.toggleSize.x -
+						Toggle.toggleOffset.x * 2) *
+						togglePos
+				),
+			-1,
+			Toggle.toggleSize
 		)
 	}
 
@@ -116,7 +141,7 @@ export class Toggle extends Base {
 	}
 	public OnMouseLeftUp(): boolean {
 		this.value = !this.value
-		this.animation_start_time = hrtime()
+		this.animationStartTime = hrtime()
 		this.TriggerOnValueChangedCBs()
 		return false
 	}

@@ -5,34 +5,33 @@ import { EPropertyType, PropertyType } from "./Enums/PropertyType"
 import { Entity } from "./Objects/Base/Entity"
 import { RegisterClass, RegisterFieldHandler } from "./Objects/NativeToSDK"
 
-export function WrapperClass(networked_class_name: string) {
-	return (constructor: object) => RegisterClass(networked_class_name, constructor as Constructor<Entity>)
+export function WrapperClass(networkedClassName: string) {
+	return (constructor: object) =>
+		RegisterClass(networkedClassName, constructor as Constructor<Entity>)
 }
 
-const convert_buf = new ArrayBuffer(16)
-const convert_uint8 = new Uint8Array(convert_buf),
-	convert_uint32 = new Uint32Array(convert_buf),
-	convert_uint64 = new BigUint64Array(convert_buf),
-	convert_float32 = new Float32Array(convert_buf)
+const convertBuf = new ArrayBuffer(16)
+const convertUint8 = new Uint8Array(convertBuf),
+	convertUint32 = new Uint32Array(convertBuf),
+	convertUint64 = new BigUint64Array(convertBuf),
+	convertFloat32 = new Float32Array(convertBuf)
 function ReencodeProperty(
 	prop: any,
-	new_type: EPropertyType,
-	networked_type: EPropertyType,
+	newType: EPropertyType,
+	networkedType: EPropertyType
 ): PropertyType {
-	convert_uint8.fill(0)
+	convertUint8.fill(0)
 	if (typeof prop === "string") {
-		if (new_type === EPropertyType.STRING)
-			return prop
+		if (newType === EPropertyType.STRING) return prop
 		throw `Tried to cast string to ${typeof prop} ${prop?.constructor?.name}`
 	} else if (typeof prop === "boolean") {
-		if (new_type === EPropertyType.BOOL)
-			return prop
-		convert_uint8[0] = prop ? 1 : 0
+		if (newType === EPropertyType.BOOL) return prop
+		convertUint8[0] = prop ? 1 : 0
 	} else if (typeof prop === "number") {
 		if (
-			networked_type === EPropertyType.INT32
-			|| networked_type === EPropertyType.INT16
-			|| networked_type === EPropertyType.INT8
+			networkedType === EPropertyType.INT32 ||
+			networkedType === EPropertyType.INT16 ||
+			networkedType === EPropertyType.INT8
 		) {
 			prop <<= 1
 			if (prop < 0) {
@@ -40,86 +39,93 @@ function ReencodeProperty(
 				prop |= 1
 			}
 		}
-		convert_uint32[0] = prop
+		convertUint32[0] = prop
 	} else if (typeof prop === "bigint") {
-		if (networked_type === EPropertyType.INT64) {
+		if (networkedType === EPropertyType.INT64) {
 			prop <<= 1n
 			if (prop < 0n) {
 				prop *= -1n
 				prop |= 1n
 			}
 		}
-		convert_uint64[0] = prop
+		convertUint64[0] = prop
 	} else if (prop instanceof Vector4) {
-		convert_float32[0] = prop.x
-		convert_float32[1] = prop.y
-		convert_float32[2] = prop.z
-		convert_float32[3] = prop.w
+		convertFloat32[0] = prop.x
+		convertFloat32[1] = prop.y
+		convertFloat32[2] = prop.z
+		convertFloat32[3] = prop.w
 	} else if (prop instanceof Vector3) {
-		convert_float32[0] = prop.x
-		convert_float32[1] = prop.y
-		convert_float32[2] = prop.z
+		convertFloat32[0] = prop.x
+		convertFloat32[1] = prop.y
+		convertFloat32[2] = prop.z
 	} else if (prop instanceof Vector2) {
-		convert_float32[0] = prop.x
-		convert_float32[1] = prop.y
+		convertFloat32[0] = prop.x
+		convertFloat32[1] = prop.y
 	} else
 		throw `Tried to cast ${typeof prop} ${prop?.constructor?.name} to string`
 
-	switch (new_type) {
+	switch (newType) {
 		case EPropertyType.INT8:
 		case EPropertyType.INT16:
 		case EPropertyType.INT32: {
-			let val = convert_uint32[0]
-			if ((val & 1) !== 0)
-				val *= -1
+			let val = convertUint32[0]
+			if ((val & 1) !== 0) val *= -1
 			val >>= 1
 			return val
 		}
 		case EPropertyType.INT64: {
-			let val = convert_uint64[0]
-			if ((val & 1n) !== 0n)
-				val *= -1n
+			let val = convertUint64[0]
+			if ((val & 1n) !== 0n) val *= -1n
 			val >>= 1n
 			return val
 		}
 		case EPropertyType.UINT8:
 		case EPropertyType.UINT16:
 		case EPropertyType.UINT32:
-			return convert_uint32[0]
+			return convertUint32[0]
 		case EPropertyType.UINT64:
-			return convert_uint64[0]
+			return convertUint64[0]
 		case EPropertyType.BOOL:
-			return convert_uint8[0] !== 0
+			return convertUint8[0] !== 0
 		case EPropertyType.FLOAT:
-			return convert_float32[0]
+			return convertFloat32[0]
 		case EPropertyType.VECTOR2:
-			return new Vector2(convert_float32[0], convert_float32[1])
+			return new Vector2(convertFloat32[0], convertFloat32[1])
 		case EPropertyType.VECTOR3:
-			return new Vector3(convert_float32[0], convert_float32[1], convert_float32[2])
+			return new Vector3(
+				convertFloat32[0],
+				convertFloat32[1],
+				convertFloat32[2]
+			)
 		case EPropertyType.QUATERNION:
-			return new Vector4(convert_float32[0], convert_float32[1], convert_float32[2], convert_float32[3])
+			return new Vector4(
+				convertFloat32[0],
+				convertFloat32[1],
+				convertFloat32[2],
+				convertFloat32[3]
+			)
 		case EPropertyType.STRING:
-			throw `Tried to convert: ${new_type} to string`
+			throw `Tried to convert: ${newType} to string`
 		default:
-			throw `Unknown PropertyType: ${new_type}`
+			throw `Unknown PropertyType: ${newType}`
 	}
 }
 
 export function NetworkedBasicField(
-	networked_field_name: string,
-	prop_type = EPropertyType.INVALID,
-	networked_type = EPropertyType.INVALID,
+	networkedFieldName: string,
+	propType = EPropertyType.INVALID,
+	networkedType = EPropertyType.INVALID
 ) {
-	return (target: object, prop_name: string) => {
+	return (target: object, propName: string) => {
 		RegisterFieldHandler(
 			target.constructor as Constructor<Entity>,
-			networked_field_name,
-			(ent, new_val) => {
-				if (prop_type !== EPropertyType.INVALID)
-					new_val = ReencodeProperty(new_val, prop_type, networked_type)
-				const ent_ = ent as any
-				ent_[prop_name] = new_val
-			},
+			networkedFieldName,
+			(ent, newVal) => {
+				if (propType !== EPropertyType.INVALID)
+					newVal = ReencodeProperty(newVal, propType, networkedType)
+				const entAny = ent as any
+				entAny[propName] = newVal
+			}
 		)
 	}
 }

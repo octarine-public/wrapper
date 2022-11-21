@@ -19,101 +19,103 @@ import { Toggle } from "./Toggle"
 
 export class Node extends Base {
 	public static OnWindowSizeChanged(): void {
-		Node.arrow_size.x = GUIInfo.ScaleWidth(Node.orig_arrow_size.x)
-		Node.arrow_size.y = GUIInfo.ScaleHeight(Node.orig_arrow_size.y)
-		Node.arrow_offset.x = GUIInfo.ScaleWidth(8)
-		Node.arrow_offset.y = GUIInfo.ScaleHeight(8)
-		Node.arrow_text_gap = GUIInfo.ScaleWidth(10)
-		Node.icon_size.x = GUIInfo.ScaleWidth(24)
-		Node.icon_size.y = GUIInfo.ScaleHeight(24)
-		Node.icon_offset.x = GUIInfo.ScaleWidth(12)
-		Node.icon_offset.y = GUIInfo.ScaleHeight(8)
-		Node.text_offset_.x = GUIInfo.ScaleWidth(15)
-		Node.text_offset_.y = GUIInfo.ScaleHeight(13)
-		Node.text_offset_with_icon.x = GUIInfo.ScaleWidth(48)
-		Node.text_offset_with_icon.y = Node.text_offset_.y
-		Node.scrollbar_width = GUIInfo.ScaleWidth(3)
-		Node.scrollbar_offset.x = GUIInfo.ScaleWidth(2)
-		Node.scrollbar_offset.y = GUIInfo.ScaleHeight(2)
+		Node.arrowSize.x = GUIInfo.ScaleWidth(Node.origArrowSize.x)
+		Node.arrowSize.y = GUIInfo.ScaleHeight(Node.origArrowSize.y)
+		Node.arrowOffset.x = GUIInfo.ScaleWidth(8)
+		Node.arrowOffset.y = GUIInfo.ScaleHeight(8)
+		Node.arrowTextGap = GUIInfo.ScaleWidth(10)
+		Node.iconSize.x = GUIInfo.ScaleWidth(24)
+		Node.iconSize.y = GUIInfo.ScaleHeight(24)
+		Node.iconOffset.x = GUIInfo.ScaleWidth(12)
+		Node.iconOffset.y = GUIInfo.ScaleHeight(8)
+		Node.textOffsetNode.x = GUIInfo.ScaleWidth(15)
+		Node.textOffsetNode.y = GUIInfo.ScaleHeight(13)
+		Node.textOffsetWithIcon.x = GUIInfo.ScaleWidth(48)
+		Node.textOffsetWithIcon.y = Node.textOffsetNode.y
+		Node.scrollbarWidth = GUIInfo.ScaleWidth(3)
+		Node.scrollbarOffset.x = GUIInfo.ScaleWidth(2)
+		Node.scrollbarOffset.y = GUIInfo.ScaleHeight(2)
 	}
 
-	private static readonly arrow_active_path = "menu/arrow_active.svg"
-	private static readonly arrow_inactive_path = "menu/arrow_inactive.svg"
-	private static readonly scrollbar_path = "menu/scrollbar.svg"
-	private static scrollbar_width = 0
-	private static readonly scrollbar_offset = new Vector2()
-	private static readonly orig_arrow_size = RendererSDK.GetImageSize(Node.arrow_inactive_path)
-	private static readonly arrow_size = new Vector2()
-	private static readonly arrow_offset = new Vector2()
-	private static arrow_text_gap = 0
-	private static readonly icon_size = new Vector2()
-	private static readonly icon_offset = new Vector2()
-	private static readonly text_offset_ = new Vector2(15, 14)
-	private static readonly text_offset_with_icon = new Vector2()
+	private static readonly arrowActivePath = "menu/arrow_active.svg"
+	private static readonly arrowInactivePath = "menu/arrow_inactive.svg"
+	private static readonly scrollbarPath = "menu/scrollbar.svg"
+	private static scrollbarWidth = 0
+	private static readonly scrollbarOffset = new Vector2()
+	private static readonly origArrowSize = RendererSDK.GetImageSize(
+		Node.arrowInactivePath
+	)
+	private static readonly arrowSize = new Vector2()
+	private static readonly arrowOffset = new Vector2()
+	private static arrowTextGap = 0
+	private static readonly iconSize = new Vector2()
+	private static readonly iconOffset = new Vector2()
+	private static readonly textOffsetNode = new Vector2(15, 14)
+	private static readonly textOffsetWithIcon = new Vector2()
 
 	public entries: Base[] = []
-	public save_unused_configs = false
-	public sort_nodes = true
+	public SaveUnusedConfigs = false
+	public SortNodes = true
 	public EntriesSizeX = 0
 	public EntriesSizeY = 0
-	protected config_storage = Object.create(null)
-	protected active_element?: Base
-	protected is_open_ = false
-	protected readonly text_offset = Node.text_offset_
+	protected configStorage = Object.create(null)
+	protected activeElement?: Base
+	protected IsOpen_ = false
+	protected readonly textOffset = Node.textOffsetNode
 	private ScrollPosition = 0
 	private IsAtScrollEnd = true
 	private VisibleEntries = 0
 
-	constructor(parent: IMenu, name: string, private icon_path_ = "", tooltip = "", private icon_round_ = -1) {
+	constructor(
+		parent: IMenu,
+		name: string,
+		private iconPath_ = "",
+		tooltip = "",
+		private iconRound_ = -1
+	) {
 		super(parent, name, tooltip)
 	}
 
-	public get is_open(): boolean {
-		return this.parent.is_open && this.IsVisible && this.is_open_
+	public get IsOpen(): boolean {
+		return this.parent.IsOpen && this.IsVisible && this.IsOpen_
 	}
-	public set is_open(val: boolean) {
-		if (this.is_open_ === val)
-			return
-		if (!val)
-			this.OnMouseLeftUp(true)
-		this.is_open_ = val
-		this.is_active = val
+	public set IsOpen(val: boolean) {
+		if (this.IsOpen_ === val) return
+		if (!val) this.OnMouseLeftUp(true)
+		this.IsOpen_ = val
+		this.isActive = val
 	}
-	public get icon_path(): string {
-		return this.icon_path_
+	public get IconPath(): string {
+		return this.iconPath_
 	}
-	public set icon_path(val: string) {
-		this.icon_path_ = val
+	public set IconPath(val: string) {
+		this.iconPath_ = val
 		this.Update()
 	}
 
-	public get icon_round(): number {
-		return this.icon_round_
+	public get IconRound(): number {
+		return this.iconRound_
 	}
-	public set icon_round(val: number) {
-		this.icon_round_ = val
+	public set IconRound(val: number) {
+		this.iconRound_ = val
 		this.Update()
 	}
 
 	public get ConfigValue() {
-		if (!this.save_unused_configs && this.entries.length === 0)
-			return undefined
-		if (!this.save_unused_configs)
-			this.config_storage = Object.create(null)
+		if (!this.SaveUnusedConfigs && this.entries.length === 0) return undefined
+		if (!this.SaveUnusedConfigs) this.configStorage = Object.create(null)
 		this.entries.forEach(entry => {
 			if (entry.SaveConfig)
-				this.config_storage[entry.InternalName] = entry.ConfigValue
+				this.configStorage[entry.InternalName] = entry.ConfigValue
 		})
-		return this.config_storage
+		return this.configStorage
 	}
 	public set ConfigValue(obj) {
 		if (obj === undefined || typeof obj !== "object" || Array.isArray(obj))
 			return
-		if (this.save_unused_configs)
-			this.config_storage = obj
+		if (this.SaveUnusedConfigs) this.configStorage = obj
 		this.entries.forEach(entry => {
-			if (entry.SaveConfig)
-				entry.ConfigValue = obj[entry.InternalName]
+			if (entry.SaveConfig) entry.ConfigValue = obj[entry.InternalName]
 		})
 	}
 	public get ClassPriority(): number {
@@ -121,16 +123,13 @@ export class Node extends Base {
 	}
 	public get ScrollVisible() {
 		let remaining = -this.VisibleEntries
-		for (const entry of this.entries)
-			if (entry.IsVisible)
-				remaining++
+		for (const entry of this.entries) if (entry.IsVisible) remaining++
 		return remaining > 0
 	}
 	private get EntriesSizeX_(): number {
 		let width = 0
 		for (const entry of this.entries)
-			if (entry.IsVisible)
-				width = Math.max(width, entry.Size.x)
+			if (entry.IsVisible) width = Math.max(width, entry.Size.x)
 		return width
 	}
 	private get EntriesSizeY_(): number {
@@ -139,49 +138,36 @@ export class Node extends Base {
 			cnt = 0,
 			skip = this.ScrollPosition
 		for (const entry of this.entries) {
-			if (!entry.IsVisible || skip-- > 0)
-				continue
+			if (!entry.IsVisible || skip-- > 0) continue
 			height += entry.Size.y
-			if (++cnt >= visibleEntries)
-				break
+			if (++cnt >= visibleEntries) break
 		}
 		return height
 	}
 	private get EntriesRect() {
-		const pos = this.Position
-			.Clone()
-			.AddScalarX(this.parent.EntriesSizeX),
+		const pos = this.Position.Clone().AddScalarX(this.parent.EntriesSizeX),
 			height = this.EntriesSizeY
 		pos.y = Math.min(pos.y, RendererSDK.WindowSize.y - height)
 		return new Rectangle(
 			pos,
-			pos
-				.Clone()
-				.AddScalarX(this.EntriesSizeX)
-				.AddScalarY(height),
+			pos.Clone().AddScalarX(this.EntriesSizeX).AddScalarY(height)
 		)
 	}
 	public OnConfigLoaded() {
 		this.entries.forEach(entry => {
-			if (entry.SaveConfig)
-				entry.OnConfigLoaded()
+			if (entry.SaveConfig) entry.OnConfigLoaded()
 		})
 	}
 	public Update(recursive = false): boolean {
-		if (!super.Update(recursive))
-			return false
+		if (!super.Update(recursive)) return false
 		this.Size.x =
-			this.name_size.x
-			+ Node.arrow_size.x
-			+ Node.arrow_offset.x
-			+ Node.arrow_text_gap
-		if (this.icon_path !== "")
-			this.Size.AddScalarX(Node.text_offset_with_icon.x)
-		else
-			this.Size.AddScalarX(this.text_offset.x)
-		if (recursive)
-			for (const entry of this.entries)
-				entry.Update(true)
+			this.nameSize.x +
+			Node.arrowSize.x +
+			Node.arrowOffset.x +
+			Node.arrowTextGap
+		if (this.IconPath !== "") this.Size.AddScalarX(Node.textOffsetWithIcon.x)
+		else this.Size.AddScalarX(this.textOffset.x)
+		if (recursive) for (const entry of this.entries) entry.Update(true)
 		this.SortEntries()
 		this.UpdateScrollbar()
 		this.EntriesSizeX = this.EntriesSizeX_
@@ -203,15 +189,16 @@ export class Node extends Base {
 			this.Update()
 			updatedEntries = false
 		}
-		if (this.is_open) {
+		if (this.IsOpen) {
 			this.UpdateScrollbar()
-			const position = this.Position.Clone().AddScalarX(this.parent.EntriesSizeX)
+			const position = this.Position.Clone().AddScalarX(
+				this.parent.EntriesSizeX
+			)
 			position.y = Math.min(position.y, this.WindowSize.y - this.EntriesSizeY)
 			let skip = this.ScrollPosition,
 				visibleEntries = this.VisibleEntries
 			for (const entry of this.entries) {
-				if (!entry.IsVisible || skip-- > 0)
-					continue
+				if (!entry.IsVisible || skip-- > 0) continue
 				position.CopyTo(entry.Position)
 				if (entry.QueuedUpdate) {
 					entry.QueuedUpdate = false
@@ -220,90 +207,83 @@ export class Node extends Base {
 				updatedEntries = updatedEntries || entry.NeedsRootUpdate
 				entry.Render()
 				position.AddScalarY(entry.Size.y)
-				if (--visibleEntries <= 0)
-					break
+				if (--visibleEntries <= 0) break
 			}
-			if (updatedEntries)
-				this.Update()
+			if (updatedEntries) this.Update()
 		}
 
 		super.Render(this.parent instanceof Node) // only draw bars on non-root nodes
 
-		const TextPos = this.Position.Clone()
-		if (this.icon_path !== "") {
-			TextPos.AddForThis(Node.text_offset_with_icon)
-			RendererSDK.Image(this.icon_path, this.Position.Add(Node.icon_offset), this.icon_round, Node.icon_size)
-		} else
-			TextPos.AddForThis(this.text_offset)
+		const textPos = this.Position.Clone()
+		if (this.IconPath !== "") {
+			textPos.AddForThis(Node.textOffsetWithIcon)
+			RendererSDK.Image(
+				this.IconPath,
+				this.Position.Add(Node.iconOffset),
+				this.IconRound,
+				Node.iconSize
+			)
+		} else textPos.AddForThis(this.textOffset)
 
-		this.RenderTextDefault(this.Name, TextPos)
-		const arrow_pos = this.Position
-			.Clone()
+		this.RenderTextDefault(this.Name, textPos)
+		const arrowPos = this.Position.Clone()
 			.AddScalarX(this.parent.EntriesSizeX)
 			.AddScalarY(this.Size.y)
-			.SubtractForThis(Node.arrow_offset)
-			.SubtractForThis(Node.arrow_size)
-		if (this.is_open)
-			RendererSDK.Image(Node.arrow_active_path, arrow_pos, -1, Node.arrow_size)
-		else
-			RendererSDK.Image(Node.arrow_inactive_path, arrow_pos, -1, Node.arrow_size)
+			.SubtractForThis(Node.arrowOffset)
+			.SubtractForThis(Node.arrowSize)
+		if (this.IsOpen)
+			RendererSDK.Image(Node.arrowActivePath, arrowPos, -1, Node.arrowSize)
+		else RendererSDK.Image(Node.arrowInactivePath, arrowPos, -1, Node.arrowSize)
 	}
 	public PostRender(): void {
-		if (!this.is_open)
-			return
-		for (const entry of this.entries)
-			if (entry.IsVisible)
-				entry.PostRender()
+		if (!this.IsOpen) return
+		for (const entry of this.entries) if (entry.IsVisible) entry.PostRender()
 		if (this.ScrollVisible) {
-			const rect = this.GetScrollbarRect(this.GetScrollbarPositionsRect(this.EntriesRect))
-			RendererSDK.Image(Node.scrollbar_path, rect.pos1, -1, rect.Size)
+			const rect = this.GetScrollbarRect(
+				this.GetScrollbarPositionsRect(this.EntriesRect)
+			)
+			RendererSDK.Image(Node.scrollbarPath, rect.pos1, -1, rect.Size)
 		}
 	}
 
-	public OnParentNotVisible(ignore_open = false): void {
-		if (ignore_open || this.is_open)
+	public OnParentNotVisible(ignoreOpen = false): void {
+		if (ignoreOpen || this.IsOpen)
 			this.entries.forEach(entry => entry.OnParentNotVisible())
 	}
 
 	public OnMouseLeftDown(): boolean {
-		if (this.active_element !== undefined || this.IsHovered)
-			return false
-		if (!this.is_open)
-			return true
+		if (this.activeElement !== undefined || this.IsHovered) return false
+		if (!this.IsOpen) return true
 		for (const entry of this.entries)
 			if (entry.IsVisible && !entry.OnPreMouseLeftDown()) {
-				this.active_element = entry
+				this.activeElement = entry
 				return false
 			}
 		for (const entry of this.entries)
 			if (entry.IsVisible && !entry.OnMouseLeftDown()) {
-				this.active_element = entry
+				this.activeElement = entry
 				return false
 			}
 		return true
 	}
-	public OnMouseLeftUp(ignore_myself = false): boolean {
-		if (!ignore_myself && this.IsHovered) {
-			this.is_open = !this.is_open
-			if (this.is_open)
+	public OnMouseLeftUp(ignoreMyself = false): boolean {
+		if (!ignoreMyself && this.IsHovered) {
+			this.IsOpen = !this.IsOpen
+			if (this.IsOpen)
 				this.parent.entries.forEach(entry => {
-					if (entry instanceof Node && entry !== this)
-						entry.is_open = false
+					if (entry instanceof Node && entry !== this) entry.IsOpen = false
 				})
-			else
-				this.OnParentNotVisible(true)
+			else this.OnParentNotVisible(true)
 			return false
 		}
-		if (this.active_element === undefined)
-			return true
-		const ret = this.active_element.OnMouseLeftUp()
-		this.active_element = undefined
+		if (this.activeElement === undefined) return true
+		const ret = this.activeElement.OnMouseLeftUp()
+		this.activeElement = undefined
 		Base.SaveConfigASAP = true
 		return ret
 	}
 	public OnMouseWheel(up: boolean): boolean {
-		if (!this.is_open)
-			return false
+		if (!this.IsOpen) return false
 		if (this.ScrollVisible) {
 			const rect = this.EntriesRect
 			if (rect.Contains(this.MousePosition)) {
@@ -319,170 +299,278 @@ export class Node extends Base {
 				return true
 			}
 		}
-		return this.entries.some(entry => {
-			if (entry instanceof Node)
-				entry.OnMouseWheel(up)
-		})
+		return this.entries.some(entry =>
+			entry instanceof Node ? entry.OnMouseWheel(up) : false
+		)
 	}
-	public AddToggle(name: string, default_value: boolean = false, tooltip = "", priority = 0): Toggle {
-		return this.AddEntry(new Toggle(this, name, default_value, tooltip), priority)
+	public AddToggle(
+		name: string,
+		defaultValue: boolean = false,
+		tooltip = "",
+		priority = 0
+	): Toggle {
+		return this.AddEntry(
+			new Toggle(this, name, defaultValue, tooltip),
+			priority
+		)
 	}
-	public AddSlider(name: string, default_value = 0, min = 0, max = 100, precision = 0, tooltip = "", priority = 0): Slider {
-		return this.AddEntry(new Slider(this, name, default_value, min, max, precision, tooltip), priority)
+	public AddSlider(
+		name: string,
+		defaultValue = 0,
+		min = 0,
+		max = 100,
+		precision = 0,
+		tooltip = "",
+		priority = 0
+	): Slider {
+		return this.AddEntry(
+			new Slider(this, name, defaultValue, min, max, precision, tooltip),
+			priority
+		)
 	}
-	public AddNode(name: string, icon_path = "", tooltip = "", icon_round = -1, priority = 0): Node {
-		const node = this.entries.find(entry => entry instanceof Node && entry.InternalName === name) as Node
+	public AddNode(
+		name: string,
+		iconPath = "",
+		tooltip = "",
+		iconRound = -1,
+		priority = 0
+	): Node {
+		const node = this.entries.find(
+			entry => entry instanceof Node && entry.InternalName === name
+		) as Node
 		if (node !== undefined) {
-			if (node.icon_path === "")
-				node.icon_path = icon_path
+			if (node.IconPath === "") node.IconPath = iconPath
 			// TODO: should we do the same for tooltips?
 			return node
 		}
-		return this.AddEntry(new Node(this, name, icon_path, tooltip, icon_round), priority)
+		return this.AddEntry(
+			new Node(this, name, iconPath, tooltip, iconRound),
+			priority
+		)
 	}
-	public AddDropdown(name: string, values: string[], default_value = 0, tooltip = "", priority = 0): Dropdown {
-		return this.AddEntry(new Dropdown(this, name, values, default_value, tooltip), priority)
+	public AddDropdown(
+		name: string,
+		values: string[],
+		defaultValue = 0,
+		tooltip = "",
+		priority = 0
+	): Dropdown {
+		return this.AddEntry(
+			new Dropdown(this, name, values, defaultValue, tooltip),
+			priority
+		)
 	}
-	public AddKeybind(name: string, default_key = "", tooltip = "", priority = 0) {
-		return this.AddEntry(new KeyBind(this, name, default_key, tooltip), priority)
+	public AddKeybind(name: string, defaultKey = "", tooltip = "", priority = 0) {
+		return this.AddEntry(new KeyBind(this, name, defaultKey, tooltip), priority)
 	}
-	public AddImageSelector(name: string, values: string[], default_values = new Map<string, boolean>(), tooltip = "", created_default_state = false, priority = 0) {
-		return this.AddEntry(new ImageSelector(this, name, values, default_values, tooltip, created_default_state), priority)
+	public AddImageSelector(
+		name: string,
+		values: string[],
+		defaultValues = new Map<string, boolean>(),
+		tooltip = "",
+		createdDefaultState = false,
+		priority = 0
+	) {
+		return this.AddEntry(
+			new ImageSelector(
+				this,
+				name,
+				values,
+				defaultValues,
+				tooltip,
+				createdDefaultState
+			),
+			priority
+		)
 	}
 	public AddDynamicImageSelector(
 		name: string,
 		values: string[],
-		default_values = new Map<string, [boolean, /** default state */ boolean, /** default show */ boolean, /** show */ number /** priority */]>(),
-		all_default_state = false,
+		defaultValues = new Map<
+			string,
+			[
+				boolean,
+				/** default state */ boolean,
+				/** default show */ boolean,
+				/** show */ number /** priority */
+			]
+		>(),
+		allDefaultState = false,
 		tooltip = "",
-		priority = 0,
+		priority = 0
 	) {
-		return this.AddEntry(new DynamicImageSelector(this, name, values, default_values, all_default_state, tooltip), priority)
+		return this.AddEntry(
+			new DynamicImageSelector(
+				this,
+				name,
+				values,
+				defaultValues,
+				allDefaultState,
+				tooltip
+			),
+			priority
+		)
 	}
 	public AddButton(name: string, tooltip = "", priority = 0): Button {
 		return this.AddEntry(new Button(this, name, tooltip), priority)
 	}
 
-	public AddVector2(name: string, vector: Vector2, minVector?: Vector2 | number, maxVector?: Vector2 | number) {
+	public AddVector2(
+		name: string,
+		vector: Vector2,
+		minVector?: Vector2 | number,
+		maxVector?: Vector2 | number
+	) {
 		const node = this.AddNode(name)
 
 		if (typeof minVector === "number")
 			minVector = new Vector2(minVector, minVector)
 
-		if (!(minVector instanceof Vector2))
-			minVector = new Vector2(0, 0)
+		if (!(minVector instanceof Vector2)) minVector = new Vector2(0, 0)
 
 		if (typeof maxVector === "number")
 			maxVector = new Vector2(maxVector, maxVector)
 
-		if (!(maxVector instanceof Vector2))
-			maxVector = new Vector2(95, 95)
+		if (!(maxVector instanceof Vector2)) maxVector = new Vector2(95, 95)
 
-		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
-		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
+		const xSlider = node.AddSlider(
+			"Position: X",
+			vector.x,
+			minVector.x,
+			maxVector.x
+		)
+		const ySlider = node.AddSlider(
+			"Position: Y",
+			vector.y,
+			minVector.y,
+			maxVector.y
+		)
 
 		return {
-			node, X, Y,
+			node,
+			X: xSlider,
+			Y: ySlider,
 			get Vector() {
-				return new Vector2(X.value, Y.value)
+				return new Vector2(xSlider.value, ySlider.value)
 			},
 			set Vector({ x, y }: Vector2) {
-				X.value = x
-				Y.value = y
+				xSlider.value = x
+				ySlider.value = y
 			},
 		}
 	}
-	public AddVector3(name: string, vector: Vector3, minVector?: Vector3 | number, maxVector?: Vector3 | number) {
+	public AddVector3(
+		name: string,
+		vector: Vector3,
+		minVector?: Vector3 | number,
+		maxVector?: Vector3 | number
+	) {
 		const node = this.AddNode(name)
 
 		if (typeof minVector === "number")
 			minVector = new Vector3(minVector, minVector, minVector)
 
-		if (!(minVector instanceof Vector3))
-			minVector = new Vector3(0, 0)
+		if (!(minVector instanceof Vector3)) minVector = new Vector3(0, 0)
 
 		if (typeof maxVector === "number")
 			maxVector = new Vector3(maxVector, maxVector, maxVector)
 
-		if (!(maxVector instanceof Vector3))
-			maxVector = new Vector3(95, 95)
+		if (!(maxVector instanceof Vector3)) maxVector = new Vector3(95, 95)
 
-		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
-		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
-		const Z = node.AddSlider("Position: Z", vector.z, minVector.z, maxVector.z)
+		const xSlider = node.AddSlider(
+			"Position: X",
+			vector.x,
+			minVector.x,
+			maxVector.x
+		)
+		const ySlider = node.AddSlider(
+			"Position: Y",
+			vector.y,
+			minVector.y,
+			maxVector.y
+		)
+		const zSlider = node.AddSlider(
+			"Position: Z",
+			vector.z,
+			minVector.z,
+			maxVector.z
+		)
 
 		return {
-			node, X, Y, Z,
+			node,
+			X: xSlider,
+			Y: ySlider,
+			Z: zSlider,
 			get Vector() {
-				return new Vector3(X.value, Y.value, Z.value)
+				return new Vector3(xSlider.value, ySlider.value, zSlider.value)
 			},
 			set Vector({ x, y, z }: Vector3) {
-				X.value = x
-				Y.value = y
-				Z.value = z
+				xSlider.value = x
+				ySlider.value = y
+				zSlider.value = z
 			},
 		}
 	}
-	public AddColorPicker(name: string, default_color: Color = new Color(0, 255, 0), tooltip = "", priority = 0): ColorPicker {
-		return this.AddEntry(new ColorPicker(this, name, default_color, tooltip), priority)
+	public AddColorPicker(
+		name: string,
+		defaultColor: Color = new Color(0, 255, 0),
+		tooltip = "",
+		priority = 0
+	): ColorPicker {
+		return this.AddEntry(
+			new ColorPicker(this, name, defaultColor, tooltip),
+			priority
+		)
 	}
 
 	public AddParticlePicker(
 		name: string,
 		color: Color | number = new Color(0, 255, 0),
 		render: PARTICLE_RENDER_NAME[],
-		addStateToTree?: boolean[],
+		addStateToTree?: boolean[]
 	): IMenuParticlePicker {
 		const node = this.AddNode(name)
 
-		let State: Nullable<Toggle>
+		let state: Nullable<Toggle>
 		if (addStateToTree !== undefined && addStateToTree[0])
-			State = node.AddToggle("State", addStateToTree[1])
+			state = node.AddToggle("State", addStateToTree[1])
 
-		if (typeof color === "number")
-			color = new Color(color, color, color)
+		if (typeof color === "number") color = new Color(color, color, color)
 
 		return {
 			Node: node,
-			State,
+			State: state,
 			Color: node.AddColorPicker("Color", color),
 			Width: node.AddSlider("Width", 15, 1, 150),
 			Style: node.AddDropdown("Style", render),
 		}
 	}
-	private GetScrollbarPositionsRect(elements_rect: Rectangle): Rectangle {
-		const additionalOffset = this.parent instanceof Node ? Base.bar_width : 0
+	private GetScrollbarPositionsRect(elementsRect: Rectangle): Rectangle {
+		const additionalOffset = this.parent instanceof Node ? Base.barWidth : 0
 		return new Rectangle(
 			new Vector2(
-				elements_rect.pos1.x
-				+ Node.scrollbar_offset.x
-				+ additionalOffset,
-				elements_rect.pos1.y
-				+ Node.scrollbar_offset.y,
+				elementsRect.pos1.x + Node.scrollbarOffset.x + additionalOffset,
+				elementsRect.pos1.y + Node.scrollbarOffset.y
 			),
 			new Vector2(
-				elements_rect.pos1.x
-				+ Node.scrollbar_offset.x
-				+ additionalOffset
-				+ Node.scrollbar_width,
-				elements_rect.pos2.y
-				- Node.scrollbar_offset.y,
-			),
+				elementsRect.pos1.x +
+					Node.scrollbarOffset.x +
+					additionalOffset +
+					Node.scrollbarWidth,
+				elementsRect.pos2.y - Node.scrollbarOffset.y
+			)
 		)
 	}
-	private GetScrollbarRect(scrollbar_positions_rect: Rectangle): Rectangle {
-		const positions_size = scrollbar_positions_rect.Size
-		const scrollbar_size = new Vector2(
-			Node.scrollbar_width,
-			positions_size.y * this.VisibleEntries / this.entries.length,
+	private GetScrollbarRect(scrollbarPositionsRect: Rectangle): Rectangle {
+		const positionsSize = scrollbarPositionsRect.Size
+		const scrollbarSize = new Vector2(
+			Node.scrollbarWidth,
+			(positionsSize.y * this.VisibleEntries) / this.entries.length
 		)
-		const scrollbar_pos = scrollbar_positions_rect.pos1.Clone().AddScalarY(
-			positions_size.y * this.ScrollPosition / this.entries.length,
-		)
-		return new Rectangle(
-			scrollbar_pos,
-			scrollbar_pos.Add(scrollbar_size),
-		)
+		const scrollbarPos = scrollbarPositionsRect.pos1
+			.Clone()
+			.AddScalarY((positionsSize.y * this.ScrollPosition) / this.entries.length)
+		return new Rectangle(scrollbarPos, scrollbarPos.Add(scrollbarSize))
 	}
 	private UpdateVisibleEntries() {
 		this.VisibleEntries = 0
@@ -492,19 +580,20 @@ export class Node extends Base {
 			skip = this.ScrollPosition
 		for (let i = 0; i < this.entries.length; i++) {
 			const entry = this.entries[i]
-			if (!entry.IsVisible || skip-- > 0)
-				continue
+			if (!entry.IsVisible || skip-- > 0) continue
 			height += entry.Size.y
 			this.VisibleEntries++
 			if (height >= maxHeight) {
-				if (i < this.entries.length - 1)
-					this.IsAtScrollEnd = false
+				if (i < this.entries.length - 1) this.IsAtScrollEnd = false
 				break
 			}
 		}
 	}
 	private UpdateScrollbar() {
-		this.ScrollPosition = Math.max(Math.min(this.ScrollPosition, this.entries.length - 1), 0)
+		this.ScrollPosition = Math.max(
+			Math.min(this.ScrollPosition, this.entries.length - 1),
+			0
+		)
 		this.UpdateVisibleEntries()
 		while (this.ScrollPosition > 0) {
 			this.ScrollPosition--
@@ -528,17 +617,14 @@ export class Node extends Base {
 	}
 
 	private SortEntries(): void {
-		if (!this.sort_nodes)
-			return
+		if (!this.SortNodes) return
 		this.entries = this.entries
 			.sort((a, b) => a.Name.localeCompare(b.Name))
 			.sort((a, b) => a.ClassPriority - b.ClassPriority)
 			.sort((a, b) => a.Priority - b.Priority)
 			.sort((a, b) => {
-				if (a.InternalName === "State")
-					return -1
-				if (b.InternalName === "State")
-					return 1
+				if (a.InternalName === "State") return -1
+				if (b.InternalName === "State") return 1
 				return 0
 			})
 	}

@@ -1,14 +1,14 @@
-export const masksBigInt: bigint[] = [],
+const masksBigInt: bigint[] = [],
 	masksNumber: number[] = []
 
-for (let i = 0; i < 64; i++)
-	masksBigInt.push(1n << BigInt(i))
+for (let i = 0; i < 64; i++) masksBigInt.push(1n << BigInt(i))
 
-for (let i = 0; i < 32; i++)
-	masksNumber.push(1 << i)
+for (let i = 0; i < 32; i++) masksNumber.push(1 << i)
 
 export function MaskToArrayBigInt(num: bigint): number[] {
-	return masksBigInt.map(mask => Number(num & mask)).filter(masked => masked !== 0)
+	return masksBigInt
+		.map(mask => Number(num & mask))
+		.filter(masked => masked !== 0)
 }
 export function MaskToArrayNumber(num: number): number[] {
 	return masksNumber.map(mask => num & mask).filter(masked => masked !== 0)
@@ -29,7 +29,7 @@ export function HasMaskBigInt(num: bigint, mask: bigint): boolean {
 export function FixInt16(num: number) {
 	if (HasBit(num, 15)) {
 		num &= ~(1 << 15)
-		num = (0xFFFF >> 1) - num + 1
+		num = (0xffff >> 1) - num + 1
 		num *= -1
 	}
 	return num
@@ -37,7 +37,7 @@ export function FixInt16(num: number) {
 export function FixInt16BigInt(num: bigint) {
 	if (HasBitBigInt(num, 15n)) {
 		num &= ~(1n << 15n)
-		num = (0xFFFFn >> 1n) - num + 1n
+		num = (0xffffn >> 1n) - num + 1n
 		num *= -1n
 	}
 	return num

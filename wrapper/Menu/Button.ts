@@ -7,58 +7,61 @@ import { Base } from "./Base"
 
 export class Button extends Base {
 	public static OnWindowSizeChanged(): void {
-		Button.text_button_gap = GUIInfo.ScaleWidth(8)
-		Button.text_vertical_button_gap = GUIInfo.ScaleHeight(8)
-		Button.button_offset.x = GUIInfo.ScaleWidth(14)
-		Button.button_offset.y = GUIInfo.ScaleWidth(11)
+		Button.textButtonGap = GUIInfo.ScaleWidth(8)
+		Button.textVerticalButtonGap = GUIInfo.ScaleHeight(8)
+		Button.buttonOffset.x = GUIInfo.ScaleWidth(14)
+		Button.buttonOffset.y = GUIInfo.ScaleWidth(11)
 	}
 
-	private static readonly button_path = "menu/button.svg"
-	private static text_button_gap = 0
-	private static text_vertical_button_gap = 0
-	private static readonly button_offset = new Vector2(14, 11)
+	private static readonly buttonPath = "menu/button.svg"
+	private static textButtonGap = 0
+	private static textVerticalButtonGap = 0
+	private static readonly buttonOffset = new Vector2(14, 11)
 
 	public readonly FontSize = 16
 
-	protected readonly execute_on_add = false
+	protected readonly executeOnAdd = false
 
 	public get ClassPriority(): number {
 		return 8
 	}
 	private get ButtonRect() {
 		return new Rectangle(
-			this.Position.Add(Button.button_offset),
-			this.Position
-				.Clone()
+			this.Position.Add(Button.buttonOffset),
+			this.Position.Clone()
 				.AddScalarX(this.parent.EntriesSizeX)
 				.AddScalarY(this.Size.y)
-				.SubtractForThis(Button.button_offset)
-				.AddScalarX(2), // because text_button_gap includes bar size
+				.SubtractForThis(Button.buttonOffset)
+				.AddScalarX(2) // because textButtonGap includes bar size
 		)
 	}
 	public Update(): boolean {
-		if (!super.Update())
-			return false
-		Button.button_offset
+		if (!super.Update()) return false
+		Button.buttonOffset
 			.MultiplyScalar(2)
-			.SubtractScalarX(2) // because text_button_gap includes bar size
-			.AddForThis(Vector2.FromVector3(this.name_size))
-			.AddScalarX(Button.text_button_gap * 2)
-			.AddScalarY(Button.text_vertical_button_gap * 2)
+			.SubtractScalarX(2) // because textButtonGap includes bar size
+			.AddForThis(Vector2.FromVector3(this.nameSize))
+			.AddScalarX(Button.textButtonGap * 2)
+			.AddScalarY(Button.textVerticalButtonGap * 2)
 			.CopyTo(this.Size)
 		return true
 	}
 	public Render(): void {
 		super.Render()
 
-		const button_rect = this.ButtonRect
-		RendererSDK.Image(Button.button_path, button_rect.pos1, -1, button_rect.pos2.Subtract(button_rect.pos1))
+		const buttonRect = this.ButtonRect
+		RendererSDK.Image(
+			Button.buttonPath,
+			buttonRect.pos1,
+			-1,
+			buttonRect.pos2.Subtract(buttonRect.pos1)
+		)
 		this.RenderTextDefault(
 			this.Name,
 			new Vector2(
-				(button_rect.pos1.x + button_rect.pos2.x - this.name_size.x) / 2,
-				button_rect.pos1.y + Button.text_vertical_button_gap,
-			),
+				(buttonRect.pos1.x + buttonRect.pos2.x - this.nameSize.x) / 2,
+				buttonRect.pos1.y + Button.textVerticalButtonGap
+			)
 		)
 	}
 	public OnMouseLeftDown(): boolean {

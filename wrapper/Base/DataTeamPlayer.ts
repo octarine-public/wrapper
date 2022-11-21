@@ -1,7 +1,7 @@
 import { EntityPropertiesNode } from "./EntityProperties"
 
 export class DataTeamPlayer {
-	constructor(public readonly properties: EntityPropertiesNode) { }
+	constructor(public readonly properties: EntityPropertiesNode) {}
 
 	public get TotalEarnedGold(): number {
 		return this.properties.get("m_iTotalEarnedGold") as number
@@ -175,10 +175,14 @@ export class DataTeamPlayer {
 		return this.properties.get("m_flSuggestedHeroesWeights") as number[]
 	}
 	public get DamageByTypeReceivedPreReduction(): number[] {
-		return this.properties.get("m_iDamageByTypeReceivedPreReduction") as number[]
+		return this.properties.get(
+			"m_iDamageByTypeReceivedPreReduction"
+		) as number[]
 	}
 	public get DamageByTypeReceivedPostReduction(): number[] {
-		return this.properties.get("m_iDamageByTypeReceivedPostReduction") as number[]
+		return this.properties.get(
+			"m_iDamageByTypeReceivedPostReduction"
+		) as number[]
 	}
 	public get CommandsIssued(): number {
 		return this.properties.get("m_iCommandsIssued") as number

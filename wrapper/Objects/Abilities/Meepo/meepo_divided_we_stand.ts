@@ -16,23 +16,29 @@ export class meepo_divided_we_stand extends Ability {
 	public NextDividedWeStand_ = 0
 
 	public get PrimeDividedWeStand(): Nullable<meepo_divided_we_stand> {
-		return EntityManager.EntityByIndex(this.PrimeDividedWeStand_) as Nullable<meepo_divided_we_stand>
+		return EntityManager.EntityByIndex(
+			this.PrimeDividedWeStand_
+		) as Nullable<meepo_divided_we_stand>
 	}
 	public get NextDividedWeStand(): Nullable<meepo_divided_we_stand> {
-		return EntityManager.EntityByIndex(this.NextDividedWeStand_) as Nullable<meepo_divided_we_stand>
+		return EntityManager.EntityByIndex(
+			this.NextDividedWeStand_
+		) as Nullable<meepo_divided_we_stand>
 	}
 }
 
 let isInMeepoCrutch = false
 EventsSDK.on("LifeStateChanged", ent => {
-	if (isInMeepoCrutch || !(ent instanceof Unit))
-		return
+	if (isInMeepoCrutch || !(ent instanceof Unit)) return
 	let abil = ent.GetAbilityByClass(meepo_divided_we_stand)
-	if (abil === undefined)
-		return
+	if (abil === undefined) return
 	abil = abil.PrimeDividedWeStand
 	while (abil !== undefined) {
-		if (abil.Owner !== undefined && !abil.Owner.IsVisible && abil.Owner.LifeState !== ent.LifeState) {
+		if (
+			abil.Owner !== undefined &&
+			!abil.Owner.IsVisible &&
+			abil.Owner.LifeState !== ent.LifeState
+		) {
 			abil.Owner.LifeState = ent.LifeState
 			abil.Owner.HP = ent.IsAlive ? abil.Owner.MaxHP : 0
 			isInMeepoCrutch = true

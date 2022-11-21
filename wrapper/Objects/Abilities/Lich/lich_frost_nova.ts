@@ -2,5 +2,4 @@ import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("lich_frost_nova")
-export class lich_frost_nova extends Ability {
-}
+export class lich_frost_nova extends Ability {}

@@ -3,14 +3,23 @@
 	"version": "1.0.0",
 	"description": "Octarine: Wrapper",
 	"devDependencies": {
-		"tslint": "beta",
+		"@typescript-eslint/eslint-plugin": "^5.44.0",
+		"@typescript-eslint/parser": "^5.44.0",
+		"eslint": "^8.28.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-plugin-import": "^2.26.0",
+		"eslint-plugin-jsdoc": "^39.6.2",
+		"eslint-plugin-prettier": "^4.2.1",
+		"eslint-plugin-simple-import-sort": "^8.0.0",
+		"eslint-plugin-unicorn": "^45.0.0",
+		"eslint-plugin-unused-imports": "^2.0.0",
 		"typescript": "next"
 	},
 	"scripts": {
 		"check-types": "npx tsc",
 		"check-types-watch": "npx tsc --watch",
-		"check-circular": "npx madge --circular scripts",
-		"lint": "npx tslint --fix -p ."
+		"check-circular": "npx madge --circular index.ts",
+		"lint": "eslint -c .eslintrc.json --ext .ts --fix ."
 	},
 	"contributors": [
 		"moofMonkey",

@@ -16,23 +16,25 @@ export class Vector2 {
 	}
 	/**
 	 * From polar coordinates
+	 *
 	 * @param radial
 	 * @param polar
 	 */
 	public static FromPolarCoordinates(radial: number, polar: number): Vector2 {
 		return new Vector2(Math.cos(polar) * radial, Math.sin(polar) * radial)
 	}
-	public static GetCenterType<T>(array: T[], callback: (value: T) => Vector2): Vector2 {
-		return array.reduce(
-			(prev, cur) => prev.AddForThis(callback(cur)),
-			new Vector2(),
-		).DivideScalarForThis(array.length)
+	public static GetCenterType<T>(
+		array: T[],
+		callback: (value: T) => Vector2
+	): Vector2 {
+		return array
+			.reduce((prev, cur) => prev.AddForThis(callback(cur)), new Vector2())
+			.DivideScalarForThis(array.length)
 	}
 	public static GetCenter(array: Vector2[]): Vector2 {
-		return array.reduce(
-			(prev, cur) => prev.AddForThis(cur),
-			new Vector2(),
-		).DivideScalarForThis(array.length)
+		return array
+			.reduce((prev, cur) => prev.AddForThis(cur), new Vector2())
+			.DivideScalarForThis(array.length)
 	}
 	public static CopyFrom(vec: Vector2): Vector2 {
 		return new Vector2(vec.x, vec.y)
@@ -48,57 +50,58 @@ export class Vector2 {
 	 * let vec = new Vector2(1, 2)
 	 * vec.Normalize()
 	 */
-	constructor(public x: number = 0, public y: number = 0) { }
+	constructor(public x: number = 0, public y: number = 0) {}
 
 	/**
 	 * Is this vector valid? (every value must not be infinity/NaN)
 	 */
-	get IsValid(): boolean {
+	public get IsValid(): boolean {
 		const x = this.x,
 			y = this.y
-		return !Number.isNaN(x) && Number.isFinite(x)
-			&& !Number.isNaN(y) && Number.isFinite(y)
+		return (
+			!Number.isNaN(x) &&
+			Number.isFinite(x) &&
+			!Number.isNaN(y) &&
+			Number.isFinite(y)
+		)
 	}
 
 	/**
 	 * Get the length of the vector squared. This operation is cheaper than Length().
 	 */
-	get LengthSqr(): number {
+	public get LengthSqr(): number {
 		return this.x ** 2 + this.y ** 2
 	}
 	/**
 	 * Get the length of the vector
 	 */
-	get Length(): number {
+	public get Length(): number {
 		return Math.sqrt(this.LengthSqr)
 	}
 	/**
 	 * Angle of the Vector2
 	 */
-	get Angle(): number {
+	public get Angle(): number {
 		return Math.atan2(this.y, this.x)
 	}
 	/**
 	 * Returns the polar for vector angle (in Degrees).
 	 */
-	get Polar(): number {
+	public get Polar(): number {
 		if (Math.abs(this.x - 0) <= 1e-9)
 			return this.y > 0 ? 90 : this.y < 0 ? 270 : 0
 
 		let theta = Math.atan(this.y / this.x) * (180 / Math.PI)
 
-		if (this.x < 0)
-			theta += 180
+		if (this.x < 0) theta += 180
 
-		if (theta < 0)
-			theta += 360
+		if (theta < 0) theta += 360
 
 		return theta
 	}
 
 	public Equals(vec: Vector2): boolean {
-		return this.x === vec.x
-			&& this.y === vec.y
+		return this.x === vec.x && this.y === vec.y
 	}
 
 	/**
@@ -108,8 +111,7 @@ export class Vector2 {
 		const x = this.x,
 			y = this.y
 
-		return x > -tolerance && x < tolerance
-			&& y > -tolerance && y < tolerance
+		return x > -tolerance && x < tolerance && y > -tolerance && y < tolerance
 	}
 	/**
 	 * Are length of this vector are  greater than value?
@@ -155,38 +157,37 @@ export class Vector2 {
 	}
 	/**
 	 * Returns a vector whose elements are the minimum of each of the pairs of elements in the two source vectors
+	 *
 	 * @param The another vector
 	 */
 	public Min(vec: Vector2 | number): Vector2 {
 		return new Vector2(
 			Math.min(this.x, vec instanceof Vector2 ? vec.x : vec),
-			Math.min(this.y, vec instanceof Vector2 ? vec.y : vec),
+			Math.min(this.y, vec instanceof Vector2 ? vec.y : vec)
 		)
 	}
 	/**
 	 * Returns a vector whose elements are the minimum of each of the pairs of elements in the two source vectors
+	 *
 	 * @param The another vector
 	 */
 	public Max(vec: Vector2 | number): Vector2 {
 		return new Vector2(
 			Math.max(this.x, vec instanceof Vector2 ? vec.x : vec),
-			Math.max(this.y, vec instanceof Vector2 ? vec.y : vec),
+			Math.max(this.y, vec instanceof Vector2 ? vec.y : vec)
 		)
 	}
 	/**
 	 * Returns a vector whose elements are the absolute values of each of the source vector's elements.
 	 */
 	public Abs(): Vector2 {
-		return new Vector2(
-			Math.abs(this.x),
-			Math.abs(this.y),
-		)
+		return new Vector2(Math.abs(this.x), Math.abs(this.y))
 	}
 	public Ceil(count: number = 0): Vector2 {
 		const pow = 10 ** count
 		return new Vector2(
 			Math.ceil(this.x * pow) / pow,
-			Math.ceil(this.y * pow) / pow,
+			Math.ceil(this.y * pow) / pow
 		)
 	}
 	public CeilForThis(count: number = 0): Vector2 {
@@ -201,7 +202,7 @@ export class Vector2 {
 		const pow = 10 ** count
 		return new Vector2(
 			Math.round(this.x * pow) / pow,
-			Math.round(this.y * pow) / pow,
+			Math.round(this.y * pow) / pow
 		)
 	}
 	public RoundForThis(count = 0): Vector2 {
@@ -216,7 +217,7 @@ export class Vector2 {
 		const pow = 10 ** count
 		return new Vector2(
 			Math.floor(this.x * pow) / pow,
-			Math.floor(this.y * pow) / pow,
+			Math.floor(this.y * pow) / pow
 		)
 	}
 	public FloorForThis(count: number = 0): Vector2 {
@@ -231,13 +232,11 @@ export class Vector2 {
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
 	 */
 	public SquareRoot(): Vector2 {
-		return new Vector2(
-			Math.sqrt(this.x),
-			Math.sqrt(this.y),
-		)
+		return new Vector2(Math.sqrt(this.x), Math.sqrt(this.y))
 	}
 	/**
 	 * Copy this vector to another vector and return it
+	 *
 	 * @param vec The another vector
 	 * @returns another vector
 	 */
@@ -248,6 +247,7 @@ export class Vector2 {
 	}
 	/**
 	 * Copy fron another vector to this vector and return it
+	 *
 	 * @param vec The another vector
 	 * @returns this vector
 	 */
@@ -284,18 +284,18 @@ export class Vector2 {
 	 */
 	public Normalize(scalar = 1): Vector2 {
 		const length = this.Length
-		if (length !== 0)
-			this.DivideScalarForThis(length * scalar)
+		if (length !== 0) this.DivideScalarForThis(length * scalar)
 		return this
 	}
 	/**
 	 * Returns the cross product Z value.
 	 */
 	public Cross(vec: Vector2): number {
-		return (vec.y * this.x) - (vec.x * this.y)
+		return vec.y * this.x - vec.x * this.y
 	}
 	/**
 	 * The dot product of this vector and another vector.
+	 *
 	 * @param vec The another vector
 	 */
 	public Dot(vec: Vector2): number {
@@ -306,10 +306,8 @@ export class Vector2 {
 	 */
 	public ScaleTo(scalar: number): Vector2 {
 		const length = this.Length
-		if (length === 0)
-			this.toZero()
-		else
-			this.MultiplyScalar(scalar / length)
+		if (length === 0) this.toZero()
+		else this.MultiplyScalar(scalar / length)
 
 		return this
 	}
@@ -318,10 +316,8 @@ export class Vector2 {
 	 */
 	public DivideTo(scalar: number): Vector2 {
 		const length = this.Length
-		if (length === 0)
-			this.toZero()
-		else
-			this.DivideScalar(scalar / length)
+		if (length === 0) this.toZero()
+		else this.DivideScalar(scalar / length)
 
 		return this
 	}
@@ -330,25 +326,24 @@ export class Vector2 {
 	 */
 	public Clamp(min: Vector2, max: Vector2): Vector2 {
 		return new Vector2(
-			Math.min((this.x > max.x) ? max.x : this.x, min.x),
-			Math.min((this.y > max.y) ? max.y : this.y, min.y),
+			Math.min(this.x > max.x ? max.x : this.x, min.x),
+			Math.min(this.y > max.y ? max.y : this.y, min.y)
 		)
 	}
 
 	/* ======== Add ======== */
 	/**
 	 * Adds two vectors together
+	 *
 	 * @param vec The another vector
 	 * @returns	The summed vector
 	 */
 	public Add(vec: Vector2): Vector2 {
-		return new Vector2(
-			this.x + vec.x,
-			this.y + vec.y,
-		)
+		return new Vector2(this.x + vec.x, this.y + vec.y)
 	}
 	/**
 	 * Adds two vectors together
+	 *
 	 * @param vec The another vector
 	 * @returns	The summed vector (this vector)
 	 */
@@ -361,13 +356,11 @@ export class Vector2 {
 	 * Add scalar to vector
 	 */
 	public AddScalar(scalar: number): Vector2 {
-		return new Vector2(
-			this.x + scalar,
-			this.y + scalar,
-		)
+		return new Vector2(this.x + scalar, this.y + scalar)
 	}
 	/**
 	 * Add scalar to vector
+	 *
 	 * @returns (this Vector2)
 	 */
 	public AddScalarForThis(scalar: number): Vector2 {
@@ -393,17 +386,16 @@ export class Vector2 {
 	/* ======== Subtract ======== */
 	/**
 	 * Subtracts the second vector from the first.
+	 *
 	 * @param vec The another vector
 	 * @returns The difference vector
 	 */
 	public Subtract(vec: Vector2): Vector2 {
-		return new Vector2(
-			this.x - vec.x,
-			this.y - vec.y,
-		)
+		return new Vector2(this.x - vec.x, this.y - vec.y)
 	}
 	/**
 	 * Subtracts the second vector from the first.
+	 *
 	 * @param vec The another vector
 	 * @returns The difference vector (this vector)
 	 */
@@ -416,13 +408,11 @@ export class Vector2 {
 	 * Subtract scalar from vector
 	 */
 	public SubtractScalar(scalar: number): Vector2 {
-		return new Vector2(
-			this.x - scalar,
-			this.y - scalar,
-		)
+		return new Vector2(this.x - scalar, this.y - scalar)
 	}
 	/**
 	 * Subtract scalar from vector
+	 *
 	 * @returns (this vector)
 	 */
 	public SubtractScalarForThis(scalar: number): Vector2 {
@@ -448,17 +438,16 @@ export class Vector2 {
 	/* ======== Multiply ======== */
 	/**
 	 * Multiplies two vectors together.
+	 *
 	 * @param vec The another vector
 	 * @return The product vector
 	 */
 	public Multiply(vec: Vector2): Vector2 {
-		return new Vector2(
-			this.x * vec.x,
-			this.y * vec.y,
-		)
+		return new Vector2(this.x * vec.x, this.y * vec.y)
 	}
 	/**
 	 * Multiplies two vectors together.
+	 *
 	 * @param vec The another vector
 	 * @return The product vector (this vector)
 	 */
@@ -471,13 +460,11 @@ export class Vector2 {
 	 * Multiply the vector by scalar
 	 */
 	public MultiplyScalar(scalar: number): Vector2 {
-		return new Vector2(
-			this.x * scalar,
-			this.y * scalar,
-		)
+		return new Vector2(this.x * scalar, this.y * scalar)
 	}
 	/**
 	 * Multiply the vector by scalar
+	 *
 	 * @return (this vector)
 	 */
 	public MultiplyScalarForThis(scalar: number): Vector2 {
@@ -503,17 +490,16 @@ export class Vector2 {
 	/* ======== Divide ======== */
 	/**
 	 * Divide this vector by another vector
+	 *
 	 * @param vec The another vector
 	 * @return The vector resulting from the division
 	 */
 	public Divide(vec: Vector2): Vector2 {
-		return new Vector2(
-			this.x / vec.x,
-			this.y / vec.y,
-		)
+		return new Vector2(this.x / vec.x, this.y / vec.y)
 	}
 	/**
 	 * Divide this vector by another vector
+	 *
 	 * @param vec The another vector
 	 * @return The vector resulting from the division (this vector)
 	 */
@@ -524,16 +510,15 @@ export class Vector2 {
 	}
 	/**
 	 * Divide the scalar by vector
+	 *
 	 * @param {number} scalar
 	 */
 	public DivideScalar(scalar: number): Vector2 {
-		return new Vector2(
-			this.x / scalar,
-			this.y / scalar,
-		)
+		return new Vector2(this.x / scalar, this.y / scalar)
 	}
 	/**
 	 * Divide the scalar by vector
+	 *
 	 * @returns (this vector)
 	 */
 	public DivideScalarForThis(scalar: number): Vector2 {
@@ -587,39 +572,47 @@ export class Vector2 {
 	}
 	public ProjectOn(segmentStart: Vector2, segmentEnd: Vector2): ProjectionInfo {
 		const segmentSize = segmentEnd.Subtract(segmentStart)
-		const rL = this.Subtract(segmentStart).Dot(segmentSize) / segmentSize.LengthSqr
+		const rL =
+			this.Subtract(segmentStart).Dot(segmentSize) / segmentSize.LengthSqr
 		const rS = Math.min(1, Math.max(0, rL)) // normalized to segment bounds
 		const pointLine = segmentStart.Add(segmentSize.MultiplyScalar(rL))
 		const pointSegment = segmentStart.Add(segmentSize.MultiplyScalar(rS))
 		return new ProjectionInfo(pointSegment, pointLine)
 	}
-	public DistanceSegmentSqr(segmentStart: Vector2, segmentEnd: Vector2, onlyIfOnSegment = false): number {
+	public DistanceSegmentSqr(
+		segmentStart: Vector2,
+		segmentEnd: Vector2,
+		onlyIfOnSegment = false
+	): number {
 		const objects = this.ProjectOn(segmentStart, segmentEnd)
-		if (!objects.IsOnSegment && onlyIfOnSegment)
-			return Number.MAX_VALUE
+		if (!objects.IsOnSegment && onlyIfOnSegment) return Number.MAX_VALUE
 		return this.DistanceSqr(objects.SegmentPoint)
 	}
-	public DistanceSegment(segmentStart: Vector2, segmentEnd: Vector2, onlyIfOnSegment = false): number {
-		const sqr = this.DistanceSegmentSqr(segmentStart, segmentEnd, onlyIfOnSegment)
-		if (sqr === Number.MAX_VALUE)
-			return Number.MAX_VALUE
+	public DistanceSegment(
+		segmentStart: Vector2,
+		segmentEnd: Vector2,
+		onlyIfOnSegment = false
+	): number {
+		const sqr = this.DistanceSegmentSqr(
+			segmentStart,
+			segmentEnd,
+			onlyIfOnSegment
+		)
+		if (sqr === Number.MAX_VALUE) return Number.MAX_VALUE
 		return Math.sqrt(sqr)
 	}
 
 	/**
 	 * @param {number} offset Axis Offset (0 = X, 1 = Y)
 	 */
-	public Perpendicular(is_x: boolean = true): Vector2 {
-		return is_x
-			? new Vector2(-this.y, this.x)
-			: new Vector2(this.y, -this.x)
+	public Perpendicular(isX: boolean = true): Vector2 {
+		return isX ? new Vector2(-this.y, this.x) : new Vector2(this.y, -this.x)
 	}
 	/**
 	 * Calculates the polar angle of the given vector. Returns degree values on default, radian if requested.
 	 */
 	public PolarAngle(radian: boolean = false): number {
-		if (radian)
-			return this.Angle
+		if (radian) return this.Angle
 
 		return this.Angle * (180 / Math.PI)
 	}
@@ -629,24 +622,23 @@ export class Vector2 {
 	public Rotated(angle: number): Vector2 {
 		const cos = Math.cos(angle),
 			sin = Math.sin(angle)
-		return new Vector2(
-			(this.x * cos) - (this.y * sin),
-			(this.y * cos) + (this.x * sin),
-		)
+		return new Vector2(this.x * cos - this.y * sin, this.y * cos + this.x * sin)
 	}
 	/**
 	 * Extends vector in the rotation direction
+	 *
 	 * @param rotation for ex. Entity#Forward
 	 * @param distance distance to be added
 	 */
 	public Rotation(rotation: Vector2, distance: number): Vector2 {
 		return new Vector2(
 			this.x + rotation.x * distance,
-			this.y + rotation.y * distance,
+			this.y + rotation.y * distance
 		)
 	}
 	/**
 	 * Extends vector in the rotation direction by radian
+	 *
 	 * @param rotation for ex. Entity#Forward
 	 * @param distance distance to be added
 	 */
@@ -655,6 +647,7 @@ export class Vector2 {
 	}
 	/**
 	 * Extends vector in the rotation direction by angle
+	 *
 	 * @param angle for ex. Entity#RotationRad
 	 * @param distance distance to be added
 	 */
@@ -667,44 +660,48 @@ export class Vector2 {
 	 * @param vecAngleRadian Angle of this vector
 	 */
 	public FindRotationAngle(vec: Vector2, vecAngleRadian = 0): number {
-		let angle = Math.abs(Math.atan2(vec.y - this.y, vec.x - this.x) - vecAngleRadian)
+		let angle = Math.abs(
+			Math.atan2(vec.y - this.y, vec.x - this.x) - vecAngleRadian
+		)
 
-		if (angle > Math.PI)
-			angle = Math.abs((Math.PI * 2) - angle)
+		if (angle > Math.PI) angle = Math.abs(Math.PI * 2 - angle)
 
 		return angle
 	}
-	public RotationTime(rot_speed: number): number {
-		return this.Angle / (30 * rot_speed)
+	public RotationTime(rotSpeed: number): number {
+		return this.Angle / (30 * rotSpeed)
 	}
 	/**
 	 * Angle between two vectors
+	 *
 	 * @param vec The another vector
 	 */
 	public AngleBetweenVectors(vec: Vector2): number {
 		let theta = this.Polar - vec.Polar
-		if (theta < 0)
-			theta = theta + 360
-		if (theta > 180)
-			theta = 360 - theta
+		if (theta < 0) theta = theta + 360
+		if (theta > 180) theta = 360 - theta
 		return theta
 	}
 	/**
 	 * Angle between two fronts
+	 *
 	 * @param vec The another vector
 	 */
 	public AngleBetweenFronts(front: Vector2): number {
-		return Math.acos((this.x * front.x) + (this.y * front.y))
+		return Math.acos(this.x * front.x + this.y * front.y)
 	}
 	public GetDirectionTo(target: Vector2): Vector2 {
 		return target.Subtract(this).Normalize()
 	}
 	/**
 	 * Extends this vector in the direction of 2nd vector for given distance
+	 *
 	 * @param vec The another vector
 	 */
 	public Extend(vec: Vector2, distance: number): Vector2 {
-		return this.GetDirectionTo(vec).MultiplyScalarForThis(distance).AddForThis(this) // this + (distance * (vec - this).Normalize())
+		return this.GetDirectionTo(vec)
+			.MultiplyScalarForThis(distance)
+			.AddForThis(this) // this + (distance * (vec - this).Normalize())
 	}
 	public Clone(): Vector2 {
 		return new Vector2(this.x, this.y)
@@ -732,7 +729,7 @@ export class Vector2 {
 	 * Returns true if the point is under the rectangle
 	 */
 	public IsUnderRectangle(x: number, y: number, width: number, height: number) {
-		return this.x > x && this.x < (x + width) && this.y > y && this.y < (y + height)
+		return this.x > x && this.x < x + width && this.y > y && this.y < y + height
 	}
 	public RadiansToDegrees(): Vector2 {
 		return this.MultiplyScalar(180).DivideScalar(Math.PI)

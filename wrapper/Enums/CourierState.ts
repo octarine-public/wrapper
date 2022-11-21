@@ -1,4 +1,4 @@
-export enum CourierState_t {
+export enum CourierState {
 	COURIER_STATE_INIT = -1,
 	COURIER_STATE_IDLE = 0,
 	COURIER_STATE_AT_BASE = 1,

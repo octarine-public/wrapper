@@ -2,10 +2,13 @@ import { Color } from "../../Base/Color"
 import { QAngle } from "../../Base/QAngle"
 import { Vector3 } from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
-import { RenderMode_t } from "../../Enums/RenderMode_t"
+import { RenderMode } from "../../Enums/RenderMode"
 import { Team } from "../../Enums/Team"
 import { EntityManager } from "../../Managers/EntityManager"
-import { CreateEntityInternal, DeleteEntity } from "../../Managers/EntityManagerLogic"
+import {
+	CreateEntityInternal,
+	DeleteEntity,
+} from "../../Managers/EntityManagerLogic"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../Native/WASM"
 import { EntityDataLump } from "../../Resources/ParseEntityLump"
@@ -33,7 +36,7 @@ export class Tree extends Entity {
 	public set CustomGlowColor(_: Nullable<Color>) {
 		// N/A for non-networked entities
 	}
-	public set CustomDrawColor(_: Nullable<[Color, RenderMode_t]>) {
+	public set CustomDrawColor(_: Nullable<[Color, RenderMode]>) {
 		// N/A for non-networked entities
 	}
 	public get RingRadius(): number {
@@ -47,11 +50,11 @@ export class Tree extends Entity {
 export const Trees = EntityManager.GetEntitiesByClass(Tree)
 
 export let TempTreeIDOffset = 0
-let cur_local_id = 0x3000
+let curLocalID = 0x3000
 function LoadTreeMap(stream: ReadableBinaryStream): void {
 	TempTreeIDOffset = 0
-	while (cur_local_id > 0x3000) {
-		const id = --cur_local_id
+	while (curLocalID > 0x3000) {
+		const id = --curLocalID
 		const ent = EntityManager.EntityByIndex(id)
 		if (ent instanceof Tree) {
 			DeleteEntity(id)
@@ -62,11 +65,9 @@ function LoadTreeMap(stream: ReadableBinaryStream): void {
 	for (const pos of ParseTRMP(stream)) {
 		TempTreeIDOffset++
 		// for some reason there are trees duplicates, but earlier ones override them
-		if (trees.some(tree => tree.Position.Equals(pos)))
-			continue
-		let id = cur_local_id++
-		while (EntityManager.EntityByIndex(id) !== undefined)
-			id = cur_local_id++
+		if (trees.some(tree => tree.Position.Equals(pos))) continue
+		let id = curLocalID++
+		while (EntityManager.EntityByIndex(id) !== undefined) id = curLocalID++
 		const entity = new Tree(id, 0)
 		entity.Name_ = "ent_dota_tree"
 		entity.ClassName = "C_DOTA_MapTree"
@@ -82,25 +83,22 @@ function LoadTreeMap(stream: ReadableBinaryStream): void {
 		trees.push(entity)
 	}
 	for (const data of EntityDataLump) {
-		if (data.get("classname") !== "ent_dota_tree")
-			return
-		const origin_str = data.get("origin"),
-			angles_str = data.get("angles"),
+		if (data.get("classname") !== "ent_dota_tree") return
+		const originStr = data.get("origin"),
+			anglesStr = data.get("angles"),
 			model = data.get("model")
 		if (
-			typeof origin_str !== "string"
-			|| typeof angles_str !== "string"
-			|| typeof model !== "string"
+			typeof originStr !== "string" ||
+			typeof anglesStr !== "string" ||
+			typeof model !== "string"
 		)
 			return
-		const pos = Vector3.FromString(origin_str)
-		const entity = trees.find(tree => (
-			tree.Position.x === pos.x
-			&& tree.Position.y === pos.y
-		))
-		if (entity === undefined)
-			return
-		const ang = QAngle.FromString(angles_str)
+		const pos = Vector3.FromString(originStr)
+		const entity = trees.find(
+			tree => tree.Position.x === pos.x && tree.Position.y === pos.y
+		)
+		if (entity === undefined) return
+		const ang = QAngle.FromString(anglesStr)
 		entity.VisualAngles.CopyFrom(ang)
 		entity.NetworkedAngles.CopyFrom(ang)
 		entity.ModelName = model

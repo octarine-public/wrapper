@@ -35,5 +35,8 @@ declare interface ReadableBinaryStream {
 	ParseKV(block?: string | number): RecursiveMap
 	ParseKVBlock(): RecursiveMap
 	Empty(): boolean
-	CreateNestedStream(size: number, detectEncoding?: boolean): ReadableBinaryStream
+	CreateNestedStream(
+		size: number,
+		detectEncoding?: boolean
+	): ReadableBinaryStream
 }

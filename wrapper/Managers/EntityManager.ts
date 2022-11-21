@@ -11,20 +11,16 @@ export const EntityManager = new (class CEntityManager {
 	public readonly AllEntities: Entity[] = []
 
 	public EntityByIndex(handle: Nullable<number>): Nullable<Entity> {
-		if (handle === 0 || handle === undefined)
-			return undefined
+		if (handle === 0 || handle === undefined) return undefined
 		const index = handle & this.INDEX_MASK,
 			serial = (handle >> this.INDEX_BITS) & this.SERIAL_MASK
 		const ent = AllEntitiesAsMap.get(index)
-		return ent?.SerialMatches(serial)
-			? ent
-			: undefined
+		return ent?.SerialMatches(serial) ? ent : undefined
 	}
 
 	public GetEntitiesByClass<T>(class_: Constructor<T>): T[] {
 		const ar = ClassToEntities.get(class_)
-		if (ar === undefined)
-			throw "Invalid entity class"
+		if (ar === undefined) throw "Invalid entity class"
 		return ar as []
 	}
 })()

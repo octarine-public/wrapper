@@ -1,5 +1,5 @@
 import { WrapperClass } from "../../Decorators"
-import { GameActivity_t } from "../../Enums/GameActivity_t"
+import { GameActivity } from "../../Enums/GameActivity"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { Hero } from "../Base/Hero"
@@ -10,18 +10,19 @@ export class npc_dota_hero_morphling extends Hero {
 	public get IsIllusion(): boolean {
 		return !this.IsGuaranteedReal && super.IsIllusion
 	}
-	public CalculateActivityModifiers(activity: GameActivity_t, ar: string[]): void {
+	public CalculateActivityModifiers(
+		activity: GameActivity,
+		ar: string[]
+	): void {
 		super.CalculateActivityModifiers(activity, ar)
 		// modifier_tiny_craggy_exterior is NOT a mistake.
 		// it's still not updated in Valve code for Rubick and Morphling as of 6/11/2021
-		if (this.HasBuffByName("modifier_tiny_craggy_exterior"))
-			ar.push("tree")
+		if (this.HasBuffByName("modifier_tiny_craggy_exterior")) ar.push("tree")
 	}
 }
 
 const morphlings = EntityManager.GetEntitiesByClass(npc_dota_hero_morphling)
 EventsSDK.on("PostDataUpdate", () => {
 	for (const hero of morphlings)
-		if (!hero.IsGuaranteedReal && !hero.IsIllusion)
-			hero.IsGuaranteedReal = true
+		if (!hero.IsGuaranteedReal && !hero.IsIllusion) hero.IsGuaranteedReal = true
 })

@@ -10,62 +10,78 @@ import { Base, IMenu } from "./Base"
 // every icon: 32x32, 1x1 border
 export class ImageSelector extends Base {
 	public static OnWindowSizeChanged(): void {
-		ImageSelector.image_border_width = GUIInfo.ScaleWidth(2)
-		ImageSelector.image_gap = GUIInfo.ScaleWidth(2)
-		ImageSelector.base_image_height = GUIInfo.ScaleHeight(32)
-		ImageSelector.random_height_value = GUIInfo.ScaleHeight(40)
+		ImageSelector.imageBorderWidth = GUIInfo.ScaleWidth(2)
+		ImageSelector.imageGap = GUIInfo.ScaleWidth(2)
+		ImageSelector.baseImageHeight = GUIInfo.ScaleHeight(32)
+		ImageSelector.randomHeightValue = GUIInfo.ScaleHeight(40)
 	}
 
-	private static image_border_width = 0
-	private static image_gap = 0
-	private static base_image_height = 0
-	private static random_height_value = 0
-	private static readonly elements_per_row = 5
-	private static readonly image_activated_border_color = new Color(104, 4, 255)
+	private static imageBorderWidth = 0
+	private static imageGap = 0
+	private static baseImageHeight = 0
+	private static randomHeightValue = 0
+	private static readonly elementsPerRow = 5
+	private static readonly imageActivatedBorderColor = new Color(104, 4, 255)
 
-	public enabled_values: Map<string, boolean>
-	protected readonly image_size = new Vector2()
-	protected rendered_paths: string[] = []
+	public enabledValues: Map<string, boolean>
+	protected readonly imageSize = new Vector2()
+	protected renderedPaths: string[] = []
 
 	constructor(
 		parent: IMenu,
 		name: string,
 		public values: string[],
-		default_values = new Map<string, boolean>(),
+		defaultValues = new Map<string, boolean>(),
 		tooltip = "",
-		public created_default_state = false,
+		public createdDefaultState = false
 	) {
 		super(parent, name, tooltip)
-		this.enabled_values = default_values
+		this.enabledValues = defaultValues
 	}
 	public get IsZeroSelected(): boolean {
-		for (const value of this.enabled_values.values())
-			if (value)
-				return false
+		for (const value of this.enabledValues.values()) if (value) return false
 		return true
 	}
 
 	public get IconsRect() {
-		const base_pos = this.Position.Add(this.text_offset).AddScalarY(this.name_size.y + 3)
+		const basePos = this.Position.Add(this.textOffset).AddScalarY(
+			this.nameSize.y + 3
+		)
 		return new Rectangle(
-			base_pos,
-			base_pos.Add(
-				this.image_size
-					.AddScalar(ImageSelector.image_border_width * 2 + ImageSelector.image_gap)
-					.MultiplyScalarX(Math.min(this.values.length, ImageSelector.elements_per_row))
-					.MultiplyScalarY(Math.ceil(this.values.length / ImageSelector.elements_per_row)),
-			).SubtractScalar((ImageSelector.elements_per_row - 1) * ImageSelector.image_gap),
+			basePos,
+			basePos
+				.Add(
+					this.imageSize
+						.AddScalar(
+							ImageSelector.imageBorderWidth * 2 + ImageSelector.imageGap
+						)
+						.MultiplyScalarX(
+							Math.min(this.values.length, ImageSelector.elementsPerRow)
+						)
+						.MultiplyScalarY(
+							Math.ceil(this.values.length / ImageSelector.elementsPerRow)
+						)
+				)
+				.SubtractScalar(
+					(ImageSelector.elementsPerRow - 1) * ImageSelector.imageGap
+				)
 		)
 	}
 
-	public get ConfigValue() { return Array.from(this.enabled_values.entries()) }
+	public get ConfigValue() {
+		return Array.from(this.enabledValues.entries())
+	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || value === undefined || !Array.isArray(value))
+		if (
+			this.ShouldIgnoreNewConfigValue ||
+			value === undefined ||
+			!Array.isArray(value)
+		)
 			return
-		this.enabled_values = new Map<string, boolean>(value)
+		this.enabledValues = new Map<string, boolean>(value)
 		this.values.forEach(value_ => {
-			if (!this.enabled_values.has(value_))
-				this.enabled_values.set(value_, this.created_default_state)
+			if (!this.enabledValues.has(value_))
+				this.enabledValues.set(value_, this.createdDefaultState)
 		})
 	}
 
@@ -74,14 +90,13 @@ export class ImageSelector extends Base {
 	}
 
 	public Update(): boolean {
-		if (!super.Update())
-			return false
+		if (!super.Update()) return false
 		this.values.forEach(value => {
-			if (!this.enabled_values.has(value))
-				this.enabled_values.set(value, this.created_default_state)
+			if (!this.enabledValues.has(value))
+				this.enabledValues.set(value, this.createdDefaultState)
 		})
-		this.image_size.x = this.image_size.y = ImageSelector.base_image_height
-		this.rendered_paths = []
+		this.imageSize.x = this.imageSize.y = ImageSelector.baseImageHeight
+		this.renderedPaths = []
 		for (let path of this.values) {
 			if (path.startsWith("rune_"))
 				path = `panorama/images/spellicons/${path}_png.vtex_c`
@@ -89,31 +104,35 @@ export class ImageSelector extends Base {
 				path = `panorama/images/items/${path.substring(5)}_png.vtex_c`
 			else if (!path.startsWith("npc_dota_hero_")) {
 				const abil = AbilityData.GetAbilityByName(path)
-				if (abil !== undefined)
-					path = abil.TexturePath
-			} else
-				path = `panorama/images/heroes/${path}_png.vtex_c`
-			const path_iamge_size = RendererSDK.GetImageSize(path)
-			this.image_size.x = Math.max(this.image_size.x, ImageSelector.base_image_height * (path_iamge_size.x / path_iamge_size.y))
-			this.rendered_paths.push(path)
+				if (abil !== undefined) path = abil.TexturePath
+			} else path = `panorama/images/heroes/${path}_png.vtex_c`
+			const pathIamgeSize = RendererSDK.GetImageSize(path)
+			this.imageSize.x = Math.max(
+				this.imageSize.x,
+				ImageSelector.baseImageHeight * (pathIamgeSize.x / pathIamgeSize.y)
+			)
+			this.renderedPaths.push(path)
 		}
 		this.Size.x =
 			Math.max(
-				this.name_size.x,
-				Math.min(this.values.length, ImageSelector.elements_per_row)
-				* (this.image_size.x + ImageSelector.image_border_width * 2 + ImageSelector.image_gap),
-			)
-			+ this.text_offset.x * 2
-		this.Size.y = (
-			Math.ceil(this.values.length / ImageSelector.elements_per_row)
-			* (this.image_size.y + ImageSelector.image_border_width * 2 + ImageSelector.image_gap)
-			+ ImageSelector.random_height_value
-		)
+				this.nameSize.x,
+				Math.min(this.values.length, ImageSelector.elementsPerRow) *
+					(this.imageSize.x +
+						ImageSelector.imageBorderWidth * 2 +
+						ImageSelector.imageGap)
+			) +
+			this.textOffset.x * 2
+		this.Size.y =
+			Math.ceil(this.values.length / ImageSelector.elementsPerRow) *
+				(this.imageSize.y +
+					ImageSelector.imageBorderWidth * 2 +
+					ImageSelector.imageGap) +
+			ImageSelector.randomHeightValue
 		return true
 	}
 
 	public IsEnabled(value: string): boolean {
-		return this.enabled_values.get(value) ?? false
+		return this.enabledValues.get(value) ?? false
 	}
 
 	public IsEnabledID(id: number): boolean {
@@ -122,26 +141,40 @@ export class ImageSelector extends Base {
 
 	public Render(): void {
 		super.Render()
-		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
-		const base_pos = this.IconsRect.pos1
+		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
+		const basePos = this.IconsRect.pos1
 		for (let i = 0; i < this.values.length; i++) {
-			const imagePath = this.rendered_paths[i]
-			if (imagePath === undefined)
-				continue
-			const size = this.image_size,
+			const imagePath = this.renderedPaths[i]
+			if (imagePath === undefined) continue
+			const size = this.imageSize,
 				pos = new Vector2(
-					i % ImageSelector.elements_per_row,
-					Math.floor(i / ImageSelector.elements_per_row),
-				).Multiply(this.image_size.AddScalar(ImageSelector.image_border_width * 2 + ImageSelector.image_gap)).Add(base_pos)
+					i % ImageSelector.elementsPerRow,
+					Math.floor(i / ImageSelector.elementsPerRow)
+				)
+					.Multiply(
+						this.imageSize.AddScalar(
+							ImageSelector.imageBorderWidth * 2 + ImageSelector.imageGap
+						)
+					)
+					.Add(basePos)
 
-			RendererSDK.Image(imagePath, pos, -1, size, Color.White, 0, undefined, !this.IsEnabled(this.values[i]))
+			RendererSDK.Image(
+				imagePath,
+				pos,
+				-1,
+				size,
+				Color.White,
+				0,
+				undefined,
+				!this.IsEnabled(this.values[i])
+			)
 
 			if (this.IsEnabled(this.values[i]))
 				RendererSDK.OutlinedRect(
 					pos,
 					size,
-					ImageSelector.image_border_width,
-					ImageSelector.image_activated_border_color,
+					ImageSelector.imageBorderWidth,
+					ImageSelector.imageActivatedBorderColor
 				)
 		}
 	}
@@ -152,18 +185,21 @@ export class ImageSelector extends Base {
 
 	public OnMouseLeftUp(): boolean {
 		const rect = this.IconsRect
-		if (!rect.Contains(this.MousePosition))
-			return false
+		if (!rect.Contains(this.MousePosition)) return false
 		const off = rect.GetOffset(this.MousePosition)
 		for (let i = 0; i < this.values.length; i++) {
-			const base_pos = new Vector2(
-				i % ImageSelector.elements_per_row,
-				Math.floor(i / ImageSelector.elements_per_row),
-			).Multiply(this.image_size.AddScalar(ImageSelector.image_border_width * 2 + ImageSelector.image_gap))
-			if (!new Rectangle(base_pos, base_pos.Add(this.image_size)).Contains(off))
+			const basePos = new Vector2(
+				i % ImageSelector.elementsPerRow,
+				Math.floor(i / ImageSelector.elementsPerRow)
+			).Multiply(
+				this.imageSize.AddScalar(
+					ImageSelector.imageBorderWidth * 2 + ImageSelector.imageGap
+				)
+			)
+			if (!new Rectangle(basePos, basePos.Add(this.imageSize)).Contains(off))
 				continue
 			const value = this.values[i]
-			this.enabled_values.set(value, !this.IsEnabled(value))
+			this.enabledValues.set(value, !this.IsEnabled(value))
 			this.TriggerOnValueChangedCBs()
 			break
 		}

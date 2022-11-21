@@ -1,4 +1,4 @@
-export enum GameActivity_t {
+export enum GameActivity {
 	ACT_DOTA_IDLE = 1500,
 	ACT_DOTA_IDLE_RARE = 1501,
 	ACT_DOTA_RUN = 1502,

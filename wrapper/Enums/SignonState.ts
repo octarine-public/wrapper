@@ -1,4 +1,4 @@
-export enum SignonState_t {
+export enum SignonState {
 	SIGNONSTATE_NONE = 0,
 	SIGNONSTATE_CHALLENGE = 1,
 	SIGNONSTATE_CONNECTED = 2,

@@ -22,7 +22,8 @@
 	"exclude": [
 		"wrapper_autogen/**/*",
 		"node_modules/**/*",
-		"scripts_files/**/*"
+		"scripts_files/**/*",
+		"wasm_source/**/*"
 	],
 	"compileOnSave": true
 }

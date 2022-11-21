@@ -13,11 +13,9 @@ export class CCameraBounds extends Entity {
 
 export let CameraBounds: Nullable<CCameraBounds>
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent instanceof CCameraBounds)
-		CameraBounds = ent
+	if (ent instanceof CCameraBounds) CameraBounds = ent
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (CameraBounds === ent)
-		CameraBounds = undefined
+	if (CameraBounds === ent) CameraBounds = undefined
 })

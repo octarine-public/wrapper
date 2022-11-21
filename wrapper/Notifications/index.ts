@@ -7,7 +7,7 @@ export { Notification } from "./AbstractNotification"
 
 export const NotificationsSDK = new (class CNotificationsSDK {
 	public size = 230
-	public y_offset = 150
+	public yOffset = 150
 	public limit = 4
 	public debug = false
 	public backgroundCover = BackgroundCover.Octarine
@@ -43,19 +43,18 @@ export const NotificationsSDK = new (class CNotificationsSDK {
 	 */
 	public Push(
 		notification: Notification,
-		UniqCheck = false,
-		backgroundCover = this.backgroundCover,
+		uniqCheck = false,
+		backgroundCover = this.backgroundCover
 	) {
 		notification.Cover = backgroundCover
 
-		if (UniqCheck) {
+		if (uniqCheck) {
 			ArrayExtensions.arrayRemoveCallback(
 				Notifications,
-				x => x.UniqueKey === x.UniqueKey && !x.IsExpired,
+				x => x.UniqueKey === x.UniqueKey && !x.IsExpired
 			)
 			if (!Queue.some(x => x.UniqueKey === notification.UniqueKey))
 				Queue.push(notification)
-		} else
-			Queue.push(notification)
+		} else Queue.push(notification)
 	}
 })()

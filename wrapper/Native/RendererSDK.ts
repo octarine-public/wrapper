@@ -22,23 +22,23 @@ import * as WASM from "./WASM"
 import { Workers } from "./Workers"
 
 enum CommandID {
-	BEGIN_CLIP = 0,
-	END_CLIP,
+	BEGINCLIP = 0,
+	ENDCLIP,
 
 	TRANSLATE,
 	ROTATE,
-	SET_SCISSOR,
+	SETSCISSOR,
 
 	// PATH_*
-	PATH_MOVE_TO,
-	PATH_LINE_TO,
+	PATHMOVE_TO,
+	PATHLINE_TO,
 	PATH_ADD_RECT,
 	PATH_ADD_ROUND_RECT,
 	PATH_ADD_ELLIPSE,
 	PATH_ADD_ARC,
-	PATH_CUBIC_TO,
+	PATHCUBIC_TO,
 	PATH_QUAD_TO,
-	PATH_CLOSE,
+	PATHCLOSE,
 
 	// DRAW
 	TEXT,
@@ -47,12 +47,12 @@ enum CommandID {
 }
 
 enum PathFlags {
-	LINE_CAP_OFFSET = 2,
+	LINECAP_OFFSET = 2,
 	LINE_JOIN_OFFSET = 4,
 
 	GRAYSCALE = 1 << 0,
-	IMAGE_SHADER = 1 << 1,
-	LINE_CAP_BITS = (1 << LINE_CAP_OFFSET) | (1 << (LINE_CAP_OFFSET + 1)),
+	IMAGESHADER = 1 << 1,
+	LINECAP_BITS = (1 << LINECAP_OFFSET) | (1 << (LINECAP_OFFSET + 1)),
 	LINE_JOIN_BITS = (1 << LINE_JOIN_OFFSET) | (1 << (LINE_JOIN_OFFSET + 1)),
 	FILL = 1 << 6,
 	STROKE = 1 << 7,
@@ -73,8 +73,8 @@ class Font {
 	constructor(
 		public readonly FontID: number,
 		public readonly Weight: number,
-		public readonly Italic: boolean,
-	) { }
+		public readonly Italic: boolean
+	) {}
 }
 
 class CRendererSDK {
@@ -82,6 +82,7 @@ class CRendererSDK {
 	public readonly DefaultTextSize = 18
 	/**
 	 * Default Size of Shape = Width 32 x Height 32
+	 *
 	 * @param vecSize Width as X
 	 * @param vecSize Height as Y
 	 */
@@ -90,32 +91,31 @@ class CRendererSDK {
 	public readonly WindowSize = new Vector2(1, 1)
 
 	private commandCache = new Uint8Array()
-	private commandStream = new ViewBinaryStream(new DataView(
-		this.commandCache.buffer,
-		this.commandCache.byteOffset,
-		this.commandCache.byteLength,
-	))
+	private commandStream = new ViewBinaryStream(
+		new DataView(
+			this.commandCache.buffer,
+			this.commandCache.byteOffset,
+			this.commandCache.byteLength
+		)
+	)
 	private commandCacheSize = 0
 	private smallCommandCacheFrames = 0
-	private readonly font_cache = new Map<string, Font[]>()
-	private readonly texture_cache = new Map</* path */string, number>()
-	private clear_texture_cache = false
-	private readonly tex2size = new Map</* texture_id */number, Vector2>()
-	private readonly queued_fonts: [string, string, number, boolean, string][] = []
-	private in_draw = false
+	private readonly fontCache = new Map<string, Font[]>()
+	private readonly textureCache = new Map</* path */ string, number>()
+	private clearTextureCache = false
+	private readonly tex2size = new Map</* textureID */ number, Vector2>()
+	private readonly queuedFonts: [string, string, number, boolean, string][] = []
+	private inDraw = false
 
 	public get IsInDraw(): boolean {
-		return this.in_draw
+		return this.inDraw
 	}
 
 	public get CameraDistance() {
 		const dist = Camera.Distance
-		if (dist !== -1)
-			return dist
+		if (dist !== -1) return dist
 		const cv = ConVarsSDK.GetFloat("dota_camera_distance", -1)
-		return cv !== -1
-			? cv
-			: 1200
+		return cv !== -1 ? cv : 1200
 	}
 
 	/**
@@ -124,19 +124,18 @@ class CRendererSDK {
 	 */
 	public WorldToScreen(
 		position: Vector2 | Vector3,
-		cull = true,
+		cull = true
 	): Nullable<Vector2> {
 		if (position instanceof Vector2)
-			position = Vector3.FromVector2(position).SetZ(WASM.GetPositionHeight(position))
+			position = Vector3.FromVector2(position).SetZ(
+				WASM.GetPositionHeight(position)
+			)
 		const vec = WASM.WorldToScreenNew(position, this.WindowSize)?.FloorForThis()
-		if (!cull || vec === undefined)
-			return vec
+		if (!cull || vec === undefined) return vec
 		vec.DivideForThis(this.WindowSize)
 		// cut returned screen space to 1.5x screen size
-		if (vec.x < -0.25 || vec.x > 1.25)
-			return undefined
-		if (vec.y < -0.25 || vec.y > 1.25)
-			return undefined
+		if (vec.x < -0.25 || vec.x > 1.25) return undefined
+		if (vec.y < -0.25 || vec.y > 1.25) return undefined
 		return vec.MultiplyForThis(this.WindowSize)
 	}
 	/**
@@ -144,74 +143,117 @@ class CRendererSDK {
 	 */
 	public WorldToScreenCustom(
 		position: Vector2 | Vector3,
-		camera_position: Vector2 | Vector3,
-		camera_distance = 1200,
-		camera_angles = new QAngle(60, 90, 0),
-		window_size = this.WindowSize,
+		cameraPosition: Vector2 | Vector3,
+		cameraDistance = 1200,
+		cameraAngles = new QAngle(60, 90, 0),
+		windowSize = this.WindowSize
 	): Nullable<Vector2> {
 		if (position instanceof Vector2)
-			position = Vector3.FromVector2(position).SetZ(WASM.GetPositionHeight(position))
-		if (camera_position instanceof Vector2)
-			camera_position = WASM.GetCameraPosition(camera_position, camera_distance, camera_angles)
-		const vec = WASM.WorldToScreen(position, camera_position, camera_distance, camera_angles, window_size)?.DivideForThis(window_size)
-		if (vec === undefined)
-			return undefined
+			position = Vector3.FromVector2(position).SetZ(
+				WASM.GetPositionHeight(position)
+			)
+		if (cameraPosition instanceof Vector2)
+			cameraPosition = WASM.GetCameraPosition(
+				cameraPosition,
+				cameraDistance,
+				cameraAngles
+			)
+		const vec = WASM.WorldToScreen(
+			position,
+			cameraPosition,
+			cameraDistance,
+			cameraAngles,
+			windowSize
+		)?.DivideForThis(windowSize)
+		if (vec === undefined) return undefined
 		// cut returned screen space to 2x screen size
-		if (vec.x < -0.5 || vec.x > 1.5)
-			return undefined
-		if (vec.y < -0.5 || vec.y > 1.5)
-			return undefined
+		if (vec.x < -0.5 || vec.x > 1.5) return undefined
+		if (vec.y < -0.5 || vec.y > 1.5) return undefined
 		return vec
 	}
 
 	/**
 	 * Projects given screen vector onto camera matrix. Can be used to connect ScreenToWorldFar and camera position dots.
+	 *
 	 * @param screen screen position
 	 */
 	public ScreenToWorld(screen: Vector2): Vector3 {
 		const vec = screen.Divide(this.WindowSize).MultiplyScalarForThis(2)
 		vec.x = vec.x - 1
 		vec.y = 1 - vec.y
-		const camera_pos = Camera.Position ? Vector3.fromIOBuffer() : new Vector3()
-		const camera_ang = Camera.Angles ? QAngle.fromIOBuffer() : new QAngle()
-		return WASM.ScreenToWorld(vec, camera_pos, this.CameraDistance, camera_ang, this.WindowSize)
+		const cameraPos = Camera.Position ? Vector3.fromIOBuffer() : new Vector3()
+		const cameraAng = Camera.Angles ? QAngle.fromIOBuffer() : new QAngle()
+		return WASM.ScreenToWorld(
+			vec,
+			cameraPos,
+			this.CameraDistance,
+			cameraAng,
+			this.WindowSize
+		)
 	}
 	/**
 	 * Projects given screen vector onto camera matrix. Can be used to connect ScreenToWorldFar and camera position dots.
+	 *
 	 * @param screen screen position with x and y in range {0, 1}
 	 */
-	public ScreenToWorldCustom(screen: Vector2, camera_position: Vector2 | Vector3, camera_distance = 1200, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Vector3 {
-		if (camera_position instanceof Vector2)
-			camera_position = WASM.GetCameraPosition(camera_position, camera_distance, camera_angles)
-		return WASM.ScreenToWorld(screen, camera_position, camera_distance, camera_angles, window_size)
+	public ScreenToWorldCustom(
+		screen: Vector2,
+		cameraPosition: Vector2 | Vector3,
+		cameraDistance = 1200,
+		cameraAngles = new QAngle(60, 90, 0),
+		windowSize = this.WindowSize
+	): Vector3 {
+		if (cameraPosition instanceof Vector2)
+			cameraPosition = WASM.GetCameraPosition(
+				cameraPosition,
+				cameraDistance,
+				cameraAngles
+			)
+		return WASM.ScreenToWorld(
+			screen,
+			cameraPosition,
+			cameraDistance,
+			cameraAngles,
+			windowSize
+		)
 	}
 	/**
 	 * @param screen screen position with x and y in range {0, 1}
 	 */
 	public ScreenToWorldFar(
 		screens: Vector2[],
-		camera_position: Vector2 | Vector3,
-		camera_distance = 1200,
-		camera_angles = new QAngle(60, 90, 0),
-		window_size = this.WindowSize,
-		fov = -1,
+		cameraPosition: Vector2 | Vector3,
+		cameraDistance = 1200,
+		cameraAngles = new QAngle(60, 90, 0),
+		windowSize = this.WindowSize,
+		fov = -1
 	): Vector3[] {
-		if (camera_position instanceof Vector2)
-			camera_position = WASM.GetCameraPosition(camera_position, camera_distance, camera_angles)
-		return WASM.ScreenToWorldFar(screens, window_size, camera_position, camera_distance, camera_angles, fov)
+		if (cameraPosition instanceof Vector2)
+			cameraPosition = WASM.GetCameraPosition(
+				cameraPosition,
+				cameraDistance,
+				cameraAngles
+			)
+		return WASM.ScreenToWorldFar(
+			screens,
+			windowSize,
+			cameraPosition,
+			cameraDistance,
+			cameraAngles,
+			fov
+		)
 	}
 	public FilledCircle(
 		vecPos: Vector2,
 		vecSize: Vector2,
 		color = Color.White,
-		rotation_deg = 0,
-		custom_scissor?: Rectangle,
-		grayscale = false,
+		rotationDeg = 0,
+		customScissor?: Rectangle,
+		grayscale = false
 	): void {
-		if (custom_scissor !== undefined)
-			this.SetScissor(custom_scissor)
+		if (customScissor !== undefined) this.SetScissor(customScissor)
 		this.Translate(vecPos)
-		this.Rotate(rotation_deg)
+		this.Rotate(rotationDeg)
 		this.Ellipse(vecSize, 0, PathFlags.FILL, color, grayscale)
 	}
 	/**
@@ -222,14 +264,13 @@ class CRendererSDK {
 		vecSize: Vector2,
 		color = Color.White,
 		width = 5,
-		rotation_deg = 0,
-		custom_scissor?: Rectangle,
-		grayscale = false,
+		rotationDeg = 0,
+		customScissor?: Rectangle,
+		grayscale = false
 	): void {
-		if (custom_scissor !== undefined)
-			this.SetScissor(custom_scissor)
+		if (customScissor !== undefined) this.SetScissor(customScissor)
 		this.Translate(vecPos)
-		this.Rotate(rotation_deg)
+		this.Rotate(rotationDeg)
 		this.Ellipse(vecSize, width, PathFlags.STROKE, color, grayscale)
 	}
 	/**
@@ -242,18 +283,23 @@ class CRendererSDK {
 		end = start.Add(this.DefaultShapeSize),
 		fillColor = Color.White,
 		width = 5,
-		rotation_deg = 0,
-		custom_scissor?: Rectangle,
+		rotationDeg = 0,
+		customScissor?: Rectangle,
 		strokeColor = fillColor,
-		grayscale = false,
+		grayscale = false
 	): void {
-		if (custom_scissor !== undefined)
-			this.SetScissor(custom_scissor)
+		if (customScissor !== undefined) this.SetScissor(customScissor)
 		this.Translate(start)
-		this.Rotate(rotation_deg)
+		this.Rotate(rotationDeg)
 		this.PathMoveTo(0, 0)
 		this.PathLineTo(end.x - start.x, end.y - start.y)
-		this.Path(width, fillColor, strokeColor, PathFlags.STROKE_AND_FILL, grayscale)
+		this.Path(
+			width,
+			fillColor,
+			strokeColor,
+			PathFlags.STROKE_AND_FILL,
+			grayscale
+		)
 	}
 	/**
 	 * @param vecSize default Width 5 x Height 5
@@ -264,18 +310,17 @@ class CRendererSDK {
 		vecPos = new Vector2(),
 		vecSize = this.DefaultShapeSize,
 		fillColor = Color.White,
-		rotation_deg = 0,
-		custom_scissor?: Rectangle,
+		rotationDeg = 0,
+		customScissor?: Rectangle,
 		grayscale = false,
 		strokeColor = fillColor,
 		width = 0,
 		cap = LineCap.Square,
-		join = LineJoin.Round,
+		join = LineJoin.Round
 	): void {
-		if (custom_scissor !== undefined)
-			this.SetScissor(custom_scissor)
+		if (customScissor !== undefined) this.SetScissor(customScissor)
 		this.Translate(vecPos)
-		this.Rotate(rotation_deg)
+		this.Rotate(rotationDeg)
 		this.Rect(
 			vecSize,
 			width,
@@ -284,7 +329,7 @@ class CRendererSDK {
 			strokeColor,
 			grayscale,
 			cap,
-			join,
+			join
 		)
 	}
 	/**
@@ -297,20 +342,28 @@ class CRendererSDK {
 		vecSize = this.DefaultShapeSize,
 		width = 1,
 		color = Color.White,
-		rotation_deg = 0,
-		custom_scissor?: Rectangle,
+		rotationDeg = 0,
+		customScissor?: Rectangle,
 		grayscale = false,
 		cap = LineCap.Square,
-		join = LineJoin.Round,
+		join = LineJoin.Round
 	): void {
-		if (custom_scissor !== undefined)
-			this.SetScissor(custom_scissor)
+		if (customScissor !== undefined) this.SetScissor(customScissor)
 		this.Translate(vecPos)
-		this.Rotate(rotation_deg)
-		this.Rect(vecSize, width, PathFlags.STROKE, color, color, grayscale, cap, join)
+		this.Rotate(rotationDeg)
+		this.Rect(
+			vecSize,
+			width,
+			PathFlags.STROKE,
+			color,
+			color,
+			grayscale,
+			cap,
+			join
+		)
 	}
 	/**
-	 * @param path must end with "_c" (without double-quotes), if that's vtex_c
+	 * @param path must end with "_c" (without double-quotes), if that's vtexC
 	 */
 	public Image(
 		path: string,
@@ -318,55 +371,50 @@ class CRendererSDK {
 		round = -1,
 		vecSize = new Vector2(-1, -1),
 		color = Color.White,
-		rotation_deg = 0,
-		custom_scissor?: Rectangle,
+		rotationDeg = 0,
+		customScissor?: Rectangle,
 		grayscale = false,
 		subtexOffset?: Vector2,
-		subtexSize?: Vector2,
+		subtexSize?: Vector2
 	): void {
-		const texture_id = this.GetTexture(path) // better put it BEFORE new command
-		if (texture_id === -1)
-			return
-		const orig_size = this.tex2size.get(texture_id)!
-		const half_round = round / 2
-		if (vecSize.x <= 0)
-			vecSize.x = subtexSize?.x ?? orig_size.x
-		if (vecSize.y <= 0)
-			vecSize.y = subtexSize?.y ?? orig_size.y
+		const textureID = this.GetTexture(path) // better put it BEFORE new command
+		if (textureID === -1) return
+		const origSize = this.tex2size.get(textureID)!
+		const halfRound = round / 2
+		if (vecSize.x <= 0) vecSize.x = subtexSize?.x ?? origSize.x
+		if (vecSize.y <= 0) vecSize.y = subtexSize?.y ?? origSize.y
 		if (path.endsWith(".svg")) {
 			if (round >= 0) {
 				this.BeginClip(false)
 				this.FilledCircle(
-					vecPos.AddScalar(half_round),
-					vecSize.SubtractScalar(half_round),
+					vecPos.AddScalar(halfRound),
+					vecSize.SubtractScalar(halfRound),
 					Color.White,
-					rotation_deg,
-					custom_scissor,
+					rotationDeg,
+					customScissor
 				)
 				this.EndClip()
 			}
 
-			if (custom_scissor !== undefined)
-				this.SetScissor(custom_scissor)
+			if (customScissor !== undefined) this.SetScissor(customScissor)
 			this.Translate(vecPos)
-			this.Rotate(rotation_deg)
+			this.Rotate(rotationDeg)
 			this.AllocateCommandSpace(CommandID.SVG, 4 * 4 + 1)
-			this.commandStream.WriteUint32(texture_id)
+			this.commandStream.WriteUint32(textureID)
 			this.commandStream.WriteFloat32(vecSize.x)
 			this.commandStream.WriteFloat32(vecSize.y)
 			this.commandStream.WriteColor(color)
 			this.commandStream.WriteBoolean(grayscale)
 		} else {
-			if (custom_scissor !== undefined)
-				this.SetScissor(custom_scissor)
+			if (customScissor !== undefined) this.SetScissor(customScissor)
 			this.Translate(vecPos)
-			this.Rotate(rotation_deg)
+			this.Rotate(rotationDeg)
 			if (round >= 0) {
 				this.AllocateCommandSpace(CommandID.PATH_ADD_ELLIPSE, 4 * 4)
-				this.commandStream.WriteFloat32(half_round)
-				this.commandStream.WriteFloat32(half_round)
-				this.commandStream.WriteFloat32(vecSize.x - half_round)
-				this.commandStream.WriteFloat32(vecSize.y - half_round)
+				this.commandStream.WriteFloat32(halfRound)
+				this.commandStream.WriteFloat32(halfRound)
+				this.commandStream.WriteFloat32(vecSize.x - halfRound)
+				this.commandStream.WriteFloat32(vecSize.y - halfRound)
 			} else {
 				this.AllocateCommandSpace(CommandID.PATH_ADD_RECT, 4 * 4)
 				this.commandStream.WriteFloat32(0)
@@ -374,9 +422,9 @@ class CRendererSDK {
 				this.commandStream.WriteFloat32(vecSize.x)
 				this.commandStream.WriteFloat32(vecSize.y)
 			}
-			const flags = PathFlags.FILL | PathFlags.IMAGE_SHADER
-			const size_x = subtexSize?.x ?? orig_size.x,
-				size_y = subtexSize?.y ?? orig_size.y
+			const flags = PathFlags.FILL | PathFlags.IMAGESHADER
+			const sizeX = subtexSize?.x ?? origSize.x,
+				sizey = subtexSize?.y ?? origSize.y
 			this.Path(
 				1,
 				color,
@@ -385,147 +433,174 @@ class CRendererSDK {
 				grayscale,
 				LineCap.Square,
 				LineJoin.Round,
-				texture_id,
-				(subtexOffset?.x ?? 0) * (vecSize.x / size_x),
-				(subtexOffset?.y ?? 0) * (vecSize.x / size_y),
-				vecSize.x * (orig_size.x / size_x),
-				vecSize.y * (orig_size.y / size_y),
+				textureID,
+				(subtexOffset?.x ?? 0) * (vecSize.x / sizeX),
+				(subtexOffset?.y ?? 0) * (vecSize.x / sizey),
+				vecSize.x * (origSize.x / sizeX),
+				vecSize.y * (origSize.y / sizey)
 			)
 		}
 	}
 	public GetImageSize(path: string): Vector2 {
 		return this.tex2size.get(this.GetTexture(path)) ?? new Vector2()
 	}
-	public Text(text: string, vecPos = new Vector2(), color = Color.White, font_name = this.DefaultFontName, font_size = this.DefaultTextSize, weight = 400, italic = false, outlined = true): void {
-		if (text === "")
-			return
+	public Text(
+		text: string,
+		vecPos = new Vector2(),
+		color = Color.White,
+		fontName = this.DefaultFontName,
+		fontSize = this.DefaultTextSize,
+		weight = 400,
+		italic = false,
+		outlined = true
+	): void {
+		if (text === "") return
 
-		const font_id = this.GetFont(font_name, weight, italic)
-		if (font_id === -1)
-			return
+		const fontID = this.GetFont(fontName, weight, italic)
+		if (fontID === -1) return
 
-		this.Translate(outlined ? vecPos.Clone().SubtractScalarX(1).AddScalarY(1) : vecPos)
-		const start_pos = this.commandCacheSize
+		this.Translate(
+			outlined ? vecPos.Clone().SubtractScalarX(1).AddScalarY(1) : vecPos
+		)
+		const startPos = this.commandCacheSize
 		this.AllocateCommandSpace(CommandID.TEXT, 2 * 2 + 2 * 4)
-		this.commandStream.WriteUint16(font_id)
-		this.commandStream.WriteUint16(Math.round(font_size + 4))
+		this.commandStream.WriteUint16(fontID)
+		this.commandStream.WriteUint16(Math.round(fontSize + 4))
 		this.commandStream.WriteColor(outlined ? Color.Black : color)
-		const length_pos = this.commandStream.pos
+		const lengthPos = this.commandStream.pos
 		this.commandStream.WriteUint32(0)
 		{
 			// preserve 2 bytes per 1 char, we'll allocate more later if needed
-			const prealloc_length = text.length * 2
-			this.commandCacheSize += prealloc_length
+			const preallocLength = text.length * 2
+			this.commandCacheSize += preallocLength
 			this.ResizeCommandCache()
-			this.commandCacheSize -= prealloc_length
+			this.commandCacheSize -= preallocLength
 		}
 		StringToUTF8Cb(text, b => {
 			this.commandCacheSize++
 			this.ResizeCommandCache()
 			this.commandStream.WriteUint8(b)
 		})
-		const end_pos = this.commandStream.pos,
-			bytes_len = end_pos - length_pos - 4
-		this.commandStream.RelativeSeek(length_pos - end_pos)
-		this.commandStream.WriteUint32(bytes_len)
-		this.commandStream.RelativeSeek(bytes_len)
+		const endPos = this.commandStream.pos,
+			bytesLen = endPos - lengthPos - 4
+		this.commandStream.RelativeSeek(lengthPos - endPos)
+		this.commandStream.WriteUint32(bytesLen)
+		this.commandStream.RelativeSeek(bytesLen)
 
 		if (outlined) {
 			this.Translate(vecPos)
-			const new_pos = this.commandCacheSize,
-				cmd_size = end_pos - start_pos
-			this.AllocateCommandSpace(CommandID.TEXT, cmd_size - 1)
-			this.commandCache.copyWithin(new_pos, start_pos, end_pos)
+			const newPos = this.commandCacheSize,
+				cmdSize = endPos - startPos
+			this.AllocateCommandSpace(CommandID.TEXT, cmdSize - 1)
+			this.commandCache.copyWithin(newPos, startPos, endPos)
 			this.commandStream.RelativeSeek(2 * 2)
 			this.commandStream.WriteColor(color)
-			this.commandStream.RelativeSeek(cmd_size - (this.commandStream.pos - new_pos))
+			this.commandStream.RelativeSeek(
+				cmdSize - (this.commandStream.pos - newPos)
+			)
 		}
 	}
 	/**
-	 * @returns text size defined as new Vector3(width, height, under_line)
+	 * @returns text size defined as new Vector3(width, height, underLine)
 	 */
-	public GetTextSize(text: string, font_name = this.DefaultFontName, font_size = this.DefaultTextSize, weight = 400, italic = false): Vector3 {
-		if (!this.in_draw)
-			console.error("Unsafe GetTextSize usage outside of Draw event", new Error().stack)
+	public GetTextSize(
+		text: string,
+		fontName = this.DefaultFontName,
+		fontSize = this.DefaultTextSize,
+		weight = 400,
+		italic = false
+	): Vector3 {
+		if (!this.inDraw)
+			console.error(
+				"Unsafe GetTextSize usage outside of Draw event",
+				new Error().stack
+			)
 
-		if (text === "")
-			return new Vector3()
+		if (text === "") return new Vector3()
 
-		const font_id = this.GetFont(font_name, weight, italic)
-		if (font_id === -1)
-			return new Vector3()
-		Renderer.GetTextSize(text, font_id, Math.round(font_size + 4))
-		return new Vector3(
-			IOBuffer[0],
-			IOBuffer[1],
-			IOBuffer[2],
-		).CeilForThis()
+		const fontID = this.GetFont(fontName, weight, italic)
+		if (fontID === -1) return new Vector3()
+		Renderer.GetTextSize(text, fontID, Math.round(fontSize + 4))
+		return new Vector3(IOBuffer[0], IOBuffer[1], IOBuffer[2]).CeilForThis()
 	}
 	/**
 	 * @param color default: Yellow
-	 * @param font_weight default: 0
-	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
-	 * @param flags default: FontFlags_t.ANTIALIAS
+	 * @param fontWeight default: 0
+	 * @param flags see FontFlagsT. You can use it like (FontFlagsT.OUTLINE | FontFlagsT.BOLD)
+	 * @param flags default: FontFlagsT.ANTIALIAS
 	 */
-	public TextAroundMouse(text: string, vec?: Vector2 | false, color = Color.Yellow, font_name = this.DefaultFontName, font_size = 30, weight = 400, italic = false, outlined = true): void {
+	public TextAroundMouse(
+		text: string,
+		vec?: Vector2 | false,
+		color = Color.Yellow,
+		fontName = this.DefaultFontName,
+		fontSize = 30,
+		weight = 400,
+		italic = false,
+		outlined = true
+	): void {
 		let vecMouse = InputManager.CursorOnScreen.AddScalarX(30).AddScalarY(15)
 
-		if (vec !== undefined && vec !== false)
-			vecMouse = vecMouse.Add(vec)
+		if (vec !== undefined && vec !== false) vecMouse = vecMouse.Add(vec)
 
-		this.Text(text, vecMouse, color, font_name, font_size, weight, italic, outlined)
+		this.Text(
+			text,
+			vecMouse,
+			color,
+			fontName,
+			fontSize,
+			weight,
+			italic,
+			outlined
+		)
 	}
 
 	public BeforeDraw(w: number, h: number) {
-		this.in_draw = true
-		const prev_width = this.WindowSize.x,
-			prev_height = this.WindowSize.y
+		this.inDraw = true
+		const prevWidth = this.WindowSize.x,
+			prevHeight = this.WindowSize.y
 		WASM.CloneWorldToProjection(DrawMatrix)
 		this.WindowSize.x = w
 		this.WindowSize.y = h
-		if (this.WindowSize.x !== prev_width || this.WindowSize.y !== prev_height)
+		if (this.WindowSize.x !== prevWidth || this.WindowSize.y !== prevHeight)
 			EventsSDK.emit("WindowSizeChanged", false)
-		if (this.clear_texture_cache) {
-			for (const tex of this.texture_cache.values())
-				if (tex !== -1)
-					this.FreeTexture(tex)
-			this.texture_cache.clear()
+		if (this.clearTextureCache) {
+			for (const tex of this.textureCache.values())
+				if (tex !== -1) this.FreeTexture(tex)
+			this.textureCache.clear()
 			this.tex2size.clear()
-			this.clear_texture_cache = false
+			this.clearTextureCache = false
 		}
 
-		this.queued_fonts.forEach(([name, path, weight, italic, stack]) =>
-			this.CreateFont(name, path, weight, italic, stack),
+		this.queuedFonts.forEach(([name, path, weight, italic, stack]) =>
+			this.CreateFont(name, path, weight, italic, stack)
 		)
-		this.queued_fonts.splice(0)
+		this.queuedFonts.splice(0)
 	}
 	public EmitDraw() {
-		Renderer.ExecuteCommandBuffer(this.commandCache.subarray(0, this.commandCacheSize))
-		const shrink_factor = 3,
-			shrink_mul = 2,
-			shrink_frames = 5
-		if (this.commandCacheSize * shrink_factor < this.commandCache.byteLength) {
-			if (this.smallCommandCacheFrames++ > shrink_frames) {
-				this.commandCache = new Uint8Array(this.commandCacheSize * shrink_mul)
+		Renderer.ExecuteCommandBuffer(
+			this.commandCache.subarray(0, this.commandCacheSize)
+		)
+		const shrinkFactor = 3,
+			shrinkMul = 2,
+			shrinkFrames = 5
+		if (this.commandCacheSize * shrinkFactor < this.commandCache.byteLength) {
+			if (this.smallCommandCacheFrames++ > shrinkFrames) {
+				this.commandCache = new Uint8Array(this.commandCacheSize * shrinkMul)
 				this.OnCommandCacheChanged()
 				this.smallCommandCacheFrames = 0
 			}
-		} else
-			this.smallCommandCacheFrames = 0
+		} else this.smallCommandCacheFrames = 0
 		this.commandStream.pos = 0
 		this.commandCacheSize = 0
-		this.in_draw = false
+		this.inDraw = false
 	}
-	public GetAspectRatio(window_size = this.WindowSize) {
-		const res = window_size.x / window_size.y
-		if (res >= 1.25 && res <= 1.35)
-			return "4x3"
-		else if (res >= 1.7 && res <= 1.85)
-			return "16x9"
-		else if (res >= 1.5 && res <= 1.69)
-			return "16x10"
-		else if (res >= 2.2 && res <= 2.4)
-			return "21x9"
+	public GetAspectRatio(windowSize = this.WindowSize) {
+		const res = windowSize.x / windowSize.y
+		if (res >= 1.25 && res <= 1.35) return "4x3"
+		else if (res >= 1.7 && res <= 1.85) return "16x9"
+		else if (res >= 1.5 && res <= 1.69) return "16x10"
+		else if (res >= 2.2 && res <= 2.4) return "21x9"
 		return "unknown"
 	}
 	public Radial(
@@ -534,60 +609,72 @@ class CRendererSDK {
 		vecPos: Vector2,
 		vecSize: Vector2,
 		fillColor = Color.White,
-		rotation_deg = 0,
-		custom_scissor?: Rectangle,
+		rotationDeg = 0,
+		customScissor?: Rectangle,
 		strokeColor = fillColor,
 		grayscale = false,
-		outline_width = -1,
+		outlineWidth = -1,
 		outer = false,
 		cap = LineCap.Square,
-		join = LineJoin.Round,
+		join = LineJoin.Round
 	): void {
-		outer = outer && outline_width !== -1
-		const size_off = outer ? Math.round(outline_width / 2) : 0,
-			pos_off = outer ? -Math.round(outline_width / 4) : 0
-		vecPos.AddScalarForThis(pos_off)
-		vecSize.AddScalarForThis(size_off)
+		outer = outer && outlineWidth !== -1
+		const sizeOff = outer ? Math.round(outlineWidth / 2) : 0,
+			posOff = outer ? -Math.round(outlineWidth / 4) : 0
+		vecPos.AddScalarForThis(posOff)
+		vecSize.AddScalarForThis(sizeOff)
 
 		percent = Math.min(Math.max(percent / 100, -1), 1)
 		if (percent >= 1) {
-			if (outline_width !== -1)
-				this.OutlinedRect(vecPos, vecSize, outline_width, strokeColor, rotation_deg, custom_scissor, grayscale)
+			if (outlineWidth !== -1)
+				this.OutlinedRect(
+					vecPos,
+					vecSize,
+					outlineWidth,
+					strokeColor,
+					rotationDeg,
+					customScissor,
+					grayscale
+				)
 			else
-				this.FilledRect(vecPos, vecSize, fillColor, rotation_deg, custom_scissor, grayscale)
-			vecSize.SubtractScalarForThis(size_off)
-			vecPos.SubtractScalarForThis(pos_off)
+				this.FilledRect(
+					vecPos,
+					vecSize,
+					fillColor,
+					rotationDeg,
+					customScissor,
+					grayscale
+				)
+			vecSize.SubtractScalarForThis(sizeOff)
+			vecPos.SubtractScalarForThis(posOff)
 			return
 		}
-		vecPos.AddScalarForThis(pos_off)
-		vecSize.AddScalarForThis(size_off)
+		vecPos.AddScalarForThis(posOff)
+		vecSize.AddScalarForThis(sizeOff)
 
-		if (outline_width !== -1)
-			this.BeginClip(false)
+		if (outlineWidth !== -1) this.BeginClip(false)
 
-		if (custom_scissor !== undefined)
-			this.SetScissor(custom_scissor)
+		if (customScissor !== undefined) this.SetScissor(customScissor)
 		this.Translate(vecPos)
-		this.Rotate(rotation_deg)
+		this.Rotate(rotationDeg)
 
 		let angle = this.NormalizedAngle(DegreesToRadian(360 * percent))
 		const startAngleSign = Math.sign(startAngle)
 		startAngle = DegreesToRadian(startAngle)
-		if (startAngleSign < 0)
-			startAngle -= angle
+		if (startAngleSign < 0) startAngle -= angle
 		startAngle = this.NormalizedAngle(startAngle)
 
 		this.PathMoveTo(vecSize.x / 2, vecSize.y / 2)
-		const PI4 = Math.PI / 4
-		const startAngleModPI4 = startAngle % PI4
+		const pi4 = Math.PI / 4
+		const startAngleModPI4 = startAngle % pi4
 		if (startAngleModPI4 !== 0) {
 			const pt = this.PointOnBounds(startAngle, vecSize)
 			this.PathLineTo(pt.x, pt.y)
-			const diff = PI4 - startAngleModPI4
+			const diff = pi4 - startAngleModPI4
 			startAngle += diff
 			angle -= Math.min(diff, angle)
 		}
-		for (let a = 0; a < angle; a += PI4) {
+		for (let a = 0; a < angle; a += pi4) {
 			const pt = this.PointOnBounds(startAngle + a, vecSize)
 			this.PathLineTo(pt.x, pt.y)
 		}
@@ -597,22 +684,30 @@ class CRendererSDK {
 		}
 		this.Path(
 			1,
-			outline_width !== -1 ? Color.White : fillColor,
-			outline_width !== -1 ? Color.White : strokeColor,
+			outlineWidth !== -1 ? Color.White : fillColor,
+			outlineWidth !== -1 ? Color.White : strokeColor,
 			PathFlags.STROKE_AND_FILL,
 			grayscale,
 			cap,
-			join,
+			join
 		)
 
-		vecSize.SubtractScalarForThis(size_off)
-		vecPos.SubtractScalarForThis(pos_off)
-		if (outline_width !== -1) {
+		vecSize.SubtractScalarForThis(sizeOff)
+		vecPos.SubtractScalarForThis(posOff)
+		if (outlineWidth !== -1) {
 			this.EndClip()
-			this.OutlinedRect(vecPos, vecSize, outline_width, strokeColor, rotation_deg, custom_scissor, grayscale)
+			this.OutlinedRect(
+				vecPos,
+				vecSize,
+				outlineWidth,
+				strokeColor,
+				rotationDeg,
+				customScissor,
+				grayscale
+			)
 		}
-		vecSize.SubtractScalarForThis(size_off)
-		vecPos.SubtractScalarForThis(pos_off)
+		vecSize.SubtractScalarForThis(sizeOff)
+		vecPos.SubtractScalarForThis(posOff)
 	}
 	public Arc(
 		baseAngle: number,
@@ -622,37 +717,48 @@ class CRendererSDK {
 		fill = false,
 		width = 5,
 		color = Color.White,
-		rotation_deg = 0,
-		custom_scissor?: Rectangle,
+		rotationDeg = 0,
+		customScissor?: Rectangle,
 		grayscale = false,
 		outer = false,
-		cap = LineCap.Butt,
+		cap = LineCap.Butt
 	): void {
-		if (Number.isNaN(baseAngle) || !Number.isFinite(baseAngle))
-			baseAngle = 0
-		if (Number.isNaN(percent) || !Number.isFinite(percent))
-			percent = 100
+		if (Number.isNaN(baseAngle) || !Number.isFinite(baseAngle)) baseAngle = 0
+		if (Number.isNaN(percent) || !Number.isFinite(percent)) percent = 100
 		percent = Math.min(Math.max(percent / 100, -1), 1)
 
-		const size_off = outer ? Math.round(width / 2) : 0,
-			pos_off = outer ? -Math.round(width / 4) : 0
+		const sizeOff = outer ? Math.round(width / 2) : 0,
+			posOff = outer ? -Math.round(width / 4) : 0
 
 		if (percent >= 1) {
-			vecPos = vecPos.AddScalar(pos_off)
-			vecSize = vecSize.AddScalar(size_off)
+			vecPos = vecPos.AddScalar(posOff)
+			vecSize = vecSize.AddScalar(sizeOff)
 			if (fill)
-				this.FilledCircle(vecPos, vecSize, color, rotation_deg, custom_scissor, grayscale)
+				this.FilledCircle(
+					vecPos,
+					vecSize,
+					color,
+					rotationDeg,
+					customScissor,
+					grayscale
+				)
 			else
-				this.OutlinedCircle(vecPos, vecSize, color, width, rotation_deg, custom_scissor, grayscale)
+				this.OutlinedCircle(
+					vecPos,
+					vecSize,
+					color,
+					width,
+					rotationDeg,
+					customScissor,
+					grayscale
+				)
 			return
 		}
 
-		if (custom_scissor !== undefined)
-			this.SetScissor(custom_scissor)
+		if (customScissor !== undefined) this.SetScissor(customScissor)
 		this.Translate(vecPos)
-		if (outer)
-			this.Translate(new Vector2(pos_off, pos_off))
-		this.Rotate(rotation_deg)
+		if (outer) this.Translate(new Vector2(posOff, posOff))
+		this.Rotate(rotationDeg)
 
 		baseAngle = DegreesToRadian(baseAngle)
 		const sweepAngle = DegreesToRadian(360 * percent * Math.sign(baseAngle))
@@ -660,8 +766,8 @@ class CRendererSDK {
 		this.AllocateCommandSpace(CommandID.PATH_ADD_ARC, 6 * 4 + 1)
 		this.commandStream.WriteFloat32(0)
 		this.commandStream.WriteFloat32(0)
-		this.commandStream.WriteFloat32(vecSize.x + size_off)
-		this.commandStream.WriteFloat32(vecSize.y + size_off)
+		this.commandStream.WriteFloat32(vecSize.x + sizeOff)
+		this.commandStream.WriteFloat32(vecSize.y + sizeOff)
 		this.commandStream.WriteFloat32(baseAngle)
 		this.commandStream.WriteFloat32(sweepAngle)
 		this.commandStream.WriteBoolean(fill)
@@ -669,29 +775,36 @@ class CRendererSDK {
 			width,
 			color,
 			color,
-			fill
-				? PathFlags.FILL
-				: PathFlags.STROKE,
+			fill ? PathFlags.FILL : PathFlags.STROKE,
 			grayscale,
-			cap,
+			cap
 		)
 	}
-	public AllocateCommandSpace_(commandID: CommandID, bytes: number): ViewBinaryStream {
+	public AllocateCommandSpace_(
+		commandID: CommandID,
+		bytes: number
+	): ViewBinaryStream {
 		this.AllocateCommandSpace(commandID, bytes)
 		return this.commandStream
 	}
 	public FreeTextureCache(): void {
-		this.clear_texture_cache = true
+		this.clearTextureCache = true
 	}
-	public CreateFont(name: string, path: string, weight: number, italic: boolean, stack = new Error().stack!): void {
+	public CreateFont(
+		name: string,
+		path: string,
+		weight: number,
+		italic: boolean,
+		stack = new Error().stack!
+	): void {
 		const realPath = tryFindFile(path, 1)
 		if (realPath === undefined) {
 			console.error(`Reading font "${name}" with path "${path}" failed`, stack)
 			return
 		}
 
-		if (!this.in_draw) {
-			this.queued_fonts.push([name, realPath, weight, italic, stack])
+		if (!this.inDraw) {
+			this.queuedFonts.push([name, realPath, weight, italic, stack])
 			return
 		}
 
@@ -701,25 +814,25 @@ class CRendererSDK {
 			return
 		}
 
-		const font_id = Renderer.CreateFont(data)
-		if (font_id === -1) {
+		const fontID = Renderer.CreateFont(data)
+		if (fontID === -1) {
 			console.error(`Loading font "${name}" with path "${path}" failed`, stack)
 			return
 		}
 
-		let font_ar = this.font_cache.get(name)
-		if (font_ar === undefined) {
-			font_ar = []
-			this.font_cache.set(name, font_ar)
+		let fontAr = this.fontCache.get(name)
+		if (fontAr === undefined) {
+			fontAr = []
+			this.fontCache.set(name, fontAr)
 		}
-		font_ar.push(new Font(font_id, weight, italic))
+		fontAr.push(new Font(fontID, weight, italic))
 	}
-	public BeginClip(diff_op: boolean): void {
-		this.AllocateCommandSpace(CommandID.BEGIN_CLIP, 1)
-		this.commandStream.WriteBoolean(diff_op)
+	public BeginClip(diffOp: boolean): void {
+		this.AllocateCommandSpace(CommandID.BEGINCLIP, 1)
+		this.commandStream.WriteBoolean(diffOp)
 	}
 	public EndClip(): void {
-		this.AllocateCommandSpace(CommandID.END_CLIP, 0)
+		this.AllocateCommandSpace(CommandID.ENDCLIP, 0)
 	}
 	private Rect(
 		vecSize: Vector2,
@@ -729,7 +842,7 @@ class CRendererSDK {
 		strokeColor: Color,
 		grayscale: boolean,
 		cap: LineCap,
-		join: LineJoin,
+		join: LineJoin
 	): void {
 		this.AllocateCommandSpace(CommandID.PATH_ADD_RECT, 4 * 4)
 		this.commandStream.WriteFloat32(0)
@@ -743,7 +856,7 @@ class CRendererSDK {
 		width: number,
 		pathFlags: PathFlags,
 		color: Color,
-		grayscale: boolean,
+		grayscale: boolean
 	): void {
 		this.AllocateCommandSpace(CommandID.PATH_ADD_ELLIPSE, 4 * 4)
 		this.commandStream.WriteFloat32(0)
@@ -752,62 +865,64 @@ class CRendererSDK {
 		this.commandStream.WriteFloat32(vecSize.y)
 		this.Path(width, color, color, pathFlags, grayscale)
 	}
-	private FreeTexture(texture_id: number): void {
-		Renderer.FreeTexture(texture_id)
+	private FreeTexture(textureID: number): void {
+		Renderer.FreeTexture(textureID)
 	}
 	private GetTexture(path: string): number {
-		if (this.texture_cache.has(path))
-			return this.texture_cache.get(path)!
+		if (this.textureCache.has(path)) return this.textureCache.get(path)!
 
-		let read_path = tryFindFile(path, 2)
-		if (read_path === undefined)
-			return -1 // It could be loaded afterwards - we don't know about that for sure
+		let readPath = tryFindFile(path, 2)
+		if (readPath === undefined) return -1 // It could be loaded afterwards - we don't know about that for sure
 
-		if (read_path.endsWith(".vmat_c")) {
+		if (readPath.endsWith(".vmat_c")) {
 			const buf = fopen(path)
 			if (buf !== undefined)
 				try {
 					const vmat = ParseMaterial(new FileBinaryStream(buf))
-					const g_tColor = vmat.TextureParams.get("g_tColor")
-					if (g_tColor !== undefined) {
-						read_path = g_tColor
-						if (read_path.endsWith(".vtex"))
-							read_path += "_c"
+					const tColor = vmat.TextureParams.get("g_tColor")
+					if (tColor !== undefined) {
+						readPath = tColor
+						if (readPath.endsWith(".vtex")) readPath += "_c"
 					}
 				} finally {
 					buf.close()
 				}
 		}
-		const texture_id = Renderer.CreateTexture(read_path)
-		if (texture_id === -1)
-			console.error("CreateTexture failed for", path)
-		this.texture_cache.set(path, texture_id)
-		this.tex2size.set(texture_id, Vector2.fromIOBuffer())
-		return texture_id
+		const textureID = Renderer.CreateTexture(readPath)
+		if (textureID === -1) console.error("CreateTexture failed for", path)
+		this.textureCache.set(path, textureID)
+		this.tex2size.set(textureID, Vector2.fromIOBuffer())
+		return textureID
 	}
-	private GetFont(font_name: string, weight: number, italic: boolean): number {
-		const font_ar = this.font_cache.get(font_name)
-		if (font_ar === undefined)
-			return -1
-		return orderByFirst(
-			font_ar,
-			font => Math.abs(font.Weight - weight) - (font.Italic === italic ? 10000 : 0),
-		)?.FontID ?? -1
+	private GetFont(fontName: string, weight: number, italic: boolean): number {
+		const fontAr = this.fontCache.get(fontName)
+		if (fontAr === undefined) return -1
+		return (
+			orderByFirst(
+				fontAr,
+				font =>
+					Math.abs(font.Weight - weight) - (font.Italic === italic ? 10000 : 0)
+			)?.FontID ?? -1
+		)
 	}
 
 	private OnCommandCacheChanged() {
-		this.commandStream = new ViewBinaryStream(new DataView(
-			this.commandCache.buffer,
-			this.commandCache.byteOffset,
-			this.commandCache.byteLength,
-		), this.commandStream.pos)
+		this.commandStream = new ViewBinaryStream(
+			new DataView(
+				this.commandCache.buffer,
+				this.commandCache.byteOffset,
+				this.commandCache.byteLength
+			),
+			this.commandStream.pos
+		)
 	}
 	private ResizeCommandCache(): void {
-		const updated_len = this.commandCacheSize
-		if (updated_len <= this.commandCache.byteLength)
-			return
-		const grow_factor = 2
-		const buf = new Uint8Array(Math.max(this.commandCache.byteLength * grow_factor, updated_len))
+		const updatedLen = this.commandCacheSize
+		if (updatedLen <= this.commandCache.byteLength) return
+		const growFactor = 2
+		const buf = new Uint8Array(
+			Math.max(this.commandCache.byteLength * growFactor, updatedLen)
+		)
 		buf.set(this.commandCache, 0)
 		this.commandCache = buf
 		this.OnCommandCacheChanged()
@@ -819,27 +934,27 @@ class CRendererSDK {
 		this.commandStream.WriteUint8(commandID)
 	}
 	private SetScissor(rect: Rectangle): void {
-		this.AllocateCommandSpace(CommandID.SET_SCISSOR, 4 * 4)
+		this.AllocateCommandSpace(CommandID.SETSCISSOR, 4 * 4)
 		this.commandStream.WriteFloat32(rect.pos1.x)
 		this.commandStream.WriteFloat32(rect.pos1.y)
 		this.commandStream.WriteFloat32(rect.pos2.x)
 		this.commandStream.WriteFloat32(rect.pos2.y)
 	}
 	/*private PathClose(): void {
-		this.AllocateCommandSpace(CommandID.PATH_CLOSE, 0)
+		this.AllocateCommandSpace(CommandID.PATHCLOSE, 0)
 	}*/
 	private PathMoveTo(x: number, y: number): void {
-		this.AllocateCommandSpace(CommandID.PATH_MOVE_TO, 2 * 4)
+		this.AllocateCommandSpace(CommandID.PATHMOVE_TO, 2 * 4)
 		this.commandStream.WriteFloat32(x)
 		this.commandStream.WriteFloat32(y)
 	}
 	private PathLineTo(x: number, y: number): void {
-		this.AllocateCommandSpace(CommandID.PATH_LINE_TO, 2 * 4)
+		this.AllocateCommandSpace(CommandID.PATHLINE_TO, 2 * 4)
 		this.commandStream.WriteFloat32(x)
 		this.commandStream.WriteFloat32(y)
 	}
 	/*private PathSetStyle(style: PathFillType): void {
-		this.AllocateCommandSpace(CommandID.PATH_SET_FILL_TYPE, 1)
+		this.AllocateCommandSpace(CommandID.PATHSET_FILL_TYPE, 1)
 		this.commandStream.WriteUint8(style)
 	}*/
 	private Path(
@@ -850,60 +965,58 @@ class CRendererSDK {
 		grayscale: boolean,
 		cap = LineCap.Square,
 		join = LineJoin.Round,
-		tex_id?: number,
-		tex_offset_x?: number,
-		tex_offset_y?: number,
-		tex_w?: number,
-		tex_h?: number,
+		texID?: number,
+		texOffsetX?: number,
+		texOffsetY?: number,
+		texW?: number,
+		texH?: number
 	): void {
-		if (grayscale)
-			flags |= PathFlags.GRAYSCALE
-		flags |= Math.max(Math.min(cap, LineCap.Square), LineCap.Butt) << PathFlags.LINE_CAP_OFFSET
-		flags |= Math.max(Math.min(join, LineJoin.Bevel), LineJoin.Miter) << PathFlags.LINE_JOIN_OFFSET
-		const has_image = HasMask(flags, PathFlags.IMAGE_SHADER)
+		if (grayscale) flags |= PathFlags.GRAYSCALE
+		flags |=
+			Math.max(Math.min(cap, LineCap.Square), LineCap.Butt) <<
+			PathFlags.LINECAP_OFFSET
+		flags |=
+			Math.max(Math.min(join, LineJoin.Bevel), LineJoin.Miter) <<
+			PathFlags.LINE_JOIN_OFFSET
+		const hasImage = HasMask(flags, PathFlags.IMAGESHADER)
 		this.AllocateCommandSpace(
 			CommandID.PATH,
-			3 * 4 + 1 + (has_image ? 5 * 4 : 0),
+			3 * 4 + 1 + (hasImage ? 5 * 4 : 0)
 		)
 		this.commandStream.WriteColor(fillColor)
 		this.commandStream.WriteColor(strokeColor)
 		this.commandStream.WriteFloat32(width / 2)
 		this.commandStream.WriteUint8(flags)
-		if (has_image) {
-			this.commandStream.WriteUint32(tex_id!)
-			this.commandStream.WriteFloat32(-tex_offset_x!)
-			this.commandStream.WriteFloat32(-tex_offset_y!)
-			this.commandStream.WriteFloat32(tex_w!)
-			this.commandStream.WriteFloat32(tex_h!)
+		if (hasImage) {
+			this.commandStream.WriteUint32(texID!)
+			this.commandStream.WriteFloat32(-texOffsetX!)
+			this.commandStream.WriteFloat32(-texOffsetY!)
+			this.commandStream.WriteFloat32(texW!)
+			this.commandStream.WriteFloat32(texH!)
 		}
 	}
 	private Rotate(ang: number): void {
-		while (ang >= 360)
-			ang -= 360
-		if (ang === 0)
-			return
+		while (ang >= 360) ang -= 360
+		if (ang === 0) return
 		this.AllocateCommandSpace(CommandID.ROTATE, 4)
 		this.commandStream.WriteFloat32(DegreesToRadian(ang))
 	}
 	private Translate(vecPos: Vector2): void {
-		if (vecPos.IsZero())
-			return
+		if (vecPos.IsZero()) return
 		this.AllocateCommandSpace(CommandID.TRANSLATE, 2 * 4)
 		this.commandStream.WriteFloat32(vecPos.x)
 		this.commandStream.WriteFloat32(vecPos.y)
 	}
 	private NormalizedAngle(ang: number): number {
-		while (ang < 0)
-			ang += 2 * Math.PI
-		while (ang > 2 * Math.PI)
-			ang -= 2 * Math.PI
+		while (ang < 0) ang += 2 * Math.PI
+		while (ang > 2 * Math.PI) ang -= 2 * Math.PI
 		return ang
 	}
 	private NormalizedPoint(ang: number): Vector2 {
 		ang = this.NormalizedAngle(ang)
-		const PI4 = Math.PI / 4
-		const s = Math.floor(ang / PI4) % 8,
-			p = (s % 2 === 0) ? Math.tan(ang % PI4) : Math.tan(PI4 - ang % PI4)
+		const pi4 = Math.PI / 4
+		const s = Math.floor(ang / pi4) % 8,
+			p = s % 2 === 0 ? Math.tan(ang % pi4) : Math.tan(pi4 - (ang % pi4))
 
 		switch (s) {
 			case 0:
@@ -925,7 +1038,9 @@ class CRendererSDK {
 		}
 	}
 	private PointOnBounds(ang: number, vecSize: Vector2): Vector2 {
-		const res = this.NormalizedPoint(ang).AddScalarForThis(1).DivideScalarForThis(2)
+		const res = this.NormalizedPoint(ang)
+			.AddScalarForThis(1)
+			.DivideScalarForThis(2)
 		res.x = Math.min(Math.max(res.x, 0), 1)
 		res.y = Math.min(Math.max(res.y, 0), 1)
 		return res.MultiplyForThis(vecSize)
@@ -937,50 +1052,45 @@ export const RendererSDK = new CRendererSDK()
 EventsSDK.on("UnitAbilityDataUpdated", () => RendererSDK.FreeTextureCache())
 
 Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
-	if (!Array.isArray(data))
-		throw "Data should be objects"
+	if (!Array.isArray(data)) throw "Data should be objects"
 	const objects = data as [string, number[]][],
 		path2meshes = new Map<string, number[]>(),
 		paths: string[] = [""]
-	let next_mesh_id = 0
+	let nextMeshID = 0
 	WASM.ResetWorld()
 	for (const [path] of objects) {
-		if (path2meshes.has(path))
-			continue
+		if (path2meshes.has(path)) continue
 		const buf = fopen(`${path}_c`)
-		if (buf === undefined)
-			continue
+		if (buf === undefined) continue
 		let filesOpen: FileStream[] = []
 		try {
-			let draw_calls: CMeshDrawCall[] = []
+			let drawCalls: CMeshDrawCall[] = []
 			if (path.endsWith(".vmdl")) {
 				const model = ParseModel(new FileBinaryStream(buf))
 				const mesh = model.Meshes[0]
 				if (mesh !== undefined) {
-					draw_calls = mesh.DrawCalls
+					drawCalls = mesh.DrawCalls
 					filesOpen = model.FilesOpen
-				} else
-					model.FilesOpen.forEach(file => file.close())
+				} else model.FilesOpen.forEach(file => file.close())
 			} else if (path.endsWith(".vmesh"))
-				draw_calls = ParseMesh(new FileBinaryStream(buf)).DrawCalls
-			else
-				throw `Invalid path ${path}`
-			const path_meshes: number[] = []
-			path2meshes.set(path, path_meshes)
-			const path_id = paths.length
+				drawCalls = ParseMesh(new FileBinaryStream(buf)).DrawCalls
+			else throw `Invalid path ${path}`
+			const pathMeshes: number[] = []
+			path2meshes.set(path, pathMeshes)
+			const pathID = paths.length
 			paths.push(path)
-			for (const draw_call of draw_calls) {
-				const mesh_id = next_mesh_id++
+			for (const drawCall of drawCalls) {
+				const meshID = nextMeshID++
 				WASM.LoadWorldMesh(
-					mesh_id,
-					draw_call.VertexBuffer.Data,
-					draw_call.VertexBuffer.ElementSize,
-					draw_call.IndexBuffer.Data,
-					draw_call.IndexBuffer.ElementSize,
-					draw_call.Flags,
-					path_id,
+					meshID,
+					drawCall.VertexBuffer.Data,
+					drawCall.VertexBuffer.ElementSize,
+					drawCall.IndexBuffer.Data,
+					drawCall.IndexBuffer.ElementSize,
+					drawCall.Flags,
+					pathID
 				)
-				path_meshes.push(mesh_id)
+				pathMeshes.push(meshID)
 			}
 		} catch (e: any) {
 			const err = e instanceof Error ? e : new Error(e)
@@ -993,42 +1103,40 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 	objects.forEach(([path, transform]) => {
 		const meshes = path2meshes.get(path)
 		if (meshes !== undefined)
-			for (const mesh of meshes)
-				WASM.SpawnWorldMesh(mesh, transform)
+			for (const mesh of meshes) WASM.SpawnWorldMesh(mesh, transform)
 	})
 	{
-		const VB = new Uint8Array(new Float32Array([
-			-100000, -100000, -16384,
-			100000, -100000, -16384,
-			-100000, 100000, -16384,
-			100000, 100000, -16384,
-		]).buffer)
-		const IB = new Uint8Array(new Uint8Array([
-			0, 1, 2, 1, 2, 3,
-		]).buffer)
-		const plate_mesh_id = next_mesh_id++
-		WASM.LoadWorldMesh(
-			plate_mesh_id,
-			VB,
-			3 * 4,
-			IB,
-			1,
-			0,
-			0,
+		const vb = new Uint8Array(
+			new Float32Array([
+				-100000, -100000, -16384, 100000, -100000, -16384, -100000, 100000,
+				-16384, 100000, 100000, -16384,
+			]).buffer
 		)
-		path2meshes.set("", [plate_mesh_id])
-		WASM.SpawnWorldMesh(plate_mesh_id, Matrix4x4.Identity.values)
+		const ib = new Uint8Array(new Uint8Array([0, 1, 2, 1, 2, 3]).buffer)
+		const plateMeshID = nextMeshID++
+		WASM.LoadWorldMesh(plateMeshID, vb, 3 * 4, ib, 1, 0, 0)
+		path2meshes.set("", [plateMeshID])
+		WASM.SpawnWorldMesh(plateMeshID, Matrix4x4.Identity.values)
 	}
 	WASM.FinishWorld()
-	const paths_data: [string, [number, Uint8Array, Uint8Array, Uint8Array, number, number][]][] = []
+	const pathsData: [
+		string,
+		[number, Uint8Array, Uint8Array, Uint8Array, number, number][]
+	][] = []
 	for (const [path, meshes] of path2meshes) {
-		const meshes_data: [number, Uint8Array, Uint8Array, Uint8Array, number, number][] = []
-		for (const mesh_id of meshes) {
-			const mesh_data = WASM.ExtractMeshData(mesh_id)
-			if (mesh_data !== undefined)
-				meshes_data.push(mesh_data)
+		const meshesData: [
+			number,
+			Uint8Array,
+			Uint8Array,
+			Uint8Array,
+			number,
+			number
+		][] = []
+		for (const meshID of meshes) {
+			const meshData = WASM.ExtractMeshData(meshID)
+			if (meshData !== undefined) meshesData.push(meshData)
 		}
-		paths_data.push([path, meshes_data])
+		pathsData.push([path, meshesData])
 	}
-	return [WASM.ExtractWorldBVH(), paths_data, paths]
+	return [WASM.ExtractWorldBVH(), pathsData, paths]
 })

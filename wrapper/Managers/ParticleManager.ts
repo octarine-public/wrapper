@@ -1,7 +1,7 @@
 import { Color } from "../Base/Color"
 import { ControlPoint, ControlPointParam, Particle } from "../Base/Particle"
 import { Vector3 } from "../Base/Vector3"
-import { ParticleAttachment_t } from "../Enums/ParticleAttachment_t"
+import { ParticleAttachment } from "../Enums/ParticleAttachment"
 import { Entity } from "../Objects/Base/Entity"
 import { GameState } from "../Utils/GameState"
 import { EventsSDK } from "./EventsSDK"
@@ -35,7 +35,7 @@ function BoundingAreaRenderPath(render = PARTICLE_RENDER.NORMAL): string {
 }
 
 export interface IDrawCircleOptions {
-	Attachment?: ParticleAttachment_t
+	Attachment?: ParticleAttachment
 	RenderStyle?: PARTICLE_RENDER
 	Position?: Entity | Vector3
 	Color?: Color
@@ -44,7 +44,7 @@ export interface IDrawCircleOptions {
 }
 
 export interface IDrawLineOptions {
-	Attachment?: ParticleAttachment_t
+	Attachment?: ParticleAttachment
 	Position?: Entity | Vector3
 	Color?: Color
 	Width?: number
@@ -53,7 +53,7 @@ export interface IDrawLineOptions {
 }
 
 export interface IDrawLineTargetOptions {
-	Attachment?: ParticleAttachment_t
+	Attachment?: ParticleAttachment
 	Start?: Entity | Vector3
 	End?: Entity | Vector3
 	Color?: Color
@@ -78,26 +78,31 @@ export class ParticlesSDK {
 	public AddOrUpdate(
 		key: any,
 		path: string,
-		attachment: ParticleAttachment_t,
+		attachment: ParticleAttachment,
 		entity: Nullable<Entity> | Vector3,
 		...points: ControlPointParam[]
 	): Particle {
 		let particle = this.AllParticles.get(key)
 
 		if (
-			particle === undefined
-			|| particle.Entity !== entity
-			|| particle.Path !== path
-			|| particle.Attachment !== attachment
+			particle === undefined ||
+			particle.AttachedTo !== entity ||
+			particle.Path !== path ||
+			particle.Attachment !== attachment
 		) {
-			if (particle !== undefined)
-				particle.Destroy(true)
+			if (particle !== undefined) particle.Destroy(true)
 
-			particle = new Particle(this, key, path, attachment, entity instanceof Entity ? entity : entity, ...points)
+			particle = new Particle(
+				this,
+				key,
+				path,
+				attachment,
+				entity instanceof Entity ? entity : entity,
+				...points
+			)
 
 			this.AllParticles.set(key, particle)
-		} else if (points !== undefined)
-			particle.SetControlPoints(...points)
+		} else if (points !== undefined) particle.SetControlPoints(...points)
 
 		return particle
 	}
@@ -106,19 +111,19 @@ export class ParticlesSDK {
 		key: any,
 		entity: Entity,
 		range: number = 100,
-		options: IDrawCircleOptions = {},
+		options: IDrawCircleOptions = {}
 	) {
 		this.CheckChangedRange(key, range)
 		return this.AddOrUpdate(
 			key,
 			RangeRenderPath(options.RenderStyle),
-			options.Attachment ?? ParticleAttachment_t.PATTACH_ABSORIGIN,
+			options.Attachment ?? ParticleAttachment.PATTACH_ABSORIGIN,
 			entity,
 			[0, options.Position ?? entity],
 			[1, range],
 			[2, options.Color ?? Color.Aqua],
 			[3, options.Width ?? 10],
-			[4, options.Alpha ?? 255],
+			[4, options.Alpha ?? 255]
 		)
 	}
 
@@ -127,17 +132,17 @@ export class ParticlesSDK {
 		entity: Entity,
 		range: number = 100,
 		position: Entity | Vector3 = entity,
-		color = Color.Aqua,
+		color = Color.Aqua
 	) {
 		this.CheckChangedRange(key, range)
 		return this.AddOrUpdate(
 			key,
 			"particles/ui_mouseactions/drag_selected_ring.vpcf",
-			ParticleAttachment_t.PATTACH_ABSORIGIN,
+			ParticleAttachment.PATTACH_ABSORIGIN,
 			entity,
 			[0, position],
 			[1, color],
-			[2, new Vector3(range * 1.1, 255)],
+			[2, new Vector3(range * 1.1, 255)]
 		)
 	}
 
@@ -145,33 +150,40 @@ export class ParticlesSDK {
 		key: any,
 		entity: Entity,
 		endPosition: Entity | Vector3,
-		options: IDrawLineOptions = {},
+		options: IDrawLineOptions = {}
 	) {
 		return this.AddOrUpdate(
 			key,
 			ParticleLinePath("line"),
-			options.Attachment ?? ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
+			options.Attachment ?? ParticleAttachment.PATTACH_ABSORIGIN_FOLLOW,
 			entity,
 			[1, options.Position ?? entity],
 			[2, endPosition],
-			[3, new Vector3(options.Alpha ?? 255, options.Width ?? 10, options.Mode2D ?? 0)],
-			[4, options.Color ?? Color.Aqua],
+			[
+				3,
+				new Vector3(
+					options.Alpha ?? 255,
+					options.Width ?? 10,
+					options.Mode2D ?? 0
+				),
+			],
+			[4, options.Color ?? Color.Aqua]
 		)
 	}
 
 	public DrawRangeLine(
 		key: any,
 		entity: Entity,
-		endPosition: Entity | Vector3,
+		endPosition: Entity | Vector3
 	) {
 		return this.AddOrUpdate(
 			key,
 			"particles/ui_mouseactions/range_finder_line.vpcf",
-			ParticleAttachment_t.PATTACH_ABSORIGIN,
+			ParticleAttachment.PATTACH_ABSORIGIN,
 			entity,
 			[0, entity],
 			[1, entity],
-			[2, endPosition],
+			[2, endPosition]
 		)
 	}
 
@@ -180,60 +192,62 @@ export class ParticlesSDK {
 		entity: Entity,
 		target: Entity,
 		color = Color.Red,
-		options: IDrawLineTargetOptions = {},
+		options: IDrawLineTargetOptions = {}
 	) {
-		const start_opt = options.Start
-		const ctrl2 = start_opt instanceof Vector3
-			? start_opt
-			: start_opt instanceof Vector3
-				? start_opt
-				: start_opt?.Position ?? entity.Position
+		const startOpt = options.Start
+		const ctrl2 =
+			startOpt instanceof Vector3
+				? startOpt
+				: startOpt instanceof Vector3
+				? startOpt
+				: startOpt?.Position ?? entity.Position
 
-		const end_opt = options.End
-		const ctrl7 = end_opt instanceof Vector3
-			? end_opt
-			: end_opt instanceof Vector3
-				? end_opt
-				: end_opt?.Position ?? target.Position
+		const endOpt = options.End
+		const ctrl7 =
+			endOpt instanceof Vector3
+				? endOpt
+				: endOpt instanceof Vector3
+				? endOpt
+				: endOpt?.Position ?? target.Position
 
 		return this.AddOrUpdate(
 			key,
 			"particles/target/range_finder_tower_aoe.vpcf",
-			ParticleAttachment_t.PATTACH_ABSORIGIN,
+			ParticleAttachment.PATTACH_ABSORIGIN,
 			entity,
 			[2, ctrl2],
 			[5, color],
 			[6, new Vector3(options.Alpha ?? 1, 0, 0)],
-			[7, ctrl7],
+			[7, ctrl7]
 		)
 	}
 
 	/**
 	 *
 	 * ControlPoints:
-	 * 	0: Start Position (|| entity pos)
-	 * 	1: End Position
-	 * 	2: Color
-	 * 	3: Width
-	 * 	4: Alpha
+	 * 0: Start Position (|| entity pos)
+	 * 1: End Position
+	 * 2: Color
+	 * 3: Width
+	 * 4: Alpha
 	 */
 	public DrawBoundingArea(
 		key: any,
 		entity: Entity,
 		startPos: Entity | Vector3,
 		endPosition: Entity | Vector3 = entity,
-		options: IDrawBoundingAreaOptions = {},
+		options: IDrawBoundingAreaOptions = {}
 	) {
 		return this.AddOrUpdate(
 			key,
 			BoundingAreaRenderPath(options.RenderStyle),
-			ParticleAttachment_t.PATTACH_ABSORIGIN,
+			ParticleAttachment.PATTACH_ABSORIGIN,
 			entity,
 			[0, startPos],
 			[1, endPosition],
 			[2, options.Color ?? Color.Aqua],
 			[3, options.Width ?? 10],
-			[4, options.Color?.a ?? 0],
+			[4, options.Color?.a ?? 0]
 		)
 	}
 
@@ -265,23 +279,23 @@ export class ParticlesSDK {
 			return
 		}
 
-		if (particleRange === undefined)
-			this.AllParticlesRange.set(key, range)
+		if (particleRange === undefined) this.AllParticlesRange.set(key, range)
 	}
 }
 
-let prev_obs_bypass_state = false
+let prevOBSBypassState = false
 EventsSDK.on("Draw", () => {
-	if (prev_obs_bypass_state === GameState.OBSBypassEnabled)
-		return
-	prev_obs_bypass_state = GameState.OBSBypassEnabled
-	ParticlesSDK.Instances.forEach(instance => [...instance.AllParticles.values()].forEach(par => {
-		if (GameState.OBSBypassEnabled) {
-			par.IsHidden = true
-			par.Destroy()
-		} else {
-			par.Restart()
-			par.IsHidden = false
-		}
-	}))
+	if (prevOBSBypassState === GameState.OBSBypassEnabled) return
+	prevOBSBypassState = GameState.OBSBypassEnabled
+	ParticlesSDK.Instances.forEach(instance =>
+		[...instance.AllParticles.values()].forEach(par => {
+			if (GameState.OBSBypassEnabled) {
+				par.IsHidden = true
+				par.Destroy()
+			} else {
+				par.Restart()
+				par.IsHidden = false
+			}
+		})
+	)
 })

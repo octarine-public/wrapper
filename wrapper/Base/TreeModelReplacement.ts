@@ -1,7 +1,7 @@
 import { EntityPropertiesNode } from "./EntityProperties"
 
 export class TreeModelReplacement {
-	constructor(public readonly properties: EntityPropertiesNode) { }
+	constructor(public readonly properties: EntityPropertiesNode) {}
 
 	public get BinaryObjectID(): number {
 		return this.properties.get("m_nBinaryObjectID") as number

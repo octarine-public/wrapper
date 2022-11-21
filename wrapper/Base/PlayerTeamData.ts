@@ -1,7 +1,7 @@
 import { EntityPropertiesNode } from "./EntityProperties"
 
 export class PlayerTeamData {
-	constructor(public readonly properties: EntityPropertiesNode) { }
+	constructor(public readonly properties: EntityPropertiesNode) {}
 
 	public get SelectedHeroID(): number {
 		return this.properties.get("m_nSelectedHeroID") as number

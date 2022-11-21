@@ -12,7 +12,7 @@ class CGridNav {
 		public readonly Offset: Vector2,
 		public readonly Size: Vector2,
 		public readonly Min: Vector2,
-		private readonly CellFlags: Uint8Array,
+		private readonly CellFlags: Uint8Array
 	) {
 		this.EdgeSizeRcp = 1 / this.EdgeSize
 		this.Max = this.Min.Add(this.Size).SubtractScalarForThis(1)
@@ -25,38 +25,60 @@ class CGridNav {
 		return this.CellFlags[this.GetCellIndexForGridPos(gridPosX, gridPosY)] ?? 0
 	}
 	public GetGridPosForPos(pos: Vector3 | Vector2): Vector2 {
-		pos = pos instanceof Vector3
-			? Vector2.FromVector3(pos).SubtractForThis(this.Offset)
-			: pos.Subtract(this.Offset)
+		pos =
+			pos instanceof Vector3
+				? Vector2.FromVector3(pos).SubtractForThis(this.Offset)
+				: pos.Subtract(this.Offset)
 		return pos.MultiplyScalarForThis(this.EdgeSizeRcp).RoundForThis()
 	}
 	public GetRectForGridPos(gridPosX: number, gridPosY: number): Rectangle {
-		const pos1 = new Vector2(gridPosX, gridPosY).RoundForThis().MultiplyScalarForThis(this.EdgeSize)
-		return new Rectangle(
-			pos1,
-			pos1.AddScalar(this.EdgeSize),
-		)
+		const pos1 = new Vector2(gridPosX, gridPosY)
+			.RoundForThis()
+			.MultiplyScalarForThis(this.EdgeSize)
+		return new Rectangle(pos1, pos1.AddScalar(this.EdgeSize))
 	}
 
 	public UpdateTreeState(tree: Tree): void {
 		const gridPos = this.GetGridPosForPos(tree.Position)
-		const is_alive = tree.IsValid && tree.IsAlive
+		const isAlive = tree.IsValid && tree.IsAlive
 		// basically tree takes 128x128, on default gridnav of 64x64 it takes 2x2 cells,
 		// and tree is located in right bottom one
-		this.SetCellFlag(gridPos.x - 0, gridPos.y - 0, GridNavCellFlags.Tree, is_alive)
-		this.SetCellFlag(gridPos.x - 1, gridPos.y - 0, GridNavCellFlags.Tree, is_alive)
-		this.SetCellFlag(gridPos.x - 0, gridPos.y - 1, GridNavCellFlags.Tree, is_alive)
-		this.SetCellFlag(gridPos.x - 1, gridPos.y - 1, GridNavCellFlags.Tree, is_alive)
+		this.SetCellFlag(
+			gridPos.x - 0,
+			gridPos.y - 0,
+			GridNavCellFlags.Tree,
+			isAlive
+		)
+		this.SetCellFlag(
+			gridPos.x - 1,
+			gridPos.y - 0,
+			GridNavCellFlags.Tree,
+			isAlive
+		)
+		this.SetCellFlag(
+			gridPos.x - 0,
+			gridPos.y - 1,
+			GridNavCellFlags.Tree,
+			isAlive
+		)
+		this.SetCellFlag(
+			gridPos.x - 1,
+			gridPos.y - 1,
+			GridNavCellFlags.Tree,
+			isAlive
+		)
 	}
 
-	private SetCellFlag(gridPosX: number, gridPosY: number, flag: GridNavCellFlags, state: boolean): void {
-		const cell_id = this.GetCellIndexForGridPos(gridPosX, gridPosY)
-		if (this.CellFlags.byteLength <= cell_id)
-			return
-		if (state)
-			this.CellFlags[cell_id] |= 1 << flag
-		else
-			this.CellFlags[cell_id] &= ~(1 << flag)
+	private SetCellFlag(
+		gridPosX: number,
+		gridPosY: number,
+		flag: GridNavCellFlags,
+		state: boolean
+	): void {
+		const cellID = this.GetCellIndexForGridPos(gridPosX, gridPosY)
+		if (this.CellFlags.byteLength <= cellID) return
+		if (state) this.CellFlags[cellID] |= 1 << flag
+		else this.CellFlags[cellID] &= ~(1 << flag)
 	}
 	private GetCellIndexForGridPos(gridPosX: number, gridPosY: number): number {
 		return this.Size.x * (gridPosY - this.Min.y) + (gridPosX - this.Min.x)
@@ -72,7 +94,8 @@ export function ParseGNV(stream: ReadableBinaryStream): void {
 	try {
 		{
 			const magic = stream.ReadUint32()
-			if (magic !== 0xFADEBEAD) // gnv magic
+			if (magic !== 0xfadebead)
+				// gnv magic
 				throw `Invalid GNV magic: 0x${magic.toString(16)}`
 		}
 		const edgeSize = stream.ReadFloat32(),
@@ -87,7 +110,7 @@ export function ParseGNV(stream: ReadableBinaryStream): void {
 			new Vector2(offsetX, offsetY),
 			new Vector2(width, height),
 			new Vector2(minX, minY),
-			stream.ReadSlice(width * height),
+			stream.ReadSlice(width * height)
 		)
 	} catch (e) {
 		console.error("Error in GridNav init", e)

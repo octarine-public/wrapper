@@ -14,26 +14,29 @@ export class spirit_breaker_charge_of_darkness extends Ability {
 
 EventsSDK.on("ParticleCreated", par => {
 	if (
-		par.PathNoEcon !== "particles/units/heroes/hero_spirit_breaker/spirit_breaker_charge_start.vpcf"
-		|| !(par.AttachedTo instanceof Unit)
+		par.PathNoEcon !==
+			"particles/units/heroes/hero_spirit_breaker/spirit_breaker_charge_start.vpcf" ||
+		!(par.AttachedTo instanceof Unit)
 	)
 		return
 
-	const abil = par.AttachedTo.GetAbilityByClass(spirit_breaker_charge_of_darkness)
-	if (abil === undefined)
-		return
+	const abil = par.AttachedTo.GetAbilityByClass(
+		spirit_breaker_charge_of_darkness
+	)
+	if (abil === undefined) return
 
 	abil.StartedChargingTime = GameState.RawGameTime
 })
 
-const abils = EntityManager.GetEntitiesByClass(spirit_breaker_charge_of_darkness)
+const abils = EntityManager.GetEntitiesByClass(
+	spirit_breaker_charge_of_darkness
+)
 EventsSDK.on("TrackingProjectileCreated", proj => {
-	if (proj.ParticlePath !== undefined || proj.Source !== undefined)
-		return
+	if (proj.ParticlePath !== undefined || proj.Source !== undefined) return
 	for (const abil of abils)
 		if (
-			abil.StartedChargingTime === GameState.RawGameTime
-			&& abil.CurrentProjectile === undefined
+			abil.StartedChargingTime === GameState.RawGameTime &&
+			abil.CurrentProjectile === undefined
 		) {
 			abil.CurrentProjectile = proj
 			break

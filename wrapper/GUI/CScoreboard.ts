@@ -7,21 +7,25 @@ import { ScaleHeight, ScaleWidth } from "./Helpers"
 export class CScoreboard {
 	public readonly Background = new Rectangle()
 
-	constructor(screen_size: Vector2) {
-		this.CalculateBackground(screen_size)
+	constructor(screenSize: Vector2) {
+		this.CalculateBackground(screenSize)
 	}
 
 	public DebugDraw(): void {
-		RendererSDK.FilledRect(this.Background.pos1, this.Background.Size, Color.White.SetA(128))
+		RendererSDK.FilledRect(
+			this.Background.pos1,
+			this.Background.Size,
+			Color.White.SetA(128)
+		)
 	}
 	public HasChanged(): boolean {
 		return false
 	}
 
-	private CalculateBackground(screen_size: Vector2): void {
-		this.Background.Width = ScaleWidth(762, screen_size)
-		this.Background.Height = ScaleHeight(680, screen_size)
+	private CalculateBackground(screenSize: Vector2): void {
+		this.Background.Width = ScaleWidth(762, screenSize)
+		this.Background.Height = ScaleHeight(680, screenSize)
 		this.Background.x = 0
-		this.Background.y = ScaleHeight(54, screen_size)
+		this.Background.y = ScaleHeight(54, screenSize)
 	}
 }

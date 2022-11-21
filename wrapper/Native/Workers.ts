@@ -2,19 +2,13 @@ import { Events } from "../Managers/Events"
 import { arrayRemove, orderBy } from "../Utils/ArrayExtensions"
 
 type RPCEndPoint = (data: WorkerIPCType) => WorkerIPCType
-type PromiseResolver = [((data: WorkerIPCType) => void), (data: any) => void]
-type WorkerType = [
-	bigint,
-	WorkerOptions,
-	PromiseResolver[],
-	boolean,
-	boolean,
-]
+type PromiseResolver = [(data: WorkerIPCType) => void, (data: any) => void]
+type WorkerType = [bigint, WorkerOptions, PromiseResolver[], boolean, boolean]
 export const Workers = new (class CWorkers {
 	private readonly workers: WorkerType[] = []
 	private readonly endpoints = new Map<string, RPCEndPoint>()
-	private queued_tasks: [string, WorkerIPCType, PromiseResolver][] = []
-	private workers_promises: Promise<void>[] = []
+	private queuedTasks: [string, WorkerIPCType, PromiseResolver][] = []
+	private workersPromises: Promise<void>[] = []
 	constructor() {
 		if (IS_MAIN_WORKER) {
 			// 2 general purpose workers
@@ -23,63 +17,51 @@ export const Workers = new (class CWorkers {
 					forward_events: false,
 					forward_server_messages: false,
 				}).then(() => {
-					arrayRemove(this.workers_promises, prom)
+					arrayRemove(this.workersPromises, prom)
 				})
-				this.workers_promises.push(prom)
+				this.workersPromises.push(prom)
 			}
 		}
-		Events.on("IPCMessage", (source_worker_uid, name, data) => {
-			if (name !== "RPCCall" || !Array.isArray(data))
-				return
-			const [endpoint_name, real_data] = data
-			if (typeof endpoint_name !== "string")
-				return
-			const endpoint = this.endpoints.get(endpoint_name)
+		Events.on("IPCMessage", (sourceWorkerUID, name, data) => {
+			if (name !== "RPCCall" || !Array.isArray(data)) return
+			const [endpointName, realData] = data
+			if (typeof endpointName !== "string") return
+			const endpoint = this.endpoints.get(endpointName)
 			if (endpoint === undefined) {
 				if (name === "RPCCall")
-					SendIPCMessage(
-						source_worker_uid,
-						"RPCCallResponse",
-						[false, "Remote RPC Endpoint name not found", endpoint_name],
-					)
+					SendIPCMessage(sourceWorkerUID, "RPCCallResponse", [
+						false,
+						"Remote RPC Endpoint name not found",
+						endpointName,
+					])
 				return
 			}
 			try {
-				const res = endpoint(real_data)
+				const res = endpoint(realData)
 				if (name === "RPCCall")
-					SendIPCMessage(
-						source_worker_uid,
-						"RPCCallResponse",
-						[true, res],
-					)
+					SendIPCMessage(sourceWorkerUID, "RPCCallResponse", [true, res])
 			} catch (e: any) {
 				if (name === "RPCCall") {
 					const err = e instanceof Error ? e : new Error(e)
-					SendIPCMessage(
-						source_worker_uid,
-						"RPCCallResponse",
-						[false, err.message, err.stack ?? ""],
-					)
-				} else
-					console.error(e)
+					SendIPCMessage(sourceWorkerUID, "RPCCallResponse", [
+						false,
+						err.message,
+						err.stack ?? "",
+					])
+				} else console.error(e)
 			}
 		})
-		Events.on("IPCMessage", (source_worker_uid, name, data) => {
-			if (name !== "RPCCallResponse" || !Array.isArray(data))
-				return
-			const [success, real_data, stack] = data
-			if (typeof success !== "boolean")
-				return
-			const worker = this.workers.find(([uid]) => uid === source_worker_uid)
-			if (worker === undefined)
-				return
+		Events.on("IPCMessage", (sourceWorkerUID, name, data) => {
+			if (name !== "RPCCallResponse" || !Array.isArray(data)) return
+			const [success, realData, stack] = data
+			if (typeof success !== "boolean") return
+			const worker = this.workers.find(([uid]) => uid === sourceWorkerUID)
+			if (worker === undefined) return
 			const resolver = worker[2].shift()
-			if (resolver === undefined)
-				return
+			if (resolver === undefined) return
 			if (!success) {
-				resolver[1]([real_data, stack])
-			} else
-				resolver[0](real_data)
+				resolver[1]([realData, stack])
+			} else resolver[0](realData)
 		})
 	}
 	public RegisterRPCEndPoint(name: string, endpoint: RPCEndPoint): void {
@@ -90,45 +72,40 @@ export const Workers = new (class CWorkers {
 	public CallRPCEndPoint(
 		name: string,
 		data: WorkerIPCType,
-		high_priority = false,
-		exclusive_worker_options?: WorkerOptions,
+		highPriority = false,
+		exclusiveWorkerOptions?: WorkerOptions
 	): Promise<WorkerIPCType> {
 		const endpoint = this.endpoints.get(name)
 		if (endpoint === undefined)
 			return Promise.reject(["Local RPC Endpoint name not found", name])
 		return new Promise<WorkerIPCType>(async (resolve, reject) => {
-			if (exclusive_worker_options !== undefined) {
-				const new_worker = await this.AddWorkerWithOpts(exclusive_worker_options, true)
-				new_worker[2].push([
+			if (exclusiveWorkerOptions !== undefined) {
+				const newWorker = await this.AddWorkerWithOpts(
+					exclusiveWorkerOptions,
+					true
+				)
+				newWorker[2].push([
 					val => {
-						DespawnWorker(new_worker[0])
+						DespawnWorker(newWorker[0])
 						resolve(val)
 					},
 					err => {
-						DespawnWorker(new_worker[0])
+						DespawnWorker(newWorker[0])
 						reject(err)
 					},
 				])
-				SendIPCMessage(
-					new_worker[0],
-					"RPCCall",
-					[name, data],
-				)
+				SendIPCMessage(newWorker[0], "RPCCall", [name, data])
 				return
 			}
 			const worker = orderBy(this.workers, ar => ar[2].length) // pick the least used worker
-				.find(ar => !ar[4] && ar[3] && (!high_priority || ar[2].length === 0))
+				.find(ar => !ar[4] && ar[3] && (!highPriority || ar[2].length === 0))
 			if (worker !== undefined) {
 				worker[2].push([resolve, reject])
-				SendIPCMessage(
-					worker[0],
-					"RPCCall",
-					[name, data],
-				)
+				SendIPCMessage(worker[0], "RPCCall", [name, data])
 				return
 			}
-			if (!high_priority) {
-				this.queued_tasks.push([name, data, [resolve, reject]])
+			if (!highPriority) {
+				this.queuedTasks.push([name, data, [resolve, reject]])
 				return
 			}
 			try {
@@ -139,50 +116,53 @@ export const Workers = new (class CWorkers {
 			}
 		})
 	}
-	private AddWorkerWithOpts(opts: WorkerOptions, exclusive = false): Promise<WorkerType> {
+	private AddWorkerWithOpts(
+		opts: WorkerOptions,
+		exclusive = false
+	): Promise<WorkerType> {
 		return new Promise<WorkerType>(resolve => {
-			const fixed_opts: WorkerOptions = {
+			const fixedOpts: WorkerOptions = {
 				forward_events: opts.forward_events,
-				forward_server_messages: opts.forward_events && opts.forward_server_messages,
-				display_name: opts.display_name ?? `Wrapper RPC Worker #${this.workers.length + 1}`,
-				entry_point: opts.entry_point ?? "github.com/octarine-public/wrapper/index",
+				forward_server_messages:
+					opts.forward_events && opts.forward_server_messages,
+				display_name:
+					opts.display_name ?? `Wrapper RPC Worker #${this.workers.length + 1}`,
+				entry_point:
+					opts.entry_point ?? "github.com/octarine-public/wrapper/index",
 			}
 			const ar: WorkerType = [
-				SpawnWorker(fixed_opts),
-				fixed_opts,
+				SpawnWorker(fixedOpts),
+				fixedOpts,
 				[],
 				false,
 				exclusive,
 			]
 			this.workers.push(ar)
-			const spawn_cb = (worker_uid: bigint) => {
-				if (worker_uid !== ar[0])
-					return
-				Events.removeListener("WorkerSpawned", spawn_cb)
+			const spawnCb = (workerUID: bigint) => {
+				if (workerUID !== ar[0]) return
+				Events.removeListener("WorkerSpawned", spawnCb)
 				ar[3] = true
-				this.queued_tasks.forEach(([name, data, promise]) => this.CallRPCEndPoint(
-					name,
-					data,
-				).then(promise[0], promise[1]))
-				this.queued_tasks = []
+				this.queuedTasks.forEach(([name, data, promise]) =>
+					this.CallRPCEndPoint(name, data).then(promise[0], promise[1])
+				)
+				this.queuedTasks = []
 				resolve(ar)
 			}
-			Events.on("WorkerSpawned", spawn_cb)
-			const despawn_cb = (worker_uid: bigint) => {
-				if (worker_uid !== ar[0])
-					return
-				Events.removeListener("WorkerDespawned", despawn_cb)
+			Events.on("WorkerSpawned", spawnCb)
+			const despawnCb = (workerUID: bigint) => {
+				if (workerUID !== ar[0]) return
+				Events.removeListener("WorkerDespawned", despawnCb)
 				ar[3] = false
 				ar[2].forEach(([, rej]) => rej("RPC Worker died"))
 				arrayRemove(this.workers, ar)
 				if (!exclusive) {
-					const prom = this.AddWorkerWithOpts(fixed_opts).then(() => {
-						arrayRemove(this.workers_promises, prom)
+					const prom = this.AddWorkerWithOpts(fixedOpts).then(() => {
+						arrayRemove(this.workersPromises, prom)
 					})
-					this.workers_promises.push(prom)
+					this.workersPromises.push(prom)
 				}
 			}
-			Events.on("WorkerDespawned", despawn_cb)
+			Events.on("WorkerDespawned", despawnCb)
 		})
 	}
 })()

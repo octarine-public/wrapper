@@ -18,31 +18,40 @@ export class techies_suicide extends Ability {
 
 const abils = EntityManager.GetEntitiesByClass(techies_suicide)
 EventsSDK.on("PostDataUpdate", () => {
-	if (LocalPlayer === undefined || LocalPlayer.Hero === undefined)
-		return
+	if (LocalPlayer === undefined || LocalPlayer.Hero === undefined) return
 
 	for (const abil of abils) {
-		if (abil.TargetPosition.IsValid)
-			continue
+		if (abil.TargetPosition.IsValid) continue
 
 		const owner = abil.Owner
-		if (owner === undefined)
-			continue
+		if (owner === undefined) continue
 
 		const buff = owner.GetBuffByName("modifier_techies_suicide_leap")
-		const buff_end_time = 0.72
-		if (buff === undefined || buff.Duration !== -1 || buff.ElapsedTime > buff_end_time)
+		const buffEndTime = 0.72
+		if (
+			buff === undefined ||
+			buff.Duration !== -1 ||
+			buff.ElapsedTime > buffEndTime
+		)
 			continue
 		if (abil.LastKnownOwnerPosition_.IsValid) {
 			if (abil.LastKnownOwnerPositionTime_ > GameState.RawGameTime - 0.04) {
-				const velocity_3d = owner.Position.Subtract(abil.LastKnownOwnerPosition_)
-				const velocity = Vector2.FromVector3(velocity_3d.Clone().Normalize()).MultiplyScalarForThis(velocity_3d.Length)
-				const time_moved = buff.ElapsedTime - (1 / 30)
+				const velocity3D = owner.Position.Subtract(abil.LastKnownOwnerPosition_)
+				const velocity = Vector2.FromVector3(
+					velocity3D.Clone().Normalize()
+				).MultiplyScalarForThis(velocity3D.Length)
+				const timeMoved = buff.ElapsedTime - 1 / 30
 
-				owner.Position.Subtract(Vector3.FromVector2(velocity.MultiplyScalar(time_moved * 30))).CopyTo(abil.StartPosition)
+				owner.Position.Subtract(
+					Vector3.FromVector2(velocity.MultiplyScalar(timeMoved * 30))
+				).CopyTo(abil.StartPosition)
 				abil.StartPosition.z = GetPositionHeight(abil.StartPosition)
 
-				owner.Position.Add(Vector3.FromVector2(velocity.MultiplyScalar((buff_end_time - time_moved) * 30 + 1))).CopyTo(abil.TargetPosition)
+				owner.Position.Add(
+					Vector3.FromVector2(
+						velocity.MultiplyScalar((buffEndTime - timeMoved) * 30 + 1)
+					)
+				).CopyTo(abil.TargetPosition)
 				abil.TargetPosition.z = GetPositionHeight(abil.TargetPosition)
 			}
 			abil.LastKnownOwnerPosition_.Invalidate()
@@ -54,12 +63,10 @@ EventsSDK.on("PostDataUpdate", () => {
 })
 
 EventsSDK.on("ModifierRemoved", buff => {
-	if (buff.Name !== "modifier_techies_suicide_leap")
-		return
+	if (buff.Name !== "modifier_techies_suicide_leap") return
 
 	const parent = buff.Parent
-	if (parent === undefined)
-		return
+	if (parent === undefined) return
 
 	const abil = parent.GetAbilityByClass(techies_suicide)
 	if (abil !== undefined) {

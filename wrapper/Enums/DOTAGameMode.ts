@@ -1,4 +1,4 @@
-export enum DOTA_GameMode {
+export enum DOTAGameMode {
 	DOTA_GAMEMODE_NONE = 0,
 	DOTA_GAMEMODE_AP = 1,
 	DOTA_GAMEMODE_CM = 2,

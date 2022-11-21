@@ -5,7 +5,10 @@ import { Ability } from "../../Base/Ability"
 @WrapperClass("earth_spirit_stone_caller")
 export class earth_spirit_stone_caller extends Ability {
 	public IsDoubleTap(order: ExecuteOrder): boolean {
-		const doubletap_target = this.Owner?.InFront(120)
-		return doubletap_target !== undefined && order.Position.Distance2D(doubletap_target) < 32
+		const doubletapTarget = this.Owner?.InFront(120)
+		return (
+			doubletapTarget !== undefined &&
+			order.Position.Distance2D(doubletapTarget) < 32
+		)
 	}
 }
