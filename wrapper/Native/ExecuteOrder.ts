@@ -92,8 +92,10 @@ function CanBeIgnored(order: ExecuteOrder): boolean {
 	}
 }
 
+const same_move_position_threshold = 30
 export class ExecuteOrder {
 	public static readonly order_queue: [ExecuteOrder, number, boolean][] = []
+	public static last_move: Nullable<[Vector3, number]>
 	public static debug_orders = false
 	public static debug_draw = false
 	public static hold_orders = 0
@@ -242,6 +244,18 @@ export class ExecuteOrder {
 			if (this.Position.z < -1024 || (height_map !== undefined && !height_map.Contains(this.Position)))
 				return
 		}
+
+		const current_time = hrtime()
+		if (this.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION) {
+			if (
+				ExecuteOrder.last_move !== undefined
+				&& ExecuteOrder.last_move[0].Equals(this.Position)
+				&& current_time - ExecuteOrder.last_move[1] < same_move_position_threshold
+			)
+				return
+			ExecuteOrder.last_move = [this.Position, current_time]
+		}
+
 		if (!this.Queue && !ORDERS_WITHOUT_SIDE_EFFECTS.includes(this.OrderType)) {
 			if (!WillInterruptOrderQueue(this)) {
 				this.Execute()
@@ -263,7 +277,7 @@ export class ExecuteOrder {
 				))
 					continue
 		}
-		ExecuteOrder.order_queue.push([this, hrtime(), false])
+		ExecuteOrder.order_queue.push([this, current_time, false])
 	}
 
 	public toJSON(): {
