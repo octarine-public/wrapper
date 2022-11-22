@@ -44,7 +44,7 @@ void ComputeViewMatrices(VMatrix* pWorldToView, VMatrix* pViewToProjection, VMat
 		ScaleFOVByWidthRatio(66.f, window_ratio),
 		window_ratio,
 		7. /* viewSetup.zNear magic */,
-		camera_distance * 10.
+		2500. // camera_distance * 2. + 100.?
 	);
 	MatrixMultiply(*pViewToProjection, *pWorldToView, *pWorldToProjection);
 }
