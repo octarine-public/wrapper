@@ -847,11 +847,11 @@ function ApplyParams(vec: Vector2, currentTime: number): void {
 	vec
 		.MultiplyScalarX(paramsX.reduce(
 			(prev, cur) => prev + Math.cos(currentTime * cur[0] + cur[1]) ** 2,
-			0,
+			0.5,
 		) / paramsX.length)
 		.MultiplyScalarY(paramsY.reduce(
 			(prev, cur) => prev + Math.sin(currentTime * cur[0] + cur[1]) ** 2,
-			0,
+			0.5,
 		) / paramsY.length)
 }
 
