@@ -1161,7 +1161,7 @@ function ProcessUserCmd(force = false): void {
 		ent => latest_usercmd.VectorUnderCursor.DistanceSqr(ent.Position),
 	)
 
-	latest_usercmd.WriteBack()
+	latest_usercmd.Write()
 	WriteUserCmd()
 }
 EventsSDK.on("Draw", ProcessUserCmd)
