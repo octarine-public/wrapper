@@ -223,6 +223,10 @@ export class ExecuteOrder {
 				this.Execute()
 			return
 		}
+		if (this.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM) {
+			this.Execute()
+			return
+		}
 		let set_z = false
 		switch (this.OrderType) {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
