@@ -94,7 +94,7 @@ function CanBeIgnored(order: ExecuteOrder): boolean {
 
 const same_move_position_threshold = 30
 export class ExecuteOrder {
-	public static readonly order_queue: [ExecuteOrder, number, boolean][] = []
+	public static readonly order_queue: [ExecuteOrder, number, boolean, boolean][] = []
 	public static last_move: Nullable<[Vector3, number]>
 	public static debug_orders = false
 	public static debug_draw = false
@@ -277,7 +277,7 @@ export class ExecuteOrder {
 				))
 					continue
 		}
-		ExecuteOrder.order_queue.push([this, current_time, false])
+		ExecuteOrder.order_queue.push([this, current_time, false, false])
 	}
 
 	public toJSON(): {

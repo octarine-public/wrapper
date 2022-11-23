@@ -543,16 +543,17 @@ let last_order_target: Nullable<Vector3 | Entity | {
 	srcRng: number,
 	dstRng: number,
 }>,
-	current_order: Nullable<[ExecuteOrder, number, boolean]>
-function ProcessOrderQueue(current_time: number): Nullable<[ExecuteOrder, number, boolean]> {
-	let order = ExecuteOrder.order_queue[0] as Nullable<[ExecuteOrder, number, boolean]>
+	current_order: Nullable<[ExecuteOrder, number, boolean, boolean]>
+function ProcessOrderQueue(current_time: number) {
+	let order = ExecuteOrder.order_queue[0] as Nullable<[ExecuteOrder, number, boolean, boolean]>
 	while (order !== undefined && CanOrderBeSkipped(order[0])) {
 		if (ExecuteOrder.debug_orders)
 			console.log(`Executing order ${order[0].OrderType} after ${current_time - order[1]}ms`)
 		order[0].Execute()
+		order[3] = true
 		ExecuteOrder.order_queue.splice(0, 1)
 		current_order = undefined
-		order = ExecuteOrder.order_queue[0] as Nullable<[ExecuteOrder, number, boolean]>
+		order = ExecuteOrder.order_queue[0] as Nullable<[ExecuteOrder, number, boolean, boolean]>
 	}
 	if (order === undefined || current_order === order)
 		return order
@@ -561,6 +562,7 @@ function ProcessOrderQueue(current_time: number): Nullable<[ExecuteOrder, number
 		if (ExecuteOrder.debug_orders)
 			console.log(`Prefiring order ${order[0].OrderType} after ${current_time - order[1]}ms at ${GameState.RawGameTime}`)
 		order[0].Execute()
+		order[3] = true
 	}
 	switch (order[0].OrderType) {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
@@ -913,11 +915,14 @@ function ProcessUserCmd(force = false): void {
 			? ExecuteOrder.hold_orders_target.Clone().SetZ(WASM.GetPositionHeight(ExecuteOrder.hold_orders_target))
 			: ExecuteOrder.hold_orders_target
 	if (
-		(last_order_target instanceof Entity && (!last_order_target.IsValid || !last_order_target.IsVisible))
-		|| (
-			last_order_target !== undefined
-			&& !(last_order_target instanceof Entity || last_order_target instanceof Vector3)
-			&& (!last_order_target.unit.IsValid || !last_order_target.unit.IsVisible)
+		(order === undefined || !order[3])
+		&& (
+			(last_order_target instanceof Entity && (!last_order_target.IsValid || !last_order_target.IsVisible))
+			|| (
+				last_order_target !== undefined
+				&& !(last_order_target instanceof Entity || last_order_target instanceof Vector3)
+				&& (!last_order_target.unit.IsValid || !last_order_target.unit.IsVisible)
+			)
 		)
 	) {
 		if (ExecuteOrder.debug_orders)
@@ -1118,8 +1123,10 @@ function ProcessUserCmd(force = false): void {
 				)
 			)
 		if ((can_finish_now || !target_pos.IsValid) && execute_order && order !== undefined) {
-			if (!ExecuteOrder.prefire_orders)
+			if (!ExecuteOrder.prefire_orders) {
 				order[0].Execute()
+				order[3] = true
+			}
 			if (ExecuteOrder.debug_orders)
 				console.log(`Finished order ${order[0].OrderType} after ${current_time - order[1]}ms at ${GameState.RawGameTime}`)
 			last_order_finish = current_time
