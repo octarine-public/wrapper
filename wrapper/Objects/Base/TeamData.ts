@@ -3,10 +3,10 @@ import { EntityPropertiesNode } from "../../Base/EntityProperties"
 import { TreeModelReplacement } from "../../Base/TreeModelReplacement"
 import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
-import { EntityManager } from "../../Managers/EntityManager"
+import { Events } from "../../Managers/Events"
 import { GridNav } from "../../Resources/ParseGNV"
 import { Entity } from "./Entity"
-import { Trees } from "./Tree"
+import { Tree, Trees } from "./Tree"
 
 @WrapperClass("CDOTA_DataNonSpectator")
 export class TeamData extends Entity {
@@ -65,9 +65,11 @@ RegisterFieldHandler(TeamData, "m_vecWorldTreeModelReplacements", (data, new_val
 	data.WorldTreeModelReplacements = (new_val as EntityPropertiesNode[]).map(map => new TreeModelReplacement(map))
 })
 
-RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, new_value) => {
-	EntityManager.SetWorldTreeState(new_value as bigint[])
+RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, newValue) => {
+	Tree.TreeActiveMask = newValue as bigint[]
 	if (GridNav !== undefined)
 		for (const tree of Trees)
 			GridNav.UpdateTreeState(tree)
 })
+
+Events.on("NewConnection", () => (Tree.TreeActiveMask = []))

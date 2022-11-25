@@ -17,10 +17,15 @@ import { Entity } from "./Entity"
 
 @WrapperClass("CDOTA_MapTree")
 export class Tree extends Entity {
+	public static TreeActiveMask: bigint[] = []
 	public BinaryID = 0
 
 	public get IsAlive() {
-		return EntityManager.IsTreeActive(this.BinaryID)
+		const bitPos = this.BinaryID
+		const pos = (bitPos / 64) | 0,
+			bit = 1n << BigInt(bitPos % 64)
+		const mask = Tree.TreeActiveMask[pos]
+		return mask !== undefined && (mask & bit) !== 0n
 	}
 	public get CustomNativeID(): number {
 		return (this.BinaryID << 1) | 1

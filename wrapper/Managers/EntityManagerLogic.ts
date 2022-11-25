@@ -9,7 +9,7 @@ import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import { GameState } from "../Utils/GameState"
 import { ParseProtobufDesc } from "../Utils/Protobuf"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
-import { AllEntitiesAsMap, EntityManager, TreeActiveMask } from "./EntityManager"
+import { AllEntitiesAsMap, EntityManager } from "./EntityManager"
 import { Events } from "./Events"
 import { EventsSDK } from "./EventsSDK"
 import * as StringTables from "./StringTables"
@@ -330,5 +330,4 @@ Events.on("ServerMessage", (msg_id, buf) => {
 Events.on("NewConnection", () => {
 	for (const ent_id of AllEntitiesAsMap.keys())
 		DeleteEntity(ent_id)
-	TreeActiveMask.reset()
 })
