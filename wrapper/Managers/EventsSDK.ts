@@ -79,7 +79,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "TrackingProjectileCreated", callback: (proj: TrackingProjectile) => void, priority?: number): EventEmitter
 	on(name: "TrackingProjectileUpdated", callback: (proj: TrackingProjectile) => void, priority?: number): EventEmitter
 	on(name: "TrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void, priority?: number): EventEmitter
-	on(name: "TrackingProjectilesDodged", callback: (ent: Nullable<Unit | FakeUnit>, attacks_only: boolean) => void, priority?: number): EventEmitter
+	on(name: "TrackingProjectilesDodged", callback: (ent: Unit | FakeUnit, attacks_only: boolean) => void, priority?: number): EventEmitter
 	on(
 		name: "UnitAnimation",
 		callback: (

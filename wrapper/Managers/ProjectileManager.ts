@@ -7,7 +7,6 @@ import { Unit } from "../Objects/Base/Unit"
 import { arrayRemove } from "../Utils/ArrayExtensions"
 import { GameState } from "../Utils/GameState"
 import { CMsgVector2DToVector2, CMsgVectorToVector3, NumberToColor, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
-import { EntityManager } from "./EntityManager"
 import { Events } from "./Events"
 import { EventsSDK } from "./EventsSDK"
 import { Manifest } from "./Manifest"
@@ -248,18 +247,21 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 			break
 		}
 		case 473: {
-			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_DodgeTrackingProjectiles")
-			const handle = msg.get("entindex") as number
-			const ent = EntityManager.EntityByIndex(handle)
-			EventsSDK.emit("TrackingProjectilesDodged", false, ent ?? handle)
-			if (ent === undefined)
-				break
-			const attacks_only = msg.get("attacks_only") as boolean
-			ProjectileManager.AllTrackingProjectiles.filter(proj =>
-				proj.IsDodgeable
-				&& proj.Target === ent
-				&& (!attacks_only || proj.IsAttack),
-			).forEach(proj => proj.IsDodged = true)
+			const msg = ParseProtobufNamed(
+				new Uint8Array(buf_),
+				"CDOTAUserMsg_DodgeTrackingProjectiles"
+			)
+			const ent = GetPredictionTarget(msg.get("entindex") as number)
+			if (ent === undefined) break
+			const attacksOnly = msg.get("attacks_only") as boolean
+			EventsSDK.emit("TrackingProjectilesDodged", false, ent, attacksOnly)
+			for (const proj of ProjectileManager.AllTrackingProjectiles)
+				if (
+					proj.IsDodgeable &&
+					proj.Target === ent &&
+					(!attacksOnly || proj.IsAttack)
+				)
+					proj.IsDodged = true
 			break
 		}
 		case 518: {
