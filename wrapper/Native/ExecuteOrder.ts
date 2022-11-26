@@ -9,21 +9,6 @@ import { Unit } from "../Objects/Base/Unit"
 import { arrayRemoveCallback } from "../Utils/ArrayExtensions"
 import * as WASM from "./WASM"
 
-const ordersWithoutSideEffects = [
-	dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
-	dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE,
-	dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO,
-	dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM,
-	dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM,
-	dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK,
-	dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM,
-	dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM,
-	dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH,
-	dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE,
-	dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH,
-	dotaunitorder_t.DOTA_UNIT_ORDER_RADAR,
-]
-
 function WillInterruptOrderQueue(order: ExecuteOrder): boolean {
 	switch (order.OrderType) {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RUNE:
@@ -264,14 +249,29 @@ export class ExecuteOrder {
 			this.Execute()
 			return
 		}
-		if (ExecuteOrder.DisableHumanizer) {
-			if (this.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET)
+		switch (this.OrderType) {
+			case dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
+			// TODO: humanize following (?)
+			case dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM:
 				this.Execute()
-			return
-		}
-		if (this.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM) {
-			this.Execute()
-			return
+				return
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET:
+				if (ExecuteOrder.DisableHumanizer) {
+					this.Execute()
+					return
+				}
+				break
+			default:
+				if (ExecuteOrder.DisableHumanizer) return
+				break
 		}
 		let setZ = false
 		switch (this.OrderType) {
@@ -309,24 +309,19 @@ export class ExecuteOrder {
 			ExecuteOrder.lastMove = [this.Position, currentTime]
 		}
 
-		if (!this.Queue && !ordersWithoutSideEffects.includes(this.OrderType)) {
-			if (!WillInterruptOrderQueue(this)) {
-				this.Execute()
-				return
-			} else
-				while (
-					arrayRemoveCallback(
-						ExecuteOrder.orderQueue,
-						([order], i) =>
-							i !== 0 &&
-							(order.Issuers.every(unit => this.Issuers.includes(unit)) ||
-								(order.Issuers.length === 1 &&
-									this.Issuers.includes(order.Issuers[0]))) &&
-							CanBeIgnored(order)
-					)
+		if (!this.Queue && !WillInterruptOrderQueue(this))
+			while (
+				arrayRemoveCallback(
+					ExecuteOrder.orderQueue,
+					([order], i) =>
+						i !== 0 &&
+						(order.Issuers.every(unit => this.Issuers.includes(unit)) ||
+							(order.Issuers.length === 1 &&
+								this.Issuers.includes(order.Issuers[0]))) &&
+						CanBeIgnored(order)
 				)
-					continue
-		}
+			)
+				continue
 		ExecuteOrder.orderQueue.push([this, hrtime(), false, false])
 	}
 }

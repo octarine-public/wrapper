@@ -463,9 +463,12 @@ export function ParseProtobufDesc(str: string): void {
 						currentMap = found[1]
 					} else currentMap = undefined
 				} else currentMap = undefined
-			} else if (line.startsWith("option ") || line.startsWith("syntax "))
-				return
-			else if (currentMap !== undefined && currentIsEnum) {
+			} else if (
+				currentMap !== undefined &&
+				currentIsEnum &&
+				!line.startsWith("option ") &&
+				!line.startsWith("syntax ")
+			) {
 				const match = /^([^\s]+)\s*=\s*([^\s]+)/.exec(line)
 				if (match === null) return
 				const fixedMap = currentMap as Map<string, number>

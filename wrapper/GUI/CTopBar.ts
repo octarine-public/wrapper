@@ -222,17 +222,15 @@ export class CTopBar {
 			teamImageWidth = ScaleWidth(66, screenSize),
 			teamImageHeight = ScaleHeight(40, screenSize)
 
-		{
-			this.RadiantTeamBackground.Width = teamBackgroundWidth
-			this.RadiantTeamBackground.Height = teamBackgroundHeight
-			this.RadiantTeamBackground.x =
-				this.TopBar.x + containerWidth - teamBackgroundWidth
+		this.RadiantTeamBackground.Width = teamBackgroundWidth
+		this.RadiantTeamBackground.Height = teamBackgroundHeight
+		this.RadiantTeamBackground.x =
+			this.TopBar.x + containerWidth - teamBackgroundWidth
 
-			this.DireTeamBackground.Width = teamBackgroundWidth
-			this.DireTeamBackground.Height = teamBackgroundHeight
-			this.DireTeamBackground.x =
-				this.TopBar.x + this.TopBar.Width - containerWidth
-		}
+		this.DireTeamBackground.Width = teamBackgroundWidth
+		this.DireTeamBackground.Height = teamBackgroundHeight
+		this.DireTeamBackground.x =
+			this.TopBar.x + this.TopBar.Width - containerWidth
 		{
 			const radiantTeamScoreAndPlayers = new Rectangle()
 			radiantTeamScoreAndPlayers.Width =

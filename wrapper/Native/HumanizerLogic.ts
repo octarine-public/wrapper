@@ -329,7 +329,7 @@ function GetRectForSlot(
 		return hud.TPSlot
 	else if (currentSlot === DOTAScriptInventorySlot.DOTA_ITEM_NEUTRAL_SLOT)
 		return hud.NeutralSlot
-	else throw `Unexpected currentSlot ${currentSlot}`
+	throw `Unexpected currentSlot ${currentSlot}`
 }
 
 function ComputeTargetPosVector3(
@@ -501,7 +501,8 @@ function ComputeTargetPos(
 			lastOrderTarget.finishedSrc,
 			!lastOrderTarget.finishedSrc || typeof lastOrderTarget.dst === "number",
 		]
-	} else {
+	}
+	{
 		if (ExecuteOrder.IsStandalone) {
 			const w2s = latestUsercmd.MousePosition
 			if (
@@ -583,7 +584,8 @@ function ComputeTargetPos(
 			)
 				return [pos.Clone(), true, true]
 			return [w2s, true, true]
-		} else return [cursorPos.Divide(RendererSDK.WindowSize), true, true]
+		}
+		return [cursorPos.Divide(RendererSDK.WindowSize), true, true]
 	}
 }
 
@@ -743,26 +745,22 @@ function CanMoveCamera(cameraVec: Vector2, targetPos: Vector2): boolean {
 			cameraVec.x < boundsMin.x
 		)
 			return false
-	} else {
-		if (
-			Math.abs(cameraVec.x - boundsMax.x) < 1 || // right
-			cameraVec.x > boundsMax.x
-		)
-			return false
-	}
+	} else if (
+		Math.abs(cameraVec.x - boundsMax.x) < 1 || // right
+		cameraVec.x > boundsMax.x
+	)
+		return false
 	if (targetPos.y < 0.5) {
 		if (
 			Math.abs(cameraVec.y - boundsMax.y) < 1 || // top
 			cameraVec.y > boundsMax.y
 		)
 			return false
-	} else {
-		if (
-			Math.abs(cameraVec.y - boundsMin.y) < 1 || // bot
-			cameraVec.y < boundsMin.y
-		)
-			return false
-	}
+	} else if (
+		Math.abs(cameraVec.y - boundsMin.y) < 1 || // bot
+		cameraVec.y < boundsMin.y
+	)
+		return false
 	return true
 }
 function MoveCameraByScreen(
@@ -828,20 +826,18 @@ function MoveCameraByScreen(
 			cameraDirection.x = 1
 			cameraDirection.y = 0
 		}
-	} else {
-		if (minCenterDist === distCenterBot) {
-			cameraDirection.x = 0.5
-			cameraDirection.y = 1
-		} else if (minCenterDist === distCenterLeft) {
-			cameraDirection.x = 0
-			cameraDirection.y = 0.5
-		} else if (minCenterDist === distCenterTop) {
-			cameraDirection.x = 0.5
-			cameraDirection.y = 0
-		} else if (minCenterDist === distCenterRight) {
-			cameraDirection.x = 1
-			cameraDirection.y = 0.5
-		}
+	} else if (minCenterDist === distCenterBot) {
+		cameraDirection.x = 0.5
+		cameraDirection.y = 1
+	} else if (minCenterDist === distCenterLeft) {
+		cameraDirection.x = 0
+		cameraDirection.y = 0.5
+	} else if (minCenterDist === distCenterTop) {
+		cameraDirection.x = 0.5
+		cameraDirection.y = 0
+	} else if (minCenterDist === distCenterRight) {
+		cameraDirection.x = 1
+		cameraDirection.y = 0.5
 	}
 
 	if (lastcameraMoveSeed < currentTime - cameraMoveSeedExpiry)
