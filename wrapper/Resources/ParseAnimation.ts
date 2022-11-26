@@ -43,7 +43,6 @@ enum AnimDecoderType {
 export class CAnimationFrame {
 	private readonly BonesPositions = new Map<string, Vector3>()
 	private readonly BonesAngles = new Map<string, Vector4>()
-	private readonly BonesInverseBindPoses = new Map<string, Matrix4x4>()
 
 	public SetAttribute(bone: string, attribute: string, data: Vector3 | Vector4) {
 		switch (attribute) {
@@ -53,24 +52,19 @@ export class CAnimationFrame {
 			case "Angle":
 				this.BonesAngles.set(bone, data as Vector4)
 				break
-			case "data":
 			default:
 				break
 		}
 	}
 	public GetBoneInverseBindPose(name: string): Matrix4x4 {
-		const found = this.BonesInverseBindPoses.get(name)
-		if (found !== undefined)
-			return found
-		const invBindPose = Matrix4x4.Identity,
-			angles = this.BonesAngles.get(name),
+		const angles = this.BonesAngles.get(name),
 			position = this.BonesPositions.get(name)
-		if (angles !== undefined)
-			invBindPose.Multiply(Matrix4x4.CreateFromVector4(angles))
+		const invBindPose = angles !== undefined
+			? Matrix4x4.CreateFromVector4(angles)
+			: Matrix4x4.Identity
 		if (position !== undefined)
-			invBindPose.Multiply(Matrix4x4.CreateTranslation(position))
+			invBindPose.Translation = position
 		invBindPose.Invert()
-		this.BonesInverseBindPoses.set(name, invBindPose)
 		return invBindPose
 	}
 }
@@ -136,6 +130,60 @@ export class CAnimationEvent {
 
 const converFloatUint32 = new Uint32Array(1)
 const converFloatFloat32 = new Float32Array(converFloatUint32.buffer)
+function ReadHalfFloat(stream: ReadableBinaryStream): number {
+	const val = stream.ReadUint16()
+	let rst: number
+	let mantissa = val & 1023,
+		exp = 0xfffffff2
+	if ((val & -33792) === 0) {
+		if (mantissa !== 0) {
+			while ((mantissa & 1024) === 0) {
+				exp--
+				mantissa = mantissa << 1
+			}
+
+			mantissa &= 0xfffffbff
+			rst = ((val & 0x8000) << 16) | ((exp + 127) << 23) | (mantissa << 13)
+		} else rst = (val & 0x8000) << 16
+	} else
+		rst =
+			((val & 0x8000) << 16) |
+			((((val >> 10) & 0x1f) - 15 + 127) << 23) |
+			(mantissa << 13)
+	converFloatUint32[0] = rst
+	return converFloatFloat32[0]
+}
+
+function ReadVector4(stream: ReadableBinaryStream): Vector4 {
+	const bytes = stream.ReadSlice(6)
+
+	// Values
+	const i1 = bytes[0] + ((bytes[1] & 63) << 8)
+	const i2 = bytes[2] + ((bytes[3] & 63) << 8)
+	const i3 = bytes[4] + ((bytes[5] & 63) << 8)
+
+	// Signs
+	const s1 = bytes[1] & 128
+	const s2 = bytes[3] & 128
+	const s3 = bytes[5] & 128
+
+	const c = Math.sin(Math.PI / 4) / 16384
+	const x = (bytes[1] & 64) === 0 ? c * (i1 - 16384) : c * i1
+	const y = (bytes[3] & 64) === 0 ? c * (i2 - 16384) : c * i2
+	const z = (bytes[5] & 64) === 0 ? c * (i3 - 16384) : c * i3
+
+	let w = Math.sqrt(1 - x * x - y * y - z * z)
+
+	// Apply sign 3
+	if (s3 === 128) w *= -1
+
+	// Apply sign 1 and 2
+	if (s1 === 128)
+		return s2 === 128 ? new Vector4(y, z, w, x) : new Vector4(z, w, x, y)
+
+	return s2 === 128 ? new Vector4(w, x, y, z) : new Vector4(x, y, z, w)
+}
+
 export class CAnimation {
 	public readonly Name: string
 	public readonly FPS: number
@@ -145,14 +193,13 @@ export class CAnimation {
 	public readonly Events: CAnimationEvent[] = []
 	public readonly FrameCount: number
 	private readonly FrameBlockArray: [number, number, number[]][] = []
-	private readonly DataChannelArray: Nullable<[string[], number[], string]>[]
-	private readonly BoneCount: number
 	constructor(
 		animationDesc: RecursiveMap,
-		DecodeKey: RecursiveMap,
-		private readonly DecoderArray: AnimDecoderType[],
-		private readonly SegmentArray: Nullable<[number, Uint8Array]>[],
-		hseq: Map<string, CAnimationActivity[]>,
+		private readonly DataChannelArray: Nullable<[string[], string]>[],
+		private readonly SegmentArray: Nullable<
+			[number, number[], AnimDecoderType, ReadableBinaryStream]
+		>[],
+		hseq: Map<string, CAnimationActivity[]>
 	) {
 		this.Name = GetMapStringProperty(animationDesc, "m_name")
 		this.FPS = GetMapNumberProperty(animationDesc, "fps")
@@ -164,60 +211,21 @@ export class CAnimation {
 		this.LoadEvents(animationDesc)
 
 		this.FrameCount = this.LoadFrameData(animationDesc)
-		const dataChannelMap = DecodeKey.get("m_dataChannelArray")
-		if (!(dataChannelMap instanceof Map || Array.isArray(dataChannelMap)))
-			throw "decodeKey without dataChannelArray"
-		this.BoneCount = GetMapNumberProperty(DecodeKey, "m_nChannelElements")
-		this.DataChannelArray = (
-			dataChannelMap instanceof Map
-				? [...dataChannelMap.values()]
-				: dataChannelMap
-		).map(dataChannel => {
-			if (!(dataChannel instanceof Map))
-				return undefined
-			const boneNamesMap = dataChannel.get("m_szElementNameArray")
-			if (!(boneNamesMap instanceof Map || Array.isArray(boneNamesMap)))
-				return undefined
-			const elementIndexArrayMap = dataChannel.get("m_nElementIndexArray")
-			if (!(elementIndexArrayMap instanceof Map || Array.isArray(elementIndexArrayMap)))
-				return undefined
-			const boneNames = MapToStringArray(boneNamesMap),
-				elementIndexArray = MapToNumberArray(elementIndexArrayMap),
-				channelAttribute = GetMapStringProperty(dataChannel, "m_szVariableName")
-			const elementBones: number[] = []
-			for (let i = 0; i < this.BoneCount; i++)
-				elementBones.push(0)
-			elementIndexArray.forEach((elementIndex, i) => elementBones[elementIndex] = i)
-			return [boneNames, elementBones, channelAttribute]
-		})
 	}
 
 	public ReadFrame(frameNum: number): Nullable<CAnimationFrame> {
-		if (this.FrameBlockArray === undefined || frameNum >= this.FrameCount)
+		if (frameNum >= this.FrameCount)
 			return undefined
 		const frame = new CAnimationFrame()
-		this.FrameBlockArray.forEach(([startFrame, endFrame, segmentIndexArray]) => {
-			if (frameNum < startFrame || frameNum > endFrame)
-				return
-			segmentIndexArray.forEach(segmentIndex => this.ReadSegment(
-				Math.max(Math.min(frameNum - startFrame, this.FrameCount - 1), 0),
-				frame,
-				segmentIndex,
-			))
-		})
+		for (const [startFrame, endFrame, segmentIndexArray] of this.FrameBlockArray)
+			if (frameNum >= startFrame && frameNum <= endFrame)
+				for (const segmentIndex of segmentIndexArray)
+					this.ReadSegment(
+						Math.max(Math.min(frameNum - startFrame, this.FrameCount - 1), 0),
+						frame,
+						segmentIndex,
+					)
 		return frame
-	}
-
-	private GetSegment(id: number): Nullable<[Uint8Array, string[], number[], string]> {
-		const segmentData = this.SegmentArray[id]
-		if (segmentData === undefined)
-			return undefined
-		const [localChannel, container] = segmentData
-		const dataChannel = this.DataChannelArray[localChannel]
-		if (dataChannel === undefined)
-			return undefined
-		const [boneNames, elementBones, channelAttribute] = dataChannel
-		return [container, boneNames, elementBones, channelAttribute]
 	}
 
 	private ComputeIsLooping(animationDesc: RecursiveMap): boolean {
@@ -282,43 +290,27 @@ export class CAnimation {
 		})
 		return GetMapNumberProperty(data, "m_nFrames")
 	}
-	private GetAnimDecoderTypeSize(type: AnimDecoderType): number {
-		switch (type) {
-			case AnimDecoderType.CCompressedFullQuaternion:
-				return 4 * 4
-			case AnimDecoderType.CCompressedFullVector3:
-				return 4 * 3
-			case AnimDecoderType.CCompressedStaticVector3:
-			case AnimDecoderType.CCompressedAnimVector3:
-			case AnimDecoderType.CCompressedAnimQuaternion:
-				return 2 * 3
-			default:
-				return 0
-		}
-	}
-	private ReadSegment(frameNum: number, frame: CAnimationFrame, segmentIndex: number): void {
-		const [data, boneNames, elementBones, channelAttribute] = this.GetSegment(segmentIndex)!
-		const stream = new ViewBinaryStream(new DataView(data.buffer, data.byteOffset, data.byteLength))
-		const decoder = this.DecoderArray[stream.ReadUint16()]
-		stream.RelativeSeek(2) // cardinality?
-		const numBones = stream.ReadUint16()
-		stream.RelativeSeek(2) // totalLength?
-		const bones: number[] = []
-		for (let i = 0; i < numBones; i++) {
-			const id = stream.ReadUint16()
-			bones.push(elementBones[id])
-		}
-		stream.RelativeSeek(this.GetAnimDecoderTypeSize(decoder) * frameNum * numBones)
-		if (stream.Empty())
-			return
-		for (const id of bones) {
-			const bone = boneNames[id] ?? ""
-			switch (decoder) {
-				case AnimDecoderType.CCompressedStaticFullVector3:
-				case AnimDecoderType.CCompressedFullVector3:
-				case AnimDecoderType.CCompressedDeltaVector3:
+	private ReadSegment(
+		frameNum: number,
+		frame: CAnimationFrame,
+		segmentIndex: number
+	): void {
+		if (frameNum < 0) return
+		const segmentData = this.SegmentArray[segmentIndex]
+		if (segmentData === undefined) return
+		const [localChannel, bones, decoder, stream] = segmentData
+		if (bones.length === 0) return
+		const dataChannel = this.DataChannelArray[localChannel]
+		if (dataChannel === undefined) return
+		const [boneNames, channelAttribute] = dataChannel
+
+		switch (decoder) {
+			case AnimDecoderType.CCompressedStaticFullVector3: {
+				stream.pos = 0
+				if (stream.Empty()) return
+				for (const boneID of bones)
 					frame.SetAttribute(
-						bone,
+						boneNames[boneID] ?? "",
 						channelAttribute,
 						new Vector3(
 							stream.ReadFloat32(),
@@ -326,30 +318,81 @@ export class CAnimation {
 							stream.ReadFloat32(),
 						),
 					)
-					break
-				case AnimDecoderType.CCompressedAnimVector3:
-				case AnimDecoderType.CCompressedStaticVector3:
+				break
+			}
+			case AnimDecoderType.CCompressedFullVector3: {
+				stream.pos = frameNum * bones.length * (3 * 4)
+				if (stream.Empty()) return
+				for (const boneID of bones)
 					frame.SetAttribute(
-						bone,
+						boneNames[boneID] ?? "",
 						channelAttribute,
 						new Vector3(
-							this.ReadHalfFloat(stream),
-							this.ReadHalfFloat(stream),
-							this.ReadHalfFloat(stream),
-						),
+							stream.ReadFloat32(),
+							stream.ReadFloat32(),
+							stream.ReadFloat32()
+						)
 					)
-					break
-				case AnimDecoderType.CCompressedAnimQuaternion:
-				case AnimDecoderType.CCompressedStaticQuaternion:
+				break
+			}
+			case AnimDecoderType.CCompressedStaticVector3: {
+				stream.pos = 0
+				if (stream.Empty()) return
+				for (const boneID of bones)
 					frame.SetAttribute(
-						bone,
+						boneNames[boneID] ?? "",
 						channelAttribute,
-						this.ReadVector4(stream),
+						new Vector3(
+							ReadHalfFloat(stream),
+							ReadHalfFloat(stream),
+							ReadHalfFloat(stream)
+						)
 					)
-					break
-				case AnimDecoderType.CCompressedFullQuaternion:
+				break
+			}
+			case AnimDecoderType.CCompressedAnimVector3: {
+				stream.pos = frameNum * bones.length * (3 * 2)
+				if (stream.Empty()) return
+				for (const boneID of bones)
 					frame.SetAttribute(
-						bone,
+						boneNames[boneID] ?? "",
+						channelAttribute,
+						new Vector3(
+							ReadHalfFloat(stream),
+							ReadHalfFloat(stream),
+							ReadHalfFloat(stream)
+						)
+					)
+				break
+			}
+			case AnimDecoderType.CCompressedStaticQuaternion: {
+				stream.pos = 0
+				if (stream.Empty()) return
+				for (const boneID of bones)
+					frame.SetAttribute(
+						boneNames[boneID] ?? "",
+						channelAttribute,
+						ReadVector4(stream)
+					)
+				break
+			}
+			case AnimDecoderType.CCompressedAnimQuaternion: {
+				stream.pos = frameNum * bones.length * 6
+				if (stream.Empty()) return
+				for (const boneID of bones)
+					frame.SetAttribute(
+						boneNames[boneID] ?? "",
+						channelAttribute,
+						ReadVector4(stream)
+					)
+				break
+			}
+			case AnimDecoderType.CCompressedFullQuaternion: {
+				stream.pos = frameNum * bones.length * (4 * 3)
+				if (stream.Empty()) return
+				for (const boneID of bones)
+					frame.SetAttribute(
+						boneNames[boneID] ?? "",
 						channelAttribute,
 						new Vector4(
 							stream.ReadFloat32(),
@@ -358,62 +401,11 @@ export class CAnimation {
 							stream.ReadFloat32(),
 						),
 					)
-					break
-				default:
-					break
+				break
 			}
+			default:
+				break
 		}
-	}
-	private ReadHalfFloat(stream: ReadableBinaryStream): number {
-		const val = stream.ReadUint16()
-		let rst: number
-		let mantissa = val & 1023,
-			exp = 0xfffffff2
-		if ((val & -33792) === 0) {
-			if (mantissa !== 0) {
-				while ((mantissa & 1024) === 0) {
-					exp--
-					mantissa = mantissa << 1
-				}
-
-				mantissa &= 0xfffffbff
-				rst = ((val & 0x8000) << 16) | ((exp + 127) << 23) | (mantissa << 13)
-			} else
-				rst = ((val & 0x8000) << 16)
-		} else
-			rst = ((val & 0x8000) << 16) | ((((val >> 10) & 0x1f) - 15 + 127) << 23) | (mantissa << 13)
-		converFloatUint32[0] = rst
-		return converFloatFloat32[0]
-	}
-	private ReadVector4(stream: ReadableBinaryStream): Vector4 {
-		const bytes = stream.ReadSlice(6)
-
-		// Values
-		const i1 = bytes[0] + ((bytes[1] & 63) << 8)
-		const i2 = bytes[2] + ((bytes[3] & 63) << 8)
-		const i3 = bytes[4] + ((bytes[5] & 63) << 8)
-
-		// Signs
-		const s1 = bytes[1] & 128
-		const s2 = bytes[3] & 128
-		const s3 = bytes[5] & 128
-
-		const c = Math.sin(Math.PI / 4) / 16384
-		const x = (bytes[1] & 64) === 0 ? c * (i1 - 16384) : c * i1
-		const y = (bytes[3] & 64) === 0 ? c * (i2 - 16384) : c * i2
-		const z = (bytes[5] & 64) === 0 ? c * (i3 - 16384) : c * i3
-
-		let w = Math.sqrt(1 - (x * x) - (y * y) - (z * z))
-
-		// Apply sign 3
-		if (s3 === 128)
-			w *= -1
-
-		// Apply sign 1 and 2
-		if (s1 === 128)
-			return s2 === 128 ? new Vector4(y, z, w, x) : new Vector4(z, w, x, y)
-
-		return s2 === 128 ? new Vector4(w, x, y, z) : new Vector4(x, y, z, w)
 	}
 }
 
@@ -433,6 +425,34 @@ export function ParseAnimationsFromData(
 	decodeKey: RecursiveMap,
 	hseq_data: RecursiveMap,
 ): CAnimation[] {
+	const dataChannelMap = decodeKey.get("m_dataChannelArray")
+	if (!(dataChannelMap instanceof Map || Array.isArray(dataChannelMap)))
+		throw "decodeKey without dataChannelArray"
+	const boneCount = GetMapNumberProperty(decodeKey, "m_nChannelElements")
+	const dataChannelArray = (
+		dataChannelMap instanceof Map
+			? [...dataChannelMap.values()]
+			: dataChannelMap
+	).map(dataChannel => {
+		if (!(dataChannel instanceof Map))
+			return undefined
+		const boneNamesMap = dataChannel.get("m_szElementNameArray")
+		if (!(boneNamesMap instanceof Map || Array.isArray(boneNamesMap)))
+			return undefined
+		const elementIndexArrayMap = dataChannel.get("m_nElementIndexArray")
+		if (!(elementIndexArrayMap instanceof Map || Array.isArray(elementIndexArrayMap)))
+			return undefined
+		const boneNames = MapToStringArray(boneNamesMap),
+			elementIndexArray = MapToNumberArray(elementIndexArrayMap),
+			channelAttribute = GetMapStringProperty(dataChannel, "m_szVariableName")
+		const mappedBoneNames: string[] = []
+		for (let i = 0; i < boneCount; i++) mappedBoneNames.push("")
+		elementIndexArray.forEach(
+			(elementIndex, i) => (mappedBoneNames[elementIndex] = boneNames[i])
+		)
+		return [mappedBoneNames, channelAttribute] as [string[], string]
+	})
+
 	const ar: CAnimation[] = []
 	const decoderArrayMap = animationData.get("m_decoderArray")
 	const decoderArray = decoderArrayMap instanceof Map || Array.isArray(decoderArrayMap)
@@ -440,7 +460,9 @@ export function ParseAnimationsFromData(
 		: []
 	const animArrayMap = animationData.get("m_animArray")
 	const segmentArrayMap = animationData.get("m_segmentArray")
-	const segmentArray: Nullable<[number, Uint8Array]>[] = []
+	const segmentArray: Nullable<
+		[number, number[], AnimDecoderType, ReadableBinaryStream]
+	>[] = []
 	if (segmentArrayMap instanceof Map || Array.isArray(segmentArrayMap))
 		segmentArrayMap.forEach((segment: RecursiveMapValue) => {
 			if (!(segment instanceof Map)) {
@@ -461,9 +483,25 @@ export function ParseAnimationsFromData(
 				return
 			}
 
+			const stream = new ViewBinaryStream(
+				new DataView(
+					container.buffer,
+					container.byteOffset,
+					container.byteLength
+				)
+			)
+			const decoder = decoderArray[stream.ReadUint16()]
+			stream.RelativeSeek(2) // cardinality?
+			const numBones = stream.ReadUint16()
+			stream.RelativeSeek(2) // totalLength?
+			const bones: number[] = []
+			for (let i = 0; i < numBones; i++) bones.push(stream.ReadUint16())
+
 			segmentArray.push([
 				GetMapNumberProperty(segment, "m_nLocalChannel"),
-				container,
+				bones,
+				decoder,
+				stream.CreateNestedStream(stream.Remaining),
 			])
 		})
 	const hseq = new Map<string, CAnimationActivity[]>()
@@ -485,13 +523,7 @@ export function ParseAnimationsFromData(
 	if (animArrayMap instanceof Map || Array.isArray(animArrayMap))
 		animArrayMap.forEach((animationDesc: RecursiveMapValue) => {
 			if (animationDesc instanceof Map)
-				ar.push(new CAnimation(
-					animationDesc,
-					decodeKey,
-					decoderArray,
-					segmentArray,
-					hseq,
-				))
+				ar.push(new CAnimation(animationDesc, dataChannelArray, segmentArray, hseq))
 		})
 	return ar
 }

@@ -7,7 +7,6 @@ import { MapToNumberArray, MapToStringArray, MapToVector3Array, MapToVector4Arra
 export class CBone {
 	public Parent: Nullable<CBone>
 	public readonly Child: CBone[] = []
-	public readonly BindPose: Matrix4x4
 	public readonly InverseBindPose: Matrix4x4
 	constructor(
 		public readonly Name: string,
@@ -15,12 +14,9 @@ export class CBone {
 		Position: Vector3,
 		Angle: Vector4,
 	) {
-		this.BindPose = Matrix4x4.CreateFromVector4(Angle)
-			.Multiply(Matrix4x4.CreateTranslation(Position))
-		this.InverseBindPose = this.BindPose.Clone().Invert()
-	}
-	public get CombinedInverseBindPose(): Matrix4x4 {
-		return this.InverseBindPose.Clone().Multiply(this.Parent?.CombinedInverseBindPose ?? Matrix4x4.Identity)
+		this.InverseBindPose = Matrix4x4.CreateFromVector4(Angle)
+		this.InverseBindPose.Translation = Position
+		this.InverseBindPose.Invert()
 	}
 	public SetParent(parent: CBone): void {
 		this.Parent = parent

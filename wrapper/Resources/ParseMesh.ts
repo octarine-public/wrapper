@@ -30,13 +30,13 @@ export class CMeshAttachment {
 		this.InfluenceRootTransforms = this.InfluenceRootTransforms.slice(0, Influences)
 
 		for (let i = 0; i < Influences; i++) {
-			const bindPose = Matrix4x4.Identity,
-				rotation = InfluenceRotations[i],
+			const rotation = InfluenceRotations[i],
 				offset = InfluenceOffsets[i]
-			if (rotation !== undefined)
-				bindPose.Multiply(Matrix4x4.CreateFromVector4(rotation))
+			const bindPose = rotation !== undefined
+				? Matrix4x4.CreateFromVector4(rotation)
+				: Matrix4x4.Identity
 			if (offset !== undefined)
-				bindPose.Multiply(Matrix4x4.CreateTranslation(offset))
+				bindPose.Translation = offset
 			this.InfluenceBindPoses.push(bindPose)
 		}
 

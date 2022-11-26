@@ -36,13 +36,6 @@ export class Matrix4x4 {
 			1.0,
 		])
 	}
-	public static CreateTranslation(vec: Vector3): Matrix4x4 {
-		const mat = Matrix4x4.Identity
-		mat.SetRowValue(3, 0, vec.x)
-		mat.SetRowValue(3, 1, vec.y)
-		mat.SetRowValue(3, 2, vec.z)
-		return mat
-	}
 	private static Identity_ = new Matrix4x4([
 		1, 0, 0, 0,
 		0, 1, 0, 0,
@@ -61,9 +54,10 @@ export class Matrix4x4 {
 			this.GetRowValue(3, 2),
 		)
 	}
-	public SetIdentity(): Matrix4x4 {
-		this.values.set(Matrix4x4.Identity_.values)
-		return this
+	public set Translation(vec: Vector3) {
+		this.SetRowValue(3, 0, vec.x)
+		this.SetRowValue(3, 1, vec.y)
+		this.SetRowValue(3, 2, vec.z)
 	}
 	public at(pos: number): number {
 		return this.values[pos]
@@ -74,11 +68,6 @@ export class Matrix4x4 {
 	public SetRowValue(row: number, col: number, val: number): Matrix4x4 {
 		this.values[(row * 4) + col] = val
 		return this
-	}
-	public toArray(): number[] {
-		const ar: number[] = []
-		this.values.forEach(val => ar.push(val))
-		return ar
 	}
 	public Multiply(matrix: Matrix4x4): Matrix4x4 {
 		const a00 = matrix.values[0]
