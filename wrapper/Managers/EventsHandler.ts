@@ -1,4 +1,4 @@
-import { Matrix4x4 } from "../Base/Matrix4x4"
+import { Matrix4x4Identity } from "../Base/Matrix"
 import { NetworkedParticle } from "../Base/NetworkedParticle"
 import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
@@ -1209,8 +1209,8 @@ function TryLoadWorld(worldKV: RecursiveMap): void {
 			const transformMap = sceneObject.get("m_vTransform")
 			const transform =
 				transformMap instanceof Map || Array.isArray(transformMap)
-					? [...MapToMatrix4x4(transformMap).values]
-					: [...Matrix4x4.Identity.values]
+					? MapToMatrix4x4(transformMap)
+					: Matrix4x4Identity
 			const modelPath = GetMapStringProperty(sceneObject, "m_renderableModel"),
 				meshPath = GetMapStringProperty(sceneObject, "m_renderable"),
 				objectTypeFlags = GetMapNumberProperty(
@@ -1272,7 +1272,7 @@ function TryLoadWorld(worldKV: RecursiveMap): void {
 		})
 		const plateMeshID = path2meshes.get("")
 		if (plateMeshID !== undefined && plateMeshID.length !== 0)
-			WASM.SpawnWorldMesh(plateMeshID[0], Matrix4x4.Identity.values)
+			WASM.SpawnWorldMesh(plateMeshID[0], Matrix4x4Identity)
 		WASM.FinishWorld(worldBVH)
 	}, console.error)
 }

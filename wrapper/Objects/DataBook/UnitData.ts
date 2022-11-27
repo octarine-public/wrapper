@@ -114,6 +114,9 @@ export class UnitData {
 	public readonly MovementCapabilities: DOTAUnitMoveCapability
 	public readonly ArmorPhysical: number
 	public readonly MagicalResistance: number
+	public readonly AttackSpeedActivityModifiers: [number, string][] = []
+	public readonly MovementSpeedActivityModifiers: [number, string][] = []
+	public readonly AttackRangeActivityModifiers: [number, string][] = []
 
 	constructor(name: string, kv: RecursiveMap) {
 		this.HeroID = kv.has("HeroID") ? parseInt(kv.get("HeroID") as string) : 0
@@ -237,6 +240,31 @@ export class UnitData {
 		this.MagicalResistance = kv.has("MagicalResistance")
 			? parseFloat(kv.get("MagicalResistance") as string)
 			: 0
+
+		if (kv.has("AttackSpeedActivityModifiers")) {
+			const m = kv.get("AttackSpeedActivityModifiers")
+			if (m instanceof Map)
+				for (const [k, v] of m)
+					if (typeof v === "string")
+						this.AttackSpeedActivityModifiers.push([parseFloat(v), k])
+			this.AttackSpeedActivityModifiers.sort((a, b) => b[0] - a[0])
+		}
+		if (kv.has("MovementSpeedActivityModifiers")) {
+			const m = kv.get("MovementSpeedActivityModifiers")
+			if (m instanceof Map)
+				for (const [k, v] of m)
+					if (typeof v === "string")
+						this.MovementSpeedActivityModifiers.push([parseFloat(v), k])
+			this.MovementSpeedActivityModifiers.sort((a, b) => b[0] - a[0])
+		}
+		if (kv.has("AttackRangeActivityModifiers")) {
+			const m = kv.get("AttackRangeActivityModifiers")
+			if (m instanceof Map)
+				for (const [k, v] of m)
+					if (typeof v === "string")
+						this.AttackRangeActivityModifiers.push([parseFloat(v), k])
+			this.AttackRangeActivityModifiers.sort((a, b) => b[0] - a[0])
+		}
 	}
 }
 

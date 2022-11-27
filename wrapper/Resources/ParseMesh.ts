@@ -1,4 +1,4 @@
-import { Matrix4x4 } from "../Base/Matrix4x4"
+import { Matrix3x4 } from "../Base/Matrix"
 import { Vector3 } from "../Base/Vector3"
 import { Vector4 } from "../Base/Vector4"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
@@ -9,17 +9,17 @@ import {
 	GetMapStringProperty,
 	MapToBooleanArray,
 	MapToNumberArray,
+	MapToQuaternionArray,
 	MapToStringArray,
 	MapToVector3,
 	MapToVector3Array,
-	MapToVector4Array,
 } from "./ParseUtils"
 import { ParseVBIB, ParseVBIBFromKV, VBIB, VBIBBufferData } from "./ParseVBIB"
 
 export class CMeshAttachment {
 	public readonly Name: string
 	public readonly InfluenceNames: string[] = []
-	public readonly InfluenceBindPoses: Matrix4x4[] = []
+	public readonly InfluenceBindPoses: Matrix3x4[] = []
 	public readonly InfluenceWeights: number[] = []
 	public readonly InfluenceRootTransforms: boolean[] = []
 	public readonly IgnoreRotation: boolean
@@ -44,12 +44,12 @@ export class CMeshAttachment {
 		for (let i = 0; i < influences; i++) {
 			const rotation = influenceRotations[i],
 				offset = influenceOffsets[i]
-			const bindPose =
-				rotation !== undefined
-					? Matrix4x4.CreateFromVector4(rotation)
-					: Matrix4x4.Identity
-			if (offset !== undefined) bindPose.Translation = offset
-			this.InfluenceBindPoses.push(bindPose)
+			this.InfluenceBindPoses.push(
+				Matrix3x4.AngleMatrix(
+					rotation ?? new Vector4(0, 0, 0, 1),
+					offset ?? new Vector3()
+				)
+			)
 		}
 
 		const bIgnoreRotation = kv.get("m_bIgnoreRotation")
@@ -73,7 +73,7 @@ export class CMeshAttachment {
 		const ar: Vector4[] = []
 		const influenceRotations = kv.get("m_vInfluenceRotations")
 		if (influenceRotations instanceof Map || Array.isArray(influenceRotations))
-			ar.push(...MapToVector4Array(influenceRotations))
+			ar.push(...MapToQuaternionArray(influenceRotations))
 		return ar
 	}
 	private LoadInfluenceWeights(kv: RecursiveMap): void {

@@ -8,7 +8,6 @@ import "./global"
 
 export { AABB } from "./Base/AABB"
 export { Color } from "./Base/Color"
-export { Matrix4x4 } from "./Base/Matrix4x4"
 export { NetworkedParticle } from "./Base/NetworkedParticle"
 export { NeutralSpawnBox } from "./Base/NeutralSpawnBox"
 export { Particle } from "./Base/Particle"

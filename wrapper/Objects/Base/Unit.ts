@@ -147,8 +147,10 @@ export class Unit extends Entity {
 	public StartSequenceCyclePrev = -1
 	public IsVisibleForEnemies = false
 	public IsVisibleForEnemiesTicks = 0
-	public LastActivity = 0
+	public LastActivity: GameActivity = 0
+	public LastActivitySequenceVariant = 0
 	public LastActivityEndTime = 0
+	public LastActivityAnimationPoint = 0
 	public Spawner: Nullable<NeutralSpawner>
 	public Spawner_ = 0
 	public MoveCapabilities = DOTAUnitMoveCapability.DOTA_UNIT_CAP_MOVE_NONE
@@ -480,9 +482,6 @@ export class Unit extends Entity {
 		}, 0)
 		return itemsSpellAmp + spellsSpellAmp
 	}
-	public get AnimationTime(): number {
-		return GameState.RawGameTime - this.NetworkActivityStartTime
-	}
 	public get Name(): string {
 		return this.UnitName_
 	}
@@ -731,6 +730,8 @@ export class Unit extends Entity {
 				else ar.push("flurry_attack_b")
 			}
 		} else ar.push("unleash")
+
+		// TODO: AttackSpeedActivityModifiers, MovementSpeedActivityModifiers, AttackRangeActivityModifiers
 	}
 	public GetAttachments(
 		activity = this.NetworkActivity,
@@ -1302,6 +1303,7 @@ RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", (unit, newVal) => {
 RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, newVal) => {
 	unit.NetworkActivity = newVal as number
 	unit.NetworkActivityStartTime = GameState.RawGameTime
+	unit.AnimationTime = 0
 	if (unit.IsValid) EventsSDK.emit("NetworkActivityChanged", false, unit)
 })
 RegisterFieldHandler(Unit, "m_NetworkSequenceIndex", (unit, newVal) => {
@@ -1416,9 +1418,11 @@ EventsSDK.on("EntityDestroyed", ent => {
 
 EventsSDK.on(
 	"UnitAnimation",
-	(unit, _sequenceVariant, _playbackRate, castpoint, _type, activity) => {
+	(unit, sequenceVariant, playbackRate, castpoint, _type, activity) => {
 		unit.LastActivity = activity
+		unit.LastActivitySequenceVariant = sequenceVariant
 		unit.LastActivityEndTime = GameState.RawGameTime + castpoint
+		unit.LastActivityAnimationPoint = playbackRate * castpoint
 	}
 )
 
@@ -1453,7 +1457,9 @@ EventsSDK.on("Tick", dt => {
 			unit.LastRealPredictedPositionUpdate = GameState.RawGameTime
 			unit.LastPredictedPositionUpdate = GameState.RawGameTime
 		}
-		// TODO: interpolate DeltaZ from OnModifierUpdated
+		// TODO: GameActivity.ACT_DOTA_RUN uses GetSequenceGroundSpeed
+		unit.AnimationTime += dt / Math.sqrt(unit.ModelScale)
+		// TODO: interpolate DeltaZ from OnModifierUpdated?
 	}
 })
 

@@ -1,4 +1,4 @@
-import { Matrix4x4 } from "../Base/Matrix4x4"
+import { Matrix3x4 } from "../Base/Matrix"
 import { Vector3 } from "../Base/Vector3"
 import { Vector4 } from "../Base/Vector4"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
@@ -55,6 +55,7 @@ export class CAnimationFrame {
 		attribute: string,
 		data: Vector3 | Vector4
 	) {
+		if (bone === "") return
 		switch (attribute) {
 			case "Position":
 				this.BonesPositions.set(bone, data as Vector3)
@@ -66,16 +67,14 @@ export class CAnimationFrame {
 				break
 		}
 	}
-	public GetBoneInverseBindPose(name: string): Matrix4x4 {
+	public GetBoneBindPose(name: string): Nullable<Matrix3x4> {
 		const angles = this.BonesAngles.get(name),
 			position = this.BonesPositions.get(name)
-		const invBindPose =
-			angles !== undefined
-				? Matrix4x4.CreateFromVector4(angles)
-				: Matrix4x4.Identity
-		if (position !== undefined) invBindPose.Translation = position
-		invBindPose.Invert()
-		return invBindPose
+		if (angles === undefined && position === undefined) return undefined
+		return Matrix3x4.AngleMatrix(
+			angles ?? new Vector4(0, 0, 0, 1),
+			position ?? new Vector3()
+		)
 	}
 }
 

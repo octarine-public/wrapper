@@ -1,4 +1,4 @@
-import { Matrix4x4 } from "../Base/Matrix4x4"
+import { Matrix4x4Identity } from "../Base/Matrix"
 import { Vector3 } from "../Base/Vector3"
 import { Vector4 } from "../Base/Vector4"
 
@@ -29,13 +29,16 @@ export function MapToVector3(map: RecursiveMap | RecursiveMapValue[]): Vector3 {
 	return Vector3.fromArray(MapToNumberArray(map))
 }
 
-export function MapToVector4(map: RecursiveMap | RecursiveMapValue[]): Vector4 {
-	return Vector4.fromArray(MapToNumberArray(map))
+export function MapToQuaternion(
+	map: RecursiveMap | RecursiveMapValue[]
+): Vector4 {
+	const ar = MapToNumberArray(map)
+	return new Vector4(ar[0] ?? 0, ar[1] ?? 0, ar[2] ?? 0, ar[3] ?? 1)
 }
 
 export function MapToMatrix4x4(
 	map: RecursiveMap | RecursiveMapValue[]
-): Matrix4x4 {
+): number[] {
 	const ar: number[] = []
 	map.forEach((el: RecursiveMapValue) => {
 		if (el instanceof Map || Array.isArray(el)) {
@@ -43,7 +46,9 @@ export function MapToMatrix4x4(
 			ar.push(vec[0] ?? 0, vec[1] ?? 0, vec[2] ?? 0, vec[3] ?? 0)
 		}
 	})
-	return new Matrix4x4(ar)
+	if (ar.length < 16) ar.push(...Matrix4x4Identity.slice(ar.length))
+	else if (ar.length > 16) ar.splice(16)
+	return ar
 }
 
 export function MapToVector3Array(
@@ -56,12 +61,12 @@ export function MapToVector3Array(
 	return ar
 }
 
-export function MapToVector4Array(
+export function MapToQuaternionArray(
 	map: RecursiveMap | RecursiveMapValue[]
 ): Vector4[] {
 	const ar: Vector4[] = []
 	map.forEach((val: RecursiveMapValue) => {
-		if (val instanceof Map || Array.isArray(val)) ar.push(MapToVector4(val))
+		if (val instanceof Map || Array.isArray(val)) ar.push(MapToQuaternion(val))
 	})
 	return ar
 }

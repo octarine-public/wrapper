@@ -1,4 +1,4 @@
-import { Matrix4x4 } from "../Base/Matrix4x4"
+import { Matrix3x4 } from "../Base/Matrix"
 import { Vector3 } from "../Base/Vector3"
 import { Workers } from "../Native/Workers"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
@@ -46,19 +46,18 @@ export type ComputedAttachments = [
 	Map<string, ComputedAttachment>
 ][]
 
-function ComputeBoneInverseBindPose(
+function ComputeBoneBindPose(
 	bone: CBone,
 	skeleton: CSkeleton,
 	frame?: CAnimationFrame
-): Matrix4x4 {
-	const invBindPose =
-		bone.Parent !== undefined
-			? ComputeBoneInverseBindPose(bone.Parent, skeleton, frame)
-			: Matrix4x4.Identity
-	if (frame !== undefined)
-		invBindPose.Multiply(frame.GetBoneInverseBindPose(bone.Name))
-	else invBindPose.Multiply(bone.InverseBindPose)
-	return invBindPose
+): Matrix3x4 {
+	const boneTransform =
+		frame?.GetBoneBindPose(bone.Name) ??
+		Matrix3x4.AngleMatrix(bone.Angle, bone.Position)
+	if (bone.Parent === undefined) return boneTransform
+	const parentBindPose = ComputeBoneBindPose(bone.Parent, skeleton, frame)
+	if (boneTransform === undefined) return parentBindPose
+	return Matrix3x4.ConcatTransforms(parentBindPose, boneTransform)
 }
 
 function ComputeAttachmentPosition(
@@ -68,14 +67,25 @@ function ComputeAttachmentPosition(
 	frameNum = 0,
 	frame?: CAnimationFrame
 ): void {
-	let bindPose = attachmentData.InfluenceBindPoses[0]?.Clone()
-	if (bindPose === undefined) bindPose = Matrix4x4.Identity
 	const bone = skeleton.Bones.get(attachmentData.InfluenceNames[0] ?? "")
-	if (bone !== undefined)
-		bindPose.Multiply(
-			ComputeBoneInverseBindPose(bone, skeleton, frame).Invert()
-		)
-	attachment.SetPosition(frameNum, bindPose.Translation)
+
+	const boneBindPose =
+		bone !== undefined ? ComputeBoneBindPose(bone, skeleton, frame) : undefined
+	const bindPose = attachmentData.InfluenceBindPoses[0]
+	if (bindPose === undefined) {
+		if (boneBindPose !== undefined)
+			attachment.SetPosition(frameNum, boneBindPose.Translation)
+		return
+	}
+	if (boneBindPose === undefined) {
+		if (bindPose !== undefined)
+			attachment.SetPosition(frameNum, bindPose.Translation)
+		return
+	}
+	attachment.SetPosition(
+		frameNum,
+		Matrix3x4.ConcatTransforms(boneBindPose, bindPose).Translation
+	)
 }
 
 export function ComputeAttachmentsAndBounds(

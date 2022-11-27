@@ -105,6 +105,7 @@ export class Entity {
 	public IsVisible = true
 	public DeltaZ = 0
 	public RotationDifference = 0
+	public AnimationTime = 0
 	public FieldHandlers_: Nullable<Map<number, FieldHandler>>
 	public Properties_ = new EntityPropertiesNode()
 	public readonly VisualPosition = new Vector3()
@@ -219,9 +220,6 @@ export class Entity {
 	}
 	public get CustomNativeID(): number {
 		return this.Index << 1
-	}
-	public get AnimationTime(): number {
-		return 0
 	}
 
 	public get Handle(): number {

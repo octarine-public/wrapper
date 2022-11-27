@@ -1,15 +1,4 @@
 export class Vector4 {
-	public static fromString(str: string): Vector4 {
-		return new Vector4(...str.split(" ").map(el => parseFloat(el)))
-	}
-	public static fromArray(array: number[]): Vector4 {
-		return new Vector4(
-			array[0] ?? 0,
-			array[1] ?? 0,
-			array[2] ?? 0,
-			array[3] ?? 0
-		)
-	}
 	/**
 	 * Create new Vector4 with x, y, z, w
 	 *
@@ -18,76 +7,9 @@ export class Vector4 {
 	 * vec.Normalize()
 	 */
 	constructor(
-		public x: number = 0,
-		public y: number = 0,
-		public z: number = 0,
-		public w: number = 0
+		public x: number,
+		public y: number,
+		public z: number,
+		public w: number
 	) {}
-
-	/**
-	 * Get the length of the vector squared. This operation is cheaper than Length().
-	 */
-	public get LengthSqr(): number {
-		return this.x ** 2 + this.y ** 2 + this.z ** 2 + this.w ** 2
-	}
-	/**
-	 * Get the length of the vector
-	 */
-	public get Length(): number {
-		return Math.sqrt(this.LengthSqr)
-	}
-	/**
-	 * Get the length of the vector squared. This operation is cheaper than Length().
-	 */
-	public get LengthSqr2D(): number {
-		return this.x ** 2 + this.y ** 2
-	}
-	/**
-	 * Get the length 2D of the vector
-	 */
-	public get Length2D(): number {
-		return Math.sqrt(this.LengthSqr2D)
-	}
-	/**
-	 * Get the length of the vector squared. This operation is cheaper than Length().
-	 */
-	public get LengthSqr3D(): number {
-		return this.x ** 2 + this.y ** 2 + this.z ** 2
-	}
-	/**
-	 * Get the length 3D of the vector
-	 */
-	public get Length3D(): number {
-		return Math.sqrt(this.LengthSqr3D)
-	}
-
-	/**
-	 * Divide the scalar by vector
-	 *
-	 * @returns (this vector)
-	 */
-	public DivideScalarForThis(scalar: number): Vector4 {
-		this.x /= scalar
-		this.y /= scalar
-		this.z /= scalar
-		this.w /= scalar
-		return this
-	}
-	/**
-	 * Normalize the vector
-	 */
-	public Normalize(scalar = 1): Vector4 {
-		const length = this.Length
-		return length !== 0 ? this.DivideScalarForThis(length * scalar) : this
-	}
-
-	/**
-	 * @return [x, y, z, w]
-	 */
-	public toArray(): [number, number, number, number] {
-		return [this.x, this.y, this.z, this.w]
-	}
-	public toJSON() {
-		return this.toArray()
-	}
 }

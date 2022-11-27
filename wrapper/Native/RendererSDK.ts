@@ -1,5 +1,5 @@
 import { Color } from "../Base/Color"
-import { Matrix4x4 } from "../Base/Matrix4x4"
+import { Matrix4x4Identity } from "../Base/Matrix"
 import { QAngle } from "../Base/QAngle"
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
@@ -1116,7 +1116,7 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 		const plateMeshID = nextMeshID++
 		WASM.LoadWorldMesh(plateMeshID, vb, 3 * 4, ib, 1, 0, 0)
 		path2meshes.set("", [plateMeshID])
-		WASM.SpawnWorldMesh(plateMeshID, Matrix4x4.Identity.values)
+		WASM.SpawnWorldMesh(plateMeshID, Matrix4x4Identity)
 	}
 	WASM.FinishWorld()
 	const pathsData: [

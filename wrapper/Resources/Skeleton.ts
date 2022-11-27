@@ -1,33 +1,23 @@
-import { Matrix4x4 } from "../Base/Matrix4x4"
 import { Vector3 } from "../Base/Vector3"
 import { Vector4 } from "../Base/Vector4"
 import { HasBit } from "../Utils/BitsExtensions"
 import {
 	MapToNumberArray,
+	MapToQuaternionArray,
 	MapToStringArray,
 	MapToVector3Array,
-	MapToVector4Array,
 } from "./ParseUtils"
 
 export class CBone {
 	public Parent: Nullable<CBone>
-	public readonly Child: CBone[] = []
-	public readonly InverseBindPose: Matrix4x4
 	constructor(
 		public readonly Name: string,
 		public readonly SkinIndices: number[],
-		position: Vector3,
-		angle: Vector4
-	) {
-		this.InverseBindPose = Matrix4x4.CreateFromVector4(angle)
-		this.InverseBindPose.Translation = position
-		this.InverseBindPose.Invert()
-	}
+		public readonly Position: Vector3,
+		public readonly Angle: Vector4
+	) {}
 	public SetParent(parent: CBone): void {
 		this.Parent = parent
-	}
-	public AddChild(child: CBone): void {
-		this.Child.push(child)
 	}
 }
 
@@ -55,7 +45,7 @@ export class CSkeleton {
 		const boneRotationsMap = modelSkeleton.get("m_boneRotParent")
 		if (!(boneRotationsMap instanceof Map || Array.isArray(boneRotationsMap)))
 			throw "Skeleton without boneRotations"
-		const boneRotations = MapToVector4Array(boneRotationsMap)
+		const boneRotations = MapToQuaternionArray(boneRotationsMap)
 
 		this.AnimationTextureSize =
 			boneNames.length !== 0 && remapTable.size !== 0
@@ -68,7 +58,7 @@ export class CSkeleton {
 				boneNames[i] ?? "",
 				remapTable.get(i) ?? [],
 				bonePositions[i] ?? new Vector3(),
-				boneRotations[i] ?? new Vector4()
+				boneRotations[i] ?? new Vector4(0, 0, 0, 1)
 			)
 			this.Bones.set(bone.Name, bone)
 		}
@@ -81,7 +71,6 @@ export class CSkeleton {
 				parent = this.Bones.get(parentName)
 			if (child === undefined || parent === undefined) continue
 			child.SetParent(parent)
-			parent.AddChild(child)
 		}
 		this.FindRoots()
 	}

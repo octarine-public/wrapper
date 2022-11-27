@@ -1,4 +1,5 @@
 import { Vector3 } from "../Base/Vector3"
+import { GameActivity } from "../Enums/GameActivity"
 import { GetPositionHeight } from "../Native/WASM"
 import { Entity } from "../Objects/Base/Entity"
 import { GetPredictionTarget } from "../Objects/Base/FakeUnit"
@@ -100,11 +101,17 @@ EventsSDK.on("PostDataUpdate", () => {
 			proj.LastUpdate = curTime
 			const source = proj.Source
 			if (source instanceof Entity && proj.SourceAttachment !== "") {
-				const attachment = source.GetAttachment(proj.SourceAttachment)
+				const attachment = source.GetAttachment(
+					proj.SourceAttachment,
+					source.LastActivity,
+					source.LastActivitySequenceVariant
+				)
 				if (attachment !== undefined)
 					proj.Position.AddForThis(
 						attachment.GetPosition(
-							attachment.FrameCount / 2 / attachment.FPS,
+							source.LastActivity !== (0 as GameActivity)
+								? source.LastActivityAnimationPoint
+								: attachment.FrameCount / 2 / attachment.FPS,
 							source.RotationRad,
 							source.ModelScale
 						)
@@ -121,12 +128,18 @@ EventsSDK.on("PostDataUpdate", () => {
 				proj.Position.CopyFrom(proj.Source.Position)
 				const attachment =
 					proj.SourceAttachment !== ""
-						? proj.Source.GetAttachment(proj.SourceAttachment)
+						? proj.Source.GetAttachment(
+								proj.SourceAttachment,
+								proj.Source.LastActivity,
+								proj.Source.LastActivitySequenceVariant
+						  )
 						: undefined
 				if (attachment !== undefined)
 					proj.Position.AddForThis(
 						attachment.GetPosition(
-							attachment.FrameCount / 2 / attachment.FPS,
+							proj.Source.LastActivity !== (0 as GameActivity)
+								? proj.Source.LastActivityAnimationPoint
+								: attachment.FrameCount / 2 / attachment.FPS,
 							proj.Source.RotationRad,
 							proj.Source.ModelScale
 						)
@@ -138,7 +151,9 @@ EventsSDK.on("PostDataUpdate", () => {
 			} else continue
 		const velocity = proj.Position.GetDirectionTo(
 			proj.TargetLoc
-		).MultiplyScalarForThis(proj.Speed * dt)
+		).MultiplyScalarForThis(
+			Math.min(proj.Speed * dt, proj.Position.Distance(proj.TargetLoc))
+		)
 		proj.Position.AddForThis(velocity)
 		proj.LastUpdate = curTime
 		const distSqr = proj.Position.DistanceSqr(proj.TargetLoc)
