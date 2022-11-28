@@ -263,10 +263,7 @@
 			},
 			{
 				"selector": "enumMember",
-				"format": [
-					"PascalCase",
-					"UPPER_CASE"
-				],
+				"format": null,
 				"leadingUnderscore": "forbid",
 				"trailingUnderscore": "forbid"
 			}
