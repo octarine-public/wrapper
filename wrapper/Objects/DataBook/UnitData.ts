@@ -141,6 +141,8 @@ export class UnitData {
 			: 0
 		this.BaseAttackSpeed = kv.has("BaseAttackSpeed")
 			? parseFloat(kv.get("BaseAttackSpeed") as string)
+			: kv.get("BaseClass") === "npc_dota_creep_lane"
+			? 170
 			: 0
 		this.MovementCapabilities = kv.has("MovementCapabilities")
 			? parseEnumString(
