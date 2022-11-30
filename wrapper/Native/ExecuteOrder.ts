@@ -326,8 +326,9 @@ export class ExecuteOrder {
 			while (
 				arrayRemoveCallback(
 					ExecuteOrder.orderQueue,
-					([order], i) =>
+					([order, _orderStartTime, _orderUsedMinimap, executed], i) =>
 						i !== 0 &&
+						!executed &&
 						(order.Issuers.every(unit => this.Issuers.includes(unit)) ||
 							(order.Issuers.length === 1 &&
 								this.Issuers.includes(order.Issuers[0]))) &&
