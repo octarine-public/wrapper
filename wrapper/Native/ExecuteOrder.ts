@@ -37,7 +37,8 @@ function WillInterruptOrderQueue(order: ExecuteOrder): boolean {
 			const abil = order.Ability_
 			return (
 				abil instanceof Ability &&
-				(abil.CastPoint > 0 || abil.MaxChannelTime > 0)
+				(abil.CastPoint > 0 || abil.MaxChannelTime > 0) &&
+				!abil.UsesRotation
 			)
 		}
 		default:

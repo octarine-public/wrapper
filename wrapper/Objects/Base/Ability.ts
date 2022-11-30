@@ -228,6 +228,9 @@ export class Ability extends Entity {
 	public get IsCastRangeFake(): boolean {
 		return false
 	}
+	public get UsesRotation() {
+		return false
+	}
 	public get CurrentCharges() {
 		return this.AbilityCurrentCharges
 	}

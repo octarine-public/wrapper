@@ -11,4 +11,7 @@ export class slark_pounce extends Ability {
 			? this.GetSpecialValue("charge_restore_time")
 			: 0
 	}
+	public get UsesRotation() {
+		return true
+	}
 }
