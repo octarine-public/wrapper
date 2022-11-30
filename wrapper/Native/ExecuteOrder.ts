@@ -61,8 +61,7 @@ function CanBeIgnored(order: ExecuteOrder): boolean {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
 			return true
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
-		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
-		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION: {
+		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE: {
 			const issuer = order.Issuers[0],
 				abil = order.Ability_
 			if (
@@ -72,9 +71,22 @@ function CanBeIgnored(order: ExecuteOrder): boolean {
 			)
 				return false
 			const target = order.Target
-			if (typeof target === "number") return false
-			const targetPos = target !== undefined ? target.Position : order.Position
-			return issuer.Distance2D(targetPos) > abil.CastRange
+			if (target instanceof Entity) {
+				const targetPos = target.Position
+				return issuer.Distance2D(targetPos) > abil.CastRange
+			}
+			return false
+		}
+		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION: {
+			const issuer = order.Issuers[0],
+				abil = order.Ability_
+			if (
+				issuer === undefined ||
+				!(abil instanceof Ability) ||
+				abil.IsCastRangeFake
+			)
+				return false
+			return issuer.Distance2D(order.Position) > abil.CastRange
 		}
 		default:
 			return order.Queue
@@ -125,7 +137,7 @@ export class ExecuteOrder {
 	}
 
 	public static get DisableHumanizer() {
-		return this.DisableHumanizer_
+		return this.DisableHumanizer_ || this.unsafeMode
 	}
 	public static set DisableHumanizer(newVal: boolean) {
 		if (this.DisableHumanizer_ === newVal) return
@@ -309,7 +321,7 @@ export class ExecuteOrder {
 			ExecuteOrder.lastMove = [this.Position, currentTime]
 		}
 
-		if (!this.Queue && !WillInterruptOrderQueue(this))
+		if (!this.Queue && WillInterruptOrderQueue(this))
 			while (
 				arrayRemoveCallback(
 					ExecuteOrder.orderQueue,
