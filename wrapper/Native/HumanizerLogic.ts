@@ -710,7 +710,7 @@ function ProcessOrderQueue(currentTime: number) {
 }
 
 const cameraMoveLingerDuration = 100,
-	orderLingerDuration = 150,
+	orderLingerDuration = 115,
 	orderLingerDurationMinimap = 250,
 	cameraMoveSeedExpiry = 300,
 	yellowZoneMaxDuration = 700,
