@@ -723,7 +723,6 @@ let lastOrderFinish = 0,
 	latestCameraY = 0,
 	cameraMoveEnd = 0,
 	wereMovingCamera = false,
-	latestUpdate = 0,
 	latestUsercmd = new UserCmd(),
 	lastcameraMoveSeed = 0,
 	yellowZoneOutAt = 0,
@@ -952,56 +951,7 @@ function ApplyParams(vec: Vector2, currentTime: number): void {
 		)
 }
 
-const minProcessUserCmdWindow = 1 / 60
-function ProcessUserCmd(force = false): void {
-	const currentTime = hrtime()
-	const dt = Math.min(currentTime - latestUpdate, 100) / 1000
-	if (RendererSDK.WindowSize.IsZero()) return
-	latestUsercmd.SpectatorStatsCategoryID = 0
-	latestUsercmd.SpectatorStatsSortMethod = 0
-	latestUsercmd.Pawn = LocalPlayer?.Pawn
-	if (ExecuteOrder.IsStandalone) {
-		if (!initializedMousePosition) {
-			latestUsercmd.MousePosition.x = 0.1 + Math.random() / 2
-			latestUsercmd.MousePosition.y = 0.1 + Math.random() / 2
-			initializedMousePosition = true
-		}
-	} else
-		latestUsercmd.MousePosition.CopyFrom(
-			InputManager.CursorOnScreen.DivideForThis(RendererSDK.WindowSize)
-		)
-	InputManager.IsShopOpen = IsShopOpen()
-	InputManager.IsScoreboardOpen =
-		ConVarsSDK.GetInt("dota_spectator_stats_panel", 0) === 1
-	const numSelected = GetSelectedEntities()
-	InputManager.SelectedEntities.splice(0)
-	for (let i = 0; i < numSelected; i++) {
-		const ent = EntityManager.EntityByIndex(IOBufferView.getUint32(i * 4, true))
-		if (ent !== undefined) InputManager.SelectedEntities.push(ent as Unit)
-	}
-	if (InputManager.SelectedEntities.length === 0) {
-		const ent = LocalPlayer?.Hero
-		if (ent !== undefined) InputManager.SelectedEntities.push(ent)
-	}
-	InputManager.QueryUnit = EntityManager.EntityByIndex(
-		GetQueryUnit()
-	) as Nullable<Unit>
-	InputManager.SelectedUnit = !ConVarsSDK.GetBoolean(
-		"dota_hud_new_query_panel",
-		false
-	)
-		? InputManager.QueryUnit ?? InputManager.SelectedEntities[0]
-		: InputManager.SelectedEntities[0] ?? InputManager.QueryUnit
-	InputManager.CursorOnWorld = RendererSDK.ScreenToWorldFar(
-		[latestUsercmd.MousePosition],
-		Camera.Position ? Vector3.fromIOBuffer() : new Vector3(),
-		RendererSDK.CameraDistance,
-		Camera.Angles ? QAngle.fromIOBuffer() : new QAngle(),
-		RendererSDK.WindowSize,
-		Camera.FoV
-	)[0]
-	if (!force && dt < minProcessUserCmdWindow) return
-	latestUpdate = currentTime
+function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 	if (ExecuteOrder.DisableHumanizer) return
 	latestUsercmd.ShopMask = 15
 	let order = ProcessOrderQueue(currentTime)
@@ -1307,6 +1257,65 @@ function ProcessUserCmd(force = false): void {
 	latestUsercmd.Write()
 	WriteUserCmd()
 }
+
+let lastUpdate = 0
+function ProcessUserCmd(force = false): void {
+	const currentTime = hrtime()
+	if (lastUpdate === 0) lastUpdate = currentTime
+	if (currentTime - lastUpdate > 100) lastUpdate = currentTime - 100
+	if (RendererSDK.WindowSize.IsZero()) return
+	latestUsercmd.SpectatorStatsCategoryID = 0
+	latestUsercmd.SpectatorStatsSortMethod = 0
+	latestUsercmd.Pawn = LocalPlayer?.Pawn
+	if (ExecuteOrder.IsStandalone) {
+		if (!initializedMousePosition) {
+			latestUsercmd.MousePosition.x = 0.1 + Math.random() / 2
+			latestUsercmd.MousePosition.y = 0.1 + Math.random() / 2
+			initializedMousePosition = true
+		}
+	} else
+		latestUsercmd.MousePosition.CopyFrom(
+			InputManager.CursorOnScreen.DivideForThis(RendererSDK.WindowSize)
+		)
+	InputManager.IsShopOpen = IsShopOpen()
+	InputManager.IsScoreboardOpen =
+		ConVarsSDK.GetInt("dota_spectator_stats_panel", 0) === 1
+	const numSelected = GetSelectedEntities()
+	InputManager.SelectedEntities.splice(0)
+	for (let i = 0; i < numSelected; i++) {
+		const ent = EntityManager.EntityByIndex(IOBufferView.getUint32(i * 4, true))
+		if (ent !== undefined) InputManager.SelectedEntities.push(ent as Unit)
+	}
+	if (InputManager.SelectedEntities.length === 0) {
+		const ent = LocalPlayer?.Hero
+		if (ent !== undefined) InputManager.SelectedEntities.push(ent)
+	}
+	InputManager.QueryUnit = EntityManager.EntityByIndex(
+		GetQueryUnit()
+	) as Nullable<Unit>
+	InputManager.SelectedUnit = !ConVarsSDK.GetBoolean(
+		"dota_hud_new_query_panel",
+		false
+	)
+		? InputManager.QueryUnit ?? InputManager.SelectedEntities[0]
+		: InputManager.SelectedEntities[0] ?? InputManager.QueryUnit
+	InputManager.CursorOnWorld = RendererSDK.ScreenToWorldFar(
+		[latestUsercmd.MousePosition],
+		Camera.Position ? Vector3.fromIOBuffer() : new Vector3(),
+		RendererSDK.CameraDistance,
+		Camera.Angles ? QAngle.fromIOBuffer() : new QAngle(),
+		RendererSDK.WindowSize,
+		Camera.FoV
+	)[0]
+	const dt = currentTime - lastUpdate,
+		processUserCmdWindow = 1000 / 60
+	for (let i = 0; i <= dt; i += processUserCmdWindow)
+		if (dt - i >= processUserCmdWindow || force) {
+			const curDt = Math.min(dt - i, processUserCmdWindow)
+			ProcessUserCmdInternal(currentTime + i, curDt / 1000)
+			lastUpdate += curDt
+		}
+}
 EventsSDK.on("Draw", ProcessUserCmd)
 Events.on("RequestUserCmd", () => {
 	if (!ExecuteOrder.DisableHumanizer) ProcessUserCmd(true)
@@ -1493,7 +1502,7 @@ function ClearHumanizerState() {
 	latestCameraY = 0
 	currentOrder = undefined
 	debugCursor.toZero()
-	latestUpdate = 0
+	lastUpdate = 0
 	latestUsercmd = new UserCmd()
 	cameraMoveEnd = 0
 	cameraDirection.toZero()
