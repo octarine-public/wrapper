@@ -442,7 +442,7 @@ class CRendererSDK {
 		}
 	}
 	public GetImageSize(path: string): Vector2 {
-		return this.tex2size.get(this.GetTexture(path)) ?? new Vector2()
+		return this.tex2size.get(this.GetTexture(path)) ?? new Vector2(1, 1)
 	}
 	public Text(
 		text: string,
@@ -872,7 +872,15 @@ class CRendererSDK {
 		if (this.textureCache.has(path)) return this.textureCache.get(path)!
 
 		let readPath = tryFindFile(path, 2)
-		if (readPath === undefined) return -1 // It could be loaded afterwards - we don't know about that for sure
+		if (readPath === undefined) {
+			console.error(
+				"CreateTexture failed file lookup for",
+				path,
+				new Error().stack
+			)
+			this.textureCache.set(path, -1)
+			return -1
+		}
 
 		if (readPath.endsWith(".vmat_c")) {
 			const buf = fopen(path)
