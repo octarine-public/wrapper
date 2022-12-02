@@ -96,12 +96,12 @@ export class ColorPicker extends Base {
 	private static readonly colorpickerAlphaSize = new Vector2()
 	private static colorpickerColorAlphaGap = 0
 	private static readonly colorpickerPickerCirclePath =
-		"menu/colorpickerPickerCircle.svg"
+		"menu/colorpicker_picker_circle.svg"
 	private static readonly origColorpickerPickerCircleSize =
 		RendererSDK.GetImageSize(ColorPicker.colorpickerPickerCirclePath)
 	private static readonly colorpickerPickerCircleSize = new Vector2()
 	private static readonly colorpickerPickerRectPath =
-		"menu/colorpickerPickerRect.svg"
+		"menu/colorpicker_picker_rect.svg"
 	private static readonly origColorpickerPickerRectSize =
 		RendererSDK.GetImageSize(ColorPicker.colorpickerPickerRectPath)
 	private static readonly colorpickerPickerRectSize = new Vector2()
