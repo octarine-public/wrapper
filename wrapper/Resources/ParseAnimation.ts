@@ -10,42 +10,6 @@ import {
 	MapToVector3,
 } from "./ParseUtils"
 
-enum AnimDecoderType {
-	Unknown,
-	CCompressedReferenceFloat,
-	CCompressedStaticFloat,
-	CCompressedFullFloat,
-	CCompressedReferenceVector3,
-	CCompressedStaticVector3,
-	CCompressedStaticFullVector3,
-	CCompressedAnimVector3,
-	CCompressedDeltaVector3,
-	CCompressedFullVector3,
-	CCompressedReferenceQuaternion,
-	CCompressedStaticQuaternion,
-	CCompressedAnimQuaternion,
-	CCompressedFullQuaternion,
-	CCompressedReferenceInt,
-	CCompressedStaticChar,
-	CCompressedFullChar,
-	CCompressedStaticShort,
-	CCompressedFullShort,
-	CCompressedStaticInt,
-	CCompressedFullInt,
-	CCompressedReferenceBool,
-	CCompressedStaticBool,
-	CCompressedFullBool,
-	CCompressedReferenceColor32,
-	CCompressedStaticColor32,
-	CCompressedFullColor32,
-	CCompressedReferenceVector2D,
-	CCompressedStaticVector2D,
-	CCompressedFullVector2D,
-	CCompressedReferenceVector4D,
-	CCompressedStaticVector4D,
-	CCompressedFullVector4D,
-}
-
 export class CAnimationFrame {
 	private readonly BonesPositions = new Map<string, Vector3>()
 	private readonly BonesAngles = new Map<string, Vector4>()
@@ -206,7 +170,7 @@ export class CAnimation {
 		animationDesc: RecursiveMap,
 		private readonly DataChannelArray: Nullable<[string[], string]>[],
 		private readonly SegmentArray: Nullable<
-			[number, number[], AnimDecoderType, ReadableBinaryStream]
+			[number, number[], string, ReadableBinaryStream]
 		>[],
 		hseq: Map<string, CAnimationActivity[]>
 	) {
@@ -307,7 +271,7 @@ export class CAnimation {
 		const [boneNames, channelAttribute] = dataChannel
 
 		switch (decoder) {
-			case AnimDecoderType.CCompressedStaticFullVector3: {
+			case "CCompressedStaticFullVector3": {
 				stream.pos = 0
 				if (stream.Empty()) return
 				for (const boneID of bones)
@@ -322,7 +286,7 @@ export class CAnimation {
 					)
 				break
 			}
-			case AnimDecoderType.CCompressedFullVector3: {
+			case "CCompressedFullVector3": {
 				stream.pos = frameNum * bones.length * (3 * 4)
 				if (stream.Empty()) return
 				for (const boneID of bones)
@@ -337,7 +301,24 @@ export class CAnimation {
 					)
 				break
 			}
-			case AnimDecoderType.CCompressedStaticVector3: {
+			case "CCompressedDeltaVector3": {
+				stream.pos = 0
+				const baseStream = stream.CreateNestedStream(bones.length * (3 * 4))
+				stream.pos += frameNum * bones.length * (3 * 2)
+				if (stream.Empty()) return
+				for (const boneID of bones)
+					frame.SetAttribute(
+						boneNames[boneID] ?? "",
+						channelAttribute,
+						new Vector3(
+							baseStream.ReadFloat32() + ReadHalfFloat(stream),
+							baseStream.ReadFloat32() + ReadHalfFloat(stream),
+							baseStream.ReadFloat32() + ReadHalfFloat(stream)
+						)
+					)
+				break
+			}
+			case "CCompressedStaticVector3": {
 				stream.pos = 0
 				if (stream.Empty()) return
 				for (const boneID of bones)
@@ -352,7 +333,7 @@ export class CAnimation {
 					)
 				break
 			}
-			case AnimDecoderType.CCompressedAnimVector3: {
+			case "CCompressedAnimVector3": {
 				stream.pos = frameNum * bones.length * (3 * 2)
 				if (stream.Empty()) return
 				for (const boneID of bones)
@@ -367,7 +348,7 @@ export class CAnimation {
 					)
 				break
 			}
-			case AnimDecoderType.CCompressedStaticQuaternion: {
+			case "CCompressedStaticQuaternion": {
 				stream.pos = 0
 				if (stream.Empty()) return
 				for (const boneID of bones)
@@ -378,7 +359,7 @@ export class CAnimation {
 					)
 				break
 			}
-			case AnimDecoderType.CCompressedAnimQuaternion: {
+			case "CCompressedAnimQuaternion": {
 				stream.pos = frameNum * bones.length * 6
 				if (stream.Empty()) return
 				for (const boneID of bones)
@@ -389,7 +370,7 @@ export class CAnimation {
 					)
 				break
 			}
-			case AnimDecoderType.CCompressedFullQuaternion: {
+			case "CCompressedFullQuaternion": {
 				stream.pos = frameNum * bones.length * (4 * 3)
 				if (stream.Empty()) return
 				for (const boneID of bones)
@@ -411,14 +392,12 @@ export class CAnimation {
 	}
 }
 
-function MakeDecoderArray(
-	map: RecursiveMap | RecursiveMapValue[]
-): AnimDecoderType[] {
-	const ar: AnimDecoderType[] = []
+function MakeDecoderArray(map: RecursiveMap | RecursiveMapValue[]): string[] {
+	const ar: string[] = []
 	map.forEach((decoder: RecursiveMapValue) => {
 		if (!(decoder instanceof Map)) return
 		const name = GetMapStringProperty(decoder, "m_szName")
-		ar.push((AnimDecoderType as any)[name])
+		ar.push(name)
 	})
 	return ar
 }
@@ -469,7 +448,7 @@ export function ParseAnimationsFromData(
 	const animArrayMap = animationData.get("m_animArray")
 	const segmentArrayMap = animationData.get("m_segmentArray")
 	const segmentArray: Nullable<
-		[number, number[], AnimDecoderType, ReadableBinaryStream]
+		[number, number[], string, ReadableBinaryStream]
 	>[] = []
 	if (segmentArrayMap instanceof Map || Array.isArray(segmentArrayMap))
 		segmentArrayMap.forEach((segment: RecursiveMapValue) => {
