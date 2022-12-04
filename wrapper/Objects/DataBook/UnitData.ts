@@ -141,8 +141,6 @@ export class UnitData {
 			: 0
 		this.BaseAttackSpeed = kv.has("BaseAttackSpeed")
 			? parseFloat(kv.get("BaseAttackSpeed") as string)
-			: kv.get("BaseClass") === "npc_dota_creep_lane"
-			? 170
 			: 0
 		this.MovementCapabilities = kv.has("MovementCapabilities")
 			? parseEnumString(
@@ -281,6 +279,8 @@ function FixUnitInheritance(
 		map.set("BaseClass", "npc_dota_units_base")
 	else if (unitName.startsWith("npc_dota_hero_") && !map.has("BaseClass"))
 		map.set("BaseClass", "npc_dota_hero_base")
+	else if (map.get("BaseClass") === "npc_dota_creep_lane")
+		map.set("BaseClass", "npc_dota_units_base")
 	if (map.has("BaseClass") || map.has("include_keys_from")) {
 		const baseName = map.get("BaseClass") ?? map.get("include_keys_from")
 		if (typeof baseName === "string" && baseName !== unitName) {
