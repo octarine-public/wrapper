@@ -20,7 +20,6 @@ import {
 } from "../Utils/Protobuf"
 import { Events } from "./Events"
 import { EventsSDK } from "./EventsSDK"
-import { Manifest } from "./Manifest"
 
 export const ProjectileManager = new (class CProjectileManager {
 	public readonly AllLinearProjectiles: LinearProjectile[] = []
@@ -256,7 +255,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				msg.get("handle") as number,
 				GetPredictionTarget(msg.get("entindex") as number),
 				(particleSystemHandle !== undefined
-					? Manifest.GetPathByHash(particleSystemHandle)
+					? GetPathByHash(particleSystemHandle)
 					: undefined)!,
 				particleSystemHandle ?? 0n,
 				msg.get("max_speed") as number,
@@ -321,7 +320,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 					(msg.get("sourceAttachment") as Nullable<number>) ?? 0
 				],
 				(particleSystemHandle !== undefined
-					? Manifest.GetPathByHash(particleSystemHandle)
+					? GetPathByHash(particleSystemHandle)
 					: undefined)!,
 				particleSystemHandle ?? 0n,
 				msg.get("dodgeable") as boolean,
@@ -354,7 +353,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				)
 			const path = (
 				particleSystemHandle !== undefined
-					? Manifest.GetPathByHash(particleSystemHandle)
+					? GetPathByHash(particleSystemHandle)
 					: undefined
 			)!
 			let projectile = ProjectileManager.AllTrackingProjectilesMap.get(handle)

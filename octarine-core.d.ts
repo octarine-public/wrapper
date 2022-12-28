@@ -170,19 +170,14 @@ declare function require(absolutePath: string): any
 declare function hrtime(): number
 declare function SetTreeModel(modelName: string, scale: number): void
 declare function EmitStartSoundEvent( // pass location: Vector2 at IOBuffer offset 0
-	soundeventHash: number,
-	sourceEntityID: number,
-	seed: number
-): void
-declare function EmitStartSoundEventNew( // pass location: Vector2 at IOBuffer offset 0
 	soundeventGUID: number,
-	soundeventHash: number,
+	soundeventName: string,
 	sourceEntityID: number,
 	seed: number
 ): void
 declare function EmitStopSoundEvent( // pass location: Vector2 at IOBuffer offset 0
 	soundeventGUID: number,
-	soundeventHash: number,
+	soundeventName: Nullable<string>,
 	sourceEntityID: number
 ): void
 /**
@@ -257,4 +252,8 @@ declare function parseKVBlock(
 declare function parseKVBlock(path: string): RecursiveMap
 
 declare function MurmurHash2(str: string, seed: number): number
-declare function MurmurHash64(str: string, seed: number): bigint
+
+declare function GetPathByHash(hash: bigint): Nullable<string>
+
+declare function GetSoundPathToName(): Map<string, string>
+declare function LookupSoundNameByHash(hash: number): Nullable<string>

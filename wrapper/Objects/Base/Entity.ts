@@ -12,7 +12,6 @@ import { Team } from "../../Enums/Team"
 import { EntityManager } from "../../Managers/EntityManager"
 import { Events } from "../../Managers/Events"
 import { EventsSDK } from "../../Managers/EventsSDK"
-import { Manifest } from "../../Managers/Manifest"
 import * as StringTables from "../../Managers/StringTables"
 import { RendererSDK } from "../../Native/RendererSDK"
 import { Player } from "../../Objects/Base/Player"
@@ -335,7 +334,7 @@ export class Entity {
 		max.x = initialRadius
 		max.y = initialRadius
 		max.z = initialRadius
-		if (this.ModelName === "<null>") return
+		if (this.ModelName === "") return
 		let promise = modelDataCache.get(this.ModelName)
 		if (promise === undefined) {
 			promise = ComputeAttachmentsAndBoundsAsync(this.ModelName)
@@ -476,7 +475,7 @@ RegisterFieldHandler(Entity, "m_lifeState", (ent, newVal) => {
 		EventsSDK.emit("LifeStateChanged", false, ent)
 })
 RegisterFieldHandler(Entity, "m_hModel", (ent, newVal) => {
-	ent.ModelName = Manifest.GetPathByHash(newVal as bigint) ?? ""
+	ent.ModelName = GetPathByHash(newVal as bigint) ?? ""
 	ent.OnModelUpdated()
 })
 EventsSDK.on("GameEnded", () => modelDataCache.clear())

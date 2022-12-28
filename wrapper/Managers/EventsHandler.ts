@@ -44,7 +44,6 @@ import { EntityManager } from "./EntityManager"
 import { Events } from "./Events"
 import { EventsSDK } from "./EventsSDK"
 import { InputManager } from "./InputManager"
-import { LoadManifest, Manifest } from "./Manifest"
 
 enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_CREATE = 0,
@@ -654,7 +653,10 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 		const submsg = msg.get("create_particle") as RecursiveProtobuf
 		const particleSystemHandle = submsg.get("particle_name_index") as bigint,
 			entID = submsg.get("entity_handle") as number
-		const path = Manifest.GetPathByHash(particleSystemHandle ?? 0n)
+		const path =
+			particleSystemHandle !== undefined
+				? GetPathByHash(particleSystemHandle)
+				: undefined
 		if (path !== undefined)
 			EventsSDK.emit(
 				"ParticleCreated",
@@ -950,7 +952,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				"CMsgSosStartSoundEvent"
 			)
 			const hash = msg.get("soundevent_hash") as number
-			const soundName = Manifest.LookupSoundNameByHash(hash)
+			const soundName = LookupSoundNameByHash(hash)
 			if (soundName === undefined) {
 				// console.log(`Unknown soundname hash: ${hash}`)
 				break
@@ -1333,7 +1335,6 @@ EventsSDK.on("ServerInfo", info => {
 	GameState.MapName = mapName
 	const addonName = (info.get("addon_name") as string) ?? ""
 	GameState.AddonName = addonName
-	LoadManifest()
 	TryLoadMapFiles()
 
 	ReloadGlobalUnitStorage()

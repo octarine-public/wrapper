@@ -12,7 +12,6 @@ import { EntityManager as _EntityManager } from "./Managers/EntityManager"
 import { Events as _Events } from "./Managers/Events"
 import { EventsSDK as _EventsSDK } from "./Managers/EventsSDK"
 import { InputManager as _InputManager } from "./Managers/InputManager"
-import { Manifest as _Manifest } from "./Managers/Manifest"
 import { MinimapSDK as _MinimapSDK } from "./Managers/MinimapSDK"
 import { ParticlesSDK as _ParticlesSDK } from "./Managers/ParticleManager"
 import { MenuManager as _Menu } from "./Menu/Menu"
@@ -94,7 +93,6 @@ globalThis.GetPositionHeight = _WASM.GetPositionHeight
 globalThis.ParticlesSDK = _ParticlesSDK
 globalThis.WASM = _WASM
 globalThis.Workers = _Workers
-globalThis.Manifest = _Manifest
 globalThis.MinimapSDK = _MinimapSDK
 globalThis.InputManager = _InputManager
 globalThis.GUIInfo = _GUIInfo

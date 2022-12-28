@@ -1,12 +1,11 @@
 import { Color } from "../Base/Color"
 import { QAngle } from "../Base/QAngle"
 import { Vector3 } from "../Base/Vector3"
-import { Manifest } from "../Managers/Manifest"
 import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
 import { HasBit } from "../Utils/BitsExtensions"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
-import { GetMapNumberProperty, GetMapStringProperty } from "./ParseUtils"
+import { MapValueToNumber, MapValueToString } from "./ParseUtils"
 
 const enum EntsTypes {
 	FLOAT = 1,
@@ -20,7 +19,6 @@ const enum EntsTypes {
 	QANGLE = 39,
 }
 
-type EntityDataMap = Map<string, EntityDataMapValue>
 type EntityDataMapValue =
 	| string
 	| bigint
@@ -29,6 +27,17 @@ type EntityDataMapValue =
 	| Vector3
 	| QAngle
 	| Color
+
+class EntityDataMap {
+	private data = new Map<number, EntityDataMapValue>()
+
+	public get(key: string): Nullable<EntityDataMapValue> {
+		return this.data.get(MurmurHash2(key, 0x31415926) >>> 0)
+	}
+	public set(key: number, value: EntityDataMapValue): void {
+		this.data.set(key, value)
+	}
+}
 
 function ReadTypedValue(stream: ReadableBinaryStream): EntityDataMapValue {
 	const type: EntsTypes = stream.ReadUint32()
@@ -106,27 +115,23 @@ function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
 				}
 				const hashedKeys = kvDataStream.ReadUint32(),
 					stringKeys = kvDataStream.ReadUint32()
-				const map: EntityDataMap = new Map()
+				const map = new EntityDataMap()
 				for (let i = 0; i < hashedKeys; i++) {
 					const hash = kvDataStream.ReadUint32(),
 						value = ReadTypedValue(kvDataStream)
-					let key = Manifest.LookupStringByToken(hash)
-					if (key === undefined) key = hash.toString()
-					map.set(key, value)
+					map.set(hash, value)
 				}
 				for (let i = 0; i < stringKeys; i++) {
-					kvDataStream.RelativeSeek(4) // hash
-					const key = kvDataStream.ReadNullTerminatedUtf8String(),
-						value = ReadTypedValue(kvDataStream)
-					map.set(key, value)
+					const hash = kvDataStream.ReadUint32()
+					kvDataStream.ReadNullTerminatedUtf8String() // key
+					const value = ReadTypedValue(kvDataStream)
+					map.set(hash, value)
 				}
 				if (
 					map.get("classname") === "info_world_layer" &&
-					HasBit(GetMapNumberProperty(map as RecursiveMap, "spawnflags"), 0)
+					HasBit(MapValueToNumber(map.get("spawnflags")), 0)
 				)
-					DefaultWorldLayers.push(
-						GetMapStringProperty(map as RecursiveMap, "layername")
-					)
+					DefaultWorldLayers.push(MapValueToString(map.get("layername")))
 				EntityDataLump.push(map)
 			})
 		}

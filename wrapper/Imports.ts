@@ -84,7 +84,6 @@ export {
 	VMouseKeys,
 	VXMouseKeys,
 } from "./Managers/InputManager"
-export { Manifest } from "./Managers/Manifest"
 export { MinimapSDK } from "./Managers/MinimapSDK"
 export {
 	PARTICLE_RENDER,

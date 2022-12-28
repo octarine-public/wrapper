@@ -1,4 +1,3 @@
-import { ParseResourceLayout } from "../Resources/ParseResource"
 import { FileBinaryStream } from "./FileBinaryStream"
 import { readFile } from "./readFile"
 
@@ -48,57 +47,6 @@ export function MapToObject(map: Map<any, any>): any {
 				v instanceof Map ? MapToObject(v) : Array.isArray(v) ? FixArray(v) : v)
 	)
 	return obj
-}
-
-function ParseExternalReferencesInternal(
-	stream: ReadableBinaryStream,
-	recursive: boolean,
-	map: Map<bigint, string>
-): void {
-	const layout = ParseResourceLayout(stream)
-	if (layout === undefined) return
-
-	const rerl = layout[0].get("RERL")
-	if (rerl === undefined) return
-
-	const dataOffset = rerl.ReadUint32(),
-		size = rerl.ReadUint32()
-	if (size === 0) return
-
-	rerl.pos += dataOffset - 8 // offset from offset
-	for (let i = 0; i < size; i++) {
-		const id = rerl.ReadUint64()
-		const offset = Number(rerl.ReadUint64()),
-			prev = rerl.pos
-		rerl.pos += offset - 8
-		const path = `${rerl.ReadNullTerminatedUtf8String()}_c`
-		if (fexists(path)) {
-			map.set(id, path)
-			if (recursive) {
-				const read = fopen(path)
-				if (read !== undefined)
-					try {
-						ParseExternalReferencesInternal(
-							new FileBinaryStream(read),
-							true,
-							map
-						)
-					} finally {
-						read.close()
-					}
-			}
-		}
-		rerl.pos = prev
-	}
-}
-
-export function ParseExternalReferences(
-	stream: ReadableBinaryStream,
-	recursive = false
-): Map<bigint, string> {
-	const map = new Map<bigint, string>()
-	ParseExternalReferencesInternal(stream, recursive, map)
-	return map
 }
 
 export function ParseMapName(path: string): Nullable<string> {
