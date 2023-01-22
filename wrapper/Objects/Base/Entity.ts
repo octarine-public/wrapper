@@ -364,6 +364,21 @@ export class Entity {
 	): void {
 		// to be implemented in child classes
 	}
+	public GetSequenceActivityModifiers(
+		activity = GameActivity.ACT_DOTA_IDLE,
+		sequenceNum = -1
+	): Map<string, number> | undefined {
+		if (this.Attachments === undefined || this.Attachments.length === 0)
+			return undefined
+		const activityName = activity2name.get(activity)
+		if (sequenceNum >= 0 && activityName !== undefined) {
+			let i = 0
+			for (const attachment of this.Attachments)
+				if (attachment[0].has(activityName) && i++ === sequenceNum)
+					return attachment[0]
+		}
+		return undefined
+	}
 	public GetAttachments(
 		activity = GameActivity.ACT_DOTA_IDLE,
 		sequenceNum = -1
