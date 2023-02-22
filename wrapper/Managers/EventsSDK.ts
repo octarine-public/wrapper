@@ -91,11 +91,6 @@ interface EventsSDK extends EventEmitter {
 		priority?: number
 	): EventEmitter
 	on(
-		name: "UnitVisibilityChanged",
-		callback: (npc: Unit) => void,
-		priority?: number
-	): EventEmitter
-	on(
 		name: "ControllableByPlayerMaskChanged",
 		callback: (npc: Unit) => void,
 		priority?: number

@@ -145,8 +145,6 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_flStartSequenceCycle")
 	public StartSequenceCycle = 0
 	public StartSequenceCyclePrev = -1
-	public IsVisibleForEnemies = false
-	public IsVisibleForEnemiesTicks = 0
 	public LastActivity: GameActivity = 0
 	public LastActivitySequenceVariant = 0
 	public LastActivityEndTime = 0
@@ -1460,26 +1458,5 @@ EventsSDK.on("Tick", dt => {
 		// TODO: GameActivity.ACT_DOTA_RUN uses GetSequenceGroundSpeed
 		unit.AnimationTime += dt / Math.sqrt(unit.ModelScale)
 		// TODO: interpolate DeltaZ from OnModifierUpdated?
-	}
-})
-
-const cycleThreshold = 2
-EventsSDK.on("PostDataUpdate", () => {
-	for (const unit of Units) {
-		unit.UnitStateMask = unit.UnitStateMask_
-		const oldTicks = unit.IsVisibleForEnemiesTicks
-		unit.IsVisibleForEnemiesTicks =
-			unit.StartSequenceCyclePrev === unit.StartSequenceCycle
-				? Math.min(unit.IsVisibleForEnemiesTicks + 1, cycleThreshold)
-				: Math.max(unit.IsVisibleForEnemiesTicks - 1, 0)
-		unit.StartSequenceCyclePrev = unit.StartSequenceCycle
-		if (
-			unit.IsVisibleForEnemiesTicks !== oldTicks &&
-			(unit.IsVisibleForEnemiesTicks === 0 ||
-				unit.IsVisibleForEnemiesTicks === cycleThreshold)
-		) {
-			unit.IsVisibleForEnemies = unit.IsVisibleForEnemiesTicks !== 0
-			EventsSDK.emit("UnitVisibilityChanged", false, unit)
-		}
 	}
 })
