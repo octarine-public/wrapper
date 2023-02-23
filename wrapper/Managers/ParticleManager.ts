@@ -19,7 +19,7 @@ export enum PARTICLE_RENDER {
 }
 
 function ParticleRangePath(name: string): string {
-	return `range_display_${name.toLowerCase()}.vpcf`
+	return `particles/range_display/range_display_${name.toLowerCase()}.vpcf`
 }
 function ParticleLinePath(name: string): string {
 	return `particles/range_line/${name.toLowerCase()}.vpcf`
