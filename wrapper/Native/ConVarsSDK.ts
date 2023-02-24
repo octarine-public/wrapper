@@ -46,11 +46,4 @@ export class ConVarsSDK {
 		if (Array.isArray(res)) return res.join(" ")
 		return res.toString()
 	}
-
-	public static Set(
-		convarName: string,
-		value: number | boolean | string | number[]
-	): void {
-		ConVars.Set(convarName, value)
-	}
 }
