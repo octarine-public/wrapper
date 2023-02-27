@@ -958,17 +958,25 @@ Events.on("ServerMessage", (msgID, buf_) => {
 			const handle = (msg.get("source_entity_index") as number) ?? 0,
 				seed = (msg.get("seed") as number) ?? 0,
 				startTime = (msg.get("start_time") as number) ?? -1,
-				packedParams = msg.get(
-					"packed_params"
-				) as Nullable<ReadableBinaryStream>
+				packedParams = msg.get("packed_params") as Nullable<Uint8Array>
+
 			const ent = GetPredictionTarget(handle),
 				position = new Vector3()
-			if (packedParams !== undefined && packedParams.Size >= 19) {
-				packedParams.RelativeSeek(7)
-				position.x = packedParams.ReadFloat32()
-				position.y = packedParams.ReadFloat32()
-				position.z = packedParams.ReadFloat32()
+
+			if (packedParams !== undefined && packedParams.byteLength >= 19) {
+				const stream = new ViewBinaryStream(
+					new DataView(
+						packedParams.buffer,
+						packedParams.byteOffset,
+						packedParams.byteLength
+					)
+				)
+				stream.RelativeSeek(7)
+				position.x = stream.ReadFloat32()
+				position.y = stream.ReadFloat32()
+				position.z = stream.ReadFloat32()
 			}
+
 			EventsSDK.emit(
 				"StartSound",
 				false,
