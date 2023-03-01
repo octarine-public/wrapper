@@ -306,6 +306,11 @@ interface EventsSDK extends EventEmitter {
 		priority?: number
 	): EventEmitter
 	on(
+		name: "ModifierChangedVBE",
+		listener: (mod: Modifier) => void,
+		priority?: number
+	): EventEmitter
+	on(
 		name: "ModifierRemoved",
 		listener: (mod: Modifier) => void,
 		priority?: number

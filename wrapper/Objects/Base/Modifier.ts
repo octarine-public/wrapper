@@ -249,6 +249,8 @@ export class Modifier {
 			this.AddModifier()
 		} else if (this.Parent !== undefined && updated)
 			EventsSDK.emit("ModifierChanged", false, this)
+		else if (this.Parent !== undefined)
+			EventsSDK.emit("ModifierChangedVBE", false, this)
 	}
 	public Remove(): void {
 		if (this.Parent === undefined || !this.Parent.Buffs.includes(this)) return
