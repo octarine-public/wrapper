@@ -2,7 +2,6 @@ import { Color } from "../Base/Color"
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { GUIInfo } from "../GUI/GUIInfo"
-import { Sleeper } from "../Helpers/Sleeper"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputEventSDK, InputManager, VKeys } from "../Managers/InputManager"
 import { RendererSDK } from "../Native/RendererSDK"
@@ -43,7 +42,6 @@ export class DynamicImageSelector extends Base {
 	protected readonly itemDrop = new Map<string, number>()
 	protected readonly imageSize = new Vector2()
 	protected renderedPaths = new Map<string, string>()
-	protected QueueSleeper = new Sleeper()
 	protected QueueImages = new Map<string, [boolean, boolean]>()
 
 	private autoPriority = 0
@@ -108,24 +106,33 @@ export class DynamicImageSelector extends Base {
 
 		this.enabledValues = new Map(value)
 
-		for (const [] of this.enabledValues) this.autoPriority++
+		for (const [] of this.enabledValues.keys()) {
+			this.autoPriority++
+		}
+
+		for (const [name, [defaultState, defaultShow]] of this.QueueImages) {
+			const hasInConfig = this.enabledValues.get(name)
+			if (hasInConfig !== undefined) {
+				this.QueueImages.delete(name)
+				continue
+			}
+			this.enabledValues.set(name, [
+				defaultState,
+				defaultShow,
+				defaultShow,
+				this.autoPriority++,
+			])
+			this.QueueImages.delete(name)
+		}
 
 		this.values = [
 			...orderBy(
-				this.values.filter(name => this.GetPriority(name) >= 0),
+				[...this.enabledValues.keys()].filter(name =>
+					this.IsVisibleImage(name)
+				),
 				x => this.GetPriority(x)
 			),
 		]
-
-		this.values.forEach(value_ => {
-			if (!this.enabledValues.has(value_))
-				this.enabledValues.set(value_, [
-					this.createdDefaultState,
-					false,
-					false,
-					this.autoPriority,
-				])
-		})
 	}
 
 	public get ClassPriority(): number {
@@ -137,20 +144,12 @@ export class DynamicImageSelector extends Base {
 
 		this.values = [
 			...orderBy(
-				this.values.filter(name => this.GetPriority(name) >= 0),
+				[...this.enabledValues.keys()].filter(name =>
+					this.IsVisibleImage(name)
+				),
 				x => this.GetPriority(x)
 			),
 		]
-
-		this.values.forEach(value => {
-			if (!this.enabledValues.has(value))
-				this.enabledValues.set(value, [
-					this.createdDefaultState,
-					false,
-					false,
-					this.autoPriority,
-				])
-		})
 
 		this.renderedPaths.clear()
 		this.imageSize.x = this.imageSize.y = DynamicImageSelector.baseImageHeight
@@ -209,16 +208,6 @@ export class DynamicImageSelector extends Base {
 
 	public IsEnabled(value: string): boolean {
 		const state = this.enabledValues.get(value)
-
-		if (this.QueuedUpdate) {
-			const queuedState = this.QueueImages.get(value)
-			if (queuedState === undefined) return false
-			return queuedState[0]
-		}
-
-		if (!this.QueuedUpdate && !this.QueueSleeper.Sleeping(value))
-			this.QueueImages.delete(value)
-
 		if (state === undefined) return false
 		return state[0]
 	}
@@ -229,15 +218,9 @@ export class DynamicImageSelector extends Base {
 
 	public OnAddNewImage(name: string, defaultState = true, defaultShow = false) {
 		if (this.QueuedUpdate && !this.values.includes(name)) {
-			this.QueueSleeper.Sleep(300, name)
 			this.QueueImages.set(name, [defaultState, defaultShow])
 			return
 		}
-
-		// boolean, /** default state */
-		// boolean, /** default static show */
-		// boolean, /** show */
-		// number /** priority */
 
 		if (!this.values.includes(name)) this.values.push(name)
 
@@ -258,11 +241,6 @@ export class DynamicImageSelector extends Base {
 	}
 
 	public OnHideImages(names?: string[]) {
-		// boolean, /** default state */
-		// boolean, /** default static show */
-		// boolean, /** show */
-		// number /** priority */
-
 		if (names === undefined) {
 			for (const name of this.values) {
 				const enabledValues = this.enabledValues.get(name)
@@ -280,28 +258,22 @@ export class DynamicImageSelector extends Base {
 				this.Update()
 			}
 		}
-
-		this.QueueImages.clear()
 	}
 
 	public Render(): void {
 		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
 
-		for (const [value, [defaultState, defaultShow]] of this.QueueImages) {
-			const time = this.QueueSleeper.RemainingSleepTime(value)
-			if (time > 50) continue
-			this.OnAddNewImage(value, defaultState, defaultShow)
-			this.QueueImages.delete(value)
-			this.QueueSleeper.ResetKey(value)
-		}
-
 		const basePos = this.IconsRect.pos1
 		for (let i = 0; i < this.values.length; i++) {
 			const value = this.values[i]
-			if (!this.IsVisibleImage(value)) continue
+
+			if (!this.IsVisibleImage(value)) {
+				continue
+			}
+
 			const imagePath = this.renderedPaths.get(value)
-			if (imagePath === undefined) continue
+			if (imagePath === undefined || this.itemDrop.has(value)) continue
 
 			const size = this.imageSize,
 				pos = new Vector2(
@@ -316,11 +288,9 @@ export class DynamicImageSelector extends Base {
 					)
 					.Add(basePos)
 
-			const position = this.itemDrop.has(value) ? this.MousePosition : pos
-
 			RendererSDK.Image(
 				imagePath,
-				position,
+				pos,
 				-1,
 				size,
 				Color.White,
@@ -329,31 +299,69 @@ export class DynamicImageSelector extends Base {
 				!this.IsEnabled(value)
 			)
 
+			if (this.IsEnabled(value)) {
+				RendererSDK.FilledRect(
+					pos.Add(new Vector2(0, size.y / 1.5)),
+					size.Subtract(new Vector2(0, size.y / 1.5)),
+					Color.Black.SetA(180)
+				)
+			}
+
 			if (
 				InputManager.IsKeyDown(VKeys.CONTROL) ||
 				DynamicImageSelector.ServicePriorityToggle
-			)
-				RendererSDK.FilledRect(position, size, Color.Black.SetA(180))
+			) {
+				RendererSDK.FilledRect(pos, size, Color.Black.SetA(150))
 
-			if (this.IsEnabled(value))
-				RendererSDK.FilledRect(
-					position.Add(new Vector2(0, size.y / 1.75)),
-					size.Subtract(new Vector2(0, size.y / 1.75)),
-					Color.Black.SetA(233)
+				RendererSDK.Image(
+					"panorama/images/control_icons/share_profile_psd.vtex_c",
+					pos.Add(size.DivideScalar(4)),
+					-1,
+					size.DivideScalar(2),
+					Color.White
 				)
+			}
 
-			this.DrawTextPriority(i + 1, position, size)
+			if (DynamicImageSelector.ServicePriorityToggle)
+				this.DrawTextRealPriority(this.enabledValues.get(value), pos, size)
+
+			this.DrawTextPriority(i + 1, pos, size)
 
 			if (this.IsEnabled(value))
 				RendererSDK.OutlinedRect(
-					position,
+					pos,
 					size,
 					DynamicImageSelector.imageBorderWidth,
 					DynamicImageSelector.imageActivatedBorderColor
 				)
+		}
 
-			if (DynamicImageSelector.ServicePriorityToggle)
-				this.DrawTextRealPriority(this.enabledValues.get(value), position, size)
+		// over all images
+		for (const [name] of this.itemDrop) {
+			const imagePath = this.renderedPaths.get(name)
+			if (imagePath === undefined) continue
+
+			const size = this.imageSize
+			const pos = this.MousePosition.Subtract(this.imageSize.DivideScalar(2))
+
+			RendererSDK.Image(
+				imagePath,
+				pos,
+				-1,
+				this.imageSize,
+				Color.White,
+				0,
+				undefined,
+				!this.IsEnabled(name)
+			)
+
+			if (this.IsEnabled(name))
+				RendererSDK.OutlinedRect(
+					pos,
+					size,
+					DynamicImageSelector.imageBorderWidth,
+					DynamicImageSelector.imageActivatedBorderColor
+				)
 		}
 	}
 
@@ -518,7 +526,7 @@ export class DynamicImageSelector extends Base {
 
 	private DrawTextPriority(id: number, position: Vector2, size: Vector2) {
 		const text = `${id}`
-		const textSize = size.y / 2
+		const textSize = size.y / 2.75
 		const textName = RendererSDK.DefaultFontName
 
 		const textSizePosition = Vector2.FromVector3(
