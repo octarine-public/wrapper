@@ -7,7 +7,7 @@ import { Localization } from "../Menu/index"
 import { RendererSDK } from "../Native/RendererSDK"
 import * as WASM from "../Native/WASM"
 import { Workers } from "../Native/Workers"
-import { Entity, LocalPlayer } from "../Objects/Base/Entity"
+import { Entity, GameRules, LocalPlayer } from "../Objects/Base/Entity"
 import { FakeUnit, GetPredictionTarget } from "../Objects/Base/FakeUnit"
 import { PlayerResource } from "../Objects/Base/PlayerResource"
 import { Unit } from "../Objects/Base/Unit"
@@ -41,6 +41,7 @@ import {
 import { createMapFromMergedIterators } from "../Utils/Utils"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { EntityManager } from "./EntityManager"
+import { SetLatestTickDelta } from "./EntityManagerLogic"
 import { Events } from "./Events"
 import { EventsSDK } from "./EventsSDK"
 import { InputManager } from "./InputManager"
@@ -73,6 +74,8 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_SKIP_TO_TIME = 24,
 	GAME_PARTICLE_MANAGER_EVENT_CAN_FREEZE = 25,
 	GAME_PARTICLE_MANAGER_EVENT_SET_NAMED_VALUE_CONTEXT = 26,
+	GAME_PARTICLE_MANAGER_EVENT_UPDATE_TRANSFORM = 27,
+	GAME_PARTICLE_MANAGER_EVENT_FREEZE_TRANSITION_OVERRIDE = 28,
 }
 enum EDotaEntityMessages {
 	DOTA_UNIT_SPEECH = 0,
@@ -165,6 +168,8 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_SKIP_TO_TIME = 24;
 	GAME_PARTICLE_MANAGER_EVENT_CAN_FREEZE = 25;
 	GAME_PARTICLE_MANAGER_EVENT_SET_NAMED_VALUE_CONTEXT = 26;
+	GAME_PARTICLE_MANAGER_EVENT_UPDATE_TRANSFORM = 27;
+	GAME_PARTICLE_MANAGER_EVENT_FREEZE_TRANSITION_OVERRIDE = 28;
 }
 
 enum DOTA_CHAT_MESSAGE {
@@ -280,8 +285,8 @@ message CUserMsg_ParticleManager {
 	message CreateParticle {
 		optional fixed64 particle_name_index = 1;
 		optional int32 attach_type = 2;
-		optional int32 entity_handle = 3;
-		optional int32 entity_handle_for_modifiers = 4;
+		optional uint32 entity_handle = 3 [default = 16777215];
+		optional uint32 entity_handle_for_modifiers = 4 [default = 16777215];
 		optional bool apply_voice_ban_rules = 5;
 		optional int32 team_behavior = 6;
 		optional string control_point_configuration = 7;
@@ -293,32 +298,39 @@ message CUserMsg_ParticleManager {
 
 	message DestroyParticleInvolving {
 		optional bool destroy_immediately = 1;
-		optional int32 entity_handle = 3;
+		optional uint32 entity_handle = 3 [default = 16777215];
 	}
 
 	message DestroyParticleNamed {
 		optional fixed64 particle_name_index = 1;
-		optional int32 entity_handle = 2;
+		optional uint32 entity_handle = 2 [default = 16777215];
 		optional bool destroy_immediately = 3;
 		optional bool play_endcap = 4;
 	}
 
-	message UpdateParticle {
+	message UpdateParticle_OBSOLETE {
 		optional int32 control_point = 1;
 		optional .CMsgVector position = 2;
 	}
 
-	message UpdateParticleFwd {
+	message UpdateParticleFwd_OBSOLETE {
 		optional int32 control_point = 1;
 		optional .CMsgVector forward = 2;
 	}
 
-	message UpdateParticleOrient {
+	message UpdateParticleOrient_OBSOLETE {
 		optional int32 control_point = 1;
 		optional .CMsgVector forward = 2;
 		optional .CMsgVector deprecated_right = 3;
 		optional .CMsgVector up = 4;
 		optional .CMsgVector left = 5;
+	}
+
+	message UpdateParticleTransform {
+		optional int32 control_point = 1;
+		optional .CMsgVector position = 2;
+		optional .CMsgQuaternion orientation = 3;
+		optional float interpolation_interval = 4;
 	}
 
 	message UpdateParticleFallback {
@@ -334,15 +346,18 @@ message CUserMsg_ParticleManager {
 
 	message UpdateParticleEnt {
 		optional int32 control_point = 1;
-		optional int32 entity_handle = 2;
+		optional uint32 entity_handle = 2 [default = 16777215];
 		optional int32 attach_type = 3;
 		optional int32 attachment = 4;
 		optional .CMsgVector fallback_position = 5;
 		optional bool include_wearables = 6;
+		optional .CMsgVector offset_position = 7;
+		optional .CMsgQAngle offset_angles = 8;
 	}
 
 	message UpdateParticleSetFrozen {
 		optional bool set_frozen = 1;
+		optional float transition_duration = 2;
 	}
 
 	message UpdateParticleShouldDraw {
@@ -352,11 +367,11 @@ message CUserMsg_ParticleManager {
 	message ChangeControlPointAttachment {
 		optional int32 attachment_old = 1;
 		optional int32 attachment_new = 2;
-		optional int32 entity_handle = 3;
+		optional uint32 entity_handle = 3 [default = 16777215];
 	}
 
 	message UpdateEntityPosition {
-		optional int32 entity_handle = 1;
+		optional uint32 entity_handle = 1 [default = 16777215];
 		optional .CMsgVector position = 2;
 	}
 
@@ -406,6 +421,10 @@ message CUserMsg_ParticleManager {
 		optional bool can_freeze = 1;
 	}
 
+	message ParticleFreezeTransitionOverride {
+		optional float freeze_transition_override = 1;
+	}
+
 	message SetParticleNamedValueContext {
 		message FloatContextValue {
 			optional string value_name = 1;
@@ -415,12 +434,21 @@ message CUserMsg_ParticleManager {
 		message VectorContextValue {
 			optional string value_name = 1;
 			optional .CMsgVector value = 2;
-			optional uint32 ent_index = 3;
+			optional uint32 ent_index = 3 [default = 16777215];
 			optional string attachment_name = 4;
+		}
+
+		message TransformContextValue {
+			optional string value_name = 1;
+			optional .CMsgQAngle angles = 2;
+			optional .CMsgVector translation = 3;
+			optional uint32 ent_index = 4 [default = 16777215];
+			optional string attachment_name = 5;
 		}
 
 		repeated .CUserMsg_ParticleManager.SetParticleNamedValueContext.FloatContextValue float_values = 1;
 		repeated .CUserMsg_ParticleManager.SetParticleNamedValueContext.VectorContextValue vector_values = 2;
+		repeated .CUserMsg_ParticleManager.SetParticleNamedValueContext.TransformContextValue transform_values = 3;
 	}
 
 	required .PARTICLE_MESSAGE type = 1 [default = GAME_PARTICLE_MANAGER_EVENT_CREATE];
@@ -429,9 +457,9 @@ message CUserMsg_ParticleManager {
 	optional .CUserMsg_ParticleManager.CreateParticle create_particle = 4;
 	optional .CUserMsg_ParticleManager.DestroyParticle destroy_particle = 5;
 	optional .CUserMsg_ParticleManager.DestroyParticleInvolving destroy_particle_involving = 6;
-	optional .CUserMsg_ParticleManager.UpdateParticle update_particle = 7;
-	optional .CUserMsg_ParticleManager.UpdateParticleFwd update_particle_fwd = 8;
-	optional .CUserMsg_ParticleManager.UpdateParticleOrient update_particle_orient = 9;
+	optional .CUserMsg_ParticleManager.UpdateParticle_OBSOLETE update_particle = 7;
+	optional .CUserMsg_ParticleManager.UpdateParticleFwd_OBSOLETE update_particle_fwd = 8;
+	optional .CUserMsg_ParticleManager.UpdateParticleOrient_OBSOLETE update_particle_orient = 9;
 	optional .CUserMsg_ParticleManager.UpdateParticleFallback update_particle_fallback = 10;
 	optional .CUserMsg_ParticleManager.UpdateParticleOffset update_particle_offset = 11;
 	optional .CUserMsg_ParticleManager.UpdateParticleEnt update_particle_ent = 12;
@@ -451,6 +479,8 @@ message CUserMsg_ParticleManager {
 	optional .CUserMsg_ParticleManager.ParticleSkipToTime particle_skip_to_time = 27;
 	optional .CUserMsg_ParticleManager.ParticleCanFreeze particle_can_freeze = 28;
 	optional .CUserMsg_ParticleManager.SetParticleNamedValueContext set_named_value_context = 29;
+	optional .CUserMsg_ParticleManager.UpdateParticleTransform update_particle_transform = 30;
+	optional .CUserMsg_ParticleManager.ParticleFreezeTransitionOverride particle_freeze_transition_override = 31;
 }
 
 enum EDotaEntityMessages {
@@ -889,6 +919,23 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			// const submsg = msg.get("set_named_value_context") as RecursiveProtobuf
 			break
 		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_TRANSFORM: {
+			const submsg = msg.get("update_particle_transform") as RecursiveProtobuf,
+				cp = submsg.get("control_point") as number
+			par.ControlPoints.set(
+				cp,
+				CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf)
+			)
+			// par.ControlPointsForward.set(
+			// 	cp,
+			// 	CMsgVectorToVector3(submsg.get("orientation") as RecursiveProtobuf)
+			// )
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_FREEZE_TRANSITION_OVERRIDE: {
+			// const submsg = msg.get("particle_freeze_transition_override") as RecursiveProtobuf
+			break
+		}
 		default:
 			console.log(
 				GameState.RawGameTime,
@@ -1179,7 +1226,25 @@ EventsSDK.on(
 	"InputCaptured",
 	isCaptured => (GameState.IsInputCaptured = isCaptured)
 )
-EventsSDK.on("ServerTick", tick => (GameState.CurrentServerTick = tick))
+EventsSDK.on("ServerTick", tick => {
+	GameState.CurrentServerTick = tick
+	if (GameRules !== undefined) {
+		// TODO: verify correctness
+		const timeTick = GameRules.IsPaused ? GameRules.PauseStartTick : tick,
+			prevTime = GameState.RawGameTime
+		GameState.RawGameTime = GameRules.RawGameTime =
+			(timeTick - GameRules.TotalPausedTicks) / 30 // TODO: is there a better way?
+
+		if (prevTime === 0)
+			EntityManager.AllEntities.forEach(
+				ent => (ent.FakeCreateTime_ = GameState.RawGameTime)
+			)
+		if (LocalPlayer !== undefined)
+			SetLatestTickDelta(
+				prevTime !== 0 ? GameState.RawGameTime - prevTime : 1 / 30
+			)
+	}
+})
 Events.on("UIStateChanged", newState => (GameState.UIState = newState))
 
 let currentWorldPromise: Nullable<Promise<WorkerIPCType>>

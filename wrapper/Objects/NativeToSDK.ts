@@ -136,6 +136,7 @@ function FixType(symbols: string[], field: any): string {
 	type = type.replace(/\<\s/g, "<")
 	type = type.replace(/\s\>/g, ">")
 	type = type.replace(/CNetworkedQuantizedFloat/g, "float")
+	type = type.replace(/GameTime_t/g, "float")
 	type = type.replace(/CUtlVector\<(.*)\>/g, "$1[]")
 	type = type.replace(/CNetworkUtlVectorBase\<(.*)\>/g, "$1[]")
 	type = type.replace(/CHandle\<(.*)\>/g, "CEntityIndex<$1>")

@@ -260,7 +260,6 @@ export function SetLatestTickDelta(delta: number): void {
 
 function ParseEntityPacket(stream: ReadableBinaryStream): void {
 	EventsSDK.emit("PreDataUpdate", false)
-	latestTickDelta = 0
 	const nativeChanges: [number, number, number][] = []
 	while (!stream.Empty()) {
 		const entID = stream.ReadUint16()
@@ -303,7 +302,10 @@ function ParseEntityPacket(stream: ReadableBinaryStream): void {
 	EventsSDK.emit("MidDataUpdate", false)
 	for (const ent of createdEntities) EventsSDK.emit("EntityCreated", false, ent)
 	EventsSDK.emit("PostDataUpdate", false)
-	if (latestTickDelta !== 0) EventsSDK.emit("Tick", false, latestTickDelta)
+	if (latestTickDelta !== 0) {
+		EventsSDK.emit("Tick", false, latestTickDelta)
+		latestTickDelta = 0
+	}
 }
 
 Events.on("ServerMessage", (msgID, buf) => {

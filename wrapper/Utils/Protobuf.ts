@@ -495,6 +495,13 @@ message CMsgQAngle {
 	optional float y = 2;
 	optional float z = 3;
 }
+
+message CMsgQuaternion {
+	optional float x = 1;
+	optional float y = 2;
+	optional float z = 3;
+	optional float w = 4;
+}
 `)
 
 export function CMsgVectorToVector3(vec: Nullable<RecursiveProtobuf>): Vector3 {

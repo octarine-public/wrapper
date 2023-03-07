@@ -8,12 +8,8 @@ export class CGameManager extends Entity {
 	public LobbyGameName = ""
 	@NetworkedBasicField("m_lobbyLeagueID")
 	public LobbyLeagueID = 0
-	@NetworkedBasicField("m_StableHeroAvailable")
-	public StableHeroAvailable: boolean[] = []
 	@NetworkedBasicField("m_CurrentHeroAvailable")
 	public CurrentHeroAvailable: boolean[] = []
-	@NetworkedBasicField("m_CulledHeroes")
-	public CulledHeroes: boolean[] = []
 
 	// need test
 	public get IsLobbyGame(): boolean {

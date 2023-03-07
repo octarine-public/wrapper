@@ -4,21 +4,22 @@ import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
 import { DOTAGameState } from "../../Enums/DOTAGameState"
 import { EPropertyType } from "../../Enums/PropertyType"
-import { Team } from "../../Enums/Team"
-import { EntityManager } from "../../Managers/EntityManager"
-import { SetLatestTickDelta } from "../../Managers/EntityManagerLogic"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GameState } from "../../Utils/GameState"
-import { Entity, LocalPlayer } from "../Base/Entity"
+import { Entity } from "../Base/Entity"
 import { StockInfo } from "./../../Base/StockInfo"
 
 @WrapperClass("CDOTAGamerulesProxy")
 export class CGameRules extends Entity {
 	public RawGameTime = 0
-	@NetworkedBasicField("m_iPauseTeam")
-	public PauseTeam = Team.None
 	@NetworkedBasicField("m_bGamePaused")
 	public IsPaused = false
+	@NetworkedBasicField("m_nTotalPausedTicks")
+	public TotalPausedTicks = -1
+	@NetworkedBasicField("m_nPauseStartTick")
+	public PauseStartTick = -1
+	@NetworkedBasicField("m_bGameTimeFrozen")
+	public IsTimeFrozen = false
 	@NetworkedBasicField("m_nExpectedPlayers")
 	public ExpectedPlayers = 0
 	@NetworkedBasicField("m_iGameMode")
@@ -100,16 +101,6 @@ export class CGameRules extends Entity {
 	}
 }
 
-RegisterFieldHandler(CGameRules, "m_fGameTime", (game, newVal) => {
-	const prevTick = game.RawGameTime
-	GameState.RawGameTime = game.RawGameTime = newVal as number
-	if (prevTick === 0)
-		EntityManager.AllEntities.forEach(
-			ent => (ent.FakeCreateTime_ = game.RawGameTime)
-		)
-	if (LocalPlayer !== undefined)
-		SetLatestTickDelta(prevTick !== 0 ? game.RawGameTime - prevTick : 1 / 30)
-})
 RegisterFieldHandler(CGameRules, "m_NeutralSpawnBoxes", (game, newVal) => {
 	game.NeutralSpawnBoxes = (newVal as EntityPropertiesNode[]).map(
 		map => new NeutralSpawnBox(map)
