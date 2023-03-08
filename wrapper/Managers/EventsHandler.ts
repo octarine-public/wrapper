@@ -33,6 +33,7 @@ import { HasBit } from "../Utils/BitsExtensions"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { GameState } from "../Utils/GameState"
 import {
+	CMsgQuaternionToVector4,
 	CMsgVectorToVector3,
 	ParseProtobufDesc,
 	ParseProtobufNamed,
@@ -676,6 +677,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 		default:
 			break
 	}
+
 	if (
 		par === undefined &&
 		msgType === PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE
@@ -705,6 +707,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 				`Received unknown particleSystemHandle ${particleSystemHandle} for particle ${index}`
 			)
 	}
+
 	if (par === undefined) {
 		if (changedEnt !== undefined)
 			EventsSDK.emit(
@@ -715,6 +718,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			)
 		return
 	}
+
 	switch (msgType) {
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY: {
 			const submsg = msg.get("destroy_particle") as RecursiveProtobuf
@@ -921,11 +925,20 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_TRANSFORM: {
 			const submsg = msg.get("update_particle_transform") as RecursiveProtobuf,
-				cp = submsg.get("control_point") as number
+				cp = submsg.get("control_point") as number,
+				orientation = submsg.get("orientation") as Nullable<RecursiveProtobuf>
+
 			par.ControlPoints.set(
 				cp,
 				CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf)
 			)
+
+			if (orientation !== undefined && orientation.size !== 0)
+				par.ControlPointsQuaternion.set(
+					cp,
+					CMsgQuaternionToVector4(orientation)
+				)
+
 			// par.ControlPointsForward.set(
 			// 	cp,
 			// 	CMsgVectorToVector3(submsg.get("orientation") as RecursiveProtobuf)

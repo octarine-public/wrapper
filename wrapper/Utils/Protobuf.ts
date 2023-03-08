@@ -1,6 +1,7 @@
 import { Color } from "../Base/Color"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
+import { Vector4 } from "../Base/Vector4"
 import { ViewBinaryStream } from "./ViewBinaryStream"
 
 export enum ProtoType {
@@ -510,6 +511,18 @@ export function CMsgVectorToVector3(vec: Nullable<RecursiveProtobuf>): Vector3 {
 		(vec.get("x") as number) ?? 0,
 		(vec.get("y") as number) ?? 0,
 		(vec.get("z") as number) ?? 0
+	)
+}
+
+export function CMsgQuaternionToVector4(
+	vec: Nullable<RecursiveProtobuf>
+): Vector4 {
+	if (vec === undefined) return new Vector4(0, 0, 0, 0)
+	return new Vector4(
+		(vec.get("x") as number) ?? 0,
+		(vec.get("y") as number) ?? 0,
+		(vec.get("z") as number) ?? 0,
+		(vec.get("w") as number) ?? 0
 	)
 }
 

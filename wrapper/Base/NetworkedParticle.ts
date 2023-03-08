@@ -10,6 +10,7 @@ import {
 import { GameState } from "../Utils/GameState"
 import { QAngle } from "./QAngle"
 import { Vector3 } from "./Vector3"
+import { Vector4 } from "./Vector4"
 
 function ApproximateParticleLifetimeInternal(path: string): number {
 	if (!path.endsWith("_c")) path += "_c"
@@ -89,6 +90,7 @@ export class NetworkedParticle {
 	public readonly ControlPointsSnapshot = new Map<number, string>()
 	public readonly ControlPointsModel = new Map<number, string>()
 	public readonly ControlPointsForward = new Map<number, Vector3>()
+	public readonly ControlPointsQuaternion = new Map<number, Vector4>()
 	public readonly ControlPointsFallback = new Map<number, Vector3>()
 	public readonly ControlPointsOrient = new Map<
 		number,
