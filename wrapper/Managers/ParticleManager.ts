@@ -114,6 +114,11 @@ export class ParticlesSDK {
 		options: IDrawCircleOptions = {}
 	) {
 		this.CheckChangedRange(key, range)
+
+		const color = options.Color ?? Color.Aqua
+		if (options.Alpha !== undefined) // for support old scripts
+			color.SetA(options.Alpha)
+
 		return this.AddOrUpdate(
 			key,
 			RangeRenderPath(options.RenderStyle),
@@ -121,9 +126,8 @@ export class ParticlesSDK {
 			entity,
 			[0, options.Position ?? entity],
 			[1, range],
-			[2, options.Color ?? Color.Aqua],
-			[3, options.Width ?? 10],
-			[4, options.Alpha ?? 255]
+			[2, color],
+			[3, options.Width ?? 10]
 		)
 	}
 
