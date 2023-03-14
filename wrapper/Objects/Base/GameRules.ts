@@ -18,8 +18,6 @@ export class CGameRules extends Entity {
 	public TotalPausedTicks = -1
 	@NetworkedBasicField("m_nPauseStartTick")
 	public PauseStartTick = -1
-	@NetworkedBasicField("m_bGameTimeFrozen")
-	public IsTimeFrozen = false
 	@NetworkedBasicField("m_nExpectedPlayers")
 	public ExpectedPlayers = 0
 	@NetworkedBasicField("m_iGameMode")
