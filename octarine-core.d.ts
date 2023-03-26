@@ -163,6 +163,8 @@ declare function SendGCPingResponse(): void
 declare function AcceptMatch(): void
 declare function ToggleOBSBypass(state: boolean): void
 declare function ToggleRequestUserCmd(state: boolean): void
+declare function ToggleParticleRendering(state: boolean): void
+
 declare function setFireEvent(
 	cb: (eventName: string, cancellable: boolean, ...args: any) => boolean
 ): void
