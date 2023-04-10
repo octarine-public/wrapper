@@ -258,6 +258,9 @@ export class ParticlesSDK {
 	public SetConstrolPointByKey(key: any, id: number, point: ControlPoint) {
 		this.AllParticles.get(key)?.SetControlPoint(id, point)
 	}
+	public SetInFogVisibleByKey(key: any, state: boolean) {
+		this.AllParticles.get(key)?.SetInFogVisible(state)
+	}
 	public SetConstrolPointsByKey(key: any, ...points: ControlPointParam[]) {
 		this.AllParticles.get(key)?.SetControlPoints(...points)
 	}

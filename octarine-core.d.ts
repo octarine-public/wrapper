@@ -97,6 +97,7 @@ declare interface CustomGameEvents {
 declare interface Particles {
 	Create(path: string, attach: number, attachedTo: number): number
 	Destroy(particleID: number, immediate: boolean): void
+	SetInFogVisible(particleID: number, value: boolean): void
 	SetControlPoint(particleID: number, controlPoint: number): void // pass vec: Vector3 at IOBuffer offset 0
 	SetControlPointForward(particleID: number, controlPoint: number): void // pass vec: Vector3 at IOBuffer offset 0
 	DeleteAll(): void
@@ -163,7 +164,6 @@ declare function SendGCPingResponse(): void
 declare function AcceptMatch(): void
 declare function ToggleOBSBypass(state: boolean): void
 declare function ToggleRequestUserCmd(state: boolean): void
-declare function ToggleParticleRendering(state: boolean): void
 
 declare function setFireEvent(
 	cb: (eventName: string, cancellable: boolean, ...args: any) => boolean

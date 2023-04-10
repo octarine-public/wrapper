@@ -23,7 +23,8 @@
 		"wrapper_autogen/**/*",
 		"node_modules/**/*",
 		"scripts_files/**/*",
-		"wasm_source/**/*"
+		"wasm_source/**/*",
+		"../../../v8/*"
 	],
 	"compileOnSave": true
 }

@@ -72,6 +72,11 @@ export class Particle {
 		controlPoints.forEach(([id, param]) => this.SetControlPoint(id, param))
 	}
 
+	public SetInFogVisible(state = true) {
+		Particles.SetInFogVisible(this.EffectIndex, state)
+		return this
+	}
+
 	public Restart() {
 		if (!this.IsValid && !this.IsHidden) return
 		const save = [...this.ControlPoints.entries()]
@@ -120,6 +125,7 @@ export class Particle {
 					: -1
 			)
 			this.IsValid = true
+			this.SetInFogVisible()
 			this.SetControlPoints(...controlPoints)
 		} else this.IsHidden = true
 		this.Parent.AllParticles.set(this.Key, this)
