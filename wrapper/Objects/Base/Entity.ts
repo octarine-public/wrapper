@@ -118,7 +118,9 @@ export class Entity {
 	private CustomDrawColor_: Nullable<[Color, RenderMode]>
 	private RingRadius_ = 30
 
-	constructor(public readonly Index: number, private readonly Serial: number) {}
+	constructor(public readonly Index: number, private readonly Serial: number) {
+		this.ChangeNetworkPosition()
+	}
 
 	public get CustomGlowColor(): Nullable<Color> {
 		return this.CustomGlowColor_
@@ -155,9 +157,13 @@ export class Entity {
 	public get Position(): Vector3 {
 		return this.RealPosition
 	}
+
 	public get RealPosition(): Vector3 {
-		return GameState.IsInDraw ? this.VisualPosition : this.NetworkedPosition
+		// hack
+		this.ChangeNetworkPosition()
+		return GameState.IsInDraw ?  this.VisualPosition : this.NetworkedPosition
 	}
+
 	public get Angles(): QAngle {
 		return GameState.IsInDraw ? this.VisualAngles : this.NetworkedAngles
 	}
@@ -357,12 +363,14 @@ export class Entity {
 			err => console.error(this.ModelName, err)
 		)
 	}
+
 	public CalculateActivityModifiers(
 		_activity: GameActivity,
 		_ar: string[]
 	): void {
 		// to be implemented in child classes
 	}
+
 	public GetSequenceActivityModifiers(
 		activity = GameActivity.ACT_DOTA_IDLE,
 		sequenceNum = -1
@@ -378,6 +386,7 @@ export class Entity {
 		}
 		return undefined
 	}
+
 	public GetAttachments(
 		activity = GameActivity.ACT_DOTA_IDLE,
 		sequenceNum = -1
@@ -413,6 +422,7 @@ export class Entity {
 		}
 		return highestScored
 	}
+
 	public GetAttachment(
 		name: string,
 		activity = GameActivity.ACT_DOTA_IDLE,
@@ -420,6 +430,7 @@ export class Entity {
 	): Nullable<ComputedAttachment> {
 		return this.GetAttachments(activity, sequenceNum)?.get(name)
 	}
+
 	/**
 	 * @returns attachment position mid-animation
 	 */
@@ -452,6 +463,12 @@ export class Entity {
 
 	public toString(): string {
 		return this.Name
+	}
+
+	protected ChangeNetworkPosition() {
+		if (this.NetworkedPosition.Length < this.VisualPosition.Length) {
+			this.NetworkedPosition.CopyFrom(this.VisualPosition)
+		}
 	}
 }
 
@@ -493,12 +510,14 @@ RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, newVal) => {
 	ent.Owner_ = newVal as number
 	ent.OwnerEntity = EntityManager.EntityByIndex(ent.Owner_)
 })
+
 EventsSDK.on("PreEntityCreated", ent => {
 	ent.SpawnPosition.CopyFrom(ent.NetworkedPosition)
 	if (ent.Index === 0) return
 	for (const iter of EntityManager.AllEntities)
 		if (ent.HandleMatches(iter.Owner_)) iter.OwnerEntity = ent
 })
+
 EventsSDK.on("EntityDestroyed", ent => {
 	if (ent.Index === 0) return
 	for (const iter of EntityManager.AllEntities)
