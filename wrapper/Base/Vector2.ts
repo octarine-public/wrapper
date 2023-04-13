@@ -656,7 +656,7 @@ export class Vector2 {
 	 * @param vec The another vector
 	 * @param vecAngleRadian Angle of this vector
 	 */
-	public FindRotationAngle(vec: Vector3, vecAngleRadian = 0): number {
+	public FindRotationAngle(vec: Vector2, vecAngleRadian = 0): number {
 		const angle = Math.abs(
 			Math.atan2(vec.y - this.y, vec.x - this.x) - vecAngleRadian
 		)
