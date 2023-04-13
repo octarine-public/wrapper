@@ -145,7 +145,7 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_flStartSequenceCycle")
 	public StartSequenceCycle = 0
 	public StartSequenceCyclePrev = -1
-	public LastActivity: GameActivity = 0
+	public LastActivity = GameActivity.ACT_DOTA_NONE
 	public LastActivitySequenceVariant = 0
 	public LastActivityEndTime = 0
 	public LastActivityAnimationPoint = 0
@@ -1292,8 +1292,9 @@ function UnitNameChanged(unit: Unit) {
 
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, newVal) => {
 	const oldName = unit.Name
+	const newValue = newVal as number
 	unit.UnitName_ =
-		newVal >= 0 ? UnitData.GetUnitNameByNameIndex(newVal as number) ?? "" : ""
+		newValue >= 0 ? UnitData.GetUnitNameByNameIndex(newValue) ?? "" : ""
 	if (unit.UnitName_ === "") unit.UnitName_ = unit.Name_
 	if (oldName !== unit.Name) UnitNameChanged(unit)
 })

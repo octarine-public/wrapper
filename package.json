@@ -14,12 +14,13 @@
 		"eslint-plugin-unicorn": "^46.0.0",
 		"eslint-plugin-unused-imports": "^2.0.0",
 		"prettier": "^2.8.7",
-		"typescript": "^4.9.5"
+		"typescript": "^5.0.4"
 	},
 	"scripts": {
 		"check-types": "npx tsc",
 		"check-types-watch": "npx tsc --watch",
 		"check-circular": "npx madge --circular index.ts",
+		"upgrade-pack": "yarn upgrade-interactive --latest",
 		"lint": "eslint -c .eslintrc.json --ext .ts --fix ."
 	},
 	"contributors": [

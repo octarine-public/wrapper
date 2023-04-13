@@ -1,5 +1,8 @@
 {
+    "eslint.enable": true,
     "editor.insertSpaces": false,
+    "npm.packageManager": "yarn",
+    "task.allowAutomaticTasks": "on",
     "typescript.format.semicolons": "remove",
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true

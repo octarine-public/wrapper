@@ -24,7 +24,8 @@
 		"node_modules/**/*",
 		"scripts_files/**/*",
 		"wasm_source/**/*",
-		"../../../v8/*"
+		"../../../v8/*",
+		"../../../v8_new/v8/*"
 	],
 	"compileOnSave": true
 }

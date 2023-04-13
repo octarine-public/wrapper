@@ -54,7 +54,7 @@ export const InputManager = new (class CInputManager {
 
 Events.on("WndProc", (msg, wParam, _lParam, x, y) => {
 	InputManager.UpdateCursorOnScreen(x, y)
-	let mKey: VMouseKeys = 0
+	let mKey = 0
 	switch (msg) {
 		case InputMessage.WM_LBUTTONUP:
 		case InputMessage.WM_LBUTTONDOWN:
