@@ -1,4 +1,5 @@
 import { ProjectionInfo } from "../Geometry/ProjectionInfo"
+import { RadianToDegrees } from "../Utils/Math"
 import { Vector3 } from "./Vector3"
 
 export class Vector2 {
@@ -88,16 +89,10 @@ export class Vector2 {
 	 * Returns the polar for vector angle (in Degrees).
 	 */
 	public get Polar(): number {
-		if (Math.abs(this.x - 0) <= 1e-9)
+		if (Math.abs(this.x) <= 1e-9) {
 			return this.y > 0 ? 90 : this.y < 0 ? 270 : 0
-
-		let theta = Math.atan(this.y / this.x) * (180 / Math.PI)
-
-		if (this.x < 0) theta += 180
-
-		if (theta < 0) theta += 360
-
-		return theta
+		}
+		return RadianToDegrees(Math.atan2(this.y, this.x) + 360) % 360
 	}
 
 	public Equals(vec: Vector2): boolean {
@@ -151,8 +146,10 @@ export class Vector2 {
 	 * Randomizes this vector within given values
 	 */
 	public Random(minVal: number, maxVal: number): Vector2 {
-		this.x = Math.random() * (maxVal - minVal) + minVal
-		this.y = Math.random() * (maxVal - minVal) + minVal
+		const range = maxVal - minVal
+		const randomRange = Math.random() * range
+		this.x = randomRange + minVal
+		this.y = randomRange + minVal
 		return this
 	}
 	/**
@@ -232,7 +229,7 @@ export class Vector2 {
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
 	 */
 	public SquareRoot(): Vector2 {
-		return new Vector2(Math.sqrt(this.x), Math.sqrt(this.y))
+		return new Vector2(this.x ** 0.5, this.y ** 0.5)
 	}
 	/**
 	 * Copy this vector to another vector and return it
@@ -659,14 +656,11 @@ export class Vector2 {
 	 * @param vec The another vector
 	 * @param vecAngleRadian Angle of this vector
 	 */
-	public FindRotationAngle(vec: Vector2, vecAngleRadian = 0): number {
-		let angle = Math.abs(
+	public FindRotationAngle(vec: Vector3, vecAngleRadian = 0): number {
+		const angle = Math.abs(
 			Math.atan2(vec.y - this.y, vec.x - this.x) - vecAngleRadian
 		)
-
-		if (angle > Math.PI) angle = Math.abs(Math.PI * 2 - angle)
-
-		return angle
+		return angle <= Math.PI ? angle : 2 * Math.PI - angle
 	}
 	public RotationTime(rotSpeed: number): number {
 		return this.Angle / (30 * rotSpeed)
@@ -676,11 +670,9 @@ export class Vector2 {
 	 *
 	 * @param vec The another vector
 	 */
-	public AngleBetweenVectors(vec: Vector2): number {
-		let theta = this.Polar - vec.Polar
-		if (theta < 0) theta = theta + 360
-		if (theta > 180) theta = 360 - theta
-		return theta
+	public AngleBetweenVectors(vec: Vector3): number {
+		const theta = Math.abs((this.Polar - vec.Polar + 360) % 360)
+		return Math.min(theta, 360 - theta)
 	}
 	/**
 	 * Angle between two fronts
@@ -713,16 +705,15 @@ export class Vector2 {
 		return this.DistanceSqr(vec) < range ** 2
 	}
 	public Closest(vecs: Vector2[]): Vector2 {
-		let minVec = new Vector2()
-		let distance = Number.POSITIVE_INFINITY
-
-		vecs.forEach(vec => {
-			const tempDist = this.Distance(vec)
-			if (tempDist < distance) {
-				distance = tempDist
-				minVec = vec
+		let minVec = vecs[0]
+		let minDist = this.Distance(minVec)
+		for (let i = 1; i < vecs.length; i++) {
+			const tempDist = this.Distance(vecs[i])
+			if (tempDist < minDist) {
+				minDist = tempDist
+				minVec = vecs[i]
 			}
-		})
+		}
 		return minVec
 	}
 	/**

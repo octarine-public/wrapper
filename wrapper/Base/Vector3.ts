@@ -1,3 +1,4 @@
+import { RadianToDegrees } from "../Utils/Math"
 import { Vector2 } from "./Vector2"
 
 export class Vector3 {
@@ -45,7 +46,6 @@ export class Vector3 {
 	public static FromVector2(vec: Vector2): Vector3 {
 		return new Vector3(vec.x, vec.y, 0)
 	}
-
 	/**
 	 * Create new Vector3 with x, y, z
 	 *
@@ -111,16 +111,10 @@ export class Vector3 {
 	 * Returns the polar for vector angle (in Degrees).
 	 */
 	public get Polar(): number {
-		if (Math.abs(this.x - 0) <= 1e-9)
+		if (Math.abs(this.x) <= 1e-9) {
 			return this.y > 0 ? 90 : this.y < 0 ? 270 : 0
-
-		let theta = Math.atan(this.y / this.x) * (180 / Math.PI)
-
-		if (this.x < 0) theta += 180
-
-		if (theta < 0) theta += 360
-
-		return theta
+		}
+		return RadianToDegrees(Math.atan2(this.y, this.x) + 360) % 360
 	}
 
 	public Equals(vec: Vector3): boolean {
@@ -183,9 +177,11 @@ export class Vector3 {
 	 * Randomizes this vector within given values
 	 */
 	public Random(minVal: number, maxVal: number): Vector3 {
-		this.x = Math.random() * (maxVal - minVal) + minVal
-		this.y = Math.random() * (maxVal - minVal) + minVal
-		this.z = Math.random() * (maxVal - minVal) + minVal
+		const range = maxVal - minVal
+		const randomRange = Math.random() * range
+		this.x = randomRange + minVal
+		this.y = randomRange + minVal
+		this.z = randomRange + minVal
 		return this
 	}
 	/**
@@ -273,7 +269,7 @@ export class Vector3 {
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
 	 */
 	public SquareRoot(): Vector3 {
-		return new Vector3(Math.sqrt(this.x), Math.sqrt(this.y), Math.sqrt(this.z))
+		return new Vector3(this.x ** 0.5, this.y ** 0.5, this.z ** 0.5)
 	}
 	/**
 	 * Copy this vector to another vector and return it
@@ -754,13 +750,10 @@ export class Vector3 {
 	 * @param vecAngleRadian Angle of this vector
 	 */
 	public FindRotationAngle(vec: Vector3, vecAngleRadian = 0): number {
-		let angle = Math.abs(
+		const angle = Math.abs(
 			Math.atan2(vec.y - this.y, vec.x - this.x) - vecAngleRadian
 		)
-
-		if (angle > Math.PI) angle = Math.abs(Math.PI * 2 - angle)
-
-		return angle
+		return angle <= Math.PI ? angle : 2 * Math.PI - angle
 	}
 	public RotationTime(rotSpeed: number): number {
 		return this.Angle / (30 * rotSpeed)
@@ -771,10 +764,8 @@ export class Vector3 {
 	 * @param vec The another vector
 	 */
 	public AngleBetweenVectors(vec: Vector3): number {
-		let theta = this.Polar - vec.Polar
-		if (theta < 0) theta = theta + 360
-		if (theta > 180) theta = 360 - theta
-		return theta
+		const theta = Math.abs((this.Polar - vec.Polar + 360) % 360)
+		return Math.min(theta, 360 - theta)
 	}
 	/**
 	 * Angle between two fronts
@@ -782,7 +773,8 @@ export class Vector3 {
 	 * @param vec The another vector
 	 */
 	public AngleBetweenFaces(front: Vector3): number {
-		return Math.acos(this.x * front.x + this.y * front.y)
+		const dotProduct = this.x * front.x + this.y * front.y
+		return Math.atan2(Math.sqrt(1 - dotProduct * dotProduct), dotProduct)
 	}
 	public GetDirectionTo(target: Vector3): Vector3 {
 		return target.Subtract(this).Normalize()
@@ -817,16 +809,15 @@ export class Vector3 {
 		return this.DistanceSqr(vec) < range * range
 	}
 	public Closest(vecs: Vector3[]): Vector3 {
-		let minVec = new Vector3()
-		let distance = Number.POSITIVE_INFINITY
-
-		vecs.forEach(vec => {
-			const tempDist = this.Distance(vec)
-			if (tempDist < distance) {
-				distance = tempDist
-				minVec = vec
+		let minVec = vecs[0]
+		let minDist = this.Distance(minVec)
+		for (let i = 1; i < vecs.length; i++) {
+			const tempDist = this.Distance(vecs[i])
+			if (tempDist < minDist) {
+				minDist = tempDist
+				minVec = vecs[i]
 			}
-		})
+		}
 		return minVec
 	}
 	/**

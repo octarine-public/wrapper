@@ -161,7 +161,7 @@ export class Entity {
 	public get RealPosition(): Vector3 {
 		// hack
 		this.ChangeNetworkPosition()
-		return GameState.IsInDraw ?  this.VisualPosition : this.NetworkedPosition
+		return GameState.IsInDraw ? this.VisualPosition : this.NetworkedPosition
 	}
 
 	public get Angles(): QAngle {

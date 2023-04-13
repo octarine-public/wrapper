@@ -1223,7 +1223,7 @@ export class Unit extends Entity {
 		direction: Vector3,
 		target?: Nullable<Entity | number>,
 		queue?: boolean,
-		showEffects?: boolean,
+		showEffects?: boolean
 	) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION,
@@ -1244,7 +1244,13 @@ export class Unit extends Entity {
 	): void {
 		if (position instanceof Unit) position = position.Position
 
-		this.VectorTargetPosition(ability, direction, position instanceof Unit ? position : 0, queue, showEffects)
+		this.VectorTargetPosition(
+			ability,
+			direction,
+			position instanceof Unit ? position : 0,
+			queue,
+			showEffects
+		)
 		this.CastPosition(ability, position, queue, showEffects)
 	}
 	public ItemLock(item: Item, state = true) {

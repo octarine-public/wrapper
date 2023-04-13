@@ -116,7 +116,8 @@ export class ParticlesSDK {
 		this.CheckChangedRange(key, range)
 
 		const color = options.Color ?? Color.Aqua
-		if (options.Alpha !== undefined) // for support old scripts
+		if (options.Alpha !== undefined)
+			// for support old scripts
 			color.SetA(options.Alpha)
 
 		return this.AddOrUpdate(
