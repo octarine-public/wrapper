@@ -145,7 +145,7 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_flStartSequenceCycle")
 	public StartSequenceCycle = 0
 	public StartSequenceCyclePrev = -1
-	public LastActivity = GameActivity.ACT_DOTA_NONE
+	public LastActivity = 0 as GameActivity
 	public LastActivitySequenceVariant = 0
 	public LastActivityEndTime = 0
 	public LastActivityAnimationPoint = 0

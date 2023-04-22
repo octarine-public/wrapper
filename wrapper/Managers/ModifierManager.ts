@@ -205,8 +205,8 @@ enum DOTA_MODIFIER_ENTRY_TYPE {
 }
 
 message CDOTAModifierBuffTableEntry {
-	required .DOTA_MODIFIER_ENTRY_TYPE entry_type = 1;
-	required uint32 parent = 2;
+	required .DOTA_MODIFIER_ENTRY_TYPE entry_type = 1 [default = DOTA_MODIFIER_ENTRY_TYPE_ACTIVE];
+	required uint32 parent = 2 [default = 16777215];
 	required int32 index = 3;
 	required int32 serial_num = 4;
 	optional int32 modifier_class = 5;
@@ -214,8 +214,8 @@ message CDOTAModifierBuffTableEntry {
 	optional int32 stack_count = 7;
 	optional float creation_time = 8;
 	optional float duration = 9 [default = -1];
-	optional uint32 caster = 10;
-	optional uint32 ability = 11;
+	optional uint32 caster = 10 [default = 16777215];
+	optional uint32 ability = 11 [default = 16777215];
 	optional int32 armor = 12;
 	optional float fade_time = 13;
 	optional bool subtle = 14;
@@ -232,17 +232,17 @@ message CDOTAModifierBuffTableEntry {
 	optional int32 damage = 25;
 	optional int32 range = 26;
 	optional int32 dd_modifier_index = 27;
-	optional int32 dd_ability_id = 28;
+	optional int32 dd_ability_id = 28 [default = -1];
 	optional string illusion_label = 29;
 	optional bool active = 30;
-	optional string player_ids = 31;
+	optional string player_ids = 31 [default = "-1"];
 	optional string lua_name = 32;
 	optional int32 attack_speed = 33;
-	optional uint32 aura_owner = 34;
+	optional uint32 aura_owner = 34 [default = 16777215];
 	optional int32 bonus_all_stats = 35;
 	optional int32 bonus_health = 36;
 	optional int32 bonus_mana = 37;
-	optional uint32 custom_entity = 38;
+	optional uint32 custom_entity = 38 [default = 16777215];
 }
 `)
 EventsSDK.on("UpdateStringTable", (name, update) => {

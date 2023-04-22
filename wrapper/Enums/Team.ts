@@ -13,5 +13,7 @@ export enum Team {
 	Custom6,
 	Custom7,
 	Custom8,
+	DraftPool = 14,
+	Count = 15,
 	Invalid = 0xffffffff,
 }

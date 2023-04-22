@@ -1,7 +1,11 @@
 export enum LaneSelectionFlags {
-	SAFE_LANE = 1 << 0,
-	OFF_LANE = 1 << 1,
-	MID_LANE = 1 << 2,
-	SOFT_SUPPORT = 1 << 3,
-	HARD_SUPPORT = 1 << 4,
+	None,
+	SAFE_LANE,
+	OFF_LANE = 2,
+	MID_LANE = 4,
+	Core = 7,
+	SOFT_SUPPORT = 8,
+	HARD_SUPPORT = 16,
+	SUPPORT = 24,
+	ALL = 31,
 }

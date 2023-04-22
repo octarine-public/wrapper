@@ -130,7 +130,7 @@ message CSVCMsg_ServerInfo {
 	optional int32 c_os = 6;
 	optional int32 max_clients = 10;
 	optional int32 max_classes = 11;
-	optional int32 player_slot = 12;
+	optional int32 player_slot = 12 [default = -1];
 	optional float tick_interval = 13;
 	optional string game_dir = 14;
 	optional string map_name = 15;
@@ -199,7 +199,7 @@ enum DOTA_CHAT_MESSAGE {
 	CHAT_MESSAGE_SAFE_TO_LEAVE = 21;
 	CHAT_MESSAGE_RUNE_PICKUP = 22;
 	CHAT_MESSAGE_RUNE_BOTTLE = 23;
-	CHAT_MESSAGE_RUNE_DENY = 124;
+	CHAT_MESSAGE_RUNE_DENY = 114;
 	CHAT_MESSAGE_INTHEBAG = 24;
 	CHAT_MESSAGE_SECRETSHOP = 25;
 	CHAT_MESSAGE_ITEM_AUTOPURCHASED = 26;
@@ -277,6 +277,11 @@ enum DOTA_CHAT_MESSAGE {
 	CHAT_MESSAGE_HERO_CHOICE_INVALID = 108;
 	CHAT_MESSAGE_BOUNTY = 109;
 	CHAT_MESSAGE_ABILITY_DRAFT_START = 110;
+	CHAT_MESSAGE_HERO_FOUND_CANDY = 111;
+	CHAT_MESSAGE_ABILITY_DRAFT_RANDOMED = 112;
+	CHAT_MESSAGE_PRIVATE_COACH_CONNECTED = 113;
+	CHAT_MESSAGE_CANT_PAUSE_TOO_EARLY = 115;
+	CHAT_MESSAGE_HERO_KILL_WITH_PENGUIN = 116;
 }
 
 message CUserMsg_ParticleManager {
@@ -499,19 +504,23 @@ message CDOTAResponseQuerySerialized {
 		enum ValueType {
 			NUMERIC = 1;
 			STRING = 2;
+			STRINGTABLE_INDEX = 3;
+			INT_NUMERIC = 4;
 		}
 
 		required int32 key = 1;
 		required .CDOTAResponseQuerySerialized.Fact.ValueType valtype = 2 [default = NUMERIC];
 		optional float val_numeric = 3;
 		optional string val_string = 4;
+		optional int32 val_stringtable_index = 5;
+		optional sint32 val_int_numeric = 6;
 	}
 
 	repeated .CDOTAResponseQuerySerialized.Fact facts = 1;
 }
 
 message CDOTASpeechMatchOnClient {
-	optional int32 concept = 1;
+	optional int32 speech_concept = 1;
 	optional int32 recipient_type = 2;
 	optional .CDOTAResponseQuerySerialized responsequery = 3;
 	optional sfixed32 randomseed = 4 [default = 0];
@@ -524,10 +533,9 @@ message CDOTAUserMsg_UnitEvent {
 	}
 
 	message Speech {
-		optional int32 concept = 1;
+		optional int32 speech_concept = 1;
 		optional string response = 2;
 		optional int32 recipient_type = 3;
-		optional int32 level = 4;
 		optional bool muteable = 5 [default = false];
 		optional .CDOTAUserMsg_UnitEvent.Interval predelay = 6;
 		optional uint32 flags = 7;
@@ -585,15 +593,15 @@ message CDOTAUserMsg_ChatEvent {
 }
 
 message CDOTAUserMsg_TE_DotaBloodImpact {
-	optional int32 entity = 1;
+	optional uint32 entity = 1 [default = 16777215];
 	optional float scale = 2;
 	optional float xnormal = 3;
 	optional float ynormal = 4;
 }
 
 message CDOTAUserMsg_TE_UnitAnimation {
-	optional int32 entity = 1;
-	optional int32 sequenceVariant = 2;
+	optional uint32 entity = 1 [default = 16777215];
+	optional int32 sequence_variant = 2;
 	optional float playbackrate = 3;
 	optional float castpoint = 4;
 	optional int32 type = 5;
@@ -602,14 +610,14 @@ message CDOTAUserMsg_TE_UnitAnimation {
 }
 
 message CDOTAUserMsg_TE_UnitAnimationEnd {
-	optional int32 entity = 1;
+	optional uint32 entity = 1 [default = 16777215];
 	optional bool snap = 2;
 }
 
 message CMsgSosStartSoundEvent {
 	optional int32 soundevent_guid = 1;
 	optional fixed32 soundevent_hash = 2;
-	optional int32 source_entity_index = 3;
+	optional int32 source_entity_index = 3 [default = -1];
 	optional int32 seed = 4;
 	optional bytes packed_params = 5;
 	optional float start_time = 6;
@@ -621,7 +629,7 @@ message CMsgSosStopSoundEvent {
 
 message CMsgSosStopSoundEventHash {
 	optional fixed32 soundevent_hash = 1;
-	optional int32 source_entity_index = 2;
+	optional int32 source_entity_index = 2 [default = -1];
 }
 
 message CMsgSosSetSoundEventParams {
@@ -1066,10 +1074,9 @@ Events.on("ServerMessage", (msgID, buf_) => {
 						"UnitSpeech",
 						false,
 						ent,
-						submsg.get("concept") as number,
+						submsg.get("speech_concept") as number,
 						submsg.get("response") as string,
 						submsg.get("recipient_type") as number,
-						submsg.get("level") as number,
 						submsg.get("muteable") as boolean,
 						(predelay?.get("start") as number) ?? 0,
 						(predelay?.get("range") as number) ?? 0,
@@ -1174,7 +1181,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				"UnitAnimation",
 				false,
 				ent,
-				msg.get("sequenceVariant") as number,
+				msg.get("sequence_variant") as number,
 				msg.get("playbackrate") as number,
 				msg.get("castpoint") as number,
 				msg.get("type") as number,

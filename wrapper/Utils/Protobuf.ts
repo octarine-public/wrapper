@@ -484,6 +484,7 @@ message CMsgVector {
 	optional float x = 1;
 	optional float y = 2;
 	optional float z = 3;
+	optional float w = 4;
 }
 
 message CMsgVector2D {

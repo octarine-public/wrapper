@@ -9,7 +9,7 @@ message CSOEconItemEquipped {
 	optional uint32 new_slot = 2;
 }
 message CSOEconItemAttribute {
-	optional uint32 def_index = 1;
+	optional uint32 def_index = 1 [default = 65535];
 	optional uint32 value = 2;
 	optional bytes value_bytes = 3;
 }
@@ -26,7 +26,7 @@ message CSOEconItem {
 	repeated .CSOEconItemAttribute attribute = 12;
 	optional .CSOEconItem interior_item = 13;
 	optional uint32 style = 15 [default = 0];
-	optional uint64 original_id = 16 [default = 0];
+	optional uint64 original_id = 16;
 	repeated .CSOEconItemEquipped equipped_state = 18;
 }
 
@@ -73,6 +73,7 @@ message CSODOTAGameAccountClient {
 	optional uint32 prevent_text_chat_until_date = 20;
 	optional uint32 prevent_voice_until_date = 21;
 	optional uint32 prevent_public_text_chat_until_date = 86;
+	optional uint32 prevent_new_player_chat_until_date = 122;
 	optional uint32 last_abandoned_game_date = 22;
 	optional uint32 last_secondary_abandoned_game_date = 59;
 	optional uint32 leaver_penalty_count = 23;
@@ -81,14 +82,8 @@ message CSODOTAGameAccountClient {
 	optional uint32 account_disabled_count = 39;
 	optional uint32 match_disabled_until_date = 41;
 	optional uint32 match_disabled_count = 42;
-	optional .PartnerAccountType partner_account_type = 44 [default = PARTNER_NONE];
-	optional uint32 partner_account_state = 45;
 	optional uint32 shutdownlawterminatetimestamp = 47;
 	optional uint32 low_priority_games_remaining = 48;
-	optional uint32 competitive_rank = 49;
-	optional uint32 competitive_calibration_games_remaining = 51;
-	optional uint32 solo_competitive_2019_rank = 52;
-	optional uint32 solo_competitive_2019_calibration_games_remaining = 54;
 	optional uint32 recruitment_level = 55;
 	optional bool has_new_notifications = 56;
 	optional bool is_league_admin = 57;
@@ -105,22 +100,11 @@ message CSODOTAGameAccountClient {
 	optional bool player_behavior_report_old_data = 73;
 	optional uint32 tourney_skill_level = 74;
 	optional uint32 tourney_recent_participation_date = 85;
-	optional uint32 favorite_team = 87;
 	optional uint64 anchored_phone_number_id = 88;
 	optional uint32 ranked_matchmaking_ban_until_date = 89;
 	optional uint32 recent_game_time_1 = 90;
 	optional uint32 recent_game_time_2 = 91;
 	optional uint32 recent_game_time_3 = 92;
-	optional uint32 general_seasonal_ranked_rank = 93;
-	optional uint32 general_seasonal_ranked_calibration_games_remaining = 94;
-	optional uint32 general_seasonal_ranked_games_played = 95;
-	optional uint32 general_seasonal_ranked_rank_peak = 96;
-	optional bool general_seasonal_rank_transferred = 97;
-	optional uint32 solo_seasonal_ranked_rank = 98;
-	optional uint32 solo_seasonal_ranked_calibration_games_remaining = 99;
-	optional uint32 solo_seasonal_ranked_games_played = 100;
-	optional uint32 solo_seasonal_ranked_rank_peak = 101;
-	optional bool solo_seasonal_rank_transferred = 102;
 	optional uint64 favorite_team_packed = 103;
 	optional uint32 recent_report_time = 104;
 	optional uint32 custom_game_disabled_until_date = 105;
@@ -128,16 +112,8 @@ message CSODOTAGameAccountClient {
 	optional uint32 recent_win_time_2 = 107;
 	optional uint32 recent_win_time_3 = 108;
 	optional uint32 coach_rating = 109;
-	optional uint32 competitive_core_rank = 110;
-	optional uint32 competitive_core_calibration_games_remaining = 111;
-	optional uint32 competitive_support_rank = 112;
-	optional uint32 competitive_support_calibration_games_remaining = 113;
 	optional uint32 queue_points = 114;
 	repeated .CSODOTAGameAccountClient.RoleHandicap role_handicaps = 115;
-	optional uint32 gauntlet_tier = 116;
-	optional uint32 gauntlet_wins = 117;
-	optional uint32 gauntlet_losses = 118;
-	optional uint32 gauntlet_recent_time = 119;
 	optional uint32 event_mode_recent_time = 120;
 	optional uint32 mmr_recalibration_time = 121;
 }
@@ -153,21 +129,13 @@ enum ETourneyQueueDeadlineState {
 enum MatchType {
 	MATCH_TYPE_CASUAL = 0;
 	MATCH_TYPE_COOP_BOTS = 1;
-	MATCH_TYPE_LEGACY_TEAM_RANKED = 2;
-	MATCH_TYPE_LEGACY_SOLO_QUEUE = 3;
 	MATCH_TYPE_COMPETITIVE = 4;
 	MATCH_TYPE_WEEKEND_TOURNEY = 5;
-	MATCH_TYPE_CASUAL_1V1 = 6;
 	MATCH_TYPE_EVENT = 7;
-	MATCH_TYPE_SEASONAL_RANKED = 8;
-	MATCH_TYPE_LOWPRI_DEPRECATED = 9;
-	MATCH_TYPE_STEAM_GROUP = 10;
-	MATCH_TYPE_MUTATION = 11;
 	MATCH_TYPE_COACHES_CHALLENGE = 12;
-	MATCH_TYPE_GAUNTLET = 13;
+	MATCH_TYPE_NEW_PLAYER_POOL = 14;
 }
 message CSODOTAPartyMember {
-	optional .PartnerAccountType partner_type = 1 [default = PARTNER_NONE];
 	optional bool is_coach = 2;
 	repeated uint32 region_ping_codes = 4 [packed = true];
 	repeated uint32 region_ping_times = 5 [packed = true];
@@ -181,6 +149,7 @@ message CSODOTAPartyMember {
 	optional bool high_priority_disabled = 14;
 	optional bool has_hp_resource = 15;
 	optional bool joined_from_partyfinder = 12;
+	optional bool is_steam_china = 16;
 }
 enum DOTABotDifficulty {
 	BOT_DIFFICULTY_PASSIVE = 0;
@@ -192,6 +161,7 @@ enum DOTABotDifficulty {
 	BOT_DIFFICULTY_EXTRA1 = 6;
 	BOT_DIFFICULTY_EXTRA2 = 7;
 	BOT_DIFFICULTY_EXTRA3 = 8;
+	BOT_DIFFICULTY_NPX = 9;
 }
 message CSODOTAPartyInvite {
 	message PartyMember {
@@ -255,7 +225,6 @@ message CSODOTAParty {
 	optional uint32 matchgroups = 11;
 	optional uint32 low_priority_account_id = 19;
 	optional .MatchType match_type = 21 [default = MATCH_TYPE_CASUAL];
-	optional .DOTABotDifficulty bot_difficulty = 22 [default = BOT_DIFFICULTY_PASSIVE];
 	optional uint32 team_id = 23;
 	optional string team_name = 51;
 	optional uint64 team_ui_logo = 52;
@@ -282,7 +251,6 @@ message CSODOTAParty {
 	optional uint32 party_builder_match_groups = 57;
 	optional uint32 party_builder_start_time = 58;
 	optional bool solo_queue = 59;
-	optional uint32 bot_script_index = 60;
 	optional uint32 steam_clan_account_id = 61;
 	optional .CMsgReadyCheckStatus ready_check = 62;
 	optional uint32 custom_game_disabled_until_date = 63;
@@ -293,6 +261,9 @@ message CSODOTAParty {
 	optional .EHighPriorityMMState high_priority_state = 68 [default = k_EHighPriorityMM_Unknown];
 	optional bool lane_selections_enabled = 69;
 	optional uint32 custom_game_difficulty_mask = 70;
+	optional bool is_steam_china = 71;
+	optional uint32 bot_difficulty_mask = 72;
+	optional uint32 bot_script_index_mask = 73;
 }
 message CMsgLobbyPlayerPlusSubscriptionData {
 	message HeroBadge {
@@ -303,22 +274,13 @@ message CMsgLobbyPlayerPlusSubscriptionData {
 	repeated .CMsgLobbyPlayerPlusSubscriptionData.HeroBadge hero_badges = 1;
 }
 message CMsgLobbyEventPoints {
-	message ChatWheelMessageRange {
-		optional uint32 message_id_start = 1;
-		optional uint32 message_id_end = 2;
+	message PeriodicResourceData {
+		optional uint32 periodic_resource_id = 1;
+		optional uint32 remaining = 2;
+		optional uint32 max = 3;
 	}
 
-	message PingWheelMessageRange {
-		optional uint32 message_id_start = 1;
-		optional uint32 message_id_end = 2;
-	}
-
-	message PeriodicResourceValues {
-		optional uint32 remaining = 1;
-		optional uint32 max = 2;
-	}
-
-	message EventGameCustomActions {
+	message NetworkedEventAction {
 		optional uint32 action_id = 1;
 		optional uint32 times_granted = 2;
 	}
@@ -328,21 +290,14 @@ message CMsgLobbyEventPoints {
 		optional uint32 normal_points = 2;
 		optional uint32 premium_points = 3;
 		optional bool owned = 4;
-		optional uint32 favorite_team = 5;
-		optional uint32 favorite_team_level = 6;
-		optional uint32 favorite_team_foil_level = 9;
 		optional uint64 active_effects_mask = 12;
-		repeated .CMsgLobbyEventPoints.ChatWheelMessageRange unlocked_chat_wheel_message_ranges = 13;
-		optional .CMsgLobbyPlayerPlusSubscriptionData plus_subscription_data = 16;
-		optional .CMsgLobbyEventPoints.PeriodicResourceValues wager_tokens = 17;
-		optional .CMsgLobbyEventPoints.PeriodicResourceValues rank_wager_tokens = 18;
-		optional .CMsgLobbyEventPoints.PeriodicResourceValues tip_tokens = 19;
-		optional .CMsgLobbyEventPoints.PeriodicResourceValues periodic_point_adjustments = 21;
-		repeated .CMsgLobbyEventPoints.PingWheelMessageRange unlocked_ping_wheel_message_ranges = 22;
 		optional uint32 wager_streak = 23;
-		optional .CMsgLobbyEventPoints.PeriodicResourceValues bounties = 24;
-		repeated .CMsgLobbyEventPoints.EventGameCustomActions event_game_custom_actions = 25;
+		repeated .CMsgLobbyEventPoints.NetworkedEventAction event_game_custom_actions = 25;
 		optional uint32 tip_amount_index = 26;
+		optional uint32 active_event_season_id = 27;
+		optional uint32 teleport_fx_level = 28;
+		repeated .CMsgLobbyEventPoints.NetworkedEventAction networked_event_actions = 30;
+		repeated .CMsgLobbyEventPoints.PeriodicResourceData periodic_resources = 31;
 	}
 
 	optional uint32 event_id = 1;
@@ -355,6 +310,15 @@ enum DOTA_GC_TEAM {
 	DOTA_GC_TEAM_SPECTATOR = 3;
 	DOTA_GC_TEAM_PLAYER_POOL = 4;
 	DOTA_GC_TEAM_NOTEAM = 5;
+	DOTA_GC_TEAM_CUSTOM_1 = 6;
+	DOTA_GC_TEAM_CUSTOM_2 = 7;
+	DOTA_GC_TEAM_CUSTOM_3 = 8;
+	DOTA_GC_TEAM_CUSTOM_4 = 9;
+	DOTA_GC_TEAM_CUSTOM_5 = 10;
+	DOTA_GC_TEAM_CUSTOM_6 = 11;
+	DOTA_GC_TEAM_CUSTOM_7 = 12;
+	DOTA_GC_TEAM_CUSTOM_8 = 13;
+	DOTA_GC_TEAM_NEUTRALS = 14;
 }
 message CLobbyGuildDetails {
 	optional uint32 guild_id = 1;
@@ -402,7 +366,16 @@ enum EEvent {
 	EVENT_ID_INTERNATIONAL_2020 = 29;
 	EVENT_ID_TEAM_FANDOM = 30;
 	EVENT_ID_DIRETIDE_2020 = 31;
-	EVENT_ID_COUNT = 32;
+	EVENT_ID_SPRING_2021 = 32;
+	EVENT_ID_FALL_2021 = 33;
+	EVENT_ID_TEAM_FANDOM_FALL_2021 = 34;
+	EVENT_ID_TEAM_2021_2022_TOUR2 = 35;
+	EVENT_ID_INTERNATIONAL_2022 = 36;
+	EVENT_ID_TEAM_2021_2022_TOUR3 = 37;
+	EVENT_ID_TEAM_INTERNATIONAL_2022 = 38;
+	EVENT_ID_PERMANENT_GRANTS = 39;
+	EVENT_ID_MUERTA_RELEASE_SPRING2023 = 40;
+	EVENT_ID_TEAM_2023_TOUR1 = 41;
 }
 message CLobbyGuildChallenge {
 	optional uint32 guild_id = 1;
@@ -439,6 +412,16 @@ enum EMatchOutcome {
 	k_EMatchOutcome_Unknown = 0;
 	k_EMatchOutcome_RadVictory = 2;
 	k_EMatchOutcome_DireVictory = 3;
+	k_EMatchOutcome_NeutralVictory = 4;
+	k_EMatchOutcome_NoTeamWinner = 5;
+	k_EMatchOutcome_Custom1Victory = 6;
+	k_EMatchOutcome_Custom2Victory = 7;
+	k_EMatchOutcome_Custom3Victory = 8;
+	k_EMatchOutcome_Custom4Victory = 9;
+	k_EMatchOutcome_Custom5Victory = 10;
+	k_EMatchOutcome_Custom6Victory = 11;
+	k_EMatchOutcome_Custom7Victory = 12;
+	k_EMatchOutcome_Custom8Victory = 13;
 	k_EMatchOutcome_NotScored_PoorNetworkConditions = 64;
 	k_EMatchOutcome_NotScored_Leaver = 65;
 	k_EMatchOutcome_NotScored_ServerCrash = 66;
@@ -487,6 +470,7 @@ message CMsgPendingEventAward {
 	optional uint32 num_to_grant = 3;
 	optional .EEventActionScoreMode score_mode = 4 [default = k_eEventActionScoreMode_Add];
 	optional uint32 audit_action = 5;
+	optional uint64 audit_data = 6;
 }
 enum DOTALeaverStatus_t {
 	DOTA_LEAVER_NONE = 0;
@@ -513,9 +497,9 @@ message CSODOTALobbyMember {
 	optional uint32 leaver_actions = 28;
 	optional uint32 channel = 17 [default = 6];
 	repeated uint32 disabled_hero_id = 20;
-	optional .PartnerAccountType partner_account_type = 21 [default = PARTNER_NONE];
 	repeated uint32 enabled_hero_id = 22;
 	optional .DOTA_GC_TEAM coach_team = 23 [default = DOTA_GC_TEAM_NOTEAM];
+	repeated uint32 coached_account_ids = 53;
 	optional uint32 coach_rating = 42;
 	optional uint32 pwrd_cyber_cafe_id = 24;
 	optional string pwrd_cyber_cafe_name = 25;
@@ -526,7 +510,6 @@ message CSODOTALobbyMember {
 	optional .MatchType search_match_type = 33 [default = MATCH_TYPE_CASUAL];
 	optional uint64 favorite_team_packed = 35;
 	optional bool is_plus_subscriber = 36;
-	optional bool rank_tier_updated = 37;
 	optional uint32 lane_selection_flags = 38;
 	optional bool can_earn_rewards = 39;
 	optional .DOTA_GC_TEAM live_spectator_team = 40 [default = DOTA_GC_TEAM_NOTEAM];
@@ -539,6 +522,9 @@ message CSODOTALobbyMember {
 	optional uint32 title = 50;
 	optional uint32 guild_id = 51;
 	optional uint32 reports_available = 52;
+	optional bool is_steam_china = 54;
+	optional uint32 live_spectator_account_id = 55;
+	optional uint32 comms_reports_available = 56;
 }
 message CLobbyTeamDetails {
 	optional string team_name = 1;
@@ -554,6 +540,7 @@ message CLobbyTeamDetails {
 	optional bool is_challenge_match = 18;
 	optional uint64 challenge_match_token_account = 19;
 	optional string team_logo_url = 20;
+	optional string team_abbreviation = 21;
 }
 enum DOTA_GameState {
 	DOTA_GAMERULES_STATE_INIT = 0;
@@ -567,16 +554,14 @@ enum DOTA_GameState {
 	DOTA_GAMERULES_STATE_TEAM_SHOWCASE = 8;
 	DOTA_GAMERULES_STATE_CUSTOM_GAME_SETUP = 9;
 	DOTA_GAMERULES_STATE_WAIT_FOR_MAP_TO_LOAD = 10;
-	DOTA_GAMERULES_STATE_LAST = 11;
+	DOTA_GAMERULES_STATE_SCENARIO_SETUP = 11;
+	DOTA_GAMERULES_STATE_PLAYER_DRAFT = 12;
+	DOTA_GAMERULES_STATE_LAST = 13;
 }
 enum DOTA_CM_PICK {
 	DOTA_CM_RANDOM = 0;
 	DOTA_CM_GOOD_GUYS = 1;
 	DOTA_CM_BAD_GUYS = 2;
-}
-enum DOTAGameVersion {
-	GAME_VERSION_CURRENT = 0;
-	GAME_VERSION_STABLE = 1;
 }
 message CLobbyTimedRewardDetails {
 	optional uint32 item_def_index = 2;
@@ -596,6 +581,16 @@ message CLobbyBroadcastChannelInfo {
 	optional string country_code = 2;
 	optional string description = 3;
 	optional string language_code = 4;
+}
+enum ELobbyMemberCoachRequestState {
+	k_eLobbyMemberCoachRequestState_None = 0;
+	k_eLobbyMemberCoachRequestState_Accepted = 1;
+	k_eLobbyMemberCoachRequestState_Rejected = 2;
+}
+message CMsgLobbyCoachFriendRequest {
+	optional uint32 coach_account_id = 1;
+	optional uint32 player_account_id = 2;
+	optional .ELobbyMemberCoachRequestState request_state = 3 [default = k_eLobbyMemberCoachRequestState_None];
 }
 message CSODOTALobby {
 	message CExtraMsg {
@@ -618,20 +613,16 @@ message CSODOTALobby {
 		CASUAL_MATCH = 0;
 		PRACTICE = 1;
 		COOP_BOT_MATCH = 4;
-		LEGACY_TEAM_MATCH = 5;
-		LEGACY_SOLO_QUEUE_MATCH = 6;
 		COMPETITIVE_MATCH = 7;
-		CASUAL_1V1_MATCH = 8;
 		WEEKEND_TOURNEY = 9;
 		LOCAL_BOT_MATCH = 10;
 		SPECTATOR = 11;
 		EVENT_MATCH = 12;
-		GAUNTLET = 13;
+		NEW_PLAYER_POOL = 14;
+		FEATURED_GAMEMODE = 15;
 	}
 
 	optional uint64 lobby_id = 1 [(key_field) = true];
-	repeated .CSODOTALobbyMember v2_members = 2;
-	repeated .CSODOTALobbyMember v2_left_members = 7;
 	repeated .CSODOTALobbyMember all_members = 120;
 	repeated uint32 member_indices = 121;
 	repeated uint32 left_member_indices = 122;
@@ -659,7 +650,6 @@ message CSODOTALobby {
 	optional uint64 match_id = 30;
 	optional bool allow_spectating = 31 [default = true];
 	optional .DOTABotDifficulty bot_difficulty_radiant = 36 [default = BOT_DIFFICULTY_HARD];
-	optional .DOTAGameVersion game_version = 37 [default = GAME_VERSION_CURRENT];
 	repeated .CLobbyTimedRewardDetails timed_reward_details = 38;
 	optional string pass_key = 39;
 	optional uint32 leagueid = 42;
@@ -689,17 +679,14 @@ message CSODOTALobby {
 	optional uint64 custom_game_id = 68;
 	optional uint32 custom_min_players = 71;
 	optional uint32 custom_max_players = 72;
-	optional .PartnerAccountType partner_type = 73 [default = PARTNER_NONE];
 	optional .DOTALobbyVisibility visibility = 75 [default = DOTALobbyVisibility_Public];
 	optional fixed64 custom_game_crc = 76;
 	optional bool custom_game_auto_created_lobby = 77;
 	optional fixed32 custom_game_timestamp = 80;
 	repeated uint64 previous_series_matches = 81;
 	optional uint64 previous_match_override = 82;
-	optional bool custom_game_uses_account_records = 83;
 	optional uint32 game_start_time = 87;
 	optional .LobbyDotaPauseSetting pause_setting = 88 [default = LobbyDotaPauseSetting_Unlimited];
-	optional uint32 lobby_mvp_account_id = 89;
 	optional uint32 weekend_tourney_division_id = 90;
 	optional uint32 weekend_tourney_skill_level = 91;
 	optional uint32 weekend_tourney_bracket_round = 92;
@@ -720,7 +707,6 @@ message CSODOTALobby {
 	optional string lan_host_ping_location = 109;
 	optional uint32 league_node_id = 110;
 	optional uint32 match_duration = 111;
-	optional bool custom_game_browseable = 112;
 	optional uint32 league_phase = 113;
 	optional bool record_detailed_stats = 114;
 	optional bool experimental_gameplay_enabled = 116;
@@ -728,6 +714,12 @@ message CSODOTALobby {
 	repeated .CLobbyGuildDetails guild_details = 118;
 	repeated .CMsgLobbyEventPoints lobby_event_points = 119;
 	repeated uint32 requested_hero_ids = 124;
+	repeated .CMsgLobbyCoachFriendRequest coach_friend_requests = 125;
+	optional bool is_in_steam_china = 126;
+	optional bool with_scenario_save = 127;
+	optional uint32 lobby_creation_time = 128;
+	optional string event_game_definition = 129;
+	repeated .CSODOTALobby.CExtraMsg extra_startup_messages = 130;
 }
 message CSODOTAGameHeroFavorites {
 	optional uint32 account_id = 1 [(key_field) = true];

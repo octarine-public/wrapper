@@ -91,6 +91,10 @@ export function GetConstructorByName(
 	className: string,
 	constructorNameHint?: string
 ): Nullable<Constructor<Entity>> {
+	// TODO
+	if (className === "CDOTA_Lamp_Use") {
+		className = "CDOTA_Ability_Lamp_Use"
+	}
 	if (
 		constructorNameHint !== undefined &&
 		constructors.has(constructorNameHint)

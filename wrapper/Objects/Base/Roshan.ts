@@ -23,7 +23,7 @@ export class Roshan extends Unit {
 }
 
 function GetHPChangedByMinute(minute: number): number {
-	let hpChanged = 115
+	let hpChanged = 130
 	if (GameRules?.GameMode === DOTAGameMode.DOTA_GAMEMODE_TURBO) hpChanged *= 2
 	return minute * hpChanged
 }

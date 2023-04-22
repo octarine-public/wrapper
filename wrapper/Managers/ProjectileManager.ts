@@ -177,7 +177,7 @@ message CDOTAUserMsg_ProjectileParticleCPData {
 message CDOTAUserMsg_CreateLinearProjectile {
 	optional .CMsgVector origin = 1;
 	optional .CMsgVector2D velocity = 2;
-	optional int32 entindex = 4;
+	optional int32 entindex = 4 [default = -1];
 	optional uint64 particle_index = 5;
 	optional int32 handle = 6;
 	optional .CMsgVector2D acceleration = 7;
@@ -199,36 +199,39 @@ message CDOTAUserMsg_DodgeTrackingProjectiles {
 }
 
 message CDOTAUserMsg_TE_Projectile {
-	optional int32 hSource = 1;
-	optional int32 hTarget = 2;
-	optional int32 moveSpeed = 3;
-	optional int32 sourceAttachment = 4;
-	optional int64 particleSystemHandle = 5;
+	optional uint32 source = 1 [default = 16777215];
+	optional uint32 target = 2 [default = 16777215];
+	optional int32 move_speed = 3;
+	optional int32 source_attachment = 4;
+	optional int64 particle_system_handle = 5;
 	optional bool dodgeable = 6;
-	optional bool isAttack = 7;
-	optional float expireTime = 9;
+	optional bool is_attack = 7;
+	optional float expire_time = 9;
 	optional float maximpacttime = 10;
 	optional fixed32 colorgemcolor = 11;
 	optional int32 launch_tick = 12;
 	optional int32 handle = 13;
-	optional .CMsgVector vTargetLoc = 14;
+	optional .CMsgVector target_loc = 14;
+	repeated .CDOTAUserMsg_ProjectileParticleCPData particle_cp_data = 15;
+	optional int64 additional_particle_system_handle = 16;
 }
 
 message CDOTAUserMsg_TE_ProjectileLoc {
-	optional .CMsgVector vSourceLoc = 1;
-	optional int32 hTarget = 2;
-	optional int32 moveSpeed = 3;
-	optional int64 particleSystemHandle = 4;
+	optional .CMsgVector source_loc = 1;
+	optional uint32 target = 2 [default = 16777215];
+	optional int32 move_speed = 3;
+	optional int64 particle_system_handle = 4;
 	optional bool dodgeable = 5;
-	optional bool isAttack = 6;
-	optional float expireTime = 9;
-	optional .CMsgVector vTargetLoc = 10;
+	optional bool is_attack = 6;
+	optional float expire_time = 9;
+	optional .CMsgVector target_loc = 10;
 	optional fixed32 colorgemcolor = 11;
 	optional int32 launch_tick = 12;
 	optional int32 handle = 13;
-	optional int32 hSource = 14;
-	optional int32 sourceAttachment = 15;
+	optional uint32 source = 14 [default = 16777215];
+	optional int32 source_attachment = 15;
 	repeated .CDOTAUserMsg_ProjectileParticleCPData particle_cp_data = 16;
+	optional int64 additional_particle_system_handle = 17;
 }
 
 message CDOTAUserMsg_TE_DestroyProjectile {
@@ -310,28 +313,27 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				new Uint8Array(buf_),
 				"CDOTAUserMsg_TE_Projectile"
 			)
-			const particleSystemHandle = msg.get("particleSystemHandle") as bigint
+			const particleSystemHandle = msg.get("particle_system_handle") as bigint
 			const projectile = new TrackingProjectile(
 				msg.get("handle") as number,
-				GetPredictionTarget(msg.get("hSource") as number),
-				GetPredictionTarget(msg.get("hTarget") as number),
-				msg.get("moveSpeed") as number,
+				GetPredictionTarget(msg.get("source") as number),
+				GetPredictionTarget(msg.get("target") as number),
+				msg.get("move_speed") as number,
 				projectileAttachmentsNames[
-					(msg.get("sourceAttachment") as Nullable<number>) ?? 0
+					(msg.get("source_attachment") as Nullable<number>) ?? 0
 				],
 				(particleSystemHandle !== undefined
 					? GetPathByHash(particleSystemHandle)
 					: undefined)!,
 				particleSystemHandle ?? 0n,
 				msg.get("dodgeable") as boolean,
-				msg.get("isAttack") as boolean,
-				msg.get("expireTime") as number,
+				msg.get("is_attack") as boolean,
+				msg.get("expire_time") as number,
 				msg.get("maximpacttime") as number,
 				msg.get("launch_tick") as number,
-				CMsgVectorToVector3(msg.get("vTargetLoc") as RecursiveProtobuf),
+				CMsgVectorToVector3(msg.get("target_loc") as RecursiveProtobuf),
 				NumberToColor(msg.get("colorgemcolor") as number)
 			)
-
 			TrackingProjectileCreated(projectile)
 			break
 		}
@@ -340,16 +342,16 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				new Uint8Array(buf_),
 				"CDOTAUserMsg_TE_ProjectileLoc"
 			)
-			const target = GetPredictionTarget(msg.get("hTarget") as number)
+			const target = GetPredictionTarget(msg.get("target") as number)
 			const handle = msg.get("handle") as number,
 				launchTick = msg.get("launch_tick") as number,
-				expireTime = msg.get("expireTime") as number,
-				moveSpeed = msg.get("moveSpeed") as number,
+				expireTime = msg.get("expire_time") as number,
+				moveSpeed = msg.get("move_speed") as number,
 				dodgeable = msg.get("dodgeable") as boolean,
-				isAttack = msg.get("isAttack") as boolean,
-				particleSystemHandle = msg.get("particleSystemHandle") as bigint,
+				isAttack = msg.get("is_attack") as boolean,
+				particleSystemHandle = msg.get("particle_system_handle") as bigint,
 				targetLoc = CMsgVectorToVector3(
-					msg.get("vTargetLoc") as RecursiveProtobuf
+					msg.get("target_loc") as RecursiveProtobuf
 				)
 			const path = (
 				particleSystemHandle !== undefined
@@ -377,7 +379,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				)
 				// TODO: do we need particle_cp_data?
 				projectile.Position.CopyFrom(
-					CMsgVectorToVector3(msg.get("vSourceLoc") as RecursiveProtobuf)
+					CMsgVectorToVector3(msg.get("source_loc") as RecursiveProtobuf)
 				)
 
 				TrackingProjectileCreated(projectile)
