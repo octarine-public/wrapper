@@ -37,8 +37,12 @@ export class item_bottle extends Item {
 				return "panorama/images/items/bottle_bounty_png.vtex_c"
 			case DOTA_RUNES.DOTA_RUNE_ARCANE:
 				return "panorama/images/items/bottle_arcane_png.vtex_c"
+			case DOTA_RUNES.DOTA_RUNE_WATER:
+				return "panorama/images/items/bottle_water_png.vtex_c"
 			case DOTA_RUNES.DOTA_RUNE_XP:
-				return "panorama/images/items/bottle4_png.vtex_c"
+				return "panorama/images/items/bottle_xp_png.vtex_c"
+			case DOTA_RUNES.DOTA_RUNE_SHIELD:
+				return "panorama/images/items/bottle_shield_png.vtex_c"
 			default:
 				switch (this.CurrentCharges) {
 					case 2:
