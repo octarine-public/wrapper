@@ -51,6 +51,16 @@ function CreateEntity(
 	className: string,
 	entityName: Nullable<string>
 ): Entity {
+	// TODO
+	switch (className) {
+		case "CDOTA_Lamp_Use":
+			className = "CDOTA_Ability_Lamp_Use"
+			break
+		case "CODTA_Item_Gossamer_Cape":
+			className = "CDOTA_Item_Gossamer_Cape"
+			break
+	}
+
 	const entity = ClassFromNative(id, serial, className, entityName)
 	entity.FieldHandlers_ = CachedFieldHandlers.get(
 		entity.constructor as Constructor<Entity>
