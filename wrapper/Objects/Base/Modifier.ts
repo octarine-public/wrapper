@@ -154,6 +154,14 @@ export class Modifier {
 	}
 
 	public Update(): void {
+		//** skip(spam) */
+		switch (this.Name) {
+			case "modifier_hp_regen":
+			case "modifier_mp_regen":
+			case "modifier_bonus_damage":
+			case "modifier_bonus_armor":
+				return
+		}
 		const newCaster = EntityManager.EntityByIndex(
 				this.kv.Caster
 			) as Nullable<Unit>,
@@ -252,6 +260,7 @@ export class Modifier {
 		else if (this.Parent !== undefined)
 			EventsSDK.emit("ModifierChangedVBE", false, this)
 	}
+
 	public Remove(): void {
 		if (this.Parent === undefined || !this.Parent.Buffs.includes(this)) return
 		arrayRemove(this.Parent.Buffs, this)
