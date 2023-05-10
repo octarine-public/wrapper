@@ -387,7 +387,7 @@ export class Unit extends Entity {
 		return IOBufferView.getBigUint64(0, true)
 	}
 	public get UnitState(): modifierstate[] {
-		return MaskToArrayBigInt(this.UnitStateMask)
+		return MaskToArrayBigInt(this.UnitStateMask_)
 	}
 	public get IsEthereal(): boolean {
 		for (const buff of this.Buffs)
@@ -548,7 +548,7 @@ export class Unit extends Entity {
 	}
 
 	public IsUnitStateFlagSet(flag: modifierstate): boolean {
-		return HasBitBigInt(this.UnitStateMask, BigInt(flag))
+		return HasBitBigInt(this.UnitStateMask_, BigInt(flag))
 	}
 	public IsControllableByPlayer(playerID: number): boolean {
 		return HasBitBigInt(this.IsControllableByPlayerMask, BigInt(playerID))
