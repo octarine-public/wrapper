@@ -15,7 +15,7 @@ export class CGameRules extends Entity {
 	@NetworkedBasicField("m_bGamePaused")
 	public IsPaused = false
 	@NetworkedBasicField("m_nTotalPausedTicks")
-	public TotalPausedTicks = -1
+	public TotalPausedTicks: number | number[] = -1
 	@NetworkedBasicField("m_nPauseStartTick")
 	public PauseStartTick = -1
 	@NetworkedBasicField("m_nExpectedPlayers")

@@ -1252,10 +1252,16 @@ EventsSDK.on("ServerTick", tick => {
 	GameState.CurrentServerTick = tick
 	if (GameRules !== undefined) {
 		// TODO: verify correctness
-		const timeTick = GameRules.IsPaused ? GameRules.PauseStartTick : tick,
-			prevTime = GameState.RawGameTime
+		const timeTick = GameRules.IsPaused ? GameRules.PauseStartTick : tick
+		const prevTime = GameState.RawGameTime
+
+		const totalPausedTicks = GameRules.TotalPausedTicks
 		GameState.RawGameTime = GameRules.RawGameTime =
-			(timeTick - GameRules.TotalPausedTicks) / 30 // TODO: is there a better way?
+			(timeTick -
+				(!Array.isArray(totalPausedTicks)
+					? totalPausedTicks
+					: Math.max(...totalPausedTicks))) /
+			30 // TODO: is there a better way?
 
 		if (prevTime === 0)
 			EntityManager.AllEntities.forEach(
