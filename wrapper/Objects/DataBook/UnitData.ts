@@ -114,6 +114,7 @@ export class UnitData {
 	public readonly MovementCapabilities: DOTAUnitMoveCapability
 	public readonly ArmorPhysical: number
 	public readonly MagicalResistance: number
+	public readonly Abilities = new Map<string, boolean>()
 	public readonly AttackSpeedActivityModifiers: [number, string][] = []
 	public readonly MovementSpeedActivityModifiers: [number, string][] = []
 	public readonly AttackRangeActivityModifiers: [number, string][] = []
@@ -264,6 +265,14 @@ export class UnitData {
 					if (typeof v === "string")
 						this.AttackRangeActivityModifiers.push([parseFloat(v), k])
 			this.AttackRangeActivityModifiers.sort((a, b) => b[0] - a[0])
+		}
+
+		for (let index = 1; index < 17; index++) {
+			const name = kv.get(`Ability${index}`) as Nullable<string>
+			if (name === undefined || name.length <= 0 || name.startsWith("special_") || name.includes("hidden")) {
+				continue
+			}
+			this.Abilities.set(name, true)
 		}
 	}
 }
