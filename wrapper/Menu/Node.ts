@@ -307,10 +307,12 @@ export class Node extends Base {
 		name: string,
 		defaultValue: boolean = false,
 		tooltip = "",
-		priority = 0
+		priority = 0,
+		iconPath = "panorama/images/hud/reborn/icon_magic_resist_psd.vtex_c",
+		iconRound = -1
 	): Toggle {
 		return this.AddEntry(
-			new Toggle(this, name, defaultValue, tooltip),
+			new Toggle(this, name, defaultValue, tooltip, iconPath, iconRound),
 			priority
 		)
 	}

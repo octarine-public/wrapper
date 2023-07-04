@@ -20,6 +20,17 @@ export class Toggle extends Base {
 		Toggle.toggleBackgroundOffset.y = GUIInfo.ScaleHeight(12)
 		Toggle.toggleOffset.x = GUIInfo.ScaleWidth(3)
 		Toggle.toggleOffset.y = GUIInfo.ScaleHeight(3)
+
+		Toggle.iconSize.x = GUIInfo.ScaleWidth(24)
+		Toggle.iconSize.y = GUIInfo.ScaleHeight(24)
+		Toggle.iconOffset.x = GUIInfo.ScaleWidth(12)
+		Toggle.iconOffset.y = GUIInfo.ScaleHeight(8)
+
+		Toggle.textOffsetNode.x = GUIInfo.ScaleWidth(15)
+		Toggle.textOffsetNode.y = GUIInfo.ScaleHeight(13)
+
+		Toggle.textOffsetWithIcon.x = GUIInfo.ScaleWidth(48)
+		Toggle.textOffsetWithIcon.y = Toggle.textOffsetNode.y
 	}
 
 	private static readonly toggleBackgroundPath = "menu/toggle_background.svg"
@@ -36,8 +47,17 @@ export class Toggle extends Base {
 	private static readonly toggleOffset = new Vector2()
 	private static readonly toggleBackgroundColorActive = new Color(104, 4, 255)
 	private static readonly toggleBackgroundColorInactive = new Color(31, 30, 53)
+	private static readonly iconActive = Color.Green
+	private static readonly iconInactive = Color.Red
+
 	private static readonly textToggleGap = 10
 	private static readonly animationTime = 150
+
+	private static readonly iconSize = new Vector2()
+	private static readonly iconOffset = new Vector2()
+	private static readonly textOffsetNode = new Vector2(15, 14)
+
+	private static readonly textOffsetWithIcon = new Vector2()
 
 	public value = true
 	private animationStartTime = 0
@@ -47,12 +67,28 @@ export class Toggle extends Base {
 		parent: IMenu,
 		name: string,
 		defaultValue: boolean,
-		tooltip = ""
+		tooltip = "",
+		private iconPath_ = "",
+		private iconRound_ = -1
 	) {
 		super(parent, name, tooltip)
 		this.value = defaultValue
 	}
 
+	public get IconPath(): string {
+		return this.iconPath_
+	}
+	public set IconPath(val: string) {
+		this.iconPath_ = val
+		this.Update()
+	}
+	public get IconRound(): number {
+		return this.iconRound_
+	}
+	public set IconRound(val: number) {
+		this.iconRound_ = val
+		this.Update()
+	}
 	public get ConfigValue() {
 		return this.value
 	}
@@ -80,6 +116,8 @@ export class Toggle extends Base {
 			Toggle.textToggleGap +
 			Toggle.toggleBackgroundSize.x +
 			Toggle.toggleBackgroundOffset.x
+		if (this.IconPath !== "") this.Size.AddScalarX(Toggle.textOffsetWithIcon.x)
+		else this.Size.AddScalarX(this.textOffset.x)
 		return true
 	}
 
@@ -95,7 +133,23 @@ export class Toggle extends Base {
 	}
 	public Render(): void {
 		super.Render()
-		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
+		const textPos = this.Position.Clone()
+		if (this.IconPath !== "") {
+			textPos.AddForThis(Toggle.textOffsetWithIcon)
+			const color = this.IconPath.includes("icon_magic_resist_psd")
+				? this.value
+					? Toggle.iconActive
+					: Toggle.iconInactive
+				: Color.White
+			RendererSDK.Image(
+				this.IconPath,
+				this.Position.Add(Toggle.iconOffset),
+				this.IconRound,
+				Toggle.iconSize,
+				color
+			)
+		} else textPos.AddForThis(this.textOffset)
+		this.RenderTextDefault(this.Name, textPos)
 		const animationState = Math.min(
 			1,
 			(hrtime() - this.animationStartTime) / Toggle.animationTime
