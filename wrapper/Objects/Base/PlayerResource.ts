@@ -4,10 +4,12 @@ import { PlayerTeamData } from "../../Base/PlayerTeamData"
 import { Vector3 } from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
 import { Team } from "../../Enums/Team"
+import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { Entity } from "../Base/Entity"
-import { PlayerSpawners } from "./InfoPlayerStartDota"
+import { InfoPlayerStartBadGuys } from "./InfoPlayerStartBadGuys"
+import { InfoPlayerStartGoodGuys } from "./InfoPlayerStartGoodGuys"
 
 @WrapperClass("CDOTA_PlayerResource")
 export class CPlayerResource extends Entity {
@@ -55,6 +57,12 @@ EventsSDK.on("EntityDestroyed", ent => {
 	if (ent instanceof CPlayerResource) PlayerResource = undefined
 })
 
+const GoodGuysSpawners = EntityManager.GetEntitiesByClass(
+	InfoPlayerStartGoodGuys
+)
+
+const BadGuysSpawners = EntityManager.GetEntitiesByClass(InfoPlayerStartBadGuys)
+
 function GetTeamDeaths(playerResource: CPlayerResource, team: Team) {
 	let deaths = 0
 	for (let i = 0; i < playerResource.PlayerData.length; i++) {
@@ -71,21 +79,23 @@ function GetTeamDeaths(playerResource: CPlayerResource, team: Team) {
 }
 
 function GetNextSpawn(playerResource: CPlayerResource, team: Team) {
-	let res = GetTeamDeaths(playerResource, team) + 4
+	let res = GetTeamDeaths(playerResource, team) + 5
 	for (const data of playerResource.PlayerData) if (data?.Team === team) res++
 	return res
 }
 
 function UpdateRespawnPositions(playerResource: CPlayerResource) {
+	const playerSpawners = GoodGuysSpawners.concat(BadGuysSpawners)
+
 	for (const [team, positions] of [
-		...new Set(PlayerSpawners.map(x => x.SpawnerTeam)),
+		...new Set(playerSpawners.map(x => x.SpawnerTeam)),
 	].map(
 		team_ =>
 			[
 				team_,
-				PlayerSpawners.filter(x => x.SpawnerTeam === team_).map(
-					x => x.Position
-				),
+				playerSpawners
+					.filter(x => x.SpawnerTeam === team_)
+					.map(x => x.Position),
 			] as [Team, Vector3[]]
 	)) {
 		const ar: [number, number][] = []
