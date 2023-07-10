@@ -872,6 +872,9 @@ class CRendererSDK {
 		if (this.textureCache.has(path)) return this.textureCache.get(path)!
 
 		let readPath = tryFindFile(path, 2)
+		if (readPath === undefined || !(readPath.length > 0))
+			readPath = "panorama/images/spellicons/empty_png.vtex_c"
+
 		if (readPath === undefined) {
 			console.error(
 				"CreateTexture failed file lookup for",
@@ -896,6 +899,7 @@ class CRendererSDK {
 					buf.close()
 				}
 		}
+
 		const textureID = Renderer.CreateTexture(readPath)
 		if (textureID === -1) console.error("CreateTexture failed for", path)
 		this.textureCache.set(path, textureID)
