@@ -872,9 +872,8 @@ class CRendererSDK {
 		if (this.textureCache.has(path)) return this.textureCache.get(path)!
 
 		let readPath = tryFindFile(path, 2)
-		// TODO
-		// if (readPath === undefined || !(readPath.length > 0))
-		// 	readPath = "panorama/images/spellicons/empty_png.vtex_c"
+		if (readPath === undefined)
+			readPath = "panorama/images/spellicons/empty_png.vtex_c"
 
 		if (readPath === undefined) {
 			console.error(
