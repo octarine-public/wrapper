@@ -184,7 +184,7 @@ declare function EmitStopSoundEvent( // pass location: Vector2 at IOBuffer offse
 ): void
 /**
  * @deprecated
- * @returns biguint to IOBuffer offset 0, and return value is true if function succeeded
+ * @returns bigint to IOBuffer offset 0, and return value is true if function succeeded
  */
 declare function GetEntityUnitState(entityID: number): boolean
 /**

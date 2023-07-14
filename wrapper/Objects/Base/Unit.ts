@@ -46,14 +46,14 @@ const MAX_ITEMS = 16
 @WrapperClass("CDOTA_BaseNPC")
 export class Unit extends Entity {
 	public UnitData = UnitData.empty
-
 	public readonly Inventory = new Inventory(this)
-
 	public IsTrueSightedForEnemies = false
 	public HasScepterModifier = false
 	public HasShardModifier = false
 
 	public UnitName_ = ""
+	public IsPulverize = false
+	public readonly AbsPosition = new Vector3()
 	public IsControllableByPlayerMask = 0n
 	public NetworkActivity = GameActivity.ACT_DOTA_IDLE
 	public NetworkActivityStartTime = 0
@@ -483,12 +483,21 @@ export class Unit extends Entity {
 	public get Name(): string {
 		return this.UnitName_
 	}
+	public get RealPosition(): Vector3 {
+		return this.IsPulverize
+			? this.AbsPosition
+			: GameState.IsInDraw
+			? this.VisualPosition
+			: this.NetworkedPosition
+	}
+
 	public get Position(): Vector3 {
 		if (
 			this.IsVisible ||
 			(this.PredictedIsWaitingToSpawn && this.IsWaitingToSpawn)
 		)
 			return this.RealPosition
+
 		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid)
 			return this.TPStartPosition
 		return this.PredictedPosition
@@ -558,10 +567,12 @@ export class Unit extends Entity {
 	 */
 	public ForwardNativeProperties(
 		healthBarOffset: number,
-		moveCapabilities: number
+		moveCapabilities: number,
+		absPosition: Vector3
 	) {
 		this.HealthBarOffset_ = healthBarOffset
 		this.MoveCapabilities = moveCapabilities
+		this.AbsPosition.CopyFrom(absPosition)
 	}
 
 	/**
@@ -1433,18 +1444,20 @@ EventsSDK.on(
 	}
 )
 
-function OnModifierUpdated(mod: Modifier): void {
+function OnModifierUpdated(mod: Modifier, add: boolean): void {
 	const parent = mod.Parent
 	if (parent === undefined) return
 	let offset = 0
+
 	for (const buff of parent.Buffs) offset += buff.DeltaZ
 	if (parent.IsFlyingVisually) offset += 150
 	parent.DeltaZ = parent.BoundingBox.DeltaZ = offset
+	if (mod.Name === "modifier_primal_beast_pulverize") parent.IsPulverize = add
 }
 
-EventsSDK.on("ModifierCreated", OnModifierUpdated)
-EventsSDK.on("ModifierChanged", OnModifierUpdated)
-EventsSDK.on("ModifierRemoved", OnModifierUpdated)
+EventsSDK.on("ModifierCreated", m => OnModifierUpdated(m, true))
+EventsSDK.on("ModifierChanged", m => OnModifierUpdated(m, true))
+EventsSDK.on("ModifierRemoved", m => OnModifierUpdated(m, false))
 
 EventsSDK.on("Tick", dt => {
 	for (const unit of Units) {
