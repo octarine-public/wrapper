@@ -103,6 +103,10 @@ export class Unit extends Entity {
 	public IsPhantom = false
 	@NetworkedBasicField("m_bIsSummoned")
 	public IsSummoned = false
+	@NetworkedBasicField("m_flLastDealtDamageTime")
+	public LastDealtDamageTime = 0
+	@NetworkedBasicField("m_iRecentDamage")
+	public RecentDamage = 0
 	@NetworkedBasicField("m_bIsWaitingToSpawn")
 	public IsWaitingToSpawn = false
 	public PredictedIsWaitingToSpawn = true

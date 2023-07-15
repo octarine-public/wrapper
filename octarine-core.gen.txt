@@ -197,9 +197,13 @@ declare enum SpawnDebugRestrictionOverrideState_t {
 }
 
 declare enum PlayerConnectedState {
+	PlayerNeverConnected = -1,
 	PlayerConnected = 0,
-	PlayerDisconnecting = 1,
-	PlayerDisconnected = 2,
+	PlayerConnecting = 1,
+	PlayerReconnecting = 2,
+	PlayerDisconnecting = 3,
+	PlayerDisconnected = 4,
+	PlayerReserved = 5,
 }
 
 declare enum ParticleVRHandChoiceList_t {
