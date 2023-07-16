@@ -602,10 +602,10 @@ EventsSDK.on("GameEvent", (name, obj) => {
 
 const lastGlowEnts = new Set<Entity>()
 function CustomGlowEnts(): void {
-	lastGlowEnts.forEach(ent => {
+	for (const ent of lastGlowEnts) {
 		if (!ent.IsValid) {
 			lastGlowEnts.delete(ent)
-			return
+			continue
 		}
 		const customID = ent.CustomNativeID
 		const customGlowColor = ent.CustomGlowColor
@@ -613,15 +613,15 @@ function CustomGlowEnts(): void {
 		if (customGlowColor !== undefined) colorU32 = customGlowColor.toUint32()
 		else lastGlowEnts.delete(ent)
 		SetEntityGlow(customID, colorU32)
-	})
+	}
 }
 
 const lastColoredEnts = new Set<Entity>()
 function CustomColorEnts(): void {
-	lastColoredEnts.forEach(ent => {
+	for (const ent of lastColoredEnts) {
 		if (!ent.IsValid) {
 			lastColoredEnts.delete(ent)
-			return
+			continue
 		}
 		const customDrawColor = ent.CustomDrawColor
 		let colorU32 = 0,
@@ -634,10 +634,10 @@ function CustomColorEnts(): void {
 			lastColoredEnts.delete(ent)
 		}
 		SetEntityColor(ent.CustomNativeID, colorU32, renderMode)
-	})
+	}
 }
 
-Events.after("Draw", () => {
+EventsSDK.after("PostDataUpdate", () => {
 	CustomColorEnts()
 	CustomGlowEnts()
 })
