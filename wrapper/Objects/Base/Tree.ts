@@ -2,7 +2,6 @@ import { Color } from "../../Base/Color"
 import { QAngle } from "../../Base/QAngle"
 import { Vector3 } from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
-import { RenderMode } from "../../Enums/RenderMode"
 import { Team } from "../../Enums/Team"
 import { EntityManager } from "../../Managers/EntityManager"
 import {
@@ -34,9 +33,6 @@ export class Tree extends Entity {
 		return (this.BinaryID << 1) | 1
 	}
 	public set CustomGlowColor(_: Nullable<Color>) {
-		// N/A for non-networked entities
-	}
-	public set CustomDrawColor(_: Nullable<[Color, RenderMode]>) {
 		// N/A for non-networked entities
 	}
 	public get RingRadius(): number {
