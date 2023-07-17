@@ -454,6 +454,7 @@ export class Entity {
 		_absPosition: Vector3
 	) {
 		// To be implemented in child classes
+		this._ChangeNetworkPosition()
 	}
 
 	public CannotUseItem(_item: Item): boolean {

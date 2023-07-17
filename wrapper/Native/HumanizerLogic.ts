@@ -1290,9 +1290,16 @@ function ProcessUserCmd(force = false): void {
 		const ent = LocalPlayer?.Hero
 		if (ent !== undefined) InputManager.SelectedEntities.push(ent)
 	}
+
 	InputManager.QueryUnit = EntityManager.EntityByIndex(
 		GetQueryUnit()
 	) as Nullable<Unit>
+
+	if (InputManager.QueryUnit === undefined)
+		InputManager.QueryUnit = EntityManager.EntityByIndex(
+			GetQueryUnit() & EntityManager.INDEX_MASK
+		) as Nullable<Unit>
+
 	InputManager.SelectedUnit = !ConVarsSDK.GetBoolean(
 		"dota_hud_new_query_panel",
 		false
