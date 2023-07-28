@@ -13,7 +13,7 @@ export class TreeModelReplacement {
 	public toJSON(): any {
 		return {
 			BinaryObjectID: this.BinaryObjectID,
-			Model: this.Model,
+			Model: this.Model
 		}
 	}
 }

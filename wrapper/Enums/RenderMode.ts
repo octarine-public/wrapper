@@ -10,5 +10,5 @@ export enum RenderMode {
 	TransAlphaAdd = 8,
 	WorldGlow = 9,
 	None = 10,
-	DevVisualizer = 11,
+	DevVisualizer = 11
 }

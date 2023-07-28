@@ -6,7 +6,7 @@ import { IsPointUnderWater } from "../Native/WASM"
 import { Buildings } from "../Objects/Base/Building"
 import {
 	CreepPathCorner,
-	CreepPathCorners,
+	CreepPathCorners
 } from "../Objects/Base/CreepPathCorner"
 import { Fountains } from "../Objects/Base/Fountain"
 import { orderBy, orderByFirst } from "../Utils/ArrayExtensions"
@@ -46,7 +46,7 @@ export function GetMapArea(
 	if (nearestCorner.Distance2D(pos) < 1550)
 		return [
 			nearestCorner.Spawner!.Lane,
-			GetPathCornerNearestTeam(nearestCorner),
+			GetPathCornerNearestTeam(nearestCorner)
 		]
 	const corner1 = nearestCorner,
 		corner2 = nearestCorners.find(

@@ -20,7 +20,7 @@ import * as _WASM from "./Native/WASM"
 import { Workers as _Workers } from "./Native/Workers"
 import {
 	GameRules as _GameRules,
-	LocalPlayer as _LocalPlayer,
+	LocalPlayer as _LocalPlayer
 } from "./Objects/Base/Entity"
 import { FakeUnits as _FakeUnits } from "./Objects/Base/FakeUnit"
 import { PlayerResource as _PlayerResource } from "./Objects/Base/PlayerResource"
@@ -45,14 +45,14 @@ Object.defineProperty(globalThis, "LocalPlayer", {
 		return _LocalPlayer
 	},
 	configurable: false,
-	enumerable: true,
+	enumerable: true
 })
 Object.defineProperty(globalThis, "WASMIOBuffer", {
 	get: () => {
 		return _WASM.WASMIOBuffer
 	},
 	configurable: false,
-	enumerable: true,
+	enumerable: true
 })
 globalThis.EntityManager = _EntityManager
 globalThis.Events = _Events
@@ -62,14 +62,14 @@ Object.defineProperty(globalThis, "PlayerResource", {
 		return _PlayerResource
 	},
 	configurable: false,
-	enumerable: true,
+	enumerable: true
 })
 Object.defineProperty(globalThis, "GameRules", {
 	get: () => {
 		return _GameRules
 	},
 	configurable: false,
-	enumerable: true,
+	enumerable: true
 })
 globalThis.GameState = _GameState
 
@@ -80,14 +80,14 @@ Object.defineProperty(globalThis, "GridNav", {
 		return _GridNav
 	},
 	configurable: false,
-	enumerable: true,
+	enumerable: true
 })
 Object.defineProperty(globalThis, "EntityDataLump", {
 	get: () => {
 		return _EntityDataLump
 	},
 	configurable: false,
-	enumerable: true,
+	enumerable: true
 })
 globalThis.GetPositionHeight = _WASM.GetPositionHeight
 globalThis.ParticlesSDK = _ParticlesSDK

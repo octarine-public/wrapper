@@ -9,5 +9,5 @@ export const enum MapArea {
 	RiverMiddle,
 	RiverBottom,
 	BottomJungle,
-	TopJungle,
+	TopJungle
 }

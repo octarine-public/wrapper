@@ -8,7 +8,7 @@ import { GameState } from "../Utils/GameState"
 import {
 	ParseProtobufDesc,
 	ParseProtobufNamed,
-	RecursiveProtobuf,
+	RecursiveProtobuf
 } from "../Utils/Protobuf"
 import { EventsSDK } from "./EventsSDK"
 

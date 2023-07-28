@@ -162,14 +162,14 @@ export class ExecuteOrder {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public static Glyph(queue?: boolean, showEffects?: boolean): void {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public static CastRiverPaint(
@@ -181,7 +181,7 @@ export class ExecuteOrder {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RIVER_PAINT,
 			position,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public static PreGameAdjustItemAssigment(
@@ -193,7 +193,7 @@ export class ExecuteOrder {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT,
 			target: itemID,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public static Scan(
@@ -205,7 +205,7 @@ export class ExecuteOrder {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR,
 			position,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 
@@ -247,7 +247,7 @@ export class ExecuteOrder {
 			Ability: ability instanceof Ability ? ability.Index : ability,
 			Issuers: this.Issuers.map(ent => ent.Index),
 			Queue: this.Queue,
-			ShowEffects: this.ShowEffects,
+			ShowEffects: this.ShowEffects
 		}
 	}
 	/**

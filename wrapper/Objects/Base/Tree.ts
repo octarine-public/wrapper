@@ -7,7 +7,7 @@ import { Team } from "../../Enums/Team"
 import { EntityManager } from "../../Managers/EntityManager"
 import {
 	CreateEntityInternal,
-	DeleteEntity,
+	DeleteEntity
 } from "../../Managers/EntityManagerLogic"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../Native/WASM"

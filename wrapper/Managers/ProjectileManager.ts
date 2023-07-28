@@ -5,7 +5,7 @@ import { Entity } from "../Objects/Base/Entity"
 import { GetPredictionTarget } from "../Objects/Base/FakeUnit"
 import {
 	LinearProjectile,
-	TrackingProjectile,
+	TrackingProjectile
 } from "../Objects/Base/Projectile"
 import { Unit } from "../Objects/Base/Unit"
 import { arrayRemove } from "../Utils/ArrayExtensions"
@@ -16,7 +16,7 @@ import {
 	NumberToColor,
 	ParseProtobufDesc,
 	ParseProtobufNamed,
-	RecursiveProtobuf,
+	RecursiveProtobuf
 } from "../Utils/Protobuf"
 import { Events } from "./Events"
 import { EventsSDK } from "./EventsSDK"
@@ -244,7 +244,7 @@ const projectileAttachmentsNames = [
 	"attach_attack2",
 	"attach_hitloc",
 	"attach_attack3",
-	"attach_attack4",
+	"attach_attack4"
 ]
 Events.on("ServerMessage", (msgID, buf_) => {
 	switch (msgID) {

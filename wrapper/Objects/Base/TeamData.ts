@@ -51,7 +51,7 @@ export class TeamData extends Entity {
 			SuggestedLaneRoam: this.SuggestedLaneRoam,
 			SuggestedLaneJungle: this.SuggestedLaneJungle,
 			NeutralItemsEarned: this.NeutralItemsEarned,
-			NeutralItemsConsumed: this.NeutralItemsConsumed,
+			NeutralItemsConsumed: this.NeutralItemsConsumed
 		}
 	}
 }

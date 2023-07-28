@@ -43,7 +43,7 @@ export class WorldPolygon {
 					Position: this.Points[i],
 					Color: color,
 					Width: width,
-					Mode2D: mode2D,
+					Mode2D: mode2D
 				})
 		}
 	}

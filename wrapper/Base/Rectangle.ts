@@ -1,7 +1,10 @@
 import { Vector2 } from "./Vector2"
 
 export class Rectangle {
-	constructor(public pos1 = new Vector2(), public pos2 = new Vector2()) {
+	constructor(
+		public pos1 = new Vector2(),
+		public pos2 = new Vector2()
+	) {
 		this.pos1 = pos1
 		this.pos2 = pos2
 	}

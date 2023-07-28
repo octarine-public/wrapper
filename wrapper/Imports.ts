@@ -82,13 +82,13 @@ export {
 	InputMessage,
 	VKeys,
 	VMouseKeys,
-	VXMouseKeys,
+	VXMouseKeys
 } from "./Managers/InputManager"
 export { MinimapSDK } from "./Managers/MinimapSDK"
 export {
 	PARTICLE_RENDER,
 	PARTICLE_RENDER_NAME,
-	ParticlesSDK,
+	ParticlesSDK
 } from "./Managers/ParticleManager"
 export { ProjectileManager } from "./Managers/ProjectileManager"
 export * as Menu from "./Menu/index"
@@ -981,7 +981,7 @@ export { Creep } from "./Objects/Base/Creep"
 export { CreepPathCorner } from "./Objects/Base/CreepPathCorner"
 export {
 	CCustomHeroPickRules,
-	CustomHeroPickRules,
+	CustomHeroPickRules
 } from "./Objects/Base/CustomPickRules"
 export { DOTABaseGameMode, GameMode } from "./Objects/Base/DOTABaseGameMode"
 export { DOTAGameModeMutation } from "./Objects/Base/DOTAGameModeMutation"
@@ -1025,7 +1025,7 @@ export { Tower } from "./Objects/Base/Tower"
 export { Tree } from "./Objects/Base/Tree"
 export {
 	CTurboHeroPickRules,
-	TurboHeroPickRules,
+	TurboHeroPickRules
 } from "./Objects/Base/TurboPickRules"
 export { Unit } from "./Objects/Base/Unit"
 export { WardObserver } from "./Objects/Base/WardObserver"
@@ -1450,7 +1450,7 @@ export {
 	CAnimation,
 	CAnimationActivity,
 	CAnimationEvent,
-	CAnimationFrame,
+	CAnimationFrame
 } from "./Resources/ParseAnimation"
 export { EntityDataLump } from "./Resources/ParseEntityLump"
 export { GridNav } from "./Resources/ParseGNV"

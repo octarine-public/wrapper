@@ -15,7 +15,7 @@ export const Workers = new (class CWorkers {
 			for (let i = 0; i < 2; i++) {
 				const prom = this.AddWorkerWithOpts({
 					forward_events: false,
-					forward_server_messages: false,
+					forward_server_messages: false
 				}).then(() => {
 					arrayRemove(this.workersPromises, prom)
 				})
@@ -32,7 +32,7 @@ export const Workers = new (class CWorkers {
 					SendIPCMessage(sourceWorkerUID, "RPCCallResponse", [
 						false,
 						"Remote RPC Endpoint name not found",
-						endpointName,
+						endpointName
 					])
 				return
 			}
@@ -46,7 +46,7 @@ export const Workers = new (class CWorkers {
 					SendIPCMessage(sourceWorkerUID, "RPCCallResponse", [
 						false,
 						err.message,
-						err.stack ?? "",
+						err.stack ?? ""
 					])
 				} else console.error(e)
 			}
@@ -92,7 +92,7 @@ export const Workers = new (class CWorkers {
 					err => {
 						DespawnWorker(newWorker[0])
 						reject(err)
-					},
+					}
 				])
 				SendIPCMessage(newWorker[0], "RPCCall", [name, data])
 				return
@@ -128,14 +128,14 @@ export const Workers = new (class CWorkers {
 				display_name:
 					opts.display_name ?? `Wrapper RPC Worker #${this.workers.length + 1}`,
 				entry_point:
-					opts.entry_point ?? "github.com/octarine-public/wrapper/index",
+					opts.entry_point ?? "github.com/octarine-public/wrapper/index"
 			}
 			const ar: WorkerType = [
 				SpawnWorker(fixedOpts),
 				fixedOpts,
 				[],
 				false,
-				exclusive,
+				exclusive
 			]
 			this.workers.push(ar)
 			const spawnCb = (workerUID: bigint) => {

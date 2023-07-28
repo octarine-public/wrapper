@@ -9,7 +9,7 @@ import { GameActivity } from "../../Enums/GameActivity"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import {
 	createMapFromMergedIterators,
-	parseEnumString,
+	parseEnumString
 } from "../../Utils/Utils"
 import { Unit } from "../Base/Unit"
 
@@ -360,7 +360,7 @@ export class AbilityData {
 					ar,
 					linkedSpecialBonus,
 					linkedSpecialBonusFieldStr,
-					linkedSpecialBonusOperation,
+					linkedSpecialBonusOperation
 				] as [number[], string, string, EDOTASpecialBonusOperation])
 			}
 		}
@@ -377,7 +377,7 @@ export class AbilityData {
 						),
 						"",
 						0,
-						EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD,
+						EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 					] as [number[], string, number, EDOTASpecialBonusOperation])
 				continue
 			}
@@ -417,7 +417,7 @@ export class AbilityData {
 				ar,
 				linkedSpecialBonus,
 				talentChange,
-				linkedSpecialBonusOperation,
+				linkedSpecialBonusOperation
 			] as [number[], string, number, EDOTASpecialBonusOperation])
 		}
 	}

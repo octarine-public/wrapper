@@ -103,7 +103,7 @@ export class Particle {
 			Attachment: this.Attachment,
 			Entity: this.AttachedTo,
 			ControlPoints: [...this.ControlPoints.entries()],
-			EffectIndex: this.EffectIndex,
+			EffectIndex: this.EffectIndex
 		}
 	}
 

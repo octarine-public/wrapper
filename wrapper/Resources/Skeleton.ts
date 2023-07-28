@@ -5,7 +5,7 @@ import {
 	MapToNumberArray,
 	MapToQuaternionArray,
 	MapToStringArray,
-	MapToVector3Array,
+	MapToVector3Array
 } from "./ParseUtils"
 
 export class CBone {

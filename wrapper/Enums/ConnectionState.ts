@@ -5,5 +5,5 @@ export enum ConnectionState {
 	Disconnected,
 	Abandoned,
 	Loading,
-	Failed,
+	Failed
 }

@@ -88,14 +88,12 @@ function UpdateRespawnPositions(playerResource: CPlayerResource) {
 	const playerSpawners = GoodGuysSpawners.concat(BadGuysSpawners)
 
 	for (const [team, positions] of [
-		...new Set(playerSpawners.map(x => x.SpawnerTeam)),
+		...new Set(playerSpawners.map(x => x.SpawnerTeam))
 	].map(
 		team_ =>
 			[
 				team_,
-				playerSpawners
-					.filter(x => x.SpawnerTeam === team_)
-					.map(x => x.Position),
+				playerSpawners.filter(x => x.SpawnerTeam === team_).map(x => x.Position)
 			] as [Team, Vector3[]]
 	)) {
 		const ar: [number, number][] = []

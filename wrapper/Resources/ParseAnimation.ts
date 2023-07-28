@@ -7,7 +7,7 @@ import {
 	GetMapStringProperty,
 	MapToNumberArray,
 	MapToStringArray,
-	MapToVector3,
+	MapToVector3
 } from "./ParseUtils"
 
 export class CAnimationFrame {
@@ -251,7 +251,7 @@ export class CAnimation {
 			this.FrameBlockArray.push([
 				startFrame,
 				endFrame,
-				MapToNumberArray(segmentIndexArray),
+				MapToNumberArray(segmentIndexArray)
 			])
 		})
 		return GetMapNumberProperty(data, "m_nFrames")
@@ -488,7 +488,7 @@ export function ParseAnimationsFromData(
 				GetMapNumberProperty(segment, "m_nLocalChannel"),
 				bones,
 				decoder,
-				stream.CreateNestedStream(stream.Remaining),
+				stream.CreateNestedStream(stream.Remaining)
 			])
 		})
 	const hseq = new Map<string, CAnimationActivity[]>()

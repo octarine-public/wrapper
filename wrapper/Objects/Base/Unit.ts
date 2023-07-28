@@ -24,7 +24,7 @@ import { arrayRemove } from "../../Utils/ArrayExtensions"
 import {
 	HasBit,
 	HasBitBigInt,
-	MaskToArrayBigInt,
+	MaskToArrayBigInt
 } from "../../Utils/BitsExtensions"
 import { GameState } from "../../Utils/GameState"
 import { Inventory } from "../DataBook/Inventory"
@@ -910,7 +910,7 @@ export class Unit extends Entity {
 			issuers: [this],
 			position,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public MoveToTarget(
@@ -923,7 +923,7 @@ export class Unit extends Entity {
 			issuers: [this],
 			target,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public AttackMove(position: Vector3, queue?: boolean, showEffects?: boolean) {
@@ -932,7 +932,7 @@ export class Unit extends Entity {
 			issuers: [this],
 			position,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public AttackTarget(
@@ -945,7 +945,7 @@ export class Unit extends Entity {
 			issuers: [this],
 			target,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public CastPosition(
@@ -960,7 +960,7 @@ export class Unit extends Entity {
 			ability,
 			position,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public PurchaseItem(itemID: number, queue?: boolean, showEffects?: boolean) {
@@ -969,7 +969,7 @@ export class Unit extends Entity {
 			issuers: [this],
 			ability: itemID,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public CastTarget(
@@ -984,7 +984,7 @@ export class Unit extends Entity {
 			target,
 			ability,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public CastTargetTree(
@@ -999,7 +999,7 @@ export class Unit extends Entity {
 			target: tree,
 			ability,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public CastNoTarget(
@@ -1012,7 +1012,7 @@ export class Unit extends Entity {
 			issuers: [this],
 			ability,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public CastToggle(ability: Ability, queue?: boolean, showEffects?: boolean) {
@@ -1021,7 +1021,7 @@ export class Unit extends Entity {
 			issuers: [this],
 			ability,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public HoldPosition(
@@ -1034,14 +1034,14 @@ export class Unit extends Entity {
 			issuers: [this],
 			position,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public TrainAbility(ability: Ability) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
 			issuers: [this],
-			ability,
+			ability
 		})
 	}
 	public DropItemAtFountain(
@@ -1056,7 +1056,7 @@ export class Unit extends Entity {
 			target: slot,
 			ability: item,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public DropItem(
@@ -1071,7 +1071,7 @@ export class Unit extends Entity {
 			ability: item,
 			position,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public GiveItem(
@@ -1086,7 +1086,7 @@ export class Unit extends Entity {
 			target,
 			ability: item,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public PickupItem(
@@ -1099,7 +1099,7 @@ export class Unit extends Entity {
 			issuers: [this],
 			target: physicalItem,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public PickupRune(
@@ -1112,14 +1112,14 @@ export class Unit extends Entity {
 			issuers: [this],
 			target: rune,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public SellItem(item: Item) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM,
 			issuers: [this],
-			ability: item,
+			ability: item
 		})
 	}
 	public DisassembleItem(item: Item, queue?: boolean) {
@@ -1127,7 +1127,7 @@ export class Unit extends Entity {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM,
 			issuers: [this],
 			ability: item,
-			queue,
+			queue
 		})
 	}
 	public ItemSetCombineLock(
@@ -1140,7 +1140,7 @@ export class Unit extends Entity {
 			issuers: [this],
 			ability: item,
 			target: (lock as number) + 0,
-			queue,
+			queue
 		})
 	}
 	public TakeItemFromNeutralStash(item: Item) {
@@ -1148,7 +1148,7 @@ export class Unit extends Entity {
 			orderType:
 				dotaunitorder_t.DOTA_UNIT_ORDER_TAKE_ITEM_FROM_NEUTRAL_ITEM_STASH,
 			issuers: [this],
-			ability: item,
+			ability: item
 		})
 	}
 	public MoveItem(item: Item, slot: DOTAScriptInventorySlot) {
@@ -1156,7 +1156,7 @@ export class Unit extends Entity {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM,
 			issuers: [this],
 			target: slot,
-			ability: item,
+			ability: item
 		})
 	}
 	public CastToggleAuto(item: Ability, queue?: boolean, showEffects?: boolean) {
@@ -1165,7 +1165,7 @@ export class Unit extends Entity {
 			issuers: [this],
 			ability: item,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public OrderStop(queue?: boolean, showEffects?: boolean) {
@@ -1173,7 +1173,7 @@ export class Unit extends Entity {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_STOP,
 			issuers: [this],
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public UnitTaunt(queue?: boolean, showEffects?: boolean) {
@@ -1181,14 +1181,14 @@ export class Unit extends Entity {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAUNT,
 			issuers: [this],
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public EjectItemFromStash(item: Item) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH,
 			issuers: [this],
-			ability: item,
+			ability: item
 		})
 	}
 	public CastRune(
@@ -1201,14 +1201,14 @@ export class Unit extends Entity {
 			issuers: [this],
 			target: runeItem,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public PingAbility(ability: Ability) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PING_ABILITY,
 			issuers: [this],
-			ability,
+			ability
 		})
 	}
 	public MoveToDirection(
@@ -1221,7 +1221,7 @@ export class Unit extends Entity {
 			issuers: [this],
 			position,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public Patrol(position: Vector3, queue?: boolean, showEffects?: boolean) {
@@ -1230,7 +1230,7 @@ export class Unit extends Entity {
 			issuers: [this],
 			position,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public VectorTargetPosition(
@@ -1247,7 +1247,7 @@ export class Unit extends Entity {
 			target,
 			position: direction,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public CastVectorTargetPosition(
@@ -1273,7 +1273,7 @@ export class Unit extends Entity {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK,
 			issuers: [this],
 			ability: item,
-			target: state === false ? 0 : undefined,
+			target: state === false ? 0 : undefined
 		})
 	}
 	public OrderContinue(item: Item, queue?: boolean, showEffects?: boolean) {
@@ -1282,7 +1282,7 @@ export class Unit extends Entity {
 			issuers: [this],
 			ability: item,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 	public VectorTargetCanceled(
@@ -1295,7 +1295,7 @@ export class Unit extends Entity {
 			issuers: [this],
 			position,
 			queue,
-			showEffects,
+			showEffects
 		})
 	}
 }

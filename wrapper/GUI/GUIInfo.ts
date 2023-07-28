@@ -20,7 +20,7 @@ import {
 	GetHeightScale,
 	GetWidthScale,
 	ScaleHeight,
-	ScaleWidth,
+	ScaleWidth
 } from "./Helpers"
 
 const latestScreenSize = new Vector2()

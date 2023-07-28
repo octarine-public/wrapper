@@ -5,7 +5,7 @@ import { FakeUnit } from "../Objects/Base/FakeUnit"
 import { Unit } from "../Objects/Base/Unit"
 import {
 	GetMapNumberProperty,
-	GetMapStringProperty,
+	GetMapStringProperty
 } from "../Resources/ParseUtils"
 import { GameState } from "../Utils/GameState"
 import { QAngle } from "./QAngle"

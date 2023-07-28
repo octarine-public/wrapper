@@ -272,7 +272,7 @@ export class DataTeamPlayer {
 			GoldSpentOnBuybacks: this.GoldSpentOnBuybacks,
 			GoldLostToDeath: this.GoldLostToDeath,
 			IsNewPlayer: this.IsNewPlayer,
-			IsGuidePlayer: this.IsGuidePlayer,
+			IsGuidePlayer: this.IsGuidePlayer
 		}
 	}
 }

@@ -3,9 +3,10 @@
     "editor.insertSpaces": false,
     "npm.packageManager": "yarn",
     "task.allowAutomaticTasks": "on",
+    "json.schemaDownload.enable": true,
     "typescript.format.semicolons": "remove",
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },
-    "files.eol": "\n",
+    "files.eol": "\n"
 }

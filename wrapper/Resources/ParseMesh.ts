@@ -12,7 +12,7 @@ import {
 	MapToQuaternionArray,
 	MapToStringArray,
 	MapToVector3,
-	MapToVector3Array,
+	MapToVector3Array
 } from "./ParseUtils"
 import { ParseVBIB, ParseVBIBFromKV, VBIB, VBIBBufferData } from "./ParseVBIB"
 

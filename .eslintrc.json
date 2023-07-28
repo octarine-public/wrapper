@@ -312,10 +312,7 @@
 		"@typescript-eslint/unified-signatures": "off",
 		"arrow-parens":  "off",
 		"brace-style": "off",
-		"comma-dangle": [
-			"error",
-			"always-multiline"
-		],
+		"comma-dangle": "warn",
 		"complexity": "off",
 		"constructor-super": "error",
 		"curly": "off",
@@ -408,7 +405,8 @@
 			"semi": false,
 			"endOfLine": "auto",
 			"arrowParens": "avoid",
-			"singleQuote": false
+			"singleQuote": false,
+			"trailingComma": "none"
 		}],
 		"@typescript-eslint/consistent-type-imports": ["error", {
 			// TODO: uncomment once we use ESBuild

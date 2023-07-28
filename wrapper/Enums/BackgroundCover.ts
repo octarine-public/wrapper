@@ -1,4 +1,4 @@
 export const enum BackgroundCover {
 	Octarine,
-	Dota2,
+	Dota2
 }

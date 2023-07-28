@@ -3,7 +3,7 @@ import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import {
 	CAnimation,
 	ParseAnimationGroup,
-	ParseEmbeddedAnimation,
+	ParseEmbeddedAnimation
 } from "./ParseAnimation"
 import { CMesh, ParseEmbeddedMesh, ParseMesh } from "./ParseMesh"
 import { ParseResourceLayout } from "./ParseResource"
@@ -11,7 +11,7 @@ import {
 	GetMapNumberProperty,
 	GetMapStringProperty,
 	MapToNumberArray,
-	MapToStringArray,
+	MapToStringArray
 } from "./ParseUtils"
 import { CSkeleton } from "./Skeleton"
 

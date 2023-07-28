@@ -191,5 +191,5 @@ export const KeyNames = [
 	"Unknown",
 	"Unknown",
 	"Unknown",
-	"Tilde",
+	"Tilde"
 ]

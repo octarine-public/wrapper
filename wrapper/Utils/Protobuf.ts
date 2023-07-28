@@ -34,7 +34,7 @@ export enum ProtoType {
 	TYPE_SFIXED32 = 15,
 	TYPE_SFIXED64 = 16,
 	TYPE_SINT32 = 17, // Uses ZigZag encoding.
-	TYPE_SINT64 = 18, // Uses ZigZag encoding.
+	TYPE_SINT64 = 18 // Uses ZigZag encoding.
 }
 
 export type ProtobufFieldType =
@@ -52,7 +52,7 @@ export enum ProtoFieldType {
 	OPTIONAL,
 	REPEATED,
 	PACKED,
-	REQUIRED,
+	REQUIRED
 }
 export type ProtoFieldDescription = {
 	name: string
@@ -403,8 +403,8 @@ export function ParseProtobufDescLine(
 			type,
 			defaultValue,
 			protoType,
-			protoDesc,
-		},
+			protoDesc
+		}
 	]
 }
 
@@ -440,7 +440,7 @@ export function ParseProtobufDesc(str: string): void {
 				currentMap = new Map()
 				ProtoCache.set(currentName.join("."), [
 					ProtoType.TYPE_MESSAGE,
-					currentMap,
+					currentMap
 				])
 			} else if (line.startsWith("enum ")) {
 				if (currentMap !== undefined && currentIsEnum)

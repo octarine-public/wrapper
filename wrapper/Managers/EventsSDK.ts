@@ -9,7 +9,7 @@ import { Modifier } from "../Objects/Base/Modifier"
 import { CPlayerResource } from "../Objects/Base/PlayerResource"
 import {
 	LinearProjectile,
-	TrackingProjectile,
+	TrackingProjectile
 } from "../Objects/Base/Projectile"
 import { Unit } from "../Objects/Base/Unit"
 import { RecursiveProtobuf } from "../Utils/Protobuf"

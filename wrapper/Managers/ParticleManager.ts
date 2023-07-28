@@ -9,13 +9,13 @@ import { EventsSDK } from "./EventsSDK"
 export enum PARTICLE_RENDER_NAME {
 	NORMAL = "Normal",
 	ROPE = "Rope",
-	ANIMATION = "Animation",
+	ANIMATION = "Animation"
 }
 
 export enum PARTICLE_RENDER {
 	NORMAL = 0,
 	ROPE,
-	ANIMATION,
+	ANIMATION
 }
 
 function ParticleRangePath(name: string): string {
@@ -170,7 +170,7 @@ export class ParticlesSDK {
 					options.Alpha ?? 255,
 					options.Width ?? 10,
 					options.Mode2D ?? 0
-				),
+				)
 			],
 			[4, options.Color ?? Color.Aqua]
 		)

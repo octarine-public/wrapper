@@ -63,7 +63,7 @@ const enum EntityFieldType {
 	V8_callback_info = 0x34,
 	UtlString = 0x35,
 	NetworkOriginCellQuantizedPositionVector = 0x36,
-	HRenderTexture = 0x37,
+	HRenderTexture = 0x37
 }
 
 type EntityDataMapValue =

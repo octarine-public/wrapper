@@ -2,7 +2,7 @@ import { Rectangle } from "../../Base/Rectangle"
 import {
 	InputEventSDK,
 	InputManager,
-	VMouseKeys,
+	VMouseKeys
 } from "../../Managers/InputManager"
 import { Notifications } from "../Data"
 import { GetPanel } from "../Util"

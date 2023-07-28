@@ -19,7 +19,10 @@ export class FakeUnit {
 	private LastRealPredictedPositionUpdate_ = 0
 	private LastPredictedPositionUpdate_ = 0
 
-	constructor(public readonly Index: number, private Serial: number) {}
+	constructor(
+		public readonly Index: number,
+		private Serial: number
+	) {}
 
 	public get LastRealPredictedPositionUpdate(): number {
 		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid)

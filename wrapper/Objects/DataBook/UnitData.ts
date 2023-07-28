@@ -5,7 +5,7 @@ import { DOTAHullSize } from "../../Enums/DOTAHullSize"
 import { DOTAUnitMoveCapability } from "../../Enums/DOTAUnitMoveCapability"
 import {
 	createMapFromMergedIterators,
-	parseEnumString,
+	parseEnumString
 } from "../../Utils/Utils"
 
 function LoadUnitFile(path: string): RecursiveMap {
@@ -29,12 +29,12 @@ enum DOTA_COMBAT_CLASS_ATTACK {
 	DOTA_COMBAT_CLASS_ATTACK_BASIC,
 	DOTA_COMBAT_CLASS_ATTACK_HERO,
 	DOTA_COMBAT_CLASS_ATTACK_PIERCE,
-	DOTA_COMBAT_CLASS_ATTACK_SIEGE,
+	DOTA_COMBAT_CLASS_ATTACK_SIEGE
 }
 enum DOTA_COMBAT_CLASS_DEFEND {
 	DOTA_COMBAT_CLASS_DEFEND_BASIC,
 	DOTA_COMBAT_CLASS_DEFEND_HERO,
-	DOTA_COMBAT_CLASS_DEFEND_STRUCTURE,
+	DOTA_COMBAT_CLASS_DEFEND_STRUCTURE
 }
 
 function FixCombatClassAttack(
@@ -268,11 +268,16 @@ export class UnitData {
 		}
 
 		for (let index = 1; index < 17; index++) {
-			const name = kv.get(`Ability${index}`) as Nullable<string>
-			if (name === undefined || name.length <= 0 || name.startsWith("special_") || name.includes("hidden")) {
+			const kvName = kv.get(`Ability${index}`) as Nullable<string>
+			if (
+				kvName === undefined ||
+				kvName.length <= 0 ||
+				kvName.startsWith("special_") ||
+				kvName.includes("hidden")
+			) {
 				continue
 			}
-			this.Abilities.set(name, true)
+			this.Abilities.set(kvName, true)
 		}
 	}
 }

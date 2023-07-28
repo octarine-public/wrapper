@@ -209,9 +209,9 @@ Events.on("ServerMessage", (msgID, buf) => {
 						const field = obj.fields[fieldID]
 						return [
 							FixType(obj.symbols as string[], field),
-							obj.symbols[field.var_name_sym],
+							obj.symbols[field.var_name_sym]
 						]
-					}),
+					})
 				])
 				console.log(
 					"dump_CSVCMsg_FlattenedSerializer.d.ts",

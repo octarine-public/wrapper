@@ -458,7 +458,7 @@ export class Node extends Base {
 			set Vector({ x, y }: Vector2) {
 				xSlider.value = x
 				ySlider.value = y
-			},
+			}
 		}
 	}
 	public AddVector3(
@@ -510,7 +510,7 @@ export class Node extends Base {
 				xSlider.value = x
 				ySlider.value = y
 				zSlider.value = z
-			},
+			}
 		}
 	}
 	public AddColorPicker(
@@ -544,7 +544,7 @@ export class Node extends Base {
 			State: state,
 			Color: node.AddColorPicker("Color", color),
 			Width: node.AddSlider("Width", 15, 1, 150),
-			Style: node.AddDropdown("Style", render),
+			Style: node.AddDropdown("Style", render)
 		}
 	}
 	private GetScrollbarPositionsRect(elementsRect: Rectangle): Rectangle {

@@ -56,7 +56,7 @@ export class NeutralSpawnBox {
 			MinBounds: this.MinBounds,
 			MaxBounds: this.MaxBounds,
 			SpawnBoxOrigin: this.SpawnBoxOrigin,
-			CampName: this.CampName,
+			CampName: this.CampName
 		}
 	}
 }

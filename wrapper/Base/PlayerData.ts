@@ -86,7 +86,7 @@ export class PlayerData {
 			AccoladeType: this.AccoladeType,
 			AccoladeData: this.AccoladeData,
 			RankTier: this.RankTier,
-			Title: this.Title,
+			Title: this.Title
 		}
 	}
 }

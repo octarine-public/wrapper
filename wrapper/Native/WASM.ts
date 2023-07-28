@@ -39,7 +39,7 @@ enum HeightMapParseError {
 	NONE = 0,
 	INVALID_MAGIC = 1,
 	UNKNOWN_VERSION = 2,
-	ALLOCATION_ERROR = 3,
+	ALLOCATION_ERROR = 3
 }
 
 function TryLoadWASMModule(path: string): WebAssembly.Module {
@@ -63,7 +63,7 @@ const wasiESUCCESS = 0
 const wasiENOSYS = 52
 const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	env: {
-		emscripten_notify_memory_growth: emscriptenNotifyMemoryGrowth,
+		emscripten_notify_memory_growth: emscriptenNotifyMemoryGrowth
 	},
 	wasi_snapshot_preview1: {
 		proc_exit: () => {
@@ -95,8 +95,8 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 		},
 		environ_get: () => {
 			throw new Error("environ_get is unimplemented")
-		},
-	},
+		}
+	}
 }).exports as any as {
 	Start: () => void
 	GetIOBuffer: () => number
@@ -261,7 +261,7 @@ export function ScreenToWorldFar(
 					cameraDistance,
 					cameraAngles,
 					fov
-				),
+				)
 			]
 		}
 		return res
@@ -585,7 +585,7 @@ export function ExtractWorldBVH(): [Uint8Array, Uint8Array] {
 	wasm.ExtractWorldBVH()
 	return [
 		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[0], WASMIOBufferU32[1]),
-		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[2], WASMIOBufferU32[3]),
+		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[2], WASMIOBufferU32[3])
 	]
 }
 
@@ -605,7 +605,7 @@ export function ExtractMeshData(
 		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[2], WASMIOBufferU32[3]),
 		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[4], WASMIOBufferU32[5]),
 		WASMIOBufferU32[6],
-		WASMIOBufferU32[7],
+		WASMIOBufferU32[7]
 	]
 }
 
@@ -620,7 +620,7 @@ export function BatchCheckRayBox(
 		for (let i = 0; i < hitboxes.length; i += maxHitboxes) {
 			res = [
 				...res,
-				...BatchCheckRayBox(startPos, ray, hitboxes.slice(i, i + maxHitboxes)),
+				...BatchCheckRayBox(startPos, ray, hitboxes.slice(i, i + maxHitboxes))
 			]
 		}
 		return res

@@ -25,5 +25,5 @@ export enum EPropertyType {
 	VECTOR2,
 	VECTOR3,
 	QUATERNION,
-	INVALID = -1,
+	INVALID = -1
 }

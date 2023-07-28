@@ -13,13 +13,13 @@ import { PlayerResource } from "../Objects/Base/PlayerResource"
 import { Unit } from "../Objects/Base/Unit"
 import {
 	AbilityData,
-	ReloadGlobalAbilityStorage,
+	ReloadGlobalAbilityStorage
 } from "../Objects/DataBook/AbilityData"
 import { ReloadGlobalUnitStorage, UnitData } from "../Objects/DataBook/UnitData"
 import {
 	DefaultWorldLayers,
 	ParseEntityLump,
-	ResetEntityLump,
+	ResetEntityLump
 } from "../Resources/ParseEntityLump"
 import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
 import {
@@ -27,7 +27,7 @@ import {
 	GetMapStringProperty,
 	MapToMatrix4x4,
 	MapToNumberArray,
-	MapToStringArray,
+	MapToStringArray
 } from "../Resources/ParseUtils"
 import { HasBit } from "../Utils/BitsExtensions"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
@@ -37,7 +37,7 @@ import {
 	CMsgVectorToVector3,
 	ParseProtobufDesc,
 	ParseProtobufNamed,
-	RecursiveProtobuf,
+	RecursiveProtobuf
 } from "../Utils/Protobuf"
 import { createMapFromMergedIterators } from "../Utils/Utils"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
@@ -76,7 +76,7 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_CAN_FREEZE = 25,
 	GAME_PARTICLE_MANAGER_EVENT_SET_NAMED_VALUE_CONTEXT = 26,
 	GAME_PARTICLE_MANAGER_EVENT_UPDATE_TRANSFORM = 27,
-	GAME_PARTICLE_MANAGER_EVENT_FREEZE_TRANSITION_OVERRIDE = 28,
+	GAME_PARTICLE_MANAGER_EVENT_FREEZE_TRANSITION_OVERRIDE = 28
 }
 enum EDotaEntityMessages {
 	DOTA_UNIT_SPEECH = 0,
@@ -85,7 +85,7 @@ enum EDotaEntityMessages {
 	DOTA_UNIT_REMOVE_GESTURE = 3,
 	DOTA_UNIT_REMOVE_ALL_GESTURES = 4,
 	DOTA_UNIT_FADE_GESTURE = 6,
-	DOTA_UNIT_SPEECH_CLIENTSIDE_RULES = 7,
+	DOTA_UNIT_SPEECH_CLIENTSIDE_RULES = 7
 }
 ParseProtobufDesc(`
 message CNETMsg_Tick {
@@ -777,7 +777,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			par.ControlPointsOrient.set(submsg.get("control_point") as number, [
 				CMsgVectorToVector3(submsg.get("forward") as RecursiveProtobuf),
 				CMsgVectorToVector3(submsg.get("up") as RecursiveProtobuf),
-				CMsgVectorToVector3(submsg.get("left") as RecursiveProtobuf),
+				CMsgVectorToVector3(submsg.get("left") as RecursiveProtobuf)
 			])
 			break
 		}
@@ -811,7 +811,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 					ent,
 					submsg.get("attach_type") as number,
 					submsg.get("attachment") as number,
-					submsg.get("include_wearables") as boolean,
+					submsg.get("include_wearables") as boolean
 				])
 			par.ControlPointsFallback.set(cp, position)
 			break
@@ -822,7 +822,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 				(submsg.get("control_point") as number) ?? 0,
 				[
 					CMsgVectorToVector3(submsg.get("origin_offset") as RecursiveProtobuf),
-					CMsgVectorToVector3(submsg.get("angle_offset") as RecursiveProtobuf),
+					CMsgVectorToVector3(submsg.get("angle_offset") as RecursiveProtobuf)
 				]
 			)
 			break
@@ -1003,7 +1003,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 			while (!stream.Empty())
 				update.set(stream.ReadVarUintAsNumber(), [
 					stream.ReadVarString(),
-					stream.ReadSlice(stream.ReadVarUintAsNumber()).buffer,
+					stream.ReadSlice(stream.ReadVarUintAsNumber()).buffer
 				])
 			EventsSDK.emit("UpdateStringTable", false, tableName, update)
 			break
@@ -1333,7 +1333,7 @@ function TryLoadWorld(worldKV: RecursiveMap): void {
 		{
 			forward_events: false,
 			forward_server_messages: false,
-			display_name: "LoadAndOptimizeWorld",
+			display_name: "LoadAndOptimizeWorld"
 		}
 	))
 	worldPromise.then(data => {

@@ -43,7 +43,7 @@ enum CommandID {
 	// DRAW
 	TEXT,
 	SVG,
-	PATH,
+	PATH
 }
 
 enum PathFlags {
@@ -56,17 +56,17 @@ enum PathFlags {
 	LINE_JOIN_BITS = (1 << LINE_JOIN_OFFSET) | (1 << (LINE_JOIN_OFFSET + 1)),
 	FILL = 1 << 6,
 	STROKE = 1 << 7,
-	STROKE_AND_FILL = FILL | STROKE,
+	STROKE_AND_FILL = FILL | STROKE
 }
 export enum LineCap {
 	Butt = 1,
 	Round = 2,
-	Square = 3,
+	Square = 3
 }
 export enum LineJoin {
 	Miter = 1,
 	Round = 2,
-	Bevel = 3,
+	Bevel = 3
 }
 
 class Font {
@@ -1121,7 +1121,7 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 		const vb = new Uint8Array(
 			new Float32Array([
 				-100000, -100000, -16384, 100000, -100000, -16384, -100000, 100000,
-				-16384, 100000, 100000, -16384,
+				-16384, 100000, 100000, -16384
 			]).buffer
 		)
 		const ib = new Uint8Array(new Uint8Array([0, 1, 2, 1, 2, 3]).buffer)

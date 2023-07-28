@@ -5,7 +5,12 @@ export class Color {
 	 * @example
 	 * let color = new Color(1, 2, 3)
 	 */
-	constructor(public r = 0, public g = 0, public b = 0, public a = 255) {}
+	constructor(
+		public r = 0,
+		public g = 0,
+		public b = 0,
+		public a = 255
+	) {}
 
 	public static get Black() {
 		return new Color(0, 0, 0)

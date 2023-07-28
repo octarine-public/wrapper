@@ -5,5 +5,5 @@ export enum PingType {
 	RETREAT = 3,
 	ATTACK = 4,
 	ENEMY_VISION = 5,
-	OWN_VISION = 6,
+	OWN_VISION = 6
 }

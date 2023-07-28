@@ -99,7 +99,7 @@ class MinimapOverview {
 }
 function ParseMinimapOverview(): void {
 	const kv = [
-		...parseKV(`resource/overviews/${GameState.MapName}.txt`).values(),
+		...parseKV(`resource/overviews/${GameState.MapName}.txt`).values()
 	].find(val => val instanceof Map) as Nullable<RecursiveMap>
 	if (kv === undefined) {
 		MinimapSDK.CurrentMinimapOverview = undefined

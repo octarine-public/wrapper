@@ -1,4 +1,4 @@
 export enum DOTACustomHeroPickRulesPhase {
 	Ban = 0,
-	Pick = 1,
+	Pick = 1
 }

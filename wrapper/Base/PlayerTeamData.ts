@@ -151,7 +151,7 @@ export class PlayerTeamData {
 			FirstBloodGiven: this.FirstBloodGiven,
 			PickOrder: this.PickOrder,
 			TimeOfLastSaluteSent: this.TimeOfLastSaluteSent,
-			SelectedHeroBadgeXP: this.SelectedHeroBadgeXP,
+			SelectedHeroBadgeXP: this.SelectedHeroBadgeXP
 		}
 	}
 }

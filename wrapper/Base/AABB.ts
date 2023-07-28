@@ -22,7 +22,7 @@ export class AABB {
 			min,
 			new Vector3(max.x, min.y, min.z),
 			new Vector3(max.x, max.y, min.z),
-			new Vector3(min.x, max.y, min.z),
+			new Vector3(min.x, max.y, min.z)
 		]
 	}
 	public get Polygon(): WorldPolygon {

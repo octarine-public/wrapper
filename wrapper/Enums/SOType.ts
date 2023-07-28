@@ -22,5 +22,5 @@ export enum SOType {
 	// PlayerChallenge represents a player challenge.
 	PlayerChallenge = 2010,
 	// LobbyInvite is an invitation to a lobby.
-	LobbyInvite = 2011,
+	LobbyInvite = 2011
 }

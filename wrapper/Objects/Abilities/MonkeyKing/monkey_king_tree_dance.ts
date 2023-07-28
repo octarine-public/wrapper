@@ -66,7 +66,7 @@ EventsSDK.on("ParticleUpdated", par => {
 	const castRange = abil.CastRange
 	abil.PredictedPositionsPerTree = [
 		...FilterValidTrees(Trees, pos, castRange),
-		...FilterValidTrees(TempTrees, pos, castRange),
+		...FilterValidTrees(TempTrees, pos, castRange)
 	]
 })
 

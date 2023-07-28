@@ -51,7 +51,10 @@ export class Vector2 {
 	 * let vec = new Vector2(1, 2)
 	 * vec.Normalize()
 	 */
-	constructor(public x: number = 0, public y: number = 0) {}
+	constructor(
+		public x: number = 0,
+		public y: number = 0
+	) {}
 
 	/**
 	 * Is this vector valid? (every value must not be infinity/NaN)

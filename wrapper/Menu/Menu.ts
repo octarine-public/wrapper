@@ -6,7 +6,7 @@ import { EventsSDK } from "../Managers/EventsSDK"
 import {
 	InputEventSDK,
 	InputManager,
-	VMouseKeys,
+	VMouseKeys
 } from "../Managers/InputManager"
 import { RendererSDK } from "../Native/RendererSDK"
 import { readJSON } from "../Utils/Utils"

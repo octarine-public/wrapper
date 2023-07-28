@@ -120,7 +120,7 @@ export class DynamicImageSelector extends Base {
 				defaultState,
 				defaultShow,
 				defaultShow,
-				this.autoPriority++,
+				this.autoPriority++
 			])
 			this.QueueImages.delete(name)
 		}
@@ -131,7 +131,7 @@ export class DynamicImageSelector extends Base {
 					this.IsVisibleImage(name)
 				),
 				x => this.GetPriority(x)
-			),
+			)
 		]
 	}
 
@@ -148,7 +148,7 @@ export class DynamicImageSelector extends Base {
 					this.IsVisibleImage(name)
 				),
 				x => this.GetPriority(x)
-			),
+			)
 		]
 
 		this.renderedPaths.clear()
@@ -230,7 +230,7 @@ export class DynamicImageSelector extends Base {
 				defaultState,
 				defaultShow,
 				true,
-				this.autoPriority++,
+				this.autoPriority++
 			])
 			this.Update()
 			return

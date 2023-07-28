@@ -130,7 +130,7 @@ function UpdateCameraBounds(cameraVec2D: Vector2) {
 			new Vector2(1, 1),
 			new Vector2(0, 1),
 			new Vector2(0, 0),
-			new Vector2(1, 0),
+			new Vector2(1, 0)
 		],
 		cameraVec,
 		defaultCameraDist
@@ -147,7 +147,7 @@ function UpdateCameraBounds(cameraVec2D: Vector2) {
 		latestCameraPoly.Points[0],
 		latestCameraPoly.Points[1],
 		latestCameraPoly.Points[2],
-		latestCameraPoly.Points[3],
+		latestCameraPoly.Points[3]
 	]
 	const screenSize = RendererSDK.WindowSize,
 		minimap = GUIInfo.Minimap.Minimap
@@ -165,7 +165,7 @@ function UpdateCameraBounds(cameraVec2D: Vector2) {
 		new Vector2(cameraLimitXMax, cameraLimitYMax),
 		new Vector2(cameraLimitXMin, cameraLimitYMax),
 		new Vector2(cameraLimitXMin, cameraLimitYMin),
-		new Vector2(cameraLimitXMax, cameraLimitYMin),
+		new Vector2(cameraLimitXMax, cameraLimitYMin)
 	]
 	const xOffsetMinimap = 1 / 25,
 		xOffsetNonMinimap = 1 / 15,
@@ -184,7 +184,7 @@ function UpdateCameraBounds(cameraVec2D: Vector2) {
 		new Vector2(cameraLimitXMax, cameraLimitYMax),
 		new Vector2(cameraLimitXMin, cameraLimitYMax),
 		new Vector2(cameraLimitXMin, cameraLimitYMin),
-		new Vector2(cameraLimitXMax, cameraLimitYMin),
+		new Vector2(cameraLimitXMax, cameraLimitYMin)
 	]
 	const xAvailable = cameraLimitXMax - cameraLimitXMin,
 		yAvailable = cameraLimitYMax - cameraLimitYMin
@@ -196,7 +196,7 @@ function UpdateCameraBounds(cameraVec2D: Vector2) {
 		new Vector2(cameraLimitXMax, cameraLimitYMax),
 		new Vector2(cameraLimitXMin, cameraLimitYMax),
 		new Vector2(cameraLimitXMin, cameraLimitYMin),
-		new Vector2(cameraLimitXMax, cameraLimitYMin),
+		new Vector2(cameraLimitXMax, cameraLimitYMin)
 	]
 
 	latestCameraGreenZonePolyWorld.Points = RendererSDK.ScreenToWorldFar(
@@ -435,13 +435,13 @@ function ComputeTargetPos(
 		return [
 			ComputeTargetPosEntity(cameraVec, currentTime, lastOrderTarget),
 			true,
-			false,
+			false
 		]
 	else if (lastOrderTarget instanceof Vector3)
 		return [
 			ComputeTargetPosVector3(cameraVec, currentTime, lastOrderTarget),
 			true,
-			false,
+			false
 		]
 	else if (typeof lastOrderTarget === "object") {
 		if (lastOrderTarget.finishedSrc) {
@@ -449,13 +449,13 @@ function ComputeTargetPos(
 				return [
 					ComputeTargetPosVector3(cameraVec, currentTime, lastOrderTarget.dst),
 					true,
-					false,
+					false
 				]
 			if (lastOrderTarget.dst instanceof Entity)
 				return [
 					ComputeTargetPosEntity(cameraVec, currentTime, lastOrderTarget.dst),
 					true,
-					false,
+					false
 				]
 		}
 		const hud = GUIInfo.GetLowerHUDForUnit(lastOrderTarget.unit)
@@ -477,13 +477,13 @@ function ComputeTargetPos(
 							lastOrderTarget.dst
 						),
 						true,
-						false,
+						false
 					]
 				if (lastOrderTarget.dst instanceof Entity)
 					return [
 						ComputeTargetPosEntity(cameraVec, currentTime, lastOrderTarget.dst),
 						true,
-						false,
+						false
 					]
 				currentRect = GetRectForSlot(hud, lastOrderTarget.dst)
 			} else return [currentPos, true, true]
@@ -499,7 +499,7 @@ function ComputeTargetPos(
 				)
 				.DivideForThis(RendererSDK.WindowSize),
 			lastOrderTarget.finishedSrc,
-			!lastOrderTarget.finishedSrc || typeof lastOrderTarget.dst === "number",
+			!lastOrderTarget.finishedSrc || typeof lastOrderTarget.dst === "number"
 		]
 	}
 	{
@@ -665,7 +665,7 @@ function ProcessOrderQueue(currentTime: number) {
 							dst: order[0].Target,
 							finishedSrc: false,
 							srcRng: Math.random(),
-							dstRng: Math.random(),
+							dstRng: Math.random()
 					  }
 					: undefined
 			break
@@ -682,7 +682,7 @@ function ProcessOrderQueue(currentTime: number) {
 							dst: order[0].Target,
 							finishedSrc: false,
 							srcRng: Math.random(),
-							dstRng: Math.random(),
+							dstRng: Math.random()
 					  }
 					: undefined
 			break
@@ -698,7 +698,7 @@ function ProcessOrderQueue(currentTime: number) {
 							dst: order[0].Position,
 							finishedSrc: false,
 							srcRng: Math.random(),
-							dstRng: Math.random(),
+							dstRng: Math.random()
 					  }
 					: undefined
 			break
@@ -929,7 +929,7 @@ function getParams() {
 	for (let i = 0; i < num; i++)
 		res.push([
 			1 / (0.5 + Math.random()), // amplitude rcp [1/1.5,1/0.5]
-			Math.random() * Math.PI * 2 - Math.PI, // offset [-180deg,180deg]
+			Math.random() * Math.PI * 2 - Math.PI // offset [-180deg,180deg]
 		])
 	return res
 }
@@ -1455,8 +1455,8 @@ function deserializeOrder(): ExecuteOrder {
 								ent.IsAlive &&
 								!ent.IsEnemy() &&
 								ent.ShouldUnifyOrders
-						),
-					]),
+						)
+					])
 				]
 			break
 	}

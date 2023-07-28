@@ -19,7 +19,7 @@ import { FieldHandler, RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import {
 	ComputeAttachmentsAndBoundsAsync,
 	ComputedAttachment,
-	ComputedAttachments,
+	ComputedAttachments
 } from "../../Resources/ComputeAttachments"
 import { GameState } from "../../Utils/GameState"
 import { DegreesToRadian } from "../../Utils/Math"
@@ -118,7 +118,10 @@ export class Entity {
 	private CustomDrawColor_: Nullable<[Color, RenderMode]>
 	private RingRadius_ = 30
 
-	constructor(public readonly Index: number, private readonly Serial: number) {
+	constructor(
+		public readonly Index: number,
+		private readonly Serial: number
+	) {
 		this._ChangeNetworkPosition()
 	}
 

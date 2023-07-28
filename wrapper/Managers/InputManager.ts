@@ -384,7 +384,7 @@ export enum InputMessage {
 
 	WM_USER = 0x0400,
 
-	WM_REFLECT = WM_USER + 0x1c00,
+	WM_REFLECT = WM_USER + 0x1c00
 }
 
 export enum VKeys {
@@ -578,7 +578,7 @@ export enum VKeys {
 	ZOOM = 0xfb,
 	NONAME = 0xfc,
 	PA1 = 0xfd,
-	OEM_CLEAR = 0xfe,
+	OEM_CLEAR = 0xfe
 }
 
 export enum VMouseKeys {
@@ -588,12 +588,12 @@ export enum VMouseKeys {
 	MK_CONTROL = 0x08,
 	MK_MBUTTON = 0x10,
 	MK_XBUTTON1 = 0x20,
-	MK_XBUTTON2 = 0x40,
+	MK_XBUTTON2 = 0x40
 }
 
 export enum VXMouseKeys {
 	XBUTTON1 = 0x01,
-	XBUTTON2 = 0x02,
+	XBUTTON2 = 0x02
 }
 
 interface InputEventSDK extends EventEmitter {

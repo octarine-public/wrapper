@@ -9,7 +9,10 @@ import { CBone, CSkeleton } from "./Skeleton"
 
 export class ComputedAttachment {
 	public readonly PositionsCompressed: Float32Array
-	constructor(public readonly FPS: number, public readonly FrameCount: number) {
+	constructor(
+		public readonly FPS: number,
+		public readonly FrameCount: number
+	) {
 		// using SharedArrayBuffer here makes 0-copy transfer while doing async stuff
 		this.PositionsCompressed = new Float32Array(
 			new SharedArrayBuffer(FrameCount * 3 * 4)
@@ -178,7 +181,7 @@ Workers.RegisterRPCEndPoint("ComputeAttachmentsAndBounds", data => {
 						number,
 						number
 					]
-			),
+			)
 		])
 	)
 	return [serializedAr, res[1].toArray(), res[2].toArray()]
@@ -216,6 +219,6 @@ export async function ComputeAttachmentsAndBoundsAsync(
 	return [
 		ar,
 		Vector3.fromArray(minBounds as number[]),
-		Vector3.fromArray(maxBounds as number[]),
+		Vector3.fromArray(maxBounds as number[])
 	]
 }

@@ -54,7 +54,7 @@ export class StockInfo {
 			IsAvalible: this.IsAvalible,
 			StockCount: this.StockCount,
 			PlayerNumber: this.PlayerNumber,
-			BonusDelayedStockCount: this.BonusDelayedStockCount,
+			BonusDelayedStockCount: this.BonusDelayedStockCount
 		}
 	}
 }

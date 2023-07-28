@@ -2,7 +2,7 @@ import { Vector3 } from "./Vector3"
 import { Vector4 } from "./Vector4"
 
 export const Matrix4x4Identity = [
-	1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
+	1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
 ]
 
 export class Matrix3x4 {
@@ -172,12 +172,12 @@ export class Matrix3x4 {
 		const forward = [
 			this.GetRowValue(0, 0),
 			this.GetRowValue(1, 0),
-			this.GetRowValue(2, 0),
+			this.GetRowValue(2, 0)
 		]
 		const left = [
 			this.GetRowValue(0, 1),
 			this.GetRowValue(1, 1),
-			this.GetRowValue(2, 1),
+			this.GetRowValue(2, 1)
 		]
 		const upZ = this.GetRowValue(2, 2),
 			xyDist = Math.sqrt(forward[0] * forward[0] + forward[1] * forward[1])

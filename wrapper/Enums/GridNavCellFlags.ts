@@ -14,5 +14,5 @@ export enum GridNavCellFlags {
 	Unused,
 
 	// Wards/branches can't be placed there, and most units can't move on this cell
-	InteractionBlocker,
+	InteractionBlocker
 }

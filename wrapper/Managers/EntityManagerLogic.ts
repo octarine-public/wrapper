@@ -1,6 +1,6 @@
 import {
 	EntityPropertiesNode,
-	EntityPropertyType,
+	EntityPropertyType
 } from "../Base/EntityProperties"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
@@ -11,7 +11,7 @@ import {
 	CachedFieldHandlers,
 	ClassToEntitiesAr,
 	EntitiesSymbols,
-	GetConstructorByName,
+	GetConstructorByName
 } from "../Objects/NativeToSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import { GameState } from "../Utils/GameState"
@@ -89,7 +89,7 @@ const enum EntityPVS {
 	LEAVE,
 	DELETE,
 	CREATE,
-	UPDATE,
+	UPDATE
 }
 
 const convertBuf = new ArrayBuffer(8)
@@ -280,7 +280,7 @@ function ParseEntityPacket(stream: ReadableBinaryStream): void {
 			stream.ReadUint32(), // m_iMoveCapabilities
 			stream.ReadFloat32(), // m_vecAbsOrigin.x
 			stream.ReadFloat32(), // m_vecAbsOrigin.y
-			stream.ReadFloat32(), // m_vecAbsOrigin.z
+			stream.ReadFloat32() // m_vecAbsOrigin.z
 		])
 	}
 	const createdEntities: Entity[] = []
@@ -313,7 +313,7 @@ function ParseEntityPacket(stream: ReadableBinaryStream): void {
 		moveCapabilities,
 		x,
 		y,
-		z,
+		z
 	] of nativeChanges) {
 		const ent = EntityManager.EntityByIndex(entID)
 		if (ent !== undefined)

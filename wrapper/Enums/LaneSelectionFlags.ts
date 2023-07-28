@@ -7,5 +7,5 @@ export enum LaneSelectionFlags {
 	SOFT_SUPPORT = 8,
 	HARD_SUPPORT = 16,
 	SUPPORT = 24,
-	ALL = 31,
+	ALL = 31
 }
