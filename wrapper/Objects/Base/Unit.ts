@@ -52,7 +52,7 @@ export class Unit extends Entity {
 	public HasShardModifier = false
 
 	public UnitName_ = ""
-	public IsPulverize = false
+	public AbsPositionBuffs = new Set<Unit>()
 	public readonly AbsPosition = new Vector3()
 	public IsControllableByPlayerMask = 0n
 	public NetworkActivity = GameActivity.ACT_DOTA_IDLE
@@ -488,7 +488,7 @@ export class Unit extends Entity {
 		return this.UnitName_
 	}
 	public get RealPosition(): Vector3 {
-		return this.IsPulverize
+		return this.AbsPositionBuffs.has(this)
 			? this.AbsPosition
 			: GameState.IsInDraw
 			? this.VisualPosition
@@ -1456,7 +1456,16 @@ function OnModifierUpdated(mod: Modifier, add: boolean): void {
 	for (const buff of parent.Buffs) offset += buff.DeltaZ
 	if (parent.IsFlyingVisually) offset += 150
 	parent.DeltaZ = parent.BoundingBox.DeltaZ = offset
-	if (mod.Name === "modifier_primal_beast_pulverize") parent.IsPulverize = add
+	if (
+		mod.Name === "modifier_primal_beast_pulverize" ||
+		mod.Name === "modifier_meepo_megameepo"
+	) {
+		if (add) {
+			parent.AbsPositionBuffs.add(parent)
+			return
+		}
+		parent.AbsPositionBuffs.delete(parent)
+	}
 }
 
 EventsSDK.on("ModifierCreated", m => OnModifierUpdated(m, true))
