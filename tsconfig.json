@@ -1,4 +1,5 @@
 {
+	"compileOnSave": true,
 	"compilerOptions": {
 		"target": "esnext",
 		"module": "ES2022",
@@ -10,22 +11,19 @@
 		"strict": true,
 		"alwaysStrict": true,
 		"experimentalDecorators": true,
+		"forceConsistentCasingInFileNames": true,
 		"lib": [
 			"ESNext"
 		],
-		"forceConsistentCasingInFileNames": true
 	},
 	"include": [
 		"./**/*.ts",
-		"../../../**/*.d.ts"
+		"../../**/*.d.ts"
 	],
 	"exclude": [
 		"wrapper_autogen/**/*",
 		"node_modules/**/*",
 		"scripts_files/**/*",
 		"wasm_source/**/*",
-		"../../../v8/*",
-		"../../../v8_new/v8/*"
-	],
-	"compileOnSave": true
+	]
 }

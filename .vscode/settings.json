@@ -5,6 +5,8 @@
     "task.allowAutomaticTasks": "on",
     "json.schemaDownload.enable": true,
     "typescript.format.semicolons": "remove",
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },
