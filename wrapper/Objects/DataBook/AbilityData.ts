@@ -72,7 +72,7 @@ export class AbilityData {
 
 	private readonly SpecialValueCache = new Map<
 		string,
-		[number[], string, string | number, EDOTASpecialBonusOperation]
+		[number[], string, string | number | number[], EDOTASpecialBonusOperation]
 	>()
 	private readonly CastRangeCache: number[]
 	private readonly ManaCostCache: number[]
@@ -236,6 +236,7 @@ export class AbilityData {
 			const talent = owner.GetAbilityByName(ar[1])
 			if (
 				(talent !== undefined && talent.Level !== 0) ||
+				(ar[1] === "special_bonus_shard" && owner.HasShard) ||
 				(ar[1] === "special_bonus_scepter" && owner.HasScepter)
 			) {
 				const val = ar[2]
@@ -243,6 +244,8 @@ export class AbilityData {
 					typeof val === "string"
 						? talent?.GetSpecialValue(val) ??
 						  this.GetSpecialValueWithTalent(owner, val, level) // TODO: should we handle named scepter values?
+						: Array.isArray(val)
+						? val[Math.min(level, val.length) - 1]
 						: val
 				switch (ar[3]) {
 					default:
@@ -319,6 +322,7 @@ export class AbilityData {
 	}
 
 	private parseFloat(str: string): number {
+		if (!str.length) return 0
 		return parseFloat(
 			str.endsWith("f") ? str.substring(0, str.length - 1) : str
 		)
@@ -403,11 +407,21 @@ export class AbilityData {
 			)
 			let linkedSpecialBonusOperation =
 				EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-			let talentChange: number
+			let talentChange: number | number[]
 			if (talentChangeStr.startsWith("x")) {
 				linkedSpecialBonusOperation =
 					EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY
 				talentChange = this.parseFloat(talentChangeStr.substring(1))
+			} else if (
+				talentChangeStr.startsWith("+") ||
+				talentChangeStr.startsWith("-")
+			) {
+				linkedSpecialBonusOperation =
+					EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+				talentChange =
+					talentChangeStr.indexOf(" ") !== -1
+						? this.parseFloat(talentChangeStr)
+						: talentChangeStr.split(" ").map(str => this.parseFloat(str))
 			} else {
 				linkedSpecialBonusOperation =
 					EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
@@ -418,7 +432,7 @@ export class AbilityData {
 				linkedSpecialBonus,
 				talentChange,
 				linkedSpecialBonusOperation
-			] as [number[], string, number, EDOTASpecialBonusOperation])
+			] as [number[], string, number | number[], EDOTASpecialBonusOperation])
 		}
 	}
 	private GetCachedSpecialValue(name: string) {

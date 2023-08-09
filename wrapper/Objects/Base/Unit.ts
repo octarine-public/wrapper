@@ -846,11 +846,11 @@ export class Unit extends Entity {
 
 		{
 			// HasShard
-			const lastHasShard = this.HasShardModifier
+			const lastHasShard = this.HasShard
 			const hasShard = Modifier.HasShardBuff(buffs)
 
 			if (hasShard !== lastHasShard) {
-				this.HasScepterModifier = hasShard
+				this.HasShardModifier = hasShard
 				EventsSDK.emit("HasShardChanged", false, this)
 			}
 		}

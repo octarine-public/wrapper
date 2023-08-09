@@ -95,13 +95,7 @@ export class Ability extends Entity {
 		return this.GetSpecialValue("delay")
 	}
 	public get CastPoint(): number {
-		let castpoint = this.AbilityData.GetCastPoint(this.Level)
-		const arcaneBlink = this.Owner?.GetBuffByName(
-			"modifier_item_arcane_blink_buff"
-		)?.Ability
-		if (arcaneBlink !== undefined)
-			castpoint *= 1 - arcaneBlink.GetSpecialValue("cast_pct_improvement") / 100
-		return castpoint
+		return this.AbilityData.GetCastPoint(this.Level)
 	}
 	public get MaxChannelTime(): number {
 		return this.AbilityData.GetChannelTime(this.Level)
