@@ -38,6 +38,10 @@ export class CGameRules extends Entity {
 	public ScanCooldownRadiantTime = 0
 	@NetworkedBasicField("m_fBadRadarCooldown")
 	public ScanCooldownDireTime = 0
+	@NetworkedBasicField("m_iGoodRadarCharges")
+	public ScanChargesRadiant = 0
+	@NetworkedBasicField("m_iBadRadarCharges")
+	public ScanChargesDire = 0
 	@NetworkedBasicField("m_bIsNightstalkerNight")
 	public IsNightstalkerNight = false
 	@NetworkedBasicField("m_bIsTemporaryNight")

@@ -23,6 +23,8 @@ export class Ability extends Entity {
 	public IsInIndefiniteCooldown = false
 	@NetworkedBasicField("m_bActivated")
 	public IsActivated = false
+	@NetworkedBasicField("m_bAltCastState")
+	public AltCastState = false
 	@NetworkedBasicField("m_bAutoCastState")
 	public IsAutoCastEnabled = false
 	@NetworkedBasicField("m_bFrozenCooldown")
