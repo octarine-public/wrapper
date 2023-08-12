@@ -416,12 +416,19 @@ export class AbilityData {
 				talentChangeStr.startsWith("+") ||
 				talentChangeStr.startsWith("-")
 			) {
-				linkedSpecialBonusOperation =
-					EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-				talentChange =
-					talentChangeStr.indexOf(" ") !== -1
-						? this.parseFloat(talentChangeStr)
-						: talentChangeStr.split(" ").map(str => this.parseFloat(str))
+				const isArray = talentChangeStr.indexOf(" ") !== -1
+				const isPercent =
+					talentChangeStr[talentChangeStr.length - 1].indexOf("%") !== -1
+				linkedSpecialBonusOperation = !isPercent
+					? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+					: talentChangeStr.startsWith("+")
+					? EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD
+					: EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT
+				talentChange = isArray
+					? talentChangeStr
+							.split(" ")
+							.map(str => Math.abs(this.parseFloat(str)))
+					: Math.abs(this.parseFloat(talentChangeStr))
 			} else {
 				linkedSpecialBonusOperation =
 					EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
