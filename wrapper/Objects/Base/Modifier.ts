@@ -110,8 +110,8 @@ export class Modifier {
 		switch (this.Name) {
 			case "modifier_rattletrap_jetpack":
 				return 260
-			case "modifier_monkey_king_bounce_perch":
 			case "modifier_lina_flame_cloak":
+			case "modifier_monkey_king_bounce_perch":
 				return 100
 			default:
 				return 0
@@ -122,7 +122,7 @@ export class Modifier {
 		return (
 			this.Name === "modifier_winter_wyvern_arctic_burn_flight" ||
 			this.Name === "modifier_courier_flying" ||
-			this.Name === "modifier_night_sttalker_darkness" ||
+			this.Name === "modifier_night_stalker_darkness" ||
 			this.Name === "modifier_monkey_king_bounce_perch"
 		)
 	}
