@@ -81,6 +81,7 @@ export class AbilityData {
 	private readonly CastPointCache: number[]
 	private readonly ChargesCache: number[]
 	private readonly ChargeRestoreTimeCache: number[]
+	private readonly HealthCostCache: number[]
 
 	constructor(name: string, kv: RecursiveMap) {
 		this.AbilityType = kv.has("AbilityType")
@@ -102,6 +103,10 @@ export class AbilityData {
 					kv.get("AbilityBehavior") as string
 			  )
 			: DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NONE
+
+		this.HealthCostCache = this.GetLevelArray(
+			kv.get("AbilityHealthCost") as Nullable<string>
+		)
 
 		this.HasShardUpgrade = kv.has("HasShardUpgrade")
 			? parseInt(kv.get("HasShardUpgrade") as string) === 1
@@ -143,6 +148,7 @@ export class AbilityData {
 			? parseInt(kv.get("IsGrantedByScepter") as string) !== 0
 			: false
 		this.ID = kv.has("ID") ? parseInt(kv.get("ID") as string) : 0
+
 		this.EffectName = (kv.get("Effect") as string) ?? ""
 		this.Cost = kv.has("ItemCost") ? parseInt(kv.get("ItemCost") as string) : 0
 		this.Purchasable = kv.has("ItemPurchasable")
@@ -270,6 +276,13 @@ export class AbilityData {
 	public GetCastRange(level: number): number {
 		if (level <= 0) return 0
 		return this.CastRangeCache[Math.min(level, this.CastRangeCache.length) - 1]
+	}
+
+	public GetHealthCost(level: number): number {
+		if (level <= 0) return 0
+		return this.HealthCostCache[
+			Math.min(level, this.HealthCostCache.length) - 1
+		]
 	}
 
 	public GetManaCost(level: number): number {
