@@ -41,7 +41,8 @@ export class CLowerHUD {
 
 		this.XP.Width = ScaleWidth(42, screenSize)
 		this.XP.Height = ScaleHeight(42, screenSize)
-		this.XP.x = ScaleWidth(30, screenSize)
+
+		this.XP.x = ScaleWidth(12, screenSize)
 		this.XP.y = screenSize.y - this.XP.Height - ScaleHeight(3, screenSize)
 
 		// TODO: calculate stats groups positions
