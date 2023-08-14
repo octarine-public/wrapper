@@ -1024,6 +1024,19 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+	public CastAltToggle(
+		ability: Ability,
+		queue?: boolean,
+		showEffects?: boolean
+	) {
+		return ExecuteOrder.PrepareOrder({
+			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_ALT,
+			issuers: [this],
+			ability,
+			queue,
+			showEffects
+		})
+	}
 	public HoldPosition(
 		position: Vector3,
 		queue?: boolean,
@@ -1037,6 +1050,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public TrainAbility(ability: Ability) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
@@ -1044,6 +1058,7 @@ export class Unit extends Entity {
 			ability
 		})
 	}
+
 	public DropItemAtFountain(
 		item: Item,
 		queue?: boolean,

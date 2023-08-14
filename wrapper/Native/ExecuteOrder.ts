@@ -32,6 +32,7 @@ function WillInterruptOrderQueue(order: ExecuteOrder): boolean {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM:
 			return true
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE:
+		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_ALT:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET: {
 			const abil = order.Ability_
@@ -127,7 +128,6 @@ export class ExecuteOrder {
 		public readonly OrderType: dotaunitorder_t,
 		public readonly Target: Nullable<Entity | number>,
 		public readonly Position: Vector3 = new Vector3(),
-		// tslint:disable-next-line: no-shadowed-variable
 		public readonly Ability_: Nullable<Ability | number>,
 		public readonly Issuers: Unit[],
 		public readonly Queue: boolean = false,
@@ -262,6 +262,7 @@ export class ExecuteOrder {
 			this.Execute()
 			return
 		}
+
 		switch (this.OrderType) {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH:
@@ -269,6 +270,7 @@ export class ExecuteOrder {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_ALT:
 			// TODO: humanize following (?)
 			case dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM:
@@ -276,6 +278,7 @@ export class ExecuteOrder {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM:
 				this.Execute()
 				return
+
 			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET:
 				if (ExecuteOrder.DisableHumanizer) {
 					this.Execute()

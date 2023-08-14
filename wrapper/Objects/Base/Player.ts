@@ -6,6 +6,7 @@ import { Team } from "../../Enums/Team"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
+import { RegisterFieldHandler } from "../NativeToSDK"
 import { Entity } from "./Entity"
 import { Hero } from "./Hero"
 import { Item } from "./Item"
@@ -13,9 +14,10 @@ import { CPlayerResource, PlayerResource } from "./PlayerResource"
 
 @WrapperClass("CDOTAPlayerController")
 export class Player extends Entity {
+	@NetworkedBasicField("m_steamID")
+	public SteamID64 = -1n
 	@NetworkedBasicField("m_nPlayerID", EPropertyType.INT32)
 	public PlayerID = -1
-	@NetworkedBasicField("m_quickBuyItems")
 	public QuickBuyItems: number[] = []
 	@NetworkedBasicField("m_iTotalEarnedGold")
 	public TotalEarnedGold = 0
@@ -24,7 +26,7 @@ export class Player extends Entity {
 	public Hero: Nullable<Hero>
 	public Hero_ = 0
 	public Pawn: Nullable<Entity>
-	@NetworkedBasicField("m_hPawn", EPropertyType.INT32)
+	@NetworkedBasicField("m_hPawn", EPropertyType.UINT32)
 	public Pawn_ = -1
 
 	public get IsSpectator(): boolean {
@@ -73,6 +75,10 @@ export class Player extends Entity {
 		this.Hero = ent instanceof Hero ? ent : undefined
 	}
 }
+RegisterFieldHandler(Player, "m_quickBuyItems", (player, newVal) => {
+	player.QuickBuyItems = (newVal as bigint[]).map(val => Number(val >> 1n))
+})
+
 export const Players = EntityManager.GetEntitiesByClass(Player)
 
 EventsSDK.on("PreEntityCreated", ent => {

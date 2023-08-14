@@ -423,6 +423,7 @@ function ComputeTargetPosEntity(
 
 let initializedMousePosition = false,
 	standaloneMovingTo: Nullable<Vector3>
+
 function ComputeTargetPos(
 	cameraVec: Vector2,
 	currentTime: number
@@ -589,19 +590,20 @@ function ComputeTargetPos(
 	}
 }
 
+let currentOrder: Nullable<[ExecuteOrder, number, boolean, boolean]>
 let lastOrderTarget: Nullable<
-		| Vector3
-		| Entity
-		| {
-				unit: Unit
-				src: DOTAScriptInventorySlot
-				dst: DOTAScriptInventorySlot | Vector3 | Entity
-				finishedSrc: boolean
-				srcRng: number
-				dstRng: number
-		  }
-	>,
-	currentOrder: Nullable<[ExecuteOrder, number, boolean, boolean]>
+	| Vector3
+	| Entity
+	| {
+			unit: Unit
+			src: DOTAScriptInventorySlot
+			dst: DOTAScriptInventorySlot | Vector3 | Entity
+			finishedSrc: boolean
+			srcRng: number
+			dstRng: number
+	  }
+>
+
 function ProcessOrderQueue(currentTime: number) {
 	let order = ExecuteOrder.orderQueue[0] as Nullable<
 		[ExecuteOrder, number, boolean, boolean]
@@ -729,6 +731,7 @@ let lastOrderFinish = 0,
 	greenZoneOutAt = 0,
 	cursorAtMinimapAt = 0,
 	cursorEnteredMinimapAt = 0
+
 function CanMoveCamera(cameraVec: Vector2, targetPos: Vector2): boolean {
 	if (latestCameraRedZonePolyScreen.IsInside(targetPos)) return true
 	const boundsMin =
@@ -762,6 +765,7 @@ function CanMoveCamera(cameraVec: Vector2, targetPos: Vector2): boolean {
 		return false
 	return true
 }
+
 function MoveCameraByScreen(
 	cameraVec: Vector2,
 	targetPos: Vector3,
@@ -861,6 +865,7 @@ function MoveCameraByScreen(
 
 const shortUnitSwitchDelay = 300
 let lastUnitSwitch = 0
+
 function MoveCamera(
 	cameraVec: Vector2,
 	targetPos: Vector3,
@@ -950,7 +955,6 @@ function ApplyParams(vec: Vector2, currentTime: number): void {
 			) / paramsY.length
 		)
 }
-
 function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 	if (ExecuteOrder.DisableHumanizer) return
 	latestUsercmd.ShopMask = 15
@@ -1019,7 +1023,7 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 		interactingWithMinimap = ar[1]
 		if (interactingWithMinimap && order !== undefined) order[2] = true
 	}
-	if (order !== undefined)
+	if (order !== undefined) {
 		switch (order[0].OrderType) {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
@@ -1035,6 +1039,7 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 				latestUsercmd.ClickBehaviors = 0
 				break
 		}
+	}
 	let cursorAtTarget = false
 	if (targetPos.IsValid) {
 		// move cursor
@@ -1432,6 +1437,7 @@ function deserializeOrder(): ExecuteOrder {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
+		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_ALT:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM:
@@ -1478,7 +1484,6 @@ function deserializeOrder(): ExecuteOrder {
 Events.on("PrepareUnitOrders", () => {
 	const order = deserializeOrder()
 	if (order === undefined) return true
-
 	const ret = EventsSDK.emit("PrepareUnitOrders", true, order)
 	if (!ret) return false
 	if (!ExecuteOrder.DisableHumanizer) {

@@ -5,8 +5,8 @@ import { EntityPropertiesNode } from "./EntityProperties"
 export class StockInfo {
 	constructor(public readonly properties: EntityPropertiesNode) {}
 
-	public get AbilityID(): bigint {
-		return this.properties.get("nItemAbilityID") as bigint
+	public get AbilityID(): number {
+		return Number((this.properties.get("nItemAbilityID") as bigint) >> 1n)
 	}
 	public get InitStockDuration(): number {
 		return this.properties.get("fInitialStockDuration") as number
@@ -41,7 +41,7 @@ export class StockInfo {
 		)
 	}
 	public GetAbilityName(): string {
-		return AbilityData.GetAbilityNameByID(Number(this.AbilityID)) ?? ""
+		return AbilityData.GetAbilityNameByID(this.AbilityID) ?? ""
 	}
 	public toJSON(): any {
 		return {
