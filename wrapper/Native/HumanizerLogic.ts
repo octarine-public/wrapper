@@ -958,6 +958,7 @@ function ApplyParams(vec: Vector2, currentTime: number): void {
 function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 	if (ExecuteOrder.DisableHumanizer) return
 	latestUsercmd.ShopMask = 15
+
 	let order = ProcessOrderQueue(currentTime)
 	latestUsercmd.CameraPosition.x = latestCameraX
 	latestUsercmd.CameraPosition.y = latestCameraY
@@ -1259,6 +1260,7 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 					latestUsercmd.VectorUnderCursor.DistanceSqr(ent.Position)
 			  )
 
+	// console.log(latestUsercmd.WeaponSelect, latestUsercmd.WeaponSubType)
 	latestUsercmd.Write()
 	WriteUserCmd()
 }
@@ -1486,6 +1488,11 @@ Events.on("PrepareUnitOrders", () => {
 	if (order === undefined) return true
 	const ret = EventsSDK.emit("PrepareUnitOrders", true, order)
 	if (!ret) return false
+
+	if (order.SkippedHumanizerOrder()) {
+		return true
+	}
+
 	if (!ExecuteOrder.DisableHumanizer) {
 		order.ExecuteQueued()
 		ProcessUserCmd(true)

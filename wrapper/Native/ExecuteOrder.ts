@@ -341,4 +341,11 @@ export class ExecuteOrder {
 				continue
 		ExecuteOrder.orderQueue.push([this, hrtime(), false, false])
 	}
+
+	public SkippedHumanizerOrder() {
+		if (!(this.Ability_ instanceof Ability) || !this.Ability_.AltCastState)
+			return false
+
+		return this.IsPlayerInput && this.Ability_.SkippedHumanizer(this)
+	}
 }
