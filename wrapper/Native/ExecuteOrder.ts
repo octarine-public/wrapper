@@ -117,6 +117,7 @@ export class ExecuteOrder {
 	public static IsStandalone = false
 	public static unsafeMode = false
 	private static DisableHumanizer_ = false
+	private readonly flags: number
 
 	/**
 	 * Orders by native CUnitOrder
@@ -135,6 +136,11 @@ export class ExecuteOrder {
 		public IsPlayerInput: boolean = true
 	) {
 		this.Position = this.Position.Clone()
+		this.flags = this.isAltCastState ? 4 : -1
+	}
+
+	private get isAltCastState() {
+		return this.Ability_ instanceof Ability && this.Ability_.AltCastState
 	}
 
 	public static get DisableHumanizer() {
@@ -247,7 +253,8 @@ export class ExecuteOrder {
 			Ability: ability instanceof Ability ? ability.Index : ability,
 			Issuers: this.Issuers.map(ent => ent.Index),
 			Queue: this.Queue,
-			ShowEffects: this.ShowEffects
+			ShowEffects: this.ShowEffects,
+			Flags: this.flags ?? -1
 		}
 	}
 	/**
@@ -340,12 +347,5 @@ export class ExecuteOrder {
 			)
 				continue
 		ExecuteOrder.orderQueue.push([this, hrtime(), false, false])
-	}
-
-	public SkippedHumanizerOrder() {
-		if (!(this.Ability_ instanceof Ability) || !this.Ability_.AltCastState)
-			return false
-
-		return this.IsPlayerInput && this.Ability_.SkippedHumanizer(this)
 	}
 }

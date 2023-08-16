@@ -351,10 +351,6 @@ export class Ability extends Entity {
 	public IsDoubleTap(_order: ExecuteOrder): boolean {
 		return false
 	}
-
-	public SkippedHumanizer(_order: ExecuteOrder) {
-		return false
-	}
 }
 
 RegisterFieldHandler(

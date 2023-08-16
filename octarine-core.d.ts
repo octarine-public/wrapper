@@ -156,6 +156,7 @@ declare function PrepareUnitOrders(obj: {
 	Issuers?: number[] | number
 	Queue?: boolean
 	ShowEffects?: boolean
+	Flags?: number
 }): void
 declare function GetLatency(flow: number): number
 declare function GetAvgLatency(flow: number): number

@@ -1407,10 +1407,10 @@ InputEventSDK.on("KeyUp", key => {
 })
 const latestUnitOrderView = new DataView(LatestUnitOrder.buffer)
 function deserializeOrder(): ExecuteOrder {
-	const issuersSize = latestUnitOrderView.getUint32(26, true)
+	const issuersSize = latestUnitOrderView.getUint32(30, true)
 	let issuers: Unit[] = []
 	for (let i = 0; i < issuersSize; i++) {
-		const entID = latestUnitOrderView.getUint32(30 + i * 4, true)
+		const entID = latestUnitOrderView.getUint32(34 + i * 4, true)
 		const ent = EntityManager.EntityByIndex(entID)
 		if (ent instanceof Unit) issuers.push(ent)
 	}
@@ -1488,11 +1488,6 @@ Events.on("PrepareUnitOrders", () => {
 	if (order === undefined) return true
 	const ret = EventsSDK.emit("PrepareUnitOrders", true, order)
 	if (!ret) return false
-
-	if (order.SkippedHumanizerOrder()) {
-		return true
-	}
-
 	if (!ExecuteOrder.DisableHumanizer) {
 		order.ExecuteQueued()
 		ProcessUserCmd(true)
