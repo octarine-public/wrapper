@@ -21,14 +21,17 @@ function LoadAbilityFile(path: string): RecursiveMap {
 export class AbilityData {
 	public static globalStorage: Map<string, AbilityData> = new Map()
 	public static empty = new AbilityData("", new Map())
+
 	public static GetAbilityByName(name: string): Nullable<AbilityData> {
 		return AbilityData.globalStorage.get(name)
 	}
+
 	public static GetAbilityNameByID(id: number): Nullable<string> {
 		for (const [name, data] of AbilityData.globalStorage)
 			if (data.ID === id) return name
 		return undefined
 	}
+
 	public static GetItemRecipeName(name: string): Nullable<string> {
 		for (const [recipeName, data] of AbilityData.globalStorage)
 			if (data.ItemResult === name) return recipeName
@@ -74,6 +77,7 @@ export class AbilityData {
 		string,
 		[number[], string, string | number | number[], EDOTASpecialBonusOperation]
 	>()
+
 	private readonly CastRangeCache: number[]
 	private readonly ManaCostCache: number[]
 	private readonly ChannelTimeCache: number[]
@@ -235,41 +239,50 @@ export class AbilityData {
 		level: number
 	): number {
 		if (level <= 0) return 0
+
 		const ar = this.GetCachedSpecialValue(name)
-		if (ar === undefined) return 0
+		if (ar === undefined || !ar[0].length) return 0
+
 		let baseVal = ar[0][Math.min(level, ar[0].length) - 1]
-		if (ar[1] !== "") {
-			const talent = owner.GetAbilityByName(ar[1])
-			if (
-				(talent !== undefined && talent.Level !== 0) ||
-				(ar[1] === "special_bonus_shard" && owner.HasShard) ||
-				(ar[1] === "special_bonus_scepter" && owner.HasScepter)
-			) {
-				const val = ar[2]
-				const talentVal =
-					typeof val === "string"
-						? talent?.GetSpecialValue(val) ??
-						  this.GetSpecialValueWithTalent(owner, val, level) // TODO: should we handle named scepter values?
-						: Array.isArray(val)
-						? val[Math.min(level, val.length) - 1]
-						: val
-				switch (ar[3]) {
-					default:
-					case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
-						baseVal += talentVal
-						break
-					case EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY:
-						baseVal *= talentVal
-						break
-					case EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD:
-						baseVal *= 1 + talentVal / 100
-						break
-					case EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT:
-						baseVal *= 1 - talentVal / 100
-						break
-				}
-			}
+		if (
+			!baseVal &&
+			!(ar[1] === "special_bonus_shard" || ar[1] === "special_bonus_scepter")
+		)
+			return baseVal
+
+		if (name.startsWith("special_bonus_unique_"))
+			return this.GetSpecialTalent(name, owner)
+
+		if (
+			!(ar[1] === "special_bonus_shard" && owner.HasShard) &&
+			!(ar[1] === "special_bonus_scepter" && owner.HasScepter)
+		)
+			return baseVal
+
+		const val = ar[2]
+		const talentVal =
+			typeof val === "string"
+				? this.GetSpecialValue(val, level)
+				: Array.isArray(val)
+				? val[Math.min(level, val.length) - 1]
+				: val
+
+		switch (ar[3]) {
+			default:
+			case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
+				baseVal += talentVal
+				break
+			case EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY:
+				baseVal *= talentVal
+				break
+			case EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD:
+				baseVal *= 1 + talentVal / 100
+				break
+			case EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT:
+				baseVal *= 1 - talentVal / 100
+				break
 		}
+
 		return baseVal
 	}
 
@@ -327,11 +340,18 @@ export class AbilityData {
 		if (level <= 0) return 0
 		return this.ChargesCache[Math.min(level, this.ChargesCache.length) - 1]
 	}
+
 	public GetChargeRestoreTime(level: number): number {
 		if (level <= 0) return 0
 		return this.ChargeRestoreTimeCache[
 			Math.min(level, this.ChargeRestoreTimeCache.length) - 1
 		]
+	}
+
+	private GetSpecialTalent(name: string, owner: Unit) {
+		const talent = owner.GetAbilityByName(name)
+		if (talent === undefined || talent.Level === 0) return 0
+		return this.GetSpecialValue(name, talent.Level)
 	}
 
 	private parseFloat(str: string): number {
@@ -340,6 +360,7 @@ export class AbilityData {
 			str.endsWith("f") ? str.substring(0, str.length - 1) : str
 		)
 	}
+
 	private CacheSpecialValuesOld(kv: RecursiveMap) {
 		const abilitySpecial = kv.get("AbilitySpecial") as RecursiveMap
 		if (abilitySpecial === undefined) return
@@ -382,6 +403,7 @@ export class AbilityData {
 			}
 		}
 	}
+
 	private CacheSpecialValuesNew(kv: RecursiveMap) {
 		const abilityValues = kv.get("AbilityValues") as RecursiveMap
 		if (abilityValues === undefined) return
@@ -455,6 +477,7 @@ export class AbilityData {
 			] as [number[], string, number | number[], EDOTASpecialBonusOperation])
 		}
 	}
+
 	private GetCachedSpecialValue(name: string) {
 		const ar = this.SpecialValueCache.get(name)
 		if (ar !== undefined) return ar
@@ -471,6 +494,7 @@ export class AbilityData {
 		if (ar.length === 0) ar.push(0)
 		return ar
 	}
+
 	private GetLevelArray(str: Nullable<string>): number[] {
 		return this.ExtendLevelArray(
 			str?.split(" ")?.map(val => parseFloat(val)) ?? []

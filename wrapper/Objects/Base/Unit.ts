@@ -391,7 +391,7 @@ export class Unit extends Entity {
 		return IOBufferView.getBigUint64(0, true)
 	}
 	public get UnitState(): modifierstate[] {
-		return MaskToArrayBigInt(this.UnitStateMask_)
+		return MaskToArrayBigInt(this.UnitStateMask)
 	}
 	public get IsEthereal(): boolean {
 		for (const buff of this.Buffs)
