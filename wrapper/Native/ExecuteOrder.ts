@@ -136,11 +136,9 @@ export class ExecuteOrder {
 		public IsPlayerInput: boolean = true
 	) {
 		this.Position = this.Position.Clone()
-		this.flags = this.isAltCastState ? 4 : -1
-	}
 
-	private get isAltCastState() {
-		return this.Ability_ instanceof Ability && this.Ability_.AltCastState
+		this.flags =
+			this.Ability_ instanceof Ability && this.Ability_.AltCastState ? 4 : -1
 	}
 
 	public static get DisableHumanizer() {
