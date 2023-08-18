@@ -1,6 +1,9 @@
 import { EntityPropertiesNode } from "./EntityProperties"
+import { PlayerEventData } from "./PlayerEventData"
 
 export class PlayerTeamData {
+	public PlayerEventsData: PlayerEventData[] = []
+
 	constructor(public readonly properties: EntityPropertiesNode) {}
 
 	public get SelectedHeroID(): number {
@@ -109,7 +112,6 @@ export class PlayerTeamData {
 	public get TimeOfLastSaluteSent(): number {
 		return this.properties.get("m_flTimeOfLastSaluteSent") as number
 	}
-	// m_vecPlayerEventData
 	public get SelectedHeroBadgeXP(): number {
 		return this.properties.get("m_unSelectedHeroBadgeXP") as number
 	}

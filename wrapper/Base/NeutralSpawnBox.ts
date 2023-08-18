@@ -20,6 +20,9 @@ export class NeutralSpawnBox {
 	public get SpawnBoxOrigin(): Vector3 {
 		return this.properties.get("vSpawnBoxOrigin") as Vector3
 	}
+	public get CampType(): number {
+		return this.properties.get("nCampType") as number
+	}
 	public get CampName(): string {
 		return this.properties.get("strCampName") as string
 	}

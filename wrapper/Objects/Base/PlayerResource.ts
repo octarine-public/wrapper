@@ -1,5 +1,6 @@
 import { EntityPropertiesNode } from "../../Base/EntityProperties"
 import { PlayerData } from "../../Base/PlayerData"
+import { PlayerEventData } from "../../Base/PlayerEventData"
 import { PlayerTeamData } from "../../Base/PlayerTeamData"
 import { Vector3 } from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
@@ -13,9 +14,9 @@ import { InfoPlayerStartGoodGuys } from "./InfoPlayerStartGoodGuys"
 
 @WrapperClass("CDOTA_PlayerResource")
 export class CPlayerResource extends Entity {
-	public PlayerTeamData: Nullable<PlayerTeamData>[] = []
 	public PlayerData: Nullable<PlayerData>[] = []
 	public RespawnPositions: Nullable<Vector3>[] = []
+	public PlayerTeamData: Nullable<PlayerTeamData>[] = []
 
 	public GetPlayerTeamDataByPlayerID(
 		playerID: number
@@ -32,12 +33,21 @@ RegisterFieldHandler(
 	"m_vecPlayerTeamData",
 	(playerResource, newVal) => {
 		playerResource.PlayerTeamData = (newVal as EntityPropertiesNode[]).map(
-			map => new PlayerTeamData(map)
+			map => {
+				const retMap = new PlayerTeamData(map)
+				retMap.PlayerEventsData = (
+					(retMap.properties.get("m_vecPlayerEventData") as Nullable<
+						EntityPropertiesNode[]
+					>) ?? []
+				).map(newMap => new PlayerEventData(newMap))
+				return retMap
+			}
 		)
 		UpdateRespawnPositions(playerResource)
 		EventsSDK.emit("PlayerResourceUpdated", false, playerResource)
 	}
 )
+
 RegisterFieldHandler(
 	CPlayerResource,
 	"m_vecPlayerData",

@@ -205,7 +205,27 @@ export class DataTeamPlayer {
 	public get IsGuidePlayer(): boolean {
 		return this.properties.get("m_bIsGuidePlayer") as boolean
 	}
-
+	public get PlayerSteamID(): bigint {
+		return this.properties.get("m_iPlayerSteamID") as bigint
+	}
+	public get SmokesUsed(): boolean {
+		return this.properties.get("m_iSmokesUsed") as boolean
+	}
+	public get NeutralTokensFound(): boolean {
+		return this.properties.get("m_iNeutralTokensFound") as boolean
+	}
+	public get WatchersTaken(): boolean {
+		return this.properties.get("m_iWatchersTaken") as boolean
+	}
+	public get LotusesTaken(): boolean {
+		return this.properties.get("m_iLotusesTaken") as boolean
+	}
+	public get TormentorKills(): boolean {
+		return this.properties.get("m_iTormentorKills") as boolean
+	}
+	public get CourierKills(): boolean {
+		return this.properties.get("m_iCourierKills") as boolean
+	}
 	public toJSON(): any {
 		return {
 			TotalEarnedGold: this.TotalEarnedGold,

@@ -10,6 +10,9 @@ export class PlayerData {
 	public get Name(): string {
 		return this.properties.get("m_iszPlayerName") as string
 	}
+	public get IsBot(): boolean {
+		return this.properties.get("m_bIsBot") as boolean
+	}
 	public get Team(): Team {
 		return this.properties.get("m_iPlayerTeam") as Team
 	}
@@ -64,7 +67,15 @@ export class PlayerData {
 	public get Title(): number {
 		return this.properties.get("m_iTitle") as number
 	}
-
+	public get FavTeamPacked(): bigint {
+		return this.properties.get("m_unFavTeamPacked") as bigint
+	}
+	public get HasNeutralTier(): boolean[] {
+		return this.properties.get("m_bHasNeutralTier") as boolean[]
+	}
+	public get HasRedeemedNeutralTier(): boolean[] {
+		return this.properties.get("m_bHasRedeemedNeutralTier") as boolean[]
+	}
 	public toJSON() {
 		return {
 			IsValid: this.IsValid,
@@ -86,7 +97,10 @@ export class PlayerData {
 			AccoladeType: this.AccoladeType,
 			AccoladeData: this.AccoladeData,
 			RankTier: this.RankTier,
-			Title: this.Title
+			Title: this.Title,
+			FavTeamPacked: this.FavTeamPacked,
+			HasNeutralTier: this.HasNeutralTier,
+			HasRedeemedNeutralTier: this.HasRedeemedNeutralTier
 		}
 	}
 }

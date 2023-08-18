@@ -8,6 +8,9 @@ export class StockInfo {
 	public get AbilityID(): number {
 		return Number((this.properties.get("nItemAbilityID") as bigint) >> 1n)
 	}
+	public get PlayerID(): number {
+		return this.properties.get("iPlayerID") as number
+	}
 	public get InitStockDuration(): number {
 		return this.properties.get("fInitialStockDuration") as number
 	}
@@ -46,6 +49,7 @@ export class StockInfo {
 	public toJSON(): any {
 		return {
 			AbilityID: this.AbilityID,
+			PlayerID: this.PlayerID,
 			InitStockDuration: this.InitStockDuration,
 			StockDuration: this.StockDuration,
 			StockTime: this.StockTime,

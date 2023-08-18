@@ -12,9 +12,12 @@ import { Tree, Trees } from "./Tree"
 @WrapperClass("CDOTA_DataNonSpectator")
 export class TeamData extends Entity {
 	public DataTeam: DataTeamPlayer[] = []
+	public NeutralItemsEarned: number[] = []
 	public WorldTreeModelReplacements: TreeModelReplacement[] = []
 	@NetworkedBasicField("m_vDesiredWardPlacement")
 	public DesiredWardPlacement: Vector2[] = []
+	@NetworkedBasicField("m_vPossibleWardPlacement")
+	public PossibleWardPlacement: Vector2[] = []
 	@NetworkedBasicField("m_nEnemyStartingPosition")
 	public EnemyStartingPosition: number[] = []
 	@NetworkedBasicField("m_nCaptainInspectedHeroID")
@@ -31,8 +34,6 @@ export class TeamData extends Entity {
 	public SuggestedLaneRoam: boolean[] = []
 	@NetworkedBasicField("m_bSuggestedLaneJungle")
 	public SuggestedLaneJungle: boolean[] = []
-	@NetworkedBasicField("m_vecNeutralItemsEarned")
-	public NeutralItemsEarned: number[] = []
 	@NetworkedBasicField("m_vecNeutralItemsConsumed")
 	public NeutralItemsConsumed: number[] = []
 
@@ -56,6 +57,12 @@ export class TeamData extends Entity {
 	}
 }
 
+RegisterFieldHandler(TeamData, "m_vecNeutralItemsEarned", (data, newVal) => {
+	data.NeutralItemsEarned = (newVal as bigint[]).map(bigintId =>
+		Number(bigintId >> 1n)
+	)
+})
+
 RegisterFieldHandler(TeamData, "m_vecDataTeam", (data, newVal) => {
 	data.DataTeam = (newVal as EntityPropertiesNode[]).map(
 		map => new DataTeamPlayer(map)
@@ -71,7 +78,6 @@ RegisterFieldHandler(
 		)
 	}
 )
-
 RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, newValue) => {
 	Tree.TreeActiveMask = newValue as bigint[]
 	if (GridNav !== undefined)

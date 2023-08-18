@@ -72,6 +72,7 @@ export class AbilityData {
 	public readonly HasShardUpgrade: boolean
 	public readonly HasScepterUpgrade: boolean
 	public readonly CastAnimation: Nullable<GameActivity>
+	public readonly LinkedAbility: string
 
 	private readonly SpecialValueCache = new Map<
 		string,
@@ -111,6 +112,8 @@ export class AbilityData {
 		this.HealthCostCache = this.GetLevelArray(
 			kv.get("AbilityHealthCost") as Nullable<string>
 		)
+
+		this.LinkedAbility = (kv.get("LinkedAbility") as string) ?? ""
 
 		this.HasShardUpgrade = kv.has("HasShardUpgrade")
 			? parseInt(kv.get("HasShardUpgrade") as string) === 1

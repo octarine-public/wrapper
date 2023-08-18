@@ -28,6 +28,8 @@ export class CTopBar {
 	public readonly DirePlayersUltReadyIndicators: Rectangle[] = []
 	public readonly RadiantPlayersHeroImages: Rectangle[] = []
 	public readonly DirePlayersHeroImages: Rectangle[] = []
+	public readonly RadiantPlayersSalutes: Rectangle[] = []
+	public readonly DirePlayersSalutes: Rectangle[] = []
 	public readonly RadiantTeamImage = new Rectangle()
 	public readonly DireTeamImage = new Rectangle()
 	public readonly RadiantTeamBackground = new Rectangle()
@@ -46,6 +48,7 @@ export class CTopBar {
 		this.CalculateTPIndicators(screenSize)
 		this.CalculateUltReadyIndicators(screenSize)
 		this.CalculateHeroImages(screenSize)
+		this.CalculateSalute(screenSize)
 	}
 
 	public DebugDraw(): void {
@@ -110,10 +113,17 @@ export class CTopBar {
 		this.DirePlayersBuybacks.forEach(rect =>
 			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Yellow.SetA(128))
 		)
+		this.RadiantPlayersSalutes.forEach(rect =>
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.White.SetA(128))
+		)
+		this.DirePlayersSalutes.forEach(rect =>
+			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.White.SetA(128))
+		)
 
 		this.RadiantPlayersTPIndicators.forEach(rect =>
 			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Fuchsia.SetA(128))
 		)
+
 		this.DirePlayersTPIndicators.forEach(rect =>
 			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Fuchsia.SetA(128))
 		)
@@ -143,7 +153,6 @@ export class CTopBar {
 	public HasChanged(): boolean {
 		return false
 	}
-
 	private CalculateTopBar(screenSize: Vector2): void {
 		this.TopBar.Width = ScaleWidth(1240, screenSize)
 		this.TopBar.Height = ScaleHeight(165, screenSize)
@@ -399,6 +408,18 @@ export class CTopBar {
 			this.DirePlayersRespawnTimers
 		)
 	}
+	private CalculateSalute(screenSize: Vector2) {
+		this.CalculateBasicRects(
+			ScaleWidth(56, screenSize),
+			ScaleHeight(19, screenSize),
+			ScaleHeight(76, screenSize),
+			ScaleWidth(6, screenSize),
+			this.RadiantPlayersSalutes,
+			this.DirePlayersSalutes,
+			true
+		)
+	}
+
 	private CalculateTPIndicators(screenSize: Vector2): void {
 		this.CalculateBasicRects(
 			ScaleWidth(48, screenSize),
