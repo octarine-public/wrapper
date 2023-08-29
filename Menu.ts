@@ -31,8 +31,12 @@ SettingsLanguage.OnValue(change => {
 	}
 })
 
+const basePath = "github.com/octarine-public/wrapper/scripts_files/menu/icons/"
+
+const iconReload = basePath + "reload.svg"
+
 /** Node Reload Scripts */
-const SettingsReloadTree = SettingsTree.AddNode("Reload Scripts")
+const SettingsReloadTree = SettingsTree.AddNode("Reload Scripts", iconReload)
 const ReloadScriptsBind = SettingsReloadTree.AddKeybind("Key Bind")
 const ReloadScriptsBtn = SettingsReloadTree.AddButton("Reload")
 
