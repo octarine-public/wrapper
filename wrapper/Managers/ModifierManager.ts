@@ -131,6 +131,9 @@ export class IModifier {
 	public get CustomEntity(): Nullable<number> {
 		return this.GetProperty("custom_entity")
 	}
+	public get IllusionLabel(): Nullable<string> {
+		return this.GetProperty("illusion_label")
+	}
 	public GetProperty<T>(name: string): Nullable<T> {
 		return this.kv.get(name) as any as T
 	}
