@@ -168,6 +168,11 @@ function FixType(symbols: string[], field: any): string {
 
 ParseProtobufDesc(`
 message ProtoFlattenedSerializerField_t {
+	message polymorphic_field_t {
+		optional int32 polymorphic_field_serializer_name_sym = 1;
+		optional int32 polymorphic_field_serializer_version = 2;
+	}
+
 	optional int32 var_type_sym = 1;
 	optional int32 var_name_sym = 2;
 	optional int32 bit_count = 3;
@@ -178,6 +183,7 @@ message ProtoFlattenedSerializerField_t {
 	optional int32 field_serializer_version = 8;
 	optional int32 send_node_sym = 9;
 	optional int32 var_encoder_sym = 10;
+	repeated .ProtoFlattenedSerializerField_t.polymorphic_field_t polymorphic_types = 11;
 }
 
 message ProtoFlattenedSerializer_t {
