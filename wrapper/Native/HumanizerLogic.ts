@@ -1313,6 +1313,7 @@ function ProcessUserCmd(force = false): void {
 	)
 		? InputManager.QueryUnit ?? InputManager.SelectedEntities[0]
 		: InputManager.SelectedEntities[0] ?? InputManager.QueryUnit
+
 	InputManager.CursorOnWorld = RendererSDK.ScreenToWorldFar(
 		[latestUsercmd.MousePosition],
 		Camera.Position ? Vector3.fromIOBuffer() : new Vector3(),

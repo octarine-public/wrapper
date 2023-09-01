@@ -78,6 +78,7 @@ export const Workers = new (class CWorkers {
 		const endpoint = this.endpoints.get(name)
 		if (endpoint === undefined)
 			return Promise.reject(["Local RPC Endpoint name not found", name])
+
 		return new Promise<WorkerIPCType>(async (resolve, reject) => {
 			if (exclusiveWorkerOptions !== undefined) {
 				const newWorker = await this.AddWorkerWithOpts(
@@ -94,6 +95,8 @@ export const Workers = new (class CWorkers {
 						reject(err)
 					}
 				])
+
+				console.log(data)
 				SendIPCMessage(newWorker[0], "RPCCall", [name, data])
 				return
 			}

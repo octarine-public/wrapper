@@ -131,6 +131,9 @@ class CRendererSDK {
 				WASM.GetPositionHeight(position)
 			)
 		const vec = WASM.WorldToScreenNew(position, this.WindowSize)?.FloorForThis()
+
+		console.log(vec, position)
+
 		if (!cull || vec === undefined) return vec
 		vec.DivideForThis(this.WindowSize)
 		// cut returned screen space to 1.5x screen size
@@ -1112,6 +1115,7 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 			buf.close()
 		}
 	}
+
 	objects.forEach(([path, transform]) => {
 		const meshes = path2meshes.get(path)
 		if (meshes !== undefined)

@@ -7,6 +7,42 @@ import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { MapValueToNumber, MapValueToString } from "./ParseUtils"
 
+type EntityDataMapValue =
+	| string
+	| bigint
+	| number
+	| boolean
+	| Vector3
+	| QAngle
+	| Color
+
+class EntityDataMapV1 {
+	private data = new Map<number, EntityDataMapValue>()
+
+	public get(key: string): Nullable<EntityDataMapValue> {
+		return this.data.get(MurmurHash2(key, 0x31415926) >>> 0)
+	}
+	public set(key: number, value: EntityDataMapValue): void {
+		this.data.set(key, value)
+	}
+}
+
+class EntityDataMapV2 {
+	private data = new Map<string, EntityDataMapValue>()
+
+	public get(key: string): Nullable<EntityDataMapValue> {
+		return this.data.get(key)
+	}
+	public set(key: string, value: EntityDataMapValue): void {
+		this.data.set(key, value)
+	}
+}
+
+const enum VersionType {
+	keyValuesData,
+	keyValues3Data
+}
+
 const enum EntityFieldType {
 	Void = 0x0,
 	Float = 0x1,
@@ -66,26 +102,6 @@ const enum EntityFieldType {
 	HRenderTexture = 0x37
 }
 
-type EntityDataMapValue =
-	| string
-	| bigint
-	| number
-	| boolean
-	| Vector3
-	| QAngle
-	| Color
-
-class EntityDataMap {
-	private data = new Map<number, EntityDataMapValue>()
-
-	public get(key: string): Nullable<EntityDataMapValue> {
-		return this.data.get(MurmurHash2(key, 0x31415926) >>> 0)
-	}
-	public set(key: number, value: EntityDataMapValue): void {
-		this.data.set(key, value)
-	}
-}
-
 function ReadTypedValue(stream: ReadableBinaryStream): EntityDataMapValue {
 	const type: EntityFieldType = stream.ReadUint32()
 	switch (type) {
@@ -129,27 +145,59 @@ function ReadTypedValue(stream: ReadableBinaryStream): EntityDataMapValue {
 	}
 }
 
-function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
-	const kv = stream.ParseKV()
+// function toInstance<T>(
+// 	type: T,
+// 	newInstance: Constructor<Vector3 | QAngle | Color>
+// ): EntityDataMapValue {
+// 	if (Array.isArray(type)) {
+// 		switch (newInstance.name) {
+// 			case "Color":
+// 				const opacity = type[4] !== undefined ? type[4] : 255
+// 				return new newInstance(type[0], type[2], type[3], opacity)
+// 			default:
+// 				return new newInstance(type[0], type[2], type[3])
+// 		}
+// 	}
 
-	if (kv.has("m_childLumps")) {
-		const childLumps = kv.get("m_childLumps")
-		if (Array.isArray(childLumps)) {
-			childLumps.forEach(childLump => {
-				if (typeof childLump !== "string") return
-				const childLumpBuf = fopen(`${childLump}_c`)
-				if (childLumpBuf !== undefined)
-					try {
-						ParseEntityLumpInternal(new FileBinaryStream(childLumpBuf))
-					} finally {
-						childLumpBuf.close()
-					}
-			})
-		}
-	}
-	if (kv.has("m_entityKeyValues")) {
-		const entityKeyValues = kv.get("m_entityKeyValues")
-		if (Array.isArray(entityKeyValues)) {
+// 	if (!(typeof type === "string")) throw `Unknown type: ${type}`
+
+// 	const arr = type.split(" ").map(x => parseFloat(x))
+// 	switch (newInstance.name) {
+// 		case "Color":
+// 			const opacity = arr[4] !== undefined ? arr[4] : 255
+// 			return new newInstance(arr[0], arr[2], arr[3], opacity)
+// 		case "Vector3":
+// 			return new newInstance(arr[0], arr[2], arr[3])
+// 		case "QAngle":
+// 			return new newInstance(arr[0], arr[2], arr[3])
+// 		default:
+// 			throw `Unknown instance: ${type}`
+// 	}
+// }
+
+// function ReadTypedValueV2(
+// 	name: string,
+// 	type: RecursiveMapValue
+// ): EntityDataMapValue {
+// 	switch (name) {
+// 		case "origin":
+// 			return toInstance(type, Vector3)
+// 		case "angles":
+// 			return toInstance(type, QAngle)
+// 		default: {
+// 			if (Array.isArray(type) && name.includes("color"))
+// 				return toInstance(type, Color)
+// 			return type as EntityDataMapValue
+// 		}
+// 	}
+// }
+
+function ParseEntityKeyValues(
+	versionType: VersionType,
+	entityKeyValues: RecursiveMapValue[]
+) {
+	switch (versionType) {
+		case VersionType.keyValuesData:
 			entityKeyValues.forEach(entityKV => {
 				if (!(entityKV instanceof Map)) return
 				// TODO: m_connections?
@@ -166,7 +214,7 @@ function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
 				}
 				const hashedKeys = kvDataStream.ReadUint32(),
 					stringKeys = kvDataStream.ReadUint32()
-				const map = new EntityDataMap()
+				const map = new EntityDataMapV1()
 				for (let i = 0; i < hashedKeys; i++) {
 					const hash = kvDataStream.ReadUint32(),
 						value = ReadTypedValue(kvDataStream)
@@ -185,11 +233,64 @@ function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
 					DefaultWorldLayers.push(MapValueToString(map.get("layername")))
 				EntityDataLump.push(map)
 			})
-		}
+			break
+		case VersionType.keyValues3Data:
+			for (const entityKV of entityKeyValues) {
+				if (!(entityKV instanceof Map)) continue
+
+				const kvData = entityKV.get("keyValues3Data")
+				if (kvData === undefined) continue
+				if (!(kvData instanceof Map)) throw `Unknown kvData: ${kvData}`
+
+				const version = MapValueToNumber(kvData.get("version"), 0) // bigint without mask
+				if (version !== 1) throw `Unknown entity kvData version: ${version}`
+
+				const values = kvData.get("values")
+				if (!(values instanceof Map)) continue
+
+				const map = new EntityDataMapV2()
+				for (const [name, value] of values)
+					map.set(name, value as EntityDataMapValue) // TODO: transfer on EntityDataMapValue (ReadTypedValueV2)
+
+				if (
+					map.get("classname") === "info_world_layer" &&
+					HasBit(MapValueToNumber(map.get("spawnflags")), 0)
+				)
+					DefaultWorldLayers.push(MapValueToString(map.get("layerName")))
+
+				EntityDataLump.push(map)
+			}
+			break
+		default:
+			throw `Unknown parse versionType: ${versionType}`
 	}
 }
 
-export let EntityDataLump: EntityDataMap[] = []
+function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
+	const kv = stream.ParseKV()
+	if (kv.has("m_childLumps")) {
+		const childLumps = kv.get("m_childLumps")
+		if (!Array.isArray(childLumps)) return
+		for (const childLump of childLumps) {
+			if (typeof childLump !== "string") continue
+			const childLumpBuf = fopen(`${childLump}_c`)
+			if (childLumpBuf !== undefined)
+				try {
+					ParseEntityLumpInternal(new FileBinaryStream(childLumpBuf))
+				} finally {
+					childLumpBuf.close()
+				}
+		}
+	}
+
+	if (kv.has("m_entityKeyValues")) {
+		const entityKeyValues = kv.get("m_entityKeyValues")
+		if (!Array.isArray(entityKeyValues)) return
+		ParseEntityKeyValues(VersionType.keyValues3Data, entityKeyValues)
+	}
+}
+
+export let EntityDataLump: (EntityDataMapV1 | EntityDataMapV2)[] = []
 export let DefaultWorldLayers: string[] = ["world_layer_base"]
 
 export function ParseEntityLump(stream: FileBinaryStream): void {

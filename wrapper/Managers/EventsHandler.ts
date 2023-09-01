@@ -2,6 +2,7 @@ import { Matrix4x4Identity } from "../Base/Matrix"
 import { NetworkedParticle } from "../Base/NetworkedParticle"
 import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
+import { ObjectTypeFlags } from "../Enums/ObjectTypeFlags"
 import { Team } from "../Enums/Team"
 import { Localization } from "../Menu/index"
 import { RendererSDK } from "../Native/RendererSDK"
@@ -39,7 +40,7 @@ import {
 	ParseProtobufNamed,
 	RecursiveProtobuf
 } from "../Utils/Protobuf"
-import { createMapFromMergedIterators } from "../Utils/Utils"
+import { createMapFromMergedIterators, parseEnumString } from "../Utils/Utils"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { EntityManager } from "./EntityManager"
 import { SetLatestTickDelta } from "./EntityManagerLogic"
@@ -1280,11 +1281,11 @@ function TryLoadWorld(worldKV: RecursiveMap): void {
 	const worldNodes = worldKV.get("m_worldNodes")
 	if (!(worldNodes instanceof Map || Array.isArray(worldNodes))) return
 	const objects: [string, number[]][] = []
+
 	worldNodes.forEach((node: RecursiveMapValue) => {
 		if (!(node instanceof Map)) return
 		const path = GetMapStringProperty(node, "m_worldNodePrefix")
 		const nodeKV = parseKV(`${path}.vwnod_c`)
-
 		const layerNames: string[] = []
 		const layerNamesMap = nodeKV.get("m_layerNames")
 		if (layerNamesMap instanceof Map || Array.isArray(layerNamesMap))
@@ -1315,17 +1316,24 @@ function TryLoadWorld(worldKV: RecursiveMap): void {
 					? MapToMatrix4x4(transformMap)
 					: Matrix4x4Identity
 			const modelPath = GetMapStringProperty(sceneObject, "m_renderableModel"),
-				meshPath = GetMapStringProperty(sceneObject, "m_renderable"),
-				objectTypeFlags = GetMapNumberProperty(
-					sceneObject,
-					"m_nObjectTypeFlags"
+				meshPath = GetMapStringProperty(sceneObject, "m_renderable")
+			let objectTypeFlags = GetMapNumberProperty(
+				sceneObject,
+				"m_nObjectTypeFlags"
+			)
+			if (isNaN(objectTypeFlags)) {
+				objectTypeFlags = parseEnumString(
+					ObjectTypeFlags,
+					sceneObject.get("m_nObjectTypeFlags") as string
 				)
+			}
 			// visual only, doesn't affect height calculations/etc
 			if (HasBit(objectTypeFlags, 7)) return
 			if (modelPath !== "") objects.push([modelPath, transform])
 			if (meshPath !== "") objects.push([meshPath, transform])
 		})
 	})
+
 	const worldPromise = (currentWorldPromise = Workers.CallRPCEndPoint(
 		"LoadAndOptimizeWorld",
 		objects,
@@ -1336,6 +1344,7 @@ function TryLoadWorld(worldKV: RecursiveMap): void {
 			display_name: "LoadAndOptimizeWorld"
 		}
 	))
+
 	worldPromise.then(data => {
 		if (
 			worldPromise !== currentWorldPromise ||
@@ -1345,6 +1354,7 @@ function TryLoadWorld(worldKV: RecursiveMap): void {
 			!Array.isArray(data[2])
 		)
 			return
+
 		currentWorldPromise = undefined
 		const worldBVH = data[0] as [Uint8Array, Uint8Array],
 			pathsData = data[1] as [
@@ -1428,8 +1438,8 @@ EventsSDK.on("ServerInfo", info => {
 	GameState.MapName = mapName
 	const addonName = (info.get("addon_name") as string) ?? ""
 	GameState.AddonName = addonName
-	TryLoadMapFiles()
 
+	TryLoadMapFiles()
 	ReloadGlobalUnitStorage()
 	ReloadGlobalAbilityStorage()
 
