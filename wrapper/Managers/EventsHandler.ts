@@ -1,10 +1,13 @@
+import { Color } from "../Base/Color"
 import { Matrix4x4Identity } from "../Base/Matrix"
 import { NetworkedParticle } from "../Base/NetworkedParticle"
 import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
+import { DOTAGameUIState } from "../Enums/DOTAGameUIState"
 import { ObjectTypeFlags } from "../Enums/ObjectTypeFlags"
 import { Team } from "../Enums/Team"
-import { Localization } from "../Menu/index"
+import { GUIInfo } from "../GUI/GUIInfo"
+import { Localization } from "../Menu/Localization"
 import { RendererSDK } from "../Native/RendererSDK"
 import * as WASM from "../Native/WASM"
 import { Workers } from "../Native/Workers"
@@ -1432,12 +1435,53 @@ function TryLoadMapFiles(): void {
 	}
 }
 
+const text =
+	"Currently the cheat does not work in the local lobby, for setup and testing, create a lobby on the valve servers."
+
+let isDedicated = false
+
+EventsSDK.on("Draw", () => {
+	if (
+		isDedicated ||
+		GameState.UIState !== DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME
+	) {
+		return
+	}
+
+	const size = GUIInfo.ScaleHeight(24)
+	const wSize = RendererSDK.WindowSize.Clone()
+
+	const windowSize = wSize.DivideScalar(2)
+	const textSize = RendererSDK.GetTextSize(
+		Localization.Localize(text),
+		RendererSDK.DefaultFontName,
+		size,
+		600
+	)
+
+	const position = windowSize.SubtractScalarY(wSize.y / 2 - textSize.y / 2)
+
+	position.SubtractScalarX(textSize.x / 2)
+	position.AddScalarY(GUIInfo.ScaleHeight(100))
+
+	RendererSDK.Text(
+		Localization.Localize(text),
+		position,
+		Color.White,
+		RendererSDK.DefaultFontName,
+		size,
+		600
+	)
+})
+
 EventsSDK.on("ServerInfo", info => {
 	let mapName = (info.get("map_name") as string) ?? "<empty>"
 	if (mapName === "start") mapName = "dota"
 	GameState.MapName = mapName
 	const addonName = (info.get("addon_name") as string) ?? ""
 	GameState.AddonName = addonName
+
+	isDedicated = (info.get("is_dedicated") as boolean) ?? false
 
 	TryLoadMapFiles()
 	ReloadGlobalUnitStorage()
@@ -1527,3 +1571,5 @@ Events.on("Draw", (visualData, w, h, x, y) => {
 	EventsSDK.emit("Draw")
 	GameState.IsInDraw = false
 })
+
+EventsSDK.on("GameEnded", () => (isDedicated = false))

@@ -1394,6 +1394,46 @@ RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, newVal) => {
 	if (ent instanceof NeutralSpawner) unit.Spawner = ent
 })
 
+function OnAbilityChanged(ent: Ability) {
+	for (const unit of Units) {
+		if (ent instanceof Ability) {
+			for (let i = 0, end = unit.Spells_.length; i < end; i++)
+				if (ent.HandleMatches(unit.Spells_[i])) {
+					unit.Spells[i] = ent
+					ent.Owner_ = unit.Handle
+					ent.OwnerEntity = unit
+					EventsSDK.emit("UnitAbilitiesChanged", false, unit)
+					break
+				}
+		}
+
+		if (!(ent instanceof Item)) return
+
+		for (let i = 0, end = unit.TotalItems_.length; i < end; i++)
+			if (ent.HandleMatches(unit.TotalItems_[i])) {
+				unit.TotalItems[i] = ent
+				ent.Owner_ = unit.Handle
+				ent.OwnerEntity = unit
+				EventsSDK.emit("UnitItemsChanged", false, unit)
+				break
+			}
+	}
+}
+
+function OnWearableChanged(ent: Wearable) {
+	for (const unit of Units) {
+		for (let i = 0, end = unit.MyWearables_.length; i < end; i++)
+			if (
+				ent.HandleMatches(unit.MyWearables_[i]) &&
+				!unit.MyWearables.includes(ent)
+			) {
+				unit.MyWearables.push(ent)
+				EventsSDK.emit("UnitWearablesChanged", false, unit)
+				break
+			}
+	}
+}
+
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof Unit) {
 		ent.PredictedPosition.CopyFrom(ent.NetworkedPosition)
@@ -1405,6 +1445,16 @@ EventsSDK.on("PreEntityCreated", ent => {
 			if (ent.HandleMatches(unit.Spawner_)) unit.Spawner = ent
 
 	const owner = ent.Owner
+	if (owner === undefined) {
+		if (ent instanceof Item || ent instanceof Ability) {
+			OnAbilityChanged(ent)
+		}
+		if (ent instanceof Wearable) {
+			OnWearableChanged(ent)
+		}
+		return
+	}
+
 	if (!(owner instanceof Unit)) return
 	if (ent instanceof Item) {
 		for (let i = 0, end = owner.TotalItems_.length; i < end; i++)
