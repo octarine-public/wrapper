@@ -264,6 +264,8 @@ message CSODOTAParty {
 	optional bool is_steam_china = 71;
 	optional uint32 bot_difficulty_mask = 72;
 	optional uint32 bot_script_index_mask = 73;
+	optional bool restricted_from_ranked = 74;
+	optional uint32 restricted_from_ranked_account_id = 75;
 }
 message CMsgLobbyPlayerPlusSubscriptionData {
 	message HeroBadge {
@@ -376,6 +378,10 @@ enum EEvent {
 	EVENT_ID_PERMANENT_GRANTS = 39;
 	EVENT_ID_MUERTA_RELEASE_SPRING2023 = 40;
 	EVENT_ID_TEAM_2023_TOUR1 = 41;
+	EVENT_ID_TEAM_2023_TOUR2 = 42;
+	EVENT_ID_TEAM_2023_TOUR3 = 43;
+	EVENT_ID_INTERNATIONAL_2023 = 45;
+	EVENT_ID_10TH_ANNIVERSARY = 46;
 }
 message CLobbyGuildChallenge {
 	optional uint32 guild_id = 1;

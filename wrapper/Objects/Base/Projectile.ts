@@ -80,9 +80,12 @@ export class TrackingProjectile extends Projectile {
 		public readonly MaxImpactTime: number | undefined,
 		public LaunchTick: number,
 		public readonly TargetLoc = new Vector3(),
-		colorgemcolor: Color
+		colorgemcolor: Color,
+		public readonly OriginalMoveSpeed: number,
+		public readonly Ability?: Nullable<Entity>
 	) {
 		super(projID, path, particleSystemHandle, source, colorgemcolor, speed)
+
 		if (this.Source instanceof Entity)
 			this.Source.Position.CopyTo(this.Position)
 		else this.Position.Invalidate()

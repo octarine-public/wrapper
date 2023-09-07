@@ -18,6 +18,7 @@ import {
 	ParseProtobufNamed,
 	RecursiveProtobuf
 } from "../Utils/Protobuf"
+import { EntityManager } from "./EntityManager"
 import { Events } from "./Events"
 import { EventsSDK } from "./EventsSDK"
 
@@ -214,6 +215,8 @@ message CDOTAUserMsg_TE_Projectile {
 	optional .CMsgVector target_loc = 14;
 	repeated .CDOTAUserMsg_ProjectileParticleCPData particle_cp_data = 15;
 	optional int64 additional_particle_system_handle = 16;
+	optional int32 original_move_speed = 17;
+	optional uint32 ability = 18 [default = 16777215];
 }
 
 message CDOTAUserMsg_TE_ProjectileLoc {
@@ -232,6 +235,7 @@ message CDOTAUserMsg_TE_ProjectileLoc {
 	optional int32 source_attachment = 15;
 	repeated .CDOTAUserMsg_ProjectileParticleCPData particle_cp_data = 16;
 	optional int64 additional_particle_system_handle = 17;
+	optional int32 original_move_speed = 18;
 }
 
 message CDOTAUserMsg_TE_DestroyProjectile {
@@ -313,7 +317,14 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				new Uint8Array(buf_),
 				"CDOTAUserMsg_TE_Projectile"
 			)
+
 			const particleSystemHandle = msg.get("particle_system_handle") as bigint
+			const abilMsg = msg.get("ability")
+			const ability =
+				abilMsg !== 16777215
+					? EntityManager.EntityByIndex(msg.get("ability") as number)
+					: undefined
+
 			const projectile = new TrackingProjectile(
 				msg.get("handle") as number,
 				GetPredictionTarget(msg.get("source") as number),
@@ -332,8 +343,11 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				msg.get("maximpacttime") as number,
 				msg.get("launch_tick") as number,
 				CMsgVectorToVector3(msg.get("target_loc") as RecursiveProtobuf),
-				NumberToColor(msg.get("colorgemcolor") as number)
+				NumberToColor(msg.get("colorgemcolor") as number),
+				msg.get("original_move_speed") as number,
+				ability
 			)
+
 			TrackingProjectileCreated(projectile)
 			break
 		}
@@ -358,8 +372,8 @@ Events.on("ServerMessage", (msgID, buf_) => {
 					? GetPathByHash(particleSystemHandle)
 					: undefined
 			)!
-			let projectile = ProjectileManager.AllTrackingProjectilesMap.get(handle)
 
+			let projectile = ProjectileManager.AllTrackingProjectilesMap.get(handle)
 			if (projectile === undefined) {
 				projectile = new TrackingProjectile(
 					handle,
@@ -375,7 +389,8 @@ Events.on("ServerMessage", (msgID, buf_) => {
 					undefined,
 					launchTick,
 					targetLoc,
-					NumberToColor(msg.get("colorgemcolor") as number)
+					NumberToColor(msg.get("colorgemcolor") as number),
+					msg.get("original_move_speed") as number
 				)
 				// TODO: do we need particle_cp_data?
 				projectile.Position.CopyFrom(

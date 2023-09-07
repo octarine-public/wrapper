@@ -50,6 +50,9 @@ export class Unit extends Entity {
 	public IsTrueSightedForEnemies = false
 	public HasScepterModifier = false
 	public HasShardModifier = false
+	public CanBeUpdateItems_ = false
+	public CanBeUpdateSpells_ = false
+	public CanBeUpdateMyWearables_ = false
 
 	public UnitName_ = ""
 	public AbsPositionBuffs = new Set<Unit>()
@@ -1361,6 +1364,7 @@ RegisterFieldHandler(Unit, "m_hAbilities", (unit, newVal) => {
 	}
 	if (unit.Spells.some((abil, i) => prevSpells[i] !== abil))
 		EventsSDK.emit("UnitAbilitiesChanged", false, unit)
+	unit.CanBeUpdateSpells_ = true
 })
 RegisterFieldHandler(Unit, "m_hItems", (unit, newVal) => {
 	const prevTotalItems = [...unit.TotalItems]
@@ -1376,12 +1380,14 @@ RegisterFieldHandler(Unit, "m_hItems", (unit, newVal) => {
 	}
 	if (unit.TotalItems.some((item, i) => prevTotalItems[i] !== item))
 		EventsSDK.emit("UnitItemsChanged", false, unit)
+	unit.CanBeUpdateItems_ = true
 })
 RegisterFieldHandler(Unit, "m_hMyWearables", (unit, newVal) => {
 	unit.MyWearables_ = newVal as number[]
 	unit.MyWearables = unit.MyWearables_.map(
 		id => EntityManager.EntityByIndex(id) as Nullable<Wearable>
 	).filter(ent => ent !== undefined) as Wearable[]
+	unit.CanBeUpdateMyWearables_ = true
 })
 RegisterFieldHandler(Unit, "m_anglediff", (unit, newVal) => {
 	unit.NetworkedAngles.SubtractScalarY(unit.RotationDifference)
@@ -1395,26 +1401,31 @@ RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, newVal) => {
 })
 
 function OnAbilityChanged(ent: Ability) {
-	for (const unit of Units) {
-		if (ent instanceof Ability) {
-			for (let i = 0, end = unit.Spells_.length; i < end; i++)
-				if (ent.HandleMatches(unit.Spells_[i])) {
-					unit.Spells[i] = ent
+	if (ent instanceof Item) {
+		for (const unit of Units) {
+			if (!unit.CanBeUpdateItems_) continue
+			for (let i = 0, end = unit.TotalItems_.length; i < end; i++)
+				if (ent.HandleMatches(unit.TotalItems_[i])) {
+					unit.TotalItems[i] = ent
 					ent.Owner_ = unit.Handle
 					ent.OwnerEntity = unit
-					EventsSDK.emit("UnitAbilitiesChanged", false, unit)
+					unit.CanBeUpdateItems_ = false
+					EventsSDK.emit("UnitItemsChanged", false, unit)
 					break
 				}
 		}
+		return
+	}
 
-		if (!(ent instanceof Item)) return
-
-		for (let i = 0, end = unit.TotalItems_.length; i < end; i++)
-			if (ent.HandleMatches(unit.TotalItems_[i])) {
-				unit.TotalItems[i] = ent
+	for (const unit of Units) {
+		if (!unit.CanBeUpdateSpells_) continue
+		for (let i = 0, end = unit.Spells_.length; i < end; i++)
+			if (ent.HandleMatches(unit.Spells_[i])) {
+				unit.Spells[i] = ent
 				ent.Owner_ = unit.Handle
 				ent.OwnerEntity = unit
-				EventsSDK.emit("UnitItemsChanged", false, unit)
+				EventsSDK.emit("UnitAbilitiesChanged", false, unit)
+				unit.CanBeUpdateSpells_ = false
 				break
 			}
 	}
@@ -1422,12 +1433,14 @@ function OnAbilityChanged(ent: Ability) {
 
 function OnWearableChanged(ent: Wearable) {
 	for (const unit of Units) {
+		if (!unit.CanBeUpdateMyWearables_) continue
 		for (let i = 0, end = unit.MyWearables_.length; i < end; i++)
 			if (
 				ent.HandleMatches(unit.MyWearables_[i]) &&
 				!unit.MyWearables.includes(ent)
 			) {
 				unit.MyWearables.push(ent)
+				unit.CanBeUpdateMyWearables_ = false
 				EventsSDK.emit("UnitWearablesChanged", false, unit)
 				break
 			}
@@ -1444,15 +1457,15 @@ EventsSDK.on("PreEntityCreated", ent => {
 		for (const unit of Units)
 			if (ent.HandleMatches(unit.Spawner_)) unit.Spawner = ent
 
-	const owner = ent.Owner
-
-	if (ent instanceof Item || ent instanceof Ability) {
-		OnAbilityChanged(ent)
-	}
 	if (ent instanceof Wearable) {
 		OnWearableChanged(ent)
 	}
 
+	if (ent instanceof Item || ent instanceof Ability) {
+		OnAbilityChanged(ent)
+	}
+
+	const owner = ent.Owner
 	if (!(owner instanceof Unit)) return
 	if (ent instanceof Item) {
 		for (let i = 0, end = owner.TotalItems_.length; i < end; i++)

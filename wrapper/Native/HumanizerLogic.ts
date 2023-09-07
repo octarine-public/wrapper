@@ -570,7 +570,7 @@ function ComputeTargetPos(
 		)
 			return [cursorPos.Divide(RendererSDK.WindowSize), true, true]
 		const pos = InputManager.CursorOnWorld
-		if (pos.IsValid && pos.z >= -1024) {
+		if (pos.IsValid && pos.z >= -1000) {
 			const w2s = RendererSDK.WorldToScreenCustom(pos, cameraVec)
 			if (
 				w2s === undefined ||

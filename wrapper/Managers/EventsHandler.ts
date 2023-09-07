@@ -80,7 +80,8 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_CAN_FREEZE = 25,
 	GAME_PARTICLE_MANAGER_EVENT_SET_NAMED_VALUE_CONTEXT = 26,
 	GAME_PARTICLE_MANAGER_EVENT_UPDATE_TRANSFORM = 27,
-	GAME_PARTICLE_MANAGER_EVENT_FREEZE_TRANSITION_OVERRIDE = 28
+	GAME_PARTICLE_MANAGER_EVENT_FREEZE_TRANSITION_OVERRIDE = 28,
+	GAME_PARTICLE_MANAGER_EVENT_FREEZE_INVOLVING = 29
 }
 enum EDotaEntityMessages {
 	DOTA_UNIT_SPEECH = 0,
@@ -175,6 +176,7 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_SET_NAMED_VALUE_CONTEXT = 26;
 	GAME_PARTICLE_MANAGER_EVENT_UPDATE_TRANSFORM = 27;
 	GAME_PARTICLE_MANAGER_EVENT_FREEZE_TRANSITION_OVERRIDE = 28;
+	GAME_PARTICLE_MANAGER_EVENT_FREEZE_INVOLVING = 29;
 }
 
 enum DOTA_CHAT_MESSAGE {
@@ -286,6 +288,8 @@ enum DOTA_CHAT_MESSAGE {
 	CHAT_MESSAGE_PRIVATE_COACH_CONNECTED = 113;
 	CHAT_MESSAGE_CANT_PAUSE_TOO_EARLY = 115;
 	CHAT_MESSAGE_HERO_KILL_WITH_PENGUIN = 116;
+	CHAT_MESSAGE_MINIBOSS_KILL = 117;
+	CHAT_MESSAGE_PLAYER_IN_GAME_BAN_TEXT = 118;
 }
 
 message CUserMsg_ParticleManager {
@@ -435,6 +439,12 @@ message CUserMsg_ParticleManager {
 		optional float freeze_transition_override = 1;
 	}
 
+	message FreezeParticleInvolving {
+		optional bool set_frozen = 1;
+		optional float transition_duration = 2;
+		optional uint32 entity_handle = 3 [default = 16777215];
+	}
+
 	message SetParticleNamedValueContext {
 		message FloatContextValue {
 			optional uint32 value_name_hash = 1;
@@ -493,6 +503,7 @@ message CUserMsg_ParticleManager {
 	optional .CUserMsg_ParticleManager.SetParticleNamedValueContext set_named_value_context = 29;
 	optional .CUserMsg_ParticleManager.UpdateParticleTransform update_particle_transform = 30;
 	optional .CUserMsg_ParticleManager.ParticleFreezeTransitionOverride particle_freeze_transition_override = 31;
+	optional .CUserMsg_ParticleManager.FreezeParticleInvolving freeze_particle_involving = 32;
 }
 
 enum EDotaEntityMessages {
@@ -961,6 +972,10 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_FREEZE_TRANSITION_OVERRIDE: {
 			// const submsg = msg.get("particle_freeze_transition_override") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_FREEZE_INVOLVING: {
+			// const submsg = msg.get("freeze_particle_involving") as RecursiveProtobuf
 			break
 		}
 		default:
