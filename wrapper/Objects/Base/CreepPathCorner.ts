@@ -112,7 +112,7 @@ function LoadCreepSpawnersAndPathCorners(): void {
 		}
 		const originStr = data.get("origin"),
 			anglesStr = data.get("angles"),
-			npcfirstwaypoint = data.get("npcfirstwaypoint")
+			npcfirstwaypoint = data.get("NPCFirstWaypoint")
 		if (
 			typeof originStr !== "string" ||
 			typeof anglesStr !== "string" ||
