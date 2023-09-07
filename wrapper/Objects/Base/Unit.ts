@@ -1445,14 +1445,12 @@ EventsSDK.on("PreEntityCreated", ent => {
 			if (ent.HandleMatches(unit.Spawner_)) unit.Spawner = ent
 
 	const owner = ent.Owner
-	if (owner === undefined) {
-		if (ent instanceof Item || ent instanceof Ability) {
-			OnAbilityChanged(ent)
-		}
-		if (ent instanceof Wearable) {
-			OnWearableChanged(ent)
-		}
-		return
+
+	if (ent instanceof Item || ent instanceof Ability) {
+		OnAbilityChanged(ent)
+	}
+	if (ent instanceof Wearable) {
+		OnWearableChanged(ent)
 	}
 
 	if (!(owner instanceof Unit)) return
