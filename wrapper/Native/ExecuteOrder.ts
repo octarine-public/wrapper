@@ -1,11 +1,13 @@
 import { Vector3 } from "../Base/Vector3"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import { EventsSDK } from "../Managers/EventsSDK"
+import { InputManager } from "../Managers/InputManager"
 import { Ability } from "../Objects/Base/Ability"
 import { Entity } from "../Objects/Base/Entity"
 import { TempTree } from "../Objects/Base/TempTree"
 import { Tree } from "../Objects/Base/Tree"
 import { Unit } from "../Objects/Base/Unit"
+import { GridNav } from "../Resources/ParseGNV"
 import { arrayRemoveCallback } from "../Utils/ArrayExtensions"
 import * as WASM from "./WASM"
 
@@ -310,14 +312,9 @@ export class ExecuteOrder {
 			default:
 				break
 		}
-		if (setZ) {
-			this.Position.SetZ(WASM.GetPositionHeight(this.Position))
-			const heightMap = WASM.HeightMap
-			if (
-				this.Position.z < -1024 ||
-				(heightMap !== undefined && !heightMap.Contains(this.Position))
-			)
-				return
+
+		if (setZ && !this.CanBeClickHeightMapPosition()) {
+			return
 		}
 
 		const currentTime = hrtime()
@@ -346,5 +343,24 @@ export class ExecuteOrder {
 			)
 				continue
 		ExecuteOrder.orderQueue.push([this, hrtime(), false, false])
+	}
+
+	protected CanBeClickHeightMapPosition() {
+		const heightMap = WASM.HeightMap
+		const edgeSize = (GridNav?.EdgeSize ?? 64) * 2
+		const height = WASM.GetPositionHeight(this.Position) / edgeSize
+		if (height >= 4) {
+			this.Position.SetZ(InputManager.CursorOnWorld.z)
+		} else {
+			this.Position.SetZ(WASM.GetPositionHeight(this.Position))
+		}
+		if (
+			height <= -edgeSize ||
+			this.Position.z < -1024 || // idk, max negative height number on "map dota" -100
+			(heightMap !== undefined && !heightMap.Contains(this.Position))
+		)
+			return false
+
+		return true
 	}
 }

@@ -1336,18 +1336,17 @@ function TryLoadWorld(worldKV: RecursiveMap): void {
 			const modelPath = GetMapStringProperty(sceneObject, "m_renderableModel"),
 				meshPath = GetMapStringProperty(sceneObject, "m_renderable")
 
-			let objectTypeFlags = sceneObject.get("m_nObjectTypeFlags") as Nullable<
-				number | string
-			>
-			if (objectTypeFlags !== undefined) {
-				if (typeof objectTypeFlags === "string") {
-					objectTypeFlags = parseEnumString(
-						ObjectTypeFlags,
-						sceneObject.get("m_nObjectTypeFlags") as string
-					)
-				}
+			let objectTypeFlags = sceneObject.get("m_nObjectTypeFlags") as
+				| number
+				| string
+
+			if (typeof objectTypeFlags === "string") {
+				objectTypeFlags = parseEnumString(
+					ObjectTypeFlags,
+					sceneObject.get("m_nObjectTypeFlags") as string
+				)
 			}
-			if (objectTypeFlags === undefined) return
+
 			// visual only, doesn't affect height calculations/etc
 			if (HasBit(objectTypeFlags, 7)) return
 			if (modelPath !== "") objects.push([modelPath, transform])
