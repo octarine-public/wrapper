@@ -7,7 +7,6 @@ import { TempTree } from "../Objects/Base/TempTree"
 import { Tree } from "../Objects/Base/Tree"
 import { Unit } from "../Objects/Base/Unit"
 import { arrayRemoveCallback } from "../Utils/ArrayExtensions"
-import * as WASM from "./WASM"
 
 function WillInterruptOrderQueue(order: ExecuteOrder): boolean {
 	switch (order.OrderType) {
@@ -294,30 +293,8 @@ export class ExecuteOrder {
 				if (ExecuteOrder.DisableHumanizer) return
 				break
 		}
-		let setZ = false
-		switch (this.OrderType) {
-			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_PATROL:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM:
-				setZ = true
-				break
-			default:
-				break
-		}
-		if (setZ) {
-			this.Position.SetZ(WASM.GetPositionHeight(this.Position))
-			const heightMap = WASM.HeightMap
-			if (
-				this.Position.z < -1024 ||
-				(heightMap !== undefined && !heightMap.Contains(this.Position))
-			)
-				return
-		}
+
+		// const heightMap = WASM.HeightMap
 
 		const currentTime = hrtime()
 		if (this.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION) {

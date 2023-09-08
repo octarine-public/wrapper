@@ -424,16 +424,6 @@ export function WorldToScreenNew(
 	WASMIOBuffer[3] = windowSize.x
 	WASMIOBuffer[4] = windowSize.y
 	if (wasm.WorldToScreenNew() === 0) return undefined
-
-	// console.log(
-	// 	"windowSize",
-	// 	WASMIOBuffer,
-	// 	"pos",
-	// 	position,
-	// 	WASMIOBuffer[3],
-	// 	WASMIOBuffer[4]
-	// )
-
 	return new Vector2(WASMIOBuffer[0], WASMIOBuffer[1])
 }
 

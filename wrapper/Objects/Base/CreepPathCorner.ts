@@ -15,6 +15,7 @@ import { GetPositionHeight } from "../../Native/WASM"
 import { EntityDataLump } from "../../Resources/ParseEntityLump"
 import { Entity } from "./Entity"
 import { LaneCreepSpawner } from "./LaneCreepSpawner"
+// import { WardSpawner } from "./WardSpawner"
 
 @WrapperClass("CreepPathCorner")
 export class CreepPathCorner extends Entity {
@@ -74,12 +75,14 @@ function LoadCreepSpawnersAndPathCorners(): void {
 		entity.VisualAngles.CopyFrom(ang)
 		entity.NetworkedAngles.CopyFrom(ang)
 	}
+
 	for (const [ent, name] of ent2name)
 		for (const [prev, target] of ent2target)
 			if (ent !== prev && name === target) {
 				prev.Target = ent
 				ent.Referencing.add(prev)
 			}
+
 	for (const data of EntityDataLump) {
 		let team: Nullable<Team>, lane: Nullable<MapArea>
 		switch (data.get("classname")) {
@@ -147,6 +150,38 @@ function LoadCreepSpawnersAndPathCorners(): void {
 		entity.NetworkedAngles.CopyFrom(ang)
 		EventsSDK.emit("EntityCreated", false, entity)
 	}
+
+	// for (const data of EntityDataLump) {
+	// 	if (data.get("classname") !== "info_target") continue
+	// 	const originStr = data.get("origin"),
+	// 		anglesStr = data.get("angles"),
+	// 		targetname = data.get("targetname")
+	// 	if (
+	// 		typeof originStr !== "string" ||
+	// 		typeof anglesStr !== "string" ||
+	// 		typeof targetname !== "string"
+	// 	)
+	// 		continue
+
+	// 	const spawnflags = Number(data.get("spawnflags"))
+	// 	if (spawnflags <= 0) continue
+
+	// 	let id = curLocalID++
+	// 	while (EntityManager.EntityByIndex(id) !== undefined) id = curLocalID++
+	// 	const entity = new WardSpawner(id, 0)
+	// 	entity.Name_ = targetname
+	// 	CreateEntityInternal(entity)
+	// 	EventsSDK.emit("PreEntityCreated", false, entity)
+	// 	const pos = Vector3.FromString(originStr),
+	// 		ang = QAngle.FromString(anglesStr)
+	// 	pos.SetZ(GetPositionHeight(pos))
+	// 	entity.VisualPosition.CopyFrom(pos)
+	// 	entity.NetworkedPosition.CopyFrom(pos)
+	// 	entity.VisualAngles.CopyFrom(ang)
+	// 	entity.NetworkedAngles.CopyFrom(ang)
+	// 	EventsSDK.emit("EntityCreated", false, entity)
+	// }
+
 	for (const [ent] of ent2name) EventsSDK.emit("EntityCreated", false, ent)
 }
 

@@ -432,19 +432,19 @@ function ComputeTargetPos(
 			yellowZoneOutAt < currentTime - yellowZoneMaxDuration,
 		greenZoneReached = greenZoneOutAt < currentTime - greenZoneMaxDuration
 	const currentPos = latestUsercmd.MousePosition
-	if (lastOrderTarget instanceof Entity)
+	if (lastOrderTarget instanceof Entity) {
 		return [
 			ComputeTargetPosEntity(cameraVec, currentTime, lastOrderTarget),
 			true,
 			false
 		]
-	else if (lastOrderTarget instanceof Vector3)
+	} else if (lastOrderTarget instanceof Vector3) {
 		return [
 			ComputeTargetPosVector3(cameraVec, currentTime, lastOrderTarget),
 			true,
 			false
 		]
-	else if (typeof lastOrderTarget === "object") {
+	} else if (typeof lastOrderTarget === "object") {
 		if (lastOrderTarget.finishedSrc) {
 			if (lastOrderTarget.dst instanceof Vector3)
 				return [
@@ -570,7 +570,7 @@ function ComputeTargetPos(
 		)
 			return [cursorPos.Divide(RendererSDK.WindowSize), true, true]
 		const pos = InputManager.CursorOnWorld
-		if (pos.IsValid && pos.z >= -1000) {
+		if (pos.IsValid && pos.z >= -1024) {
 			const w2s = RendererSDK.WorldToScreenCustom(pos, cameraVec)
 			if (
 				w2s === undefined ||

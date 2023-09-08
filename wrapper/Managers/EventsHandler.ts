@@ -27,7 +27,6 @@ import {
 } from "../Resources/ParseEntityLump"
 import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
 import {
-	GetMapNumberProperty,
 	GetMapStringProperty,
 	MapToMatrix4x4,
 	MapToNumberArray,
@@ -1323,6 +1322,7 @@ function TryLoadWorld(worldKV: RecursiveMap): void {
 
 		const sceneObjects = nodeKV.get("m_sceneObjects")
 		if (!(sceneObjects instanceof Map || Array.isArray(sceneObjects))) return
+
 		let i = 0
 		sceneObjects.forEach((sceneObject: RecursiveMapValue) => {
 			if (!(sceneObject instanceof Map)) return
@@ -1335,16 +1335,19 @@ function TryLoadWorld(worldKV: RecursiveMap): void {
 					: Matrix4x4Identity
 			const modelPath = GetMapStringProperty(sceneObject, "m_renderableModel"),
 				meshPath = GetMapStringProperty(sceneObject, "m_renderable")
-			let objectTypeFlags = GetMapNumberProperty(
-				sceneObject,
-				"m_nObjectTypeFlags"
-			)
-			if (isNaN(objectTypeFlags)) {
-				objectTypeFlags = parseEnumString(
-					ObjectTypeFlags,
-					sceneObject.get("m_nObjectTypeFlags") as string
-				)
+
+			let objectTypeFlags = sceneObject.get("m_nObjectTypeFlags") as Nullable<
+				number | string
+			>
+			if (objectTypeFlags !== undefined) {
+				if (typeof objectTypeFlags === "string") {
+					objectTypeFlags = parseEnumString(
+						ObjectTypeFlags,
+						sceneObject.get("m_nObjectTypeFlags") as string
+					)
+				}
 			}
+			if (objectTypeFlags === undefined) return
 			// visual only, doesn't affect height calculations/etc
 			if (HasBit(objectTypeFlags, 7)) return
 			if (modelPath !== "") objects.push([modelPath, transform])
