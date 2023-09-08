@@ -1535,5 +1535,32 @@ function ClearHumanizerState() {
 	paramsY = getParams()
 }
 
+function RestartHumanizerState() {
+	ExecuteOrder.orderQueue.splice(0)
+	ExecuteOrder.lastMove = undefined
+	lastOrderFinish = 0
+	latestCameraX = 0
+	latestCameraY = 0
+	currentOrder = undefined
+	debugCursor.toZero()
+	lastUpdate = 0
+	latestUsercmd = new UserCmd()
+	cameraMoveEnd = 0
+	cameraDirection.toZero()
+	yellowZoneOutAt = 0
+	greenZoneOutAt = 0
+	cursorAtMinimapAt = 0
+	cursorEnteredMinimapAt = 0
+	lastUnitSwitch = 0
+	initializedMousePosition = false
+	paramsX = getParams()
+	paramsY = getParams()
+}
+
 Events.on("NewConnection", ClearHumanizerState)
 EventsSDK.on("GameEnded", ClearHumanizerState)
+EventsSDK.on("HumanizerStateChanged", () => {
+	if (ExecuteOrder.DisableHumanizer) {
+		RestartHumanizerState()
+	}
+})
