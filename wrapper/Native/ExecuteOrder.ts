@@ -7,6 +7,7 @@ import { TempTree } from "../Objects/Base/TempTree"
 import { Tree } from "../Objects/Base/Tree"
 import { Unit } from "../Objects/Base/Unit"
 import { arrayRemoveCallback } from "../Utils/ArrayExtensions"
+import * as WASM from "./WASM"
 
 function WillInterruptOrderQueue(order: ExecuteOrder): boolean {
 	switch (order.OrderType) {
@@ -294,7 +295,10 @@ export class ExecuteOrder {
 				break
 		}
 
-		// const heightMap = WASM.HeightMap
+		const heightMap = WASM.HeightMap
+		if (heightMap === undefined) return
+
+		console.log(heightMap, heightMap.Contains(this.Position))
 
 		const currentTime = hrtime()
 		if (this.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION) {
