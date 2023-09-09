@@ -3,8 +3,6 @@ import { ControlPoint, ControlPointParam, Particle } from "../Base/Particle"
 import { Vector3 } from "../Base/Vector3"
 import { ParticleAttachment } from "../Enums/ParticleAttachment"
 import { Entity } from "../Objects/Base/Entity"
-import { GameState } from "../Utils/GameState"
-import { EventsSDK } from "./EventsSDK"
 
 export enum PARTICLE_RENDER_NAME {
 	NORMAL = "Normal",
@@ -290,20 +288,3 @@ export class ParticlesSDK {
 		if (particleRange === undefined) this.AllParticlesRange.set(key, range)
 	}
 }
-
-let prevOBSBypassState = false
-EventsSDK.on("Draw", () => {
-	if (prevOBSBypassState === GameState.OBSBypassEnabled) return
-	prevOBSBypassState = GameState.OBSBypassEnabled
-	ParticlesSDK.Instances.forEach(instance =>
-		[...instance.AllParticles.values()].forEach(par => {
-			if (GameState.OBSBypassEnabled) {
-				par.IsHidden = true
-				par.Destroy()
-			} else {
-				par.Restart()
-				par.IsHidden = false
-			}
-		})
-	)
-})

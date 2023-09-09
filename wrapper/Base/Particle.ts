@@ -1,7 +1,6 @@
 import { ParticleAttachment } from "../Enums/ParticleAttachment"
 import { ParticlesSDK } from "../Managers/ParticleManager"
 import { Entity } from "../Objects/Base/Entity"
-import { GameState } from "../Utils/GameState"
 import { tryFindFile } from "../Utils/readFile"
 import { Color } from "./Color"
 import { Vector2 } from "./Vector2"
@@ -114,22 +113,19 @@ export class Particle {
 		if (!path.endsWith("_c")) path += "_c"
 		path = tryFindFile(path, 2) ?? path
 		path = path.substring(0, path.length - 2)
-		if (!GameState.OBSBypassEnabled) {
-			this.EffectIndex = Particles.Create(
-				path,
-				this.Attachment,
-				this.AttachedTo?.IsValid
-					? this.AttachedTo instanceof Entity
-						? this.AttachedTo.Index
-						: this.AttachedTo.Length
-					: -1
-			)
-			this.IsValid = true
-			this.SetInFogVisible()
-			this.SetControlPoints(...controlPoints)
-		} else this.IsHidden = true
+		this.EffectIndex = Particles.Create(
+			path,
+			this.Attachment,
+			this.AttachedTo?.IsValid
+				? this.AttachedTo instanceof Entity
+					? this.AttachedTo.Index
+					: this.AttachedTo.Length
+				: -1
+		)
+		this.IsValid = true
+		this.SetInFogVisible()
+		this.SetControlPoints(...controlPoints)
 		this.Parent.AllParticles.set(this.Key, this)
-
 		return this
 	}
 }
