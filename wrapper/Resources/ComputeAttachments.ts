@@ -101,7 +101,7 @@ export function ComputeAttachmentsAndBounds(
 	if (buf === undefined) return [ar, new Vector3(), new Vector3()]
 	let model: CModel
 	try {
-		model = ParseModel(new FileBinaryStream(buf))
+		model = ParseModel(new FileBinaryStream(buf), modelName)
 	} finally {
 		buf.close()
 	}

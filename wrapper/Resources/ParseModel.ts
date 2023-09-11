@@ -28,7 +28,7 @@ export class CModel {
 	public readonly MinBounds = new Vector3()
 	public readonly MaxBounds = new Vector3()
 	public readonly FilesOpen: FileStream[] = []
-	constructor(stream: ReadableBinaryStream) {
+	constructor(stream: ReadableBinaryStream, path: string) {
 		const layout = ParseResourceLayout(stream)
 		if (layout === undefined) throw "Model without resource format"
 		const kv = stream.ParseKV()
@@ -38,11 +38,11 @@ export class CModel {
 		this.LoadMeshGroupsMasks(kv)
 		this.DefaultMeshGroupsMask = this.LoadLODGroupMasks(kv)
 		this.LoadMaterialGroups(kv)
-		this.LoadRefMeshes(kv)
+		this.LoadRefMeshes(kv, path)
 		this.LoadRefAnimations(kv)
 
 		const ctrl = layout[0].get("CTRL")?.ParseKVBlock() ?? new Map()
-		this.LoadEmbeddedMeshes(ctrl, layout[1])
+		this.LoadEmbeddedMeshes(ctrl, layout[1], path) // broken for map load (LoadAndOptimizeWorld)
 		this.LoadEmbeddedAnimation(
 			ctrl,
 			layout[1],
@@ -130,8 +130,19 @@ export class CModel {
 			})
 		})
 	}
-	private LoadRefMeshes(kv: RecursiveMap): void {
+	private LoadRefMeshes(kv: RecursiveMap, path: string): void {
 		const refMeshes = kv.get("m_refMeshes")
+		if (
+			(refMeshes instanceof Map && refMeshes.size < 2) ||
+			(Array.isArray(refMeshes) && refMeshes.length < 2)
+		) {
+			const buf = fopen(path)
+			if (buf !== undefined) {
+				this.FilesOpen.push(buf)
+				this.Meshes.push(ParseMesh(new FileBinaryStream(buf), path))
+			}
+			return
+		}
 		if (refMeshes instanceof Map || Array.isArray(refMeshes))
 			refMeshes.forEach((meshPath: RecursiveMapValue) => {
 				if (typeof meshPath !== "string") return
@@ -139,13 +150,15 @@ export class CModel {
 				const buf = fopen(meshPath)
 				if (buf !== undefined) {
 					this.FilesOpen.push(buf)
-					this.Meshes.push(ParseMesh(new FileBinaryStream(buf)))
+					this.Meshes.push(ParseMesh(new FileBinaryStream(buf), path))
 				}
 			})
 	}
+
 	private LoadEmbeddedMeshes(
 		kv: RecursiveMap,
-		blocks: ReadableBinaryStream[]
+		blocks: ReadableBinaryStream[],
+		path: string
 	): void {
 		const embeddedMeshes = kv.get("embedded_meshes")
 		if (!(embeddedMeshes instanceof Map || Array.isArray(embeddedMeshes)))
@@ -154,7 +167,9 @@ export class CModel {
 			if (!(embeddedMesh instanceof Map)) return
 			const dataBlock = GetMapNumberProperty(embeddedMesh, "data_block"),
 				vbibBlock = GetMapNumberProperty(embeddedMesh, "vbib_block")
-			this.Meshes.push(ParseEmbeddedMesh(blocks[dataBlock], blocks[vbibBlock]))
+			this.Meshes.push(
+				ParseEmbeddedMesh(blocks[dataBlock], blocks[vbibBlock], path)
+			)
 		})
 	}
 	private LoadRefAnimations(kv: RecursiveMap): void {
@@ -196,6 +211,6 @@ export class CModel {
 	}
 }
 
-export function ParseModel(stream: ReadableBinaryStream): CModel {
-	return new CModel(stream)
+export function ParseModel(stream: ReadableBinaryStream, path: string): CModel {
+	return new CModel(stream, path)
 }

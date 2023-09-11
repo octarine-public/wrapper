@@ -106,7 +106,7 @@ export class CMesh {
 	public readonly MaxBounds: Vector3
 	public readonly Attachments = new Map<string, CMeshAttachment>()
 	public readonly DrawCalls: CMeshDrawCall[] = []
-	constructor(kv: RecursiveMap, vbib: VBIB) {
+	constructor(kv: RecursiveMap, vbib: VBIB, _path: string) {
 		const [min, max] = this.ComputeBounds(kv)
 		this.MinBounds = min
 		this.MaxBounds = max
@@ -204,7 +204,7 @@ export class CMesh {
 				if (materialPath === "")
 					materialPath = GetMapStringProperty(drawCall, "m_pMaterial")
 				if (!materialPath.endsWith("_c")) materialPath += "_c"
-				let material: CMaterial | undefined
+				let material: Nullable<CMaterial>
 				const materialBuf = fopen(materialPath)
 				if (materialBuf !== undefined)
 					try {
@@ -244,17 +244,18 @@ export class CMesh {
 
 export function ParseEmbeddedMesh(
 	data: Nullable<ReadableBinaryStream>,
-	vbibData: Nullable<ReadableBinaryStream>
+	vbibData: Nullable<ReadableBinaryStream>,
+	path: string
 ): CMesh {
 	const kv = data?.ParseKVBlock() ?? new Map()
 	if (kv.size === 0) throw "Mesh without data"
 	const vbib =
 		vbibData !== undefined ? ParseVBIB(vbibData) : ParseVBIBFromKV(kv)
-	return new CMesh(kv, vbib)
+	return new CMesh(kv, vbib, path)
 }
 
-export function ParseMesh(stream: ReadableBinaryStream): CMesh {
+export function ParseMesh(stream: ReadableBinaryStream, path: string): CMesh {
 	const layout = ParseResourceLayout(stream)
 	if (layout === undefined) throw "Mesh without resource layout"
-	return ParseEmbeddedMesh(layout[0].get("DATA"), layout[0].get("VBIB"))
+	return ParseEmbeddedMesh(layout[0].get("MDAT"), layout[0].get("MBUF"), path)
 }

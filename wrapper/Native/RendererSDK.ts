@@ -1078,15 +1078,19 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 		try {
 			let drawCalls: CMeshDrawCall[] = []
 			if (path.endsWith(".vmdl")) {
-				const model = ParseModel(new FileBinaryStream(buf))
+				const model = ParseModel(new FileBinaryStream(buf), path)
 				const mesh = model.Meshes[0]
 				if (mesh !== undefined) {
 					drawCalls = mesh.DrawCalls
 					filesOpen = model.FilesOpen
-				} else model.FilesOpen.forEach(file => file.close())
-			} else if (path.endsWith(".vmesh"))
-				drawCalls = ParseMesh(new FileBinaryStream(buf)).DrawCalls
-			else throw `Invalid path ${path}`
+				} else {
+					model.FilesOpen.forEach(file => file.close())
+				}
+			} else if (path.endsWith(".vmesh")) {
+				drawCalls = ParseMesh(new FileBinaryStream(buf), path).DrawCalls
+			} else {
+				throw `Invalid path ${path}`
+			}
 			const pathMeshes: number[] = []
 			path2meshes.set(path, pathMeshes)
 			const pathID = paths.length
