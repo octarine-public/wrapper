@@ -17,7 +17,6 @@ import { ParticlesSDK as _ParticlesSDK } from "./Managers/ParticleManager"
 import { MenuManager as _Menu } from "./Menu/Menu"
 import { RendererSDK as _RendererSDK } from "./Native/RendererSDK"
 import * as _WASM from "./Native/WASM"
-import { Workers as _Workers } from "./Native/Workers"
 import {
 	GameRules as _GameRules,
 	LocalPlayer as _LocalPlayer
@@ -43,13 +42,6 @@ globalThis.FakeUnits = _FakeUnits
 Object.defineProperty(globalThis, "LocalPlayer", {
 	get: () => {
 		return _LocalPlayer
-	},
-	configurable: false,
-	enumerable: true
-})
-Object.defineProperty(globalThis, "WASMIOBuffer", {
-	get: () => {
-		return _WASM.WASMIOBuffer
 	},
 	configurable: false,
 	enumerable: true
@@ -92,7 +84,6 @@ Object.defineProperty(globalThis, "EntityDataLump", {
 globalThis.GetPositionHeight = _WASM.GetPositionHeight
 globalThis.ParticlesSDK = _ParticlesSDK
 globalThis.WASM = _WASM
-globalThis.Workers = _Workers
 globalThis.MinimapSDK = _MinimapSDK
 globalThis.InputManager = _InputManager
 globalThis.GUIInfo = _GUIInfo

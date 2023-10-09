@@ -101,21 +101,16 @@ EventsSDK.on("PostDataUpdate", () => {
 			proj.LastUpdate = curTime
 			const source = proj.Source
 			if (source instanceof Entity && proj.SourceAttachment !== "") {
-				const attachment = source.GetAttachment(
+				const attachmentPos = source.GetAttachmentPosition(
 					proj.SourceAttachment,
 					source.LastActivity,
-					source.LastActivitySequenceVariant
+					source.LastActivitySequenceVariant,
+					source.LastActivity !== (0 as GameActivity)
+						? source.LastActivityAnimationPoint
+						: Infinity,
+					new Vector3()
 				)
-				if (attachment !== undefined)
-					proj.Position.AddForThis(
-						attachment.GetPosition(
-							source.LastActivity !== (0 as GameActivity)
-								? source.LastActivityAnimationPoint
-								: attachment.FrameCount / 2 / attachment.FPS,
-							source.RotationRad,
-							source.ModelScale
-						)
-					)
+				proj.Position.AddForThis(attachmentPos)
 			}
 		}
 		const dt = curTime - proj.LastUpdate
@@ -126,24 +121,20 @@ EventsSDK.on("PostDataUpdate", () => {
 				!proj.IsDodged
 			) {
 				proj.Position.CopyFrom(proj.Source.Position)
-				const attachment =
+
+				const attachmentPos =
 					proj.SourceAttachment !== ""
-						? proj.Source.GetAttachment(
+						? proj.Source.GetAttachmentPosition(
 								proj.SourceAttachment,
 								proj.Source.LastActivity,
-								proj.Source.LastActivitySequenceVariant
+								proj.Source.LastActivitySequenceVariant,
+								proj.Source.LastActivity !== (0 as GameActivity)
+									? proj.Source.LastActivityAnimationPoint
+									: Infinity,
+								new Vector3()
 						  )
 						: undefined
-				if (attachment !== undefined)
-					proj.Position.AddForThis(
-						attachment.GetPosition(
-							proj.Source.LastActivity !== (0 as GameActivity)
-								? proj.Source.LastActivityAnimationPoint
-								: attachment.FrameCount / 2 / attachment.FPS,
-							proj.Source.RotationRad,
-							proj.Source.ModelScale
-						)
-					)
+				if (attachmentPos !== undefined) proj.Position.AddForThis(attachmentPos)
 				proj.Position.Extend(
 					proj.TargetLoc,
 					(GameState.CurrentServerTick - proj.LaunchTick) * dt * proj.Speed

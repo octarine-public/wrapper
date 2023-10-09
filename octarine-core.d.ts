@@ -1,43 +1,13 @@
 /// GLOBAL TYPES
-type WorkerIPCType =
-	| { [key: string]: WorkerIPCType }
-	| Map<WorkerIPCType, WorkerIPCType>
-	| WorkerIPCType[]
-	| WebAssembly.Module
-	| WebAssembly.Memory
-	| SharedArrayBuffer // is 0-copy
-	| Uint8Array // won't maintain byteOffset/buffer (so won't be 0-copy) unless underlying buffer is SharedArrayBuffer
-	| ArrayBuffer // is not 0-copy
-	| string
-	| bigint
-	| number
-	| boolean
-	| undefined
-	| void
-interface WorkerOptions {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	forward_events?: boolean // forward events [except several user-driven ones and /ServerMessages] to worker
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	forward_server_messages?: boolean // forward ServerMessage events, only works with forward_events
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	display_name?: string // display name in CDT
-	/**
-	 * if specified and not empty - absolute path of a singular entry point of the worker
-	 * i.e. github.com/octarine-public/wrapper/wrapper/Imports
-	 */
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	entry_point?: string
-}
 
 /// GLOBAL OBJECTS
 declare var IOBuffer: Float32Array // 128 floats in size
 declare var IOBufferView: DataView // IOBuffer DataView
-declare var DrawMatrix: Float32Array // 16 floats in size
 /**
 struct CUnitOrder {
 	uint32_t order_type; // 0
 	uint32_t issuer; // 4
-	Vector position; // 8
+	Vector3 position; // 8
 	CEntityIndex target; // 20
 	CEntityIndex ability; // 24
 	bool show_effects; // 28
@@ -79,8 +49,8 @@ declare var ConVars: ConVars
 declare var CustomGameEvents: CustomGameEvents
 declare var Particles: Particles
 declare var Renderer: Renderer
+declare var WorldUtils: WorldUtils
 declare var Camera: Camera
-declare const IS_MAIN_WORKER: boolean
 declare const IS_MINIMAL_CORE: boolean
 
 declare interface ConVars {
@@ -120,6 +90,78 @@ declare interface Renderer {
 	ExecuteCommandBuffer(buf: Uint8Array): void
 }
 
+declare interface WorldUtils {
+	/**
+	 * @returns MinMapCoords: Vector2 to IOBuffer offset 0,
+	 *          MapSize: Vector2 to IOBuffer offset 2,
+	 *          and return value is true if function succeeded
+	 */
+	GetHeightMapData(): boolean
+	
+	GetHeightForLocation(x: number, y: number): number
+	IsPointUnderWater(x: number, y: number): boolean
+	GetLocationAverageHeight(x: number, y: number, count: number, distance: number): number
+
+	/**
+	 * Pass world_vec: Vector3 at IOBuffer offset 0,
+	 *      camera_pos: Vector3 at IOBuffer offset 3,
+	 *      camera_ang: QAngle at IOBuffer offset 6,
+	 *      camera_dist: float at IOBuffer offset 9,
+	 *      window_size: Vector2 at IOBuffer offset 10
+	 * 
+	 * @returns screen: Vector3 at IOBuffer offset 0,
+	 *          return value is true if it succeeded
+	 */
+	WorldToScreen(): boolean
+	/**
+	 * Pass world_vec: Vector3 at IOBuffer offset 0
+	 * 
+	 * @returns screen: Vector3 at IOBuffer offset 0,
+	 *          return value is true if it succeeded
+	 */
+	WorldToScreenNew(): boolean
+	/**
+	 * Pass screen: Vector2 at IOBuffer offset 0,
+	 *      camera_pos: Vector3 at IOBuffer offset 2,
+	 *      camera_ang: QAngle at IOBuffer offset 5,
+	 *      camera_dist: float at IOBuffer offset 8,
+	 *      window_size: Vector2 at IOBuffer offset 9
+	 * 
+	 * @returns world_vec: Vector3 at IOBuffer offset 0
+	 */
+	ScreenToWorld(): void
+	/**
+	 * Pass window_size: Vector2 at IOBuffer offset 0,
+	 *      camera_angles: Vector3 at IOBuffer offset 2,
+	 *      fov: float at IOBuffer offset 5,
+	 *      screen: Vector2 at IOBuffer offset 6
+	 * 
+	 * @returns ray: Vector3 at IOBuffer offset 0
+	 */
+	GetCursorRay(): void
+	/**
+	 * Pass window_size: Vector2 at IOBuffer offset 0,
+	 *      camera_pos: Vector3 at IOBuffer offset 2,
+	 *      camera_ang: QAngle at IOBuffer offset 5,
+	 *      camera_dist: float at IOBuffer offset 8,
+	 *      fov: float at IOBuffer offset 9,
+	 *      screens_count: float at IOBuffer offset 10,
+	 *      screens: Vector2[screens_count] at IOBuffer offset 11
+	 * 
+	 * @returns screens_results: Vector3[screens_count] at IOBuffer offset 0
+	 */
+	ScreenToWorldFar(): void
+	/**
+	 * Pass ray_origin: Vector3 at IOBuffer offset 0,
+	 *      ray_dir: QAngle at IOBuffer offset 3,
+	 *      count: float at IOBuffer offset 6,
+	 *      bboxes: Vector2[count * 2] at IOBuffer offset 7, where 0 is min, 1 is max
+	 * 
+	 * @returns res: bool[count] at IOBuffer offset 0
+	 */
+	BatchCheckRayBox(): void
+}
+
 declare interface Camera {
 	Distance: number
 	FoV: number
@@ -132,6 +174,48 @@ declare class FileStream {
 	public close(): void
 
 	public readonly byteLength: number
+}
+
+declare interface AnimationActivityData {
+	readonly name: string
+	readonly activity: number
+	readonly flags: number
+	readonly weight: number
+}
+
+declare interface AnimationData {
+	readonly name: string
+	readonly activities: AnimationActivityData[]
+	readonly hasMovement: boolean
+	readonly frameCount: number
+	readonly fps: number
+}
+
+declare class ModelData {
+	public readonly animations: AnimationData[]
+	public readonly attachments: string[]
+
+	/**
+	 * @returns min: Vector3 to IOBuffer offset 0, max: Vector3 to IOBuffer offset 3
+	 */
+	public getBounds(): void
+	/**
+	 * @param animationID ID in animations array, or -1 for default static skeleton
+	 * @param attachmentID ID in attachments array
+	 * @param time time of animation, in seconds
+	 * @param scale scale of the model
+	 * 
+	 * Pass Position: Vector3 at IOBuffer offset 0,
+	 *      Angle: QAngle at IOBuffer offset 3
+	 * 
+	 * @returns position: Vector3 to IOBuffer offset 0
+	 */
+	public getAttachmentData(
+		animationID: number,
+		attachmentID: number,
+		time: number,
+		scale: number,
+	): void
 }
 
 /// GLOBAL FUNCTIONS
@@ -202,26 +286,12 @@ declare function SetEntityColor(
 declare function SetEntityGlow(customEntityID: number, colorU32: number): void
 declare function GetPlayerMuteFlags(steamid64: bigint): number
 /**
- * pass location: Vector2 at IOBuffer offset 0
+ * Pass location: Vector2 at IOBuffer offset 0
  */
 declare function SendMinimapPing(
 	type?: number,
 	directPing?: boolean,
 	target?: number
-): void
-declare function SpawnWorker(options: WorkerOptions): bigint
-/**
- * @throws on wrong/self workerUID
- */
-declare function DespawnWorker(workerUID: bigint): void
-/**
- * @param workerUID could be 0n for parent or already spawned workerUID returned from SpawnWorker
- * @throws on wrong/self workerUID
- */
-declare function SendIPCMessage(
-	workerUID: bigint,
-	name: string,
-	msg: WorkerIPCType
 ): void
 declare function WriteUserCmd(): void
 declare function IsShopOpen(): boolean
@@ -259,3 +329,5 @@ declare function GetPathByHash(hash: bigint): Nullable<string>
 
 declare function GetSoundPathToName(): Map<string, string>
 declare function LookupSoundNameByHash(hash: number): Nullable<string>
+
+declare function GetModelData(path: string): Promise<ModelData>

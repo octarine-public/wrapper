@@ -111,7 +111,6 @@ class CMenuManager {
 	}
 
 	public async LoadConfig() {
-		if (!IS_MAIN_WORKER) return // workers shouldn't propagate configs
 		try {
 			this.ConfigValue = JSON.parse(await readConfig())
 		} catch {

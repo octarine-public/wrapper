@@ -146,7 +146,6 @@ export class Base {
 	}
 
 	public OnValue(func: (caller: this) => any): this {
-		if (!IS_MAIN_WORKER) return this // workers shouldn't propagate configs
 		this.OnValueChangedCBs.push(func as any)
 		if (this.executeOnAdd) func(this)
 		return this

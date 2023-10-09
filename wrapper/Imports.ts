@@ -99,7 +99,6 @@ export { ExecuteOrder } from "./Native/ExecuteOrder"
 export { LineCap, LineJoin, RendererSDK } from "./Native/RendererSDK"
 export { SoundSDK } from "./Native/SoundSDK"
 export { GetPositionHeight } from "./Native/WASM"
-export { Workers } from "./Native/Workers"
 export { Notification, NotificationsSDK } from "./Notifications/index"
 export { abaddon_aphotic_shield } from "./Objects/Abilities/Abaddon/abaddon_aphotic_shield"
 export { abaddon_borrowed_time } from "./Objects/Abilities/Abaddon/abaddon_borrowed_time"
@@ -1448,19 +1447,9 @@ export { item_woodland_striders } from "./Objects/Items/item_woodland_striders"
 export { item_wraith_band } from "./Objects/Items/item_wraith_band"
 export { item_yasha } from "./Objects/Items/item_yasha"
 export { item_yasha_and_kaya } from "./Objects/Items/item_yasha_and_kaya"
-export { ComputedAttachment } from "./Resources/ComputeAttachments"
-export {
-	CAnimation,
-	CAnimationActivity,
-	CAnimationEvent,
-	CAnimationFrame
-} from "./Resources/ParseAnimation"
 export { EntityDataLump } from "./Resources/ParseEntityLump"
 export { GridNav } from "./Resources/ParseGNV"
-export { CMesh, CMeshAttachment, ParseMesh } from "./Resources/ParseMesh"
-export { CModel, ParseModel } from "./Resources/ParseModel"
 export * as ParseUtils from "./Resources/ParseUtils"
-export { CBone, CSkeleton } from "./Resources/Skeleton"
 export * as ArrayBufferUtils from "./Utils/ArrayBufferUtils"
 export * as ArrayExtensions from "./Utils/ArrayExtensions"
 export * as BitsExtensions from "./Utils/BitsExtensions"

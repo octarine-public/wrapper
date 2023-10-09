@@ -1,16 +1,13 @@
 import { Color } from "../Base/Color"
-import { Matrix4x4Identity } from "../Base/Matrix"
 import { NetworkedParticle } from "../Base/NetworkedParticle"
 import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { DOTAGameUIState } from "../Enums/DOTAGameUIState"
-import { ObjectTypeFlags } from "../Enums/ObjectTypeFlags"
 import { Team } from "../Enums/Team"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { Localization } from "../Menu/Localization"
 import { RendererSDK } from "../Native/RendererSDK"
 import * as WASM from "../Native/WASM"
-import { Workers } from "../Native/Workers"
 import { Entity, GameRules, LocalPlayer } from "../Objects/Base/Entity"
 import { FakeUnit, GetPredictionTarget } from "../Objects/Base/FakeUnit"
 import { PlayerResource } from "../Objects/Base/PlayerResource"
@@ -20,19 +17,8 @@ import {
 	ReloadGlobalAbilityStorage
 } from "../Objects/DataBook/AbilityData"
 import { ReloadGlobalUnitStorage, UnitData } from "../Objects/DataBook/UnitData"
-import {
-	DefaultWorldLayers,
-	ParseEntityLump,
-	ResetEntityLump
-} from "../Resources/ParseEntityLump"
+import { ParseEntityLump, ResetEntityLump } from "../Resources/ParseEntityLump"
 import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
-import {
-	GetMapStringProperty,
-	MapToMatrix4x4,
-	MapToNumberArray,
-	MapToStringArray
-} from "../Resources/ParseUtils"
-import { HasBit } from "../Utils/BitsExtensions"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { GameState } from "../Utils/GameState"
 import {
@@ -42,7 +28,7 @@ import {
 	ParseProtobufNamed,
 	RecursiveProtobuf
 } from "../Utils/Protobuf"
-import { createMapFromMergedIterators, parseEnumString } from "../Utils/Utils"
+import { createMapFromMergedIterators } from "../Utils/Utils"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { EntityManager } from "./EntityManager"
 import { SetLatestTickDelta } from "./EntityManagerLogic"
@@ -1293,134 +1279,10 @@ EventsSDK.on("ServerTick", tick => {
 })
 Events.on("UIStateChanged", newState => (GameState.UIState = newState))
 
-let currentWorldPromise: Nullable<Promise<WorkerIPCType>>
-function TryLoadWorld(worldKV: RecursiveMap): void {
-	const worldNodes = worldKV.get("m_worldNodes")
-	if (!(worldNodes instanceof Map || Array.isArray(worldNodes))) return
-	const objects: [string, number[]][] = []
-
-	worldNodes.forEach((node: RecursiveMapValue) => {
-		if (!(node instanceof Map)) return
-		const path = GetMapStringProperty(node, "m_worldNodePrefix")
-		const nodeKV = parseKV(`${path}.vwnod_c`)
-		const layerNames: string[] = []
-		const layerNamesMap = nodeKV.get("m_layerNames")
-		if (layerNamesMap instanceof Map || Array.isArray(layerNamesMap))
-			layerNames.push(...MapToStringArray(layerNamesMap))
-
-		const sceneObjectLayers: string[] = []
-		const sceneObjectLayerIndicesMap = nodeKV.get("m_sceneObjectLayerIndices")
-		if (
-			sceneObjectLayerIndicesMap instanceof Map ||
-			Array.isArray(sceneObjectLayerIndicesMap)
-		)
-			sceneObjectLayers.push(
-				...MapToNumberArray(sceneObjectLayerIndicesMap).map(
-					index => layerNames[index]
-				)
-			)
-
-		const sceneObjects = nodeKV.get("m_sceneObjects")
-		if (!(sceneObjects instanceof Map || Array.isArray(sceneObjects))) return
-
-		let i = 0
-		sceneObjects.forEach((sceneObject: RecursiveMapValue) => {
-			if (!(sceneObject instanceof Map)) return
-			const layerName = sceneObjectLayers[i++] ?? "world_layer_base"
-			if (!DefaultWorldLayers.includes(layerName)) return
-			const transformMap = sceneObject.get("m_vTransform")
-			const transform =
-				transformMap instanceof Map || Array.isArray(transformMap)
-					? MapToMatrix4x4(transformMap)
-					: Matrix4x4Identity
-			const modelPath = GetMapStringProperty(sceneObject, "m_renderableModel"),
-				meshPath = GetMapStringProperty(sceneObject, "m_renderable")
-
-			let objectTypeFlags = sceneObject.get("m_nObjectTypeFlags") as
-				| number
-				| string
-
-			if (typeof objectTypeFlags === "string") {
-				objectTypeFlags = parseEnumString(
-					ObjectTypeFlags,
-					sceneObject.get("m_nObjectTypeFlags") as string
-				)
-			}
-
-			// visual only, doesn't affect height calculations/etc
-			if (HasBit(objectTypeFlags, 7)) return
-			if (modelPath !== "") objects.push([modelPath, transform])
-			if (meshPath !== "") objects.push([meshPath, transform])
-		})
-	})
-
-	const worldPromise = (currentWorldPromise = Workers.CallRPCEndPoint(
-		"LoadAndOptimizeWorld",
-		objects,
-		false,
-		{
-			forward_events: false,
-			forward_server_messages: false,
-			display_name: "LoadAndOptimizeWorld"
-		}
-	))
-
-	worldPromise.then(data => {
-		if (
-			worldPromise !== currentWorldPromise ||
-			!Array.isArray(data) ||
-			!Array.isArray(data[0]) ||
-			!Array.isArray(data[1]) ||
-			!Array.isArray(data[2])
-		)
-			return
-
-		currentWorldPromise = undefined
-		const worldBVH = data[0] as [Uint8Array, Uint8Array],
-			pathsData = data[1] as [
-				string,
-				[number, Uint8Array, Uint8Array, Uint8Array, number, number][]
-			][],
-			// paths = data[2] as string[],
-			path2meshes = new Map<string, number[]>()
-		pathsData.forEach(([path, meshesData]) => {
-			const meshes: number[] = []
-			for (const meshData of meshesData) {
-				WASM.LoadWorldMeshCached(
-					meshData[0],
-					meshData[1],
-					meshData[2],
-					meshData[3],
-					meshData[4],
-					meshData[5]
-				)
-				meshes.push(meshData[0])
-			}
-			path2meshes.set(path, meshes)
-		})
-		objects.forEach(([path, transform]) => {
-			const meshes = path2meshes.get(path)
-			if (meshes !== undefined)
-				for (const mesh of meshes) WASM.SpawnWorldMesh(mesh, transform)
-		})
-		const plateMeshID = path2meshes.get("")
-		if (plateMeshID !== undefined && plateMeshID.length !== 0)
-			WASM.SpawnWorldMesh(plateMeshID[0], Matrix4x4Identity)
-		WASM.FinishWorld(worldBVH)
-	}, console.error)
-}
 function TryLoadMapFiles(): void {
 	const mapName = GameState.MapName
-	{
-		const buf = fopen(`maps/${mapName}.vhcg`)
-		if (buf !== undefined)
-			try {
-				WASM.ParseVHCG(new FileBinaryStream(buf))
-			} finally {
-				buf.close()
-			}
-		else WASM.ResetVHCG()
-	}
+	if (mapName !== "<empty>") WASM.ParseVHCG()
+	else WASM.ResetVHCG()
 	{
 		const buf = fopen(`maps/${mapName}.gnv`)
 		if (buf !== undefined)
@@ -1433,7 +1295,6 @@ function TryLoadMapFiles(): void {
 	}
 	{
 		ResetEntityLump()
-		WASM.ResetWorld()
 		const worldKV = parseKV(`maps/${mapName}/world.vwrld_c`)
 		const entityLumps = worldKV.get("m_entityLumps")
 		if (entityLumps instanceof Map || Array.isArray(entityLumps))
@@ -1447,7 +1308,6 @@ function TryLoadMapFiles(): void {
 					buf.close()
 				}
 			})
-		if (IS_MAIN_WORKER) TryLoadWorld(worldKV)
 		EventsSDK.emit("MapDataLoaded", false)
 	}
 }

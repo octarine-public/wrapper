@@ -1,5 +1,4 @@
 import { Color } from "../Base/Color"
-import { Matrix4x4Identity } from "../Base/Matrix"
 import { QAngle } from "../Base/QAngle"
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
@@ -7,8 +6,6 @@ import { Vector3 } from "../Base/Vector3"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputManager } from "../Managers/InputManager"
 import { ParseMaterial } from "../Resources/ParseMaterial"
-import { CMeshDrawCall, ParseMesh } from "../Resources/ParseMesh"
-import { ParseModel } from "../Resources/ParseModel"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
 import { orderByFirst } from "../Utils/ArrayExtensions"
 import { HasMask } from "../Utils/BitsExtensions"
@@ -19,7 +16,6 @@ import { tryFindFile } from "../Utils/readFile"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { ConVarsSDK } from "./ConVarsSDK"
 import * as WASM from "./WASM"
-import { Workers } from "./Workers"
 
 enum CommandID {
 	BEGINCLIP = 0,
@@ -559,7 +555,6 @@ class CRendererSDK {
 		this.inDraw = true
 		const prevWidth = this.WindowSize.x,
 			prevHeight = this.WindowSize.y
-		WASM.CloneWorldToProjection(DrawMatrix)
 		this.WindowSize.x = w
 		this.WindowSize.y = h
 		if (this.WindowSize.x !== prevWidth || this.WindowSize.y !== prevHeight)
@@ -1062,98 +1057,3 @@ class CRendererSDK {
 export const RendererSDK = new CRendererSDK()
 
 EventsSDK.on("UnitAbilityDataUpdated", () => RendererSDK.FreeTextureCache())
-
-Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
-	if (!Array.isArray(data)) throw "Data should be objects"
-	const objects = data as [string, number[]][],
-		path2meshes = new Map<string, number[]>(),
-		paths: string[] = [""]
-	let nextMeshID = 0
-	WASM.ResetWorld()
-	for (const [path] of objects) {
-		if (path2meshes.has(path)) continue
-		const buf = fopen(`${path}_c`)
-		if (buf === undefined) continue
-		let filesOpen: FileStream[] = []
-		try {
-			let drawCalls: CMeshDrawCall[] = []
-			if (path.endsWith(".vmdl")) {
-				const model = ParseModel(new FileBinaryStream(buf), path)
-				const mesh = model.Meshes[0]
-				if (mesh !== undefined) {
-					drawCalls = mesh.DrawCalls
-					filesOpen = model.FilesOpen
-				} else {
-					model.FilesOpen.forEach(file => file.close())
-				}
-			} else if (path.endsWith(".vmesh")) {
-				drawCalls = ParseMesh(new FileBinaryStream(buf), path).DrawCalls
-			} else {
-				throw `Invalid path ${path}`
-			}
-			const pathMeshes: number[] = []
-			path2meshes.set(path, pathMeshes)
-			const pathID = paths.length
-			paths.push(path)
-			for (const drawCall of drawCalls) {
-				const meshID = nextMeshID++
-				WASM.LoadWorldMesh(
-					meshID,
-					drawCall.VertexBuffer.Data,
-					drawCall.VertexBuffer.ElementSize,
-					drawCall.IndexBuffer.Data,
-					drawCall.IndexBuffer.ElementSize,
-					drawCall.Flags,
-					pathID
-				)
-				pathMeshes.push(meshID)
-			}
-		} catch (e: any) {
-			const err = e instanceof Error ? e : new Error(e)
-			throw `${path} ${err.message} ${err.stack ?? ""}`
-		} finally {
-			filesOpen.forEach(file => file.close())
-			buf.close()
-		}
-	}
-
-	objects.forEach(([path, transform]) => {
-		const meshes = path2meshes.get(path)
-		if (meshes !== undefined)
-			for (const mesh of meshes) WASM.SpawnWorldMesh(mesh, transform)
-	})
-	{
-		const vb = new Uint8Array(
-			new Float32Array([
-				-100000, -100000, -16384, 100000, -100000, -16384, -100000, 100000,
-				-16384, 100000, 100000, -16384
-			]).buffer
-		)
-		const ib = new Uint8Array(new Uint8Array([0, 1, 2, 1, 2, 3]).buffer)
-		const plateMeshID = nextMeshID++
-		WASM.LoadWorldMesh(plateMeshID, vb, 3 * 4, ib, 1, 0, 0)
-		path2meshes.set("", [plateMeshID])
-		WASM.SpawnWorldMesh(plateMeshID, Matrix4x4Identity)
-	}
-	WASM.FinishWorld()
-	const pathsData: [
-		string,
-		[number, Uint8Array, Uint8Array, Uint8Array, number, number][]
-	][] = []
-	for (const [path, meshes] of path2meshes) {
-		const meshesData: [
-			number,
-			Uint8Array,
-			Uint8Array,
-			Uint8Array,
-			number,
-			number
-		][] = []
-		for (const meshID of meshes) {
-			const meshData = WASM.ExtractMeshData(meshID)
-			if (meshData !== undefined) meshesData.push(meshData)
-		}
-		pathsData.push([path, meshesData])
-	}
-	return [WASM.ExtractWorldBVH(), pathsData, paths]
-})

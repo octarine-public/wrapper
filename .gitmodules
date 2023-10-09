@@ -1,6 +1,0 @@
-[submodule "wasm_source/meshoptimizer"]
-	path = wasm_source/meshoptimizer
-	url = https://github.com/zeux/meshoptimizer
-[submodule "wasm_source/bvh"]
-	path = wasm_source/bvh
-	url = https://github.com/madmann91/bvh

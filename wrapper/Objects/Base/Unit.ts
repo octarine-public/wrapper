@@ -18,7 +18,6 @@ import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
-import { ComputedAttachment } from "../../Resources/ComputeAttachments"
 import { GridNav } from "../../Resources/ParseGNV"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
 import {
@@ -749,28 +748,25 @@ export class Unit extends Entity {
 
 		// TODO: AttackSpeedActivityModifiers, MovementSpeedActivityModifiers, AttackRangeActivityModifiers
 	}
-	public GetAttachments(
-		activity = this.NetworkActivity,
-		sequenceNum = this.NetworkSequenceIndex
-	): Nullable<Map<string, ComputedAttachment>> {
-		return super.GetAttachments(activity, sequenceNum)
-	}
-	public GetAttachment(
-		name: string,
-		activity = this.NetworkActivity,
-		sequenceNum = this.NetworkSequenceIndex
-	): Nullable<ComputedAttachment> {
-		return super.GetAttachment(name, activity, sequenceNum)
-	}
-	/**
-	 * @returns attachment position mid-animation
-	 */
+
 	public GetAttachmentPosition(
 		name: string,
 		activity = this.NetworkActivity,
-		sequenceNum = this.NetworkSequenceIndex
-	): Nullable<Vector3> {
-		return super.GetAttachmentPosition(name, activity, sequenceNum)
+		sequenceNum = this.NetworkSequenceIndex,
+		time = Infinity,
+		pos = this.Position,
+		ang = this.Angles,
+		scale = this.ModelScale
+	): Vector3 {
+		return super.GetAttachmentPosition(
+			name,
+			activity,
+			sequenceNum,
+			time,
+			pos,
+			ang,
+			scale
+		)
 	}
 
 	public CanAttack(target: Unit): boolean {

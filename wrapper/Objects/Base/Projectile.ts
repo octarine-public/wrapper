@@ -127,15 +127,7 @@ export class TrackingProjectile extends Projectile {
 		if (this.IsDodged) return
 
 		const target = this.Target
-		if (target instanceof Entity) {
-			const attachment = target.GetAttachment("attach_hitloc")
-			const attachmentOff = attachment?.GetPosition(
-				target.AnimationTime,
-				target.RotationRad,
-				target.ModelScale
-			)
-			this.TargetLoc.CopyFrom(target.Position)
-			if (attachmentOff !== undefined) this.TargetLoc.AddForThis(attachmentOff)
-		}
+		if (target instanceof Entity)
+			this.TargetLoc.CopyFrom(target.GetAttachmentPosition("attach_hitloc"))
 	}
 }

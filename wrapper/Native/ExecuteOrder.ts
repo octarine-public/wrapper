@@ -346,7 +346,6 @@ export class ExecuteOrder {
 	}
 
 	protected CanBeClickHeightMapPosition() {
-		const heightMap = WASM.HeightMap
 		const edgeSize = (GridNav?.EdgeSize ?? 64) * 2
 		const height = WASM.GetPositionHeight(this.Position) / edgeSize
 		if (height >= 4) {
@@ -354,6 +353,7 @@ export class ExecuteOrder {
 		} else {
 			this.Position.SetZ(WASM.GetPositionHeight(this.Position))
 		}
+		const heightMap = WASM.HeightMap
 		if (
 			height <= -edgeSize ||
 			this.Position.z < -1024 || // idk, max negative height number on "map dota" -100

@@ -154,21 +154,6 @@ declare interface Events extends EventEmitter {
 	): Events
 	on(name: "ScriptsUpdated", listener: () => void, priority?: number): Events
 	on(
-		name: "IPCMessage",
-		func: (source_worker_uid: bigint, name: string, msg: WorkerIPCType) => void,
-		priority?: number
-	): Events
-	on(
-		name: "WorkerSpawned",
-		func: (worker_uid: bigint) => void,
-		priority?: number
-	): Events
-	on(
-		name: "WorkerDespawned",
-		func: (worker_uid: bigint) => void,
-		priority?: number
-	): Events
-	on(
 		name: "SetLanguage",
 		func: (language: number) => void,
 		priority?: number

@@ -16,11 +16,6 @@ import * as StringTables from "../../Managers/StringTables"
 import { RendererSDK } from "../../Native/RendererSDK"
 import { Player } from "../../Objects/Base/Player"
 import { FieldHandler, RegisterFieldHandler } from "../../Objects/NativeToSDK"
-import {
-	ComputeAttachmentsAndBoundsAsync,
-	ComputedAttachment,
-	ComputedAttachments
-} from "../../Resources/ComputeAttachments"
 import { GameState } from "../../Utils/GameState"
 import { DegreesToRadian } from "../../Utils/Math"
 import { CGameRules } from "./GameRules"
@@ -33,15 +28,11 @@ EventsSDK.on(
 	info => (playerSlot = (info.get("player_slot") as number) ?? NaN)
 )
 let gameInProgress = false
-const modelDataCache = new Map<
-	string,
-	Promise<[ComputedAttachments, Vector3, Vector3]>
->()
 function SetGameInProgress(newVal: boolean) {
 	if (!gameInProgress && newVal) EventsSDK.emit("GameStarted", false)
 	else if (gameInProgress && !newVal) {
 		EventsSDK.emit("GameEnded", false)
-		if (IS_MAIN_WORKER) Particles.DeleteAll()
+		Particles.DeleteAll()
 		RendererSDK.FreeTextureCache()
 	}
 	gameInProgress = newVal
@@ -71,6 +62,9 @@ EventsSDK.on("EntityDestroyed", ent => {
 const activity2name = new Map<GameActivity, string>(
 	Object.entries(GameActivity).map(([k, v]) => [v as GameActivity, k])
 )
+const modelDataCache = new Map<string, [AnimationData[], string[]]>()
+EventsSDK.on("ServerInfo", () => modelDataCache.clear())
+
 @WrapperClass("CBaseEntity")
 export class Entity {
 	public IsValid = true
@@ -113,15 +107,14 @@ export class Entity {
 	public readonly NetworkedAngles = new QAngle()
 	public readonly BoundingBox = new AABB(this.VisualPosition)
 	public readonly SpawnPosition = new Vector3()
-	public Attachments: Nullable<ComputedAttachments>
+	public ModelData: Nullable<ModelData>
+	public Animations: AnimationData[] = []
+	public Attachments: string[] = []
 	private CustomGlowColor_: Nullable<Color>
 	private CustomDrawColor_: Nullable<[Color, RenderMode]>
 	private RingRadius_ = 30
 
-	constructor(
-		public readonly Index: number,
-		private readonly Serial: number
-	) {
+	constructor(public readonly Index: number, private readonly Serial: number) {
 		this._ChangeNetworkPosition()
 	}
 
@@ -332,6 +325,7 @@ export class Entity {
 	}
 
 	public OnModelUpdated(): void {
+		const requestedModelName = this.ModelName
 		const initialRadius = this.RingRadius !== 0 ? this.RingRadius : 50
 		const min = this.BoundingBox.MinOffset,
 			max = this.BoundingBox.MaxOffset
@@ -341,18 +335,30 @@ export class Entity {
 		max.x = initialRadius
 		max.y = initialRadius
 		max.z = initialRadius
-		if (this.ModelName === "") return
-		let promise = modelDataCache.get(this.ModelName)
-		if (promise === undefined) {
-			promise = ComputeAttachmentsAndBoundsAsync(this.ModelName)
-			modelDataCache.set(this.ModelName, promise)
-		}
+		if (requestedModelName === "") return
 
-		promise.then(
-			ar => {
-				this.Attachments = ar[0]
-				this.BoundingBox.MinOffset.CopyFrom(ar[1])
-				this.BoundingBox.MaxOffset.CopyFrom(ar[2])
+		GetModelData(requestedModelName).then(
+			modelData => {
+				if (requestedModelName !== this.ModelName) return
+				this.ModelData = modelData
+
+				// cache static data to avoid excessive object creation in JS
+				const cacheRes = modelDataCache.get(requestedModelName)
+				if (cacheRes === undefined) {
+					this.Animations = modelData.animations
+					this.Attachments = modelData.attachments
+					modelDataCache.set(requestedModelName, [
+						this.Animations,
+						this.Attachments
+					])
+				} else {
+					this.Animations = cacheRes[0]
+					this.Attachments = cacheRes[1]
+				}
+
+				modelData.getBounds()
+				this.BoundingBox.MinOffset.CopyFrom(Vector3.fromIOBuffer())
+				this.BoundingBox.MaxOffset.CopyFrom(Vector3.fromIOBuffer(3))
 				const minXY = Math.min(min.x, min.y, max.x, max.y),
 					maxXY = Math.max(min.x, min.y, max.x, max.y)
 				this.RingRadius_ = Math.max(Math.abs(minXY), Math.abs(maxXY))
@@ -361,7 +367,7 @@ export class Entity {
 				max.x = this.RingRadius
 				max.y = this.RingRadius
 			},
-			err => console.error(this.ModelName, err)
+			err => console.error(requestedModelName, err)
 		)
 	}
 
@@ -372,64 +378,64 @@ export class Entity {
 		// to be implemented in child classes
 	}
 
-	public GetSequenceActivityModifiers(
+	public GetAnimationID(
 		activity = GameActivity.ACT_DOTA_IDLE,
-		sequenceNum = -1
-	): Map<string, number> | undefined {
-		if (this.Attachments === undefined || this.Attachments.length === 0)
-			return undefined
+		sequenceNum = -1,
+		findBestMatch = true
+	): Nullable<number> {
 		const activityName = activity2name.get(activity)
 		if (sequenceNum >= 0 && activityName !== undefined) {
 			let i = 0
-			for (const attachment of this.Attachments)
-				if (attachment[0].has(activityName) && i++ === sequenceNum)
-					return attachment[0]
+			for (let j = 0; j < this.Animations.length; j++)
+				if (
+					this.Animations[j].activities.some(
+						activityData => activityData.name === activityName
+					) &&
+					i++ === sequenceNum
+				)
+					return j
 		}
-		return undefined
-	}
-
-	public GetAttachments(
-		activity = GameActivity.ACT_DOTA_IDLE,
-		sequenceNum = -1
-	): Nullable<Map<string, ComputedAttachment>> {
-		if (this.Attachments === undefined || this.Attachments.length === 0)
-			return undefined
-		const activityName = activity2name.get(activity)
-		if (sequenceNum >= 0 && activityName !== undefined) {
-			let i = 0
-			for (const attachment of this.Attachments)
-				if (attachment[0].has(activityName) && i++ === sequenceNum)
-					return attachment[1]
-		}
+		if (!findBestMatch) return undefined
 		const modifiers: string[] = []
 		if (activityName !== undefined) modifiers.push(activityName)
 		this.CalculateActivityModifiers(activity, modifiers)
 		let highestScore = 0,
-			highestScored: Nullable<Map<string, ComputedAttachment>>
-		for (const ar of this.Attachments) {
-			const score =
-				modifiers.reduce((prev, name) => prev + (ar[0].get(name) ?? 0), 0) /
-				ar[0].size
+			highestScored: Nullable<number>
+
+		for (let i = 0; i < this.Animations.length; i++) {
+			const anim = this.Animations[i]
+			let score = 0,
+				hasMovement = false
+			for (const activityData of anim.activities)
+				if (modifiers.includes(activityData.name)) {
+					hasMovement ||= activityData.name === "ACT_DOTA_RUN"
+					score += activityData.weight
+				}
+			if (
+				!hasMovement &&
+				anim.hasMovement &&
+				modifiers.includes("ACT_DOTA_RUN")
+			)
+				score += 1
 			if (score > highestScore) {
 				highestScore = score
-				highestScored = ar[1]
+				highestScored = i
 			}
 		}
-		if (highestScored !== undefined) {
-			const defaultAr = this.Attachments.find(ar =>
-				ar[0].has("ACT_DOTA_CONSTANT_LAYER")
-			)
-			if (defaultAr !== undefined) highestScored = defaultAr[1]
-		}
-		return highestScored
-	}
 
-	public GetAttachment(
-		name: string,
-		activity = GameActivity.ACT_DOTA_IDLE,
-		sequenceNum = -1
-	): Nullable<ComputedAttachment> {
-		return this.GetAttachments(activity, sequenceNum)?.get(name)
+		// TODO: is this used anywhere? if so, is this correct?
+		if (highestScored !== undefined)
+			for (let i = 0; i < this.Animations.length; i++) {
+				const anim = this.Animations[i]
+				if (
+					anim.activities.some(
+						activityData => activityData.name === "ACT_DOTA_CONSTANT_LAYER"
+					)
+				)
+					return i
+			}
+
+		return highestScored
 	}
 
 	/**
@@ -438,16 +444,26 @@ export class Entity {
 	public GetAttachmentPosition(
 		name: string,
 		activity = GameActivity.ACT_DOTA_IDLE,
-		sequenceNum = -1
-	): Nullable<Vector3> {
-		const attachment = this.GetAttachment(name, activity, sequenceNum)
-		if (attachment === undefined) return undefined
-		return attachment.GetPosition(
-			attachment.FrameCount / attachment.FPS / 2,
-			this.RotationRad,
-			this.ModelScale
-		)
+		sequenceNum = -1,
+		time = Infinity,
+		pos = this.Position,
+		ang = this.Angles,
+		scale = this.ModelScale
+	): Vector3 {
+		if (this.ModelData === undefined) return this.Position
+		const attachmentID = this.Attachments.indexOf(name)
+		if (attachmentID === -1) return this.Position
+		const animationID = this.GetAnimationID(activity, sequenceNum) ?? -1
+		if (animationID !== -1 && time === Infinity) {
+			const anim = this.Animations[animationID]
+			time = anim.frameCount / anim.fps / 2
+		}
+		pos.toIOBuffer()
+		ang.toIOBuffer(3)
+		this.ModelData.getAttachmentData(animationID, attachmentID, time, scale)
+		return Vector3.fromIOBuffer()
 	}
+
 	/**
 	 * @deprecated
 	 */
@@ -498,7 +514,6 @@ RegisterFieldHandler(Entity, "m_hModel", (ent, newVal) => {
 	ent.ModelName = GetPathByHash(newVal as bigint) ?? ""
 	ent.OnModelUpdated()
 })
-EventsSDK.on("GameEnded", () => modelDataCache.clear())
 RegisterFieldHandler(Entity, "m_angRotation", (ent, newVal) => {
 	const angRotation = newVal as QAngle
 	ent.NetworkedAngles.CopyFrom(angRotation)

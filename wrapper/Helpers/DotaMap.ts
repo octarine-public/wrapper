@@ -2,7 +2,6 @@ import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { MapArea } from "../Enums/MapArea"
 import { Team } from "../Enums/Team"
-import { IsPointUnderWater } from "../Native/WASM"
 import { Buildings } from "../Objects/Base/Building"
 import {
 	CreepPathCorner,
@@ -12,7 +11,7 @@ import { Fountains } from "../Objects/Base/Fountain"
 import { orderBy, orderByFirst } from "../Utils/ArrayExtensions"
 
 export function IsRiver(pos: Vector3 | Vector2): boolean {
-	return IsPointUnderWater(pos)
+	return WorldUtils.IsPointUnderWater(pos.x, pos.y)
 }
 export function GetPathCornerNearestTeam(corner: CreepPathCorner): Team {
 	return (

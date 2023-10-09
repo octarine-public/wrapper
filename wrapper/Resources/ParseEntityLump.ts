@@ -1,6 +1,8 @@
 import { Color } from "../Base/Color"
 import { QAngle } from "../Base/QAngle"
+import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
+import { Vector4 } from "../Base/Vector4"
 import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
 import { HasBit } from "../Utils/BitsExtensions"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
@@ -12,11 +14,13 @@ type EntityDataMapValue =
 	| bigint
 	| number
 	| boolean
+	| Vector2
 	| Vector3
+	| Vector4
 	| QAngle
 	| Color
 
-class EntityDataMapV1 {
+class EntityDataMap {
 	private data = new Map<number, EntityDataMapValue>()
 
 	public get(key: string): Nullable<EntityDataMapValue> {
@@ -25,22 +29,6 @@ class EntityDataMapV1 {
 	public set(key: number, value: EntityDataMapValue): void {
 		this.data.set(key, value)
 	}
-}
-
-class EntityDataMapV2 {
-	private data = new Map<string, EntityDataMapValue>()
-
-	public get(key: string): Nullable<EntityDataMapValue> {
-		return this.data.get(key)
-	}
-	public set(key: string, value: EntityDataMapValue): void {
-		this.data.set(key, value)
-	}
-}
-
-const enum VersionType {
-	keyValuesData,
-	keyValues3Data
 }
 
 const enum EntityFieldType {
@@ -192,77 +180,74 @@ function ReadTypedValue(stream: ReadableBinaryStream): EntityDataMapValue {
 // 	}
 // }
 
-function ParseEntityKeyValues(
-	versionType: VersionType,
-	entityKeyValues: RecursiveMapValue[]
-) {
-	switch (versionType) {
-		case VersionType.keyValuesData:
-			entityKeyValues.forEach(entityKV => {
-				if (!(entityKV instanceof Map)) return
-				// TODO: m_connections?
-				let kvData = entityKV.get("m_keyValuesData")
-				if (kvData === undefined) return
-				if (typeof kvData === "string") kvData = StringToUTF8(kvData)
-				if (!(kvData instanceof Uint8Array)) return
-				const kvDataStream = new ViewBinaryStream(
-					new DataView(kvData.buffer, kvData.byteOffset, kvData.byteLength)
+function ParseEntityKeyValues(entityKeyValues: RecursiveMapValue[]) {
+	for (const entityKV of entityKeyValues) {
+		if (!(entityKV instanceof Map)) continue
+		// TODO: m_connections?
+		const map = new EntityDataMap()
+		if (entityKV.has("keyValues3Data")) {
+			const kvData = entityKV.get("keyValues3Data")
+			if (kvData === undefined) continue
+			if (!(kvData instanceof Map)) throw `Unknown kvData: ${kvData}`
+
+			const version = MapValueToNumber(kvData.get("version"), 0) // bigint without mask
+			if (version !== 1) throw `Unknown entity kvData version: ${version}`
+
+			const values = kvData.get("values")
+			if (!(values instanceof Map)) continue
+
+			for (const [name, value] of values) {
+				let entityValue: RecursiveMapValue | EntityDataMapValue = value
+				if (Array.isArray(entityValue))
+					switch (entityValue.length) {
+						case 2:
+							entityValue = Vector2.fromArray(entityValue as number[])
+							break
+						case 3:
+							entityValue = Vector3.fromArray(entityValue as number[])
+							break
+						case 4:
+							entityValue = Vector4.fromArray(entityValue as number[])
+							break
+					}
+				map.set(
+					MurmurHash2(name, 0x31415926) >>> 0,
+					value as EntityDataMapValue
 				)
-				{
-					const version = kvDataStream.ReadUint32()
-					if (version !== 1) throw `Unknown entity data version: ${version}`
-				}
-				const hashedKeys = kvDataStream.ReadUint32(),
-					stringKeys = kvDataStream.ReadUint32()
-				const map = new EntityDataMapV1()
-				for (let i = 0; i < hashedKeys; i++) {
-					const hash = kvDataStream.ReadUint32(),
-						value = ReadTypedValue(kvDataStream)
-					map.set(hash, value)
-				}
-				for (let i = 0; i < stringKeys; i++) {
-					const hash = kvDataStream.ReadUint32()
-					kvDataStream.ReadNullTerminatedUtf8String() // key
-					const value = ReadTypedValue(kvDataStream)
-					map.set(hash, value)
-				}
-				if (
-					map.get("classname") === "info_world_layer" &&
-					HasBit(MapValueToNumber(map.get("spawnflags")), 0)
-				)
-					DefaultWorldLayers.push(MapValueToString(map.get("layername")))
-				EntityDataLump.push(map)
-			})
-			break
-		case VersionType.keyValues3Data:
-			for (const entityKV of entityKeyValues) {
-				if (!(entityKV instanceof Map)) continue
-
-				const kvData = entityKV.get("keyValues3Data")
-				if (kvData === undefined) continue
-				if (!(kvData instanceof Map)) throw `Unknown kvData: ${kvData}`
-
-				const version = MapValueToNumber(kvData.get("version"), 0) // bigint without mask
-				if (version !== 1) throw `Unknown entity kvData version: ${version}`
-
-				const values = kvData.get("values")
-				if (!(values instanceof Map)) continue
-
-				const map = new EntityDataMapV2()
-				for (const [name, value] of values)
-					map.set(name, value as EntityDataMapValue) // TODO: transfer on EntityDataMapValue (ReadTypedValueV2)
-
-				if (
-					map.get("classname") === "info_world_layer" &&
-					HasBit(MapValueToNumber(map.get("spawnflags")), 0)
-				)
-					DefaultWorldLayers.push(MapValueToString(map.get("layerName")))
-
-				EntityDataLump.push(map)
 			}
-			break
-		default:
-			throw `Unknown parse versionType: ${versionType}`
+		} else if (entityKV.has("m_keyValuesData")) {
+			let kvData = entityKV.get("m_keyValuesData")
+			if (typeof kvData === "string") kvData = StringToUTF8(kvData)
+			if (!(kvData instanceof Uint8Array)) continue
+			const kvDataStream = new ViewBinaryStream(
+				new DataView(kvData.buffer, kvData.byteOffset, kvData.byteLength)
+			)
+			{
+				const version = kvDataStream.ReadUint32()
+				if (version !== 1) throw `Unknown entity data version: ${version}`
+			}
+			const hashedKeys = kvDataStream.ReadUint32(),
+				stringKeys = kvDataStream.ReadUint32()
+			for (let i = 0; i < hashedKeys; i++) {
+				const hash = kvDataStream.ReadUint32(),
+					value = ReadTypedValue(kvDataStream)
+				map.set(hash, value)
+			}
+			for (let i = 0; i < stringKeys; i++) {
+				const hash = kvDataStream.ReadUint32()
+				kvDataStream.ReadNullTerminatedUtf8String() // key
+				const value = ReadTypedValue(kvDataStream)
+				map.set(hash, value)
+			}
+		} else throw "Unknown entity KV"
+
+		if (
+			map.get("classname") === "info_world_layer" &&
+			HasBit(MapValueToNumber(map.get("spawnflags")), 0)
+		)
+			DefaultWorldLayers.push(MapValueToString(map.get("layerName")))
+
+		EntityDataLump.push(map)
 	}
 }
 
@@ -286,11 +271,11 @@ function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
 	if (kv.has("m_entityKeyValues")) {
 		const entityKeyValues = kv.get("m_entityKeyValues")
 		if (!Array.isArray(entityKeyValues)) return
-		ParseEntityKeyValues(VersionType.keyValues3Data, entityKeyValues)
+		ParseEntityKeyValues(entityKeyValues)
 	}
 }
 
-export let EntityDataLump: (EntityDataMapV1 | EntityDataMapV2)[] = []
+export let EntityDataLump: EntityDataMap[] = []
 export let DefaultWorldLayers: string[] = ["world_layer_base"]
 
 export function ParseEntityLump(stream: FileBinaryStream): void {
