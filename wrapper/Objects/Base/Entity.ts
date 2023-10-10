@@ -114,9 +114,7 @@ export class Entity {
 	private CustomDrawColor_: Nullable<[Color, RenderMode]>
 	private RingRadius_ = 30
 
-	constructor(public readonly Index: number, private readonly Serial: number) {
-		this._ChangeNetworkPosition()
-	}
+	constructor(public readonly Index: number, private readonly Serial: number) {}
 
 	public get CustomGlowColor(): Nullable<Color> {
 		return this.CustomGlowColor_
@@ -473,7 +471,6 @@ export class Entity {
 		_absPosition: Vector3
 	) {
 		// To be implemented in child classes
-		this._ChangeNetworkPosition()
 	}
 
 	public CannotUseItem(_item: Item): boolean {
@@ -482,12 +479,6 @@ export class Entity {
 
 	public toString(): string {
 		return this.Name
-	}
-
-	public _ChangeNetworkPosition() {
-		if (this.NetworkedPosition.Length < this.VisualPosition.Length) {
-			this.NetworkedPosition.CopyFrom(this.VisualPosition)
-		}
 	}
 }
 
@@ -547,42 +538,36 @@ RegisterFieldHandler(Entity, "m_cellX", (ent, newVal) => {
 		newVal as number,
 		ent.CBodyComponent_?.get("m_vecX") as Nullable<number>
 	)
-	ent._ChangeNetworkPosition()
 })
 RegisterFieldHandler(Entity, "m_vecX", (ent, newVal) => {
 	ent.NetworkedPosition.x = ent.VisualPosition.x = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellX") as Nullable<number>,
 		newVal as number
 	)
-	ent._ChangeNetworkPosition()
 })
 RegisterFieldHandler(Entity, "m_cellY", (ent, newVal) => {
 	ent.NetworkedPosition.y = ent.VisualPosition.y = QuantitizedVecCoordToCoord(
 		newVal as number,
 		ent.CBodyComponent_?.get("m_vecY") as Nullable<number>
 	)
-	ent._ChangeNetworkPosition()
 })
 RegisterFieldHandler(Entity, "m_vecY", (ent, newVal) => {
 	ent.NetworkedPosition.y = ent.VisualPosition.y = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellY") as Nullable<number>,
 		newVal as number
 	)
-	ent._ChangeNetworkPosition()
 })
 RegisterFieldHandler(Entity, "m_cellZ", (ent, newVal) => {
 	ent.NetworkedPosition.z = ent.VisualPosition.z = QuantitizedVecCoordToCoord(
 		newVal as number,
 		ent.CBodyComponent_?.get("m_vecZ") as Nullable<number>
 	)
-	ent._ChangeNetworkPosition()
 })
 RegisterFieldHandler(Entity, "m_vecZ", (ent, newVal) => {
 	ent.NetworkedPosition.z = ent.VisualPosition.z = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellZ") as Nullable<number>,
 		newVal as number
 	)
-	ent._ChangeNetworkPosition()
 })
 
 EventsSDK.on("GameEvent", (name, obj) => {
