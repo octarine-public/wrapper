@@ -51,8 +51,6 @@ export class Unit extends Entity {
 	public HasShardModifier = false
 
 	public UnitName_ = ""
-	public AbsPositionBuffs = new Set<Unit>()
-	public readonly AbsPosition = new Vector3()
 	public IsControllableByPlayerMask = 0n
 	public NetworkActivity = GameActivity.ACT_DOTA_IDLE
 	public NetworkActivityStartTime = 0
@@ -487,11 +485,7 @@ export class Unit extends Entity {
 		return this.UnitName_
 	}
 	public get RealPosition(): Vector3 {
-		return this.AbsPositionBuffs.has(this)
-			? this.AbsPosition
-			: GameState.IsInDraw
-			? this.VisualPosition
-			: this.NetworkedPosition
+		return GameState.IsInDraw ? this.VisualPosition : this.NetworkedPosition
 	}
 
 	public get Position(): Vector3 {
@@ -570,12 +564,10 @@ export class Unit extends Entity {
 	 */
 	public ForwardNativeProperties(
 		healthBarOffset: number,
-		moveCapabilities: number,
-		absPosition: Vector3
+		moveCapabilities: number
 	) {
 		this.HealthBarOffset_ = healthBarOffset
 		this.MoveCapabilities = moveCapabilities
-		this.AbsPosition.CopyFrom(absPosition)
 	}
 
 	/**
@@ -1515,30 +1507,6 @@ EventsSDK.on(
 		unit.LastActivityAnimationPoint = playbackRate * castpoint
 	}
 )
-
-function OnModifierUpdated(mod: Modifier, add: boolean): void {
-	const parent = mod.Parent
-	if (parent === undefined) return
-	let offset = 0
-
-	for (const buff of parent.Buffs) offset += buff.DeltaZ
-	if (parent.IsFlyingVisually) offset += 150
-	parent.DeltaZ = parent.BoundingBox.DeltaZ = offset
-	if (
-		mod.Name === "modifier_primal_beast_pulverize" ||
-		mod.Name === "modifier_meepo_megameepo"
-	) {
-		if (add) {
-			parent.AbsPositionBuffs.add(parent)
-			return
-		}
-		parent.AbsPositionBuffs.delete(parent)
-	}
-}
-
-EventsSDK.on("ModifierCreated", m => OnModifierUpdated(m, true))
-EventsSDK.on("ModifierChanged", m => OnModifierUpdated(m, true))
-EventsSDK.on("ModifierRemoved", m => OnModifierUpdated(m, false))
 
 EventsSDK.on("Tick", dt => {
 	for (const unit of Units) {

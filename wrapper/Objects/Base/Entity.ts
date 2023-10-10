@@ -467,8 +467,7 @@ export class Entity {
 	 */
 	public ForwardNativeProperties(
 		_healthBarOffset: number,
-		_moveCapabilities: number,
-		_absPosition: Vector3
+		_moveCapabilities: number
 	) {
 		// To be implemented in child classes
 	}
