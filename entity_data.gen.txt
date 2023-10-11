@@ -1046,7 +1046,6 @@ declare class CBasePlayerWeapon {
 	m_ConfigEntitiesToPropagateMaterialDecalsTo: CEntityIndex<CBaseModelEntity>[]
 	m_bShouldAnimateDuringGameplayPause: boolean
 	m_bInitiallyPopulateInterpHistory: boolean
-	m_iState: WeaponState_t
 	m_bvDisabledHitGroups: number[]
 	CRenderComponent: CRenderComponent
 	m_nNextThinkTick: GameTick_t
@@ -42925,7 +42924,6 @@ declare class CDOTA_AghsFort_Hero_Clinkz {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -42937,7 +42935,6 @@ declare class CDOTA_AghsFort_Hero_Clinkz {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -43095,7 +43092,6 @@ declare class CDOTA_AghsFort_Hero_Phoenix {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -43107,7 +43103,6 @@ declare class CDOTA_AghsFort_Hero_Phoenix {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -43265,7 +43260,6 @@ declare class CDOTA_AghsFort_Unit_ArcWarden_Boss {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -43277,7 +43271,6 @@ declare class CDOTA_AghsFort_Unit_ArcWarden_Boss {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -43435,7 +43428,6 @@ declare class CDOTA_AghsFort_Unit_Hero_Undying {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -43447,7 +43439,6 @@ declare class CDOTA_AghsFort_Unit_Hero_Undying {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -43604,7 +43595,6 @@ declare class CDOTA_AghsFort_Unit_Undying_Tombstone {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -43616,7 +43606,6 @@ declare class CDOTA_AghsFort_Unit_Undying_Tombstone {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -43755,7 +43744,6 @@ declare class CDOTA_AghsFort_Unit_Undying_Zombie {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -43767,7 +43755,6 @@ declare class CDOTA_AghsFort_Unit_Undying_Zombie {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -43946,7 +43933,6 @@ declare class CDOTA_BaseNPC {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -43958,7 +43944,6 @@ declare class CDOTA_BaseNPC {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -44097,7 +44082,6 @@ declare class CDOTA_BaseNPC_Additive {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -44109,7 +44093,6 @@ declare class CDOTA_BaseNPC_Additive {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -44248,7 +44231,6 @@ declare class CDOTA_BaseNPC_AghsFort_Clinkz_Skeleton_Archer {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -44260,7 +44242,6 @@ declare class CDOTA_BaseNPC_AghsFort_Clinkz_Skeleton_Archer {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -44399,7 +44380,6 @@ declare class CDOTA_BaseNPC_AghsFort_Clinkz_Skeleton_Colossus {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -44411,7 +44391,6 @@ declare class CDOTA_BaseNPC_AghsFort_Clinkz_Skeleton_Colossus {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -44580,7 +44559,6 @@ declare class CDOTA_BaseNPC_AghsFort_Watch_Tower {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -44592,7 +44570,6 @@ declare class CDOTA_BaseNPC_AghsFort_Watch_Tower {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -44753,7 +44730,6 @@ declare class CDOTA_BaseNPC_Barracks {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -44765,7 +44741,6 @@ declare class CDOTA_BaseNPC_Barracks {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -44917,7 +44892,6 @@ declare class CDOTA_BaseNPC_Building {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -44929,7 +44903,6 @@ declare class CDOTA_BaseNPC_Building {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -45081,7 +45054,6 @@ declare class CDOTA_BaseNPC_Clinkz_Skeleton_Army {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -45093,7 +45065,6 @@ declare class CDOTA_BaseNPC_Clinkz_Skeleton_Army {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -45232,7 +45203,6 @@ declare class CDOTA_BaseNPC_Creature {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -45244,7 +45214,6 @@ declare class CDOTA_BaseNPC_Creature {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -45386,7 +45355,6 @@ declare class CDOTA_BaseNPC_Creep {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -45398,7 +45366,6 @@ declare class CDOTA_BaseNPC_Creep {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -45522,7 +45489,6 @@ declare class CDOTA_BaseNPC_Creep_Lane {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -45667,7 +45633,6 @@ declare class CDOTA_BaseNPC_Creep_Neutral {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -45679,7 +45644,6 @@ declare class CDOTA_BaseNPC_Creep_Neutral {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -45803,7 +45767,6 @@ declare class CDOTA_BaseNPC_Creep_Siege {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -45948,7 +45911,6 @@ declare class CDOTA_BaseNPC_Creep_Talking {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -45960,7 +45922,6 @@ declare class CDOTA_BaseNPC_Creep_Talking {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -46100,7 +46061,6 @@ declare class CDOTA_BaseNPC_Effigy_BattleCup {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -46112,7 +46072,6 @@ declare class CDOTA_BaseNPC_Effigy_BattleCup {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -46264,7 +46223,6 @@ declare class CDOTA_BaseNPC_Effigy_Statue {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -46276,7 +46234,6 @@ declare class CDOTA_BaseNPC_Effigy_Statue {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -46428,7 +46385,6 @@ declare class CDOTA_BaseNPC_Filler {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -46440,7 +46396,6 @@ declare class CDOTA_BaseNPC_Filler {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -46592,7 +46547,6 @@ declare class CDOTA_BaseNPC_Fort {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -46604,7 +46558,6 @@ declare class CDOTA_BaseNPC_Fort {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -46756,7 +46709,6 @@ declare class CDOTA_BaseNPC_Frostivus2018_Clinkz_Skeleton_Army {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -46768,7 +46720,6 @@ declare class CDOTA_BaseNPC_Frostivus2018_Clinkz_Skeleton_Army {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -46907,7 +46858,6 @@ declare class CDOTA_BaseNPC_Frostivus2018_Snowman {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -46919,7 +46869,6 @@ declare class CDOTA_BaseNPC_Frostivus2018_Snowman {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -47058,7 +47007,6 @@ declare class CDOTA_BaseNPC_HallofFame {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -47070,7 +47018,6 @@ declare class CDOTA_BaseNPC_HallofFame {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -47222,7 +47169,6 @@ declare class CDOTA_BaseNPC_Healer {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -47234,7 +47180,6 @@ declare class CDOTA_BaseNPC_Healer {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -47387,7 +47332,6 @@ declare class CDOTA_BaseNPC_Hero {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -47399,7 +47343,6 @@ declare class CDOTA_BaseNPC_Hero {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -47556,7 +47499,6 @@ declare class CDOTA_BaseNPC_HoldoutTower {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -47568,7 +47510,6 @@ declare class CDOTA_BaseNPC_HoldoutTower {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -47722,7 +47663,6 @@ declare class CDOTA_BaseNPC_HoldoutTower_HeavySlow {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -47734,7 +47674,6 @@ declare class CDOTA_BaseNPC_HoldoutTower_HeavySlow {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -47888,7 +47827,6 @@ declare class CDOTA_BaseNPC_HoldoutTower_LightFast {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -47900,7 +47838,6 @@ declare class CDOTA_BaseNPC_HoldoutTower_LightFast {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -48054,7 +47991,6 @@ declare class CDOTA_BaseNPC_HoldoutTower_ReduceSpeed {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -48066,7 +48002,6 @@ declare class CDOTA_BaseNPC_HoldoutTower_ReduceSpeed {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -48220,7 +48155,6 @@ declare class CDOTA_BaseNPC_Invoker_Forged_Spirit {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -48232,7 +48166,6 @@ declare class CDOTA_BaseNPC_Invoker_Forged_Spirit {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -48372,7 +48305,6 @@ declare class CDOTA_BaseNPC_JungleVarmint {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -48384,7 +48316,6 @@ declare class CDOTA_BaseNPC_JungleVarmint {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -48523,7 +48454,6 @@ declare class CDOTA_BaseNPC_MangoTree {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -48535,7 +48465,6 @@ declare class CDOTA_BaseNPC_MangoTree {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -48687,7 +48616,6 @@ declare class CDOTA_BaseNPC_NeutralItemStash {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -48699,7 +48627,6 @@ declare class CDOTA_BaseNPC_NeutralItemStash {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -48851,7 +48778,6 @@ declare class CDOTA_BaseNPC_Phantom_Assassin_GroundDagger {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -48863,7 +48789,6 @@ declare class CDOTA_BaseNPC_Phantom_Assassin_GroundDagger {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -49002,7 +48927,6 @@ declare class CDOTA_BaseNPC_Promo {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -49014,7 +48938,6 @@ declare class CDOTA_BaseNPC_Promo {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -49166,7 +49089,6 @@ declare class CDOTA_BaseNPC_RotatableBuilding {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -49178,7 +49100,6 @@ declare class CDOTA_BaseNPC_RotatableBuilding {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -49317,7 +49238,6 @@ declare class CDOTA_BaseNPC_SDKTower {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -49329,7 +49249,6 @@ declare class CDOTA_BaseNPC_SDKTower {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -49483,7 +49402,6 @@ declare class CDOTA_BaseNPC_Seasonal_CNY_Balloon {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -49495,7 +49413,6 @@ declare class CDOTA_BaseNPC_Seasonal_CNY_Balloon {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -49634,7 +49551,6 @@ declare class CDOTA_BaseNPC_Seasonal_Dragon {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -49646,7 +49562,6 @@ declare class CDOTA_BaseNPC_Seasonal_Dragon {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -49785,7 +49700,6 @@ declare class CDOTA_BaseNPC_Seasonal_Penguin {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -49797,7 +49711,6 @@ declare class CDOTA_BaseNPC_Seasonal_Penguin {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -49936,7 +49849,6 @@ declare class CDOTA_BaseNPC_Seasonal_Snowman {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -49948,7 +49860,6 @@ declare class CDOTA_BaseNPC_Seasonal_Snowman {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -50087,7 +49998,6 @@ declare class CDOTA_BaseNPC_Seasonal_TI10_DiscoBall {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -50099,7 +50009,6 @@ declare class CDOTA_BaseNPC_Seasonal_TI10_DiscoBall {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -50238,7 +50147,6 @@ declare class CDOTA_BaseNPC_Seasonal_TI10_SoccerBall {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -50250,7 +50158,6 @@ declare class CDOTA_BaseNPC_Seasonal_TI10_SoccerBall {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -50389,7 +50296,6 @@ declare class CDOTA_BaseNPC_Seasonal_TI11_Balloon {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -50401,7 +50307,6 @@ declare class CDOTA_BaseNPC_Seasonal_TI11_Balloon {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -50540,7 +50445,6 @@ declare class CDOTA_BaseNPC_Seasonal_TI11_Balloon_Dire {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -50552,7 +50456,6 @@ declare class CDOTA_BaseNPC_Seasonal_TI11_Balloon_Dire {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -50691,7 +50594,6 @@ declare class CDOTA_BaseNPC_Seasonal_TI9_Balloon {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -50703,7 +50605,6 @@ declare class CDOTA_BaseNPC_Seasonal_TI9_Balloon {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -50842,7 +50743,6 @@ declare class CDOTA_BaseNPC_Seasonal_TI9_Drums {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -50854,7 +50754,6 @@ declare class CDOTA_BaseNPC_Seasonal_TI9_Drums {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -50993,7 +50892,6 @@ declare class CDOTA_BaseNPC_Seasonal_TI9_Monkey {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -51005,7 +50903,6 @@ declare class CDOTA_BaseNPC_Seasonal_TI9_Monkey {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -51144,7 +51041,6 @@ declare class CDOTA_BaseNPC_ShadowShaman_SerpentWard {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -51156,7 +51052,6 @@ declare class CDOTA_BaseNPC_ShadowShaman_SerpentWard {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -51295,7 +51190,6 @@ declare class CDOTA_BaseNPC_Shop {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -51307,7 +51201,6 @@ declare class CDOTA_BaseNPC_Shop {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -51460,7 +51353,6 @@ declare class CDOTA_BaseNPC_Spring2021_AbilityBuilding {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -51472,7 +51364,6 @@ declare class CDOTA_BaseNPC_Spring2021_AbilityBuilding {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -51611,7 +51502,6 @@ declare class CDOTA_BaseNPC_Spring2021_DefusalBomb {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -51623,7 +51513,6 @@ declare class CDOTA_BaseNPC_Spring2021_DefusalBomb {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -51762,7 +51651,6 @@ declare class CDOTA_BaseNPC_Spring2021_MeteorCrashSite {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -51774,7 +51662,6 @@ declare class CDOTA_BaseNPC_Spring2021_MeteorCrashSite {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -51913,7 +51800,6 @@ declare class CDOTA_BaseNPC_Tower {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -51925,7 +51811,6 @@ declare class CDOTA_BaseNPC_Tower {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -52079,7 +51964,6 @@ declare class CDOTA_BaseNPC_Trap_Ward {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -52091,7 +51975,6 @@ declare class CDOTA_BaseNPC_Trap_Ward {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -52233,7 +52116,6 @@ declare class CDOTA_BaseNPC_Tusk_Sigil {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -52245,7 +52127,6 @@ declare class CDOTA_BaseNPC_Tusk_Sigil {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -52384,7 +52265,6 @@ declare class CDOTA_BaseNPC_Venomancer_PlagueWard {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -52396,7 +52276,6 @@ declare class CDOTA_BaseNPC_Venomancer_PlagueWard {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -52535,7 +52414,6 @@ declare class CDOTA_BaseNPC_Warlock_Golem {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -52547,7 +52425,6 @@ declare class CDOTA_BaseNPC_Warlock_Golem {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -52687,7 +52564,6 @@ declare class CDOTA_BaseNPC_Watch_Tower {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -52699,7 +52575,6 @@ declare class CDOTA_BaseNPC_Watch_Tower {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -52853,7 +52728,6 @@ declare class CDOTA_BaseNPC_Winter2022_CandyBucket {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -52865,7 +52739,6 @@ declare class CDOTA_BaseNPC_Winter2022_CandyBucket {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -53017,7 +52890,6 @@ declare class CDOTA_BaseNPC_Winter2022_FeedableRoshan {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -53029,7 +52901,6 @@ declare class CDOTA_BaseNPC_Winter2022_FeedableRoshan {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -53243,7 +53114,6 @@ declare class CDOTA_Creature_Jungle_Spirit {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -53255,7 +53125,6 @@ declare class CDOTA_Creature_Jungle_Spirit {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -53397,7 +53266,6 @@ declare class CDOTA_DarkWillow_Creature {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -53409,7 +53277,6 @@ declare class CDOTA_DarkWillow_Creature {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -53489,7 +53356,6 @@ declare class DataTeamPlayer_t {
 	m_iWardsDestroyed: number
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_nKillsPerOpposingTeamMember: number[]
@@ -71130,7 +70996,6 @@ declare class CDOTA_Muerta_Revenant {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -71142,7 +71007,6 @@ declare class CDOTA_Muerta_Revenant {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -71303,7 +71167,6 @@ declare class CDOTA_NPC_AghsFort_Lich_Ice_Spire {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -71315,7 +71178,6 @@ declare class CDOTA_NPC_AghsFort_Lich_Ice_Spire {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -71454,7 +71316,6 @@ declare class CDOTA_NPC_Aghsfort_WitchDoctor_Ward {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -71466,7 +71327,6 @@ declare class CDOTA_NPC_Aghsfort_WitchDoctor_Ward {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -71607,7 +71467,6 @@ declare class CDOTA_NPC_BaseBlocker {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -71619,7 +71478,6 @@ declare class CDOTA_NPC_BaseBlocker {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -71758,7 +71616,6 @@ declare class CDOTA_NPC_BroodmotherStickyWeb {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -71770,7 +71627,6 @@ declare class CDOTA_NPC_BroodmotherStickyWeb {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -71909,7 +71765,6 @@ declare class CDOTA_NPC_DataDriven {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -71921,7 +71776,6 @@ declare class CDOTA_NPC_DataDriven {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -72060,7 +71914,6 @@ declare class CDOTA_NPC_Lantern {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -72072,7 +71925,6 @@ declare class CDOTA_NPC_Lantern {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -72225,7 +72077,6 @@ declare class CDOTA_NPC_Lich_Ice_Spire {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -72237,7 +72088,6 @@ declare class CDOTA_NPC_Lich_Ice_Spire {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -72376,7 +72226,6 @@ declare class CDOTA_NPC_Observer_Ward {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -72388,7 +72237,6 @@ declare class CDOTA_NPC_Observer_Ward {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -72527,7 +72375,6 @@ declare class CDOTA_NPC_Observer_Ward_TrueSight {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -72539,7 +72386,6 @@ declare class CDOTA_NPC_Observer_Ward_TrueSight {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -72678,7 +72524,6 @@ declare class CDOTA_NPC_Techies_Minefield_Sign {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -72690,7 +72535,6 @@ declare class CDOTA_NPC_Techies_Minefield_Sign {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -72829,7 +72673,6 @@ declare class CDOTA_NPC_TechiesMines {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -72841,7 +72684,6 @@ declare class CDOTA_NPC_TechiesMines {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -72980,7 +72822,6 @@ declare class CDOTA_NPC_Treant_EyesInTheForest {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -72992,7 +72833,6 @@ declare class CDOTA_NPC_Treant_EyesInTheForest {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -73131,7 +72971,6 @@ declare class CDOTA_NPC_WitchDoctor_Ward {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -73143,7 +72982,6 @@ declare class CDOTA_NPC_WitchDoctor_Ward {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -73284,7 +73122,6 @@ declare class CDOTA_PhantomAssassin_Gravestone {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -73296,7 +73133,6 @@ declare class CDOTA_PhantomAssassin_Gravestone {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -73803,7 +73639,6 @@ declare class CDOTA_Unit_Aghsfort_Aziyog_Underlord_Portal {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -73815,7 +73650,6 @@ declare class CDOTA_Unit_Aghsfort_Aziyog_Underlord_Portal {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -73954,7 +73788,6 @@ declare class CDOTA_Unit_AghsFort_Creature_Batrider {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -73966,7 +73799,6 @@ declare class CDOTA_Unit_AghsFort_Creature_Batrider {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -74108,7 +73940,6 @@ declare class CDOTA_Unit_AghsFort_Creature_DragonKnight {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -74120,7 +73951,6 @@ declare class CDOTA_Unit_AghsFort_Creature_DragonKnight {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -74262,7 +74092,6 @@ declare class CDOTA_Unit_AghsFort_Creature_DungeonBat {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -74274,7 +74103,6 @@ declare class CDOTA_Unit_AghsFort_Creature_DungeonBat {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -74416,7 +74244,6 @@ declare class CDOTA_Unit_AghsFort_EarthSpiritBoss_Stone {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -74428,7 +74255,6 @@ declare class CDOTA_Unit_AghsFort_EarthSpiritBoss_Stone {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -74567,7 +74393,6 @@ declare class CDOTA_Unit_AghsFort_SpectralTusk_Tombstone {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -74579,7 +74404,6 @@ declare class CDOTA_Unit_AghsFort_SpectralTusk_Tombstone {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -74718,7 +74542,6 @@ declare class CDOTA_Unit_Announcer {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -74730,7 +74553,6 @@ declare class CDOTA_Unit_Announcer {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -74869,7 +74691,6 @@ declare class CDOTA_Unit_Announcer_Killing_Spree {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -74881,7 +74702,6 @@ declare class CDOTA_Unit_Announcer_Killing_Spree {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -75020,7 +74840,6 @@ declare class CDOTA_Unit_Brewmaster_PrimalEarth {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -75032,7 +74851,6 @@ declare class CDOTA_Unit_Brewmaster_PrimalEarth {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -75172,7 +74990,6 @@ declare class CDOTA_Unit_Brewmaster_PrimalFire {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -75184,7 +75001,6 @@ declare class CDOTA_Unit_Brewmaster_PrimalFire {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -75324,7 +75140,6 @@ declare class CDOTA_Unit_Brewmaster_PrimalStorm {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -75336,7 +75151,6 @@ declare class CDOTA_Unit_Brewmaster_PrimalStorm {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -75476,7 +75290,6 @@ declare class CDOTA_Unit_Brewmaster_PrimalVoid {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -75488,7 +75301,6 @@ declare class CDOTA_Unit_Brewmaster_PrimalVoid {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -75628,7 +75440,6 @@ declare class CDOTA_Unit_Broodmother_Spiderling {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -75640,7 +75451,6 @@ declare class CDOTA_Unit_Broodmother_Spiderling {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -75780,7 +75590,6 @@ declare class CDOTA_Unit_Broodmother_Web {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -75792,7 +75601,6 @@ declare class CDOTA_Unit_Broodmother_Web {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -75931,7 +75739,6 @@ declare class CDOTA_Unit_Courier {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -75943,7 +75750,6 @@ declare class CDOTA_Unit_Courier {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -76087,7 +75893,6 @@ declare class CDOTA_Unit_CustomGameAnnouncer {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -76099,7 +75904,6 @@ declare class CDOTA_Unit_CustomGameAnnouncer {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -76238,7 +76042,6 @@ declare class CDOTA_Unit_CustomGameAnnouncerAghanim {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -76250,7 +76053,6 @@ declare class CDOTA_Unit_CustomGameAnnouncerAghanim {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -76389,7 +76191,6 @@ declare class CDOTA_Unit_Diretide_Portal {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -76401,7 +76202,6 @@ declare class CDOTA_Unit_Diretide_Portal {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -76553,7 +76353,6 @@ declare class CDOTA_Unit_Earth_Spirit_Stone {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -76565,7 +76364,6 @@ declare class CDOTA_Unit_Earth_Spirit_Stone {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -76704,7 +76502,6 @@ declare class CDOTA_Unit_Elder_Titan_AncestralSpirit {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -76716,7 +76513,6 @@ declare class CDOTA_Unit_Elder_Titan_AncestralSpirit {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -76855,7 +76651,6 @@ declare class CDOTA_Unit_Fountain {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -76867,7 +76662,6 @@ declare class CDOTA_Unit_Fountain {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -77019,7 +76813,6 @@ declare class CDOTA_Unit_Grimstroke_InkCreature {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -77031,7 +76824,6 @@ declare class CDOTA_Unit_Grimstroke_InkCreature {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -77171,7 +76963,6 @@ declare class CDOTA_Unit_Hero_Abaddon {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -77183,7 +76974,6 @@ declare class CDOTA_Unit_Hero_Abaddon {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -77341,7 +77131,6 @@ declare class CDOTA_Unit_Hero_AbyssalUnderlord {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -77353,7 +77142,6 @@ declare class CDOTA_Unit_Hero_AbyssalUnderlord {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -77511,7 +77299,6 @@ declare class CDOTA_Unit_Hero_Aghsfort_PrimalBeast_Boss {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -77523,7 +77310,6 @@ declare class CDOTA_Unit_Hero_Aghsfort_PrimalBeast_Boss {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -77681,7 +77467,6 @@ declare class CDOTA_Unit_Hero_Alchemist {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -77693,7 +77478,6 @@ declare class CDOTA_Unit_Hero_Alchemist {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -77851,7 +77635,6 @@ declare class CDOTA_Unit_Hero_AncientApparition {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -77863,7 +77646,6 @@ declare class CDOTA_Unit_Hero_AncientApparition {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -78021,7 +77803,6 @@ declare class CDOTA_Unit_Hero_AntiMage {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -78033,7 +77814,6 @@ declare class CDOTA_Unit_Hero_AntiMage {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -78191,7 +77971,6 @@ declare class CDOTA_Unit_Hero_ArcWarden {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -78203,7 +77982,6 @@ declare class CDOTA_Unit_Hero_ArcWarden {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -78361,7 +78139,6 @@ declare class CDOTA_Unit_Hero_Axe {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -78373,7 +78150,6 @@ declare class CDOTA_Unit_Hero_Axe {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -78531,7 +78307,6 @@ declare class CDOTA_Unit_Hero_Bane {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -78543,7 +78318,6 @@ declare class CDOTA_Unit_Hero_Bane {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -78701,7 +78475,6 @@ declare class CDOTA_Unit_Hero_Batrider {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -78713,7 +78486,6 @@ declare class CDOTA_Unit_Hero_Batrider {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -78871,7 +78643,6 @@ declare class CDOTA_Unit_Hero_Beastmaster {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -78883,7 +78654,6 @@ declare class CDOTA_Unit_Hero_Beastmaster {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -79040,7 +78810,6 @@ declare class CDOTA_Unit_Hero_Beastmaster_Beasts {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -79052,7 +78821,6 @@ declare class CDOTA_Unit_Hero_Beastmaster_Beasts {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -79192,7 +78960,6 @@ declare class CDOTA_Unit_Hero_Beastmaster_Boar {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -79204,7 +78971,6 @@ declare class CDOTA_Unit_Hero_Beastmaster_Boar {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -79344,7 +79110,6 @@ declare class CDOTA_Unit_Hero_Beastmaster_Hawk {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -79356,7 +79121,6 @@ declare class CDOTA_Unit_Hero_Beastmaster_Hawk {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -79497,7 +79261,6 @@ declare class CDOTA_Unit_Hero_Bloodseeker {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -79509,7 +79272,6 @@ declare class CDOTA_Unit_Hero_Bloodseeker {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -79667,7 +79429,6 @@ declare class CDOTA_Unit_Hero_BountyHunter {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -79679,7 +79440,6 @@ declare class CDOTA_Unit_Hero_BountyHunter {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -79837,7 +79597,6 @@ declare class CDOTA_Unit_Hero_Brewmaster {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -79849,7 +79608,6 @@ declare class CDOTA_Unit_Hero_Brewmaster {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -80007,7 +79765,6 @@ declare class CDOTA_Unit_Hero_Bristleback {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -80019,7 +79776,6 @@ declare class CDOTA_Unit_Hero_Bristleback {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -80177,7 +79933,6 @@ declare class CDOTA_Unit_Hero_Broodmother {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -80189,7 +79944,6 @@ declare class CDOTA_Unit_Hero_Broodmother {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -80347,7 +80101,6 @@ declare class CDOTA_Unit_Hero_Centaur {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -80359,7 +80112,6 @@ declare class CDOTA_Unit_Hero_Centaur {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -80517,7 +80269,6 @@ declare class CDOTA_Unit_Hero_ChaosKnight {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -80529,7 +80280,6 @@ declare class CDOTA_Unit_Hero_ChaosKnight {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -80687,7 +80437,6 @@ declare class CDOTA_Unit_Hero_Chen {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -80699,7 +80448,6 @@ declare class CDOTA_Unit_Hero_Chen {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -80857,7 +80605,6 @@ declare class CDOTA_Unit_Hero_Clinkz {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -80869,7 +80616,6 @@ declare class CDOTA_Unit_Hero_Clinkz {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -81027,7 +80773,6 @@ declare class CDOTA_Unit_Hero_CrystalMaiden {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -81039,7 +80784,6 @@ declare class CDOTA_Unit_Hero_CrystalMaiden {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -81197,7 +80941,6 @@ declare class CDOTA_Unit_Hero_DarkSeer {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -81209,7 +80952,6 @@ declare class CDOTA_Unit_Hero_DarkSeer {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -81367,7 +81109,6 @@ declare class CDOTA_Unit_Hero_DarkWillow {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -81379,7 +81120,6 @@ declare class CDOTA_Unit_Hero_DarkWillow {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -81537,7 +81277,6 @@ declare class CDOTA_Unit_Hero_Dawnbreaker {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -81549,7 +81288,6 @@ declare class CDOTA_Unit_Hero_Dawnbreaker {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -81708,7 +81446,6 @@ declare class CDOTA_Unit_Hero_Dazzle {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -81720,7 +81457,6 @@ declare class CDOTA_Unit_Hero_Dazzle {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -81878,7 +81614,6 @@ declare class CDOTA_Unit_Hero_DeathProphet {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -81890,7 +81625,6 @@ declare class CDOTA_Unit_Hero_DeathProphet {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -82048,7 +81782,6 @@ declare class CDOTA_Unit_Hero_Disruptor {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -82060,7 +81793,6 @@ declare class CDOTA_Unit_Hero_Disruptor {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -82218,7 +81950,6 @@ declare class CDOTA_Unit_Hero_DoomBringer {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -82230,7 +81961,6 @@ declare class CDOTA_Unit_Hero_DoomBringer {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -82388,7 +82118,6 @@ declare class CDOTA_Unit_Hero_DragonKnight {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -82400,7 +82129,6 @@ declare class CDOTA_Unit_Hero_DragonKnight {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -82558,7 +82286,6 @@ declare class CDOTA_Unit_Hero_DrowRanger {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -82570,7 +82297,6 @@ declare class CDOTA_Unit_Hero_DrowRanger {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -82728,7 +82454,6 @@ declare class CDOTA_Unit_Hero_Earthshaker {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -82740,7 +82465,6 @@ declare class CDOTA_Unit_Hero_Earthshaker {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -82898,7 +82622,6 @@ declare class CDOTA_Unit_Hero_EarthSpirit {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -82910,7 +82633,6 @@ declare class CDOTA_Unit_Hero_EarthSpirit {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -83068,7 +82790,6 @@ declare class CDOTA_Unit_Hero_Elder_Titan {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -83080,7 +82801,6 @@ declare class CDOTA_Unit_Hero_Elder_Titan {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -83238,7 +82958,6 @@ declare class CDOTA_Unit_Hero_EmberSpirit {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -83250,7 +82969,6 @@ declare class CDOTA_Unit_Hero_EmberSpirit {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -83408,7 +83126,6 @@ declare class CDOTA_Unit_Hero_Enchantress {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -83420,7 +83137,6 @@ declare class CDOTA_Unit_Hero_Enchantress {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -83578,7 +83294,6 @@ declare class CDOTA_Unit_Hero_Enigma {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -83590,7 +83305,6 @@ declare class CDOTA_Unit_Hero_Enigma {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -83748,7 +83462,6 @@ declare class CDOTA_Unit_Hero_FacelessVoid {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -83760,7 +83473,6 @@ declare class CDOTA_Unit_Hero_FacelessVoid {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -83918,7 +83630,6 @@ declare class CDOTA_Unit_Hero_Furion {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -83930,7 +83641,6 @@ declare class CDOTA_Unit_Hero_Furion {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -84088,7 +83798,6 @@ declare class CDOTA_Unit_Hero_Grimstroke {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -84100,7 +83809,6 @@ declare class CDOTA_Unit_Hero_Grimstroke {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -84258,7 +83966,6 @@ declare class CDOTA_Unit_Hero_Gyrocopter {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -84270,7 +83977,6 @@ declare class CDOTA_Unit_Hero_Gyrocopter {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -84428,7 +84134,6 @@ declare class CDOTA_Unit_Hero_Hoodwink {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -84440,7 +84145,6 @@ declare class CDOTA_Unit_Hero_Hoodwink {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -84598,7 +84302,6 @@ declare class CDOTA_Unit_Hero_Huskar {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -84610,7 +84313,6 @@ declare class CDOTA_Unit_Hero_Huskar {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -84768,7 +84470,6 @@ declare class CDOTA_Unit_Hero_Invoker {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -84780,7 +84481,6 @@ declare class CDOTA_Unit_Hero_Invoker {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -84938,7 +84638,6 @@ declare class CDOTA_Unit_Hero_Jakiro {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -84950,7 +84649,6 @@ declare class CDOTA_Unit_Hero_Jakiro {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -85108,7 +84806,6 @@ declare class CDOTA_Unit_Hero_Juggernaut {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -85120,7 +84817,6 @@ declare class CDOTA_Unit_Hero_Juggernaut {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -85278,7 +84974,6 @@ declare class CDOTA_Unit_Hero_KeeperOfTheLight {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -85290,7 +84985,6 @@ declare class CDOTA_Unit_Hero_KeeperOfTheLight {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -85448,7 +85142,6 @@ declare class CDOTA_Unit_Hero_Kunkka {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -85460,7 +85153,6 @@ declare class CDOTA_Unit_Hero_Kunkka {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -85618,7 +85310,6 @@ declare class CDOTA_Unit_Hero_Legion_Commander {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -85630,7 +85321,6 @@ declare class CDOTA_Unit_Hero_Legion_Commander {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -85788,7 +85478,6 @@ declare class CDOTA_Unit_Hero_Leshrac {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -85800,7 +85489,6 @@ declare class CDOTA_Unit_Hero_Leshrac {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -85958,7 +85646,6 @@ declare class CDOTA_Unit_Hero_Lich {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -85970,7 +85657,6 @@ declare class CDOTA_Unit_Hero_Lich {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -86128,7 +85814,6 @@ declare class CDOTA_Unit_Hero_Life_Stealer {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -86140,7 +85825,6 @@ declare class CDOTA_Unit_Hero_Life_Stealer {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -86298,7 +85982,6 @@ declare class CDOTA_Unit_Hero_Lina {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -86310,7 +85993,6 @@ declare class CDOTA_Unit_Hero_Lina {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -86468,7 +86150,6 @@ declare class CDOTA_Unit_Hero_Lion {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -86480,7 +86161,6 @@ declare class CDOTA_Unit_Hero_Lion {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -86638,7 +86318,6 @@ declare class CDOTA_Unit_Hero_LoneDruid {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -86650,7 +86329,6 @@ declare class CDOTA_Unit_Hero_LoneDruid {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -86808,7 +86486,6 @@ declare class CDOTA_Unit_Hero_Luna {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -86820,7 +86497,6 @@ declare class CDOTA_Unit_Hero_Luna {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -86978,7 +86654,6 @@ declare class CDOTA_Unit_Hero_Lycan {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -86990,7 +86665,6 @@ declare class CDOTA_Unit_Hero_Lycan {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -87148,7 +86822,6 @@ declare class CDOTA_Unit_Hero_Magnataur {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -87160,7 +86833,6 @@ declare class CDOTA_Unit_Hero_Magnataur {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -87318,7 +86990,6 @@ declare class CDOTA_Unit_Hero_Marci {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -87330,7 +87001,6 @@ declare class CDOTA_Unit_Hero_Marci {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -87488,7 +87158,6 @@ declare class CDOTA_Unit_Hero_Mars {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -87500,7 +87169,6 @@ declare class CDOTA_Unit_Hero_Mars {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -87658,7 +87326,6 @@ declare class CDOTA_Unit_Hero_Medusa {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -87670,7 +87337,6 @@ declare class CDOTA_Unit_Hero_Medusa {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -87828,7 +87494,6 @@ declare class CDOTA_Unit_Hero_Meepo {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -87841,7 +87506,6 @@ declare class CDOTA_Unit_Hero_Meepo {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -88000,7 +87664,6 @@ declare class CDOTA_Unit_Hero_Mirana {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -88012,7 +87675,6 @@ declare class CDOTA_Unit_Hero_Mirana {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -88170,7 +87832,6 @@ declare class CDOTA_Unit_Hero_MonkeyKing {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -88182,7 +87843,6 @@ declare class CDOTA_Unit_Hero_MonkeyKing {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -88342,7 +88002,6 @@ declare class CDOTA_Unit_Hero_Morphling {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -88354,7 +88013,6 @@ declare class CDOTA_Unit_Hero_Morphling {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -88513,7 +88171,6 @@ declare class CDOTA_Unit_Hero_Muerta {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -88525,7 +88182,6 @@ declare class CDOTA_Unit_Hero_Muerta {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -88683,7 +88339,6 @@ declare class CDOTA_Unit_Hero_Naga_Siren {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -88695,7 +88350,6 @@ declare class CDOTA_Unit_Hero_Naga_Siren {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -88853,7 +88507,6 @@ declare class CDOTA_Unit_Hero_Necrolyte {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -88865,7 +88518,6 @@ declare class CDOTA_Unit_Hero_Necrolyte {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -89023,7 +88675,6 @@ declare class CDOTA_Unit_Hero_Nevermore {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -89035,7 +88686,6 @@ declare class CDOTA_Unit_Hero_Nevermore {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -89193,7 +88843,6 @@ declare class CDOTA_Unit_Hero_NightStalker {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -89205,7 +88854,6 @@ declare class CDOTA_Unit_Hero_NightStalker {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -89363,7 +89011,6 @@ declare class CDOTA_Unit_Hero_Nyx_Assassin {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -89375,7 +89022,6 @@ declare class CDOTA_Unit_Hero_Nyx_Assassin {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -89533,7 +89179,6 @@ declare class CDOTA_Unit_Hero_Obsidian_Destroyer {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -89545,7 +89190,6 @@ declare class CDOTA_Unit_Hero_Obsidian_Destroyer {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -89703,7 +89347,6 @@ declare class CDOTA_Unit_Hero_Ogre_Magi {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -89715,7 +89358,6 @@ declare class CDOTA_Unit_Hero_Ogre_Magi {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -89873,7 +89515,6 @@ declare class CDOTA_Unit_Hero_Omniknight {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -89885,7 +89526,6 @@ declare class CDOTA_Unit_Hero_Omniknight {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -90043,7 +89683,6 @@ declare class CDOTA_Unit_Hero_Oracle {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -90055,7 +89694,6 @@ declare class CDOTA_Unit_Hero_Oracle {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -90213,7 +89851,6 @@ declare class CDOTA_Unit_Hero_Pangolier {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -90225,7 +89862,6 @@ declare class CDOTA_Unit_Hero_Pangolier {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -90383,7 +90019,6 @@ declare class CDOTA_Unit_Hero_PhantomAssassin {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -90395,7 +90030,6 @@ declare class CDOTA_Unit_Hero_PhantomAssassin {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -90554,7 +90188,6 @@ declare class CDOTA_Unit_Hero_PhantomLancer {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -90566,7 +90199,6 @@ declare class CDOTA_Unit_Hero_PhantomLancer {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -90724,7 +90356,6 @@ declare class CDOTA_Unit_Hero_Phoenix {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -90736,7 +90367,6 @@ declare class CDOTA_Unit_Hero_Phoenix {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -90894,7 +90524,6 @@ declare class CDOTA_Unit_Hero_PrimalBeast {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -90906,7 +90535,6 @@ declare class CDOTA_Unit_Hero_PrimalBeast {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -91064,7 +90692,6 @@ declare class CDOTA_Unit_Hero_Puck {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -91076,7 +90703,6 @@ declare class CDOTA_Unit_Hero_Puck {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -91234,7 +90860,6 @@ declare class CDOTA_Unit_Hero_Pudge {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -91246,7 +90871,6 @@ declare class CDOTA_Unit_Hero_Pudge {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -91404,7 +91028,6 @@ declare class CDOTA_Unit_Hero_Pugna {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -91416,7 +91039,6 @@ declare class CDOTA_Unit_Hero_Pugna {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -91574,7 +91196,6 @@ declare class CDOTA_Unit_Hero_QueenOfPain {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -91586,7 +91207,6 @@ declare class CDOTA_Unit_Hero_QueenOfPain {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -91744,7 +91364,6 @@ declare class CDOTA_Unit_Hero_Rattletrap {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -91756,7 +91375,6 @@ declare class CDOTA_Unit_Hero_Rattletrap {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -91916,7 +91534,6 @@ declare class CDOTA_Unit_Hero_Razor {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -91928,7 +91545,6 @@ declare class CDOTA_Unit_Hero_Razor {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -92086,7 +91702,6 @@ declare class CDOTA_Unit_Hero_Riki {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -92098,7 +91713,6 @@ declare class CDOTA_Unit_Hero_Riki {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -92256,7 +91870,6 @@ declare class CDOTA_Unit_Hero_Rubick {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -92268,7 +91881,6 @@ declare class CDOTA_Unit_Hero_Rubick {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -92429,7 +92041,6 @@ declare class CDOTA_Unit_Hero_SandKing {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -92441,7 +92052,6 @@ declare class CDOTA_Unit_Hero_SandKing {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -92599,7 +92209,6 @@ declare class CDOTA_Unit_Hero_Shadow_Demon {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -92611,7 +92220,6 @@ declare class CDOTA_Unit_Hero_Shadow_Demon {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -92769,7 +92377,6 @@ declare class CDOTA_Unit_Hero_ShadowShaman {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -92781,7 +92388,6 @@ declare class CDOTA_Unit_Hero_ShadowShaman {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -92939,7 +92545,6 @@ declare class CDOTA_Unit_Hero_Shredder {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -92951,7 +92556,6 @@ declare class CDOTA_Unit_Hero_Shredder {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -93109,7 +92713,6 @@ declare class CDOTA_Unit_Hero_Silencer {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -93121,7 +92724,6 @@ declare class CDOTA_Unit_Hero_Silencer {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -93279,7 +92881,6 @@ declare class CDOTA_Unit_Hero_SkeletonKing {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -93291,7 +92892,6 @@ declare class CDOTA_Unit_Hero_SkeletonKing {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -93451,7 +93051,6 @@ declare class CDOTA_Unit_Hero_Skywrath_Mage {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -93463,7 +93062,6 @@ declare class CDOTA_Unit_Hero_Skywrath_Mage {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -93621,7 +93219,6 @@ declare class CDOTA_Unit_Hero_Slardar {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -93633,7 +93230,6 @@ declare class CDOTA_Unit_Hero_Slardar {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -93791,7 +93387,6 @@ declare class CDOTA_Unit_Hero_Slark {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -93803,7 +93398,6 @@ declare class CDOTA_Unit_Hero_Slark {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -93961,7 +93555,6 @@ declare class CDOTA_Unit_Hero_Snapfire {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -93973,7 +93566,6 @@ declare class CDOTA_Unit_Hero_Snapfire {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -94131,7 +93723,6 @@ declare class CDOTA_Unit_Hero_Sniper {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -94143,7 +93734,6 @@ declare class CDOTA_Unit_Hero_Sniper {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -94301,7 +93891,6 @@ declare class CDOTA_Unit_Hero_Spectre {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -94313,7 +93902,6 @@ declare class CDOTA_Unit_Hero_Spectre {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -94475,7 +94063,6 @@ declare class CDOTA_Unit_Hero_SpiritBreaker {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -94487,7 +94074,6 @@ declare class CDOTA_Unit_Hero_SpiritBreaker {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -94645,7 +94231,6 @@ declare class CDOTA_Unit_Hero_StormSpirit {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -94657,7 +94242,6 @@ declare class CDOTA_Unit_Hero_StormSpirit {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -94815,7 +94399,6 @@ declare class CDOTA_Unit_Hero_Sven {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -94827,7 +94410,6 @@ declare class CDOTA_Unit_Hero_Sven {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -94985,7 +94567,6 @@ declare class CDOTA_Unit_Hero_Techies {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -94997,7 +94578,6 @@ declare class CDOTA_Unit_Hero_Techies {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -95155,7 +94735,6 @@ declare class CDOTA_Unit_Hero_TemplarAssassin {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -95167,7 +94746,6 @@ declare class CDOTA_Unit_Hero_TemplarAssassin {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -95325,7 +94903,6 @@ declare class CDOTA_Unit_Hero_Terrorblade {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -95337,7 +94914,6 @@ declare class CDOTA_Unit_Hero_Terrorblade {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -95496,7 +95072,6 @@ declare class CDOTA_Unit_Hero_Tidehunter {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -95508,7 +95083,6 @@ declare class CDOTA_Unit_Hero_Tidehunter {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -95666,7 +95240,6 @@ declare class CDOTA_Unit_Hero_Tinker {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -95678,7 +95251,6 @@ declare class CDOTA_Unit_Hero_Tinker {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -95836,7 +95408,6 @@ declare class CDOTA_Unit_Hero_Tiny {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -95848,7 +95419,6 @@ declare class CDOTA_Unit_Hero_Tiny {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -96008,7 +95578,6 @@ declare class CDOTA_Unit_Hero_Treant {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -96020,7 +95589,6 @@ declare class CDOTA_Unit_Hero_Treant {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -96178,7 +95746,6 @@ declare class CDOTA_Unit_Hero_TrollWarlord {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -96190,7 +95757,6 @@ declare class CDOTA_Unit_Hero_TrollWarlord {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -96348,7 +95914,6 @@ declare class CDOTA_Unit_Hero_Tusk {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -96360,7 +95925,6 @@ declare class CDOTA_Unit_Hero_Tusk {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -96518,7 +96082,6 @@ declare class CDOTA_Unit_Hero_Undying {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -96530,7 +96093,6 @@ declare class CDOTA_Unit_Hero_Undying {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -96688,7 +96250,6 @@ declare class CDOTA_Unit_Hero_Ursa {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -96700,7 +96261,6 @@ declare class CDOTA_Unit_Hero_Ursa {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -96858,7 +96418,6 @@ declare class CDOTA_Unit_Hero_VengefulSpirit {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -96870,7 +96429,6 @@ declare class CDOTA_Unit_Hero_VengefulSpirit {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -97028,7 +96586,6 @@ declare class CDOTA_Unit_Hero_Venomancer {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -97040,7 +96597,6 @@ declare class CDOTA_Unit_Hero_Venomancer {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -97198,7 +96754,6 @@ declare class CDOTA_Unit_Hero_Viper {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -97210,7 +96765,6 @@ declare class CDOTA_Unit_Hero_Viper {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -97368,7 +96922,6 @@ declare class CDOTA_Unit_Hero_Visage {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -97380,7 +96933,6 @@ declare class CDOTA_Unit_Hero_Visage {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -97538,7 +97090,6 @@ declare class CDOTA_Unit_Hero_Void_Spirit {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -97550,7 +97101,6 @@ declare class CDOTA_Unit_Hero_Void_Spirit {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -97708,7 +97258,6 @@ declare class CDOTA_Unit_Hero_Warlock {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -97720,7 +97269,6 @@ declare class CDOTA_Unit_Hero_Warlock {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -97878,7 +97426,6 @@ declare class CDOTA_Unit_Hero_Weaver {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -97890,7 +97437,6 @@ declare class CDOTA_Unit_Hero_Weaver {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -98049,7 +97595,6 @@ declare class CDOTA_Unit_Hero_Windrunner {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -98061,7 +97606,6 @@ declare class CDOTA_Unit_Hero_Windrunner {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -98219,7 +97763,6 @@ declare class CDOTA_Unit_Hero_Winter_Wyvern {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -98231,7 +97774,6 @@ declare class CDOTA_Unit_Hero_Winter_Wyvern {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -98389,7 +97931,6 @@ declare class CDOTA_Unit_Hero_Wisp {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -98401,7 +97942,6 @@ declare class CDOTA_Unit_Hero_Wisp {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -98559,7 +98099,6 @@ declare class CDOTA_Unit_Hero_WitchDoctor {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -98571,7 +98110,6 @@ declare class CDOTA_Unit_Hero_WitchDoctor {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -98729,7 +98267,6 @@ declare class CDOTA_Unit_Hero_Zuus {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -98741,7 +98278,6 @@ declare class CDOTA_Unit_Hero_Zuus {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -98898,7 +98434,6 @@ declare class CDOTA_Unit_IngisFatuus {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -98910,7 +98445,6 @@ declare class CDOTA_Unit_IngisFatuus {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -99049,7 +98583,6 @@ declare class CDOTA_Unit_LoopingSound {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -99061,7 +98594,6 @@ declare class CDOTA_Unit_LoopingSound {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -99202,7 +98734,6 @@ declare class CDOTA_Unit_Miniboss {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -99214,7 +98745,6 @@ declare class CDOTA_Unit_Miniboss {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -99354,7 +98884,6 @@ declare class CDOTA_Unit_Nian {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -99366,7 +98895,6 @@ declare class CDOTA_Unit_Nian {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -99508,7 +99036,6 @@ declare class CDOTA_Unit_Roshan {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -99520,7 +99047,6 @@ declare class CDOTA_Unit_Roshan {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -99660,7 +99186,6 @@ declare class CDOTA_Unit_Scout {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -99672,7 +99197,6 @@ declare class CDOTA_Unit_Scout {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -99815,7 +99339,6 @@ declare class CDOTA_Unit_SpectralTusk_Tombstone {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -99827,7 +99350,6 @@ declare class CDOTA_Unit_SpectralTusk_Tombstone {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -99967,7 +99489,6 @@ declare class CDOTA_Unit_SpiritBear {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -99979,7 +99500,6 @@ declare class CDOTA_Unit_SpiritBear {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -100139,7 +99659,6 @@ declare class CDOTA_Unit_TargetDummy {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -100151,7 +99670,6 @@ declare class CDOTA_Unit_TargetDummy {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -100312,7 +99830,6 @@ declare class CDOTA_Unit_TemplarAssassin_PsionicTrap {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -100324,7 +99841,6 @@ declare class CDOTA_Unit_TemplarAssassin_PsionicTrap {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -100463,7 +99979,6 @@ declare class CDOTA_Unit_Tidehunter_Anchor {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -100475,7 +99990,6 @@ declare class CDOTA_Unit_Tidehunter_Anchor {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -100616,7 +100130,6 @@ declare class CDOTA_Unit_Twin_Gate {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -100628,7 +100141,6 @@ declare class CDOTA_Unit_Twin_Gate {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -100780,7 +100292,6 @@ declare class CDOTA_Unit_Underlord_Portal {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -100792,7 +100303,6 @@ declare class CDOTA_Unit_Underlord_Portal {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -100944,7 +100454,6 @@ declare class CDOTA_Unit_Undying_Tombstone {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -100956,7 +100465,6 @@ declare class CDOTA_Unit_Undying_Tombstone {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -101095,7 +100603,6 @@ declare class CDOTA_Unit_Undying_Zombie {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -101107,7 +100614,6 @@ declare class CDOTA_Unit_Undying_Zombie {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -101247,7 +100753,6 @@ declare class CDOTA_Unit_VisageFamiliar {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -101259,7 +100764,6 @@ declare class CDOTA_Unit_VisageFamiliar {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -101399,7 +100903,6 @@ declare class CDOTA_Unit_ZeusCloud {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -101411,7 +100914,6 @@ declare class CDOTA_Unit_ZeusCloud {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -101550,7 +101052,6 @@ declare class CDOTA_Wisp_Spirit {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -101562,7 +101063,6 @@ declare class CDOTA_Wisp_Spirit {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -102877,32 +102377,7 @@ declare class CDotaQuestBase {
 	m_flNavIgnoreUntilTime: number
 }
 
-declare class CDOTASpecGraphPlayerData {
-	m_flAnimTime: number
-	m_flSimulationTime: number
-	m_hOwnerEntity: CEntityIndex<CBaseEntity>
-	CBodyComponent: CBodyComponentPoint
-	m_pEntity: CEntityIdentity
-	m_takedamage: DamageOptions_t
-	m_MoveCollide: MoveCollide_t
-	m_MoveType: MoveType_t
-	m_nSubclassID: CUtlStringToken
-	m_flCreateTime: number
-	m_ubInterpolationFrame: number
-	m_iTeamNum: number
-	m_hEffectEntity: CEntityIndex<CBaseEntity>
-	m_fEffects: number
-	m_flElasticity: number
-	m_bSimulatedEveryTick: boolean
-	m_bAnimatedEveryTick: boolean
-	m_flNavIgnoreUntilTime: number
-	m_rgGoldPerMinute: number[]
-	m_rgXPPerMinute: number[]
-	m_nCreatedByPlayerID: PlayerID_t
-}
-
 declare class CDOTASpectatorGraphManager {
-	m_rgPlayerGraphData: CEntityIndex<CDOTASpecGraphPlayerData>[]
 	m_rgRadiantTotalEarnedGold: number[]
 	m_rgDireTotalEarnedGold: number[]
 	m_rgRadiantTotalEarnedXP: number[]
@@ -105492,7 +104967,6 @@ declare class CIngameEvent_MuertaReleaseSpring2023_DummyModifierHolder {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -105504,7 +104978,6 @@ declare class CIngameEvent_MuertaReleaseSpring2023_DummyModifierHolder {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -105708,6 +105181,53 @@ declare class CIngameEvent_TI2020 {
 }
 
 declare class CIngameEvent_TI2022 {
+	m_flAnimTime: number
+	m_flSimulationTime: number
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	CBodyComponent: CBodyComponentPoint
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_CompendiumChallengeEventID: number[]
+	m_CompendiumChallengeSequenceID: number[]
+	m_CompendiumChallengeCoinReward: number[]
+	m_CompendiumChallengeCoinSplash: number[]
+	m_CompendiumChallengePointReward: number[]
+	m_CompendiumChallengeCompleted: boolean[]
+	m_CompendiumChallengeFailed: boolean[]
+	m_CompendiumChallengeProgress: number[]
+	m_QueryIDForProgress: number[]
+	m_SubChallenges: CDOTASubChallengeInfo
+	m_CompendiumCoinWager: number[]
+	m_CompendiumTokenWagerItemID: itemid_t[]
+	m_CompendiumWagerTokenBonusPct: number[]
+	m_CompendiumCoinWagerResults: number[]
+	m_CompendiumRankWagers: number[]
+	m_flWagerTimer: number
+	m_flWagerEndTime: number
+	m_CompendiumChallengeInfo: CDOTA_PlayerChallengeInfo
+	m_PlayerQueryIDs: CDOTA_CombatLogQueryProgress
+	m_ProgressForQueryID: number[]
+	m_GoalForQueryID: number[]
+	m_PlayerQuestRankPreviouslyCompleted: number[]
+	m_PlayerQuestRankCompleted: number[]
+	m_PlayerBountyTarget: PlayerID_t[]
+	m_flPlayerBountyTimestamp: number[]
+	m_PlayerBountyCount: number[]
+}
+
+declare class CIngameEvent_TI2023 {
 	m_flAnimTime: number
 	m_flSimulationTime: number
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
@@ -106764,7 +106284,6 @@ declare class CODTA_Unit_Warlock_Imp {
 	m_nUnitState64: bigint
 	m_nUnitModelVariant: number
 	m_iIsControllableByPlayer64: bigint
-	m_hModifierParent: CEntityIndex<CBaseEntity>
 	m_iUnitNameIndex: number
 	m_iDamageMin: number
 	m_iDamageMax: number
@@ -106776,7 +106295,6 @@ declare class CODTA_Unit_Warlock_Imp {
 	m_hOwnerNPC: CEntityIndex<CBaseEntity>
 	m_hItems: CEntityIndex<CBaseEntity>[]
 	m_iParity: number
-	m_hInventoryParent: CEntityIndex<CBaseEntity>
 	m_bStashEnabled: boolean
 	m_hTransientCastItem: CEntityIndex<CBaseEntity>
 	m_iCurShop: CDOTA_SHOP_TYPE
@@ -107153,6 +106671,7 @@ declare class CPointCamera {
 	m_fBrightness: number
 	m_flZFar: number
 	m_flZNear: number
+	m_bCanHLTVUse: boolean
 	m_flOverrideShadowFarZ: number
 	m_bDofEnabled: boolean
 	m_flDofNearBlurry: number

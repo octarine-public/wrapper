@@ -24,6 +24,5 @@
 		"wrapper_autogen/**/*",
 		"node_modules/**/*",
 		"scripts_files/**/*",
-		"wasm_source/**/*",
 	]
 }

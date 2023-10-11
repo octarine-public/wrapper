@@ -3,7 +3,6 @@
 		"wrapper_autogen/**/*",
 		"node_modules/**/*",
 		"scripts_files/**/*",
-		"wasm_source/**/*",
 		"standard.d.ts",
 		"octarine-core.d.ts"
 	],
@@ -21,7 +20,6 @@
 	"plugins": [
 		"eslint-plugin-import",
 		"eslint-plugin-unicorn",
-		"eslint-plugin-import",
 		"eslint-plugin-simple-import-sort",
 		"@typescript-eslint",
 		"unused-imports",

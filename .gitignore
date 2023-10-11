@@ -1,8 +1,3 @@
 node_modules/
 wrapper_autogen/**/*.ts
 scripts/
-ninja/*
-!ninja/*.bat
-msvs/*
-!msvs/*.bat
-*.ninja
