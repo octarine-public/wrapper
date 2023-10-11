@@ -270,14 +270,13 @@ export function SetLatestTickDelta(delta: number): void {
 
 function ParseEntityPacket(stream: ReadableBinaryStream): void {
 	EventsSDK.emit("PreDataUpdate", false)
-	const nativeChanges: [number, number, number][] = []
+	const nativeChanges: [number, number][] = []
 	while (!stream.Empty()) {
 		const entID = stream.ReadUint16()
 		if (entID === 0) break
 		nativeChanges.push([
 			entID,
-			stream.ReadInt32(), // m_iHealthBarOffset
-			stream.ReadUint32() // m_iMoveCapabilities
+			stream.ReadInt32() // m_iHealthBarOffset
 		])
 	}
 	const createdEntities: Entity[] = []
@@ -304,10 +303,9 @@ function ParseEntityPacket(stream: ReadableBinaryStream): void {
 				break
 		}
 	}
-	for (const [entID, healthBarOffset, moveCapabilities] of nativeChanges) {
+	for (const [entID, healthBarOffset] of nativeChanges) {
 		const ent = EntityManager.EntityByIndex(entID)
-		if (ent !== undefined)
-			ent.ForwardNativeProperties(healthBarOffset, moveCapabilities)
+		if (ent !== undefined) ent.ForwardNativeProperties(healthBarOffset)
 	}
 	EventsSDK.emit("MidDataUpdate", false)
 	for (const ent of createdEntities) EventsSDK.emit("EntityCreated", false, ent)

@@ -465,10 +465,7 @@ export class Entity {
 	/**
 	 * @deprecated
 	 */
-	public ForwardNativeProperties(
-		_healthBarOffset: number,
-		_moveCapabilities: number
-	) {
+	public ForwardNativeProperties(_healthBarOffset: number) {
 		// To be implemented in child classes
 	}
 

@@ -152,7 +152,6 @@ export class Unit extends Entity {
 	public LastActivityAnimationPoint = 0
 	public Spawner: Nullable<NeutralSpawner>
 	public Spawner_ = 0
-	public MoveCapabilities = DOTAUnitMoveCapability.DOTA_UNIT_CAP_MOVE_NONE
 	/**
 	 * @deprecated
 	 */
@@ -501,8 +500,9 @@ export class Unit extends Entity {
 	}
 	public get HasFlyingVision(): boolean {
 		return (
-			this.HasMoveCapability(DOTAUnitMoveCapability.DOTA_UNIT_CAP_MOVE_FLY) ||
-			this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FLYING)
+			(this.UnitData.MovementCapabilities &
+				DOTAUnitMoveCapability.DOTA_UNIT_CAP_MOVE_FLY) !==
+				0 || this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FLYING)
 		)
 	}
 	public get IsFlyingVisually(): boolean {
@@ -550,7 +550,15 @@ export class Unit extends Entity {
 		flag: DOTAUnitMoveCapability = DOTAUnitMoveCapability.DOTA_UNIT_CAP_MOVE_GROUND |
 			DOTAUnitMoveCapability.DOTA_UNIT_CAP_MOVE_FLY
 	): boolean {
-		return (this.MoveCapabilities & flag) !== 0
+		if (
+			(flag & DOTAUnitMoveCapability.DOTA_UNIT_CAP_MOVE_FLY) !== 0 &&
+			(this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FLYING) ||
+				this.IsUnitStateFlagSet(
+					modifierstate.MODIFIER_STATE_FLYING_FOR_PATHING_PURPOSES_ONLY
+				))
+		)
+			return true
+		return (this.UnitData.MovementCapabilities & flag) !== 0
 	}
 
 	public IsUnitStateFlagSet(flag: modifierstate): boolean {
@@ -562,12 +570,8 @@ export class Unit extends Entity {
 	/**
 	 * @deprecated
 	 */
-	public ForwardNativeProperties(
-		healthBarOffset: number,
-		moveCapabilities: number
-	) {
+	public ForwardNativeProperties(healthBarOffset: number) {
 		this.HealthBarOffset_ = healthBarOffset
-		this.MoveCapabilities = moveCapabilities
 	}
 
 	/**
