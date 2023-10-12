@@ -4,10 +4,9 @@ import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { Vector4 } from "../Base/Vector4"
 import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
-import { HasBit } from "../Utils/BitsExtensions"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
-import { MapValueToNumber, MapValueToString } from "./ParseUtils"
+import { MapValueToNumber } from "./ParseUtils"
 
 type EntityDataMapValue =
 	| string
@@ -241,12 +240,6 @@ function ParseEntityKeyValues(entityKeyValues: RecursiveMapValue[]) {
 			}
 		} else throw "Unknown entity KV"
 
-		if (
-			map.get("classname") === "info_world_layer" &&
-			HasBit(MapValueToNumber(map.get("spawnflags")), 0)
-		)
-			DefaultWorldLayers.push(MapValueToString(map.get("layerName")))
-
 		EntityDataLump.push(map)
 	}
 }
@@ -276,7 +269,6 @@ function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
 }
 
 export let EntityDataLump: EntityDataMap[] = []
-export let DefaultWorldLayers: string[] = ["world_layer_base"]
 
 export function ParseEntityLump(stream: FileBinaryStream): void {
 	try {
@@ -288,5 +280,4 @@ export function ParseEntityLump(stream: FileBinaryStream): void {
 
 export function ResetEntityLump(): void {
 	EntityDataLump = []
-	DefaultWorldLayers = ["world_layer_base"]
 }
