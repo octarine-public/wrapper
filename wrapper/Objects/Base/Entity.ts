@@ -1,6 +1,7 @@
 import { AABB } from "../../Base/AABB"
 import { Color } from "../../Base/Color"
 import { EntityPropertiesNode } from "../../Base/EntityProperties"
+import { Matrix3x4 } from "../../Base/Matrix"
 import { QAngle } from "../../Base/QAngle"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
@@ -16,6 +17,7 @@ import * as StringTables from "../../Managers/StringTables"
 import { RendererSDK } from "../../Native/RendererSDK"
 import { Player } from "../../Objects/Base/Player"
 import { FieldHandler, RegisterFieldHandler } from "../../Objects/NativeToSDK"
+import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { GameState } from "../../Utils/GameState"
 import { DegreesToRadian } from "../../Utils/Math"
 import { CGameRules } from "./GameRules"
@@ -62,7 +64,10 @@ EventsSDK.on("EntityDestroyed", ent => {
 const activity2name = new Map<GameActivity, string>(
 	Object.entries(GameActivity).map(([k, v]) => [v as GameActivity, k])
 )
-const modelDataCache = new Map<string, [AnimationData[], string[]]>()
+const modelDataCache = new Map<
+	string,
+	[AnimationData[], Map<number, number>, string[]]
+>()
 EventsSDK.on("ServerInfo", () => modelDataCache.clear())
 
 @WrapperClass("CBaseEntity")
@@ -81,7 +86,6 @@ export class Entity {
 	public ClassName = ""
 	public BecameDormantTime = 0
 	public ModelName = ""
-	@NetworkedBasicField("m_flScale")
 	public ModelScale = 1
 	@NetworkedBasicField("m_flPlaybackRate")
 	public PlaybackRate = 1
@@ -93,6 +97,10 @@ export class Entity {
 	public TotalStrength = 0
 	public Owner_ = 0
 	public OwnerEntity: Nullable<Entity> = undefined
+	public Parent_ = 0
+	public ParentEntity: Nullable<Entity> = undefined
+	public HierarchyAttachName = 0
+	public Children: Entity[] = []
 	@NetworkedBasicField("CBodyComponent")
 	public CBodyComponent_: Nullable<EntityPropertiesNode> = undefined
 	public IsVisible = true
@@ -102,14 +110,17 @@ export class Entity {
 	public FieldHandlers_: Nullable<Map<number, FieldHandler>>
 	public Properties_ = new EntityPropertiesNode()
 	public readonly VisualPosition = new Vector3()
-	public readonly NetworkedPosition = new Vector3().Invalidate()
+	public readonly NetworkedPosition = new Vector3()
+	public readonly NetworkedPosition_ = new Vector3().Invalidate()
 	public readonly VisualAngles = new QAngle()
 	public readonly NetworkedAngles = new QAngle()
+	public readonly NetworkedAngles_ = new QAngle()
 	public readonly BoundingBox = new AABB(this.VisualPosition)
 	public readonly SpawnPosition = new Vector3()
 	public ModelData: Nullable<ModelData>
 	public Animations: AnimationData[] = []
 	public Attachments: string[] = []
+	public AttachmentsHashMap: Nullable<Map<number, number>>
 	private CustomGlowColor_: Nullable<Color>
 	private CustomDrawColor_: Nullable<[Color, RenderMode]>
 	private RingRadius_ = 30
@@ -345,13 +356,22 @@ export class Entity {
 				if (cacheRes === undefined) {
 					this.Animations = modelData.animations
 					this.Attachments = modelData.attachments
+					const attachmentsHashMap = new Map<number, number>()
+					for (let i = 0, end = this.Attachments.length; i < end; i++)
+						attachmentsHashMap.set(
+							MurmurHash2(this.Attachments[i], 0x31415926) >>> 0,
+							i
+						)
+					this.AttachmentsHashMap = attachmentsHashMap
 					modelDataCache.set(requestedModelName, [
 						this.Animations,
+						attachmentsHashMap,
 						this.Attachments
 					])
 				} else {
 					this.Animations = cacheRes[0]
-					this.Attachments = cacheRes[1]
+					this.AttachmentsHashMap = cacheRes[1]
+					this.Attachments = cacheRes[2]
 				}
 
 				modelData.getBounds()
@@ -469,12 +489,62 @@ export class Entity {
 		// To be implemented in child classes
 	}
 
+	public UpdatePositions(parentTransform?: Matrix3x4) {
+		this.NetworkedPosition.CopyFrom(this.NetworkedPosition_)
+		this.NetworkedAngles.CopyFrom(this.NetworkedAngles_)
+
+		const parentEnt = this.ParentEntity
+		if (parentEnt !== undefined || this.Children.length !== 0) {
+			let transform = this.GetTransform()
+			if (parentEnt !== undefined) {
+				parentTransform ??= parentEnt.GetTransform()
+				const parentModelData = parentEnt.ModelData
+				if (
+					parentModelData !== undefined &&
+					parentModelData.getAttachmentMatrix !== undefined &&
+					this.HierarchyAttachName !== 0
+				) {
+					const attachmentID = parentEnt.AttachmentsHashMap?.get(
+						this.HierarchyAttachName
+					)
+					if (attachmentID !== undefined) {
+						IOBuffer.set(parentTransform.values)
+						parentModelData.getAttachmentMatrix(
+							parentEnt.GetAnimationID() ?? -1,
+							attachmentID,
+							parentEnt.AnimationTime
+						)
+						parentTransform = new Matrix3x4()
+						parentTransform.values.set(IOBuffer.slice(0, 12))
+					}
+				}
+				transform = Matrix3x4.ConcatTransforms(parentTransform, transform)
+
+				this.NetworkedPosition.CopyFrom(transform.Translation)
+				this.NetworkedAngles.CopyFrom(transform.Angles)
+			}
+
+			for (const child of this.Children) child.UpdatePositions(transform)
+		}
+
+		this.VisualPosition.CopyFrom(this.NetworkedPosition)
+		this.VisualAngles.CopyFrom(this.NetworkedAngles)
+	}
+
 	public CannotUseItem(_item: Item): boolean {
 		return false
 	}
 
 	public toString(): string {
 		return this.Name
+	}
+
+	private GetTransform() {
+		return Matrix3x4.AngleMatrix(
+			this.NetworkedAngles,
+			this.NetworkedPosition,
+			this.ModelScale
+		)
 	}
 }
 
@@ -503,8 +573,8 @@ RegisterFieldHandler(Entity, "m_hModel", (ent, newVal) => {
 })
 RegisterFieldHandler(Entity, "m_angRotation", (ent, newVal) => {
 	const angRotation = newVal as QAngle
-	ent.NetworkedAngles.CopyFrom(angRotation)
-	ent.VisualAngles.CopyFrom(angRotation)
+	ent.NetworkedAngles_.CopyFrom(angRotation)
+	ent.UpdatePositions()
 })
 RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, newVal) => {
 	ent.Name_ =
@@ -515,55 +585,92 @@ RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, newVal) => {
 	ent.Owner_ = newVal as number
 	ent.OwnerEntity = EntityManager.EntityByIndex(ent.Owner_)
 })
+RegisterFieldHandler(Entity, "m_hParent", (ent, newVal) => {
+	ent.Parent_ = Number(newVal as bigint)
+	const parentEnt = EntityManager.EntityByIndex(ent.Parent_),
+		prevParentEnt = ent.ParentEntity
+	if (parentEnt !== ent.ParentEntity) {
+		if (prevParentEnt !== undefined) arrayRemove(prevParentEnt.Children, ent)
+		parentEnt?.Children.push(ent)
+		ent.ParentEntity = parentEnt
+		ent.UpdatePositions()
+	}
+})
+RegisterFieldHandler(Entity, "m_hierarchyAttachName", (ent, newVal) => {
+	ent.HierarchyAttachName = Number(newVal as bigint) >>> 0
+	ent.UpdatePositions()
+})
 
 EventsSDK.on("PreEntityCreated", ent => {
 	ent.SpawnPosition.CopyFrom(ent.NetworkedPosition)
 	if (ent.Index === 0) return
-	for (const iter of EntityManager.AllEntities)
+	for (const iter of EntityManager.AllEntities) {
 		if (ent.HandleMatches(iter.Owner_)) iter.OwnerEntity = ent
+		if (ent.HandleMatches(iter.Parent_)) {
+			ent.Children.push(iter)
+			iter.ParentEntity = ent
+			iter.UpdatePositions()
+		}
+	}
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
 	if (ent.Index === 0) return
-	for (const iter of EntityManager.AllEntities)
+	for (const iter of EntityManager.AllEntities) {
 		if (ent.HandleMatches(iter.Owner_)) iter.OwnerEntity = undefined
+		if (ent.HandleMatches(iter.Parent_)) {
+			arrayRemove(ent.Children, iter)
+			iter.ParentEntity = undefined
+			iter.UpdatePositions()
+		}
+	}
 })
 
 RegisterFieldHandler(Entity, "m_cellX", (ent, newVal) => {
-	ent.NetworkedPosition.x = ent.VisualPosition.x = QuantitizedVecCoordToCoord(
+	ent.NetworkedPosition_.x = QuantitizedVecCoordToCoord(
 		newVal as number,
 		ent.CBodyComponent_?.get("m_vecX") as Nullable<number>
 	)
+	ent.UpdatePositions()
 })
 RegisterFieldHandler(Entity, "m_vecX", (ent, newVal) => {
-	ent.NetworkedPosition.x = ent.VisualPosition.x = QuantitizedVecCoordToCoord(
+	ent.NetworkedPosition_.x = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellX") as Nullable<number>,
 		newVal as number
 	)
+	ent.UpdatePositions()
 })
 RegisterFieldHandler(Entity, "m_cellY", (ent, newVal) => {
-	ent.NetworkedPosition.y = ent.VisualPosition.y = QuantitizedVecCoordToCoord(
+	ent.NetworkedPosition_.y = QuantitizedVecCoordToCoord(
 		newVal as number,
 		ent.CBodyComponent_?.get("m_vecY") as Nullable<number>
 	)
+	ent.UpdatePositions()
 })
 RegisterFieldHandler(Entity, "m_vecY", (ent, newVal) => {
-	ent.NetworkedPosition.y = ent.VisualPosition.y = QuantitizedVecCoordToCoord(
+	ent.NetworkedPosition_.y = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellY") as Nullable<number>,
 		newVal as number
 	)
+	ent.UpdatePositions()
 })
 RegisterFieldHandler(Entity, "m_cellZ", (ent, newVal) => {
-	ent.NetworkedPosition.z = ent.VisualPosition.z = QuantitizedVecCoordToCoord(
+	ent.NetworkedPosition_.z = QuantitizedVecCoordToCoord(
 		newVal as number,
 		ent.CBodyComponent_?.get("m_vecZ") as Nullable<number>
 	)
+	ent.UpdatePositions()
 })
 RegisterFieldHandler(Entity, "m_vecZ", (ent, newVal) => {
-	ent.NetworkedPosition.z = ent.VisualPosition.z = QuantitizedVecCoordToCoord(
+	ent.NetworkedPosition_.z = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellZ") as Nullable<number>,
 		newVal as number
 	)
+	ent.UpdatePositions()
+})
+RegisterFieldHandler(Entity, "m_flScale", (ent, newVal) => {
+	ent.ModelScale = newVal as number
+	ent.UpdatePositions()
 })
 
 EventsSDK.on("GameEvent", (name, obj) => {

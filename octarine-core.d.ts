@@ -199,6 +199,7 @@ declare class ModelData {
 	 * @returns min: Vector3 to IOBuffer offset 0, max: Vector3 to IOBuffer offset 3
 	 */
 	public getBounds(): void
+
 	/**
 	 * @param animationID ID in animations array, or -1 for default static skeleton
 	 * @param attachmentID ID in attachments array
@@ -208,13 +209,29 @@ declare class ModelData {
 	 * Pass Position: Vector3 at IOBuffer offset 0,
 	 *      Angle: QAngle at IOBuffer offset 3
 	 * 
-	 * @returns position: Vector3 to IOBuffer offset 0
+	 * @returns position: Vector3 to IOBuffer offset 0,
+	 *          angle: QAngle at IOBuffer offset 3
 	 */
 	public getAttachmentData(
 		animationID: number,
 		attachmentID: number,
 		time: number,
 		scale: number,
+	): void
+
+	/**
+	 * @param animationID ID in animations array, or -1 for default static skeleton
+	 * @param attachmentID ID in attachments array
+	 * @param time time of animation, in seconds
+	 * 
+	 * Pass mat: Matrix3x4 at IOBuffer offset 0
+	 * 
+	 * @returns mat: Matrix3x4 to IOBuffer offset 0
+	 */
+	public getAttachmentMatrix(
+		animationID: number,
+		attachmentID: number,
+		time: number,
 	): void
 }
 

@@ -742,6 +742,14 @@ export class Unit extends Entity {
 		// TODO: AttackSpeedActivityModifiers, MovementSpeedActivityModifiers, AttackRangeActivityModifiers
 	}
 
+	public GetAnimationID(
+		activity = this.NetworkActivity,
+		sequenceNum = this.NetworkSequenceIndex,
+		findBestMatch = true
+	): Nullable<number> {
+		return super.GetAnimationID(activity, sequenceNum, findBestMatch)
+	}
+
 	public GetAttachmentPosition(
 		name: string,
 		activity = this.NetworkActivity,

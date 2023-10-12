@@ -1,17 +1,17 @@
+import { DegreesToRadian } from "../Utils/Math"
+import { QAngle } from "./QAngle"
 import { Vector3 } from "./Vector3"
-import { Vector4 } from "./Vector4"
-
-export const Matrix4x4Identity = [
-	1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
-]
 
 export class Matrix3x4 {
-	public static AngleMatrix(quat: Vector4, pos: Vector3): Matrix3x4 {
-		const ang = Matrix3x4.QuaternionMatrix(quat).Angles
+	public static AngleMatrix(
+		ang: QAngle,
+		pos: Vector3,
+		scale: number
+	): Matrix3x4 {
 		const matrix = new Matrix3x4()
-		const yaw = ang.y,
-			pitch = ang.x,
-			roll = ang.z
+		const yaw = DegreesToRadian(ang.y),
+			pitch = DegreesToRadian(ang.x),
+			roll = DegreesToRadian(ang.z)
 		const sr = Math.sin(roll),
 			sp = Math.sin(pitch),
 			sy = Math.sin(yaw),
@@ -20,49 +20,28 @@ export class Matrix3x4 {
 			cy = Math.cos(yaw)
 
 		// matrix = (YAW * PITCH) * ROLL
-		matrix.SetRowValue(0, 0, cp * cy)
-		matrix.SetRowValue(1, 0, cp * sy)
-		matrix.SetRowValue(2, 0, -sp)
+		matrix.SetRowValue(0, 0, scale * (cp * cy))
+		matrix.SetRowValue(1, 0, scale * (cp * sy))
+		matrix.SetRowValue(2, 0, scale * -sp)
 
 		const crcy = cr * cy,
 			crsy = cr * sy,
 			srcy = sr * cy,
 			srsy = sr * sy
 
-		matrix.SetRowValue(0, 1, sp * srcy - crsy)
-		matrix.SetRowValue(1, 1, sp * srsy + crcy)
-		matrix.SetRowValue(2, 1, sr * cp)
+		matrix.SetRowValue(0, 1, scale * (sp * srcy - crsy))
+		matrix.SetRowValue(1, 1, scale * (sp * srsy + crcy))
+		matrix.SetRowValue(2, 1, scale * (sr * cp))
 
-		matrix.SetRowValue(0, 2, sp * crcy + srsy)
-		matrix.SetRowValue(1, 2, sp * crsy - srcy)
-		matrix.SetRowValue(2, 2, cr * cp)
+		matrix.SetRowValue(0, 2, scale * (sp * crcy + srsy))
+		matrix.SetRowValue(1, 2, scale * (sp * crsy - srcy))
+		matrix.SetRowValue(2, 2, scale * (cr * cp))
 
 		matrix.SetRowValue(0, 3, pos.x)
 		matrix.SetRowValue(1, 3, pos.y)
 		matrix.SetRowValue(2, 3, pos.z)
 
 		return matrix
-	}
-	public static QuaternionMatrix(q: Vector4): Matrix3x4 {
-		const res = new Matrix3x4()
-
-		res.SetRowValue(0, 0, 1 - 2 * q.y * q.y - 2 * q.z * q.z)
-		res.SetRowValue(1, 0, 2 * q.x * q.y + 2 * q.w * q.z)
-		res.SetRowValue(2, 0, 2 * q.x * q.z - 2 * q.w * q.y)
-
-		res.SetRowValue(0, 1, 2 * q.x * q.y - 2 * q.w * q.z)
-		res.SetRowValue(1, 1, 1 - 2 * q.x * q.x - 2 * q.z * q.z)
-		res.SetRowValue(2, 1, 2 * q.y * q.z + 2 * q.w * q.x)
-
-		res.SetRowValue(0, 2, 2 * q.x * q.z + 2 * q.w * q.y)
-		res.SetRowValue(1, 2, 2 * q.y * q.z - 2 * q.w * q.x)
-		res.SetRowValue(2, 2, 1 - 2 * q.x * q.x - 2 * q.y * q.y)
-
-		res.SetRowValue(0, 3, 0)
-		res.SetRowValue(1, 3, 0)
-		res.SetRowValue(2, 3, 0)
-
-		return res
 	}
 	public static ConcatTransforms(in1: Matrix3x4, in2: Matrix3x4): Matrix3x4 {
 		const out = new Matrix3x4()
