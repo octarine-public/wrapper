@@ -233,7 +233,7 @@ function CanOrderBeSkipped(order: ExecuteOrder): boolean {
 			return Units.some(
 				ent =>
 					ent.IsGloballyTargetable &&
-					order.Position.Distance2D(ent.Position) < 200
+					order.Position.Distance2D(ent.VisualPosition) < 200
 			)
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
 			return order.Target instanceof Entity && order.Target === order.Issuers[0]
@@ -391,7 +391,7 @@ function ComputeTargetPosEntity(
 				CanMoveCamera(cameraVec, point)
 		)
 	)
-		return ent.Position
+		return ent.VisualPosition
 	// TODO: try to find best spot between other entities' hitboxes, i.e. between creeps
 	const center = hitbox.Center,
 		min = hitbox.Points.reduce(
@@ -417,7 +417,7 @@ function ComputeTargetPosEntity(
 		latestCameraRedZonePolyScreen.IsOutside(center) &&
 		CanMoveCamera(cameraVec, center)
 	)
-		return ent.Position
+		return ent.VisualPosition
 	return center
 }
 
@@ -892,10 +892,10 @@ function MoveCamera(
 			ent => ent.DistanceSqr2D(targetPos)
 		)
 		if (nearest !== undefined) {
-			const nearestDist = targetPos.Distance2D(nearest.Position)
+			const nearestDist = targetPos.Distance2D(nearest.VisualPosition)
 			if (nearestDist < lookatposDist) {
 				const newCameraVec = Vector2.FromVector3(
-					nearest.Position.Clone()
+					nearest.VisualPosition.Clone()
 						.SubtractScalarX(eyeVector.x * defaultCameraDist)
 						.SubtractScalarY(eyeVector.y * defaultCameraDist)
 				)
@@ -903,7 +903,7 @@ function MoveCamera(
 				const [targetPosNew] = ComputeTargetPos(newCameraVec, currentTime)
 				if (
 					targetPosNew instanceof Vector2 ||
-					targetPosNew.Distance2D(nearest.Position) < defaultCameraDist
+					targetPosNew.Distance2D(nearest.VisualPosition) < defaultCameraDist
 				) {
 					cameraVec.CopyFrom(newCameraVec)
 					lastUnitSwitch = currentTime
@@ -1257,7 +1257,7 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 		intersectedUnits.includes(lastOrderTarget)
 			? lastOrderTarget
 			: orderByFirst(intersectedUnits, ent =>
-					latestUsercmd.VectorUnderCursor.DistanceSqr(ent.Position)
+					latestUsercmd.VectorUnderCursor.DistanceSqr(ent.VisualPosition)
 			  )
 
 	// console.log(latestUsercmd.WeaponSelect, latestUsercmd.WeaponSubType)
