@@ -1538,8 +1538,7 @@ EventsSDK.on("Tick", dt => {
 			unit.LastRealPredictedPositionUpdate = GameState.RawGameTime
 			unit.LastPredictedPositionUpdate = GameState.RawGameTime
 		}
-		// TODO: GameActivity.ACT_DOTA_RUN uses GetSequenceGroundSpeed
-		unit.AnimationTime += dt / Math.sqrt(unit.ModelScale)
+		unit.AnimationTime += dt * unit.PlaybackRate
 		// TODO: interpolate DeltaZ from OnModifierUpdated?
 	}
 })
