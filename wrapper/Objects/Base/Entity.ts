@@ -111,7 +111,7 @@ export class Entity {
 	public Properties_ = new EntityPropertiesNode()
 	public readonly VisualPosition = new Vector3()
 	public readonly NetworkedPosition = new Vector3()
-	public readonly NetworkedPosition_ = new Vector3().Invalidate()
+	public readonly NetworkedPosition_ = new Vector3()
 	public readonly VisualAngles = new QAngle()
 	public readonly NetworkedAngles = new QAngle()
 	public readonly NetworkedAngles_ = new QAngle()
