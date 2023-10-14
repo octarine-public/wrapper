@@ -15,6 +15,20 @@ import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Hero")
 export class Hero extends Unit {
+	private static readonly colorRadiant: Color[] = [
+		new Color(0x33, 0x75, 0xff),
+		new Color(0x66, 0xff, 0xbf),
+		new Color(0xbf, 0x0, 0xbf),
+		new Color(0xf3, 0xf0, 0xb),
+		new Color(0xff, 0x6b, 0x0)
+	]
+	private static readonly colorDire: Color[] = [
+		new Color(0xfe, 0x86, 0xc2),
+		new Color(0xa1, 0xb4, 0x47),
+		new Color(0x65, 0xd9, 0xf7),
+		new Color(0x0, 0x83, 0x21),
+		new Color(0xa4, 0x69, 0x0)
+	]
 	@NetworkedBasicField("m_iAbilityPoints")
 	public AbilityPoints = 0
 	@NetworkedBasicField("m_iCurrentXP")
@@ -43,25 +57,9 @@ export class Hero extends Unit {
 	public TotalIntellect = 0
 	@NetworkedBasicField("m_flStrengthTotal")
 	public TotalStrength = 0
-	public ReplicatingOtherHeroModel: Nullable<Unit | FakeUnit>
 
 	public HeroTeamData: Nullable<HeroTeamData>
-
-	private readonly colorRadiant: Color[] = [
-		new Color(51, 117, 255),
-		new Color(102, 255, 191),
-		new Color(191, 0, 191),
-		new Color(243, 240, 11),
-		new Color(255, 107, 0)
-	]
-
-	private readonly colorDire: Color[] = [
-		new Color(254, 134, 194),
-		new Color(161, 180, 71),
-		new Color(101, 217, 247),
-		new Color(0, 131, 33),
-		new Color(164, 105, 0)
-	]
+	public ReplicatingOtherHeroModel: Nullable<Unit | FakeUnit>
 
 	/**
 	 * Returns the color of the hero based on their team.
@@ -70,21 +68,30 @@ export class Hero extends Unit {
 	 */
 	public get PlayerColor(): Color {
 		return this.Team === Team.Dire
-			? this.colorDire[this.TeamSlot]
-			: this.colorRadiant[this.TeamSlot]
+			? Hero.colorDire[this.TeamSlot]
+			: Hero.colorRadiant[this.TeamSlot]
 	}
 	/**
-	 * Determines if the object is a hero.
-	 *
-	 * @returns {boolean} true if the object is a hero, false otherwise.
+	 * @deprecated use instanceof Hero
+	 * Determines if the Hero is a hero.
+	 * @returns {boolean} true if the Hero is a hero, false otherwise.
 	 */
 	public get IsHero(): boolean {
 		return true
 	}
 	/**
-	 * Returns the HeroID of this unit.
+	 * Returns whether the hero is a real hero.
+	 * A hero is considered real if it is not a clone or an illusion.
 	 *
-	 * @returns {number} The HeroID of this unit.
+	 * @returns {boolean} True if the hero is a real hero, false otherwise.
+	 */
+	public get IsRealHero(): boolean {
+		return !this.IsClone && !this.IsIllusion
+	}
+	/**
+	 * Get the ID of the hero.
+	 *
+	 * @returns {number} The ID of the hero.
 	 */
 	public get HeroID(): number {
 		return this.UnitData.HeroID
@@ -108,7 +115,7 @@ export class Hero extends Unit {
 	/**
 	 * Retrieves the team slot of the hero.
 	 *
-	 * @returns {number} The team slot of the hero. If the hero's team data is not available, returns -1.
+	 * @returns {number} The team slot of the hero. If the hero's team data is not available, return -1.
 	 */
 	public get TeamSlot(): number {
 		return this.PlayerTeamData?.TeamSlot ?? -1

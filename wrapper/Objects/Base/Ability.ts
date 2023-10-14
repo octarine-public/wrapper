@@ -18,7 +18,7 @@ import { Unit } from "./Unit"
 
 @WrapperClass("CDOTABaseAbility")
 export class Ability extends Entity {
-	public AbilityData: AbilityData
+	public readonly AbilityData: AbilityData
 	@NetworkedBasicField("m_bInIndefiniteCooldown")
 	public IsInIndefiniteCooldown = false
 	@NetworkedBasicField("m_bActivated")
@@ -66,7 +66,14 @@ export class Ability extends Entity {
 		this.Name_ = name
 		this.AbilityData = AbilityData.globalStorage.get(name) ?? AbilityData.empty
 	}
-
+	/**
+	 * Check if the ability is usable.
+	 * @description Check if the ability is not hidden and is activated
+	 * @returns {boolean} True if the ability is usable, false otherwise.
+	 */
+	public get IsUsable(): boolean {
+		return !this.IsHidden && this.IsActivated
+	}
 	public get Owner(): Nullable<Unit> {
 		return this.OwnerEntity as Nullable<Unit>
 	}

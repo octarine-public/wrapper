@@ -40,6 +40,9 @@ const MAX_ITEMS = 16
 
 @WrapperClass("CDOTA_BaseNPC")
 export class Unit extends Entity {
+	// TODO: find a better way to do this
+	public IsClone_ = false
+
 	public UnitData = UnitData.empty
 	public readonly Inventory = new Inventory(this)
 	public IsTrueSightedForEnemies = false
@@ -175,6 +178,10 @@ export class Unit extends Entity {
 	}
 	public set LastPredictedPositionUpdate(val: number) {
 		this.LastPredictedPositionUpdate_ = val
+	}
+
+	public get IsClone(): boolean {
+		return this.IsClone_
 	}
 
 	/* ======== modifierstate ======== */

@@ -2,8 +2,8 @@ import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAScriptInventorySlot } from "../../Enums/DOTAScriptInventorySlot"
 import { EShareAbility } from "../../Enums/EShareAbility"
 import { EPropertyType } from "../../Enums/PropertyType"
+import { GameState } from "../../Utils/GameState"
 import { Ability } from "./Ability"
-import { GameRules } from "./Entity"
 
 @WrapperClass("CDOTA_Item")
 export class Item extends Ability {
@@ -64,8 +64,26 @@ export class Item extends Ability {
 			(unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsMuted))
 		)
 	}
+	/**
+	 * Returns whether the item is usable.
+	 *
+	 * An item is considered usable if it is not muted or if the owner cannot use it.
+	 * @description Check if the item is not muted or if the owner cannot use it
+	 * @returns {boolean} Whether the item is usable.
+	 */
+	public get IsUsable(): boolean {
+		return !this.IsMuted || (this.Owner?.CannotUseItem(this) ?? false)
+	}
+	/**
+	 * Returns the remaining time for a sale.
+	 *
+	 * @returns {number} The remaining time for the sale.
+	 */
+	public get SaleRemainingTime(): number {
+		return Math.max(GameState.RawGameTime - this.CreateTime + 10, 0)
+	}
 	public get IsMuted(): boolean {
-		return this.EnableTime !== 0 && this.EnableTime > GameRules!.RawGameTime
+		return this.EnableTime !== 0 && this.EnableTime > GameState.RawGameTime
 	}
 	public get Cost(): number {
 		return this.AbilityData.Cost
