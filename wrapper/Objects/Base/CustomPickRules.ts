@@ -15,9 +15,13 @@ export class CCustomHeroPickRules extends Entity {
 
 export let CustomHeroPickRules: Nullable<CCustomHeroPickRules>
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent instanceof CCustomHeroPickRules) CustomHeroPickRules = ent
+	if (ent instanceof CCustomHeroPickRules) {
+		CustomHeroPickRules = ent
+	}
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (CustomHeroPickRules === ent) CustomHeroPickRules = undefined
+	if (CustomHeroPickRules === ent) {
+		CustomHeroPickRules = undefined
+	}
 })

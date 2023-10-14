@@ -39,9 +39,7 @@ export class Toggle extends Base {
 		Toggle.toggleBackgroundPath
 	)
 	private static readonly toggleBackgroundSize = new Vector2()
-	private static readonly origToggleSize = RendererSDK.GetImageSize(
-		Toggle.togglePath
-	)
+	private static readonly origToggleSize = RendererSDK.GetImageSize(Toggle.togglePath)
 	private static readonly toggleSize = new Vector2()
 	private static readonly toggleBackgroundOffset = new Vector2()
 	private static readonly toggleOffset = new Vector2()
@@ -93,7 +91,9 @@ export class Toggle extends Base {
 		return this.value
 	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || typeof value !== "boolean") return
+		if (this.ShouldIgnoreNewConfigValue || typeof value !== "boolean") {
+			return
+		}
 		this.value = value ?? this.value
 	}
 	public get ClassPriority(): number {
@@ -109,26 +109,35 @@ export class Toggle extends Base {
 	}
 
 	public Update(): boolean {
-		if (!super.Update()) return false
+		if (!super.Update()) {
+			return false
+		}
 		this.Size.x =
 			this.textOffset.x +
 			this.nameSize.x +
 			Toggle.textToggleGap +
 			Toggle.toggleBackgroundSize.x +
 			Toggle.toggleBackgroundOffset.x
-		if (this.IconPath !== "") this.Size.AddScalarX(Toggle.textOffsetWithIcon.x)
-		else this.Size.AddScalarX(this.textOffset.x)
+		if (this.IconPath !== "") {
+			this.Size.AddScalarX(Toggle.textOffsetWithIcon.x)
+		} else {
+			this.Size.AddScalarX(this.textOffset.x)
+		}
 		return true
 	}
 
 	public OnActivate(func: (caller: this) => any) {
 		return this.OnValue(caller => {
-			if (caller.value) func(caller)
+			if (caller.value) {
+				func(caller)
+			}
 		})
 	}
 	public OnDeactivate(func: (caller: this) => any) {
 		return this.OnValue(caller => {
-			if (!caller.value) func(caller)
+			if (!caller.value) {
+				func(caller)
+			}
 		})
 	}
 	public Render(): void {
@@ -148,7 +157,9 @@ export class Toggle extends Base {
 				Toggle.iconSize,
 				color
 			)
-		} else textPos.AddForThis(this.textOffset)
+		} else {
+			textPos.AddForThis(this.textOffset)
+		}
 		this.RenderTextDefault(this.Name, textPos)
 		const animationState = Math.min(
 			1,

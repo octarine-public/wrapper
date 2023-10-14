@@ -7,10 +7,7 @@ import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EDOTASpecialBonusOperation } from "../../Enums/EDOTASpecialBonusOperation"
 import { GameActivity } from "../../Enums/GameActivity"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
-import {
-	createMapFromMergedIterators,
-	parseEnumString
-} from "../../Utils/Utils"
+import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
 import { Unit } from "../Base/Unit"
 
 function LoadAbilityFile(path: string): RecursiveMap {
@@ -27,14 +24,20 @@ export class AbilityData {
 	}
 
 	public static GetAbilityNameByID(id: number): Nullable<string> {
-		for (const [name, data] of AbilityData.globalStorage)
-			if (data.ID === id) return name
+		for (const [name, data] of AbilityData.globalStorage) {
+			if (data.ID === id) {
+				return name
+			}
+		}
 		return undefined
 	}
 
 	public static GetItemRecipeName(name: string): Nullable<string> {
-		for (const [recipeName, data] of AbilityData.globalStorage)
-			if (data.ItemResult === name) return recipeName
+		for (const [recipeName, data] of AbilityData.globalStorage) {
+			if (data.ItemResult === name) {
+				return recipeName
+			}
+		}
 		return undefined
 	}
 
@@ -92,21 +95,19 @@ export class AbilityData {
 		this.AbilityType = kv.has("AbilityType")
 			? (ABILITY_TYPES as any)[(kv.get("AbilityType") as string).substring(5)]
 			: ABILITY_TYPES.ABILITY_TYPE_BASIC
-		if (kv.has("MaxLevel"))
+		if (kv.has("MaxLevel")) {
 			this.MaxLevel = parseInt(kv.get("MaxLevel") as string)
-		else if (kv.has("MaxUpgradeLevel"))
+		} else if (kv.has("MaxUpgradeLevel")) {
 			this.MaxLevel = parseInt(kv.get("MaxUpgradeLevel") as string)
-		else
+		} else {
 			this.MaxLevel =
 				this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE ? 3 : 4
+		}
 		this.CacheSpecialValuesNew(kv)
 		this.CacheSpecialValuesOld(kv)
 
 		this.AbilityBehavior = kv.has("AbilityBehavior")
-			? parseEnumString(
-					DOTA_ABILITY_BEHAVIOR,
-					kv.get("AbilityBehavior") as string
-			  )
+			? parseEnumString(DOTA_ABILITY_BEHAVIOR, kv.get("AbilityBehavior") as string)
 			: DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NONE
 
 		this.HealthCostCache = this.GetLevelArray(
@@ -145,8 +146,7 @@ export class AbilityData {
 		this.CastAnimation = kv.has("AbilityCastAnimation")
 			? parseEnumString(GameActivity, kv.get("AbilityCastAnimation") as string)
 			: undefined
-		this.SharedCooldownName =
-			(kv.get("AbilitySharedCooldown") as string) ?? name
+		this.SharedCooldownName = (kv.get("AbilitySharedCooldown") as string) ?? name
 		this.ModelName = (kv.get("Model") as string) ?? ""
 		this.AlternateModelName = (kv.get("ModelAlternate") as string) ?? ""
 		// this.ItemRecipeName = m_pAbilityData.m_pszItemRecipeName
@@ -174,10 +174,7 @@ export class AbilityData {
 			? 6
 			: 1
 		this.AbilityImmunityType = kv.has("SpellImmunityType")
-			? parseEnumString(
-					SPELL_IMMUNITY_TYPES,
-					kv.get("SpellImmunityType") as string
-			  )
+			? parseEnumString(SPELL_IMMUNITY_TYPES, kv.get("SpellImmunityType") as string)
 			: SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE
 		this.ItemDisplayCharges = kv.has("ItemDisplayCharges")
 			? parseInt(kv.get("ItemDisplayCharges") as string) !== 0
@@ -230,37 +227,44 @@ export class AbilityData {
 	}
 
 	public GetSpecialValue(name: string, level: number): number {
-		if (level <= 0) return 0
+		if (level <= 0) {
+			return 0
+		}
 		const ar = this.GetCachedSpecialValue(name)
-		if (ar === undefined) return 0
+		if (ar === undefined) {
+			return 0
+		}
 		return ar[0][Math.min(level, ar[0].length) - 1]
 	}
 
-	public GetSpecialValueWithTalent(
-		owner: Unit,
-		name: string,
-		level: number
-	): number {
-		if (level <= 0) return 0
+	public GetSpecialValueWithTalent(owner: Unit, name: string, level: number): number {
+		if (level <= 0) {
+			return 0
+		}
 
 		const ar = this.GetCachedSpecialValue(name)
-		if (ar === undefined || !ar[0].length) return 0
+		if (ar === undefined || !ar[0].length) {
+			return 0
+		}
 
 		let baseVal = ar[0][Math.min(level, ar[0].length) - 1]
 		if (
 			!baseVal &&
 			!(ar[1] === "special_bonus_shard" || ar[1] === "special_bonus_scepter")
-		)
+		) {
 			return baseVal
+		}
 
-		if (name.startsWith("special_bonus_unique_"))
+		if (name.startsWith("special_bonus_unique_")) {
 			return this.GetSpecialTalent(name, owner)
+		}
 
 		if (
 			!(ar[1] === "special_bonus_shard" && owner.HasShard) &&
 			!(ar[1] === "special_bonus_scepter" && owner.HasScepter)
-		)
+		) {
 			return baseVal
+		}
 
 		const val = ar[2]
 		const talentVal =
@@ -290,62 +294,74 @@ export class AbilityData {
 	}
 
 	public GetCastRange(level: number): number {
-		if (level <= 0) return 0
+		if (level <= 0) {
+			return 0
+		}
 		return this.CastRangeCache[Math.min(level, this.CastRangeCache.length) - 1]
 	}
 
 	public GetHealthCost(level: number): number {
-		if (level <= 0) return 0
-		return this.HealthCostCache[
-			Math.min(level, this.HealthCostCache.length) - 1
-		]
+		if (level <= 0) {
+			return 0
+		}
+		return this.HealthCostCache[Math.min(level, this.HealthCostCache.length) - 1]
 	}
 
 	public GetManaCost(level: number): number {
-		if (level <= 0) return 0
+		if (level <= 0) {
+			return 0
+		}
 		return this.ManaCostCache[Math.min(level, this.ManaCostCache.length) - 1]
 	}
 
 	public GetMaxDurationForLevel(level: number): number {
-		if (level <= 0) return 0
-		return this.MaxDurationCache[
-			Math.min(level, this.MaxDurationCache.length) - 1
-		]
+		if (level <= 0) {
+			return 0
+		}
+		return this.MaxDurationCache[Math.min(level, this.MaxDurationCache.length) - 1]
 	}
 
 	public GetMaxCooldownForLevel(level: number): number {
-		if (level <= 0) return 0
-		return this.MaxCooldownCache[
-			Math.min(level, this.MaxCooldownCache.length) - 1
-		]
+		if (level <= 0) {
+			return 0
+		}
+		return this.MaxCooldownCache[Math.min(level, this.MaxCooldownCache.length) - 1]
 	}
 
 	public GetChannelTime(level: number): number {
-		if (level <= 0) return 0
-		return this.ChannelTimeCache[
-			Math.min(level, this.ChannelTimeCache.length) - 1
-		]
+		if (level <= 0) {
+			return 0
+		}
+		return this.ChannelTimeCache[Math.min(level, this.ChannelTimeCache.length) - 1]
 	}
 
 	public GetAbilityDamage(level: number): number {
-		if (level <= 0) return 0
+		if (level <= 0) {
+			return 0
+		}
 		return this.AbilityDamageCache[
 			Math.min(level, this.AbilityDamageCache.length) - 1
 		]
 	}
 
 	public GetCastPoint(level: number): number {
-		if (level <= 0) return 0
+		if (level <= 0) {
+			return 0
+		}
 		return this.CastPointCache[Math.min(level, this.CastPointCache.length) - 1]
 	}
 
 	public GetMaxCharges(level: number): number {
-		if (level <= 0) return 0
+		if (level <= 0) {
+			return 0
+		}
 		return this.ChargesCache[Math.min(level, this.ChargesCache.length) - 1]
 	}
 
 	public GetChargeRestoreTime(level: number): number {
-		if (level <= 0) return 0
+		if (level <= 0) {
+			return 0
+		}
 		return this.ChargeRestoreTimeCache[
 			Math.min(level, this.ChargeRestoreTimeCache.length) - 1
 		]
@@ -353,22 +369,28 @@ export class AbilityData {
 
 	private GetSpecialTalent(name: string, owner: Unit) {
 		const talent = owner.GetAbilityByName(name)
-		if (talent === undefined || talent.Level === 0) return 0
+		if (talent === undefined || talent.Level === 0) {
+			return 0
+		}
 		return this.GetSpecialValue(name, talent.Level)
 	}
 
 	private parseFloat(str: string): number {
-		if (!str.length) return 0
-		return parseFloat(
-			str.endsWith("f") ? str.substring(0, str.length - 1) : str
-		)
+		if (!str.length) {
+			return 0
+		}
+		return parseFloat(str.endsWith("f") ? str.substring(0, str.length - 1) : str)
 	}
 
 	private CacheSpecialValuesOld(kv: RecursiveMap) {
 		const abilitySpecial = kv.get("AbilitySpecial") as RecursiveMap
-		if (abilitySpecial === undefined) return
+		if (abilitySpecial === undefined) {
+			return
+		}
 		for (const special of abilitySpecial.values()) {
-			if (!(special instanceof Map)) continue
+			if (!(special instanceof Map)) {
+				continue
+			}
 			for (const [name, value] of special) {
 				if (
 					name === "var_type" ||
@@ -377,26 +399,31 @@ export class AbilityData {
 					name === "RequiresScepter" ||
 					name === "RequiresShard" ||
 					typeof value !== "string"
-				)
+				) {
 					continue
+				}
 				const ar = this.ExtendLevelArray(
 					value.split(" ").map(str => this.parseFloat(str))
 				)
 				let linkedSpecialBonus = special.get("LinkedSpecialBonus")
-				if (typeof linkedSpecialBonus !== "string") linkedSpecialBonus = ""
+				if (typeof linkedSpecialBonus !== "string") {
+					linkedSpecialBonus = ""
+				}
 				const linkedSpecialBonusOperationStr = special.get(
 					"LinkedSpecialBonusOperation"
 				)
 				let linkedSpecialBonusOperation =
 					EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-				if (typeof linkedSpecialBonusOperationStr === "string")
+				if (typeof linkedSpecialBonusOperationStr === "string") {
 					linkedSpecialBonusOperation =
 						(EDOTASpecialBonusOperation as any)[
 							linkedSpecialBonusOperationStr
 						] ?? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+				}
 				let linkedSpecialBonusFieldStr = special.get("LinkedSpecialBonusField")
-				if (typeof linkedSpecialBonusFieldStr !== "string")
+				if (typeof linkedSpecialBonusFieldStr !== "string") {
 					linkedSpecialBonusFieldStr = "value"
+				}
 				this.SpecialValueCache.set(name, [
 					ar,
 					linkedSpecialBonus,
@@ -409,10 +436,12 @@ export class AbilityData {
 
 	private CacheSpecialValuesNew(kv: RecursiveMap) {
 		const abilityValues = kv.get("AbilityValues") as RecursiveMap
-		if (abilityValues === undefined) return
+		if (abilityValues === undefined) {
+			return
+		}
 		for (const [name, special] of abilityValues) {
 			if (!(special instanceof Map)) {
-				if (typeof special === "string")
+				if (typeof special === "string") {
 					this.SpecialValueCache.set(name, [
 						this.ExtendLevelArray(
 							special.split(" ").map(str => this.parseFloat(str))
@@ -421,6 +450,7 @@ export class AbilityData {
 						0,
 						EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 					] as [number[], string, number, EDOTASpecialBonusOperation])
+				}
 				continue
 			}
 			let linkedSpecialBonus = "",
@@ -433,18 +463,20 @@ export class AbilityData {
 					specialName === "RequiresScepter" ||
 					specialName === "RequiresShard" ||
 					typeof specialValue !== "string"
-				)
+				) {
 					continue
+				}
 				linkedSpecialBonus = specialName
 				talentChangeStr = specialValue
 			}
 			let value = special.get("value") ?? ""
-			if (typeof value !== "string") value = ""
+			if (typeof value !== "string") {
+				value = ""
+			}
 			const ar = this.ExtendLevelArray(
 				value.split(" ").map(str => this.parseFloat(str))
 			)
-			let linkedSpecialBonusOperation =
-				EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+			let linkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 			let talentChange: number | number[]
 			if (talentChangeStr.startsWith("x")) {
 				linkedSpecialBonusOperation =
@@ -468,8 +500,7 @@ export class AbilityData {
 							.map(str => Math.abs(this.parseFloat(str)))
 					: Math.abs(this.parseFloat(talentChangeStr))
 			} else {
-				linkedSpecialBonusOperation =
-					EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+				linkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 				talentChange = this.parseFloat(talentChangeStr)
 			}
 			this.SpecialValueCache.set(name, [
@@ -483,7 +514,9 @@ export class AbilityData {
 
 	private GetCachedSpecialValue(name: string) {
 		const ar = this.SpecialValueCache.get(name)
-		if (ar !== undefined) return ar
+		if (ar !== undefined) {
+			return ar
+		}
 
 		return [[0], "", "value", EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD] as [
 			number[],
@@ -494,23 +527,26 @@ export class AbilityData {
 	}
 
 	private ExtendLevelArray(ar: number[]): number[] {
-		if (ar.length === 0) ar.push(0)
+		if (ar.length === 0) {
+			ar.push(0)
+		}
 		return ar
 	}
 
 	private GetLevelArray(str: Nullable<string>): number[] {
-		return this.ExtendLevelArray(
-			str?.split(" ")?.map(val => parseFloat(val)) ?? []
-		)
+		return this.ExtendLevelArray(str?.split(" ")?.map(val => parseFloat(val)) ?? [])
 	}
 }
 
 function AbilityNameToPath(name: string, strip = false): string {
 	const isItem = name.startsWith("item_")
 	let texName = isItem && strip ? name.substring(5) : name
-	if (texName.startsWith("frostivus"))
+	if (texName.startsWith("frostivus")) {
 		texName = texName.split("_").slice(1).join("_")
-	if (isItem && name.startsWith("item_recipe_")) texName = "recipe"
+	}
+	if (isItem && name.startsWith("item_recipe_")) {
+		texName = "recipe"
+	}
 	return isItem
 		? `panorama/images/items/${texName}_png.vtex_c`
 		: `panorama/images/spellicons/${texName}_png.vtex_c`
@@ -522,9 +558,12 @@ function FixAbilityInheritance(
 	map: RecursiveMap,
 	abilName: string
 ): RecursiveMap {
-	if (fixedCache.has(abilName)) return fixedCache.get(abilName) as RecursiveMap
-	if (abilName !== "ability_base" && !map.has("BaseClass"))
+	if (fixedCache.has(abilName)) {
+		return fixedCache.get(abilName) as RecursiveMap
+	}
+	if (abilName !== "ability_base" && !map.has("BaseClass")) {
 		map.set("BaseClass", "ability_base")
+	}
 	if (map.has("BaseClass")) {
 		const baseName = map.get("BaseClass")
 		if (typeof baseName === "string" && baseName !== abilName) {
@@ -537,7 +576,9 @@ function FixAbilityInheritance(
 					baseName
 				)
 				fixedBaseMap.forEach((v, k) => {
-					if (!map.has(k)) map.set(k, v)
+					if (!map.has(k)) {
+						map.set(k, v)
+					}
 				})
 			}
 		}
@@ -548,10 +589,13 @@ function FixAbilityInheritance(
 		if (!fexists(path)) {
 			path = AbilityNameToPath(texName, true)
 			if (!fexists(path)) {
-				if (texName.startsWith("frostivus"))
+				if (texName.startsWith("frostivus")) {
 					texName = texName.split("_").slice(1).join("_")
-				else if (texName.startsWith("special_")) texName = "attribute_bonus"
-				else texName = texName
+				} else if (texName.startsWith("special_")) {
+					texName = "attribute_bonus"
+				} else {
+					texName = texName
+				}
 				path = AbilityNameToPath(texName)
 			}
 		}
@@ -573,8 +617,9 @@ export function ReloadGlobalAbilityStorage() {
 		)
 		const fixedCache: RecursiveMap = new Map()
 		for (const [abilName, map] of abilsMap) {
-			if (map instanceof Map)
+			if (map instanceof Map) {
 				FixAbilityInheritance(abilsMap, fixedCache, map, abilName)
+			}
 		}
 	} catch (e) {
 		console.error("Error in ReloadGlobalAbilityStorage", e)

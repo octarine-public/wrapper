@@ -7,8 +7,6 @@ export class viper_viper_strike extends Ability {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("max_charges") : 0
 	}
 	public get ChargeRestoreTime(): number {
-		return this.Owner?.HasScepter
-			? this.GetSpecialValue("charge_restore_time")
-			: 0
+		return this.Owner?.HasScepter ? this.GetSpecialValue("charge_restore_time") : 0
 	}
 }

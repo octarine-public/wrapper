@@ -980,10 +980,7 @@ export { CameraBounds, CCameraBounds } from "./Objects/Base/CameraBounds"
 export { Courier } from "./Objects/Base/Courier"
 export { Creep } from "./Objects/Base/Creep"
 export { CreepPathCorner } from "./Objects/Base/CreepPathCorner"
-export {
-	CCustomHeroPickRules,
-	CustomHeroPickRules
-} from "./Objects/Base/CustomPickRules"
+export { CCustomHeroPickRules, CustomHeroPickRules } from "./Objects/Base/CustomPickRules"
 export { DOTABaseGameMode, GameMode } from "./Objects/Base/DOTABaseGameMode"
 export { DOTAGameModeMutation } from "./Objects/Base/DOTAGameModeMutation"
 export { DOTAGameModeTurbo } from "./Objects/Base/DOTAGameModeTurbo"
@@ -1026,10 +1023,7 @@ export { TechiesMines } from "./Objects/Base/TechiesMines"
 export { TempTree } from "./Objects/Base/TempTree"
 export { Tower } from "./Objects/Base/Tower"
 export { Tree } from "./Objects/Base/Tree"
-export {
-	CTurboHeroPickRules,
-	TurboHeroPickRules
-} from "./Objects/Base/TurboPickRules"
+export { CTurboHeroPickRules, TurboHeroPickRules } from "./Objects/Base/TurboPickRules"
 export { Unit } from "./Objects/Base/Unit"
 export { WardObserver } from "./Objects/Base/WardObserver"
 export { WardTrueSight } from "./Objects/Base/WardTrueSight"

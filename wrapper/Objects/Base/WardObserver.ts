@@ -7,10 +7,7 @@ export class WardObserver extends Unit {
 	public get RingRadius(): number {
 		return 64
 	}
-	public CalculateActivityModifiers(
-		activity: GameActivity,
-		ar: string[]
-	): void {
+	public CalculateActivityModifiers(activity: GameActivity, ar: string[]): void {
 		super.CalculateActivityModifiers(activity, ar)
 		ar.push("observer")
 	}

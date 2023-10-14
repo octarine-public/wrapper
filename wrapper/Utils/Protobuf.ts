@@ -44,10 +44,7 @@ export type ProtobufFieldType =
 	| boolean
 	| RecursiveProtobuf
 	| Uint8Array
-export type RecursiveProtobuf = Map<
-	string,
-	ProtobufFieldType[] | ProtobufFieldType
->
+export type RecursiveProtobuf = Map<string, ProtobufFieldType[] | ProtobufFieldType>
 export enum ProtoFieldType {
 	OPTIONAL,
 	REPEATED,
@@ -74,14 +71,17 @@ function FillMessageDefaults(
 	desc: ProtoDescription
 ): RecursiveProtobuf {
 	desc.forEach(field => {
-		if (msg.has(field.name)) return
+		if (msg.has(field.name)) {
+			return
+		}
 		if (
 			field.protoType === ProtoFieldType.REPEATED ||
 			field.protoType === ProtoFieldType.PACKED
-		)
+		) {
 			msg.set(field.name, [])
-		else if (field.defaultValue !== undefined)
+		} else if (field.defaultValue !== undefined) {
 			msg.set(field.name, field.defaultValue)
+		}
 	})
 	return msg
 }
@@ -99,55 +99,76 @@ function ParseField(
 ): ProtobufFieldType {
 	switch (field.type) {
 		case ProtoType.TYPE_BOOL:
-			if (value instanceof Uint8Array) throw "Invalid proto [1]"
+			if (value instanceof Uint8Array) {
+				throw "Invalid proto [1]"
+			}
 			return value !== 0n
 		case ProtoType.TYPE_ENUM:
 		case ProtoType.TYPE_INT32:
 		case ProtoType.TYPE_SFIXED32:
-			if (value instanceof Uint8Array) throw "Invalid proto [2]"
+			if (value instanceof Uint8Array) {
+				throw "Invalid proto [2]"
+			}
 			convertUint64[0] = value
 			return convertInt32[0]
 		case ProtoType.TYPE_INT64:
 		case ProtoType.TYPE_SFIXED64:
-			if (value instanceof Uint8Array) throw "Invalid proto [2]"
+			if (value instanceof Uint8Array) {
+				throw "Invalid proto [2]"
+			}
 			convertUint64[0] = value
 			return convertInt64[0]
 		case ProtoType.TYPE_SINT32:
-			if (value instanceof Uint8Array || value > 0xffffffffn)
+			if (value instanceof Uint8Array || value > 0xffffffffn) {
 				throw "Invalid proto [3]"
+			}
 			return Number((value >> 1n) ^ -(value & 1n))
 		case ProtoType.TYPE_SINT64:
-			if (value instanceof Uint8Array) throw "Invalid proto [4]"
+			if (value instanceof Uint8Array) {
+				throw "Invalid proto [4]"
+			}
 			return (value >> 1n) ^ -(value & 1n)
 		case ProtoType.TYPE_FIXED32:
 		case ProtoType.TYPE_UINT32:
-			if (value instanceof Uint8Array || value > 0xffffffffn)
+			if (value instanceof Uint8Array || value > 0xffffffffn) {
 				throw "Invalid proto [5]"
+			}
 			convertUint64[0] = value
 			return convertUint32[0]
 		case ProtoType.TYPE_FIXED64:
 		case ProtoType.TYPE_UINT64:
-			if (value instanceof Uint8Array) throw "Invalid proto [6]"
+			if (value instanceof Uint8Array) {
+				throw "Invalid proto [6]"
+			}
 			return value
 		case ProtoType.TYPE_FLOAT:
-			if (value instanceof Uint8Array || value > 0xffffffffn)
+			if (value instanceof Uint8Array || value > 0xffffffffn) {
 				throw "Invalid proto [7]"
+			}
 			convertUint64[0] = value
 			return convertFloat32[0]
 		case ProtoType.TYPE_DOUBLE:
-			if (value instanceof Uint8Array) throw "Invalid proto [8]"
+			if (value instanceof Uint8Array) {
+				throw "Invalid proto [8]"
+			}
 			convertInt64[0] = value
 			return convertFloat64[0]
 		case ProtoType.TYPE_MESSAGE:
-			if (!(value instanceof Uint8Array)) throw "Invalid proto [9]"
+			if (!(value instanceof Uint8Array)) {
+				throw "Invalid proto [9]"
+			}
 			return ParseProtobuf(value, field.protoDesc!)
 		case ProtoType.TYPE_STRING:
-			if (!(value instanceof Uint8Array)) throw "Invalid proto [10]"
+			if (!(value instanceof Uint8Array)) {
+				throw "Invalid proto [10]"
+			}
 			return new ViewBinaryStream(
 				new DataView(value.buffer, value.byteOffset, value.byteLength)
 			).ReadUtf8String(value.byteLength)
 		case ProtoType.TYPE_BYTES:
-			if (!(value instanceof Uint8Array)) throw "Invalid proto [11]"
+			if (!(value instanceof Uint8Array)) {
+				throw "Invalid proto [11]"
+			}
 			return value
 		case ProtoType.TYPE_GROUP: // group
 			throw "Groups are deprecated"
@@ -210,19 +231,24 @@ function DecodeField(
 			break
 		case ProtoFieldType.REPEATED: {
 			try {
-				if (!map.has(field.name)) map.set(field.name, [])
+				if (!map.has(field.name)) {
+					map.set(field.name, [])
+				}
 				const array = map.get(field.name) as ProtobufFieldType[]
 				array.push(ParseField(field, value))
 			} catch (e) {
-				if (value instanceof Uint8Array)
+				if (value instanceof Uint8Array) {
 					map.set(field.name, ParsePacked(value, field))
-				else throw e
+				} else {
+					throw e
+				}
 			}
 			break
 		}
 		case ProtoFieldType.PACKED:
-			if (!(value instanceof Uint8Array))
+			if (!(value instanceof Uint8Array)) {
 				throw `Invalid proto [packed] at field name ${field.name}`
+			}
 			map.set(field.name, ParsePacked(value, field))
 			break
 	}
@@ -261,19 +287,21 @@ export function ParseProtobuf(
 				throw `Unknown wire type ${wireType}`
 		}
 		const fieldDesc = protoDesc.get(fieldNum)
-		if (fieldDesc === undefined) continue
+		if (fieldDesc === undefined) {
+			continue
+		}
 		DecodeField(map, fieldDesc, value)
 	}
 	return FillMessageDefaults(map, protoDesc)
 }
-export function ParseProtobufNamed(
-	data: Uint8Array,
-	name: string
-): RecursiveProtobuf {
+export function ParseProtobufNamed(data: Uint8Array, name: string): RecursiveProtobuf {
 	const protoCacheEntry = ProtoCache.get(name)
-	if (protoCacheEntry === undefined) throw `Unknown type name ${name}`
-	if (protoCacheEntry[0] === ProtoType.TYPE_ENUM)
+	if (protoCacheEntry === undefined) {
+		throw `Unknown type name ${name}`
+	}
+	if (protoCacheEntry[0] === ProtoType.TYPE_ENUM) {
 		throw `Enum type name ${name} passed to ParseProtobuf`
+	}
 	return ParseProtobuf(data, protoCacheEntry[1] as ProtoDescription)
 }
 
@@ -281,7 +309,9 @@ export function ParseProtobufDescLine(
 	str: string
 ): [/* field number */ number, ProtoFieldDescription] {
 	const exec = /^\s*(\w+)\s+([^\s]+)\s+([^\s]+)\s*=\s*(\d+)/.exec(str)
-	if (exec === null) throw "Invalid protobuf description line: " + str
+	if (exec === null) {
+		throw "Invalid protobuf description line: " + str
+	}
 
 	let protoType = ProtoFieldType.OPTIONAL
 	switch (exec[1].toLowerCase()) {
@@ -347,24 +377,30 @@ export function ParseProtobufDescLine(
 			type = ProtoType.TYPE_DOUBLE
 			break
 		default: {
-			if (typeStr.startsWith(".")) typeStr = typeStr.substring(1)
+			if (typeStr.startsWith(".")) {
+				typeStr = typeStr.substring(1)
+			}
 			const messageType = ProtoCache.get(typeStr)
-			if (messageType === undefined)
+			if (messageType === undefined) {
 				throw `Invalid protobuf description type: ${typeStr}`
+			}
 			if (messageType[0] === ProtoType.TYPE_MESSAGE) {
 				type = ProtoType.TYPE_MESSAGE
 				protoDesc = messageType[1] as ProtoDescription
 			} else if (messageType[0] === ProtoType.TYPE_ENUM) {
 				type = ProtoType.TYPE_ENUM
 				enumMapping = messageType[1] as Map<string, number>
-			} else throw `Unknown ProtoType for ProtoCache entry ${typeStr}`
+			} else {
+				throw `Unknown ProtoType for ProtoCache entry ${typeStr}`
+			}
 		}
 	}
 	let defaultValue: Nullable<bigint | number | boolean>
 	if (protoType === ProtoFieldType.REPEATED) {
 		const packed = /\s*\[packed\s*=\s*([^\s]+)\]/.exec(others)
-		if (packed !== null && packed[1] !== "false")
+		if (packed !== null && packed[1] !== "false") {
 			protoType = ProtoFieldType.PACKED
+		}
 	} else {
 		const defaultRegex = /\s*\[default\s*=\s*([^\s]+)\]/.exec(others)
 		if (defaultRegex !== null) {
@@ -412,28 +448,32 @@ export function ParseProtobufDesc(str: string): void {
 	const currentName: string[] = []
 	let currentMap: Nullable<ProtoDescription | Map<string, number>>,
 		currentIsEnum = false
-	str
-		.replace(/\r/g, "")
+	str.replace(/\r/g, "")
 		.split("\n")
 		.forEach((line, i) => {
 			line = line.trim()
 
 			if (/^(optional|required|repeated)\s+/.test(line)) {
-				if (currentMap === undefined)
+				if (currentMap === undefined) {
 					throw `Unexpected field declaration at line ${i}`
-				if (currentIsEnum)
+				}
+				if (currentIsEnum) {
 					throw `Unexpected field declaration at line ${i} (declaration inside enum ${currentName.join(
 						"."
 					)})`
+				}
 				const [fieldNumber, fieldDesc] = ParseProtobufDescLine(line),
 					fixedMap = currentMap as ProtoDescription
 				fixedMap.set(fieldNumber, fieldDesc)
 			} else if (line.startsWith("message ")) {
-				if (currentMap !== undefined && currentIsEnum)
+				if (currentMap !== undefined && currentIsEnum) {
 					throw `Unexpected message declaration at line ${i} (declaration inside enum)`
+				}
 
 				const match = /^message ([^\s]+) {$/.exec(line)
-				if (match === null) throw `Invalid message declaration at line ${i}`
+				if (match === null) {
+					throw `Invalid message declaration at line ${i}`
+				}
 
 				currentName.push(match[1])
 				currentIsEnum = false
@@ -443,27 +483,35 @@ export function ParseProtobufDesc(str: string): void {
 					currentMap
 				])
 			} else if (line.startsWith("enum ")) {
-				if (currentMap !== undefined && currentIsEnum)
+				if (currentMap !== undefined && currentIsEnum) {
 					throw `Unexpected enum declaration at line ${i} (declaration inside enum)`
+				}
 
 				const match = /^enum ([^\s]+) {$/.exec(line)
-				if (match === null) throw `Invalid enum declaration at line ${i}`
+				if (match === null) {
+					throw `Invalid enum declaration at line ${i}`
+				}
 
 				currentName.push(match[1])
 				currentIsEnum = true
 				currentMap = new Map()
 				ProtoCache.set(currentName.join("."), [ProtoType.TYPE_ENUM, currentMap])
 			} else if (line === "}") {
-				if (currentName.length === 0)
+				if (currentName.length === 0) {
 					throw `Unexpected closing brace at line ${i}`
+				}
 				currentName.splice(currentName.length - 1) // removes last element in array
 				if (currentName.length !== 0) {
 					const found = ProtoCache.get(currentName.join("."))
 					if (found !== undefined) {
 						currentIsEnum = found[0] === ProtoType.TYPE_ENUM
 						currentMap = found[1]
-					} else currentMap = undefined
-				} else currentMap = undefined
+					} else {
+						currentMap = undefined
+					}
+				} else {
+					currentMap = undefined
+				}
 			} else if (
 				currentMap !== undefined &&
 				currentIsEnum &&
@@ -471,7 +519,9 @@ export function ParseProtobufDesc(str: string): void {
 				!line.startsWith("syntax ")
 			) {
 				const match = /^([^\s]+)\s*=\s*([^\s]+)/.exec(line)
-				if (match === null) return
+				if (match === null) {
+					return
+				}
 				const fixedMap = currentMap as Map<string, number>
 				fixedMap.set(match[1], parseInt(match[2]))
 			}
@@ -507,7 +557,9 @@ message CMsgQuaternion {
 `)
 
 export function CMsgVectorToVector3(vec: Nullable<RecursiveProtobuf>): Vector3 {
-	if (vec === undefined) return new Vector3()
+	if (vec === undefined) {
+		return new Vector3()
+	}
 	return new Vector3(
 		(vec.get("x") as number) ?? 0,
 		(vec.get("y") as number) ?? 0,
@@ -515,10 +567,10 @@ export function CMsgVectorToVector3(vec: Nullable<RecursiveProtobuf>): Vector3 {
 	)
 }
 
-export function CMsgQuaternionToVector4(
-	vec: Nullable<RecursiveProtobuf>
-): Vector4 {
-	if (vec === undefined) return new Vector4(0, 0, 0, 0)
+export function CMsgQuaternionToVector4(vec: Nullable<RecursiveProtobuf>): Vector4 {
+	if (vec === undefined) {
+		return new Vector4(0, 0, 0, 0)
+	}
 	return new Vector4(
 		(vec.get("x") as number) ?? 0,
 		(vec.get("y") as number) ?? 0,
@@ -527,18 +579,17 @@ export function CMsgQuaternionToVector4(
 	)
 }
 
-export function CMsgVector2DToVector2(
-	vec: Nullable<RecursiveProtobuf>
-): Vector2 {
-	if (vec === undefined) return new Vector2()
-	return new Vector2(
-		(vec.get("x") as number) ?? 0,
-		(vec.get("y") as number) ?? 0
-	)
+export function CMsgVector2DToVector2(vec: Nullable<RecursiveProtobuf>): Vector2 {
+	if (vec === undefined) {
+		return new Vector2()
+	}
+	return new Vector2((vec.get("x") as number) ?? 0, (vec.get("y") as number) ?? 0)
 }
 
 export function NumberToColor(num: Nullable<number>): Color {
-	if (num === undefined) return new Color()
+	if (num === undefined) {
+		return new Color()
+	}
 	return new Color(
 		(num >> 24) & 0xff,
 		(num >> 16) & 0xff,

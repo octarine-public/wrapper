@@ -59,14 +59,16 @@ export class DynamicImageSelector extends Base {
 	}
 
 	public get IsZeroSelected(): boolean {
-		for (const [value] of this.enabledValues.values()) if (value) return false
+		for (const [value] of this.enabledValues.values()) {
+			if (value) {
+				return false
+			}
+		}
 		return true
 	}
 
 	public get IconsRect() {
-		const basePos = this.Position.Add(this.textOffset).AddScalarY(
-			this.nameSize.y + 3
-		)
+		const basePos = this.Position.Add(this.textOffset).AddScalarY(this.nameSize.y + 3)
 		return new Rectangle(
 			basePos,
 			basePos
@@ -77,7 +79,10 @@ export class DynamicImageSelector extends Base {
 								DynamicImageSelector.imageGap
 						)
 						.MultiplyScalarX(
-							Math.min(this.values.length, DynamicImageSelector.elementsPerRow)
+							Math.min(
+								this.values.length,
+								DynamicImageSelector.elementsPerRow
+							)
 						)
 						.MultiplyScalarY(
 							Math.ceil(
@@ -101,8 +106,9 @@ export class DynamicImageSelector extends Base {
 			this.ShouldIgnoreNewConfigValue ||
 			value === undefined ||
 			!Array.isArray(value)
-		)
+		) {
 			return
+		}
 
 		this.enabledValues = new Map(value)
 
@@ -127,9 +133,7 @@ export class DynamicImageSelector extends Base {
 
 		this.values = [
 			...orderBy(
-				[...this.enabledValues.keys()].filter(name =>
-					this.IsVisibleImage(name)
-				),
+				[...this.enabledValues.keys()].filter(name => this.IsVisibleImage(name)),
 				x => this.GetPriority(x)
 			)
 		]
@@ -140,13 +144,13 @@ export class DynamicImageSelector extends Base {
 	}
 
 	public Update(): boolean {
-		if (!super.Update()) return false
+		if (!super.Update()) {
+			return false
+		}
 
 		this.values = [
 			...orderBy(
-				[...this.enabledValues.keys()].filter(name =>
-					this.IsVisibleImage(name)
-				),
+				[...this.enabledValues.keys()].filter(name => this.IsVisibleImage(name)),
 				x => this.GetPriority(x)
 			)
 		]
@@ -155,21 +159,26 @@ export class DynamicImageSelector extends Base {
 		this.imageSize.x = this.imageSize.y = DynamicImageSelector.baseImageHeight
 
 		for (const name of this.values) {
-			if (!this.IsVisibleImage(name)) continue
+			if (!this.IsVisibleImage(name)) {
+				continue
+			}
 			let path = name
-			if (path.startsWith("rune_"))
+			if (path.startsWith("rune_")) {
 				path = `panorama/images/spellicons/${path}_png.vtex_c`
-			else if (path.startsWith("item_bottle_"))
+			} else if (path.startsWith("item_bottle_")) {
 				path = `panorama/images/items/${path.substring(5)}_png.vtex_c`
-			else if (!path.startsWith("npc_dota_hero_")) {
+			} else if (!path.startsWith("npc_dota_hero_")) {
 				const abil = AbilityData.GetAbilityByName(path)
-				if (abil !== undefined) path = abil.TexturePath
-			} else path = `panorama/images/heroes/${path}_png.vtex_c`
+				if (abil !== undefined) {
+					path = abil.TexturePath
+				}
+			} else {
+				path = `panorama/images/heroes/${path}_png.vtex_c`
+			}
 			const pathIamgeSize = RendererSDK.GetImageSize(path)
 			this.imageSize.x = Math.max(
 				this.imageSize.x,
-				DynamicImageSelector.baseImageHeight *
-					(pathIamgeSize.x / pathIamgeSize.y)
+				DynamicImageSelector.baseImageHeight * (pathIamgeSize.x / pathIamgeSize.y)
 			)
 			this.renderedPaths.set(name, path)
 		}
@@ -196,19 +205,25 @@ export class DynamicImageSelector extends Base {
 
 	public GetPriority(value: string): number {
 		const state = this.enabledValues.get(value)
-		if (state === undefined) return Number.MAX_SAFE_INTEGER
+		if (state === undefined) {
+			return Number.MAX_SAFE_INTEGER
+		}
 		return state[3]
 	}
 
 	public IsVisibleImage(value: string): boolean {
 		const state = this.enabledValues.get(value)
-		if (state === undefined) return false
+		if (state === undefined) {
+			return false
+		}
 		return state[1] || state[2]
 	}
 
 	public IsEnabled(value: string): boolean {
 		const state = this.enabledValues.get(value)
-		if (state === undefined) return false
+		if (state === undefined) {
+			return false
+		}
 		return state[0]
 	}
 
@@ -222,7 +237,9 @@ export class DynamicImageSelector extends Base {
 			return
 		}
 
-		if (!this.values.includes(name)) this.values.push(name)
+		if (!this.values.includes(name)) {
+			this.values.push(name)
+		}
 
 		const enabledValues = this.enabledValues.get(name)
 		if (enabledValues === undefined || !Array.isArray(enabledValues)) {
@@ -244,7 +261,9 @@ export class DynamicImageSelector extends Base {
 		if (names === undefined) {
 			for (const name of this.values) {
 				const enabledValues = this.enabledValues.get(name)
-				if (enabledValues === undefined || enabledValues[1]) continue
+				if (enabledValues === undefined || enabledValues[1]) {
+					continue
+				}
 				enabledValues[2] = false
 				this.Update()
 			}
@@ -273,7 +292,9 @@ export class DynamicImageSelector extends Base {
 			}
 
 			const imagePath = this.renderedPaths.get(value)
-			if (imagePath === undefined || this.itemDrop.has(value)) continue
+			if (imagePath === undefined || this.itemDrop.has(value)) {
+				continue
+			}
 
 			const size = this.imageSize,
 				pos = new Vector2(
@@ -322,24 +343,28 @@ export class DynamicImageSelector extends Base {
 				)
 			}
 
-			if (DynamicImageSelector.ServicePriorityToggle)
+			if (DynamicImageSelector.ServicePriorityToggle) {
 				this.DrawTextRealPriority(this.enabledValues.get(value), pos, size)
+			}
 
 			this.DrawTextPriority(i + 1, pos, size)
 
-			if (this.IsEnabled(value))
+			if (this.IsEnabled(value)) {
 				RendererSDK.OutlinedRect(
 					pos,
 					size,
 					DynamicImageSelector.imageBorderWidth,
 					DynamicImageSelector.imageActivatedBorderColor
 				)
+			}
 		}
 
 		// over all images
 		for (const [name] of this.itemDrop) {
 			const imagePath = this.renderedPaths.get(name)
-			if (imagePath === undefined) continue
+			if (imagePath === undefined) {
+				continue
+			}
 
 			const size = this.imageSize
 			const pos = this.MousePosition.Subtract(this.imageSize.DivideScalar(2))
@@ -355,13 +380,14 @@ export class DynamicImageSelector extends Base {
 				!this.IsEnabled(name)
 			)
 
-			if (this.IsEnabled(name))
+			if (this.IsEnabled(name)) {
 				RendererSDK.OutlinedRect(
 					pos,
 					size,
 					DynamicImageSelector.imageBorderWidth,
 					DynamicImageSelector.imageActivatedBorderColor
 				)
+			}
 		}
 	}
 
@@ -369,12 +395,15 @@ export class DynamicImageSelector extends Base {
 		const rect = this.IconsRect,
 			off = rect.GetOffset(this.MousePosition)
 
-		if (InputManager.IsKeyDown(VKeys.CONTROL))
+		if (InputManager.IsKeyDown(VKeys.CONTROL)) {
 			this.ImageValueChanged(off, value => {
 				const enabledValues = this.enabledValues.get(value)
-				if (enabledValues === undefined || !this.IsVisibleImage(value)) return
+				if (enabledValues === undefined || !this.IsVisibleImage(value)) {
+					return
+				}
 				this.itemDrop.set(value, enabledValues[3])
 			})
+		}
 
 		return !rect.Contains(this.MousePosition)
 	}
@@ -392,8 +421,9 @@ export class DynamicImageSelector extends Base {
 					dragNameValue === undefined ||
 					currNameValue === undefined ||
 					dragPriority === currPriority
-				)
+				) {
 					return
+				}
 
 				// todo need improved
 				if (dragPriority > currPriority) {
@@ -412,15 +442,15 @@ export class DynamicImageSelector extends Base {
 			this.itemDrop.delete(dragName)
 		}
 
-		if (
-			!rect.Contains(this.MousePosition) ||
-			InputManager.IsKeyDown(VKeys.CONTROL)
-		)
+		if (!rect.Contains(this.MousePosition) || InputManager.IsKeyDown(VKeys.CONTROL)) {
 			return false
+		}
 
 		this.ImageValueChanged(off, value => {
 			const enabledValues = this.enabledValues.get(value)
-			if (enabledValues === undefined || !this.IsVisibleImage(value)) return
+			if (enabledValues === undefined || !this.IsVisibleImage(value)) {
+				return
+			}
 			enabledValues[0] = !this.IsEnabled(value)
 			this.TriggerOnValueChangedCBs()
 		})
@@ -435,7 +465,9 @@ export class DynamicImageSelector extends Base {
 		for (let i = 0; i < this.values.length; i++) {
 			const value = this.values[i]
 			const enabledValues = this.enabledValues.get(value)
-			if (enabledValues === undefined || !this.IsVisibleImage(value)) return
+			if (enabledValues === undefined || !this.IsVisibleImage(value)) {
+				return
+			}
 			const basePos = new Vector2(
 				i % DynamicImageSelector.elementsPerRow,
 				Math.floor(i / DynamicImageSelector.elementsPerRow)
@@ -445,34 +477,29 @@ export class DynamicImageSelector extends Base {
 						DynamicImageSelector.imageGap
 				)
 			)
-			if (!new Rectangle(basePos, basePos.Add(this.imageSize)).Contains(off))
+			if (!new Rectangle(basePos, basePos.Add(this.imageSize)).Contains(off)) {
 				continue
+			}
 			callback(value, enabledValues[0], enabledValues[3])
 			break
 		}
 	}
 
-	private InsertDecrease(
-		currName: string,
-		dragName: string,
-		currPriority: number
-	) {
+	private InsertDecrease(currName: string, dragName: string, currPriority: number) {
 		const entriesEnables = [...this.enabledValues.entries()]
 		const decrease = entriesEnables.filter(([name, [, , , priority]]) =>
 			this.FilterDecrease(name, currName, dragName, currPriority, priority)
 		)
 		for (const [insertName] of decrease) {
 			const insert = this.enabledValues.get(insertName)
-			if (insert === undefined) continue
+			if (insert === undefined) {
+				continue
+			}
 			insert[3] = insert[3] - 1
 		}
 	}
 
-	private InsertIncrease(
-		currName: string,
-		dragName: string,
-		currPriority: number
-	) {
+	private InsertIncrease(currName: string, dragName: string, currPriority: number) {
 		const entriesEnables = [...this.enabledValues.entries()]
 
 		const increase = entriesEnables.filter(([name, [, , , priority]]) =>
@@ -488,7 +515,9 @@ export class DynamicImageSelector extends Base {
 
 		for (const [insertName] of increase) {
 			const insert = this.enabledValues.get(insertName)
-			if (insert === undefined) continue
+			if (insert === undefined) {
+				continue
+			}
 			insert[3] = insert[3] + 1
 		}
 	}
@@ -558,7 +587,9 @@ export class DynamicImageSelector extends Base {
 		position: Vector2,
 		size: Vector2
 	) {
-		if (enabled === undefined) return
+		if (enabled === undefined) {
+			return
+		}
 
 		const text = `${enabled[3]}`
 		const textSize = size.y / 1.3
@@ -581,19 +612,16 @@ export class DynamicImageSelector extends Base {
 	}
 }
 
-EventsSDK.on("WindowSizeChanged", () =>
-	DynamicImageSelector.OnWindowSizeChanged()
-)
+EventsSDK.on("WindowSizeChanged", () => DynamicImageSelector.OnWindowSizeChanged())
 
 InputEventSDK.on("KeyDown", key => {
 	if (
 		(key !== VKeys.MENU && key !== VKeys.KEY_K) ||
 		!(InputManager.IsKeyDown(VKeys.MENU) && InputManager.IsKeyDown(VKeys.KEY_K))
-	)
+	) {
 		return true
+	}
 	DynamicImageSelector.ServicePriorityToggle =
 		!DynamicImageSelector.ServicePriorityToggle
-	return !(
-		InputManager.IsKeyDown(VKeys.MENU) && InputManager.IsKeyDown(VKeys.KEY_K)
-	)
+	return !(InputManager.IsKeyDown(VKeys.MENU) && InputManager.IsKeyDown(VKeys.KEY_K))
 })

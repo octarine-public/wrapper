@@ -17,23 +17,24 @@ EventsSDK.on("ParticleCreated", par => {
 		par.PathNoEcon !==
 			"particles/units/heroes/hero_spirit_breaker/spirit_breaker_charge_start.vpcf" ||
 		!(par.AttachedTo instanceof Unit)
-	)
+	) {
 		return
+	}
 
-	const abil = par.AttachedTo.GetAbilityByClass(
-		spirit_breaker_charge_of_darkness
-	)
-	if (abil === undefined) return
+	const abil = par.AttachedTo.GetAbilityByClass(spirit_breaker_charge_of_darkness)
+	if (abil === undefined) {
+		return
+	}
 
 	abil.StartedChargingTime = GameState.RawGameTime
 })
 
-const abils = EntityManager.GetEntitiesByClass(
-	spirit_breaker_charge_of_darkness
-)
+const abils = EntityManager.GetEntitiesByClass(spirit_breaker_charge_of_darkness)
 EventsSDK.on("TrackingProjectileCreated", proj => {
-	if (proj.ParticlePath !== undefined || proj.Source !== undefined) return
-	for (const abil of abils)
+	if (proj.ParticlePath !== undefined || proj.Source !== undefined) {
+		return
+	}
+	for (const abil of abils) {
 		if (
 			abil.StartedChargingTime === GameState.RawGameTime &&
 			abil.CurrentProjectile === undefined
@@ -41,17 +42,20 @@ EventsSDK.on("TrackingProjectileCreated", proj => {
 			abil.CurrentProjectile = proj
 			break
 		}
+	}
 })
 EventsSDK.on("TrackingProjectileDestroyed", proj => {
-	for (const abil of abils)
+	for (const abil of abils) {
 		if (abil.CurrentProjectile === proj) {
 			abil.CurrentProjectile = undefined
 			break
 		}
+	}
 })
 
 EventsSDK.on("ModifierRemoved", mod => {
 	const abil = mod.Ability
-	if (abil instanceof spirit_breaker_charge_of_darkness)
+	if (abil instanceof spirit_breaker_charge_of_darkness) {
 		abil.CurrentProjectile = undefined
+	}
 })

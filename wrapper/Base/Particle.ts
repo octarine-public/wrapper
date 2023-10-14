@@ -35,19 +35,29 @@ export class Particle {
 	}
 
 	public SetControlPoint(id: number, param: ControlPoint): void {
-		if (!this.IsValid && !this.IsHidden) return
+		if (!this.IsValid && !this.IsHidden) {
+			return
+		}
 
-		if (Array.isArray(param)) param = Vector3.fromArray(param)
-		else if (param instanceof Entity) param = param.Position
-		else if (param instanceof Vector2) param = Vector3.FromVector2(param)
-		else if (param instanceof Color)
+		if (Array.isArray(param)) {
+			param = Vector3.fromArray(param)
+		} else if (param instanceof Entity) {
+			param = param.Position
+		} else if (param instanceof Vector2) {
+			param = Vector3.FromVector2(param)
+		} else if (param instanceof Color) {
 			param = new Vector3(param.r, param.g, param.b)
-		else if (typeof param === "number") param = new Vector3(param, 0, 0)
-		else if (typeof param === "boolean")
+		} else if (typeof param === "number") {
+			param = new Vector3(param, 0, 0)
+		} else if (typeof param === "boolean") {
 			param = new Vector3(param ? 1 : 0, 0, 0)
-		else param = param.Clone()
+		} else {
+			param = param.Clone()
+		}
 
-		if (this.ControlPoints.get(id)?.Equals(param)) return
+		if (this.ControlPoints.get(id)?.Equals(param)) {
+			return
+		}
 		this.ControlPoints.set(id, param)
 		param.toIOBuffer()
 		Particles.SetControlPoint(this.EffectIndex, id)
@@ -67,7 +77,9 @@ export class Particle {
 	 * )
 	 */
 	public SetControlPoints(...controlPoints: ControlPointParam[]): void {
-		if (!this.IsValid && !this.IsHidden) return
+		if (!this.IsValid && !this.IsHidden) {
+			return
+		}
 		controlPoints.forEach(([id, param]) => this.SetControlPoint(id, param))
 	}
 
@@ -77,7 +89,9 @@ export class Particle {
 	}
 
 	public Restart() {
-		if (!this.IsValid && !this.IsHidden) return
+		if (!this.IsValid && !this.IsHidden) {
+			return
+		}
 		const save = [...this.ControlPoints.entries()]
 		this.Destroy().Create(...save)
 	}
@@ -87,7 +101,9 @@ export class Particle {
 			Particles.Destroy(this.EffectIndex, immediate)
 			this.EffectIndex = -1
 			this.IsValid = false
-		} else this.IsHidden = false
+		} else {
+			this.IsHidden = false
+		}
 		if (!this.IsHidden) {
 			this.ControlPoints.clear()
 			this.Parent.AllParticles.delete(this.Key)
@@ -107,10 +123,14 @@ export class Particle {
 	}
 
 	private Create(...controlPoints: ControlPointParam[]): this {
-		if (this.IsValid) return this
+		if (this.IsValid) {
+			return this
+		}
 
 		let path = this.Path
-		if (!path.endsWith("_c")) path += "_c"
+		if (!path.endsWith("_c")) {
+			path += "_c"
+		}
 		path = tryFindFile(path, 2) ?? path
 		path = path.substring(0, path.length - 2)
 		this.EffectIndex = Particles.Create(

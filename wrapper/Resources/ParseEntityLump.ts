@@ -181,23 +181,33 @@ function ReadTypedValue(stream: ReadableBinaryStream): EntityDataMapValue {
 
 function ParseEntityKeyValues(entityKeyValues: RecursiveMapValue[]) {
 	for (const entityKV of entityKeyValues) {
-		if (!(entityKV instanceof Map)) continue
+		if (!(entityKV instanceof Map)) {
+			continue
+		}
 		// TODO: m_connections?
 		const map = new EntityDataMap()
 		if (entityKV.has("keyValues3Data")) {
 			const kvData = entityKV.get("keyValues3Data")
-			if (kvData === undefined) continue
-			if (!(kvData instanceof Map)) throw `Unknown kvData: ${kvData}`
+			if (kvData === undefined) {
+				continue
+			}
+			if (!(kvData instanceof Map)) {
+				throw `Unknown kvData: ${kvData}`
+			}
 
 			const version = MapValueToNumber(kvData.get("version"), 0) // bigint without mask
-			if (version !== 1) throw `Unknown entity kvData version: ${version}`
+			if (version !== 1) {
+				throw `Unknown entity kvData version: ${version}`
+			}
 
 			const values = kvData.get("values")
-			if (!(values instanceof Map)) continue
+			if (!(values instanceof Map)) {
+				continue
+			}
 
 			for (const [name, value] of values) {
 				let entityValue: RecursiveMapValue | EntityDataMapValue = value
-				if (Array.isArray(entityValue))
+				if (Array.isArray(entityValue)) {
 					switch (entityValue.length) {
 						case 2:
 							entityValue = Vector2.fromArray(entityValue as number[])
@@ -209,21 +219,25 @@ function ParseEntityKeyValues(entityKeyValues: RecursiveMapValue[]) {
 							entityValue = Vector4.fromArray(entityValue as number[])
 							break
 					}
-				map.set(
-					MurmurHash2(name, 0x31415926) >>> 0,
-					value as EntityDataMapValue
-				)
+				}
+				map.set(MurmurHash2(name, 0x31415926) >>> 0, value as EntityDataMapValue)
 			}
 		} else if (entityKV.has("m_keyValuesData")) {
 			let kvData = entityKV.get("m_keyValuesData")
-			if (typeof kvData === "string") kvData = StringToUTF8(kvData)
-			if (!(kvData instanceof Uint8Array)) continue
+			if (typeof kvData === "string") {
+				kvData = StringToUTF8(kvData)
+			}
+			if (!(kvData instanceof Uint8Array)) {
+				continue
+			}
 			const kvDataStream = new ViewBinaryStream(
 				new DataView(kvData.buffer, kvData.byteOffset, kvData.byteLength)
 			)
 			{
 				const version = kvDataStream.ReadUint32()
-				if (version !== 1) throw `Unknown entity data version: ${version}`
+				if (version !== 1) {
+					throw `Unknown entity data version: ${version}`
+				}
 			}
 			const hashedKeys = kvDataStream.ReadUint32(),
 				stringKeys = kvDataStream.ReadUint32()
@@ -238,7 +252,9 @@ function ParseEntityKeyValues(entityKeyValues: RecursiveMapValue[]) {
 				const value = ReadTypedValue(kvDataStream)
 				map.set(hash, value)
 			}
-		} else throw "Unknown entity KV"
+		} else {
+			throw "Unknown entity KV"
+		}
 
 		EntityDataLump.push(map)
 	}
@@ -248,22 +264,29 @@ function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
 	const kv = stream.ParseKV()
 	if (kv.has("m_childLumps")) {
 		const childLumps = kv.get("m_childLumps")
-		if (!Array.isArray(childLumps)) return
+		if (!Array.isArray(childLumps)) {
+			return
+		}
 		for (const childLump of childLumps) {
-			if (typeof childLump !== "string") continue
+			if (typeof childLump !== "string") {
+				continue
+			}
 			const childLumpBuf = fopen(`${childLump}_c`)
-			if (childLumpBuf !== undefined)
+			if (childLumpBuf !== undefined) {
 				try {
 					ParseEntityLumpInternal(new FileBinaryStream(childLumpBuf))
 				} finally {
 					childLumpBuf.close()
 				}
+			}
 		}
 	}
 
 	if (kv.has("m_entityKeyValues")) {
 		const entityKeyValues = kv.get("m_entityKeyValues")
-		if (!Array.isArray(entityKeyValues)) return
+		if (!Array.isArray(entityKeyValues)) {
+			return
+		}
 		ParseEntityKeyValues(entityKeyValues)
 	}
 }

@@ -86,9 +86,11 @@ export class TrackingProjectile extends Projectile {
 	) {
 		super(projID, path, particleSystemHandle, source, colorgemcolor, speed)
 
-		if (this.Source instanceof Entity)
+		if (this.Source instanceof Entity) {
 			this.Source.Position.CopyTo(this.Position)
-		else this.Position.Invalidate()
+		} else {
+			this.Position.Invalidate()
+		}
 	}
 
 	public get IsDodgeable(): boolean {
@@ -124,10 +126,13 @@ export class TrackingProjectile extends Projectile {
 		targetLoc.CopyTo(this.TargetLoc)
 	}
 	public UpdateTargetLoc(): void {
-		if (this.IsDodged) return
+		if (this.IsDodged) {
+			return
+		}
 
 		const target = this.Target
-		if (target instanceof Entity)
+		if (target instanceof Entity) {
 			this.TargetLoc.CopyFrom(target.GetAttachmentPosition("attach_hitloc"))
+		}
 	}
 }

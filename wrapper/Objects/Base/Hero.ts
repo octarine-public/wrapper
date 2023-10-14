@@ -146,15 +146,23 @@ RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", (ent, newVal) => {
 })
 
 EventsSDK.on("PreEntityCreated", ent => {
-	if (!(ent instanceof Unit)) return
-	for (const hero of Heroes)
-		if (hero.ReplicatingOtherHeroModel?.EntityMatches(ent))
+	if (!(ent instanceof Unit)) {
+		return
+	}
+	for (const hero of Heroes) {
+		if (hero.ReplicatingOtherHeroModel?.EntityMatches(ent)) {
 			hero.ReplicatingOtherHeroModel = ent
+		}
+	}
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (!(ent instanceof Unit)) return
-	for (const hero of Heroes)
-		if (hero.ReplicatingOtherHeroModel === ent)
+	if (!(ent instanceof Unit)) {
+		return
+	}
+	for (const hero of Heroes) {
+		if (hero.ReplicatingOtherHeroModel === ent) {
 			hero.ReplicatingOtherHeroModel = undefined
+		}
+	}
 })

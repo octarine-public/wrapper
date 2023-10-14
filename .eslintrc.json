@@ -305,7 +305,7 @@
 				"lib": "always"
 			}
 		],
-		"curly": ["warn", "all"],
+		"curly": ["error", "all"],
 		"object-curly-spacing": [
             "warn", 
             "always",
@@ -411,7 +411,7 @@
 			"endOfLine": "auto",
 			"arrowParens": "avoid",
 			"singleQuote": false,
-			"printWidth": 120,
+			"printWidth": 90,
 			"tabWidth": 4,
 			"trailingComma": "none",
 			"breakBeforeElse": true,

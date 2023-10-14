@@ -13,12 +13,7 @@ export { Localization } from "./Localization"
 export { Slider } from "./Slider"
 export { Toggle } from "./Toggle"
 export { Node }
-function AddEntry(
-	name: string,
-	iconPath = "",
-	tooltip = "",
-	iconRound = -1
-): Node {
+function AddEntry(name: string, iconPath = "", tooltip = "", iconRound = -1): Node {
 	return MenuManager.AddEntry(name, iconPath, tooltip, iconRound)
 }
 function AddEntryDeep(name: string[], iconPath: string[] = []): Node {

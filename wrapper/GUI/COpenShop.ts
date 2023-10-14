@@ -27,16 +27,8 @@ export class COpenShop {
 	}
 
 	public DebugDraw(): void {
-		RendererSDK.FilledRect(
-			this.Header.pos1,
-			this.Header.Size,
-			Color.White.SetA(128)
-		)
-		RendererSDK.FilledRect(
-			this.Items.pos1,
-			this.Items.Size,
-			Color.Green.SetA(128)
-		)
+		RendererSDK.FilledRect(this.Header.pos1, this.Header.Size, Color.White.SetA(128))
+		RendererSDK.FilledRect(this.Items.pos1, this.Items.Size, Color.Green.SetA(128))
 		RendererSDK.FilledRect(
 			this.PinnedItems.pos1,
 			this.PinnedItems.Size,
@@ -65,10 +57,7 @@ export class COpenShop {
 		const headerHeight = ScaleHeight(COpenShop.HeaderHeight, screenSize),
 			itemsHeight = ScaleHeight(COpenShop.ItemsHeight, screenSize),
 			pinnedItemsHeight = ScaleHeight(COpenShop.PinnedItemsHeight, screenSize),
-			itemCombinesHeight = ScaleHeight(
-				COpenShop.ItemCombinesHeight,
-				screenSize
-			),
+			itemCombinesHeight = ScaleHeight(COpenShop.ItemCombinesHeight, screenSize),
 			shopBottomMargin = ScaleHeight(206, screenSize)
 
 		const mainPanel = new Rectangle()

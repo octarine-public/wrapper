@@ -96,8 +96,9 @@ export class CGameRules extends Entity {
 			this.IsNightstalkerNight ||
 			this.IsTemporaryNight ||
 			this.GameState === DOTAGameState.DOTA_GAMERULES_STATE_PRE_GAME
-		)
+		) {
 			return true
+		}
 
 		return (
 			this.GameState === DOTAGameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS &&
@@ -115,7 +116,5 @@ RegisterFieldHandler(CGameRules, "m_NeutralSpawnBoxes", (game, newVal) => {
 	)
 })
 RegisterFieldHandler(CGameRules, "m_vecItemStockInfo", (game, newVal) => {
-	game.StockInfo = (newVal as EntityPropertiesNode[]).map(
-		map => new StockInfo(map)
-	)
+	game.StockInfo = (newVal as EntityPropertiesNode[]).map(map => new StockInfo(map))
 })

@@ -65,10 +65,7 @@ export class Rectangle {
 		this.pos2.y = val
 	}
 	public get Center(): Vector2 {
-		return new Vector2(
-			this.pos1.x + this.Width / 2,
-			this.pos1.y + this.Height / 2
-		)
+		return new Vector2(this.pos1.x + this.Width / 2, this.pos1.y + this.Height / 2)
 	}
 	public Contains(pos: Vector2): boolean {
 		return (

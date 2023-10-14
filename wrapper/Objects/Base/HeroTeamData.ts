@@ -66,7 +66,10 @@ export class HeroTeamData {
 	 * @return {number} The number of available salutes (tips player).
 	 */
 	public get AvailableSalutes(): number {
-		return this.hero.PlayerTeamData?.PlayerEventsData.find(data => data.EventID === 19)?.AvailableSalutes ?? 0
+		return (
+			this.hero.PlayerTeamData?.PlayerEventsData.find(data => data.EventID === 19)
+				?.AvailableSalutes ?? 0
+		)
 	}
 	/**
 	 * Returns the buyback cost based on the net worth of the player.
@@ -82,7 +85,9 @@ export class HeroTeamData {
 	 * @return {number} The deny count of the hero.
 	 */
 	public get DenyCount(): number {
-		return this.Player === undefined || this.IsEnemy ? this.denyCount : this.Player.DenyCount
+		return this.Player === undefined || this.IsEnemy
+			? this.denyCount
+			: this.Player.DenyCount
 	}
 	/**
 	 * @ignore
@@ -99,7 +104,9 @@ export class HeroTeamData {
 	 * @return {number} The last hit count of the hero.
 	 */
 	public get LastHitCount(): number {
-		return this.Player === undefined || this.IsEnemy ? this.lastHitCount : this.Player.LastHitCount
+		return this.Player === undefined || this.IsEnemy
+			? this.lastHitCount
+			: this.Player.LastHitCount
 	}
 	/**
 	 * @ignore
@@ -126,7 +133,9 @@ export class HeroTeamData {
 	 * @return {number} The reliable gold amount for the hero.
 	 */
 	public get ReliableGold(): number {
-		return this.Player === undefined || this.IsEnemy ? this.reliableGold : this.Player.ReliableGold
+		return this.Player === undefined || this.IsEnemy
+			? this.reliableGold
+			: this.Player.ReliableGold
 	}
 	/**
 	 * @ignore
@@ -143,7 +152,9 @@ export class HeroTeamData {
 	 * @return {number} The unreliable gold amount for the hero.
 	 */
 	public get UnreliableGold(): number {
-		return this.Player === undefined || this.IsEnemy ? this.unreliableGold : this.Player.UnreliableGold
+		return this.Player === undefined || this.IsEnemy
+			? this.unreliableGold
+			: this.Player.UnreliableGold
 	}
 	/**
 	 * @ignore
@@ -195,7 +206,9 @@ export class HeroTeamData {
 	 */
 	public PostDataUpdate() {
 		if (this.TeamData === undefined && !this.IsEnemy) {
-			this.TeamData = EntityManager.GetEntitiesByClass(TeamData).find(x => x.Team === this.hero.Team)
+			this.TeamData = EntityManager.GetEntitiesByClass(TeamData).find(
+				x => x.Team === this.hero.Team
+			)
 		}
 
 		if (this.TeamData !== undefined && this.Player === undefined && !this.IsEnemy) {

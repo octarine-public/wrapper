@@ -4,7 +4,9 @@ import { qsort } from "./Utils"
  * @returns equal arrays?
  */
 export function CompareArrays<T>(a: T[], b: T[]): boolean {
-	if (a.length !== b.length) return false
+	if (a.length !== b.length) {
+		return false
+	}
 
 	return !a.some(val1 => b.some(val2 => val1 !== val2))
 }
@@ -22,7 +24,9 @@ export function HasIntersectArrays<T>(a: T[], b: T[]): boolean {
 
 export function CountInArray<T>(array: T[], el: T): number {
 	return array.reduce((prev, val) => {
-		if (val === el) prev++
+		if (val === el) {
+			prev++
+		}
 		return prev
 	}, 0)
 }
@@ -31,15 +35,15 @@ export function CountInArray<T>(array: T[], el: T): number {
  *
  * @param deleteEl uses operator 'delete' instead of 'splice'
  */
-export function arrayRemove<T>(
-	ar: T[],
-	el: T,
-	deleteEl: boolean = false
-): boolean {
+export function arrayRemove<T>(ar: T[], el: T, deleteEl: boolean = false): boolean {
 	const id = ar.indexOf(el)
-	if (id !== -1)
-		if (deleteEl) delete ar[id]
-		else ar.splice(id, 1)
+	if (id !== -1) {
+		if (deleteEl) {
+			delete ar[id]
+		} else {
+			ar.splice(id, 1)
+		}
+	}
 	return id !== -1
 }
 
@@ -53,10 +57,15 @@ export function arrayRemoveCallback<T>(
 	deleteEl = false
 ): boolean {
 	const id = ar.findIndex(cb)
-	if (id === -1) return false
+	if (id === -1) {
+		return false
+	}
 
-	if (deleteEl) delete ar[id]
-	else ar.splice(id, 1)
+	if (deleteEl) {
+		delete ar[id]
+	} else {
+		ar.splice(id, 1)
+	}
 
 	return true
 }
@@ -85,16 +94,10 @@ export function qorderBy<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return qsort(ar, (a, b) => (cb(a) as number) - (cb(b) as number))
 }
 
-export function orderByRevert<T>(
-	ar: T[],
-	cb: (obj: T) => number | boolean
-): T[] {
+export function orderByRevert<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return ar.sort((a, b) => (cb(b) as number) - (cb(a) as number))
 }
 
-export function qorderByRevert<T>(
-	ar: T[],
-	cb: (obj: T) => number | boolean
-): T[] {
+export function qorderByRevert<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return qsort(ar, (a, b) => (cb(b) as number) - (cb(a) as number))
 }

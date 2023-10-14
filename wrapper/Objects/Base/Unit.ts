@@ -20,11 +20,7 @@ import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GridNav } from "../../Resources/ParseGNV"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
-import {
-	HasBit,
-	HasBitBigInt,
-	MaskToArrayBigInt
-} from "../../Utils/BitsExtensions"
+import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
 import { GameState } from "../../Utils/GameState"
 import { Inventory } from "../DataBook/Inventory"
 import { UnitData } from "../DataBook/UnitData"
@@ -125,13 +121,9 @@ export class Unit extends Entity {
 	public HealthBarOffsetOverride = 0
 	public HealthBarOffset_: Nullable<number>
 	public readonly Spells_ = new Array<number>(MAX_SPELLS).fill(0)
-	public readonly Spells = new Array<Nullable<Ability>>(MAX_SPELLS).fill(
-		undefined
-	)
+	public readonly Spells = new Array<Nullable<Ability>>(MAX_SPELLS).fill(undefined)
 	public readonly TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
-	public readonly TotalItems = new Array<Nullable<Item>>(MAX_ITEMS).fill(
-		undefined
-	)
+	public readonly TotalItems = new Array<Nullable<Item>>(MAX_ITEMS).fill(undefined)
 	public readonly Buffs: Modifier[] = []
 	public MyWearables: Wearable[] = []
 	public MyWearables_: number[] = []
@@ -167,16 +159,18 @@ export class Unit extends Entity {
 	private LastPredictedPositionUpdate_ = 0
 
 	public get LastRealPredictedPositionUpdate(): number {
-		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid)
+		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
 			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime
+		}
 		return this.LastRealPredictedPositionUpdate_
 	}
 	public set LastRealPredictedPositionUpdate(val: number) {
 		this.LastRealPredictedPositionUpdate_ = val
 	}
 	public get LastPredictedPositionUpdate(): number {
-		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid)
+		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
 			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime
+		}
 		return this.LastPredictedPositionUpdate_
 	}
 	public set LastPredictedPositionUpdate(val: number) {
@@ -227,10 +221,9 @@ export class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE)
 	}
 	public get IsDeniable(): boolean {
-		if (
-			this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE)
-		)
+		if (this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE)) {
 			return true
+		}
 		return (
 			this.HPPercent < 25 &&
 			this.Buffs.some(
@@ -247,9 +240,7 @@ export class Unit extends Entity {
 	}
 	//
 	public get HasNoCollision(): boolean {
-		return this.IsUnitStateFlagSet(
-			modifierstate.MODIFIER_STATE_NO_UNIT_COLLISION
-		)
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_UNIT_COLLISION)
 	}
 	//
 	public get IsBlind(): boolean {
@@ -257,9 +248,7 @@ export class Unit extends Entity {
 	}
 	//
 	public get IsTrueSightImmune(): boolean {
-		return this.IsUnitStateFlagSet(
-			modifierstate.MODIFIER_STATE_TRUESIGHT_IMMUNE
-		)
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_TRUESIGHT_IMMUNE)
 	}
 	/* ======== base ======== */
 	public get IsInFadeTime(): boolean {
@@ -300,13 +289,13 @@ export class Unit extends Entity {
 	}
 	public get HealthBarOffset(): number {
 		let offset = this.HealthBarOffsetOverride
-		if (offset === -1)
+		if (offset === -1) {
 			offset =
 				this.HealthBarOffset_ ??
-				this.MyWearables.find(
-					wearable => wearable.HealthBarOffset !== undefined
-				)?.HealthBarOffset ??
+				this.MyWearables.find(wearable => wearable.HealthBarOffset !== undefined)
+					?.HealthBarOffset ??
 				this.UnitData.HealthBarOffset
+		}
 		return this.DeltaZ + offset
 	}
 	public get WorkshopName(): string {
@@ -326,8 +315,7 @@ export class Unit extends Entity {
 	 */
 	public get IsControllable(): boolean {
 		return (
-			LocalPlayer !== undefined &&
-			this.IsControllableByPlayer(LocalPlayer.PlayerID)
+			LocalPlayer !== undefined && this.IsControllableByPlayer(LocalPlayer.PlayerID)
 		)
 	}
 	public get IsMelee(): boolean {
@@ -357,14 +345,16 @@ export class Unit extends Entity {
 	 */
 	public get UnitStateMask_(): bigint {
 		// TODO: use buffs to calculate this
-		if (!GetEntityUnitState(this.Index)) return this.UnitStateNetworked
+		if (!GetEntityUnitState(this.Index)) {
+			return this.UnitStateNetworked
+		}
 		return IOBufferView.getBigUint64(0, true)
 	}
 	public get UnitState(): modifierstate[] {
 		return MaskToArrayBigInt(this.UnitStateMask)
 	}
 	public get IsEthereal(): boolean {
-		for (const buff of this.Buffs)
+		for (const buff of this.Buffs) {
 			switch (buff.Name) {
 				case "modifier_ghost_state":
 				case "modifier_item_ethereal_blade_ethereal":
@@ -374,10 +364,11 @@ export class Unit extends Entity {
 				default:
 					break
 			}
+		}
 		return false
 	}
 	public get CanUseAbilitiesInInvisibility(): boolean {
-		for (const buff of this.Buffs)
+		for (const buff of this.Buffs) {
 			switch (buff.Name) {
 				case "modifier_riki_permanent_invisibility":
 				case "modifier_treant_natures_guise_invis":
@@ -385,6 +376,7 @@ export class Unit extends Entity {
 				default:
 					break
 			}
+		}
 		return false
 	}
 	public get Items(): Item[] {
@@ -396,7 +388,9 @@ export class Unit extends Entity {
 	}
 	public get ProjectileCollisionSize(): number {
 		let projectileCollisionSize = this.UnitData.ProjectileCollisionSize
-		if (projectileCollisionSize === 0) projectileCollisionSize = this.HullRadius
+		if (projectileCollisionSize === 0) {
+			projectileCollisionSize = this.HullRadius
+		}
 		return projectileCollisionSize
 	}
 
@@ -416,30 +410,34 @@ export class Unit extends Entity {
 		return this.RotationDifference !== 0
 	}
 	public get IsChanneling(): boolean {
-		if (this.HasInventory && this.Items.some(item => item.IsChanneling))
+		if (this.HasInventory && this.Items.some(item => item.IsChanneling)) {
 			return true
+		}
 
 		return this.Spells.some(spell => spell !== undefined && spell.IsChanneling)
 	}
 	public get IsInAbilityPhase(): boolean {
-		return this.Spells.some(
-			spell => spell !== undefined && spell.IsInAbilityPhase
-		)
+		return this.Spells.some(spell => spell !== undefined && spell.IsInAbilityPhase)
 	}
 	public get CastRangeBonus(): number {
 		let castrange = 0
 		const gadgetAura = this.GetBuffByName("modifier_item_spy_gadget_aura")
 		if (gadgetAura !== undefined) {
 			const gadget = gadgetAura.Ability
-			if (gadget !== undefined)
+			if (gadget !== undefined) {
 				castrange += gadget.GetSpecialValue("cast_range")
+			}
 		}
 
 		this.Spells.forEach(spell => {
-			if (spell !== undefined) castrange += spell.BonusCastRange
+			if (spell !== undefined) {
+				castrange += spell.BonusCastRange
+			}
 		})
 		this.Items.forEach(item => {
-			if (item !== undefined) castrange += item.BonusCastRange
+			if (item !== undefined) {
+				castrange += item.BonusCastRange
+			}
 		})
 		return castrange
 	}
@@ -449,7 +447,9 @@ export class Unit extends Entity {
 			0
 		)
 		const spellsSpellAmp = this.Spells.reduce((val, spell) => {
-			if (spell !== undefined) val += spell.SpellAmplification
+			if (spell !== undefined) {
+				val += spell.SpellAmplification
+			}
 			return val
 		}, 0)
 		return itemsSpellAmp + spellsSpellAmp
@@ -462,14 +462,13 @@ export class Unit extends Entity {
 	}
 
 	public get Position(): Vector3 {
-		if (
-			this.IsVisible ||
-			(this.PredictedIsWaitingToSpawn && this.IsWaitingToSpawn)
-		)
+		if (this.IsVisible || (this.PredictedIsWaitingToSpawn && this.IsWaitingToSpawn)) {
 			return this.RealPosition
+		}
 
-		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid)
+		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
 			return this.TPStartPosition
+		}
 		return this.PredictedPosition
 	}
 	public get HasFlyingVision(): boolean {
@@ -501,10 +500,7 @@ export class Unit extends Entity {
 	): Nullable<T> {
 		return this.Inventory.GetItemByClass(class_, includeBackpack)
 	}
-	public HasItemInInventory(
-		name: string | RegExp,
-		includeBackpack = false
-	): boolean {
+	public HasItemInInventory(name: string | RegExp, includeBackpack = false): boolean {
 		return this.GetItemByName(name, includeBackpack) !== undefined
 	}
 
@@ -530,8 +526,9 @@ export class Unit extends Entity {
 				this.IsUnitStateFlagSet(
 					modifierstate.MODIFIER_STATE_FLYING_FOR_PATHING_PURPOSES_ONLY
 				))
-		)
+		) {
 			return true
+		}
 		return (this.UnitData.MovementCapabilities & flag) !== 0
 	}
 
@@ -553,8 +550,9 @@ export class Unit extends Entity {
 	 */
 	public Distance(vec: Vector3 | Entity, fromCenterToCenter = false): number {
 		let dist = super.Distance(vec)
-		if (fromCenterToCenter && vec instanceof Entity)
+		if (fromCenterToCenter && vec instanceof Entity) {
 			dist -= this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0)
+		}
 		return dist
 	}
 	/**
@@ -565,8 +563,9 @@ export class Unit extends Entity {
 		fromCenterToCenter = false
 	): number {
 		let dist = super.Distance2D(vec)
-		if (fromCenterToCenter && vec instanceof Entity)
+		if (fromCenterToCenter && vec instanceof Entity) {
 			dist -= this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0)
+		}
 		return dist
 	}
 	public GetAbilityByName(name: string | RegExp): Nullable<Ability> {
@@ -576,9 +575,7 @@ export class Unit extends Entity {
 				(name instanceof RegExp ? name.test(abil.Name) : abil.Name === name)
 		)
 	}
-	public GetAbilityByClass<T extends Ability>(
-		class_: Constructor<T>
-	): Nullable<T> {
+	public GetAbilityByClass<T extends Ability>(class_: Constructor<T>): Nullable<T> {
 		return this.Spells.find(abil => abil instanceof class_) as Nullable<T>
 	}
 	public GetBuffByName(name: string): Nullable<Modifier> {
@@ -610,7 +607,9 @@ export class Unit extends Entity {
 	): boolean {
 		if (fromCenterToCenter === false) {
 			range += this.HullRadius
-			if (ent instanceof Unit) range += ent.HullRadius
+			if (ent instanceof Unit) {
+				range += ent.HullRadius
+			}
 		}
 
 		return super.IsInRange(ent, range)
@@ -627,27 +626,34 @@ export class Unit extends Entity {
 
 		if (currentTurnRate) {
 			const buff = this.GetBuffByName("modifier_batrider_sticky_napalm")
-			if (buff !== undefined && buff.Ability !== undefined)
+			if (buff !== undefined && buff.Ability !== undefined) {
 				turnRate *=
 					1 +
 					buff.Ability.GetSpecialValue("turn_rate_pct", buff.AbilityLevel) / 100
+			}
 		}
 
 		const legs = this.GetItemByName("item_spider_legs")
-		if (legs !== undefined)
+		if (legs !== undefined) {
 			turnRate *= 1 + legs.GetSpecialValue("turn_rate") / 100
+		}
 
 		return turnRate
 	}
 
 	public TurnTime(angle: number | Vector3) {
-		if (angle instanceof Vector3) angle = this.FindRotationAngle(angle)
+		if (angle instanceof Vector3) {
+			angle = this.FindRotationAngle(angle)
+		}
 
 		const name = this.Name
-		if (name === "npc_dota_hero_wisp" || name === "npc_dota_hero_pangolier")
+		if (name === "npc_dota_hero_wisp" || name === "npc_dota_hero_pangolier") {
 			return 0
+		}
 
-		if (angle <= 0.2) return 0
+		if (angle <= 0.2) {
+			return 0
+		}
 
 		return angle / (30 * this.TurnRate())
 	}
@@ -656,7 +662,7 @@ export class Unit extends Entity {
 	public IsInside(vec: Vector3, radius: number): boolean {
 		const direction = this.Forward,
 			npcPos = this.Position
-		for (let i = Math.floor(vec.Distance2D(npcPos) / radius) + 1; i--; )
+		for (let i = Math.floor(vec.Distance2D(npcPos) / radius) + 1; i--; ) {
 			if (
 				npcPos.Distance2D(
 					new Vector3(
@@ -665,8 +671,10 @@ export class Unit extends Entity {
 						vec.z - direction.z * i * radius
 					)
 				) <= radius
-			)
+			) {
 				return true
+			}
+		}
 		return false
 	}
 
@@ -675,7 +683,9 @@ export class Unit extends Entity {
 		let angle = Math.abs(
 			Math.atan2(npcPos.y - vec.y, npcPos.x - vec.x) - this.RotationRad
 		)
-		if (angle > Math.PI) angle = Math.abs(Math.PI * 2 - angle)
+		if (angle > Math.PI) {
+			angle = Math.abs(Math.PI * 2 - angle)
+		}
 		return angle
 	}
 
@@ -686,32 +696,40 @@ export class Unit extends Entity {
 	public HasLinkenAtTime(time: number = 0): boolean {
 		const sphere = this.GetItemByName("item_sphere")
 
-		if (sphere !== undefined && sphere.Cooldown - time <= 0) return true
+		if (sphere !== undefined && sphere.Cooldown - time <= 0) {
+			return true
+		}
 
 		const sphereTarget = this.GetBuffByName("modifier_item_sphere_target")
 
 		return sphereTarget !== undefined && sphereTarget.RemainingTime - time <= 0
 	}
 
-	public CalculateActivityModifiers(
-		activity: GameActivity,
-		ar: string[]
-	): void {
+	public CalculateActivityModifiers(activity: GameActivity, ar: string[]): void {
 		super.CalculateActivityModifiers(activity, ar)
-		if (this.IsIllusion) ar.push("illusion")
+		if (this.IsIllusion) {
+			ar.push("illusion")
+		}
 		if (
 			this.HPPercent <= 25 &&
 			!this.HasBuffByName("modifier_skeleton_king_reincarnation_scepter_active")
-		)
+		) {
 			ar.push("injured")
+		}
 		if (!this.HasBuffByName("modifier_marci_unleash_flurry_cooldown")) {
 			const buff = this.GetBuffByName("modifier_marci_unleash_flurry")
 			if (buff !== undefined) {
-				if (buff.StackCount === 1) ar.push("flurry_pulse_attack")
-				else if (buff.StackCount % 2 === 0) ar.push("flurry_attack_a")
-				else ar.push("flurry_attack_b")
+				if (buff.StackCount === 1) {
+					ar.push("flurry_pulse_attack")
+				} else if (buff.StackCount % 2 === 0) {
+					ar.push("flurry_attack_a")
+				} else {
+					ar.push("flurry_attack_b")
+				}
 			}
-		} else ar.push("unleash")
+		} else {
+			ar.push("unleash")
+		}
 
 		// TODO: AttackSpeedActivityModifiers, MovementSpeedActivityModifiers, AttackRangeActivityModifiers
 	}
@@ -765,9 +783,12 @@ export class Unit extends Entity {
 		direction: Vector3,
 		distance: number
 	): Vector3 {
-		if (GridNav === undefined)
+		if (GridNav === undefined) {
 			return start.Add(direction.MultiplyScalar(distance))
-		if (distance < 0) direction = direction.Clone().Negate()
+		}
+		if (distance < 0) {
+			direction = direction.Clone().Negate()
+		}
 		distance = Math.abs(distance)
 
 		const step = GridNav.EdgeSize / 2,
@@ -782,10 +803,12 @@ export class Unit extends Entity {
 					(!HasBit(flags, GridNavCellFlags.Walkable) ||
 						HasBit(flags, GridNavCellFlags.Tree))) ||
 				HasBit(flags, GridNavCellFlags.MovementBlocker)
-			)
+			) {
 				break
-			if (distance < step)
+			}
+			if (distance < step) {
 				return start.Add(direction.MultiplyScalar(origDistance))
+			}
 			testPoint.AddForThis(stepVec)
 			distance -= step
 		}
@@ -841,28 +864,25 @@ export class Unit extends Entity {
 	) {
 		if (
 			checkAutoCast &&
-			ability.HasBehavior(
-				DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_AUTOCAST
-			) &&
+			ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_AUTOCAST) &&
 			!ability.IsAutoCastEnabled
-		)
+		) {
 			return this.CastToggleAuto(ability, queue, showEffects)
+		}
 
 		if (
 			checkToggled &&
 			ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) &&
 			!ability.IsToggled
-		)
-			return this.CastToggle(ability, queue, showEffects)
-
-		if (
-			ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)
-		)
-			return this.CastNoTarget(ability, queue, showEffects)
-
-		if (
-			ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)
 		) {
+			return this.CastToggle(ability, queue, showEffects)
+		}
+
+		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
+			return this.CastNoTarget(ability, queue, showEffects)
+		}
+
+		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)) {
 			if (target instanceof Entity) {
 				target = target.Position
 			}
@@ -871,11 +891,10 @@ export class Unit extends Entity {
 		}
 
 		if (
-			ability.HasBehavior(
-				DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET
-			)
-		)
+			ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)
+		) {
 			return this.CastTarget(ability, target as Entity, showEffects)
+		}
 	}
 
 	public MoveTo(position: Vector3, queue?: boolean, showEffects?: boolean) {
@@ -887,11 +906,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
-	public MoveToTarget(
-		target: Entity | number,
-		queue?: boolean,
-		showEffects?: boolean
-	) {
+	public MoveToTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET,
 			issuers: [this],
@@ -909,11 +924,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
-	public AttackTarget(
-		target: Entity | number,
-		queue?: boolean,
-		showEffects?: boolean
-	) {
+	public AttackTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET,
 			issuers: [this],
@@ -976,11 +987,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
-	public CastNoTarget(
-		ability: Ability,
-		queue?: boolean,
-		showEffects?: boolean
-	) {
+	public CastNoTarget(ability: Ability, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
 			issuers: [this],
@@ -998,11 +1005,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
-	public CastAltToggle(
-		ability: Ability,
-		queue?: boolean,
-		showEffects?: boolean
-	) {
+	public CastAltToggle(ability: Ability, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_ALT,
 			issuers: [this],
@@ -1011,11 +1014,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
-	public HoldPosition(
-		position: Vector3,
-		queue?: boolean,
-		showEffects?: boolean
-	) {
+	public HoldPosition(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION,
 			issuers: [this],
@@ -1091,11 +1090,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
-	public PickupRune(
-		rune: Rune | number,
-		queue?: boolean,
-		showEffects?: boolean
-	) {
+	public PickupRune(rune: Rune | number, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE,
 			issuers: [this],
@@ -1134,8 +1129,7 @@ export class Unit extends Entity {
 	}
 	public TakeItemFromNeutralStash(item: Item) {
 		return ExecuteOrder.PrepareOrder({
-			orderType:
-				dotaunitorder_t.DOTA_UNIT_ORDER_TAKE_ITEM_FROM_NEUTRAL_ITEM_STASH,
+			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAKE_ITEM_FROM_NEUTRAL_ITEM_STASH,
 			issuers: [this],
 			ability: item
 		})
@@ -1180,11 +1174,7 @@ export class Unit extends Entity {
 			ability: item
 		})
 	}
-	public CastRune(
-		runeItem: Item | number,
-		queue?: boolean,
-		showEffects?: boolean
-	) {
+	public CastRune(runeItem: Item | number, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RUNE,
 			issuers: [this],
@@ -1200,11 +1190,7 @@ export class Unit extends Entity {
 			ability
 		})
 	}
-	public MoveToDirection(
-		position: Vector3,
-		queue?: boolean,
-		showEffects?: boolean
-	) {
+	public MoveToDirection(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION,
 			issuers: [this],
@@ -1246,7 +1232,9 @@ export class Unit extends Entity {
 		queue?: boolean,
 		showEffects?: boolean
 	): void {
-		if (position instanceof Unit) position = position.Position
+		if (position instanceof Unit) {
+			position = position.Position
+		}
 
 		this.VectorTargetPosition(
 			ability,
@@ -1297,29 +1285,39 @@ function UnitNameChanged(unit: Unit) {
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, newVal) => {
 	const oldName = unit.Name
 	const newValue = newVal as number
-	unit.UnitName_ =
-		newValue >= 0 ? UnitData.GetUnitNameByNameIndex(newValue) ?? "" : ""
-	if (unit.UnitName_ === "") unit.UnitName_ = unit.Name_
-	if (oldName !== unit.Name) UnitNameChanged(unit)
+	unit.UnitName_ = newValue >= 0 ? UnitData.GetUnitNameByNameIndex(newValue) ?? "" : ""
+	if (unit.UnitName_ === "") {
+		unit.UnitName_ = unit.Name_
+	}
+	if (oldName !== unit.Name) {
+		UnitNameChanged(unit)
+	}
 })
 RegisterFieldHandler(Unit, "m_nameStringableIndex", unit => {
-	if (unit.UnitName_ === "") unit.UnitName_ = unit.Name_
+	if (unit.UnitName_ === "") {
+		unit.UnitName_ = unit.Name_
+	}
 	UnitNameChanged(unit)
 })
 RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", (unit, newVal) => {
 	unit.IsControllableByPlayerMask = newVal as bigint
-	if (unit.IsValid)
+	if (unit.IsValid) {
 		EventsSDK.emit("ControllableByPlayerMaskChanged", false, unit)
+	}
 })
 RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, newVal) => {
 	unit.NetworkActivity = newVal as number
 	unit.NetworkActivityStartTime = GameState.RawGameTime
 	unit.AnimationTime = 0
-	if (unit.IsValid) EventsSDK.emit("NetworkActivityChanged", false, unit)
+	if (unit.IsValid) {
+		EventsSDK.emit("NetworkActivityChanged", false, unit)
+	}
 })
 RegisterFieldHandler(Unit, "m_NetworkSequenceIndex", (unit, newVal) => {
 	unit.NetworkSequenceIndex = newVal as number
-	if (unit.IsValid) EventsSDK.emit("NetworkActivityChanged", false, unit)
+	if (unit.IsValid) {
+		EventsSDK.emit("NetworkActivityChanged", false, unit)
+	}
 })
 RegisterFieldHandler(Unit, "m_hAbilities", (unit, newVal) => {
 	const prevSpells = [...unit.Spells]
@@ -1331,14 +1329,17 @@ RegisterFieldHandler(Unit, "m_hAbilities", (unit, newVal) => {
 			ent.Owner_ = unit.Handle
 			ent.OwnerEntity = unit
 			unit.Spells[i] = ent
-		} else unit.TotalItems[i] = undefined
+		} else {
+			unit.TotalItems[i] = undefined
+		}
 	}
 	for (let i = ar.length; i < unit.Spells_.length; i++) {
 		unit.Spells_[i] = 0
 		unit.Spells[i] = undefined
 	}
-	if (unit.Spells.some((abil, i) => prevSpells[i] !== abil))
+	if (unit.Spells.some((abil, i) => prevSpells[i] !== abil)) {
 		EventsSDK.emit("UnitAbilitiesChanged", false, unit)
+	}
 })
 RegisterFieldHandler(Unit, "m_hItems", (unit, newVal) => {
 	const prevTotalItems = [...unit.TotalItems]
@@ -1350,14 +1351,17 @@ RegisterFieldHandler(Unit, "m_hItems", (unit, newVal) => {
 			ent.Owner_ = unit.Handle
 			ent.OwnerEntity = unit
 			unit.TotalItems[i] = ent
-		} else unit.TotalItems[i] = undefined
+		} else {
+			unit.TotalItems[i] = undefined
+		}
 	}
 	for (let i = ar.length; i < unit.TotalItems_.length; i++) {
 		unit.TotalItems_[i] = 0
 		unit.TotalItems[i] = undefined
 	}
-	if (unit.TotalItems.some((item, i) => prevTotalItems[i] !== item))
+	if (unit.TotalItems.some((item, i) => prevTotalItems[i] !== item)) {
 		EventsSDK.emit("UnitItemsChanged", false, unit)
+	}
 })
 RegisterFieldHandler(Unit, "m_hMyWearables", (unit, newVal) => {
 	unit.MyWearables_ = newVal as number[]
@@ -1373,13 +1377,15 @@ RegisterFieldHandler(Unit, "m_anglediff", (unit, newVal) => {
 RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, newVal) => {
 	unit.Spawner_ = newVal as number
 	const ent = EntityManager.EntityByIndex(unit.Spawner_)
-	if (ent instanceof NeutralSpawner) unit.Spawner = ent
+	if (ent instanceof NeutralSpawner) {
+		unit.Spawner = ent
+	}
 })
 
 function OnAbilityChanged(ent: Ability) {
 	if (ent instanceof Item) {
 		for (const unit of Units) {
-			for (let i = 0, end = unit.TotalItems_.length; i < end; i++)
+			for (let i = 0, end = unit.TotalItems_.length; i < end; i++) {
 				if (ent.HandleMatches(unit.TotalItems_[i])) {
 					unit.TotalItems[i] = ent
 					ent.Owner_ = unit.Handle
@@ -1387,12 +1393,13 @@ function OnAbilityChanged(ent: Ability) {
 					EventsSDK.emit("UnitItemsChanged", false, unit)
 					break
 				}
+			}
 		}
 		return
 	}
 
 	for (const unit of Units) {
-		for (let i = 0, end = unit.Spells_.length; i < end; i++)
+		for (let i = 0, end = unit.Spells_.length; i < end; i++) {
 			if (ent.HandleMatches(unit.Spells_[i])) {
 				unit.Spells[i] = ent
 				ent.Owner_ = unit.Handle
@@ -1400,12 +1407,13 @@ function OnAbilityChanged(ent: Ability) {
 				EventsSDK.emit("UnitAbilitiesChanged", false, unit)
 				break
 			}
+		}
 	}
 }
 
 function OnWearableChanged(ent: Wearable) {
 	for (const unit of Units) {
-		for (let i = 0, end = unit.MyWearables_.length; i < end; i++)
+		for (let i = 0, end = unit.MyWearables_.length; i < end; i++) {
 			if (
 				ent.HandleMatches(unit.MyWearables_[i]) &&
 				!unit.MyWearables.includes(ent)
@@ -1414,6 +1422,7 @@ function OnWearableChanged(ent: Wearable) {
 				EventsSDK.emit("UnitWearablesChanged", false, unit)
 				break
 			}
+		}
 	}
 }
 
@@ -1423,9 +1432,13 @@ EventsSDK.on("PreEntityCreated", ent => {
 		ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 		ent.LastPredictedPositionUpdate = GameState.RawGameTime
 	}
-	if (ent instanceof NeutralSpawner)
-		for (const unit of Units)
-			if (ent.HandleMatches(unit.Spawner_)) unit.Spawner = ent
+	if (ent instanceof NeutralSpawner) {
+		for (const unit of Units) {
+			if (ent.HandleMatches(unit.Spawner_)) {
+				unit.Spawner = ent
+			}
+		}
+	}
 
 	if (ent instanceof Wearable) {
 		OnWearableChanged(ent)
@@ -1436,51 +1449,61 @@ EventsSDK.on("PreEntityCreated", ent => {
 	}
 
 	const owner = ent.Owner
-	if (!(owner instanceof Unit)) return
+	if (!(owner instanceof Unit)) {
+		return
+	}
 	if (ent instanceof Item) {
-		for (let i = 0, end = owner.TotalItems_.length; i < end; i++)
+		for (let i = 0, end = owner.TotalItems_.length; i < end; i++) {
 			if (ent.HandleMatches(owner.TotalItems_[i])) {
 				owner.TotalItems[i] = ent
 				EventsSDK.emit("UnitItemsChanged", false, owner)
 				break
 			}
+		}
 	} else if (ent instanceof Ability) {
-		for (let i = 0, end = owner.Spells_.length; i < end; i++)
+		for (let i = 0, end = owner.Spells_.length; i < end; i++) {
 			if (ent.HandleMatches(owner.Spells_[i])) {
 				owner.Spells[i] = ent
 				EventsSDK.emit("UnitAbilitiesChanged", false, owner)
 				break
 			}
+		}
 	} else if (ent instanceof Wearable) {
-		for (let i = 0, end = owner.MyWearables_.length; i < end; i++)
+		for (let i = 0, end = owner.MyWearables_.length; i < end; i++) {
 			if (ent.HandleMatches(owner.MyWearables_[i])) {
 				owner.MyWearables.push(ent)
 				EventsSDK.emit("UnitWearablesChanged", false, owner)
 				break
 			}
+		}
 	}
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
 	const owner = ent.Owner
-	if (!(owner instanceof Unit)) return
+	if (!(owner instanceof Unit)) {
+		return
+	}
 	if (ent instanceof Item) {
-		for (let i = 0, end = owner.TotalItems.length; i < end; i++)
+		for (let i = 0, end = owner.TotalItems.length; i < end; i++) {
 			if (ent === owner.TotalItems[i]) {
 				owner.TotalItems[i] = undefined
 				EventsSDK.emit("UnitItemsChanged", false, owner)
 				break
 			}
+		}
 	} else if (ent instanceof Ability) {
-		for (let i = 0, end = owner.Spells.length; i < end; i++)
+		for (let i = 0, end = owner.Spells.length; i < end; i++) {
 			if (ent === owner.Spells[i]) {
 				owner.Spells[i] = undefined
 				EventsSDK.emit("UnitAbilitiesChanged", false, owner)
 				break
 			}
+		}
 	} else if (ent instanceof Wearable) {
-		if (arrayRemove(owner.MyWearables, ent))
+		if (arrayRemove(owner.MyWearables, ent)) {
 			EventsSDK.emit("UnitWearablesChanged", false, owner)
+		}
 	}
 })
 
@@ -1506,7 +1529,9 @@ EventsSDK.on("Tick", dt => {
 				0
 			)
 		}
-		if (!unit.IsWaitingToSpawn) unit.PredictedIsWaitingToSpawn = false
+		if (!unit.IsWaitingToSpawn) {
+			unit.PredictedIsWaitingToSpawn = false
+		}
 		if (unit.IsVisible) {
 			unit.PredictedPosition.CopyFrom(unit.NetworkedPosition)
 			unit.LastRealPredictedPositionUpdate = GameState.RawGameTime

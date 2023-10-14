@@ -36,7 +36,9 @@ export class Button extends Base {
 		)
 	}
 	public Update(): boolean {
-		if (!super.Update()) return false
+		if (!super.Update()) {
+			return false
+		}
 		Button.buttonOffset
 			.MultiplyScalar(2)
 			.SubtractScalarX(2) // because textButtonGap includes bar size
@@ -68,8 +70,9 @@ export class Button extends Base {
 		return !this.IsHovered
 	}
 	public OnMouseLeftUp(): boolean {
-		if (this.ButtonRect.Contains(this.MousePosition))
+		if (this.ButtonRect.Contains(this.MousePosition)) {
 			this.TriggerOnValueChangedCBs()
+		}
 		return false
 	}
 }

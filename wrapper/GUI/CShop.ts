@@ -51,11 +51,7 @@ export class CShop {
 			Color.Red.SetA(128)
 		)
 
-		RendererSDK.FilledRect(
-			this.Stash.pos1,
-			this.Stash.Size,
-			Color.Gray.SetA(128)
-		)
+		RendererSDK.FilledRect(this.Stash.pos1, this.Stash.Size, Color.Gray.SetA(128))
 		RendererSDK.FilledRect(
 			this.StashGrabAll.pos1,
 			this.StashGrabAll.Size,
@@ -83,21 +79,17 @@ export class CShop {
 			this.CourierGold.x + ScaleWidth(8 + (!hudFlip ? 20 : 0), screenSize)
 		this.ShopButton.y = this.CourierGold.y + ScaleHeight(12, screenSize)
 	}
-	private CalculateQuickbuyAndSticky(
-		screenSize: Vector2,
-		hudFlip: boolean
-	): void {
+	private CalculateQuickbuyAndSticky(screenSize: Vector2, hudFlip: boolean): void {
 		this.ClearQuickBuy1Row.Width = this.ClearQuickBuy2Rows.Width = ScaleWidth(
 			16,
 			screenSize
 		)
-		this.ClearQuickBuy1Row.Height = this.ClearQuickBuy2Rows.Height =
-			ScaleHeight(16, screenSize)
-
-		this.Quickbuy1Row.Width = this.Quickbuy2Rows.Width = ScaleWidth(
-			202,
+		this.ClearQuickBuy1Row.Height = this.ClearQuickBuy2Rows.Height = ScaleHeight(
+			16,
 			screenSize
 		)
+
+		this.Quickbuy1Row.Width = this.Quickbuy2Rows.Width = ScaleWidth(202, screenSize)
 		this.Quickbuy1Row.Height = ScaleHeight(40, screenSize)
 		this.Quickbuy2Rows.Height = ScaleHeight(74, screenSize)
 		this.Quickbuy1Row.y = this.CourierGold.y - this.Quickbuy1Row.Height

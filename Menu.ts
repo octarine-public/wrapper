@@ -11,13 +11,11 @@ const MainMenuKeyBind = SettingsTree.AddKeybind("Menu Bind", "Insert")
 MainMenuKeyBind.ActivatesInMenu = true
 MainMenuKeyBind.TriggerOnChat = true
 
-const SettingsLanguage = SettingsTree.AddDropdown(
-	"Language",
-	["English", "Russian"],
-	1
-)
+const SettingsLanguage = SettingsTree.AddDropdown("Language", ["English", "Russian"], 1)
 SettingsLanguage.OnValue(change => {
-	if (Menu.MenuManager.emptyConfig) return
+	if (Menu.MenuManager.emptyConfig) {
+		return
+	}
 	switch (change.SelectedID) {
 		case 0:
 			Menu.Localization.SelectedUnitName = "english"

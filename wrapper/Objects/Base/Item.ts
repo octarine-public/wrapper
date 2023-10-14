@@ -117,12 +117,18 @@ export class Item extends Ability {
 	}
 
 	public CanBeCasted(bonusMana: number = 0): boolean {
-		if (!this.IsValid || this.IsMuted) return false
+		if (!this.IsValid || this.IsMuted) {
+			return false
+		}
 
 		const rootOwner = this.RootOwner
-		if (rootOwner?.CannotUseItem(this)) return false
+		if (rootOwner?.CannotUseItem(this)) {
+			return false
+		}
 
-		if (this.RequiresCharges && this.CurrentCharges < 1) return false
+		if (this.RequiresCharges && this.CurrentCharges < 1) {
+			return false
+		}
 
 		return (
 			this.Level !== 0 &&

@@ -16,12 +16,7 @@ import { CPreGame } from "./CPreGame"
 import { CScoreboard } from "./CScoreboard"
 import { CShop } from "./CShop"
 import { CTopBar } from "./CTopBar"
-import {
-	GetHeightScale,
-	GetWidthScale,
-	ScaleHeight,
-	ScaleWidth
-} from "./Helpers"
+import { GetHeightScale, GetWidthScale, ScaleHeight, ScaleWidth } from "./Helpers"
 
 const latestScreenSize = new Vector2()
 export const GUIInfo = new (class CGUIInfo {
@@ -55,46 +50,53 @@ export const GUIInfo = new (class CGUIInfo {
 			this.HUDFlipped !== hudFlipped || !latestScreenSize.Equals(screenSize)
 		latestScreenSize.CopyFrom(screenSize)
 		this.HUDFlipped = hudFlipped
-		if (
-			everythingChanged ||
-			this.TopBar === undefined ||
-			this.TopBar.HasChanged()
-		)
+		if (everythingChanged || this.TopBar === undefined || this.TopBar.HasChanged()) {
 			this.TopBar = new CTopBar(screenSize)
+		}
 		if (
 			everythingChanged ||
 			this.Minimap === undefined ||
 			this.Minimap.HasChanged()
-		)
+		) {
 			this.Minimap = new CMinimap(screenSize, hudFlipped)
-		if (everythingChanged || this.Shop === undefined || this.Shop.HasChanged())
+		}
+		if (everythingChanged || this.Shop === undefined || this.Shop.HasChanged()) {
 			this.Shop = new CShop(screenSize, hudFlipped)
+		}
 		if (
 			everythingChanged ||
 			this.OpenShopMini === undefined ||
 			this.OpenShopMini.HasChanged()
-		)
+		) {
 			this.OpenShopMini = new COpenShop(false, screenSize, hudFlipped)
+		}
 		if (
 			everythingChanged ||
 			this.OpenShopLarge === undefined ||
 			this.OpenShopLarge.HasChanged()
-		)
+		) {
 			this.OpenShopLarge = new COpenShop(true, screenSize, hudFlipped)
+		}
 		if (
 			everythingChanged ||
 			this.PreGame === undefined ||
 			this.PreGame.HasChanged()
-		)
+		) {
 			this.PreGame = new CPreGame(screenSize)
+		}
 		if (
 			everythingChanged ||
 			this.Scoreboard === undefined ||
 			this.Scoreboard.HasChanged()
-		)
+		) {
 			this.Scoreboard = new CScoreboard(screenSize)
-		if (everythingChanged) this.LowerHUD_.clear()
-		if (this.debugDraw) this.DebugDraw()
+		}
+		if (everythingChanged) {
+			this.LowerHUD_.clear()
+		}
+		if (this.debugDraw) {
+			this.DebugDraw()
+		}
 	}
 	public GetVisibleAbilitiesForUnit(unit: Unit): Ability[] {
 		return unit.Spells.filter(
@@ -147,16 +149,20 @@ export const GUIInfo = new (class CGUIInfo {
 		return hud
 	}
 	public DebugDraw(): void {
-		if (
-			GameRules?.GameState !== DOTAGameState.DOTA_GAMERULES_STATE_HERO_SELECTION
-		) {
+		if (GameRules?.GameState !== DOTAGameState.DOTA_GAMERULES_STATE_HERO_SELECTION) {
 			this.TopBar.DebugDraw()
 			this.Minimap.DebugDraw()
 			this.Shop.DebugDraw()
-			if (InputManager.IsShopOpen) this.OpenShopLarge.DebugDraw()
+			if (InputManager.IsShopOpen) {
+				this.OpenShopLarge.DebugDraw()
+			}
 			this.GetLowerHUDForUnit()?.DebugDraw()
-			if (InputManager.IsScoreboardOpen) this.Scoreboard.DebugDraw()
-		} else this.PreGame.DebugDraw()
+			if (InputManager.IsScoreboardOpen) {
+				this.Scoreboard.DebugDraw()
+			}
+		} else {
+			this.PreGame.DebugDraw()
+		}
 	}
 	public GetWidthScale(screenSize = RendererSDK.WindowSize): number {
 		return GetWidthScale(screenSize)

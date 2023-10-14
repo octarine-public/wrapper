@@ -25,16 +25,18 @@ export class FakeUnit {
 	) {}
 
 	public get LastRealPredictedPositionUpdate(): number {
-		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid)
+		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
 			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime
+		}
 		return this.LastRealPredictedPositionUpdate_
 	}
 	public set LastRealPredictedPositionUpdate(val: number) {
 		this.LastRealPredictedPositionUpdate_ = val
 	}
 	public get LastPredictedPositionUpdate(): number {
-		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid)
+		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
 			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime
+		}
 		return this.LastPredictedPositionUpdate_
 	}
 	public set LastPredictedPositionUpdate(val: number) {
@@ -45,25 +47,29 @@ export class FakeUnit {
 	}
 	public HandleMatches(handle: number): boolean {
 		const index = handle & EntityManager.INDEX_MASK
-		const serial =
-			(handle >> EntityManager.INDEX_BITS) & EntityManager.SERIAL_MASK
-		if (this.Index !== index) return false
-		if (this.Serial !== 0) return this.SerialMatches(serial)
+		const serial = (handle >> EntityManager.INDEX_BITS) & EntityManager.SERIAL_MASK
+		if (this.Index !== index) {
+			return false
+		}
+		if (this.Serial !== 0) {
+			return this.SerialMatches(serial)
+		}
 		this.Serial = serial
 		return true
 	}
 	public EntityMatches(ent: Entity): boolean {
-		return ent.HandleMatches(
-			(this.Serial << EntityManager.INDEX_BITS) | this.Index
-		)
+		return ent.HandleMatches((this.Serial << EntityManager.INDEX_BITS) | this.Index)
 	}
 	public UpdateName(): void {
-		if (this.Name !== "") return
+		if (this.Name !== "") {
+			return
+		}
 		const data = PlayerResource?.PlayerTeamData?.find(
 			x => x !== undefined && this.HandleMatches(x.SelectedHeroIndex)
 		)
-		if (data !== undefined)
+		if (data !== undefined) {
 			this.Name = UnitData.GetHeroNameByID(data.SelectedHeroID)
+		}
 	}
 }
 const fakeUnitsMap = new Map<number, FakeUnit>()
@@ -72,15 +78,21 @@ export const FakeUnits: FakeUnit[] = []
 export function GetPredictionTarget(
 	handle: Nullable<Entity | number>
 ): Nullable<Unit | FakeUnit> {
-	if (handle === undefined) return undefined
-	if (handle instanceof Entity)
+	if (handle === undefined) {
+		return undefined
+	}
+	if (handle instanceof Entity) {
 		return handle instanceof Unit ? handle : undefined
+	}
 	const index = handle & EntityManager.INDEX_MASK
-	const serial =
-		(handle >> EntityManager.INDEX_BITS) & EntityManager.SERIAL_MASK
-	if (handle === 0 || index === EntityManager.INDEX_MASK) return undefined
+	const serial = (handle >> EntityManager.INDEX_BITS) & EntityManager.SERIAL_MASK
+	if (handle === 0 || index === EntityManager.INDEX_MASK) {
+		return undefined
+	}
 	const ent = EntityManager.EntityByIndex(handle)
-	if (ent !== undefined) return ent instanceof Unit ? ent : undefined
+	if (ent !== undefined) {
+		return ent instanceof Unit ? ent : undefined
+	}
 	let fakeUnit = fakeUnitsMap.get(index)
 	if (fakeUnit === undefined) {
 		fakeUnit = new FakeUnit(index, serial)
@@ -93,10 +105,14 @@ export function GetPredictionTarget(
 
 EventsSDK.on("EntityCreated", ent => {
 	const fakeUnit = fakeUnitsMap.get(ent.Index)
-	if (fakeUnit === undefined) return
+	if (fakeUnit === undefined) {
+		return
+	}
 	fakeUnitsMap.delete(ent.Index)
 	arrayRemove(FakeUnits, fakeUnit)
-	if (!(ent instanceof Unit)) return
+	if (!(ent instanceof Unit)) {
+		return
+	}
 	ent.TPStartTime = fakeUnit.TPStartTime
 	ent.TPStartPosition.CopyFrom(fakeUnit.TPStartPosition)
 	ent.TPEndPosition.CopyFrom(fakeUnit.TPEndPosition)
@@ -109,5 +125,7 @@ EventsSDK.on("GameEnded", () => {
 })
 
 EventsSDK.on("PostDataUpdate", () => {
-	for (const fakeUnit of FakeUnits) fakeUnit.UpdateName()
+	for (const fakeUnit of FakeUnits) {
+		fakeUnit.UpdateName()
+	}
 })

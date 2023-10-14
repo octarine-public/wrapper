@@ -45,9 +45,7 @@ export class PlayerEventData {
 		return this.properties.get("m_iSaluteAmounts") as number
 	}
 	public get EventArcanaPeriodicResourceRemaining(): number {
-		return this.properties.get(
-			"m_iEventArcanaPeriodicResourceRemaining"
-		) as number
+		return this.properties.get("m_iEventArcanaPeriodicResourceRemaining") as number
 	}
 	public get EventArcanaPeriodicResourceMax(): number {
 		return this.properties.get("m_iEventArcanaPeriodicResourceMax") as number

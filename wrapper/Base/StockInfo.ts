@@ -39,9 +39,7 @@ export class StockInfo {
 		return this.properties.get("iBonusDelayedStockCount") as number
 	}
 	public GetAbilityData(): AbilityData {
-		return (
-			AbilityData.GetAbilityByName(this.GetAbilityName()) ?? AbilityData.empty
-		)
+		return AbilityData.GetAbilityByName(this.GetAbilityName()) ?? AbilityData.empty
 	}
 	public GetAbilityName(): string {
 		return AbilityData.GetAbilityNameByID(this.AbilityID) ?? ""

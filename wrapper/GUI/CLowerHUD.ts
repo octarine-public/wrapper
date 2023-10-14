@@ -47,10 +47,7 @@ export class CLowerHUD {
 
 		// TODO: calculate stats groups positions
 		this.StatsContainer.Width = ScaleWidth(129, screenSize)
-		this.StatsContainer.Height = this.StatsContainer.x = ScaleWidth(
-			82,
-			screenSize
-		)
+		this.StatsContainer.Height = this.StatsContainer.x = ScaleWidth(82, screenSize)
 		this.StatsContainer.y =
 			screenSize.y - this.StatsContainer.Height - ScaleHeight(145, screenSize)
 
@@ -59,9 +56,7 @@ export class CLowerHUD {
 			ScaleHeight(104, screenSize) + ScaleHeight(25, screenSize)
 		this.AbilitiesContainer.x = ScaleWidth(219, screenSize)
 		this.AbilitiesContainer.y =
-			screenSize.y -
-			this.AbilitiesContainer.Height -
-			ScaleHeight(50, screenSize)
+			screenSize.y - this.AbilitiesContainer.Height - ScaleHeight(50, screenSize)
 
 		if (isHero) {
 			this.TalentTree.Width = ScaleWidth(62, screenSize)
@@ -119,10 +114,7 @@ export class CLowerHUD {
 		this.InventoryContainer.x =
 			maxX - this.InventoryContainer.Width - ScaleWidth(93, screenSize)
 		this.InventoryContainer.y = screenSize.y - this.InventoryContainer.Height
-		maxX = Math.max(
-			maxX,
-			this.InventoryContainer.pos2.x + ScaleWidth(93, screenSize)
-		)
+		maxX = Math.max(maxX, this.InventoryContainer.pos2.x + ScaleWidth(93, screenSize))
 
 		const MaininventoryItemWidth = ScaleWidth(60, screenSize),
 			MainInventoryItemHeight = ScaleHeight(45, screenSize),
@@ -139,10 +131,8 @@ export class CLowerHUD {
 			const ItemRect = new Rectangle()
 			ItemRect.Width = MaininventoryItemWidth
 			ItemRect.Height = MainInventoryItemHeight
-			ItemRect.x =
-				MainInventoryRow1Container.x + MainInventoryItemMarginHorizontal
-			ItemRect.y =
-				MainInventoryRow1Container.y + MainInventoryItemMarginVertical
+			ItemRect.x = MainInventoryRow1Container.x + MainInventoryItemMarginHorizontal
+			ItemRect.y = MainInventoryRow1Container.y + MainInventoryItemMarginVertical
 			MainInventoryRow1Container.x +=
 				ItemRect.Width + MainInventoryItemMarginHorizontal
 			this.MainInventorySlots.push(ItemRect)
@@ -158,10 +148,8 @@ export class CLowerHUD {
 			const ItemRect = new Rectangle()
 			ItemRect.Width = MaininventoryItemWidth
 			ItemRect.Height = MainInventoryItemHeight
-			ItemRect.x =
-				MainInventoryRow2Container.x + MainInventoryItemMarginHorizontal
-			ItemRect.y =
-				MainInventoryRow2Container.y + MainInventoryItemMarginVertical
+			ItemRect.x = MainInventoryRow2Container.x + MainInventoryItemMarginHorizontal
+			ItemRect.y = MainInventoryRow2Container.y + MainInventoryItemMarginVertical
 			MainInventoryRow2Container.x +=
 				ItemRect.Width + MainInventoryItemMarginHorizontal
 			this.MainInventorySlots.push(ItemRect)
@@ -171,8 +159,7 @@ export class CLowerHUD {
 		const BackpackContainer = new Rectangle()
 		BackpackContainer.Height = ScaleWidth(34, screenSize)
 		BackpackContainer.x = this.InventoryContainer.x + ScaleWidth(6, screenSize)
-		BackpackContainer.y =
-			this.InventoryContainer.y + ScaleHeight(104, screenSize)
+		BackpackContainer.y = this.InventoryContainer.y + ScaleHeight(104, screenSize)
 		for (let i = 0; i < 3; i++) {
 			const ItemRect = new Rectangle()
 			ItemRect.Width = BackpackItemWidth
@@ -197,15 +184,12 @@ export class CLowerHUD {
 		this.NeutralAndTPContainer.Height = ScaleHeight(128, screenSize)
 		this.NeutralAndTPContainer.x =
 			maxX - ScaleWidth(44, screenSize) - this.NeutralAndTPContainer.Width
-		this.NeutralAndTPContainer.y =
-			screenSize.y - this.NeutralAndTPContainer.Height
+		this.NeutralAndTPContainer.y = screenSize.y - this.NeutralAndTPContainer.Height
 
 		const NeutralAndTPPaddingWidth = ScaleWidth(2, screenSize),
 			NeutralAndTPPaddingHeight = ScaleHeight(2, screenSize)
-		const NeutralAndTPWidthPadded =
-				NeutralAndTPWidth - NeutralAndTPPaddingWidth * 2,
-			NeutralAndTPHeightPadded =
-				NeutralAndTPHeight - NeutralAndTPPaddingHeight * 2
+		const NeutralAndTPWidthPadded = NeutralAndTPWidth - NeutralAndTPPaddingWidth * 2,
+			NeutralAndTPHeightPadded = NeutralAndTPHeight - NeutralAndTPPaddingHeight * 2
 		const BaseNeutralAndTPHeight =
 			screenSize.y - NeutralAndTPHeight + NeutralAndTPPaddingHeight
 		this.TPSlot.Width = NeutralAndTPWidthPadded
@@ -226,9 +210,7 @@ export class CLowerHUD {
 			ScaleWidth(266, screenSize) -
 			this.HealthManaContainer.x
 		this.HealthManaContainer.y =
-			screenSize.y -
-			ScaleHeight(8, screenSize) -
-			this.HealthManaContainer.Height
+			screenSize.y - ScaleHeight(8, screenSize) - this.HealthManaContainer.Height
 
 		this.CenterEverything(screenSize, maxX, hudFlip)
 	}
@@ -301,13 +283,11 @@ export class CLowerHUD {
 		)
 	}
 
-	private CenterEverything(
-		screenSize: Vector2,
-		maxX: number,
-		hudFlip: boolean
-	): void {
+	private CenterEverything(screenSize: Vector2, maxX: number, hudFlip: boolean): void {
 		let baseX = Math.floor((screenSize.x - maxX) / 2)
-		if (hudFlip) baseX++
+		if (hudFlip) {
+			baseX++
+		}
 		this.LeftFlare.x += baseX
 		this.Portrait.x += baseX
 		this.XP.x += baseX

@@ -8,7 +8,9 @@ globalThisAny.StringTables = stringTables
 
 EventsSDK.on("RemoveAllStringTables", () => stringTables.clear())
 EventsSDK.on("UpdateStringTable", (name, update) => {
-	if (!stringTables.has(name)) stringTables.set(name, new Map())
+	if (!stringTables.has(name)) {
+		stringTables.set(name, new Map())
+	}
 	const table = stringTables.get(name)!
 	update.forEach((val, key) => table.set(key, [val[0], val[1]]))
 })
@@ -22,7 +24,9 @@ export function GetString(tableName: string, index: number): string {
 }
 export function GetValue(tableName: string, index: number): string {
 	const ar = GetTable(tableName)?.get(index)
-	if (ar === undefined) return ""
+	if (ar === undefined) {
+		return ""
+	}
 	const stream = new ViewBinaryStream(new DataView(ar[1]))
 	return stream.ReadUtf8String(stream.Remaining)
 }

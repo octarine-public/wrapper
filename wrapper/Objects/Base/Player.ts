@@ -69,7 +69,9 @@ export class Player extends Entity {
 
 	public UpdateHero(playerResource: Nullable<CPlayerResource>): void {
 		const teamDataAr = playerResource?.PlayerTeamData
-		if (teamDataAr === undefined) return
+		if (teamDataAr === undefined) {
+			return
+		}
 		this.Hero_ = teamDataAr[this.PlayerID]?.SelectedHeroIndex ?? this.Hero_
 		const ent = EntityManager.EntityByIndex(this.Hero_)
 		this.Hero = ent instanceof Hero ? ent : undefined
@@ -86,21 +88,37 @@ EventsSDK.on("PreEntityCreated", ent => {
 		ent.UpdateHero(PlayerResource)
 		return
 	}
-	for (const player of Players)
-		if (ent.HandleMatches(player.Pawn_)) player.Pawn = ent
-	if (ent instanceof Hero && ent.CanBeMainHero)
-		for (const player of Players)
-			if (ent.HandleMatches(player.Hero_)) player.Hero = ent
+	for (const player of Players) {
+		if (ent.HandleMatches(player.Pawn_)) {
+			player.Pawn = ent
+		}
+	}
+	if (ent instanceof Hero && ent.CanBeMainHero) {
+		for (const player of Players) {
+			if (ent.HandleMatches(player.Hero_)) {
+				player.Hero = ent
+			}
+		}
+	}
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	for (const player of Players)
-		if (ent.HandleMatches(player.Pawn_)) player.Pawn = undefined
-	if (ent instanceof Hero)
-		for (const player of Players)
-			if (ent.HandleMatches(player.Hero_)) player.Hero = undefined
+	for (const player of Players) {
+		if (ent.HandleMatches(player.Pawn_)) {
+			player.Pawn = undefined
+		}
+	}
+	if (ent instanceof Hero) {
+		for (const player of Players) {
+			if (ent.HandleMatches(player.Hero_)) {
+				player.Hero = undefined
+			}
+		}
+	}
 })
 
 EventsSDK.on("PlayerResourceUpdated", playerResource => {
-	for (const player of Players) player.UpdateHero(playerResource)
+	for (const player of Players) {
+		player.UpdateHero(playerResource)
+	}
 })

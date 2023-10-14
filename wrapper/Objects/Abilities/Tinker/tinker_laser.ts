@@ -7,8 +7,9 @@ export class tinker_laser extends Ability {
 		return this.GetSpecialValue("laser_damage")
 	}
 	public GetAOERadiusForLevel(level: number): number {
-		if (this.Owner?.HasScepter)
+		if (this.Owner?.HasScepter) {
 			return this.GetSpecialValue("scepter_bounce_range", level)
+		}
 		return 0
 	}
 	public GetCastRangeForLevel(level: number): number {

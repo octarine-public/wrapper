@@ -9,9 +9,7 @@ export class Tower extends Building {
 	public TowerAttackTarget_ = 0
 
 	public get TowerAttackTarget(): Nullable<Unit> {
-		return EntityManager.EntityByIndex(
-			this.TowerAttackTarget_
-		) as Nullable<Unit>
+		return EntityManager.EntityByIndex(this.TowerAttackTarget_) as Nullable<Unit>
 	}
 	public get IsDeniable(): boolean {
 		return super.IsDeniable || this.HPPercent <= 10

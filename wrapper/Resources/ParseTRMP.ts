@@ -23,7 +23,9 @@ export function ParseTRMP(stream: ReadableBinaryStream): Vector3[] {
 		treeCount = stream.ReadUint32()
 	stream.pos = dataOffset
 
-	for (let i = 0; i < lumpNamesCount; i++) stream.ReadNullTerminatedUtf8String()
+	for (let i = 0; i < lumpNamesCount; i++) {
+		stream.ReadNullTerminatedUtf8String()
+	}
 
 	const trees: Vector3[] = []
 	for (let i = 0; i < treeCount; i++) {

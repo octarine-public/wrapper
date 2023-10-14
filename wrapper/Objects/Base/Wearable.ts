@@ -29,21 +29,29 @@ RegisterFieldHandler(Wearable, "m_iItemDefinitionIndex", (ent, newVal) => {
 })
 RegisterFieldHandler(Wearable, "m_hAdditionalWearable", (ent, newVal) => {
 	ent.AdditionalWearable_ = newVal as number
-	ent.AdditionalWearable = EntityManager.EntityByIndex(
-		ent.Owner_
-	) as Nullable<Wearable>
+	ent.AdditionalWearable = EntityManager.EntityByIndex(ent.Owner_) as Nullable<Wearable>
 })
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent.Index === 0) return
-	if (ent instanceof Wearable)
-		for (const wearable of Wearables)
-			if (ent.HandleMatches(wearable.AdditionalWearable_))
+	if (ent.Index === 0) {
+		return
+	}
+	if (ent instanceof Wearable) {
+		for (const wearable of Wearables) {
+			if (ent.HandleMatches(wearable.AdditionalWearable_)) {
 				wearable.AdditionalWearable = ent
+			}
+		}
+	}
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	if (ent.Index === 0) return
-	if (ent instanceof Wearable)
-		for (const wearable of Wearables)
-			if (ent.HandleMatches(wearable.AdditionalWearable_))
+	if (ent.Index === 0) {
+		return
+	}
+	if (ent instanceof Wearable) {
+		for (const wearable of Wearables) {
+			if (ent.HandleMatches(wearable.AdditionalWearable_)) {
 				wearable.AdditionalWearable = undefined
+			}
+		}
+	}
 })

@@ -111,11 +111,7 @@ Events.on("WndProc", (msg, wParam, _lParam, x, y) => {
 			return InputEventSDK.emit("MouseKeyUp", true, mKey)
 
 		case InputMessage.WM_MOUSEWHEEL:
-			return InputEventSDK.emit(
-				"MouseWheel",
-				true,
-				FixInt16(hidword(wParam)) > 0
-			)
+			return InputEventSDK.emit("MouseWheel", true, FixInt16(hidword(wParam)) > 0)
 
 		default:
 			break
@@ -609,13 +605,7 @@ interface InputEventSDK extends EventEmitter {
 	 * @param callback returns keyMask. You can use HasMask from Utils
 	 */
 	on(name: "KeyUp", callback: (keyMask: VKeys) => boolean | any): EventEmitter
-	on(
-		name: "MouseKeyDown",
-		callback: (key: VMouseKeys) => boolean | any
-	): EventEmitter
-	on(
-		name: "MouseKeyUp",
-		callback: (key: VMouseKeys) => boolean | any
-	): EventEmitter
+	on(name: "MouseKeyDown", callback: (key: VMouseKeys) => boolean | any): EventEmitter
+	on(name: "MouseKeyUp", callback: (key: VMouseKeys) => boolean | any): EventEmitter
 	on(name: "MouseWheel", callback: (up: boolean) => boolean | any): EventEmitter
 }

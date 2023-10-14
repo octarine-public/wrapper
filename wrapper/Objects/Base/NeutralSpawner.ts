@@ -21,9 +21,7 @@ export class NeutralSpawner extends Entity {
 		return this.SpawnBox_
 	}
 	public get SpawnerTeam(): Team {
-		return this.SpawnBox?.CampName?.includes("_evil_")
-			? Team.Dire
-			: Team.Radiant
+		return this.SpawnBox?.CampName?.includes("_evil_") ? Team.Dire : Team.Radiant
 	}
 	public get Name(): string {
 		return this.SpawnBox?.CampName ?? ""

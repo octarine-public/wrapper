@@ -45,7 +45,9 @@ export class KeyBind extends Base {
 		return this.assignedKey
 	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number") return
+		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number") {
+			return
+		}
 		this.assignedKey = value !== undefined ? value : this.assignedKey
 	}
 	public get isPressed(): boolean {
@@ -68,20 +70,27 @@ export class KeyBind extends Base {
 
 	public OnPressed(func: (caller: this) => any) {
 		return this.OnValue(caller => {
-			if (caller.isPressed) func(caller)
+			if (caller.isPressed) {
+				func(caller)
+			}
 		})
 	}
 	public OnRelease(func: (caller: this) => any) {
 		return this.OnValue(caller => {
-			if (!caller.isPressed) func(caller)
+			if (!caller.isPressed) {
+				func(caller)
+			}
 		})
 	}
 
 	public Update(_recursive = false, assignKeyStr = true): boolean {
-		if (!super.Update()) return false
+		if (!super.Update()) {
+			return false
+		}
 		KeyBind.callbacks.forEach((keybinds, key) => {
-			if (arrayRemove(keybinds, this) && keybinds.length === 0)
+			if (arrayRemove(keybinds, this) && keybinds.length === 0) {
 				KeyBind.callbacks.delete(key)
+			}
 		})
 		if (this.assignedKey > 0) {
 			let ar = KeyBind.callbacks.get(this.assignedKey)
@@ -91,11 +100,12 @@ export class KeyBind extends Base {
 			}
 			ar.push(this)
 		}
-		if (assignKeyStr)
+		if (assignKeyStr) {
 			this.assignedKeyStr =
 				this.assignedKey >= KeyNames.length
 					? "Unknown"
 					: KeyNames[Math.max(this.assignedKey, 0)]
+		}
 		Vector2.FromVector3(this.GetTextSizeDefault(this.assignedKeyStr)).CopyTo(
 			this.keybindTextSize
 		)
@@ -116,27 +126,26 @@ export class KeyBind extends Base {
 		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
 		const keybindRect = this.KeybindRect
-		if (KeyBind.changingNow === this)
+		if (KeyBind.changingNow === this) {
 			RendererSDK.Image(
 				KeyBind.keybindActivePath,
 				keybindRect.pos1,
 				-1,
 				keybindRect.Size
 			)
-		else
+		} else {
 			RendererSDK.Image(
 				KeyBind.keybindInactivePath,
 				keybindRect.pos1,
 				-1,
 				keybindRect.Size
 			)
+		}
 		this.RenderTextDefault(
 			this.assignedKeyStr,
 			new Vector2(
 				keybindRect.pos1.x + KeyBind.keybindTextOffset.x,
-				keybindRect.pos2.y -
-					KeyBind.keybindTextOffset.y -
-					this.keybindTextSize.y
+				keybindRect.pos2.y - KeyBind.keybindTextOffset.y - this.keybindTextSize.y
 			)
 		)
 	}
@@ -153,7 +162,9 @@ export class KeyBind extends Base {
 			KeyBind.changingNow = this
 			this.assignedKeyStr = "..."
 			this.Update(false, false)
-			if (old !== undefined) old.Update()
+			if (old !== undefined) {
+				old.Update()
+			}
 		}
 		return false
 	}
@@ -171,23 +182,25 @@ function KeyHandler(key: VKeys, pressed: boolean): boolean {
 		return true
 	}
 
-	if (isPressing.get(key) === pressed) return true
+	if (isPressing.get(key) === pressed) {
+		return true
+	}
 	isPressing.set(key, pressed)
 
 	const onExecute = KeyBind.callbacks.get(key)
-	if (onExecute === undefined) return true
+	if (onExecute === undefined) {
+		return true
+	}
 
 	const uniqueOnExecute = [...new Set(onExecute)]
 	uniqueOnExecute.forEach(keybind => {
-		if (
-			!Base.triggerOnChat &&
-			GameState.IsInputCaptured &&
-			!keybind.TriggerOnChat
-		)
+		if (!Base.triggerOnChat && GameState.IsInputCaptured && !keybind.TriggerOnChat) {
 			return
-		if (!GameState.IsConnected && !keybind.ActivatesInMenu && pressed)
+		}
+		if (!GameState.IsConnected && !keybind.ActivatesInMenu && pressed) {
 			// pass un-press even in menu
 			return
+		}
 		keybind.isPressed = pressed
 	})
 	return true

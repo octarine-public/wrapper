@@ -129,18 +129,10 @@ export class CTopBar {
 		)
 
 		this.RadiantPlayersHeroImages.forEach((rect, i) =>
-			RendererSDK.FilledRect(
-				rect.pos1,
-				rect.Size,
-				new Color(50, 50 * i, 0, 128)
-			)
+			RendererSDK.FilledRect(rect.pos1, rect.Size, new Color(50, 50 * i, 0, 128))
 		)
 		this.DirePlayersHeroImages.forEach((rect, i) =>
-			RendererSDK.FilledRect(
-				rect.pos1,
-				rect.Size,
-				new Color(50 * i, 0, 50, 128)
-			)
+			RendererSDK.FilledRect(rect.pos1, rect.Size, new Color(50 * i, 0, 50, 128))
 		)
 
 		this.RadiantPlayersUltReadyIndicators.forEach(rect =>
@@ -162,11 +154,11 @@ export class CTopBar {
 		// instead of the left one.
 		// Leave as-is unless anything breaks.
 		if (
-			(screenSize.x === 1280 &&
-				(screenSize.y === 800 || screenSize.y === 720)) ||
+			(screenSize.x === 1280 && (screenSize.y === 800 || screenSize.y === 720)) ||
 			((screenSize.x === 720 || screenSize.x === 640) && screenSize.y === 480)
-		)
+		) {
 			this.TopBar.x -= 1
+		}
 	}
 	private CalculateTimeOfDay(screenSize: Vector2): void {
 		this.TimeOfDay.Width = ScaleWidth(80, screenSize)
@@ -195,8 +187,7 @@ export class CTopBar {
 		spectatorGoldDisplayContainer.x =
 			this.TopBar.x +
 			Math.round((this.TopBar.Width - spectatorGoldDisplayContainer.Width) / 2)
-		spectatorGoldDisplayContainer.y =
-			this.TopBar.y + ScaleHeight(40, screenSize)
+		spectatorGoldDisplayContainer.y = this.TopBar.y + ScaleHeight(40, screenSize)
 
 		this.RadiantSpectatorGoldDisplay.Width = displayWidth
 		this.RadiantSpectatorGoldDisplay.Height = displayHeight
@@ -238,8 +229,7 @@ export class CTopBar {
 
 		this.DireTeamBackground.Width = teamBackgroundWidth
 		this.DireTeamBackground.Height = teamBackgroundHeight
-		this.DireTeamBackground.x =
-			this.TopBar.x + this.TopBar.Width - containerWidth
+		this.DireTeamBackground.x = this.TopBar.x + this.TopBar.Width - containerWidth
 		{
 			const radiantTeamScoreAndPlayers = new Rectangle()
 			radiantTeamScoreAndPlayers.Width =
@@ -327,13 +317,18 @@ export class CTopBar {
 		barRect.Width = rectWidth
 		barRect.Height = rectHeight
 		barRect.x = playerRect.x + rectMargin
-		if (centerWidth)
+		if (centerWidth) {
 			barRect.x +=
 				Math.sign(rectMargin) *
 				Math.round((playerRect.Width - rectWidth - Math.abs(rectMargin)) / 2)
-		if (rectMargin < 0) barRect.x += playerRect.Width - rectWidth
+		}
+		if (rectMargin < 0) {
+			barRect.x += playerRect.Width - rectWidth
+		}
 		barRect.y = playerRect.y - rectMarginBottom
-		if (rectMarginBottom > 0) barRect.y += playerRect.Height - rectHeight
+		if (rectMarginBottom > 0) {
+			barRect.y += playerRect.Height - rectHeight
+		}
 		return barRect
 	}
 	private CalculateBasicRects(
@@ -345,7 +340,7 @@ export class CTopBar {
 		direBarArray: Rectangle[],
 		centerWidth = false
 	): void {
-		for (const playerRect of this.RadiantPlayers)
+		for (const playerRect of this.RadiantPlayers) {
 			radiantBarArray.push(
 				this.CalculateBar(
 					playerRect,
@@ -356,7 +351,8 @@ export class CTopBar {
 					centerWidth
 				)
 			)
-		for (const playerRect of this.DirePlayers)
+		}
+		for (const playerRect of this.DirePlayers) {
 			direBarArray.push(
 				this.CalculateBar(
 					playerRect,
@@ -367,6 +363,7 @@ export class CTopBar {
 					centerWidth
 				)
 			)
+		}
 	}
 	private CalculateHealthbars(screenSize: Vector2): void {
 		this.CalculateBasicRects(

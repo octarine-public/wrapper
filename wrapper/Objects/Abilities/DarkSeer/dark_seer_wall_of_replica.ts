@@ -5,8 +5,9 @@ import { Ability } from "../../Base/Ability"
 export class dark_seer_wall_of_replica extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		let width = this.GetSpecialValue("width", level)
-		if (this.Owner?.HasScepter)
+		if (this.Owner?.HasScepter) {
 			width *= this.GetSpecialValue("scepter_length_multiplier", level)
+		}
 		return width
 	}
 }

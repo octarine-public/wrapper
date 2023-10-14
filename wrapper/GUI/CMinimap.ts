@@ -9,8 +9,9 @@ let extraLargeMinimapSetting = 0
 export class CMinimap {
 	private static UpdateExtraLargeMinimapSetting(): boolean {
 		const setting = ConVarsSDK.GetInt("dota_hud_extra_large_minimap", 0)
-		if (setting < 0 || setting > 2 || extraLargeMinimapSetting === setting)
+		if (setting < 0 || setting > 2 || extraLargeMinimapSetting === setting) {
 			return false
+		}
 		extraLargeMinimapSetting = setting
 		return true
 	}
@@ -53,11 +54,7 @@ export class CMinimap {
 			this.Minimap.Size,
 			Color.Green.SetA(128)
 		)
-		RendererSDK.FilledRect(
-			this.Glyph.pos1,
-			this.Glyph.Size,
-			Color.Yellow.SetA(128)
-		)
+		RendererSDK.FilledRect(this.Glyph.pos1, this.Glyph.Size, Color.Yellow.SetA(128))
 		RendererSDK.FilledRect(this.Scan.pos1, this.Scan.Size, Color.Gray.SetA(128))
 	}
 	public HasChanged(): boolean {
@@ -111,10 +108,8 @@ export class CMinimap {
 			this.Glyph.x = GlyphScan.x + glyphOffsetX
 			this.Scan.x = GlyphScan.x + scanOffsetX
 		} else {
-			this.Glyph.x =
-				GlyphScan.x + GlyphScan.Width - glyphOffsetX - this.Glyph.Width
-			this.Scan.x =
-				GlyphScan.x + GlyphScan.Width - scanOffsetX - this.Scan.Width
+			this.Glyph.x = GlyphScan.x + GlyphScan.Width - glyphOffsetX - this.Glyph.Width
+			this.Scan.x = GlyphScan.x + GlyphScan.Width - scanOffsetX - this.Scan.Width
 		}
 	}
 }

@@ -1,6 +1,10 @@
 export function MapValueToNumber(value: any, defaultValue = 0) {
-	if (typeof value === "bigint") value = Number(value)
-	if (typeof value === "string") value = parseFloat(value)
+	if (typeof value === "bigint") {
+		value = Number(value)
+	}
+	if (typeof value === "string") {
+		value = parseFloat(value)
+	}
 	return typeof value === "number" ? value : defaultValue
 }
 

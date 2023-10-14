@@ -24,10 +24,7 @@ export class Vector2 {
 	public static FromPolarCoordinates(radial: number, polar: number): Vector2 {
 		return new Vector2(Math.cos(polar) * radial, Math.sin(polar) * radial)
 	}
-	public static GetCenterType<T>(
-		array: T[],
-		callback: (value: T) => Vector2
-	): Vector2 {
+	public static GetCenterType<T>(array: T[], callback: (value: T) => Vector2): Vector2 {
 		return array
 			.reduce((prev, cur) => prev.AddForThis(callback(cur)), new Vector2())
 			.DivideScalarForThis(array.length)
@@ -185,10 +182,7 @@ export class Vector2 {
 	}
 	public Ceil(count: number = 0): Vector2 {
 		const pow = 10 ** count
-		return new Vector2(
-			Math.ceil(this.x * pow) / pow,
-			Math.ceil(this.y * pow) / pow
-		)
+		return new Vector2(Math.ceil(this.x * pow) / pow, Math.ceil(this.y * pow) / pow)
 	}
 	public CeilForThis(count: number = 0): Vector2 {
 		const pow = 10 ** count
@@ -200,10 +194,7 @@ export class Vector2 {
 	}
 	public Round(count = 0): Vector2 {
 		const pow = 10 ** count
-		return new Vector2(
-			Math.round(this.x * pow) / pow,
-			Math.round(this.y * pow) / pow
-		)
+		return new Vector2(Math.round(this.x * pow) / pow, Math.round(this.y * pow) / pow)
 	}
 	public RoundForThis(count = 0): Vector2 {
 		const pow = 10 ** count
@@ -215,10 +206,7 @@ export class Vector2 {
 	}
 	public Floor(count: number = 0): Vector2 {
 		const pow = 10 ** count
-		return new Vector2(
-			Math.floor(this.x * pow) / pow,
-			Math.floor(this.y * pow) / pow
-		)
+		return new Vector2(Math.floor(this.x * pow) / pow, Math.floor(this.y * pow) / pow)
 	}
 	public FloorForThis(count: number = 0): Vector2 {
 		const pow = 10 ** count
@@ -284,7 +272,9 @@ export class Vector2 {
 	 */
 	public Normalize(scalar = 1): Vector2 {
 		const length = this.Length
-		if (length !== 0) this.DivideScalarForThis(length * scalar)
+		if (length !== 0) {
+			this.DivideScalarForThis(length * scalar)
+		}
 		return this
 	}
 	/**
@@ -306,8 +296,11 @@ export class Vector2 {
 	 */
 	public ScaleTo(scalar: number): Vector2 {
 		const length = this.Length
-		if (length === 0) this.toZero()
-		else this.MultiplyScalar(scalar / length)
+		if (length === 0) {
+			this.toZero()
+		} else {
+			this.MultiplyScalar(scalar / length)
+		}
 
 		return this
 	}
@@ -316,8 +309,11 @@ export class Vector2 {
 	 */
 	public DivideTo(scalar: number): Vector2 {
 		const length = this.Length
-		if (length === 0) this.toZero()
-		else this.DivideScalar(scalar / length)
+		if (length === 0) {
+			this.toZero()
+		} else {
+			this.DivideScalar(scalar / length)
+		}
 
 		return this
 	}
@@ -572,8 +568,7 @@ export class Vector2 {
 	}
 	public ProjectOn(segmentStart: Vector2, segmentEnd: Vector2): ProjectionInfo {
 		const segmentSize = segmentEnd.Subtract(segmentStart)
-		const rL =
-			this.Subtract(segmentStart).Dot(segmentSize) / segmentSize.LengthSqr
+		const rL = this.Subtract(segmentStart).Dot(segmentSize) / segmentSize.LengthSqr
 		const rS = Math.min(1, Math.max(0, rL)) // normalized to segment bounds
 		const pointLine = segmentStart.Add(segmentSize.MultiplyScalar(rL))
 		const pointSegment = segmentStart.Add(segmentSize.MultiplyScalar(rS))
@@ -585,7 +580,9 @@ export class Vector2 {
 		onlyIfOnSegment = false
 	): number {
 		const objects = this.ProjectOn(segmentStart, segmentEnd)
-		if (!objects.IsOnSegment && onlyIfOnSegment) return Number.MAX_VALUE
+		if (!objects.IsOnSegment && onlyIfOnSegment) {
+			return Number.MAX_VALUE
+		}
 		return this.DistanceSqr(objects.SegmentPoint)
 	}
 	public DistanceSegment(
@@ -593,12 +590,10 @@ export class Vector2 {
 		segmentEnd: Vector2,
 		onlyIfOnSegment = false
 	): number {
-		const sqr = this.DistanceSegmentSqr(
-			segmentStart,
-			segmentEnd,
-			onlyIfOnSegment
-		)
-		if (sqr === Number.MAX_VALUE) return Number.MAX_VALUE
+		const sqr = this.DistanceSegmentSqr(segmentStart, segmentEnd, onlyIfOnSegment)
+		if (sqr === Number.MAX_VALUE) {
+			return Number.MAX_VALUE
+		}
 		return Math.sqrt(sqr)
 	}
 
@@ -612,7 +607,9 @@ export class Vector2 {
 	 * Calculates the polar angle of the given vector. Returns degree values on default, radian if requested.
 	 */
 	public PolarAngle(radian: boolean = false): number {
-		if (radian) return this.Angle
+		if (radian) {
+			return this.Angle
+		}
 
 		return this.Angle * (180 / Math.PI)
 	}
@@ -631,10 +628,7 @@ export class Vector2 {
 	 * @param distance distance to be added
 	 */
 	public Rotation(rotation: Vector2, distance: number): Vector2 {
-		return new Vector2(
-			this.x + rotation.x * distance,
-			this.y + rotation.y * distance
-		)
+		return new Vector2(this.x + rotation.x * distance, this.y + rotation.y * distance)
 	}
 	/**
 	 * Extends vector in the rotation direction by radian
@@ -694,9 +688,7 @@ export class Vector2 {
 	 * @param vec The another vector
 	 */
 	public Extend(vec: Vector2, distance: number): Vector2 {
-		return this.GetDirectionTo(vec)
-			.MultiplyScalarForThis(distance)
-			.AddForThis(this) // this + (distance * (vec - this).Normalize())
+		return this.GetDirectionTo(vec).MultiplyScalarForThis(distance).AddForThis(this) // this + (distance * (vec - this).Normalize())
 	}
 	public Clone(): Vector2 {
 		return new Vector2(this.x, this.y)

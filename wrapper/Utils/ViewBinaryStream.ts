@@ -10,7 +10,9 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 	) {
 		this.isUtf16 = false
 		this.isUtf16BE = false
-		if (!detectEncoding) return
+		if (!detectEncoding) {
+			return
+		}
 		if (this.Remaining >= 2) {
 			const ch1 = this.ReadUint8(),
 				ch2 = this.ReadUint8()
@@ -249,7 +251,11 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 		return this.isUtf16 ? this.ReadUtf16Char() : this.ReadUtf8Char()
 	}
 	public SeekLine(): void {
-		while (!this.Empty()) if (this.ReadChar() === "\n") break
+		while (!this.Empty()) {
+			if (this.ReadChar() === "\n") {
+				break
+			}
+		}
 	}
 	public ReadUtf8String(size: number): string {
 		let out = ""
@@ -263,16 +269,22 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 	public ReadNullTerminatedString(): string {
 		let str = ""
 		while (true) {
-			if (this.Empty()) return str
+			if (this.Empty()) {
+				return str
+			}
 			const b = this.ReadUint8()
-			if (b === 0) return str
+			if (b === 0) {
+				return str
+			}
 			str += String.fromCharCode(b)
 		}
 	}
 	public ReadNullTerminatedUtf8String(): string {
 		const savedPos = this.pos
 		let size = 0
-		while (this.ReadUint8() !== 0) size++
+		while (this.ReadUint8() !== 0) {
+			size++
+		}
 		this.pos = savedPos
 
 		const str = this.ReadUtf8String(size)
@@ -282,16 +294,22 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 	public ReadNullTerminatedUtf16String(): string {
 		let str = ""
 		while (true) {
-			if (this.Empty()) return str
+			if (this.Empty()) {
+				return str
+			}
 			const b = this.ReadUint16()
-			if (b === 0) return str
+			if (b === 0) {
+				return str
+			}
 			str += String.fromCharCode(b)
 		}
 	}
 	// https://github.com/SteamDatabase/ValveResourceFormat/blob/cceba491d7bb60890a53236a90970b24d0a4aba9/ValveResourceFormat/Utils/StreamHelpers.cs#L43
 	public ReadOffsetString(): string {
 		const offset = this.ReadUint32()
-		if (offset === 0) return ""
+		if (offset === 0) {
+			return ""
+		}
 		const savedPos = this.pos
 		this.pos += offset - 4 // offset from offset
 		const ret = this.ReadNullTerminatedUtf8String()
@@ -323,10 +341,7 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 	public Empty(): boolean {
 		return this.pos >= this.view.byteLength
 	}
-	public CreateNestedStream(
-		size: number,
-		detectEncoding = false
-	): ViewBinaryStream {
+	public CreateNestedStream(size: number, detectEncoding = false): ViewBinaryStream {
 		const res = new ViewBinaryStream(
 			new DataView(this.view.buffer, this.view.byteOffset + this.pos, size),
 			0,

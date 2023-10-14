@@ -39,14 +39,16 @@ export class ImageSelector extends Base {
 		this.enabledValues = defaultValues
 	}
 	public get IsZeroSelected(): boolean {
-		for (const value of this.enabledValues.values()) if (value) return false
+		for (const value of this.enabledValues.values()) {
+			if (value) {
+				return false
+			}
+		}
 		return true
 	}
 
 	public get IconsRect() {
-		const basePos = this.Position.Add(this.textOffset).AddScalarY(
-			this.nameSize.y + 3
-		)
+		const basePos = this.Position.Add(this.textOffset).AddScalarY(this.nameSize.y + 3)
 		return new Rectangle(
 			basePos,
 			basePos
@@ -76,12 +78,14 @@ export class ImageSelector extends Base {
 			this.ShouldIgnoreNewConfigValue ||
 			value === undefined ||
 			!Array.isArray(value)
-		)
+		) {
 			return
+		}
 		this.enabledValues = new Map<string, boolean>(value)
 		this.values.forEach(value_ => {
-			if (!this.enabledValues.has(value_))
+			if (!this.enabledValues.has(value_)) {
 				this.enabledValues.set(value_, this.createdDefaultState)
+			}
 		})
 	}
 
@@ -90,22 +94,29 @@ export class ImageSelector extends Base {
 	}
 
 	public Update(): boolean {
-		if (!super.Update()) return false
+		if (!super.Update()) {
+			return false
+		}
 		this.values.forEach(value => {
-			if (!this.enabledValues.has(value))
+			if (!this.enabledValues.has(value)) {
 				this.enabledValues.set(value, this.createdDefaultState)
+			}
 		})
 		this.imageSize.x = this.imageSize.y = ImageSelector.baseImageHeight
 		this.renderedPaths = []
 		for (let path of this.values) {
-			if (path.startsWith("rune_"))
+			if (path.startsWith("rune_")) {
 				path = `panorama/images/spellicons/${path}_png.vtex_c`
-			else if (path.startsWith("item_bottle_"))
+			} else if (path.startsWith("item_bottle_")) {
 				path = `panorama/images/items/${path.substring(5)}_png.vtex_c`
-			else if (!path.startsWith("npc_dota_hero_")) {
+			} else if (!path.startsWith("npc_dota_hero_")) {
 				const abil = AbilityData.GetAbilityByName(path)
-				if (abil !== undefined) path = abil.TexturePath
-			} else path = `panorama/images/heroes/${path}_png.vtex_c`
+				if (abil !== undefined) {
+					path = abil.TexturePath
+				}
+			} else {
+				path = `panorama/images/heroes/${path}_png.vtex_c`
+			}
 			const pathIamgeSize = RendererSDK.GetImageSize(path)
 			this.imageSize.x = Math.max(
 				this.imageSize.x,
@@ -145,7 +156,9 @@ export class ImageSelector extends Base {
 		const basePos = this.IconsRect.pos1
 		for (let i = 0; i < this.values.length; i++) {
 			const imagePath = this.renderedPaths[i]
-			if (imagePath === undefined) continue
+			if (imagePath === undefined) {
+				continue
+			}
 			const size = this.imageSize,
 				pos = new Vector2(
 					i % ImageSelector.elementsPerRow,
@@ -169,13 +182,14 @@ export class ImageSelector extends Base {
 				!this.IsEnabled(this.values[i])
 			)
 
-			if (this.IsEnabled(this.values[i]))
+			if (this.IsEnabled(this.values[i])) {
 				RendererSDK.OutlinedRect(
 					pos,
 					size,
 					ImageSelector.imageBorderWidth,
 					ImageSelector.imageActivatedBorderColor
 				)
+			}
 		}
 	}
 
@@ -185,7 +199,9 @@ export class ImageSelector extends Base {
 
 	public OnMouseLeftUp(): boolean {
 		const rect = this.IconsRect
-		if (!rect.Contains(this.MousePosition)) return false
+		if (!rect.Contains(this.MousePosition)) {
+			return false
+		}
 		const off = rect.GetOffset(this.MousePosition)
 		for (let i = 0; i < this.values.length; i++) {
 			const basePos = new Vector2(
@@ -196,8 +212,9 @@ export class ImageSelector extends Base {
 					ImageSelector.imageBorderWidth * 2 + ImageSelector.imageGap
 				)
 			)
-			if (!new Rectangle(basePos, basePos.Add(this.imageSize)).Contains(off))
+			if (!new Rectangle(basePos, basePos.Add(this.imageSize)).Contains(off)) {
 				continue
+			}
 			const value = this.values[i]
 			this.enabledValues.set(value, !this.IsEnabled(value))
 			this.TriggerOnValueChangedCBs()

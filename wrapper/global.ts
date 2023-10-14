@@ -90,7 +90,11 @@ globalThis.GUIInfo = _GUIInfo
 
 globalThis.Menu = _Menu
 globalThis.GetEntityClassByName = (name: string) => {
-	for (const [constr] of SDKClasses) if (constr.name === name) return constr
+	for (const [constr] of SDKClasses) {
+		if (constr.name === name) {
+			return constr
+		}
+	}
 	return undefined
 }
 

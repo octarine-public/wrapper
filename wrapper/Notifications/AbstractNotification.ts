@@ -51,10 +51,11 @@ export abstract class Notification {
 	protected get Opacity() {
 		let timeSince = 1000
 		const currentTime = hrtime()
-		if (this.startDisplayTime + 500 > currentTime)
+		if (this.startDisplayTime + 500 > currentTime) {
 			timeSince = currentTime - this.startDisplayTime
-		else if (currentTime + 500 > this.stopDisplayTime)
+		} else if (currentTime + 500 > this.stopDisplayTime) {
 			timeSince = this.stopDisplayTime - currentTime
+		}
 		return Math.min((Math.max(timeSince, 0) / 1000) * 2, 1) * 255
 	}
 
@@ -74,12 +75,10 @@ export abstract class Notification {
 	}
 
 	public PlaySound() {
-		if (this.playSoundName === undefined || this.IsPlaying) return
-		SoundSDK.EmitStartSoundEvent(
-			this.playSoundName,
-			this.position,
-			this.sourceEntity
-		)
+		if (this.playSoundName === undefined || this.IsPlaying) {
+			return
+		}
+		SoundSDK.EmitStartSoundEvent(this.playSoundName, this.position, this.sourceEntity)
 		this.IsPlaying = true
 	}
 }

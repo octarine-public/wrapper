@@ -23,12 +23,9 @@ export class Creep extends Unit {
 		return 60
 	}
 	public TryAssignLane(): void {
-		if (
-			this.IsNeutral ||
-			this.Owner !== undefined ||
-			this.Lane !== MapArea.Unknown
-		)
+		if (this.IsNeutral || this.Owner !== undefined || this.Lane !== MapArea.Unknown) {
 			return
+		}
 		const area = GetMapArea(this.Position, true)
 		switch (area[0]) {
 			case MapArea.Top:
@@ -44,5 +41,7 @@ export class Creep extends Unit {
 export const Creeps = EntityManager.GetEntitiesByClass(Creep)
 
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent instanceof Creep) ent.TryAssignLane()
+	if (ent instanceof Creep) {
+		ent.TryAssignLane()
+	}
 })
