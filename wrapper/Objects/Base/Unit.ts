@@ -152,6 +152,7 @@ export class Unit extends Entity {
 	public LastActivityAnimationPoint = 0
 	public Spawner: Nullable<NeutralSpawner>
 	public Spawner_ = 0
+
 	/**
 	 * @deprecated
 	 */
@@ -288,9 +289,6 @@ export class Unit extends Entity {
 	public get BaseAttackRange(): number {
 		return this.UnitData.BaseAttackRange
 	}
-	// BaseArmor
-	// BaseHealthRegeneration
-	// BaseManaRegeneration
 	public get AttackDamageAverage(): number {
 		return (this.AttackDamageMin + this.AttackDamageMax) / 2
 	}
@@ -314,30 +312,6 @@ export class Unit extends Entity {
 	public get WorkshopName(): string {
 		return this.UnitData.WorkshopName
 	}
-	/**
-	 * @returns [Position: Vector2, Size: Vector2]
-	 */
-	/*public get HealthBarOnScreen(): Nullable<[Vector2, Vector2]> {
-		let wts = RendererSDK.WorldToScreen(this.Position.AddScalarZ(this.HealthBarOffset))
-		if (wts === undefined)
-			return undefined
-
-		let healthbar_size = RendererSDK.GetProportionalScaledVector(healthbar_size_noscale, false).SubtractScalarX(1)
-		wts.SubtractForThis(healthbar_size.Divide(new Vector2(1.95, 0.32))).AddScalarY(healthbar_size.y).FloorForThis()
-		return [wts, healthbar_size]
-	}*/
-	/**
-	 * @returns [Position: Vector2, Size: Vector2]
-	 */
-	/*public get ManaBarOnScreen(): Nullable<[Vector2, Vector2]> {
-		const wts = RendererSDK.WorldToScreen(this.Position.AddScalarZ(this.HealthBarOffset))
-		if (wts === undefined)
-			return undefined
-
-		const manabar_size = RendererSDK.GetProportionalScaledVector(manabar_size_noscale, false).SubtractScalarX(1)
-		wts.SubtractForThis(manabar_size.Divide(new Vector2(1.95, 0.42))).FloorForThis()
-		return [wts, manabar_size]
-	}*/
 	public get BaseAttackTime() {
 		return this.UnitData.BaseAttackTime
 	}

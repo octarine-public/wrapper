@@ -125,7 +125,10 @@ export class Entity {
 	private CustomDrawColor_: Nullable<[Color, RenderMode]>
 	private RingRadius_ = 30
 
-	constructor(public readonly Index: number, private readonly Serial: number) {}
+	constructor(
+		public readonly Index: number,
+		private readonly Serial: number
+	) {}
 
 	public get CustomGlowColor(): Nullable<Color> {
 		return this.CustomGlowColor_
