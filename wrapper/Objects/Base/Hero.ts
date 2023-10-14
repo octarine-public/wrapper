@@ -9,6 +9,7 @@ import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { FakeUnit, GetPredictionTarget } from "./FakeUnit"
+import { HeroTeamData } from "./HeroTeamData"
 import { PlayerResource } from "./PlayerResource"
 import { Unit } from "./Unit"
 
@@ -43,6 +44,8 @@ export class Hero extends Unit {
 	@NetworkedBasicField("m_flStrengthTotal")
 	public TotalStrength = 0
 	public ReplicatingOtherHeroModel: Nullable<Unit | FakeUnit>
+
+	public HeroTeamData: Nullable<HeroTeamData>
 
 	private readonly colorRadiant: Color[] = [
 		new Color(51, 117, 255),
@@ -105,10 +108,10 @@ export class Hero extends Unit {
 	/**
 	 * Retrieves the team slot of the hero.
 	 *
-	 * @returns {number} The team slot of the hero. If the hero's team data is not available, returns 0.
+	 * @returns {number} The team slot of the hero. If the hero's team data is not available, returns -1.
 	 */
 	public get TeamSlot(): number {
-		return this.PlayerTeamData?.TeamSlot ?? 0
+		return this.PlayerTeamData?.TeamSlot ?? -1
 	}
 	/**
 	 * Get the name of the player.
@@ -121,7 +124,7 @@ export class Hero extends Unit {
 	/**
 	 * Retrieves the team data for the hero.
 	 *
-	 * @returns {PlayerTeamData} The team data for the hero.
+	 * @returns {PlayerTeamData | undefined} The team data for the hero.
 	 */
 	public get PlayerTeamData(): Nullable<PlayerTeamData> {
 		return PlayerResource?.PlayerTeamData[this.PlayerID]

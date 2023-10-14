@@ -1,4 +1,12 @@
 export class ConVarsSDK {
+	/**
+	 * Retrieves a boolean value from a convar.
+	 *
+	 * @param {string} convarName - The name of the convar.
+	 * @param {boolean} defaultValue - The default value to return if the convar is not found or is not a boolean.
+	 * @return {boolean} - The boolean value of the convar, or the default value if the convar is not found or is not a boolean.
+	 * @example ConVarsSDK.GetBoolean("dota_hud_new_query_panel", false)
+	 */
 	public static GetBoolean(convarName: string, defaultValue: boolean): boolean {
 		const res = ConVars.Get(convarName)
 		if (res === undefined || Array.isArray(res)) return defaultValue

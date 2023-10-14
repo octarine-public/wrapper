@@ -13,10 +13,13 @@
 		"eslint-plugin-unicorn": "^48.0.1",
 		"eslint-plugin-unused-imports": "^3.0.0",
 		"prettier": "^3.0.3",
+		"typedoc": "^0.25.2",
+		"typedoc-plugin-markdown": "^4.0.0-next.23",
 		"typescript": "^5.2.2"
 	},
 	"scripts": {
 		"check-types": "npx tsc",
+		"typedoc ": "npx typedoc",
 		"check-types-watch": "npx tsc --watch",
 		"check-circular": "npx madge --circular index.ts",
 		"upgrade-pack": "yarn upgrade-interactive --latest",

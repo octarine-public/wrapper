@@ -1,0 +1,11 @@
+{
+	"name": "Octarine API",
+	"hideInPageTOC": true,
+	"hidePageHeader": true,
+	"hideBreadcrumbs": true,
+	"hidePageTitle": true,
+	"tsconfig": "./tsconfig.json",
+	"plugin": ["typedoc-plugin-markdown"],
+	"entryPoints": ["./**/*.ts"],
+	"out": "docs",
+}

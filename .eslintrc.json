@@ -1,4 +1,5 @@
 {
+	"root": true,
 	"ignorePatterns": [
 		"wrapper_autogen/**/*",
 		"node_modules/**/*",
@@ -25,7 +26,6 @@
 		"unused-imports",
 		"prettier"
 	],
-	"root": true,
 	"rules": {
 		"@typescript-eslint/adjacent-overload-signatures": "error",
 		"@typescript-eslint/array-type": [
@@ -186,7 +186,6 @@
 		// 		"protected-abstract-method",
 		// 		"private-abstract-method"
 		// 	]
-		// }],
 		"@typescript-eslint/naming-convention": [
 			"error",
 			{
@@ -306,14 +305,21 @@
 				"lib": "always"
 			}
 		],
+		"curly": ["warn", "all"],
+		"object-curly-spacing": [
+            "warn", 
+            "always",
+            { 
+                "objectsInObjects": false 
+            }
+        ],
 		"@typescript-eslint/typedef": "off",
 		"@typescript-eslint/unified-signatures": "off",
-		"arrow-parens":  "off",
-		"brace-style": "off",
-		"comma-dangle": "warn",
+		"arrow-parens": ["warn", "as-needed"],
+		"comma-spacing": "error",
 		"complexity": "off",
+		"no-multi-str": "error",
 		"constructor-super": "error",
-		"curly": "off",
 		"dot-notation": "off",
 		"eol-last": "error",
 		"eqeqeq": [
@@ -337,9 +343,10 @@
 		"no-useless-return": "error",
 		"no-useless-concat": "error",
 		"no-useless-call": "error",
-		"keyword-spacing": "error",
+		"keyword-spacing": "warn",
 		"no-lone-blocks": "error",
-		"space-before-blocks": "error",
+		"comma-dangle": "warn",
+		"space-before-blocks": "warn",
 		"import/no-extraneous-dependencies": "off",
 		"import/no-internal-modules": "off",
 		"indent": "off",
@@ -375,7 +382,7 @@
 		"no-unsafe-finally": "error",
 		"no-unused-expressions": "off",
 		"no-unused-labels": "error",
-		"no-lonely-if": "error",
+		"no-lonely-if": "warn",
 		"no-use-before-define": "off",
 		"no-var": "off",
 		"object-shorthand": "error",
@@ -384,11 +391,11 @@
 			"never"
 		],
 		"no-else-return": "error",
-		"semi-spacing": "error",
-		"block-spacing": "error",
+		"semi-spacing": "warn",
+		"block-spacing": "warn",
 		"prefer-const": "error",
 		"no-unmodified-loop-condition": "error",
-		"no-whitespace-before-property": "error",
+		"no-whitespace-before-property": "warn",
 		"prefer-object-spread": "error",
 		"quotes": "off",
 		"radix": "off",
@@ -404,7 +411,11 @@
 			"endOfLine": "auto",
 			"arrowParens": "avoid",
 			"singleQuote": false,
-			"trailingComma": "none"
+			"printWidth": 120,
+			"tabWidth": 4,
+			"trailingComma": "none",
+			"breakBeforeElse": true,
+			"proseWrap": "always"
 		}],
 		"@typescript-eslint/consistent-type-imports": ["error", {
 			// TODO: uncomment once we use ESBuild
@@ -425,6 +436,9 @@
 			"warn",
 			{ "vars": "all", "varsIgnorePattern": "^_", "args": "after-used", "argsIgnorePattern": "^_" }
 		],
+		"func-style": ["warn", "declaration", {
+            "allowArrowFunctions": true
+        }],
 		"array-callback-return": "error",
 		"prefer-arrow-callback": "error"
 	}
