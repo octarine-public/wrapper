@@ -6,10 +6,10 @@ import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import * as ArrayExtensions from "../../Utils/ArrayExtensions"
 import { GameState } from "../../Utils/GameState"
+import { Entity, GameRules } from "../Base/Entity"
+import { Hero } from "../Base/Hero"
+import { TeamData } from "../Base/TeamData"
 import { item_philosophers_stone } from "../Items/item_philosophers_stone"
-import { Entity, GameRules } from "./Entity"
-import { Hero } from "./Hero"
-import { TeamData } from "./TeamData"
 
 /** @ignore */
 class GPMCounter {
@@ -50,7 +50,7 @@ export class HeroTeamData {
 	private philosopherStoneCounter: Nullable<GPMCounter>
 
 	/** @ignore */
-	constructor(private readonly hero: Hero) {
+	constructor(private readonly Owner: Hero) {
 		this.ReCalculateUnreliableGold()
 	}
 
@@ -60,7 +60,7 @@ export class HeroTeamData {
 	 */
 	public get AvailableSalutes(): number {
 		return (
-			this.hero.PlayerTeamData?.PlayerEventsData.find(data => data.EventID === 19)
+			this.Owner.PlayerTeamData?.PlayerEventsData.find(data => data.EventID === 19)
 				?.AvailableSalutes ?? 0
 		)
 	}
@@ -145,7 +145,7 @@ export class HeroTeamData {
 	 * @returns {number}
 	 */
 	public get TimeOfLastSaluteSent(): number {
-		return this.hero.PlayerTeamData?.TimeOfLastSaluteSent ?? 0
+		return this.Owner.PlayerTeamData?.TimeOfLastSaluteSent ?? 0
 	}
 	/**
 	 * @description Determines if the hero has enough gold to perform a buyback.
@@ -156,11 +156,11 @@ export class HeroTeamData {
 	}
 	/** @ignore */
 	protected get IsEnemy() {
-		return this.hero.IsEnemy() && GameState.LocalTeam !== Team.Observer
+		return this.Owner.IsEnemy() && GameState.LocalTeam !== Team.Observer
 	}
 	/** @ignore */
 	public SetBuyBack(ms: number) {
-		this.sleeper.Sleep(ms, this.hero.PlayerID)
+		this.sleeper.Sleep(ms, this.Owner.PlayerID)
 		this.SubtractGold(this.BuyBackCost)
 	}
 	/*** @ignore */
@@ -176,11 +176,11 @@ export class HeroTeamData {
 		}
 		if (this.TeamData === undefined && !this.IsEnemy) {
 			this.TeamData = EntityManager.GetEntitiesByClass(TeamData).find(
-				x => x.Team === this.hero.Team
+				x => x.Team === this.Owner.Team
 			)
 		}
 		if (this.TeamData !== undefined && this.Player === undefined && !this.IsEnemy) {
-			this.Player = this.TeamData.DataTeam[this.hero.TeamSlot]
+			this.Player = this.TeamData.DataTeam[this.Owner.TeamSlot]
 		}
 	}
 	/** @ignore */
@@ -223,7 +223,7 @@ export class HeroTeamData {
 		if (GameRules.GameMode === DOTAGameMode.DOTA_GAMEMODE_EVENT) {
 			return
 		}
-		const itemStone = this.hero.GetAbilityByClass(item_philosophers_stone)
+		const itemStone = this.Owner.GetAbilityByClass(item_philosophers_stone)
 		if (itemStone === undefined || !itemStone.IsUsable) {
 			this.philosopherStoneCounter = undefined
 			return
@@ -237,7 +237,7 @@ export class HeroTeamData {
 	}
 	/** @ignore */
 	protected ReCalculateUnreliableGold() {
-		if (GameRules === undefined || !this.hero.IsEnemy()) {
+		if (GameRules === undefined || !this.Owner.IsEnemy()) {
 			return
 		}
 
@@ -246,7 +246,7 @@ export class HeroTeamData {
 			return
 		}
 
-		for (const item of this.hero.TotalItems) {
+		for (const item of this.Owner.TotalItems) {
 			if (item === undefined) {
 				continue
 			}

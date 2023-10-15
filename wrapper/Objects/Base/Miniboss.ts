@@ -1,5 +1,5 @@
 import { WrapperClass } from "../../Decorators"
 import { Unit } from "./Unit"
 
-@WrapperClass("CDOTA_Unit_Miniboss")
+@WrapperClass("npc_dota_miniboss")
 export class Miniboss extends Unit {}
