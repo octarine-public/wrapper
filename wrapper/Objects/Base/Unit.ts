@@ -382,9 +382,11 @@ export class Unit extends Entity {
 	 * @deprecated
 	 */
 	public get UnitStateMask_(): bigint {
+		let mask = this.UnitStateNetworked
 		// TODO: use buffs to calculate this
-		if (!GetEntityUnitState(this.Index)) return this.UnitStateNetworked
-		return IOBufferView.getBigUint64(0, true)
+		if (GetEntityUnitState(this.Index))
+			mask |= IOBufferView.getBigUint64(0, true)
+		return mask
 	}
 	public get UnitState(): modifierstate[] {
 		return MaskToArrayBigInt(this.UnitStateMask)
