@@ -11,10 +11,7 @@ import { Entity, GameRules } from "./Entity"
 import { Hero } from "./Hero"
 import { TeamData } from "./TeamData"
 
-/**
- * @ignore
- * @internal
- */
+/** @ignore */
 class GPMCounter {
 	private counter = 0
 	private lastUpdate: Nullable<number>
@@ -52,18 +49,14 @@ export class HeroTeamData {
 	private unreliableGold = 600 /** base start gold */
 	private philosopherStoneCounter: Nullable<GPMCounter>
 
-	/**
-	 * @ignore
-	 * @internal
-	 */
+	/** @ignore */
 	constructor(private readonly hero: Hero) {
 		this.ReCalculateUnreliableGold()
 	}
 
 	/**
-	 * Returns the number of available salutes (tips player) for the hero.
-	 *
-	 * @returns {number} The number of available salutes (tips player).
+	 * @description Returns the number of available salutes (tips player) for the hero.
+	 * @returns {number}
 	 */
 	public get AvailableSalutes(): number {
 		return (
@@ -72,55 +65,45 @@ export class HeroTeamData {
 		)
 	}
 	/**
-	 * Returns the buyback cost based on the net worth of the player.
-	 *
-	 * @returns {number} The buyback cost.
+	 * @description Returns the buyback cost based on the net worth of the player.
+	 * @returns {number}
 	 */
 	public get BuyBackCost(): number {
 		return Math.floor(200 + this.NetWorth / 13)
 	}
 	/**
-	 * Returns the deny count of the hero.
-	 *
-	 * @returns {number} The deny count of the hero.
+	 * @description Returns the deny count of the hero.
+	 * @returns {number}
 	 */
 	public get DenyCount(): number {
 		return this.Player === undefined || this.IsEnemy
 			? this.denyCount
 			: this.Player.DenyCount
 	}
-	/**
-	 * @ignore
-	 * @internal
-	 */
+	/** @ignore */
 	public set DenyCount(value) {
 		if (this.IsEnemy) {
 			this.denyCount = value
 		}
 	}
 	/**
-	 * Returns the last hit count of the hero.
-	 *
-	 * @returns {number} The last hit count of the hero.
+	 * @description Returns the last hit count of the hero.
+	 * @returns {number}
 	 */
 	public get LastHitCount(): number {
 		return this.Player === undefined || this.IsEnemy
 			? this.lastHitCount
 			: this.Player.LastHitCount
 	}
-	/**
-	 * @ignore
-	 * @internal
-	 */
+	/** @ignore */
 	public set LastHitCount(value) {
 		if (this.IsEnemy) {
 			this.lastHitCount = value
 		}
 	}
 	/**
-	 * Returns the net worth of the hero.
-	 *
-	 * @returns {number} The net worth of the hero.
+	 * @description Returns the net worth of the hero.
+	 * @returns {number}
 	 */
 	public get NetWorth(): number {
 		return this.Player === undefined || this.IsEnemy
@@ -128,85 +111,63 @@ export class HeroTeamData {
 			: this.Player.NetWorth
 	}
 	/**
-	 * Returns the reliable gold amount for the hero.
-	 *
-	 * @returns {number} The reliable gold amount for the hero.
+	 * @description Returns the reliable gold amount for the hero.
+	 * @returns {number}
 	 */
 	public get ReliableGold(): number {
 		return this.Player === undefined || this.IsEnemy
 			? this.reliableGold
 			: this.Player.ReliableGold
 	}
-	/**
-	 * @ignore
-	 * @internal
-	 */
+	/** @ignore */
 	public set ReliableGold(value) {
 		if (this.IsEnemy) {
 			this.reliableGold = value
 		}
 	}
 	/**
-	 * Returns the unreliable gold amount for the hero.
-	 *
-	 * @returns {number} The unreliable gold amount for the hero.
+	 * @description Returns the unreliable gold amount for the hero.
+	 * @returns {number}
 	 */
 	public get UnreliableGold(): number {
 		return this.Player === undefined || this.IsEnemy
 			? this.unreliableGold
 			: this.Player.UnreliableGold
 	}
-	/**
-	 * @ignore
-	 * @internal
-	 */
+	/** @ignore */
 	public set UnreliableGold(value) {
 		if (this.IsEnemy) {
 			this.unreliableGold = value
 		}
 	}
 	/**
-	 * Returns the time of the last salute sent by the hero's PlayerTeamData.
-	 *
-	 * @returns {number} The time of the last salute sent, or 0 if no salute has been sent.
+	 * @description Returns the time of the last salute sent by the hero's PlayerTeamData.
+	 * @returns {number}
 	 */
 	public get TimeOfLastSaluteSent(): number {
 		return this.hero.PlayerTeamData?.TimeOfLastSaluteSent ?? 0
 	}
 	/**
-	 * Determines if the hero has enough gold to perform a buyback.
-	 *
-	 * @returns {boolean} Returns true if the hero has enough gold to perform a buyback, false otherwise.
+	 * @description Determines if the hero has enough gold to perform a buyback.
+	 * @returns {boolean}
 	 */
 	public get HasGoldForBuyBack(): boolean {
 		return this.ReliableGold + this.UnreliableGold >= this.BuyBackCost
 	}
-	/**
-	 * @ignore
-	 * @internal
-	 */
+	/** @ignore */
 	protected get IsEnemy() {
 		return this.hero.IsEnemy() && GameState.LocalTeam !== Team.Observer
 	}
-	/**
-	 * @ignore
-	 * @internal
-	 */
+	/** @ignore */
 	public SetBuyBack(ms: number) {
 		this.sleeper.Sleep(ms, this.hero.PlayerID)
 		this.SubtractGold(this.BuyBackCost)
 	}
-	/**
-	 * @ignore
-	 * @internal
-	 */
+	/*** @ignore */
 	public AddGoldAfterTime(sec: number, count: number) {
 		this.goldAfterTimeAr.push([GameState.RawGameTime + sec, count])
 	}
-	/**
-	 * @ignore
-	 * @internal
-	 */
+	/** @ignore */
 	public PostDataUpdate() {
 		if (this.IsEnemy) {
 			this.UpdateGoldPerMinute()
@@ -222,10 +183,7 @@ export class HeroTeamData {
 			this.Player = this.TeamData.DataTeam[this.hero.TeamSlot]
 		}
 	}
-	/**
-	 * @ignore
-	 * @internal
-	 */
+	/** @ignore */
 	protected SubtractGold(amount: number) {
 		if (this.Player === undefined || !this.IsEnemy) {
 			return
@@ -234,10 +192,7 @@ export class HeroTeamData {
 		this.unreliableGold -= unreliableCost
 		this.reliableGold -= amount - unreliableCost
 	}
-	/**
-	 * @ignore
-	 * @internal
-	 */
+	/** @ignore */
 	protected UpdateGoldAfterTime() {
 		const deletedGold: [number, number][] = []
 		for (const ar of this.goldAfterTimeAr) {
@@ -251,10 +206,7 @@ export class HeroTeamData {
 			ArrayExtensions.arrayRemove(this.goldAfterTimeAr, ar)
 		}
 	}
-	/**
-	 * @ignore
-	 * @internal
-	 */
+	/** @ignore */
 	protected UpdateGoldPerMinute() {
 		if (GameRules === undefined || GameRules.IsPaused) {
 			return
@@ -263,10 +215,7 @@ export class HeroTeamData {
 			this.counter.Update(this, this.gpm, true)
 		}
 	}
-	/**
-	 * @ignore
-	 * @internal
-	 */
+	/** @ignore */
 	protected UpdatePhilosophersStone() {
 		if (GameRules === undefined || GameRules.IsPaused) {
 			return
@@ -286,16 +235,14 @@ export class HeroTeamData {
 		}
 		counter.Update(this, itemStone.GetSpecialValue("bonus_gpm"), false)
 	}
-	/**
-	 * @ignore
-	 * @internal
-	 */
+	/** @ignore */
 	protected ReCalculateUnreliableGold() {
 		if (GameRules === undefined || !this.hero.IsEnemy()) {
 			return
 		}
 
-		if (this.unreliableGold > 690 && GameRules.GameTime < 200) {
+		// TODO: rework
+		if (this.unreliableGold > 600 && GameRules.GameTime < 200) {
 			return
 		}
 
@@ -310,25 +257,16 @@ export class HeroTeamData {
 	}
 }
 
-/**
- * @ignore
- * @internal
- */
+/** @ignore */
 const heroes: Hero[] = []
 
-/**
- * @ignore
- * @internal
- */
+/** @ignore */
 function PostDataUpdate() {
 	for (const hero of heroes) {
 		hero.HeroTeamData?.PostDataUpdate()
 	}
 }
-/**
- * @ignore
- * @internal
- */
+/** @ignore */
 function EntityCreated(ent: Entity) {
 	// TODO add check ent.IsClone
 	if (ent instanceof Hero && !ent.IsIllusion) {
@@ -336,10 +274,7 @@ function EntityCreated(ent: Entity) {
 		heroes.push(ent)
 	}
 }
-/**
- * @ignore
- * @internal
- */
+/** @ignore */
 function EntityDestroyed(ent: Entity) {
 	if (ent instanceof Hero) {
 		ArrayExtensions.arrayRemove(heroes, ent)

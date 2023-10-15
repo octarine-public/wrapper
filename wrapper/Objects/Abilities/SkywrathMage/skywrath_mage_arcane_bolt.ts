@@ -4,8 +4,7 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("skywrath_mage_arcane_bolt")
 export class skywrath_mage_arcane_bolt extends Ability {
-	public readonly ProjectilePath =
-		"particles/units/heroes/hero_skywrath_mage/skywrath_mage_arcane_bolt.vpcf"
+	
 	public get Speed(): number {
 		return this.GetSpecialValue("bolt_speed")
 	}

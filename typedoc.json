@@ -4,8 +4,9 @@
 	"hidePageHeader": true,
 	"hideBreadcrumbs": true,
 	"hidePageTitle": true,
+	"hideGenerator": true,
 	"tsconfig": "./tsconfig.json",
-	"plugin": ["typedoc-plugin-markdown"],
+	"plugin": ["typedoc-plugin-markdown", "typedoc-gitlab-wiki-theme"],
 	"entryPoints": ["./**/*.ts"],
 	"out": "docs",
 }

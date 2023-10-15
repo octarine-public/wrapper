@@ -39,8 +39,6 @@ export class Ability extends Entity {
 	public OverrideCastPoint = 0
 	@NetworkedBasicField("m_iLevel")
 	public Level = 0
-	public Cooldown_ = 0
-	public CooldownChangeTime = 0
 	@NetworkedBasicField("m_flCooldownLength")
 	public CooldownLength_ = 0
 	public IsInAbilityPhase_ = false
@@ -59,17 +57,46 @@ export class Ability extends Entity {
 	public DirtyButtons = 0
 	@NetworkedBasicField("m_fAbilityChargeRestoreTimeRemaining")
 	public AbilityChargeRestoreTimeRemaining = 0
+
+	/** @ignore */
+	public Cooldown_ = 0
+	public CooldownChangeTime = 0
+
+	/**@deprecated */
 	public readonly ProjectilePath: Nullable<string>
 
+	/** @ignore */
 	constructor(index: number, serial: number, name: string) {
 		super(index, serial)
 		this.Name_ = name
 		this.AbilityData = AbilityData.globalStorage.get(name) ?? AbilityData.empty
 	}
+
+	/**
+	 * @description Determines if the ability can hit a spell immune enemy.
+	 * @returns {boolean}
+	 */
+	public get CanHitSpellImmuneEnemy(): boolean {
+		return (
+			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES ||
+			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
+		)
+	}
+	/**
+	 * @description Check if the ability can hit a spell immune ally.
+	 * @returns {boolean}
+	 */
+	public get CanHitSpellImmuneAlly(): boolean {
+		return (
+			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE ||
+			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES ||
+			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
+		)
+	}
 	/**
 	 * Check if the ability is usable.
 	 * @description Check if the ability is not hidden and is activated
-	 * @returns {boolean} True if the ability is usable, false otherwise.
+	 * @returns {boolean}
 	 */
 	public get IsUsable(): boolean {
 		return !this.IsHidden && this.IsActivated

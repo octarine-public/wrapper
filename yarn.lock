@@ -2198,6 +2198,11 @@ typed-array-length@^1.0.4:
     for-each "^0.3.3"
     is-typed-array "^1.1.9"
 
+typedoc-gitlab-wiki-theme@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/typedoc-gitlab-wiki-theme/-/typedoc-gitlab-wiki-theme-1.1.1.tgz#83dc484894c48b8bb1e90242a2c14b60ba6fcfa3"
+  integrity sha512-WnFpEyHsxCFY1GstpaViwGagFL9SfsKm3L/m2jEXtTO274ExZYbkPLZ7W/REP9xD51fvW57MyIJZrfo+V+UM5A==
+
 typedoc-plugin-markdown@^4.0.0-next.23:
   version "4.0.0-next.23"
   resolved "https://registry.yarnpkg.com/typedoc-plugin-markdown/-/typedoc-plugin-markdown-4.0.0-next.23.tgz#db61fe205141bcd19593116599f1e2a9aa469cfe"
