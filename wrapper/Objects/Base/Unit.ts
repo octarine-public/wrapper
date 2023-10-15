@@ -1357,7 +1357,7 @@ RegisterFieldHandler(Unit, "m_hAbilities", (unit, newVal) => {
 			ent.Owner_ = unit.Handle
 			ent.OwnerEntity = unit
 			unit.Spells[i] = ent
-		} else unit.TotalItems[i] = undefined
+		} else unit.Spells[i] = undefined
 	}
 	for (let i = ar.length; i < unit.Spells_.length; i++) {
 		unit.Spells_[i] = 0
