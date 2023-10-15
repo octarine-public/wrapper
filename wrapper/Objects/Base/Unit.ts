@@ -391,6 +391,9 @@ export class Unit extends Entity {
 	public get UnitState(): modifierstate[] {
 		return MaskToArrayBigInt(this.UnitStateMask)
 	}
+	public get UnitStateDebug(): modifierstate[] {
+		return MaskToArrayBigInt(this.UnitStateMask_)
+	}
 	public get IsEthereal(): boolean {
 		for (const buff of this.Buffs)
 			switch (buff.Name) {
