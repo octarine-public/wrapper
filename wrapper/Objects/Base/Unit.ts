@@ -358,7 +358,7 @@ export class Unit extends Entity {
 		return mask
 	}
 	public get UnitState(): modifierstate[] {
-		return MaskToArrayBigInt(this.UnitStateMask)
+		return MaskToArrayBigInt(this.UnitStateMask_)
 	}
 	public get UnitStateDebug(): modifierstate[] {
 		return MaskToArrayBigInt(this.UnitStateMask_)
