@@ -1323,6 +1323,9 @@ RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, newVal) => {
 		EventsSDK.emit("NetworkActivityChanged", false, unit)
 	}
 })
+RegisterFieldHandler(Unit, "m_nResetEventsParity", unit => {
+	unit.AnimationTime = 0
+})
 RegisterFieldHandler(Unit, "m_NetworkSequenceIndex", (unit, newVal) => {
 	unit.NetworkSequenceIndex = newVal as number
 	if (unit.IsValid) {
