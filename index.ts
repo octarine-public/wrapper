@@ -1,4 +1,2 @@
-import "./Menu"
-import "./NotificationsSettings"
-import "./Translations"
+import "./internal/index"
 export * from "./wrapper/Imports"

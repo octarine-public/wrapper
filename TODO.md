@@ -1,4 +1,0 @@
-- add ability instance type
-- add new auto generate ability
-- add prediction for ability
-- rewrite Data/GameData

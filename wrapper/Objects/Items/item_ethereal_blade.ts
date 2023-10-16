@@ -5,7 +5,6 @@ import { Item } from "../Base/Item"
 
 @WrapperClass("item_ethereal_blade")
 export class item_ethereal_blade extends Item {
-	public readonly ProjectilePath = "particles/items_fx/ethereal_blade.vpcf"
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")
 	}

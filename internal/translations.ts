@@ -1,4 +1,4 @@
-import { Menu, Utils } from "./wrapper/Imports"
+import { Menu, Utils } from "../wrapper/Imports"
 
 function Load(name: string) {
 	return new Map<string, string>(
