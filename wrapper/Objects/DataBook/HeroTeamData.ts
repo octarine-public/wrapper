@@ -258,7 +258,7 @@ export class HeroTeamData {
 }
 
 /** @ignore */
-const heroes: Hero[] = []
+const heroes = new Set<Hero>()
 
 /** @ignore */
 function PostDataUpdate() {
@@ -269,15 +269,15 @@ function PostDataUpdate() {
 /** @ignore */
 function EntityCreated(ent: Entity) {
 	// TODO add check ent.IsClone
-	if (ent instanceof Hero && !ent.IsIllusion) {
+	if (ent instanceof Hero && !ent.IsIllusion && !heroes.has(ent)) {
 		ent.HeroTeamData = new HeroTeamData(ent)
-		heroes.push(ent)
+		heroes.add(ent)
 	}
 }
 /** @ignore */
 function EntityDestroyed(ent: Entity) {
 	if (ent instanceof Hero) {
-		ArrayExtensions.arrayRemove(heroes, ent)
+		heroes.delete(ent)
 	}
 }
 

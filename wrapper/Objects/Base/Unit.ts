@@ -353,8 +353,9 @@ export class Unit extends Entity {
 	public get UnitStateMask_(): bigint {
 		let mask = this.UnitStateNetworked
 		// TODO: use buffs to calculate this
-		if (GetEntityUnitState(this.Index))
+		if (GetEntityUnitState(this.Index)) {
 			mask |= IOBufferView.getBigUint64(0, true)
+		}
 		return mask
 	}
 	public get UnitState(): modifierstate[] {
@@ -1342,7 +1343,9 @@ RegisterFieldHandler(Unit, "m_hAbilities", (unit, newVal) => {
 			ent.Owner_ = unit.Handle
 			ent.OwnerEntity = unit
 			unit.Spells[i] = ent
-		} else unit.Spells[i] = undefined
+		} else {
+			unit.Spells[i] = undefined
+		}
 	}
 	for (let i = ar.length; i < unit.Spells_.length; i++) {
 		unit.Spells_[i] = 0
