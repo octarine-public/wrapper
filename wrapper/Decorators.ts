@@ -22,10 +22,14 @@ function ReencodeProperty(
 ): PropertyType {
 	convertUint8.fill(0)
 	if (typeof prop === "string") {
-		if (newType === EPropertyType.STRING) return prop
+		if (newType === EPropertyType.STRING) {
+			return prop
+		}
 		throw `Tried to cast string to ${typeof prop} ${prop?.constructor?.name}`
 	} else if (typeof prop === "boolean") {
-		if (newType === EPropertyType.BOOL) return prop
+		if (newType === EPropertyType.BOOL) {
+			return prop
+		}
 		convertUint8[0] = prop ? 1 : 0
 	} else if (typeof prop === "number") {
 		if (
@@ -61,21 +65,26 @@ function ReencodeProperty(
 	} else if (prop instanceof Vector2) {
 		convertFloat32[0] = prop.x
 		convertFloat32[1] = prop.y
-	} else
+	} else {
 		throw `Tried to cast ${typeof prop} ${prop?.constructor?.name} to string`
+	}
 
 	switch (newType) {
 		case EPropertyType.INT8:
 		case EPropertyType.INT16:
 		case EPropertyType.INT32: {
 			let val = convertUint32[0]
-			if ((val & 1) !== 0) val *= -1
+			if ((val & 1) !== 0) {
+				val *= -1
+			}
 			val >>= 1
 			return val
 		}
 		case EPropertyType.INT64: {
 			let val = convertUint64[0]
-			if ((val & 1n) !== 0n) val *= -1n
+			if ((val & 1n) !== 0n) {
+				val *= -1n
+			}
 			val >>= 1n
 			return val
 		}
@@ -92,11 +101,7 @@ function ReencodeProperty(
 		case EPropertyType.VECTOR2:
 			return new Vector2(convertFloat32[0], convertFloat32[1])
 		case EPropertyType.VECTOR3:
-			return new Vector3(
-				convertFloat32[0],
-				convertFloat32[1],
-				convertFloat32[2]
-			)
+			return new Vector3(convertFloat32[0], convertFloat32[1], convertFloat32[2])
 		case EPropertyType.QUATERNION:
 			return new Vector4(
 				convertFloat32[0],
@@ -121,8 +126,9 @@ export function NetworkedBasicField(
 			target.constructor as Constructor<Entity>,
 			networkedFieldName,
 			(ent, newVal) => {
-				if (propType !== EPropertyType.INVALID)
+				if (propType !== EPropertyType.INVALID) {
 					newVal = ReencodeProperty(newVal, propType, networkedType)
+				}
 				const entAny = ent as any
 				entAny[propName] = newVal
 			}

@@ -3,11 +3,7 @@ import { Vector2 } from "../Base/Vector2"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { Events } from "../Managers/Events"
 import { EventsSDK } from "../Managers/EventsSDK"
-import {
-	InputEventSDK,
-	InputManager,
-	VMouseKeys
-} from "../Managers/InputManager"
+import { InputEventSDK, InputManager, VMouseKeys } from "../Managers/InputManager"
 import { RendererSDK } from "../Native/RendererSDK"
 import { readJSON } from "../Utils/Utils"
 import { Base } from "./Base"
@@ -51,7 +47,9 @@ class CMenuManager {
 		return this.IsOpen_
 	}
 	public set IsOpen(val: boolean) {
-		if (this.IsOpen_ === val) return
+		if (this.IsOpen_ === val) {
+			return
+		}
 		if (!val) {
 			this.OnMouseLeftUp()
 			this.entries.forEach(entry => entry.OnParentNotVisible())
@@ -65,7 +63,9 @@ class CMenuManager {
 	public get ConfigValue() {
 		this.config = Object.create(null)
 		this.entries.forEach(entry => {
-			if (entry.SaveConfig) this.config[entry.InternalName] = entry.ConfigValue
+			if (entry.SaveConfig) {
+				this.config[entry.InternalName] = entry.ConfigValue
+			}
 		})
 		this.config.Header = this.header.ConfigValue
 		this.config.SelectedLocalization = Localization.SelectedUnitName
@@ -78,14 +78,21 @@ class CMenuManager {
 
 	public get ScrollVisible() {
 		let remaining = -this.VisibleEntries
-		for (const entry of this.entries) if (entry.IsVisible) remaining++
+		for (const entry of this.entries) {
+			if (entry.IsVisible) {
+				remaining++
+			}
+		}
 		return remaining > 0
 	}
 
 	private get EntriesSizeX_(): number {
 		let width = this.header.Size.x
-		for (const entry of this.entries)
-			if (entry.IsVisible) width = Math.max(width, entry.Size.x)
+		for (const entry of this.entries) {
+			if (entry.IsVisible) {
+				width = Math.max(width, entry.Size.x)
+			}
+		}
 		return width
 	}
 	private get EntriesSizeY_(): number {
@@ -94,9 +101,13 @@ class CMenuManager {
 			cnt = 0,
 			skip = this.ScrollPosition
 		for (const entry of this.entries) {
-			if (!entry.IsVisible || skip-- > 0) continue
+			if (!entry.IsVisible || skip-- > 0) {
+				continue
+			}
 			height += entry.Size.y
-			if (++cnt >= visibleEntries) break
+			if (++cnt >= visibleEntries) {
+				break
+			}
 		}
 		return height
 	}
@@ -129,7 +140,9 @@ class CMenuManager {
 		}
 	}
 	public Render(): void {
-		if (this.config === undefined) return
+		if (this.config === undefined) {
+			return
+		}
 		if (!this.initializedLanguage && Localization.PreferredUnitName !== "") {
 			Localization.SelectedUnitName = Localization.PreferredUnitName
 			this.initializedLanguage = true
@@ -144,7 +157,9 @@ class CMenuManager {
 			writeConfig(JSON.stringify(this.ConfigValue))
 			Base.SaveConfigASAP = false
 		}
-		if (!this.IsOpen) return
+		if (!this.IsOpen) {
+			return
+		}
 		if (this.header.QueuedUpdate) {
 			this.header.QueuedUpdate = false
 			this.header.Update(this.header.QueuedUpdateRecursive)
@@ -168,7 +183,9 @@ class CMenuManager {
 		let skip = this.ScrollPosition,
 			visibleEntries = this.VisibleEntries
 		for (const entry of this.entries) {
-			if (!entry.IsVisible || skip-- > 0) continue
+			if (!entry.IsVisible || skip-- > 0) {
+				continue
+			}
 			position.CopyTo(entry.Position)
 			if (entry.QueuedUpdate) {
 				entry.QueuedUpdate = false
@@ -177,41 +194,62 @@ class CMenuManager {
 			updatedEntries = updatedEntries || entry.NeedsRootUpdate
 			entry.Render()
 			position.AddScalarY(entry.Size.y)
-			if (--visibleEntries <= 0) break
+			if (--visibleEntries <= 0) {
+				break
+			}
 		}
-		if (updatedEntries) this.Update()
-		for (const node of this.entries) if (node.IsVisible) node.PostRender()
+		if (updatedEntries) {
+			this.Update()
+		}
+		for (const node of this.entries) {
+			if (node.IsVisible) {
+				node.PostRender()
+			}
+		}
 		this.PostRender()
 	}
 	public Update(recursive = false): void {
-		if (recursive) for (const entry of this.entries) entry.Update(true)
+		if (recursive) {
+			for (const entry of this.entries) {
+				entry.Update(true)
+			}
+		}
 		this.UpdateScrollbar()
 		this.EntriesSizeX = this.EntriesSizeX_
 		this.EntriesSizeY = this.EntriesSizeY_
 	}
 
 	public OnMouseLeftDown(): boolean {
-		if (!this.IsOpen) return true
+		if (!this.IsOpen) {
+			return true
+		}
 		if (!this.header.OnMouseLeftDown()) {
 			this.activeElement = this.header
 			return false
 		}
-		for (const node of this.entries)
+		for (const node of this.entries) {
 			if (node.IsVisible && !node.OnMouseLeftDown()) {
 				this.activeElement = node
 				return false
 			}
+		}
 		return true
 	}
 	public OnMouseLeftUp(): boolean {
-		if (!this.IsOpen || this.activeElement === undefined) return true
+		if (!this.IsOpen || this.activeElement === undefined) {
+			return true
+		}
 		const ret = this.activeElement.OnMouseLeftUp()
-		if (this.activeElement === this.header) Base.SaveConfigASAP = true
+		if (this.activeElement === this.header) {
+			Base.SaveConfigASAP = true
+		}
 		this.activeElement = undefined
 		return ret
 	}
 	public OnMouseWheel(up: boolean): boolean {
-		if (!this.IsOpen) return false
+		if (!this.IsOpen) {
+			return false
+		}
 		if (this.ScrollVisible) {
 			const rect = this.EntriesRect
 			if (rect.Contains(InputManager.CursorOnScreen)) {
@@ -229,21 +267,21 @@ class CMenuManager {
 		}
 		return this.entries.some(entry => entry.OnMouseWheel(up))
 	}
-	public AddEntry(
-		name: string,
-		iconPath = "",
-		tooltip = "",
-		iconRound = -1
-	): Node {
+	public AddEntry(name: string, iconPath = "", tooltip = "", iconRound = -1): Node {
 		let node = this.entries.find(entry => entry.InternalName === name)
 		if (node !== undefined) {
-			if (node.IconPath === "") node.IconPath = iconPath
+			if (node.IconPath === "") {
+				node.IconPath = iconPath
+			}
 			return node
 		}
-		if (hardcodedIcons.has(name)) iconPath = hardcodedIcons.get(name)!
+		if (hardcodedIcons.has(name)) {
+			iconPath = hardcodedIcons.get(name)!
+		}
 		node = new Node(this, name, iconPath, tooltip, iconRound)
-		if (hardcodedPriorities.has(name))
+		if (hardcodedPriorities.has(name)) {
 			node.Priority = hardcodedPriorities.get(name)!
+		}
 		node.parent = this
 		this.entries.push(node)
 		this.entries = this.entries
@@ -252,13 +290,15 @@ class CMenuManager {
 		return node
 	}
 	public AddEntryDeep(names: string[], iconPaths: string[] = []): Node {
-		if (names.length === 0)
+		if (names.length === 0) {
 			throw "Invalid names array passed to Menu.AddEntryDeep"
+		}
 		return names.reduce((prev, cur, i) => {
-			if (i === 0) return prev
+			if (i === 0) {
+				return prev
+			}
 			const iconPathID = names.length - i - 1
-			const iconPath =
-				iconPathID < iconPaths.length ? iconPaths[iconPathID] : ""
+			const iconPath = iconPathID < iconPaths.length ? iconPaths[iconPathID] : ""
 			return prev.AddNode(cur, iconPath)
 		}, this.AddEntry(names[0]))
 	}
@@ -288,7 +328,9 @@ class CMenuManager {
 		return new Rectangle(scrollbarPos, scrollbarPos.Add(scrollbarSize))
 	}
 	private PostRender(): void {
-		if (!this.IsOpen) return
+		if (!this.IsOpen) {
+			return
+		}
 		if (this.ScrollVisible) {
 			const rect = this.GetScrollbarRect(
 				this.GetScrollbarPositionsRect(this.EntriesRect)
@@ -304,11 +346,15 @@ class CMenuManager {
 			skip = this.ScrollPosition
 		for (let i = 0; i < this.entries.length; i++) {
 			const entry = this.entries[i]
-			if (!entry.IsVisible || skip-- > 0) continue
+			if (!entry.IsVisible || skip-- > 0) {
+				continue
+			}
 			height += entry.Size.y
 			this.VisibleEntries++
 			if (height >= maxHeight) {
-				if (i < this.entries.length - 1) this.IsAtScrollEnd = false
+				if (i < this.entries.length - 1) {
+					this.IsAtScrollEnd = false
+				}
 				break
 			}
 		}
@@ -334,11 +380,14 @@ class CMenuManager {
 		while (Base.ForwardConfigASAP && this.config !== undefined) {
 			Base.ForwardConfigASAP = false
 			this.entries.forEach(entry => {
-				if (entry.SaveConfig)
+				if (entry.SaveConfig) {
 					entry.ConfigValue = this.config[entry.InternalName]
+				}
 			})
 			this.entries.forEach(entry => {
-				if (entry.SaveConfig) entry.OnConfigLoaded()
+				if (entry.SaveConfig) {
+					entry.OnConfigLoaded()
+				}
 			})
 		}
 	}
@@ -355,17 +404,23 @@ EventsSDK.on("WindowSizeChanged", () => MenuManager.Update(true))
 EventsSDK.on("UnitAbilityDataUpdated", () => MenuManager.Update(true))
 
 InputEventSDK.on("MouseKeyDown", key => {
-	if (key === VMouseKeys.MK_LBUTTON) return MenuManager.OnMouseLeftDown()
+	if (key === VMouseKeys.MK_LBUTTON) {
+		return MenuManager.OnMouseLeftDown()
+	}
 	return true
 })
 InputEventSDK.on("MouseKeyUp", key => {
-	if (key === VMouseKeys.MK_LBUTTON) return MenuManager.OnMouseLeftUp()
+	if (key === VMouseKeys.MK_LBUTTON) {
+		return MenuManager.OnMouseLeftUp()
+	}
 	return true
 })
 
 InputEventSDK.on("MouseWheel", up => {
 	const activeDropdown = Dropdown.activeDropdown
-	if (activeDropdown?.IsVisible && activeDropdown.OnMouseWheel(up)) return false
+	if (activeDropdown?.IsVisible && activeDropdown.OnMouseWheel(up)) {
+		return false
+	}
 	return !MenuManager.OnMouseWheel(up)
 })
 

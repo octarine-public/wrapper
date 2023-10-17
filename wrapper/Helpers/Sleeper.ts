@@ -10,12 +10,16 @@ export class Sleeper {
 		return hrtime()
 	}
 	public Sleep(ms: number, key: any): number {
-		if (typeof ms !== "number") ms = 0
+		if (typeof ms !== "number") {
+			ms = 0
+		}
 		return this.setTime(key, this.TickCount + ms)
 	}
 	public RemainingSleepTime(key: any): number {
 		const endTime = this.SleepDB.get(key)
-		if (endTime === undefined) return 0
+		if (endTime === undefined) {
+			return 0
+		}
 		const ticks = this.TickCount
 		if (endTime < ticks) {
 			this.SleepDB.delete(key)
@@ -25,7 +29,9 @@ export class Sleeper {
 	}
 	public StartTime(key: any): number {
 		const endTime = this.SleepDB.get(key)
-		if (endTime === undefined) return 0
+		if (endTime === undefined) {
+			return 0
+		}
 		return endTime
 	}
 	public Sleeping(key: any): boolean {

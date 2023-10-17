@@ -9,7 +9,9 @@ export class item_power_treads extends Item {
 
 	public SwitchAttribute(target: PowerTreadsAttribute, queue: boolean): void {
 		const owner = this.Owner
-		if (target === this.ActiveAttribute || owner === undefined) return
+		if (target === this.ActiveAttribute || owner === undefined) {
+			return
+		}
 		let switchCount = 0
 		// TODO: that's really bad code, rewrite it in a good way once we know one
 		switch (this.ActiveAttribute) {
@@ -55,6 +57,8 @@ export class item_power_treads extends Item {
 			default:
 				break
 		}
-		for (let i = 0; i < switchCount; i++) owner.CastNoTarget(this, queue)
+		for (let i = 0; i < switchCount; i++) {
+			owner.CastNoTarget(this, queue)
+		}
 	}
 }

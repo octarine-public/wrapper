@@ -47,8 +47,7 @@ export class Base {
 		Base.textOffset.y = GUIInfo.ScaleHeight(14)
 	}
 
-	private static readonly backgroundInactivePath =
-		"menu/background_inactive.svg"
+	private static readonly backgroundInactivePath = "menu/background_inactive.svg"
 	private static readonly backgroundActivePath = "menu/background_active.svg"
 	private static readonly tooltipPath = "menu/tooltip.svg"
 	private static readonly barInactivePath = "menu/bar_inactive.svg"
@@ -140,14 +139,20 @@ export class Base {
 	}
 
 	public OnConfigLoaded() {
-		if (!this.configDirty) return
+		if (!this.configDirty) {
+			return
+		}
 		this.configDirty = false
-		if (this.executeOnAdd) this.TriggerOnValueChangedCBs()
+		if (this.executeOnAdd) {
+			this.TriggerOnValueChangedCBs()
+		}
 	}
 
 	public OnValue(func: (caller: this) => any): this {
 		this.OnValueChangedCBs.push(func as any)
-		if (this.executeOnAdd) func(this)
+		if (this.executeOnAdd) {
+			func(this)
+		}
 		return this
 	}
 
@@ -161,7 +166,9 @@ export class Base {
 		this.NeedsRootUpdate = true
 		this.Size.CopyFrom(Base.DefaultSize)
 		this.GetTextSizeDefault(this.Name).CopyTo(this.nameSize)
-		if (this.Tooltip === "") return true
+		if (this.Tooltip === "") {
+			return true
+		}
 		Vector2.FromVector3(
 			this.GetTextSizeDefault(this.Tooltip).CopyTo(this.TooltipTextSize)
 		)
@@ -182,28 +189,33 @@ export class Base {
 	}
 
 	public Render(drawBar = true): void {
-		if (this.isActive)
+		if (this.isActive) {
 			RendererSDK.Image(
 				Base.backgroundActivePath,
 				this.Position,
 				-1,
 				this.RenderSize
 			)
-		else
+		} else {
 			RendererSDK.Image(
 				Base.backgroundInactivePath,
 				this.Position,
 				-1,
 				this.RenderSize
 			)
+		}
 		const isHovered = this.IsHovered
 		if (drawBar) {
 			const barSize = new Vector2(Base.barWidth, this.Size.y)
-			if (isHovered || this.isActive)
+			if (isHovered || this.isActive) {
 				RendererSDK.Image(Base.barActivePath, this.Position, -1, barSize)
-			else RendererSDK.Image(Base.barInactivePath, this.Position, -1, barSize)
+			} else {
+				RendererSDK.Image(Base.barInactivePath, this.Position, -1, barSize)
+			}
 		}
-		if (isHovered) this.RenderTooltip()
+		if (isHovered) {
+			this.RenderTooltip()
+		}
 	}
 	public PostRender(): void {
 		// to be implemented in child classes
@@ -257,11 +269,15 @@ export class Base {
 		)
 	}
 	protected TriggerOnValueChangedCBs(): void {
-		for (const cb of this.OnValueChangedCBs) cb(this)
+		for (const cb of this.OnValueChangedCBs) {
+			cb(this)
+		}
 	}
 
 	private RenderTooltip(): void {
-		if (this.Tooltip === "") return
+		if (this.Tooltip === "") {
+			return
+		}
 
 		const position = this.Position.Clone()
 			.AddScalarX(this.parent.EntriesSizeX + Base.tooltipOffset)

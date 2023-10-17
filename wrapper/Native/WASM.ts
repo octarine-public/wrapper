@@ -38,8 +38,7 @@ export function GetEyeVector(cameraAngles: QAngle): Vector3 {
 	return new Vector3(
 		0,
 		Math.cos(
-			DegreesToRadian(cameraAngles.x) -
-				Math.cos(DegreesToRadian(cameraAngles.y))
+			DegreesToRadian(cameraAngles.x) - Math.cos(DegreesToRadian(cameraAngles.y))
 		),
 		-Math.sin(DegreesToRadian(cameraAngles.x))
 	)
@@ -146,7 +145,9 @@ export function WorldToScreen(
 	IOBuffer[10] = windowSize.x
 	IOBuffer[11] = windowSize.y
 
-	if (!WorldUtils.WorldToScreen()) return undefined
+	if (!WorldUtils.WorldToScreen()) {
+		return undefined
+	}
 	return Vector2.fromIOBuffer()
 }
 
@@ -194,7 +195,9 @@ export function WorldToScreenNew(
 	position.toIOBuffer()
 	windowSize.toIOBuffer(3)
 
-	if (!WorldUtils.WorldToScreenNew()) return undefined
+	if (!WorldUtils.WorldToScreenNew()) {
+		return undefined
+	}
 	return Vector2.fromIOBuffer()
 }
 
@@ -222,12 +225,10 @@ export function BatchCheckRayBox(
 	hitboxes.forEach((hitbox, i) => {
 		IOBuffer[7 + i * 3 * 2 + 0] = hitbox.Base.x + hitbox.MinOffset.x
 		IOBuffer[7 + i * 3 * 2 + 1] = hitbox.Base.y + hitbox.MinOffset.y
-		IOBuffer[7 + i * 3 * 2 + 2] =
-			hitbox.Base.z + hitbox.MinOffset.z + hitbox.DeltaZ
+		IOBuffer[7 + i * 3 * 2 + 2] = hitbox.Base.z + hitbox.MinOffset.z + hitbox.DeltaZ
 		IOBuffer[7 + i * 3 * 2 + 3] = hitbox.Base.x + hitbox.MaxOffset.x
 		IOBuffer[7 + i * 3 * 2 + 4] = hitbox.Base.y + hitbox.MaxOffset.y
-		IOBuffer[7 + i * 3 * 2 + 5] =
-			hitbox.Base.z + hitbox.MaxOffset.z + hitbox.DeltaZ
+		IOBuffer[7 + i * 3 * 2 + 5] = hitbox.Base.z + hitbox.MaxOffset.z + hitbox.DeltaZ
 	})
 
 	WorldUtils.BatchCheckRayBox()

@@ -18,13 +18,19 @@ export class techies_suicide extends Ability {
 
 const abils = EntityManager.GetEntitiesByClass(techies_suicide)
 EventsSDK.on("PostDataUpdate", () => {
-	if (LocalPlayer === undefined || LocalPlayer.Hero === undefined) return
+	if (LocalPlayer === undefined || LocalPlayer.Hero === undefined) {
+		return
+	}
 
 	for (const abil of abils) {
-		if (abil.TargetPosition.IsValid) continue
+		if (abil.TargetPosition.IsValid) {
+			continue
+		}
 
 		const owner = abil.Owner
-		if (owner === undefined) continue
+		if (owner === undefined) {
+			continue
+		}
 
 		const buff = owner.GetBuffByName("modifier_techies_suicide_leap")
 		const buffEndTime = 0.72
@@ -32,8 +38,9 @@ EventsSDK.on("PostDataUpdate", () => {
 			buff === undefined ||
 			buff.Duration !== -1 ||
 			buff.ElapsedTime > buffEndTime
-		)
+		) {
 			continue
+		}
 		if (abil.LastKnownOwnerPosition_.IsValid) {
 			if (abil.LastKnownOwnerPositionTime_ > GameState.RawGameTime - 0.04) {
 				const velocity3D = owner.Position.Subtract(abil.LastKnownOwnerPosition_)
@@ -63,10 +70,14 @@ EventsSDK.on("PostDataUpdate", () => {
 })
 
 EventsSDK.on("ModifierRemoved", buff => {
-	if (buff.Name !== "modifier_techies_suicide_leap") return
+	if (buff.Name !== "modifier_techies_suicide_leap") {
+		return
+	}
 
 	const parent = buff.Parent
-	if (parent === undefined) return
+	if (parent === undefined) {
+		return
+	}
 
 	const abil = parent.GetAbilityByClass(techies_suicide)
 	if (abil !== undefined) {

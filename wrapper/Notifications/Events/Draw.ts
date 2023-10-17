@@ -11,14 +11,15 @@ import { GetPanel } from "../Util"
 
 EventsSDK.after("Draw", () => {
 	arrayRemove(Notifications, Notifications.filter(x => x.IsExpired)[0])
-	if (InputManager.IsShopOpen) return
-	const num = Math.min(
-		Queue.length,
-		NotificationsSDK.limit - Notifications.length
-	)
+	if (InputManager.IsShopOpen) {
+		return
+	}
+	const num = Math.min(Queue.length, NotificationsSDK.limit - Notifications.length)
 	for (let index = 0; index < num; index++) {
 		const notification = Queue.shift()
-		if (notification === undefined) continue
+		if (notification === undefined) {
+			continue
+		}
 		notification.PushTime()
 		Notifications.push(notification)
 	}

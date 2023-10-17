@@ -68,12 +68,7 @@ export class Color {
 	/**
 	 * Set Color by numbers
 	 */
-	public SetColor(
-		r: number = 0,
-		g: number = 0,
-		b: number = 0,
-		a: number = 255
-	): Color {
+	public SetColor(r: number = 0, g: number = 0, b: number = 0, a: number = 255): Color {
 		this.r = r
 		this.g = g
 		this.b = b
@@ -115,10 +110,7 @@ export class Color {
 
 	public Equals(col: Color): boolean {
 		return (
-			this.r === col.r &&
-			this.g === col.g &&
-			this.b === col.b &&
-			this.a === col.a
+			this.r === col.r && this.g === col.g && this.b === col.b && this.a === col.a
 		)
 	}
 

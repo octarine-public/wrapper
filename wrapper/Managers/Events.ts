@@ -34,10 +34,13 @@ export class EventEmitter {
 
 	public removeListener(name: string, listener: Listener): EventEmitter {
 		const listeners = this.events.get(name)
-		if (listeners === undefined) return this
+		if (listeners === undefined) {
+			return this
+		}
 
-		if (arrayRemoveCallback(listeners, val => val[0] === listener))
+		if (arrayRemoveCallback(listeners, val => val[0] === listener)) {
 			this.listener2line.delete(listener)
+		}
 		return this
 	}
 
@@ -45,18 +48,22 @@ export class EventEmitter {
 		const listeners = this.events.get(name),
 			listenersAfter = this.eventsAfter.get(name)
 
-		if (listeners !== undefined)
-			for (const [listener] of listeners)
+		if (listeners !== undefined) {
+			for (const [listener] of listeners) {
 				try {
-					if (listener(...args) === false && cancellable) return false
+					if (listener(...args) === false && cancellable) {
+						return false
+					}
 				} catch (e: any) {
 					console.error(
 						e instanceof Error ? e : new Error(e),
 						this.listener2line.get(listener)
 					)
 				}
-		if (listenersAfter !== undefined)
-			for (const [listener] of listenersAfter)
+			}
+		}
+		if (listenersAfter !== undefined) {
+			for (const [listener] of listenersAfter) {
 				try {
 					listener(...args)
 				} catch (e: any) {
@@ -65,6 +72,8 @@ export class EventEmitter {
 						this.listener2line.get(listener)
 					)
 				}
+			}
+		}
 		return true
 	}
 
@@ -110,11 +119,7 @@ declare interface Events extends EventEmitter {
 		) => void,
 		priority?: number
 	): Events
-	on(
-		name: "PrepareUnitOrders",
-		callback: () => false | any,
-		priority?: number
-	): Events
+	on(name: "PrepareUnitOrders", callback: () => false | any, priority?: number): Events
 	on(
 		name: "DebuggerPrepareUnitOrders",
 		callback: (is_user_input: boolean, was_cancelled: boolean) => void,
@@ -153,14 +158,8 @@ declare interface Events extends EventEmitter {
 		priority?: number
 	): Events
 	on(name: "ScriptsUpdated", listener: () => void, priority?: number): Events
-	on(
-		name: "SetLanguage",
-		func: (language: number) => void,
-		priority?: number
-	): Events
+	on(name: "SetLanguage", func: (language: number) => void, priority?: number): Events
 }
 
 export const Events: Events = new EventEmitter()
-setFireEvent((name, cancellable, ...args) =>
-	Events.emit(name, cancellable, ...args)
-)
+setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args))

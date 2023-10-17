@@ -1,18 +1,30 @@
 const masksBigInt: bigint[] = [],
 	masksNumber: number[] = []
 
-for (let i = 0; i < 64; i++) masksBigInt.push(1n << BigInt(i))
+for (let i = 0; i < 64; i++) {
+	masksBigInt.push(1n << BigInt(i))
+}
 
-for (let i = 0; i < 32; i++) masksNumber.push(1 << i)
+for (let i = 0; i < 32; i++) {
+	masksNumber.push(1 << i)
+}
 
 export function MaskToArrayBigInt(num: bigint): number[] {
 	const res: number[] = []
-	for (let i = 0; i < 64; i++) if ((num & masksBigInt[i]) !== 0n) res.push(i)
+	for (let i = 0; i < 64; i++) {
+		if ((num & masksBigInt[i]) !== 0n) {
+			res.push(i)
+		}
+	}
 	return res
 }
 export function MaskToArrayNumber(num: number): number[] {
 	const res: number[] = []
-	for (let i = 0; i < 32; i++) if ((num & masksNumber[i]) !== 0) res.push(i)
+	for (let i = 0; i < 32; i++) {
+		if ((num & masksNumber[i]) !== 0) {
+			res.push(i)
+		}
+	}
 	return res
 }
 export function HasBit(num: number, bit: number): boolean {

@@ -53,8 +53,11 @@ export const NotificationsSDK = new (class CNotificationsSDK {
 				Notifications,
 				x => x.UniqueKey === x.UniqueKey && !x.IsExpired
 			)
-			if (!Queue.some(x => x.UniqueKey === notification.UniqueKey))
+			if (!Queue.some(x => x.UniqueKey === notification.UniqueKey)) {
 				Queue.push(notification)
-		} else Queue.push(notification)
+			}
+		} else {
+			Queue.push(notification)
+		}
 	}
 })()

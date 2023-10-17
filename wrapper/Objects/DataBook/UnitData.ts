@@ -3,10 +3,7 @@ import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { Attributes } from "../../Enums/Attributes"
 import { DOTAHullSize } from "../../Enums/DOTAHullSize"
 import { DOTAUnitMoveCapability } from "../../Enums/DOTAUnitMoveCapability"
-import {
-	createMapFromMergedIterators,
-	parseEnumString
-} from "../../Utils/Utils"
+import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
 
 function LoadUnitFile(path: string): RecursiveMap {
 	const kv = parseKV(path)
@@ -16,10 +13,12 @@ function LoadUnitFile(path: string): RecursiveMap {
 		new Map()
 	if (ret.has("Version")) {
 		const version = ret.get("Version")
-		if (typeof version === "string" || typeof version === "number")
-			if (version !== "1" && version !== 1)
+		if (typeof version === "string" || typeof version === "number") {
+			if (version !== "1" && version !== 1) {
 				// unknown version, skip it
 				return new Map()
+			}
+		}
 		ret.delete("Version")
 	}
 	return ret
@@ -37,9 +36,7 @@ enum DOTA_COMBAT_CLASS_DEFEND {
 	DOTA_COMBAT_CLASS_DEFEND_STRUCTURE
 }
 
-function FixCombatClassAttack(
-	type: DOTA_COMBAT_CLASS_ATTACK
-): AttackDamageType {
+function FixCombatClassAttack(type: DOTA_COMBAT_CLASS_ATTACK): AttackDamageType {
 	switch (type) {
 		default:
 		case DOTA_COMBAT_CLASS_ATTACK.DOTA_COMBAT_CLASS_ATTACK_BASIC:
@@ -71,22 +68,31 @@ export class UnitData {
 	public static GetUnitNameByNameIndex(index: number): Nullable<string> {
 		const unitNamesSorted = UnitData.unitNamesSorted
 		// it should be much better for V8 to not try to make hits outside of array
-		if (index < 0 || unitNamesSorted.length <= index) return undefined
+		if (index < 0 || unitNamesSorted.length <= index) {
+			return undefined
+		}
 		return unitNamesSorted[index]
 	}
 	public static GetHeroID(name: string): number {
 		const data = UnitData.globalStorage.get(name)
-		if (data === undefined) throw `Unknown unit name: ${name}`
+		if (data === undefined) {
+			throw `Unknown unit name: ${name}`
+		}
 		return data.HeroID
 	}
 	public static GetHeroNameByID(id: number): string {
-		for (const [name, data] of UnitData.globalStorage)
-			if (data.HeroID === id) return name
+		for (const [name, data] of UnitData.globalStorage) {
+			if (data.HeroID === id) {
+				return name
+			}
+		}
 		return ""
 	}
 	public static GetHeroAttributePrimary(name: string): Attributes {
 		const data = UnitData.globalStorage.get(name)
-		if (data === undefined) throw `Unknown unit name: ${name}`
+		if (data === undefined) {
+			throw `Unknown unit name: ${name}`
+		}
 		return data.AttributePrimary
 	}
 
@@ -224,14 +230,22 @@ export class UnitData {
 			? parseInt(kv.get("HealthBarOffset") as string)
 			: 200
 		if (!kv.has("workshop_guide_name")) {
-			if (name.startsWith("npc_")) name = name.substring(4)
-			if (name.startsWith("dota_")) name = name.substring(5)
-			if (name.startsWith("hero_")) name = name.substring(5)
+			if (name.startsWith("npc_")) {
+				name = name.substring(4)
+			}
+			if (name.startsWith("dota_")) {
+				name = name.substring(5)
+			}
+			if (name.startsWith("hero_")) {
+				name = name.substring(5)
+			}
 			this.WorkshopName = name
 				.split("_")
 				.map(str => (str ? str[0].toUpperCase() + str.substring(1) : ""))
 				.join(" ")
-		} else this.WorkshopName = kv.get("workshop_guide_name") as string
+		} else {
+			this.WorkshopName = kv.get("workshop_guide_name") as string
+		}
 		this.AttributePrimary = kv.has("AttributePrimary")
 			? parseEnumString(Attributes, kv.get("AttributePrimary") as string)
 			: Attributes.DOTA_ATTRIBUTE_STRENGTH
@@ -244,26 +258,35 @@ export class UnitData {
 
 		if (kv.has("AttackSpeedActivityModifiers")) {
 			const m = kv.get("AttackSpeedActivityModifiers")
-			if (m instanceof Map)
-				for (const [k, v] of m)
-					if (typeof v === "string")
+			if (m instanceof Map) {
+				for (const [k, v] of m) {
+					if (typeof v === "string") {
 						this.AttackSpeedActivityModifiers.push([parseFloat(v), k])
+					}
+				}
+			}
 			this.AttackSpeedActivityModifiers.sort((a, b) => b[0] - a[0])
 		}
 		if (kv.has("MovementSpeedActivityModifiers")) {
 			const m = kv.get("MovementSpeedActivityModifiers")
-			if (m instanceof Map)
-				for (const [k, v] of m)
-					if (typeof v === "string")
+			if (m instanceof Map) {
+				for (const [k, v] of m) {
+					if (typeof v === "string") {
 						this.MovementSpeedActivityModifiers.push([parseFloat(v), k])
+					}
+				}
+			}
 			this.MovementSpeedActivityModifiers.sort((a, b) => b[0] - a[0])
 		}
 		if (kv.has("AttackRangeActivityModifiers")) {
 			const m = kv.get("AttackRangeActivityModifiers")
-			if (m instanceof Map)
-				for (const [k, v] of m)
-					if (typeof v === "string")
+			if (m instanceof Map) {
+				for (const [k, v] of m) {
+					if (typeof v === "string") {
 						this.AttackRangeActivityModifiers.push([parseFloat(v), k])
+					}
+				}
+			}
 			this.AttackRangeActivityModifiers.sort((a, b) => b[0] - a[0])
 		}
 
@@ -288,13 +311,16 @@ function FixUnitInheritance(
 	map: RecursiveMap,
 	unitName: string
 ): RecursiveMap {
-	if (fixedCache.has(unitName)) return fixedCache.get(unitName) as RecursiveMap
-	if (unitName === "npc_dota_hero_base")
+	if (fixedCache.has(unitName)) {
+		return fixedCache.get(unitName) as RecursiveMap
+	}
+	if (unitName === "npc_dota_hero_base") {
 		map.set("BaseClass", "npc_dota_units_base")
-	else if (unitName.startsWith("npc_dota_hero_") && !map.has("BaseClass"))
+	} else if (unitName.startsWith("npc_dota_hero_") && !map.has("BaseClass")) {
 		map.set("BaseClass", "npc_dota_hero_base")
-	else if (map.get("BaseClass") === "npc_dota_creep_lane")
+	} else if (map.get("BaseClass") === "npc_dota_creep_lane") {
 		map.set("BaseClass", "npc_dota_units_base")
+	}
 	if (map.has("BaseClass") || map.has("include_keys_from")) {
 		const baseName = map.get("BaseClass") ?? map.get("include_keys_from")
 		if (typeof baseName === "string" && baseName !== unitName) {
@@ -307,7 +333,9 @@ function FixUnitInheritance(
 					baseName
 				)
 				fixedBaseMap.forEach((v, k) => {
-					if (!map.has(k)) map.set(k, v)
+					if (!map.has(k)) {
+						map.set(k, v)
+					}
 				})
 			}
 		}
@@ -321,10 +349,7 @@ export function ReloadGlobalUnitStorage() {
 	UnitData.unitNamesSorted = []
 	UnitData.globalStorage.clear()
 	try {
-		const parsedHeroes = createMapFromMergedIterators<
-			string,
-			RecursiveMapValue
-		>(
+		const parsedHeroes = createMapFromMergedIterators<string, RecursiveMapValue>(
 			LoadUnitFile("scripts/npc/npc_heroes.txt").entries(),
 			LoadUnitFile("scripts/npc/npc_heroes_staging.txt").entries(),
 			LoadUnitFile("scripts/npc/npc_heroes_custom.txt").entries()
@@ -346,8 +371,9 @@ export function ReloadGlobalUnitStorage() {
 		)
 		const fixedCache: RecursiveMap = new Map()
 		unitsMap.forEach((map, unitName) => {
-			if (map instanceof Map)
+			if (map instanceof Map) {
 				FixUnitInheritance(unitsMap, fixedCache, map, unitName)
+			}
 		})
 		UnitData.unitNamesSorted = [...unitsMap.keys()]
 	} catch (e) {

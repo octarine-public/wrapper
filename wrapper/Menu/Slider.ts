@@ -46,7 +46,9 @@ export class Slider extends Base {
 		return this.value
 	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number") return
+		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number") {
+			return
+		}
 		this.value =
 			value !== undefined
 				? Math.min(Math.max(value, this.min), this.max)
@@ -66,29 +68,22 @@ export class Slider extends Base {
 					Slider.sliderBackgroundOffset.y -
 					Slider.sliderBackgroundHeight
 			),
-			rect.pos2
-				.Clone()
-				.SubtractForThis(Slider.sliderBackgroundOffset)
-				.AddScalarX(1) // because sliderBackgroundOffset includes bar size (?)
+			rect.pos2.Clone().SubtractForThis(Slider.sliderBackgroundOffset).AddScalarX(1) // because sliderBackgroundOffset includes bar size (?)
 		)
 	}
 
 	public Update(): boolean {
-		if (!super.Update()) return false
+		if (!super.Update()) {
+			return false
+		}
 		const maxValueSize = this.GetTextSizeDefault(
 			this.max.toFixed(this.precision)
 		).Max(this.GetTextSizeDefault(this.min.toFixed(this.precision)))
 		this.Size.x =
-			this.nameSize.x +
-			this.textOffset.x * 2 +
-			Slider.textValueGap +
-			maxValueSize.x
+			this.nameSize.x + this.textOffset.x * 2 + Slider.textValueGap + maxValueSize.x
 		this.Size.y =
 			this.textOffset.y +
-			Math.max(
-				maxValueSize.y - maxValueSize.z,
-				this.nameSize.y - this.nameSize.z
-			) +
+			Math.max(maxValueSize.y - maxValueSize.z, this.nameSize.y - this.nameSize.z) +
 			Slider.textSliderVerticalGap +
 			Slider.sliderBackgroundOffset.y +
 			Slider.sliderBackgroundHeight
@@ -97,7 +92,9 @@ export class Slider extends Base {
 
 	public Render(): void {
 		super.Render()
-		if (this.isDragging) this.OnValueChanged()
+		if (this.isDragging) {
+			this.OnValueChanged()
+		}
 
 		const rect = this.Rect,
 			valueText = this.value.toFixed(this.precision)
@@ -125,13 +122,14 @@ export class Slider extends Base {
 			-1,
 			sliderRect.Size
 		)
-		if (sliderProgress > 0)
+		if (sliderProgress > 0) {
 			RendererSDK.Image(
 				Slider.sliderFillPath,
 				sliderRect.pos1,
 				-1,
 				sliderRect.Size.MultiplyScalarX(sliderProgress)
 			)
+		}
 	}
 	public OnValueChanged(): void {
 		const sliderRect = this.SliderRect
@@ -141,7 +139,9 @@ export class Slider extends Base {
 			this.max,
 			this.Round(this.min + (off / sliderRect.Size.x) * (this.max - this.min))
 		)
-		if (this.value !== oldValue) this.TriggerOnValueChangedCBs()
+		if (this.value !== oldValue) {
+			this.TriggerOnValueChangedCBs()
+		}
 	}
 
 	public OnMouseLeftDown(): boolean {

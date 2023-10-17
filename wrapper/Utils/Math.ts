@@ -23,11 +23,7 @@ export function DegreesToRadian(degrees: number): number {
  * @param b The blue color value
  * @return The HSL representation
  */
-export function RGBToHSL(
-	r: number,
-	g: number,
-	b: number
-): [number, number, number] {
+export function RGBToHSL(r: number, g: number, b: number): [number, number, number] {
 	r /= 255
 	g /= 255
 	b /= 255
@@ -54,17 +50,29 @@ export function RGBToHSL(
 		}
 
 		h /= 6
-	} else h = s = 0 // achromatic
+	} else {
+		h = s = 0
+	} // achromatic
 
 	return [h, s, l]
 }
 
 function HueToRGB(p: number, q: number, t: number): number {
-	if (t < 0) t += 1
-	if (t > 1) t -= 1
-	if (t < 1 / 6) return p + (q - p) * 6 * t
-	if (t < 1 / 2) return q
-	if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
+	if (t < 0) {
+		t += 1
+	}
+	if (t > 1) {
+		t -= 1
+	}
+	if (t < 1 / 6) {
+		return p + (q - p) * 6 * t
+	}
+	if (t < 1 / 2) {
+		return q
+	}
+	if (t < 2 / 3) {
+		return p + (q - p) * (2 / 3 - t) * 6
+	}
 	return p
 }
 
@@ -79,11 +87,7 @@ function HueToRGB(p: number, q: number, t: number): number {
  * @param l The lightness
  * @return The RGB representation
  */
-export function HSLToRGB(
-	h: number,
-	s: number,
-	l: number
-): [number, number, number] {
+export function HSLToRGB(h: number, s: number, l: number): [number, number, number] {
 	let r: number, g: number, b: number
 
 	if (s !== 0) {
@@ -93,7 +97,9 @@ export function HSLToRGB(
 		r = HueToRGB(p, q, h + 1 / 3)
 		g = HueToRGB(p, q, h)
 		b = HueToRGB(p, q, h - 1 / 3)
-	} else r = g = b = l // achromatic
+	} else {
+		r = g = b = l
+	} // achromatic
 
 	return [r * 255, g * 255, b * 255]
 }
@@ -109,11 +115,7 @@ export function HSLToRGB(
  * @param b The blue color value
  * @return The HSV representation
  */
-export function RGBToHSV(
-	r: number,
-	g: number,
-	b: number
-): [number, number, number] {
+export function RGBToHSV(r: number, g: number, b: number): [number, number, number] {
 	r /= 255
 	g /= 255
 	b /= 255
@@ -154,11 +156,7 @@ export function RGBToHSV(
  * @param v The value
  * @return The RGB representation
  */
-export function HSVToRGB(
-	h: number,
-	s: number,
-	v: number
-): [number, number, number] {
+export function HSVToRGB(h: number, s: number, v: number): [number, number, number] {
 	let r: number, g: number, b: number
 
 	const i = Math.floor(h * 6),

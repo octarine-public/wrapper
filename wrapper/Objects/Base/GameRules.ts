@@ -59,6 +59,15 @@ export class CGameRules extends Entity {
 	public NeutralSpawnBoxes: NeutralSpawnBox[] = []
 	public StockInfo: StockInfo[] = []
 
+	/** @ignore */
+	constructor(
+		public readonly Index: number,
+		serial: number
+	) {
+		super(Index, serial)
+		this.IsGameRules = true
+	}
+
 	public get GameTime(): number {
 		const time = this.RawGameTime,
 			transitionTime =
@@ -96,16 +105,14 @@ export class CGameRules extends Entity {
 			this.IsNightstalkerNight ||
 			this.IsTemporaryNight ||
 			this.GameState === DOTAGameState.DOTA_GAMERULES_STATE_PRE_GAME
-		)
+		) {
 			return true
+		}
 
 		return (
 			this.GameState === DOTAGameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS &&
 			(this.GameTime / 60 / 5) % 2 >= 1
 		)
-	}
-	public get IsGameRules(): boolean {
-		return true
 	}
 }
 
@@ -115,7 +122,5 @@ RegisterFieldHandler(CGameRules, "m_NeutralSpawnBoxes", (game, newVal) => {
 	)
 })
 RegisterFieldHandler(CGameRules, "m_vecItemStockInfo", (game, newVal) => {
-	game.StockInfo = (newVal as EntityPropertiesNode[]).map(
-		map => new StockInfo(map)
-	)
+	game.StockInfo = (newVal as EntityPropertiesNode[]).map(map => new StockInfo(map))
 })

@@ -3,10 +3,7 @@ import { GameActivity } from "../Enums/GameActivity"
 import { GetPositionHeight } from "../Native/WASM"
 import { Entity } from "../Objects/Base/Entity"
 import { GetPredictionTarget } from "../Objects/Base/FakeUnit"
-import {
-	LinearProjectile,
-	TrackingProjectile
-} from "../Objects/Base/Projectile"
+import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import { Unit } from "../Objects/Base/Unit"
 import { arrayRemove } from "../Utils/ArrayExtensions"
 import { GameState } from "../Utils/GameState"
@@ -26,10 +23,8 @@ export const ProjectileManager = new (class CProjectileManager {
 	public readonly AllLinearProjectiles: LinearProjectile[] = []
 	public readonly AllTrackingProjectiles: TrackingProjectile[] = []
 
-	public readonly AllLinearProjectilesMap: Map<number, LinearProjectile> =
-		new Map()
-	public readonly AllTrackingProjectilesMap: Map<number, TrackingProjectile> =
-		new Map()
+	public readonly AllLinearProjectilesMap: Map<number, LinearProjectile> = new Map()
+	public readonly AllTrackingProjectilesMap: Map<number, TrackingProjectile> = new Map()
 })()
 
 EventsSDK.on("GameEnded", () => {
@@ -56,22 +51,40 @@ function DestroyTrackingProjectile(proj: TrackingProjectile) {
 }
 
 EventsSDK.on("EntityCreated", ent => {
-	if (!(ent instanceof Unit)) return
-	for (const proj of ProjectileManager.AllTrackingProjectiles) {
-		if (proj.Source?.EntityMatches(ent)) proj.Source = ent
-		if (proj.Target?.EntityMatches(ent)) proj.Target = ent
+	if (!(ent instanceof Unit)) {
+		return
 	}
-	for (const proj of ProjectileManager.AllLinearProjectiles)
-		if (proj.Source?.EntityMatches(ent)) proj.Source = ent
+	for (const proj of ProjectileManager.AllTrackingProjectiles) {
+		if (proj.Source?.EntityMatches(ent)) {
+			proj.Source = ent
+		}
+		if (proj.Target?.EntityMatches(ent)) {
+			proj.Target = ent
+		}
+	}
+	for (const proj of ProjectileManager.AllLinearProjectiles) {
+		if (proj.Source?.EntityMatches(ent)) {
+			proj.Source = ent
+		}
+	}
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	if (!(ent instanceof Unit)) return
-	for (const proj of ProjectileManager.AllTrackingProjectiles) {
-		if (proj.Source === ent) proj.Source = undefined
-		if (proj.Target === ent) proj.Target = undefined
+	if (!(ent instanceof Unit)) {
+		return
 	}
-	for (const proj of ProjectileManager.AllLinearProjectiles)
-		if (proj.Source === ent) proj.Source = undefined
+	for (const proj of ProjectileManager.AllTrackingProjectiles) {
+		if (proj.Source === ent) {
+			proj.Source = undefined
+		}
+		if (proj.Target === ent) {
+			proj.Target = undefined
+		}
+	}
+	for (const proj of ProjectileManager.AllLinearProjectiles) {
+		if (proj.Source === ent) {
+			proj.Source = undefined
+		}
+	}
 })
 
 EventsSDK.on("PostDataUpdate", () => {
@@ -87,8 +100,9 @@ EventsSDK.on("PostDataUpdate", () => {
 		proj.Position.AddForThis(add)
 		proj.LastUpdate = curTime
 		proj.Position.z = GetPositionHeight(proj.Position)
-		if (proj.Position.DistanceSqr2D(proj.TargetLoc) < add.LengthSqr)
+		if (proj.Position.DistanceSqr2D(proj.TargetLoc) < add.LengthSqr) {
 			expiredLinearProjectiles.push(proj)
+		}
 	}
 	for (const proj of expiredLinearProjectiles) {
 		EventsSDK.emit("LinearProjectileDestroyed", false, proj)
@@ -114,7 +128,7 @@ EventsSDK.on("PostDataUpdate", () => {
 			}
 		}
 		const dt = curTime - proj.LastUpdate
-		if (!proj.Position.IsValid)
+		if (!proj.Position.IsValid) {
 			if (
 				proj.Target instanceof Entity &&
 				proj.Source instanceof Entity &&
@@ -134,12 +148,17 @@ EventsSDK.on("PostDataUpdate", () => {
 								new Vector3()
 						  )
 						: undefined
-				if (attachmentPos !== undefined) proj.Position.AddForThis(attachmentPos)
+				if (attachmentPos !== undefined) {
+					proj.Position.AddForThis(attachmentPos)
+				}
 				proj.Position.Extend(
 					proj.TargetLoc,
 					(GameState.CurrentServerTick - proj.LaunchTick) * dt * proj.Speed
 				).CopyTo(proj.Position)
-			} else continue
+			} else {
+				continue
+			}
+		}
 		const velocity = proj.Position.GetDirectionTo(
 			proj.TargetLoc
 		).MultiplyScalarForThis(
@@ -149,14 +168,13 @@ EventsSDK.on("PostDataUpdate", () => {
 		proj.LastUpdate = curTime
 		const distSqr = proj.Position.DistanceSqr(proj.TargetLoc)
 		const collisionSize =
-			proj.Target instanceof Entity
-				? proj.Target.ProjectileCollisionSize ** 2
-				: 0
+			proj.Target instanceof Entity ? proj.Target.ProjectileCollisionSize ** 2 : 0
 		if (
 			(collisionSize !== 0 && distSqr < collisionSize) ||
 			distSqr < velocity.LengthSqr
-		)
+		) {
 			DestroyTrackingProjectile(proj)
+		}
 	}
 })
 
@@ -279,7 +297,9 @@ Events.on("ServerMessage", (msgID, buf_) => {
 			const projectile = ProjectileManager.AllLinearProjectilesMap.get(
 				msg.get("handle") as number
 			)
-			if (projectile === undefined) return
+			if (projectile === undefined) {
+				return
+			}
 			EventsSDK.emit("LinearProjectileDestroyed", false, projectile)
 			arrayRemove(ProjectileManager.AllLinearProjectiles, projectile)
 			ProjectileManager.AllLinearProjectilesMap.delete(projectile.ID)
@@ -291,16 +311,20 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				"CDOTAUserMsg_DodgeTrackingProjectiles"
 			)
 			const ent = GetPredictionTarget(msg.get("entindex") as number)
-			if (ent === undefined) break
+			if (ent === undefined) {
+				break
+			}
 			const attacksOnly = msg.get("attacks_only") as boolean
 			EventsSDK.emit("TrackingProjectilesDodged", false, ent, attacksOnly)
-			for (const proj of ProjectileManager.AllTrackingProjectiles)
+			for (const proj of ProjectileManager.AllTrackingProjectiles) {
 				if (
 					proj.IsDodgeable &&
 					proj.Target === ent &&
 					(!attacksOnly || proj.IsAttack)
-				)
+				) {
 					proj.IsDodged = true
+				}
+			}
 			break
 		}
 		case 518: {
@@ -413,7 +437,9 @@ Events.on("ServerMessage", (msgID, buf_) => {
 			const projectile = ProjectileManager.AllTrackingProjectilesMap.get(
 				msg.get("handle") as number
 			)
-			if (projectile !== undefined) DestroyTrackingProjectile(projectile)
+			if (projectile !== undefined) {
+				DestroyTrackingProjectile(projectile)
+			}
 			break
 		}
 	}

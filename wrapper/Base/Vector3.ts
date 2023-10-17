@@ -27,10 +27,7 @@ export class Vector3 {
 	public static FromPolarCoordinates(radial: number, polar: number): Vector3 {
 		return new Vector3(Math.cos(polar) * radial, Math.sin(polar) * radial)
 	}
-	public static GetCenterType<T>(
-		array: T[],
-		callback: (value: T) => Vector3
-	): Vector3 {
+	public static GetCenterType<T>(array: T[], callback: (value: T) => Vector3): Vector3 {
 		return array
 			.reduce((prev, cur) => prev.AddForThis(callback(cur)), new Vector3())
 			.DivideScalarForThis(array.length)
@@ -356,8 +353,11 @@ export class Vector3 {
 	 */
 	public ScaleTo(scalar: number): Vector3 {
 		const length = this.Length
-		if (length === 0) this.toZero()
-		else this.MultiplyScalarForThis(scalar / length)
+		if (length === 0) {
+			this.toZero()
+		} else {
+			this.MultiplyScalarForThis(scalar / length)
+		}
 
 		return this
 	}
@@ -366,8 +366,11 @@ export class Vector3 {
 	 */
 	public DivideTo(scalar: number): Vector3 {
 		const length = this.Length
-		if (length === 0) this.toZero()
-		else this.DivideScalar(scalar / length)
+		if (length === 0) {
+			this.toZero()
+		} else {
+			this.DivideScalar(scalar / length)
+		}
 
 		return this
 	}
@@ -696,7 +699,9 @@ export class Vector3 {
 	 * Calculates the polar angle of the given vector. Returns degree values on default, radian if requested.
 	 */
 	public PolarAngle(radian = false): number {
-		if (radian) return this.Angle
+		if (radian) {
+			return this.Angle
+		}
 
 		return this.Angle * (180 / Math.PI)
 	}
@@ -790,14 +795,10 @@ export class Vector3 {
 	 * @returns extended vector (new Vector3)
 	 */
 	public Extend(vec: Vector3, distance: number): Vector3 {
-		return this.GetDirectionTo(vec)
-			.MultiplyScalarForThis(distance)
-			.AddForThis(this) // this + (distance * (vec - this).Normalize())
+		return this.GetDirectionTo(vec).MultiplyScalarForThis(distance).AddForThis(this) // this + (distance * (vec - this).Normalize())
 	}
 	public Extend2D(vec: Vector3, distance: number): Vector3 {
-		return this.GetDirection2DTo(vec)
-			.MultiplyScalarForThis(distance)
-			.AddForThis(this) // this + (distance * (vec - this).SetZ(0).Normalize())
+		return this.GetDirection2DTo(vec).MultiplyScalarForThis(distance).AddForThis(this) // this + (distance * (vec - this).SetZ(0).Normalize())
 	}
 	public Clone(): Vector3 {
 		return new Vector3(this.x, this.y, this.z)

@@ -18,9 +18,7 @@ export class CPlayerResource extends Entity {
 	public RespawnPositions: Nullable<Vector3>[] = []
 	public PlayerTeamData: Nullable<PlayerTeamData>[] = []
 
-	public GetPlayerTeamDataByPlayerID(
-		playerID: number
-	): Nullable<PlayerTeamData> {
+	public GetPlayerTeamDataByPlayerID(playerID: number): Nullable<PlayerTeamData> {
 		return this.PlayerTeamData[playerID]
 	}
 	public GetPlayerDataByPlayerID(playerID: number): Nullable<PlayerData> {
@@ -28,48 +26,40 @@ export class CPlayerResource extends Entity {
 	}
 }
 
-RegisterFieldHandler(
-	CPlayerResource,
-	"m_vecPlayerTeamData",
-	(playerResource, newVal) => {
-		playerResource.PlayerTeamData = (newVal as EntityPropertiesNode[]).map(
-			map => {
-				const retMap = new PlayerTeamData(map)
-				retMap.PlayerEventsData = (
-					(retMap.properties.get("m_vecPlayerEventData") as Nullable<
-						EntityPropertiesNode[]
-					>) ?? []
-				).map(newMap => new PlayerEventData(newMap))
-				return retMap
-			}
-		)
-		UpdateRespawnPositions(playerResource)
-		EventsSDK.emit("PlayerResourceUpdated", false, playerResource)
-	}
-)
+RegisterFieldHandler(CPlayerResource, "m_vecPlayerTeamData", (playerResource, newVal) => {
+	playerResource.PlayerTeamData = (newVal as EntityPropertiesNode[]).map(map => {
+		const retMap = new PlayerTeamData(map)
+		retMap.PlayerEventsData = (
+			(retMap.properties.get("m_vecPlayerEventData") as Nullable<
+				EntityPropertiesNode[]
+			>) ?? []
+		).map(newMap => new PlayerEventData(newMap))
+		return retMap
+	})
+	UpdateRespawnPositions(playerResource)
+	EventsSDK.emit("PlayerResourceUpdated", false, playerResource)
+})
 
-RegisterFieldHandler(
-	CPlayerResource,
-	"m_vecPlayerData",
-	(playerResource, newVal) => {
-		playerResource.PlayerData = (newVal as EntityPropertiesNode[]).map(
-			map => new PlayerData(map)
-		)
-		UpdateRespawnPositions(playerResource)
-	}
-)
+RegisterFieldHandler(CPlayerResource, "m_vecPlayerData", (playerResource, newVal) => {
+	playerResource.PlayerData = (newVal as EntityPropertiesNode[]).map(
+		map => new PlayerData(map)
+	)
+	UpdateRespawnPositions(playerResource)
+})
 
 export let PlayerResource: Nullable<CPlayerResource>
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent instanceof CPlayerResource) PlayerResource = ent
+	if (ent instanceof CPlayerResource) {
+		PlayerResource = ent
+	}
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	if (ent instanceof CPlayerResource) PlayerResource = undefined
+	if (ent instanceof CPlayerResource) {
+		PlayerResource = undefined
+	}
 })
 
-const GoodGuysSpawners = EntityManager.GetEntitiesByClass(
-	InfoPlayerStartGoodGuys
-)
+const GoodGuysSpawners = EntityManager.GetEntitiesByClass(InfoPlayerStartGoodGuys)
 
 const BadGuysSpawners = EntityManager.GetEntitiesByClass(InfoPlayerStartBadGuys)
 
@@ -82,15 +72,20 @@ function GetTeamDeaths(playerResource: CPlayerResource, team: Team) {
 			teamData !== undefined &&
 			playerData !== undefined &&
 			playerData.Team === team
-		)
+		) {
 			deaths += teamData.Deaths
+		}
 	}
 	return deaths
 }
 
 function GetNextSpawn(playerResource: CPlayerResource, team: Team) {
 	let res = GetTeamDeaths(playerResource, team) + 5
-	for (const data of playerResource.PlayerData) if (data?.Team === team) res++
+	for (const data of playerResource.PlayerData) {
+		if (data?.Team === team) {
+			res++
+		}
+	}
 	return res
 }
 
@@ -116,7 +111,9 @@ function UpdateRespawnPositions(playerResource: CPlayerResource) {
 				playerResource.RespawnPositions[i] = undefined
 				continue
 			}
-			if (playerData.Team !== team) continue
+			if (playerData.Team !== team) {
+				continue
+			}
 			const respawnTime = teamData.RespawnSeconds
 			if (respawnTime < 0) {
 				playerResource.RespawnPositions[i] = undefined

@@ -1,11 +1,6 @@
 export class Vector4 {
 	public static fromArray(array: ArrayLike<number>): Vector4 {
-		return new Vector4(
-			array[0] ?? 0,
-			array[1] ?? 0,
-			array[2] ?? 0,
-			array[3] ?? 0
-		)
+		return new Vector4(array[0] ?? 0, array[1] ?? 0, array[2] ?? 0, array[3] ?? 0)
 	}
 
 	/**

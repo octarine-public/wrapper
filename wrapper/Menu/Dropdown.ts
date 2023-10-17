@@ -42,16 +42,8 @@ export class Dropdown extends Base {
 	private static readonly dropdownPopupPath = "menu/dropdown_popup.svg"
 	private static readonly scrollbarPath = "menu/scrollbar.svg"
 	private static readonly dropdownPopupElementActiveColor = new Color(8, 7, 14)
-	private static readonly dropdownPopupElementHoveredColor = new Color(
-		24,
-		23,
-		40
-	)
-	private static readonly dropdownPopupElementInactiveColor = new Color(
-		16,
-		16,
-		28
-	)
+	private static readonly dropdownPopupElementHoveredColor = new Color(24, 23, 40)
+	private static readonly dropdownPopupElementInactiveColor = new Color(16, 16, 28)
 	private static readonly dropdownBackgroundColor = new Color(16, 16, 28)
 	private static readonly dropdownArrowActiveColor = new Color(104, 4, 255)
 	private static readonly dropdownArrowInactiveColor = new Color(47, 45, 77)
@@ -92,7 +84,9 @@ export class Dropdown extends Base {
 		return this.SelectedID
 	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number") return
+		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number") {
+			return
+		}
 		this.SelectedID = value ?? this.SelectedID
 		this.FixSelectedID()
 		this.currentlyAtID =
@@ -112,9 +106,7 @@ export class Dropdown extends Base {
 		)
 	}
 	public get PopupElementHeight(): number {
-		return (
-			this.longestValueSize.y + Dropdown.dropdownPopupElementTextOffset.y * 2
-		)
+		return this.longestValueSize.y + Dropdown.dropdownPopupElementTextOffset.y * 2
 	}
 
 	public get ClassPriority(): number {
@@ -122,10 +114,10 @@ export class Dropdown extends Base {
 	}
 
 	public Update(): boolean {
-		if (!super.Update()) return false
-		this.ValuesSizes = this.ValuesNames.map(value =>
-			this.GetTextSizeDefault(value)
-		)
+		if (!super.Update()) {
+			return false
+		}
+		this.ValuesSizes = this.ValuesNames.map(value => this.GetTextSizeDefault(value))
 		this.ValuesSizes.reduce((prev, cur) => {
 			prev.x = Math.max(prev.x, cur.x)
 			prev.y = Math.max(prev.y, cur.y + cur.z)
@@ -168,9 +160,7 @@ export class Dropdown extends Base {
 		const popupRectSize = popupRect.Size
 		if (popupRect.pos1.y + popupRectSize.y > this.WindowSize.y) {
 			const off =
-				dropdownRect.Size.y +
-				popupRectSize.y +
-				Dropdown.dropdownPopupOffset.y * 2
+				dropdownRect.Size.y + popupRectSize.y + Dropdown.dropdownPopupOffset.y * 2
 			popupRect.pos1.SubtractScalarY(off)
 			popupRect.pos2.SubtractScalarY(off)
 		}
@@ -184,12 +174,12 @@ export class Dropdown extends Base {
 	}
 	public GetHoveredID(popupElementsRect: Rectangle): number {
 		const mousePos = this.MousePosition
-		if (!popupElementsRect.Contains(mousePos)) return -1
+		if (!popupElementsRect.Contains(mousePos)) {
+			return -1
+		}
 		return (
 			this.currentlyAtID +
-			Math.floor(
-				popupElementsRect.GetOffset(mousePos).y / this.PopupElementHeight
-			)
+			Math.floor(popupElementsRect.GetOffset(mousePos).y / this.PopupElementHeight)
 		)
 	}
 
@@ -199,12 +189,7 @@ export class Dropdown extends Base {
 		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
 		const dropdownRect = this.DropdownRect
-		RendererSDK.Image(
-			Dropdown.dropdownPath,
-			dropdownRect.pos1,
-			-1,
-			dropdownRect.Size
-		)
+		RendererSDK.Image(Dropdown.dropdownPath, dropdownRect.pos1, -1, dropdownRect.Size)
 		RendererSDK.FilledRect(
 			dropdownRect.pos1.Add(Dropdown.dropdownBorderSize),
 			dropdownRect.Size.SubtractForThis(
@@ -234,7 +219,9 @@ export class Dropdown extends Base {
 		}
 	}
 	public PostRender(): void {
-		if (!this.isActive) return
+		if (!this.isActive) {
+			return
+		}
 		const popupRect = this.GetPopupRect(this.DropdownRect)
 		const popupElementsRect = this.GetPopupElementsRect(popupRect)
 		this.currentlyAtID = Math.max(
@@ -244,42 +231,36 @@ export class Dropdown extends Base {
 				this.ValuesNames.length - Dropdown.dropdownPopupElementsLimit
 			)
 		)
-		RendererSDK.Image(
-			Dropdown.dropdownPopupPath,
-			popupRect.pos1,
-			-1,
-			popupRect.Size
-		)
+		RendererSDK.Image(Dropdown.dropdownPopupPath, popupRect.pos1, -1, popupRect.Size)
 		const currentElementPos = popupElementsRect.pos1.Clone(),
-			elementSize = new Vector2(
-				popupElementsRect.Size.x,
-				this.PopupElementHeight
-			),
+			elementSize = new Vector2(popupElementsRect.Size.x, this.PopupElementHeight),
 			hoveredID = this.GetHoveredID(popupElementsRect)
 		this.ValuesNames.forEach((value, i) => {
 			if (
 				i < this.currentlyAtID ||
 				i >= Dropdown.dropdownPopupElementsLimit + this.currentlyAtID
-			)
+			) {
 				return
-			if (this.SelectedID === i)
+			}
+			if (this.SelectedID === i) {
 				RendererSDK.FilledRect(
 					currentElementPos,
 					elementSize,
 					Dropdown.dropdownPopupElementActiveColor
 				)
-			else if (hoveredID === i)
+			} else if (hoveredID === i) {
 				RendererSDK.FilledRect(
 					currentElementPos,
 					elementSize,
 					Dropdown.dropdownPopupElementHoveredColor
 				)
-			else
+			} else {
 				RendererSDK.FilledRect(
 					currentElementPos,
 					elementSize,
 					Dropdown.dropdownPopupElementInactiveColor
 				)
+			}
 			const valueSize = this.ValuesSizes[i]
 			this.RenderTextDefault(
 				value,
@@ -298,7 +279,9 @@ export class Dropdown extends Base {
 		}
 	}
 	public OnParentNotVisible(): void {
-		if (Dropdown.activeDropdown === this) Dropdown.activeDropdown = undefined
+		if (Dropdown.activeDropdown === this) {
+			Dropdown.activeDropdown = undefined
+		}
 		this.isActive = false
 	}
 
@@ -327,17 +310,23 @@ export class Dropdown extends Base {
 		}
 		if (dropdownRect.Contains(mousePos)) {
 			this.isActive = !this.isActive
-			if (this.isActive) Dropdown.activeDropdown = this
-			else if (Dropdown.activeDropdown === this)
+			if (this.isActive) {
+				Dropdown.activeDropdown = this
+			} else if (Dropdown.activeDropdown === this) {
 				Dropdown.activeDropdown = undefined
+			}
 		}
 		return false
 	}
 	public OnMouseWheel(up: boolean): boolean {
-		if (!this.GetPopupRect(this.DropdownRect).Contains(this.MousePosition))
+		if (!this.GetPopupRect(this.DropdownRect).Contains(this.MousePosition)) {
 			return false
-		if (up) this.currentlyAtID--
-		else this.currentlyAtID++
+		}
+		if (up) {
+			this.currentlyAtID--
+		} else {
+			this.currentlyAtID++
+		}
 		return true
 	}
 
@@ -353,12 +342,9 @@ export class Dropdown extends Base {
 				popupElementsRect.pos2.x -
 					Dropdown.dropdownPopupElementsScrollbarOffset.x -
 					Dropdown.dropdownPopupElementsScrollbarWidth,
-				popupElementsRect.pos1.y +
-					Dropdown.dropdownPopupElementsScrollbarOffset.y
+				popupElementsRect.pos1.y + Dropdown.dropdownPopupElementsScrollbarOffset.y
 			),
-			popupElementsRect.pos2.Subtract(
-				Dropdown.dropdownPopupElementsScrollbarOffset
-			)
+			popupElementsRect.pos2.Subtract(Dropdown.dropdownPopupElementsScrollbarOffset)
 		)
 	}
 	private GetScrollbarRect(scrollbarPositionsRect: Rectangle): Rectangle {
@@ -370,9 +356,7 @@ export class Dropdown extends Base {
 		)
 		const scrollbarPos = scrollbarPositionsRect.pos1
 			.Clone()
-			.AddScalarY(
-				(positionsSize.y * this.currentlyAtID) / this.ValuesNames.length
-			)
+			.AddScalarY((positionsSize.y * this.currentlyAtID) / this.ValuesNames.length)
 		return new Rectangle(scrollbarPos, scrollbarPos.Add(scrollbarSize))
 	}
 	private FixSelectedID(): void {

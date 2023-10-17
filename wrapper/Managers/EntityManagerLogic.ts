@@ -1,7 +1,4 @@
-import {
-	EntityPropertiesNode,
-	EntityPropertyType
-} from "../Base/EntityProperties"
+import { EntityPropertiesNode, EntityPropertyType } from "../Base/EntityProperties"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { Vector4 } from "../Base/Vector4"
@@ -41,8 +38,9 @@ function ClassFromNative(
 export function CreateEntityInternal(ent: Entity): void {
 	AllEntitiesAsMap.set(ent.Index, ent)
 	EntityManager.AllEntities.push(ent)
-	for (const classEntities of ClassToEntitiesAr.get(ent.constructor as any)!)
+	for (const classEntities of ClassToEntitiesAr.get(ent.constructor as any)!) {
 		classEntities.push(ent)
+	}
 }
 
 function CreateEntity(
@@ -72,7 +70,9 @@ function CreateEntity(
 
 export function DeleteEntity(id: number): void {
 	const entity = AllEntitiesAsMap.get(id)
-	if (entity === undefined) return
+	if (entity === undefined) {
+		return
+	}
 
 	entity.IsValid = false
 	entity.BecameDormantTime = GameState.RawGameTime
@@ -81,8 +81,9 @@ export function DeleteEntity(id: number): void {
 	EventsSDK.emit("EntityDestroyed", false, entity)
 	entity.IsVisible = false
 	AllEntitiesAsMap.delete(id)
-	for (const classEntities of ClassToEntitiesAr.get(entity.constructor as any)!)
+	for (const classEntities of ClassToEntitiesAr.get(entity.constructor as any)!) {
 		ArrayExtensions.arrayRemove(classEntities, entity)
+	}
 }
 
 const enum EntityPVS {
@@ -192,7 +193,9 @@ function ParseEntityUpdate(
 	}
 	if (ent !== undefined) {
 		ent.IsVisible = true
-		if (entWasCreated) ent.IsValid = false
+		if (entWasCreated) {
+			ent.IsValid = false
+		}
 	}
 	const entHandlers = ent?.FieldHandlers_,
 		entNode = ent?.Properties_ ?? new EntityPropertiesNode(),
@@ -200,7 +203,9 @@ function ParseEntityUpdate(
 		changedPathsResults: EntityPropertyType[] = []
 	while (true) {
 		const pathSize = stream.ReadUint8()
-		if (pathSize === 0) break
+		if (pathSize === 0) {
+			break
+		}
 
 		let propNode: EntityPropertyType = entNode
 		for (let i = 0; i < pathSize; i++) {
@@ -208,14 +213,16 @@ function ParseEntityUpdate(
 			const mustBeArray = id & 1
 			id >>= 1
 			if (debugParsing) {
-				if (mustBeArray && !Array.isArray(propNode))
+				if (mustBeArray && !Array.isArray(propNode)) {
 					throw `Expected array at ${DumpStreamPosition(entClass, stream, i)}`
+				}
 				if (
 					!mustBeArray &&
 					(typeof propNode !== "object" ||
 						propNode.constructor !== EntityPropertiesNode)
-				)
+				) {
 					throw `Expected map at ${DumpStreamPosition(entClass, stream, i)}`
+				}
 			}
 
 			if (mustBeArray) {
@@ -227,7 +234,9 @@ function ParseEntityUpdate(
 						ar[id] = nextMustBeArray ? [] : new EntityPropertiesNode()
 					}
 					propNode = ar[id]
-				} else ar[id] = ParseProperty(stream)
+				} else {
+					ar[id] = ParseProperty(stream)
+				}
 			} else {
 				const map = propNode as EntityPropertiesNode
 				let res: EntityPropertyType
@@ -249,13 +258,16 @@ function ParseEntityUpdate(
 							changedPaths.push(id)
 							changedPathsResults.push(res)
 						}
-					} else changedPathsResults[changedPathID] = res
+					} else {
+						changedPathsResults[changedPathID] = res
+					}
 				}
 			}
 		}
 	}
-	for (let i = 0, end = changedPaths.length; i < end; i++)
+	for (let i = 0, end = changedPaths.length; i < end; i++) {
 		entHandlers!.get(changedPaths[i])!(ent!, changedPathsResults[i])
+	}
 	if (ent !== undefined && entWasCreated) {
 		ent.IsValid = true
 		EventsSDK.emit("PreEntityCreated", false, ent)
@@ -273,7 +285,9 @@ function ParseEntityPacket(stream: ReadableBinaryStream): void {
 	const nativeChanges: [number, number][] = []
 	while (!stream.Empty()) {
 		const entID = stream.ReadUint16()
-		if (entID === 0) break
+		if (entID === 0) {
+			break
+		}
 		nativeChanges.push([
 			entID,
 			stream.ReadInt32() // m_iHealthBarOffset
@@ -305,10 +319,14 @@ function ParseEntityPacket(stream: ReadableBinaryStream): void {
 	}
 	for (const [entID, healthBarOffset] of nativeChanges) {
 		const ent = EntityManager.EntityByIndex(entID)
-		if (ent !== undefined) ent.ForwardNativeProperties(healthBarOffset)
+		if (ent !== undefined) {
+			ent.ForwardNativeProperties(healthBarOffset)
+		}
 	}
 	EventsSDK.emit("MidDataUpdate", false)
-	for (const ent of createdEntities) EventsSDK.emit("EntityCreated", false, ent)
+	for (const ent of createdEntities) {
+		EventsSDK.emit("EntityCreated", false, ent)
+	}
 	EventsSDK.emit("PostDataUpdate", false)
 	if (latestTickDelta !== 0) {
 		EventsSDK.emit("Tick", false, latestTickDelta)
@@ -325,5 +343,7 @@ Events.on("ServerMessage", (msgID, buf) => {
 })
 
 Events.on("NewConnection", () => {
-	for (const entID of AllEntitiesAsMap.keys()) DeleteEntity(entID)
+	for (const entID of AllEntitiesAsMap.keys()) {
+		DeleteEntity(entID)
+	}
 })

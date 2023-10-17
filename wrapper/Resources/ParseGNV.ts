@@ -43,30 +43,10 @@ class CGridNav {
 		const isAlive = tree.IsValid && tree.IsAlive
 		// basically tree takes 128x128, on default gridnav of 64x64 it takes 2x2 cells,
 		// and tree is located in right bottom one
-		this.SetCellFlag(
-			gridPos.x - 0,
-			gridPos.y - 0,
-			GridNavCellFlags.Tree,
-			isAlive
-		)
-		this.SetCellFlag(
-			gridPos.x - 1,
-			gridPos.y - 0,
-			GridNavCellFlags.Tree,
-			isAlive
-		)
-		this.SetCellFlag(
-			gridPos.x - 0,
-			gridPos.y - 1,
-			GridNavCellFlags.Tree,
-			isAlive
-		)
-		this.SetCellFlag(
-			gridPos.x - 1,
-			gridPos.y - 1,
-			GridNavCellFlags.Tree,
-			isAlive
-		)
+		this.SetCellFlag(gridPos.x - 0, gridPos.y - 0, GridNavCellFlags.Tree, isAlive)
+		this.SetCellFlag(gridPos.x - 1, gridPos.y - 0, GridNavCellFlags.Tree, isAlive)
+		this.SetCellFlag(gridPos.x - 0, gridPos.y - 1, GridNavCellFlags.Tree, isAlive)
+		this.SetCellFlag(gridPos.x - 1, gridPos.y - 1, GridNavCellFlags.Tree, isAlive)
 	}
 
 	private SetCellFlag(
@@ -76,9 +56,14 @@ class CGridNav {
 		state: boolean
 	): void {
 		const cellID = this.GetCellIndexForGridPos(gridPosX, gridPosY)
-		if (this.CellFlags.byteLength <= cellID) return
-		if (state) this.CellFlags[cellID] |= 1 << flag
-		else this.CellFlags[cellID] &= ~(1 << flag)
+		if (this.CellFlags.byteLength <= cellID) {
+			return
+		}
+		if (state) {
+			this.CellFlags[cellID] |= 1 << flag
+		} else {
+			this.CellFlags[cellID] &= ~(1 << flag)
+		}
 	}
 	private GetCellIndexForGridPos(gridPosX: number, gridPosY: number): number {
 		return this.Size.x * (gridPosY - this.Min.y) + (gridPosX - this.Min.x)
@@ -94,9 +79,10 @@ export function ParseGNV(stream: ReadableBinaryStream): void {
 	try {
 		{
 			const magic = stream.ReadUint32()
-			if (magic !== 0xfadebead)
+			if (magic !== 0xfadebead) {
 				// gnv magic
 				throw `Invalid GNV magic: 0x${magic.toString(16)}`
+			}
 		}
 		const edgeSize = stream.ReadFloat32(),
 			offsetX = stream.ReadFloat32(),

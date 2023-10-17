@@ -20,7 +20,9 @@ export class FileBinaryStream implements ReadableBinaryStream {
 		this.cachePos = -this.cache.byteLength
 		this.isUtf16 = false
 		this.isUtf16BE = false
-		if (!detectEncoding) return
+		if (!detectEncoding) {
+			return
+		}
 		if (this.Remaining >= 2) {
 			const ch1 = this.ReadUint8(),
 				ch2 = this.ReadUint8()
@@ -68,15 +70,15 @@ export class FileBinaryStream implements ReadableBinaryStream {
 		return this.cacheView.getInt8(this.pos++ - this.cachePos)
 	}
 	public ReadVarUintAsNumber(): number {
-		let val = 0,
-			shift = 0,
-			b: number
+		let value = 0
+		let shift = 0
+		let b: number
 		do {
 			b = this.ReadUint8()
-			val |= (b & 0x7f) << shift
+			value |= (b & 0x7f) << shift
 			shift += 7
 		} while ((b & 0x80) !== 0)
-		return val
+		return value
 	}
 	public ReadVarUint(): bigint {
 		let val = 0n,
@@ -115,37 +117,25 @@ export class FileBinaryStream implements ReadableBinaryStream {
 	}
 	public ReadUint64(littleEndian = true): bigint {
 		this.PopulateCache(8)
-		const res = this.cacheView.getBigUint64(
-			this.pos - this.cachePos,
-			littleEndian
-		)
+		const res = this.cacheView.getBigUint64(this.pos - this.cachePos, littleEndian)
 		this.pos += 8
 		return res
 	}
 	public ReadInt64(littleEndian = true): bigint {
 		this.PopulateCache(8)
-		const res = this.cacheView.getBigInt64(
-			this.pos - this.cachePos,
-			littleEndian
-		)
+		const res = this.cacheView.getBigInt64(this.pos - this.cachePos, littleEndian)
 		this.pos += 8
 		return res
 	}
 	public ReadFloat32(littleEndian = true): number {
 		this.PopulateCache(4)
-		const res = this.cacheView.getFloat32(
-			this.pos - this.cachePos,
-			littleEndian
-		)
+		const res = this.cacheView.getFloat32(this.pos - this.cachePos, littleEndian)
 		this.pos += 4
 		return res
 	}
 	public ReadFloat64(littleEndian = true): number {
 		this.PopulateCache(8)
-		const res = this.cacheView.getFloat64(
-			this.pos - this.cachePos,
-			littleEndian
-		)
+		const res = this.cacheView.getFloat64(this.pos - this.cachePos, littleEndian)
 		this.pos += 8
 		return res
 	}
@@ -153,21 +143,23 @@ export class FileBinaryStream implements ReadableBinaryStream {
 		return this.ReadUint8() !== 0
 	}
 	public ReadSliceTo(out: Uint8Array): void {
-		if (this.Remaining < out.byteLength)
+		if (this.Remaining < out.byteLength) {
 			throw `Failed reading slice of size ${out.byteLength}`
+		}
 		// if cache fully contains required bytes - grab them from there, otherwise bypass cache
 		if (
 			this.pos >= this.cachePos &&
 			this.cachePos + this.cache.byteLength >= this.pos + out.byteLength
-		)
+		) {
 			out.set(
 				this.cache.subarray(
 					this.pos - this.cachePos,
 					this.pos - this.cachePos + out.byteLength
 				)
 			)
-		else if (this.fileStream.read(this.offset + this.pos, out) < out.byteLength)
+		} else if (this.fileStream.read(this.offset + this.pos, out) < out.byteLength) {
 			throw `Failed reading slice of size ${out.byteLength} (native)`
+		}
 		this.pos += out.byteLength
 	}
 	public ReadSlice(size: number): Uint8Array {
@@ -223,7 +215,11 @@ export class FileBinaryStream implements ReadableBinaryStream {
 		return this.isUtf16 ? this.ReadUtf16Char() : this.ReadUtf8Char()
 	}
 	public SeekLine(): void {
-		while (!this.Empty()) if (this.ReadChar() === "\n") break
+		while (!this.Empty()) {
+			if (this.ReadChar() === "\n") {
+				break
+			}
+		}
 	}
 	public ReadUtf8String(size: number): string {
 		let out = ""
@@ -237,16 +233,22 @@ export class FileBinaryStream implements ReadableBinaryStream {
 	public ReadNullTerminatedString(): string {
 		let str = ""
 		while (true) {
-			if (this.Empty()) return str
+			if (this.Empty()) {
+				return str
+			}
 			const b = this.ReadUint8()
-			if (b === 0) return str
+			if (b === 0) {
+				return str
+			}
 			str += String.fromCharCode(b)
 		}
 	}
 	public ReadNullTerminatedUtf8String(): string {
 		const savedPos = this.pos
 		let size = 0
-		while (this.ReadUint8() !== 0) size++
+		while (this.ReadUint8() !== 0) {
+			size++
+		}
 		this.pos = savedPos
 
 		const str = this.ReadUtf8String(size)
@@ -256,16 +258,22 @@ export class FileBinaryStream implements ReadableBinaryStream {
 	public ReadNullTerminatedUtf16String(): string {
 		let str = ""
 		while (true) {
-			if (this.Empty()) return str
+			if (this.Empty()) {
+				return str
+			}
 			const b = this.ReadUint16()
-			if (b === 0) return str
+			if (b === 0) {
+				return str
+			}
 			str += String.fromCharCode(b)
 		}
 	}
 	// https://github.com/SteamDatabase/ValveResourceFormat/blob/cceba491d7bb60890a53236a90970b24d0a4aba9/ValveResourceFormat/Utils/StreamHelpers.cs#L43
 	public ReadOffsetString(): string {
 		const offset = this.ReadUint32()
-		if (offset === 0) return ""
+		if (offset === 0) {
+			return ""
+		}
 		const savedPos = this.pos
 		this.pos += offset - 4 // offset from offset
 		const ret = this.ReadNullTerminatedUtf8String()
@@ -276,12 +284,7 @@ export class FileBinaryStream implements ReadableBinaryStream {
 		return this.ReadUtf8String(this.ReadVarUintAsNumber())
 	}
 	public ParseKV(block: string | number = "DATA"): RecursiveMap {
-		return parseKV(
-			this.fileStream,
-			block,
-			this.offset + this.pos,
-			this.Remaining
-		)
+		return parseKV(this.fileStream, block, this.offset + this.pos, this.Remaining)
 	}
 	public ParseKVBlock(): RecursiveMap {
 		return parseKVBlock(this.fileStream, this.offset + this.pos, this.Remaining)
@@ -289,10 +292,7 @@ export class FileBinaryStream implements ReadableBinaryStream {
 	public Empty(): boolean {
 		return this.pos >= this.size
 	}
-	public CreateNestedStream(
-		size: number,
-		detectEncoding = false
-	): FileBinaryStream {
+	public CreateNestedStream(size: number, detectEncoding = false): FileBinaryStream {
 		const res = new FileBinaryStream(
 			this.fileStream,
 			0,
@@ -306,16 +306,19 @@ export class FileBinaryStream implements ReadableBinaryStream {
 
 	private PopulateCache(bytes: number): void {
 		const remaining = this.Remaining
-		if (remaining < bytes || bytes > this.cache.byteLength)
+		if (remaining < bytes || bytes > this.cache.byteLength) {
 			throw `Failed populating cache with ${bytes} bytes`
+		}
 		if (
 			this.pos >= this.cachePos &&
 			this.cachePos + this.cache.byteLength >= this.pos + bytes
-		)
+		) {
 			return
+		}
 		this.cachePos = this.pos
 		const read = this.fileStream.read(this.offset + this.pos, this.cache)
-		if (read < Math.min(remaining, this.cache.byteLength))
+		if (read < Math.min(remaining, this.cache.byteLength)) {
 			throw `Failed populating cache while reading ${bytes} bytes`
+		}
 	}
 }

@@ -88,7 +88,9 @@ export class ParticlesSDK {
 			particle.Path !== path ||
 			particle.Attachment !== attachment
 		) {
-			if (particle !== undefined) particle.Destroy(true)
+			if (particle !== undefined) {
+				particle.Destroy(true)
+			}
 
 			particle = new Particle(
 				this,
@@ -100,7 +102,9 @@ export class ParticlesSDK {
 			)
 
 			this.AllParticles.set(key, particle)
-		} else if (points !== undefined) particle.SetControlPoints(...points)
+		} else if (points !== undefined) {
+			particle.SetControlPoints(...points)
+		}
 
 		return particle
 	}
@@ -114,9 +118,10 @@ export class ParticlesSDK {
 		this.CheckChangedRange(key, range)
 
 		const color = options.Color ?? Color.Aqua
-		if (options.Alpha !== undefined)
+		if (options.Alpha !== undefined) {
 			// for support old scripts
 			color.SetA(options.Alpha)
+		}
 
 		return this.AddOrUpdate(
 			key,
@@ -174,11 +179,7 @@ export class ParticlesSDK {
 		)
 	}
 
-	public DrawRangeLine(
-		key: any,
-		entity: Entity,
-		endPosition: Entity | Vector3
-	) {
+	public DrawRangeLine(key: any, entity: Entity, endPosition: Entity | Vector3) {
 		return this.AddOrUpdate(
 			key,
 			"particles/ui_mouseactions/range_finder_line.vpcf",
@@ -285,6 +286,8 @@ export class ParticlesSDK {
 			return
 		}
 
-		if (particleRange === undefined) this.AllParticlesRange.set(key, range)
+		if (particleRange === undefined) {
+			this.AllParticlesRange.set(key, range)
+		}
 	}
 }

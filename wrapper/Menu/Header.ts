@@ -21,9 +21,7 @@ export class Header extends Base {
 	private static readonly logoPath = "menu/logo.svg"
 	private static readonly TextOffset = new Vector2()
 	private static readonly LogoOffset = new Vector2()
-	private static readonly OriginalLogoSize = RendererSDK.GetImageSize(
-		Header.logoPath
-	)
+	private static readonly OriginalLogoSize = RendererSDK.GetImageSize(Header.logoPath)
 	private static readonly LogoSize = new Vector2()
 	private static readonly ActualOriginalSize_ = RendererSDK.GetImageSize(
 		Header.imagePath
@@ -47,19 +45,22 @@ export class Header extends Base {
 			this.ShouldIgnoreNewConfigValue ||
 			value === undefined ||
 			!Array.isArray(value)
-		)
+		) {
 			return
+		}
 		Vector2.fromArray(value).Max(0).CopyTo(this.Position)
 	}
 
 	public Render(): void {
 		const windowSize = this.WindowSize
-		if (this.Position.IsZero())
+		if (this.Position.IsZero()) {
 			this.Position.CopyFrom(windowSize.DivideScalar(2))
-		if (this.dragging)
+		}
+		if (this.dragging) {
 			this.MousePosition.SubtractForThis(this.draggingOffset)
 				.Max(1)
 				.CopyTo(this.Position)
+		}
 		this.Position.x = Math.max(
 			Math.min(this.Position.x, windowSize.x - this.parent.EntriesSizeX),
 			0
@@ -89,13 +90,17 @@ export class Header extends Base {
 	}
 
 	public OnMouseLeftDown(): boolean {
-		if (!this.IsHovered) return true
+		if (!this.IsHovered) {
+			return true
+		}
 		this.dragging = true
 		this.MousePosition.Subtract(this.Position).CopyTo(this.draggingOffset)
 		return false
 	}
 	public OnMouseLeftUp(): boolean {
-		if (!this.dragging) return !this.IsHovered
+		if (!this.dragging) {
+			return !this.IsHovered
+		}
 		this.dragging = false
 		return false
 	}

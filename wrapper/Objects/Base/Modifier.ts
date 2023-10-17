@@ -21,6 +21,13 @@ import { Unit } from "./Unit"
 const scepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
 export class Modifier {
+	public static VisibleToEnemies: string[] = [
+		"modifier_bounty_hunter_track",
+		"modifier_slardar_amplify_damage",
+		"modifier_bloodseeker_thirst_vision",
+		"modifier_spirit_breaker_charge_of_darkness_vision"
+	]
+
 	public static HasTrueSightBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => {
 			switch (buff.Name) {
@@ -74,10 +81,7 @@ export class Modifier {
 		const luaName = this.kv.LuaName
 		this.Name =
 			luaName === undefined || luaName === ""
-				? StringTables.GetString(
-						"ModifierNames",
-						this.kv.ModifierClass as number
-				  )
+				? StringTables.GetString("ModifierNames", this.kv.ModifierClass as number)
 				: luaName
 
 		const ddAbilityID = this.kv.DDAbilityID
@@ -92,11 +96,16 @@ export class Modifier {
 		if (
 			this.Name === "modifier_monkey_king_bounce_leap" ||
 			this.Name === "modifier_monkey_king_arc_to_ground"
-		)
+		) {
 			return 0
+		}
 		const fadeTime = this.kv.FadeTime
-		if (fadeTime === undefined) return 0
-		if (fadeTime === 0) return 1
+		if (fadeTime === undefined) {
+			return 0
+		}
+		if (fadeTime === 0) {
+			return 1
+		}
 		return Math.min(this.ElapsedTime / (fadeTime * 2), 1)
 	}
 
@@ -105,8 +114,9 @@ export class Modifier {
 			(this.Name === "modifier_monkey_king_bounce_leap" ||
 				this.Name === "modifier_monkey_king_arc_to_ground") &&
 			this.ElapsedTime < 10 // just in case buff bugs out
-		)
+		) {
 			return this.kv.FadeTime ?? 0
+		}
 		switch (this.Name) {
 			case "modifier_rattletrap_jetpack":
 				return 260
@@ -141,14 +151,18 @@ export class Modifier {
 	public get vStart(): Vector3 {
 		const vec = this.kv.vStart
 
-		if (vec === undefined) return new Vector3().Invalidate()
+		if (vec === undefined) {
+			return new Vector3().Invalidate()
+		}
 
 		return new Vector3(vec.x, vec.y, vec.z)
 	}
 	public get vEnd(): Vector3 {
 		const vec = this.kv.vEnd
 
-		if (vec === undefined) return new Vector3().Invalidate()
+		if (vec === undefined) {
+			return new Vector3().Invalidate()
+		}
 
 		return new Vector3(vec.x, vec.y, vec.z)
 	}
@@ -162,16 +176,10 @@ export class Modifier {
 			case "modifier_bonus_armor":
 				return
 		}
-		const newCaster = EntityManager.EntityByIndex(
-				this.kv.Caster
-			) as Nullable<Unit>,
-			newAbility = EntityManager.EntityByIndex(
-				this.kv.Ability
-			) as Nullable<Ability>,
-			newAuraOwner = EntityManager.EntityByIndex(
-				this.kv.AuraOwner
-			) as Nullable<Unit>,
-			newParent = EntityManager.EntityByIndex(this.kv.Parent) as Nullable<Unit>,
+		const newCaster = EntityManager.EntityByIndex<Unit>(this.kv.Caster),
+			newAbility = EntityManager.EntityByIndex<Ability>(this.kv.Ability),
+			newAuraOwner = EntityManager.EntityByIndex<Unit>(this.kv.AuraOwner),
+			newParent = EntityManager.EntityByIndex<Unit>(this.kv.Parent),
 			newAbilityLevel = this.kv.AbilityLevel ?? 0,
 			newDuration = this.kv.Duration ?? 0,
 			newStackCount = this.kv.StackCount ?? 0,
@@ -182,11 +190,11 @@ export class Modifier {
 			newBonusAllStats = this.kv.BonusAllStats ?? 0,
 			newBonusHealth = this.kv.BonusHealth ?? 0,
 			newBonusMana = this.kv.BonusMana ?? 0,
-			newCustomEntity = EntityManager.EntityByIndex(
-				this.kv.CustomEntity
-			) as Nullable<Unit>
+			newCustomEntity = EntityManager.EntityByIndex<Unit>(this.kv.CustomEntity)
 
-		if (this.Parent !== newParent) this.Remove()
+		if (this.Parent !== newParent) {
+			this.Remove()
+		}
 		let updated = false
 		if (this.Caster !== newCaster) {
 			this.Caster = newCaster
@@ -255,20 +263,25 @@ export class Modifier {
 		if (this.Parent !== newParent) {
 			this.Parent = newParent
 			this.AddModifier()
-		} else if (this.Parent !== undefined && updated)
+		} else if (this.Parent !== undefined && updated) {
 			EventsSDK.emit("ModifierChanged", false, this)
-		else if (this.Parent !== undefined)
+		} else if (this.Parent !== undefined) {
 			EventsSDK.emit("ModifierChangedVBE", false, this)
+		}
 	}
 
 	public Remove(): void {
-		if (this.Parent === undefined || !this.Parent.Buffs.includes(this)) return
+		if (this.Parent === undefined || !this.Parent.Buffs.includes(this)) {
+			return
+		}
 		arrayRemove(this.Parent.Buffs, this)
 		EventsSDK.emit("ModifierRemoved", false, this)
 		this.Parent.ChangeFieldsByEvents()
 	}
 	private AddModifier(): void {
-		if (this.Parent === undefined || this.Parent.Buffs.includes(this)) return
+		if (this.Parent === undefined || this.Parent.Buffs.includes(this)) {
+			return
+		}
 		this.Parent.Buffs.push(this)
 		EventsSDK.emit("ModifierCreated", false, this)
 		this.Parent.ChangeFieldsByEvents()

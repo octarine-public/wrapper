@@ -20,23 +20,33 @@ function RegisterClassInternal(constructor: Constructor<Entity>) {
 	if (!ClassToEntities.has(constructor)) {
 		const ar: Entity[][] = [[]]
 		ClassToEntities.set(constructor, ar[0])
-		for (const [constr, entitiesAr] of SDKClasses)
-			if (prototype instanceof constr) ar.push(entitiesAr)
+		for (const [constr, entitiesAr] of SDKClasses) {
+			if (prototype instanceof constr) {
+				ar.push(entitiesAr)
+			}
+		}
 		ClassToEntitiesAr.set(constructor, ar)
 	}
-	if (!CachedFieldHandlers.has(constructor))
+	if (!CachedFieldHandlers.has(constructor)) {
 		CachedFieldHandlers.set(constructor, new Map())
+	}
 	SDKClasses.push([constructor, ClassToEntities.get(constructor)!])
 	const map = new Map<string, FieldHandler>()
-	for (const [constr, classFieldHandlers] of FieldHandlers)
-		if (prototype instanceof constr)
-			for (const [k, v] of classFieldHandlers) map.set(k, v)
+	for (const [constr, classFieldHandlers] of FieldHandlers) {
+		if (prototype instanceof constr) {
+			for (const [k, v] of classFieldHandlers) {
+				map.set(k, v)
+			}
+		}
+	}
 	FieldHandlers.set(constructor, map)
 }
 
 export function RegisterClass(name: string, constructor: Constructor<Entity>) {
 	constructors.set(name, constructor)
-	if (!FieldHandlers.has(constructor)) RegisterClassInternal(constructor)
+	if (!FieldHandlers.has(constructor)) {
+		RegisterClassInternal(constructor)
+	}
 }
 
 function GenerateChainedFieldHandler(old: FieldHandler, new_: FieldHandler) {
@@ -50,20 +60,24 @@ export function RegisterFieldHandler<T extends Entity>(
 	fieldName: string,
 	handler: (entity: T, newValue: EntityPropertyType) => any
 ) {
-	if (!FieldHandlers.has(constructor)) RegisterClassInternal(constructor)
+	if (!FieldHandlers.has(constructor)) {
+		RegisterClassInternal(constructor)
+	}
 	const map = FieldHandlers.get(constructor)!
 	let handler_ = handler as FieldHandler
-	if (map.has(fieldName))
+	if (map.has(fieldName)) {
 		handler_ = GenerateChainedFieldHandler(map.get(fieldName)!, handler_)
+	}
 	map.set(fieldName, handler_)
 
 	const map2 = CachedFieldHandlers.get(constructor)!
 	const id = EntitiesSymbols.indexOf(fieldName)
 	if (id === -1) {
-		if (EntitiesSymbols.length !== 0)
+		if (EntitiesSymbols.length !== 0) {
 			console.log(
 				`[WARNING] Index of "${fieldName}" not found in CSVCMsg_FlattenedSerializer.`
 			)
+		}
 		return
 	}
 	map2.set(id, handler_)
@@ -73,15 +87,21 @@ function FixClassNameForMap<T>(
 	constructorName: string,
 	map: Map<string, T>
 ): Nullable<string> {
-	if (map.has(constructorName)) return constructorName
+	if (map.has(constructorName)) {
+		return constructorName
+	}
 
 	if (constructorName[0] === "C" && constructorName[1] !== "_") {
 		constructorName = `C_${constructorName.substring(1)}`
-		if (map.has(constructorName)) return constructorName
+		if (map.has(constructorName)) {
+			return constructorName
+		}
 	}
 	if (constructorName[0] === "C" && constructorName[1] === "_") {
 		constructorName = `C${constructorName.substring(2)}`
-		if (map.has(constructorName)) return constructorName
+		if (map.has(constructorName)) {
+			return constructorName
+		}
 	}
 
 	return undefined
@@ -91,14 +111,14 @@ export function GetConstructorByName(
 	className: string,
 	constructorNameHint?: string
 ): Nullable<Constructor<Entity>> {
-	if (
-		constructorNameHint !== undefined &&
-		constructors.has(constructorNameHint)
-	)
+	if (constructorNameHint !== undefined && constructors.has(constructorNameHint)) {
 		return constructors.get(constructorNameHint)
+	}
 
 	const fixedWrapperName = FixClassNameForMap(className, constructors)
-	if (fixedWrapperName !== undefined) return constructors.get(fixedWrapperName)
+	if (fixedWrapperName !== undefined) {
+		return constructors.get(fixedWrapperName)
+	}
 
 	const fixedClassName = FixClassNameForMap(className, SchemaClassesInheritance)
 	if (fixedClassName === undefined) {
@@ -112,7 +132,9 @@ export function GetConstructorByName(
 	const inherited = SchemaClassesInheritance.get(fixedClassName)!
 	for (const inheritedClassName of inherited) {
 		const constructor = GetConstructorByName(inheritedClassName)
-		if (constructor !== undefined) return constructor
+		if (constructor !== undefined) {
+			return constructor
+		}
 	}
 	console.error(
 		`Can't find wrapper declared inherited classes for classname ${className}, [${inherited}]`
@@ -123,13 +145,14 @@ export function GetConstructorByName(
 function FixType(symbols: string[], field: any): string {
 	{
 		const fieldSerializerNameSym = field.field_serializer_name_sym
-		if (fieldSerializerNameSym !== undefined)
+		if (fieldSerializerNameSym !== undefined) {
 			return (
 				symbols[fieldSerializerNameSym] +
 				(field.field_serializer_version !== 0
 					? field.field_serializer_version
 					: "")
 			)
+		}
 	}
 	let type = symbols[field.var_type_sym]
 	// types
@@ -234,9 +257,7 @@ ${list
 	.map(
 		([name, fields]) => `\
 declare class ${name} {
-	${(fields as [string, string][])
-		.map(([type, fName]) => `${fName}: ${type}`)
-		.join("\n\t")}
+	${(fields as [string, string][]).map(([type, fName]) => `${fName}: ${type}`).join("\n\t")}
 }`
 	)
 	.join("\n\n")}
@@ -244,7 +265,9 @@ declare class ${name} {
 				)
 			}
 			EntitiesSymbols = (msg.get("symbols") as string[]).map(sym => {
-				if (sym.startsWith("DOTA")) return `C${sym}`
+				if (sym.startsWith("DOTA")) {
+					return `C${sym}`
+				}
 				return sym
 			})
 			for (const [construct, map] of FieldHandlers) {

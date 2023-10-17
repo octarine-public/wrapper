@@ -24,10 +24,10 @@ type StringEntityPropertyType =
 	| bigint
 	| number
 	| boolean
-function ConvertToStringedMap(
-	prop: EntityPropertyType
-): StringEntityPropertyType {
-	if (Array.isArray(prop)) return prop.map(el => ConvertToStringedMap(el))
+function ConvertToStringedMap(prop: EntityPropertyType): StringEntityPropertyType {
+	if (Array.isArray(prop)) {
+		return prop.map(el => ConvertToStringedMap(el))
+	}
 	if (prop instanceof EntityPropertiesNode) {
 		const stringedMap = new Map<string, StringEntityPropertyType>()
 		prop.map.forEach((v, k) =>
@@ -46,7 +46,9 @@ export class EntityPropertiesNode {
 			cachedID = EntitiesSymbols.indexOf(name)
 			EntityPropertiesNode.entitiesSymbolsCached.set(name, cachedID)
 		}
-		if (cachedID === -1) return undefined
+		if (cachedID === -1) {
+			return undefined
+		}
 		return this.map.get(cachedID)
 	}
 	public set(id: number, prop: EntityPropertyType): void {

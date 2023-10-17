@@ -31,8 +31,9 @@ EventsSDK.on(
 )
 let gameInProgress = false
 function SetGameInProgress(newVal: boolean) {
-	if (!gameInProgress && newVal) EventsSDK.emit("GameStarted", false)
-	else if (gameInProgress && !newVal) {
+	if (!gameInProgress && newVal) {
+		EventsSDK.emit("GameStarted", false)
+	} else if (gameInProgress && !newVal) {
 		EventsSDK.emit("GameEnded", false)
 		Particles.DeleteAll()
 		RendererSDK.FreeTextureCache()
@@ -53,10 +54,14 @@ EventsSDK.on("EntityDestroyed", ent => {
 })
 export let GameRules: Nullable<CGameRules>
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent.IsGameRules) GameRules = ent as CGameRules
+	if (ent.IsGameRules) {
+		GameRules = ent as CGameRules
+	}
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	if (!ent.IsGameRules) return
+	if (!ent.IsGameRules) {
+		return
+	}
 	GameRules = undefined
 	GameState.RawGameTime = 0
 })
@@ -64,10 +69,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 const activity2name = new Map<GameActivity, string>(
 	Object.entries(GameActivity).map(([k, v]) => [v as GameActivity, k])
 )
-const modelDataCache = new Map<
-	string,
-	[AnimationData[], Map<number, number>, string[]]
->()
+const modelDataCache = new Map<string, [AnimationData[], Map<number, number>, string[]]>()
 EventsSDK.on("ServerInfo", () => modelDataCache.clear())
 
 @WrapperClass("CBaseEntity")
@@ -125,13 +127,26 @@ export class Entity {
 	private CustomDrawColor_: Nullable<[Color, RenderMode]>
 	private RingRadius_ = 30
 
-	constructor(public readonly Index: number, private readonly Serial: number) {}
+	/**
+	 * Demarcate recursions.
+	 * Recommended: use instanceof for get unique property
+	 */
+	public IsShop = false
+	public IsGameRules = false
+	/** ================================================= */
+
+	constructor(
+		public readonly Index: number,
+		private readonly serial: number
+	) {}
 
 	public get CustomGlowColor(): Nullable<Color> {
 		return this.CustomGlowColor_
 	}
 	public set CustomGlowColor(val: Nullable<Color>) {
-		if (this.CustomGlowColor_ === undefined && val === undefined) return
+		if (this.CustomGlowColor_ === undefined && val === undefined) {
+			return
+		}
 		this.CustomGlowColor_ = val
 		lastGlowEnts.add(this)
 	}
@@ -139,7 +154,9 @@ export class Entity {
 		return this.CustomDrawColor_
 	}
 	public set CustomDrawColor(val: Nullable<[Color, RenderMode]>) {
-		if (this.CustomDrawColor_ === undefined && val === undefined) return
+		if (this.CustomDrawColor_ === undefined && val === undefined) {
+			return
+		}
 		this.CustomDrawColor_ = val
 		lastColoredEnts.add(this)
 	}
@@ -153,7 +170,9 @@ export class Entity {
 		let owner = this.Owner
 		while (true) {
 			const rootOwner = owner?.Owner
-			if (rootOwner === undefined) break
+			if (rootOwner === undefined) {
+				break
+			}
 
 			owner = rootOwner
 		}
@@ -172,19 +191,27 @@ export class Entity {
 	}
 	public get NetworkedRotation(): number {
 		const ang = this.NetworkedAngles.y
-		if (ang >= 180) return ang - 360
-		return ang
+		return ang >= 180 ? ang - 360 : ang
 	}
 	public get Rotation(): number {
 		const ang = this.Angles.y
-		if (ang >= 180) return ang - 360
-		return ang
+		return ang >= 180 ? ang - 360 : ang
 	}
 	public get CreateTime() {
 		return this.CreateTime_ !== 0 ? this.CreateTime_ : this.FakeCreateTime_
 	}
+	/**
+	 * The percentage of HP remaining.
+	 * @description Calculates the percentage of HP remaining.
+	 * @returns {number}
+	 */
 	public get HPPercent(): number {
-		return Math.floor((this.HP / this.MaxHP) * 100) || 0
+		// Calculate the value by dividing current HP by maximum HP.
+		const value = this.HP / this.MaxHP
+		// If value is Infinity, set percentage to Infinity, otherwise round down to the nearest integer.
+		const percentage = value === Infinity ? value >> 0 : value
+		// Return the percentage multiplied by 100, capped at a minimum of 0.
+		return Math.max(percentage * 100, 0)
 	}
 	public get IsAlive(): boolean {
 		return (
@@ -217,49 +244,47 @@ export class Entity {
 	public get RingRadius(): number {
 		return this.RingRadius_
 	}
-	public get IsGameRules(): boolean {
-		return false
-	}
-	public get IsShop(): boolean {
-		return false
-	}
-	public get IsHero(): boolean {
-		return false
-	}
 	public get CustomNativeID(): number {
 		return this.Index << 1
 	}
 
 	public get Handle(): number {
-		return (this.Serial << EntityManager.INDEX_BITS) | this.Index
+		return (this.serial << EntityManager.INDEX_BITS) | this.Index
 	}
 
 	public SerialMatches(serial: number): boolean {
-		return serial === 0 || this.Serial === 0 || serial === this.Serial
+		return serial === 0 || this.serial === 0 || serial === this.serial
 	}
 	public HandleMatches(handle: number): boolean {
 		const index = handle & EntityManager.INDEX_MASK
-		const serial =
-			(handle >> EntityManager.INDEX_BITS) & EntityManager.SERIAL_MASK
+		const serial = (handle >> EntityManager.INDEX_BITS) & EntityManager.SERIAL_MASK
 		return this.Index === index && this.SerialMatches(serial)
 	}
 	public EntityMatches(ent: Entity): boolean {
 		return this === ent
 	}
 	public Distance(vec: Vector3 | Entity): number {
-		if (vec instanceof Entity) vec = vec.Position
+		if (vec instanceof Entity) {
+			vec = vec.Position
+		}
 		return this.Position.Distance(vec)
 	}
 	public Distance2D(vec: Vector3 | Vector2 | Entity): number {
-		if (vec instanceof Entity) vec = vec.Position
+		if (vec instanceof Entity) {
+			vec = vec.Position
+		}
 		return this.Position.Distance2D(vec)
 	}
 	public DistanceSqr(vec: Vector3 | Entity): number {
-		if (vec instanceof Entity) vec = vec.Position
+		if (vec instanceof Entity) {
+			vec = vec.Position
+		}
 		return this.Position.DistanceSqr(vec)
 	}
 	public DistanceSqr2D(vec: Vector3 | Vector2 | Entity): number {
-		if (vec instanceof Entity) vec = vec.Position
+		if (vec instanceof Entity) {
+			vec = vec.Position
+		}
 		return this.Position.DistanceSqr2D(vec)
 	}
 	public AngleBetweenFaces(front: Vector3): number {
@@ -272,7 +297,9 @@ export class Entity {
 		return this.Position.InFrontFromAngle(this.RotationRad + angle, distance)
 	}
 	public FindRotationAngle(vec: Vector3 | Entity): number {
-		if (vec instanceof Entity) vec = vec.Position
+		if (vec instanceof Entity) {
+			vec = vec.Position
+		}
 		return this.Position.FindRotationAngle(vec, this.RotationRad)
 	}
 	/**
@@ -344,11 +371,15 @@ export class Entity {
 		max.x = initialRadius
 		max.y = initialRadius
 		max.z = initialRadius
-		if (requestedModelName === "") return
+		if (requestedModelName === "") {
+			return
+		}
 
 		GetModelData(requestedModelName).then(
 			modelData => {
-				if (requestedModelName !== this.ModelName) return
+				if (requestedModelName !== this.ModelName) {
+					return
+				}
 				this.ModelData = modelData
 
 				// cache static data to avoid excessive object creation in JS
@@ -357,11 +388,12 @@ export class Entity {
 					this.Animations = modelData.animations
 					this.Attachments = modelData.attachments
 					const attachmentsHashMap = new Map<number, number>()
-					for (let i = 0, end = this.Attachments.length; i < end; i++)
+					for (let i = 0, end = this.Attachments.length; i < end; i++) {
 						attachmentsHashMap.set(
 							MurmurHash2(this.Attachments[i], 0x31415926) >>> 0,
 							i
 						)
+					}
 					this.AttachmentsHashMap = attachmentsHashMap
 					modelDataCache.set(requestedModelName, [
 						this.Animations,
@@ -389,10 +421,7 @@ export class Entity {
 		)
 	}
 
-	public CalculateActivityModifiers(
-		_activity: GameActivity,
-		_ar: string[]
-	): void {
+	public CalculateActivityModifiers(_activity: GameActivity, _ar: string[]): void {
 		// to be implemented in child classes
 	}
 
@@ -404,18 +433,24 @@ export class Entity {
 		const activityName = activity2name.get(activity)
 		if (sequenceNum >= 0 && activityName !== undefined) {
 			let i = 0
-			for (let j = 0; j < this.Animations.length; j++)
+			for (let j = 0; j < this.Animations.length; j++) {
 				if (
 					this.Animations[j].activities.some(
 						activityData => activityData.name === activityName
 					) &&
 					i++ === sequenceNum
-				)
+				) {
 					return j
+				}
+			}
 		}
-		if (!findBestMatch) return undefined
+		if (!findBestMatch) {
+			return undefined
+		}
 		const modifiers: string[] = []
-		if (activityName !== undefined) modifiers.push(activityName)
+		if (activityName !== undefined) {
+			modifiers.push(activityName)
+		}
 		this.CalculateActivityModifiers(activity, modifiers)
 		let highestScore = 0,
 			highestScored: Nullable<number>
@@ -424,17 +459,15 @@ export class Entity {
 			const anim = this.Animations[i]
 			let score = 0,
 				hasMovement = false
-			for (const activityData of anim.activities)
+			for (const activityData of anim.activities) {
 				if (modifiers.includes(activityData.name)) {
 					hasMovement ||= activityData.name === "ACT_DOTA_RUN"
 					score += activityData.weight
 				}
-			if (
-				!hasMovement &&
-				anim.hasMovement &&
-				modifiers.includes("ACT_DOTA_RUN")
-			)
+			}
+			if (!hasMovement && anim.hasMovement && modifiers.includes("ACT_DOTA_RUN")) {
 				score += 1
+			}
 			if (score > highestScore) {
 				highestScore = score
 				highestScored = i
@@ -442,16 +475,18 @@ export class Entity {
 		}
 
 		// TODO: is this used anywhere? if so, is this correct?
-		if (highestScored !== undefined)
+		if (highestScored !== undefined) {
 			for (let i = 0; i < this.Animations.length; i++) {
 				const anim = this.Animations[i]
 				if (
 					anim.activities.some(
 						activityData => activityData.name === "ACT_DOTA_CONSTANT_LAYER"
 					)
-				)
+				) {
 					return i
+				}
 			}
+		}
 
 		return highestScored
 	}
@@ -468,9 +503,13 @@ export class Entity {
 		ang = this.Angles,
 		scale = this.ModelScale
 	): Vector3 {
-		if (this.ModelData === undefined) return this.Position
+		if (this.ModelData === undefined) {
+			return this.Position
+		}
 		const attachmentID = this.Attachments.indexOf(name)
-		if (attachmentID === -1) return this.Position
+		if (attachmentID === -1) {
+			return this.Position
+		}
 		const animationID = this.GetAnimationID(activity, sequenceNum) ?? -1
 		if (animationID !== -1 && time === Infinity) {
 			const anim = this.Animations[animationID]
@@ -524,7 +563,9 @@ export class Entity {
 				this.NetworkedAngles.CopyFrom(transform.Angles)
 			}
 
-			for (const child of this.Children) child.UpdatePositions(transform)
+			for (const child of this.Children) {
+				child.UpdatePositions(transform)
+			}
 		}
 
 		this.VisualPosition.CopyFrom(this.NetworkedPosition)
@@ -558,14 +599,16 @@ function QuantitizedVecCoordToCoord(
 RegisterFieldHandler(Entity, "m_iTeamNum", (ent, newVal) => {
 	const oldTeam = ent.Team
 	ent.Team = newVal as Team
-	if (ent.IsValid && oldTeam !== ent.Team)
+	if (ent.IsValid && oldTeam !== ent.Team) {
 		EventsSDK.emit("EntityTeamChanged", false, ent)
+	}
 })
 RegisterFieldHandler(Entity, "m_lifeState", (ent, newVal) => {
 	const oldState = ent.LifeState
 	ent.LifeState = newVal as LifeState
-	if (ent.IsValid && oldState !== ent.LifeState)
+	if (ent.IsValid && oldState !== ent.LifeState) {
 		EventsSDK.emit("LifeStateChanged", false, ent)
+	}
 })
 RegisterFieldHandler(Entity, "m_hModel", (ent, newVal) => {
 	ent.ModelName = GetPathByHash(newVal as bigint) ?? ""
@@ -577,8 +620,7 @@ RegisterFieldHandler(Entity, "m_angRotation", (ent, newVal) => {
 	ent.UpdatePositions()
 })
 RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, newVal) => {
-	ent.Name_ =
-		StringTables.GetString("EntityNames", newVal as number) ?? ent.Name_
+	ent.Name_ = StringTables.GetString("EntityNames", newVal as number) ?? ent.Name_
 })
 
 RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, newVal) => {
@@ -590,7 +632,9 @@ RegisterFieldHandler(Entity, "m_hParent", (ent, newVal) => {
 	const parentEnt = EntityManager.EntityByIndex(ent.Parent_),
 		prevParentEnt = ent.ParentEntity
 	if (parentEnt !== ent.ParentEntity) {
-		if (prevParentEnt !== undefined) arrayRemove(prevParentEnt.Children, ent)
+		if (prevParentEnt !== undefined) {
+			arrayRemove(prevParentEnt.Children, ent)
+		}
 		parentEnt?.Children.push(ent)
 		ent.ParentEntity = parentEnt
 		ent.UpdatePositions()
@@ -603,9 +647,13 @@ RegisterFieldHandler(Entity, "m_hierarchyAttachName", (ent, newVal) => {
 
 EventsSDK.on("PreEntityCreated", ent => {
 	ent.SpawnPosition.CopyFrom(ent.NetworkedPosition)
-	if (ent.Index === 0) return
+	if (ent.Index === 0) {
+		return
+	}
 	for (const iter of EntityManager.AllEntities) {
-		if (ent.HandleMatches(iter.Owner_)) iter.OwnerEntity = ent
+		if (ent.HandleMatches(iter.Owner_)) {
+			iter.OwnerEntity = ent
+		}
 		if (ent.HandleMatches(iter.Parent_)) {
 			ent.Children.push(iter)
 			iter.ParentEntity = ent
@@ -615,9 +663,13 @@ EventsSDK.on("PreEntityCreated", ent => {
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (ent.Index === 0) return
+	if (ent.Index === 0) {
+		return
+	}
 	for (const iter of EntityManager.AllEntities) {
-		if (ent.HandleMatches(iter.Owner_)) iter.OwnerEntity = undefined
+		if (ent.HandleMatches(iter.Owner_)) {
+			iter.OwnerEntity = undefined
+		}
 		if (ent.HandleMatches(iter.Parent_)) {
 			arrayRemove(ent.Children, iter)
 			iter.ParentEntity = undefined
@@ -677,8 +729,9 @@ EventsSDK.on("GameEvent", (name, obj) => {
 	switch (name) {
 		case "entity_hurt": {
 			const ent = EntityManager.EntityByIndex(obj.entindex_killed)
-			if (ent !== undefined && ent.IsAlive)
+			if (ent !== undefined && ent.IsAlive) {
 				ent.HP = Math.max(Math.round(ent.HP - obj.damage), 1)
+			}
 			break
 		}
 		case "entity_killed": {
@@ -717,8 +770,11 @@ function CustomGlowEnts(): void {
 		const customID = ent.CustomNativeID
 		const customGlowColor = ent.CustomGlowColor
 		let colorU32 = 0
-		if (customGlowColor !== undefined) colorU32 = customGlowColor.toUint32()
-		else lastGlowEnts.delete(ent)
+		if (customGlowColor !== undefined) {
+			colorU32 = customGlowColor.toUint32()
+		} else {
+			lastGlowEnts.delete(ent)
+		}
 		SetEntityGlow(customID, colorU32)
 	}
 }

@@ -5,10 +5,7 @@ import { WrapperClass } from "../../Decorators"
 import { RenderMode } from "../../Enums/RenderMode"
 import { Team } from "../../Enums/Team"
 import { EntityManager } from "../../Managers/EntityManager"
-import {
-	CreateEntityInternal,
-	DeleteEntity
-} from "../../Managers/EntityManagerLogic"
+import { CreateEntityInternal, DeleteEntity } from "../../Managers/EntityManagerLogic"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../Native/WASM"
 import { EntityDataLump } from "../../Resources/ParseEntityLump"
@@ -65,9 +62,13 @@ function LoadTreeMap(stream: ReadableBinaryStream): void {
 	for (const pos of ParseTRMP(stream)) {
 		TempTreeIDOffset++
 		// for some reason there are trees duplicates, but earlier ones override them
-		if (trees.some(tree => tree.Position.Equals(pos))) continue
+		if (trees.some(tree => tree.Position.Equals(pos))) {
+			continue
+		}
 		let id = curLocalID++
-		while (EntityManager.EntityByIndex(id) !== undefined) id = curLocalID++
+		while (EntityManager.EntityByIndex(id) !== undefined) {
+			id = curLocalID++
+		}
 		const entity = new Tree(id, 0)
 		entity.Name_ = "ent_dota_tree"
 		entity.ClassName = "C_DOTA_MapTree"
@@ -83,7 +84,9 @@ function LoadTreeMap(stream: ReadableBinaryStream): void {
 		trees.push(entity)
 	}
 	for (const data of EntityDataLump) {
-		if (data.get("classname") !== "ent_dota_tree") return
+		if (data.get("classname") !== "ent_dota_tree") {
+			return
+		}
 		const originStr = data.get("origin"),
 			anglesStr = data.get("angles"),
 			model = data.get("model")
@@ -91,13 +94,16 @@ function LoadTreeMap(stream: ReadableBinaryStream): void {
 			typeof originStr !== "string" ||
 			typeof anglesStr !== "string" ||
 			typeof model !== "string"
-		)
+		) {
 			return
+		}
 		const pos = Vector3.FromString(originStr)
 		const entity = trees.find(
 			tree => tree.Position.x === pos.x && tree.Position.y === pos.y
 		)
-		if (entity === undefined) return
+		if (entity === undefined) {
+			return
+		}
 		const ang = QAngle.FromString(anglesStr)
 		entity.VisualAngles.CopyFrom(ang)
 		entity.NetworkedAngles.CopyFrom(ang)
@@ -108,7 +114,7 @@ function LoadTreeMap(stream: ReadableBinaryStream): void {
 
 EventsSDK.after("ServerInfo", () => {
 	const buf = fopen(`maps/${GameState.MapName}.trm`)
-	if (buf !== undefined)
+	if (buf !== undefined) {
 		try {
 			LoadTreeMap(new FileBinaryStream(buf))
 		} catch (e) {
@@ -116,4 +122,5 @@ EventsSDK.after("ServerInfo", () => {
 		} finally {
 			buf.close()
 		}
+	}
 })

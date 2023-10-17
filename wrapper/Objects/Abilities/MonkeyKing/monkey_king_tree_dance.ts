@@ -45,17 +45,24 @@ EventsSDK.on("ParticleUpdated", par => {
 	if (
 		par.PathNoEcon !==
 		"particles/units/heroes/hero_monkey_king/monkey_king_jump_trail.vpcf"
-	)
+	) {
 		return
+	}
 
 	const cpEnt = par.ControlPointsEnt.get(1)
-	if (cpEnt === undefined) return
+	if (cpEnt === undefined) {
+		return
+	}
 
 	const ent = cpEnt[0],
 		pos = par.ControlPointsFallback.get(1)
-	if (pos === undefined || !(ent instanceof Unit)) return
+	if (pos === undefined || !(ent instanceof Unit)) {
+		return
+	}
 	const abil = ent.GetAbilityByClass(monkey_king_tree_dance)
-	if (abil === undefined) return
+	if (abil === undefined) {
+		return
+	}
 	abil.StartedJumpingTime = GameState.RawGameTime
 	pos.CopyTo(abil.StartPosition)
 	abil.IsJumping = true
@@ -74,15 +81,22 @@ EventsSDK.on("ParticleDestroyed", par => {
 	if (
 		par.PathNoEcon !==
 		"particles/units/heroes/hero_monkey_king/monkey_king_jump_trail.vpcf"
-	)
+	) {
 		return
+	}
 	const cpEnt = par.ControlPointsEnt.get(1)
-	if (cpEnt === undefined) return
+	if (cpEnt === undefined) {
+		return
+	}
 
 	const ent = cpEnt[0]
-	if (!(ent instanceof Unit)) return
+	if (!(ent instanceof Unit)) {
+		return
+	}
 	const abil = ent.GetAbilityByClass(monkey_king_tree_dance)
-	if (abil === undefined) return
+	if (abil === undefined) {
+		return
+	}
 	abil.IsJumping = false
 	abil.EndedJumpingTime = GameState.RawGameTime + 1 / 30
 })
@@ -100,11 +114,14 @@ EventsSDK.on("Tick", dt => {
 			abil.TargetTree !== undefined ||
 			!abil.IsJumpingToTree ||
 			GameState.RawGameTime === abil.StartedJumpingTime
-		)
+		) {
 			continue
+		}
 
 		const startPos = abil.StartPosition
-		if (!startPos.IsValid) continue
+		if (!startPos.IsValid) {
+			continue
+		}
 		if (
 			owner.IsVisible &&
 			owner.HasBuffByName("modifier_monkey_king_arc_to_ground")
@@ -119,7 +136,9 @@ EventsSDK.on("Tick", dt => {
 			finishedJumpingTrees: (Tree | TempTree)[] = []
 		for (const predictedAr of abil.PredictedPositionsPerTree) {
 			const [currentPos, tree, timeFinished] = predictedAr
-			if (timeFinished !== 0) continue
+			if (timeFinished !== 0) {
+				continue
+			}
 			const targetPos = tree.Position
 			{
 				// update horizontal motion
@@ -135,7 +154,9 @@ EventsSDK.on("Tick", dt => {
 				) {
 					currentPos.z = GetPositionHeight(currentPos)
 					predictedAr[2] = GameState.RawGameTime
-					if (finishedJumping) finishedJumpingTrees.push(tree)
+					if (finishedJumping) {
+						finishedJumpingTrees.push(tree)
+					}
 				}
 			}
 			if (predictedAr[2] === 0) {
@@ -148,16 +169,23 @@ EventsSDK.on("Tick", dt => {
 					Math.sin(mul * Math.PI) *
 						Math.min(200, targetPos.Distance2D(startPos) / 3)
 				const groundHeight = GetPositionHeight(currentPos)
-				if (currentPos.z < groundHeight) currentPos.z = groundHeight
+				if (currentPos.z < groundHeight) {
+					currentPos.z = groundHeight
+				}
 			}
 		}
-		if (finishedJumpingTrees.length === 1)
+		if (finishedJumpingTrees.length === 1) {
 			abil.TargetTree = finishedJumpingTrees[0]
+		}
 
-		if (!abil.IsJumping) continue
+		if (!abil.IsJumping) {
+			continue
+		}
 
 		// further code relies on owner visibility, so we should skip it if owner isn't visible
-		if (!owner.IsVisible) continue
+		if (!owner.IsVisible) {
+			continue
+		}
 		const heroAngle =
 			owner.NetworkedRotationRad - DegreesToRadian(owner.RotationDifference)
 		const bestPredictedPos = ArrayExtensions.orderByFirst(
@@ -165,11 +193,14 @@ EventsSDK.on("Tick", dt => {
 				ar =>
 					ar[2] === 0 &&
 					Math.abs(
-						heroAngle - abil.StartPosition.GetDirectionTo(ar[1].Position).Angle
+						heroAngle -
+							abil.StartPosition.GetDirectionTo(ar[1].Position).Angle
 					) < 0.05 // 0.05rad = 2.8deg
 			),
 			ar => owner.NetworkedPosition.Distance(ar[0])
 		)
-		if (bestPredictedPos !== undefined) abil.TargetTree = bestPredictedPos[1]
+		if (bestPredictedPos !== undefined) {
+			abil.TargetTree = bestPredictedPos[1]
+		}
 	}
 })

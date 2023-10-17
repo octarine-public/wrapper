@@ -3,17 +3,16 @@ import * as EconHelper from "../Managers/EconHelper"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { FakeUnit } from "../Objects/Base/FakeUnit"
 import { Unit } from "../Objects/Base/Unit"
-import {
-	GetMapNumberProperty,
-	GetMapStringProperty
-} from "../Resources/ParseUtils"
+import { GetMapNumberProperty, GetMapStringProperty } from "../Resources/ParseUtils"
 import { GameState } from "../Utils/GameState"
 import { QAngle } from "./QAngle"
 import { Vector3 } from "./Vector3"
 import { Vector4 } from "./Vector4"
 
 function ApproximateParticleLifetimeInternal(path: string): number {
-	if (!path.endsWith("_c")) path += "_c"
+	if (!path.endsWith("_c")) {
+		path += "_c"
+	}
 	const kv = parseKV(path)
 	if (kv.size === 0) {
 		console.log(`Failed parsing particle KV at ${path}`)
@@ -22,9 +21,11 @@ function ApproximateParticleLifetimeInternal(path: string): number {
 
 	let res = 0
 	const initializers = kv.get("m_Initializers")
-	if (Array.isArray(initializers) || initializers instanceof Map)
+	if (Array.isArray(initializers) || initializers instanceof Map) {
 		initializers.forEach((initializer: RecursiveMapValue) => {
-			if (!(initializer instanceof Map)) return
+			if (!(initializer instanceof Map)) {
+				return
+			}
 			switch (initializer.get("_class")) {
 				case "C_INIT_RandomLifeTime": {
 					let min = GetMapNumberProperty(initializer, "m_fLifetimeMin"),
@@ -41,12 +42,15 @@ function ApproximateParticleLifetimeInternal(path: string): number {
 					break
 			}
 		})
+	}
 
 	let hasDecay = false
 	const operators = kv.get("m_Operators")
-	if (Array.isArray(operators) || operators instanceof Map)
+	if (Array.isArray(operators) || operators instanceof Map) {
 		operators.forEach((operator: RecursiveMapValue) => {
-			if (!(operator instanceof Map)) return
+			if (!(operator instanceof Map)) {
+				return
+			}
 			switch (operator.get("_class")) {
 				case "C_OP_Decay":
 					res += GetMapNumberProperty(operator, "m_flOpStartFadeInTime")
@@ -59,26 +63,36 @@ function ApproximateParticleLifetimeInternal(path: string): number {
 					break
 			}
 		})
+	}
 
-	if (!hasDecay) return -1
+	if (!hasDecay) {
+		return -1
+	}
 
 	let maxChildRes = 0
 	const children = kv.get("m_Children")
-	if (Array.isArray(children) || children instanceof Map)
+	if (Array.isArray(children) || children instanceof Map) {
 		children.forEach((child: RecursiveMapValue) => {
-			if (!(child instanceof Map) || child.get("m_bDisableChild")) return
+			if (!(child instanceof Map) || child.get("m_bDisableChild")) {
+				return
+			}
 			const childRes = ApproximateParticleLifetime(
 				GetMapStringProperty(child, "m_ChildRef")
 			)
-			if (childRes === -1) return -1
+			if (childRes === -1) {
+				return -1
+			}
 			maxChildRes = Math.max(maxChildRes, childRes)
 		})
+	}
 	return res + maxChildRes
 }
 
 const ParticlesLifetimeCache = new Map<string, number>()
 function ApproximateParticleLifetime(path: string): number {
-	if (ParticlesLifetimeCache.has(path)) return ParticlesLifetimeCache.get(path)!
+	if (ParticlesLifetimeCache.has(path)) {
+		return ParticlesLifetimeCache.get(path)!
+	}
 	const res = ApproximateParticleLifetimeInternal(path)
 	ParticlesLifetimeCache.set(path, res)
 	return res
@@ -92,10 +106,7 @@ export class NetworkedParticle {
 	public readonly ControlPointsForward = new Map<number, Vector3>()
 	public readonly ControlPointsQuaternion = new Map<number, Vector4>()
 	public readonly ControlPointsFallback = new Map<number, Vector3>()
-	public readonly ControlPointsOrient = new Map<
-		number,
-		[Vector3, Vector3, Vector3]
-	>()
+	public readonly ControlPointsOrient = new Map<number, [Vector3, Vector3, Vector3]>()
 	public readonly ControlPointsOffset = new Map<number, [Vector3, QAngle]>()
 	public readonly ControlPointsEnt = new Map<
 		number,
@@ -117,11 +128,12 @@ export class NetworkedParticle {
 		public AttachedTo: Nullable<Unit | FakeUnit>
 	) {
 		const orig = EconHelper.Particles.repl2orig.get(this.Path)
-		this.PathNoEcon =
-			orig !== undefined && orig.length !== 0 ? orig[0] : this.Path
+		this.PathNoEcon = orig !== undefined && orig.length !== 0 ? orig[0] : this.Path
 		NetworkedParticle.Instances.set(this.Index, this)
 		this.EndTime = ApproximateParticleLifetime(this.Path)
-		if (this.EndTime !== -1) this.EndTime += GameState.RawGameTime
+		if (this.EndTime !== -1) {
+			this.EndTime += GameState.RawGameTime
+		}
 	}
 
 	public Destroy(): void {
@@ -131,47 +143,62 @@ export class NetworkedParticle {
 }
 
 EventsSDK.after("EntityCreated", ent => {
-	if (!(ent instanceof Unit)) return
+	if (!(ent instanceof Unit)) {
+		return
+	}
 	for (const par of NetworkedParticle.Instances.values()) {
 		let changedAnything = false
 		if (par.AttachedTo?.EntityMatches(ent)) {
 			par.AttachedTo = ent
 			changedAnything = true
 		}
-		for (const data of par.ControlPointsEnt.values())
+		for (const data of par.ControlPointsEnt.values()) {
 			if (data[0].EntityMatches(ent)) {
 				data[0] = ent
 				changedAnything = true
 			}
-		if (changedAnything) EventsSDK.emit("ParticleUpdated", false, par)
+		}
+		if (changedAnything) {
+			EventsSDK.emit("ParticleUpdated", false, par)
+		}
 	}
 })
 EventsSDK.on("EntityDestroyed", ent => {
 	const destroyedParticles: NetworkedParticle[] = []
-	for (const par of NetworkedParticle.Instances.values())
-		if (par.AttachedTo === ent) destroyedParticles.push(par)
-	for (const par of destroyedParticles) par.Destroy()
+	for (const par of NetworkedParticle.Instances.values()) {
+		if (par.AttachedTo === ent) {
+			destroyedParticles.push(par)
+		}
+	}
+	for (const par of destroyedParticles) {
+		par.Destroy()
+	}
 	for (const par of NetworkedParticle.Instances.values()) {
 		let changedAnything = false
 		const destroyedCPsEnt: number[] = []
-		for (const [cp, data] of par.ControlPointsEnt)
+		for (const [cp, data] of par.ControlPointsEnt) {
 			if (data[0] === ent) {
 				destroyedCPsEnt.push(cp)
 				changedAnything = true
 			}
-		for (const cp of destroyedCPsEnt) par.ControlPointsEnt.delete(cp)
-		if (changedAnything) EventsSDK.emit("ParticleUpdated", false, par)
+		}
+		for (const cp of destroyedCPsEnt) {
+			par.ControlPointsEnt.delete(cp)
+		}
+		if (changedAnything) {
+			EventsSDK.emit("ParticleUpdated", false, par)
+		}
 	}
 })
 
 EventsSDK.on("Tick", () => {
 	const destroyedParticles: NetworkedParticle[] = []
-	for (const par of NetworkedParticle.Instances.values())
-		if (
-			par.Released &&
-			par.EndTime !== -1 &&
-			par.EndTime <= GameState.RawGameTime
-		)
+	for (const par of NetworkedParticle.Instances.values()) {
+		if (par.Released && par.EndTime !== -1 && par.EndTime <= GameState.RawGameTime) {
 			destroyedParticles.push(par)
-	for (const par of destroyedParticles) par.Destroy()
+		}
+	}
+	for (const par of destroyedParticles) {
+		par.Destroy()
+	}
 })

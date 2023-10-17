@@ -19,8 +19,12 @@ export class CGameManager extends Entity {
 
 export let GameManager: Nullable<CGameManager>
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent instanceof CGameManager) GameManager = ent
+	if (ent instanceof CGameManager) {
+		GameManager = ent
+	}
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	if (ent instanceof CGameManager) GameManager = undefined
+	if (ent instanceof CGameManager) {
+		GameManager = undefined
+	}
 })

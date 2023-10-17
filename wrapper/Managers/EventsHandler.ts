@@ -9,10 +9,7 @@ import { Entity, GameRules, LocalPlayer } from "../Objects/Base/Entity"
 import { FakeUnit, GetPredictionTarget } from "../Objects/Base/FakeUnit"
 import { PlayerResource } from "../Objects/Base/PlayerResource"
 import { Unit } from "../Objects/Base/Unit"
-import {
-	AbilityData,
-	ReloadGlobalAbilityStorage
-} from "../Objects/DataBook/AbilityData"
+import { AbilityData, ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
 import { ReloadGlobalUnitStorage, UnitData } from "../Objects/DataBook/UnitData"
 import { ParseEntityLump, ResetEntityLump } from "../Resources/ParseEntityLump"
 import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
@@ -696,7 +693,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			particleSystemHandle !== undefined
 				? GetPathByHash(particleSystemHandle)
 				: undefined
-		if (path !== undefined)
+		if (path !== undefined) {
 			EventsSDK.emit(
 				"ParticleCreated",
 				false,
@@ -708,21 +705,18 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 					GetPredictionTarget(entID)
 				)
 			)
-		else
+		} else {
 			console.log(
 				GameState.RawGameTime,
 				`Received unknown particleSystemHandle ${particleSystemHandle} for particle ${index}`
 			)
+		}
 	}
 
 	if (par === undefined) {
-		if (changedEnt !== undefined)
-			EventsSDK.emit(
-				"ParticleUnitPositionUpdated",
-				false,
-				changedEnt,
-				undefined
-			)
+		if (changedEnt !== undefined) {
+			EventsSDK.emit("ParticleUnitPositionUpdated", false, changedEnt, undefined)
+		}
 		return
 	}
 
@@ -733,7 +727,9 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			if (!destroyImmediately && par.EndTime !== -1) {
 				par.Released = true
 				EventsSDK.emit("ParticleReleased", false, par)
-			} else par.Destroy()
+			} else {
+				par.Destroy()
+			}
 			return
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY_INVOLVING: {
@@ -743,14 +739,18 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			if (!destroyImmediately && par.EndTime !== -1) {
 				par.Released = true
 				EventsSDK.emit("ParticleReleased", false, par)
-			} else par.Destroy()
+			} else {
+				par.Destroy()
+			}
 			return
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_RELEASE: {
 			if (par.EndTime !== -1) {
 				par.Released = true
 				EventsSDK.emit("ParticleReleased", false, par)
-			} else par.Destroy()
+			} else {
+				par.Destroy()
+			}
 			return
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE: {
@@ -803,25 +803,23 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 					submsg.get("fallback_position") as RecursiveProtobuf
 				)
 			const ent = GetPredictionTarget(entID)
-			if (ent !== undefined)
+			if (ent !== undefined) {
 				par.ControlPointsEnt.set(cp, [
 					ent,
 					submsg.get("attach_type") as number,
 					submsg.get("attachment") as number,
 					submsg.get("include_wearables") as boolean
 				])
+			}
 			par.ControlPointsFallback.set(cp, position)
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_OFFSET: {
 			const submsg = msg.get("update_particle_offset") as RecursiveProtobuf
-			par.ControlPointsOffset.set(
-				(submsg.get("control_point") as number) ?? 0,
-				[
-					CMsgVectorToVector3(submsg.get("origin_offset") as RecursiveProtobuf),
-					CMsgVectorToVector3(submsg.get("angle_offset") as RecursiveProtobuf)
-				]
-			)
+			par.ControlPointsOffset.set((submsg.get("control_point") as number) ?? 0, [
+				CMsgVectorToVector3(submsg.get("origin_offset") as RecursiveProtobuf),
+				CMsgVectorToVector3(submsg.get("angle_offset") as RecursiveProtobuf)
+			])
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SHOULD_DRAW: {
@@ -832,25 +830,30 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_FROZEN: {
 			const submsg = msg.get("update_particle_set_frozen") as RecursiveProtobuf
 			if (submsg.get("set_frozen") as boolean) {
-				if (par.FrozenAt === -1) par.FrozenAt = GameState.RawGameTime
-			} else par.FrozenAt = -1
+				if (par.FrozenAt === -1) {
+					par.FrozenAt = GameState.RawGameTime
+				}
+			} else {
+				par.FrozenAt = -1
+			}
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CHANGE_CONTROL_POINT_ATTACHMENT: {
-			const submsg = msg.get(
-				"change_control_point_attachment"
-			) as RecursiveProtobuf
+			const submsg = msg.get("change_control_point_attachment") as RecursiveProtobuf
 			const attachmentOld = (submsg.get("attachment_old") as number) ?? 0,
 				attachmentNew = (submsg.get("attachment_new") as number) ?? 0,
 				entID = submsg.get("entity_handle") as number
 			const ent = EntityManager.EntityByIndex(entID) ?? entID
 			let changedAnything = false
-			for (const data of par.ControlPointsEnt.values())
+			for (const data of par.ControlPointsEnt.values()) {
 				if (data[2] === attachmentOld && data[0] === ent) {
 					data[2] = attachmentNew
 					changedAnything = true
 				}
-			if (!changedAnything) return
+			}
+			if (!changedAnything) {
+				return
+			}
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENTITY_POSITION: {
@@ -861,12 +864,15 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 				entID = submsg.get("entity_handle") as number
 			const ent = EntityManager.EntityByIndex(entID) ?? entID
 			let changedAnything = false
-			for (const [cp, data] of par.ControlPointsEnt)
+			for (const [cp, data] of par.ControlPointsEnt) {
 				if (data[0] === ent) {
 					par.ControlPointsFallback.set(cp, position)
 					changedAnything = true
 				}
-			if (!changedAnything) return
+			}
+			if (!changedAnything) {
+				return
+			}
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_FOW_PROPERTIES: {
@@ -940,11 +946,9 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 				CMsgVectorToVector3(submsg.get("position") as RecursiveProtobuf)
 			)
 
-			if (orientation !== undefined && orientation.size !== 0)
-				par.ControlPointsQuaternion.set(
-					cp,
-					CMsgQuaternionToVector4(orientation)
-				)
+			if (orientation !== undefined && orientation.size !== 0) {
+				par.ControlPointsQuaternion.set(cp, CMsgQuaternionToVector4(orientation))
+			}
 
 			// par.ControlPointsForward.set(
 			// 	cp,
@@ -968,8 +972,9 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			return
 	}
 	EventsSDK.emit("ParticleUpdated", false, par)
-	if (changedEntPos)
+	if (changedEntPos) {
 		EventsSDK.emit("ParticleUnitPositionUpdated", false, changedEnt, par)
+	}
 }
 
 Events.on("ServerMessage", (msgID, buf_) => {
@@ -1001,11 +1006,12 @@ Events.on("ServerMessage", (msgID, buf_) => {
 			const stream = new ViewBinaryStream(new DataView(buf_))
 			const tableName = stream.ReadVarString(),
 				update = new Map<number, [string, ArrayBuffer]>()
-			while (!stream.Empty())
+			while (!stream.Empty()) {
 				update.set(stream.ReadVarUintAsNumber(), [
 					stream.ReadVarString(),
 					stream.ReadSlice(stream.ReadVarUintAsNumber()).buffer
 				])
+			}
 			EventsSDK.emit("UpdateStringTable", false, tableName, update)
 			break
 		}
@@ -1018,10 +1024,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 			)
 			break
 		case 208: {
-			const msg = ParseProtobufNamed(
-				new Uint8Array(buf_),
-				"CMsgSosStartSoundEvent"
-			)
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CMsgSosStartSoundEvent")
 			const hash = msg.get("soundevent_hash") as number
 			const soundName = LookupSoundNameByHash(hash)
 			if (soundName === undefined) {
@@ -1050,25 +1053,16 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				position.z = stream.ReadFloat32()
 			}
 
-			EventsSDK.emit(
-				"StartSound",
-				false,
-				soundName,
-				ent,
-				position,
-				seed,
-				startTime
-			)
+			EventsSDK.emit("StartSound", false, soundName, ent, position, seed, startTime)
 			break
 		}
 		case 488: {
-			const msg = ParseProtobufNamed(
-				new Uint8Array(buf_),
-				"CDOTAUserMsg_UnitEvent"
-			)
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_UnitEvent")
 			const handle = msg.get("entity_index") as number
 			const ent = GetPredictionTarget(handle)
-			if (ent instanceof Entity && !(ent instanceof Unit)) break
+			if (ent instanceof Entity && !(ent instanceof Unit)) {
+				break
+			}
 			switch (msg.get("msg_type") as EDotaEntityMessages) {
 				case EDotaEntityMessages.DOTA_UNIT_SPEECH: {
 					const submsg = msg.get("speech") as RecursiveProtobuf,
@@ -1136,10 +1130,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 			break
 		}
 		case 466: {
-			const msg = ParseProtobufNamed(
-				new Uint8Array(buf_),
-				"CDOTAUserMsg_ChatEvent"
-			)
+			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_ChatEvent")
 			EventsSDK.emit(
 				"ChatEvent",
 				false,
@@ -1162,7 +1153,9 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				"CDOTAUserMsg_TE_DotaBloodImpact"
 			)
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
-			if (ent === undefined) break
+			if (ent === undefined) {
+				break
+			}
 			EventsSDK.emit(
 				"BloodImpact",
 				false,
@@ -1179,7 +1172,9 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				"CDOTAUserMsg_TE_UnitAnimation"
 			)
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
-			if (!(ent instanceof Unit)) break
+			if (!(ent instanceof Unit)) {
+				break
+			}
 			EventsSDK.emit(
 				"UnitAnimation",
 				false,
@@ -1199,7 +1194,9 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				"CDOTAUserMsg_TE_UnitAnimationEnd"
 			)
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
-			if (!(ent instanceof Unit)) break
+			if (!(ent instanceof Unit)) {
+				break
+			}
 			EventsSDK.emit("UnitAnimationEnd", false, ent, msg.get("snap") as boolean)
 			break
 		}
@@ -1234,21 +1231,19 @@ Events.on("MatchmakingStatsUpdated", data => {
 	)
 })
 
-Events.on("GameEvent", (name, obj) =>
-	EventsSDK.emit("GameEvent", false, name, obj)
-)
+Events.on("GameEvent", (name, obj) => EventsSDK.emit("GameEvent", false, name, obj))
 
 let inputCaptureDepth = 0
 Events.on("InputCaptured", isCaptured => {
-	if (isCaptured) inputCaptureDepth++
-	else inputCaptureDepth = Math.max(inputCaptureDepth - 1, 0)
+	if (isCaptured) {
+		inputCaptureDepth++
+	} else {
+		inputCaptureDepth = Math.max(inputCaptureDepth - 1, 0)
+	}
 	EventsSDK.emit("InputCaptured", false, inputCaptureDepth !== 0)
 })
 
-EventsSDK.on(
-	"InputCaptured",
-	isCaptured => (GameState.IsInputCaptured = isCaptured)
-)
+EventsSDK.on("InputCaptured", isCaptured => (GameState.IsInputCaptured = isCaptured))
 EventsSDK.on("ServerTick", tick => {
 	GameState.CurrentServerTick = tick
 	if (GameRules !== undefined) {
@@ -1264,54 +1259,66 @@ EventsSDK.on("ServerTick", tick => {
 					: Math.max(...totalPausedTicks))) /
 			30 // TODO: is there a better way?
 
-		if (prevTime === 0)
+		if (prevTime === 0) {
 			EntityManager.AllEntities.forEach(
 				ent => (ent.FakeCreateTime_ = GameState.RawGameTime)
 			)
-		if (LocalPlayer !== undefined)
-			SetLatestTickDelta(
-				prevTime !== 0 ? GameState.RawGameTime - prevTime : 1 / 30
-			)
+		}
+		if (LocalPlayer !== undefined) {
+			SetLatestTickDelta(prevTime !== 0 ? GameState.RawGameTime - prevTime : 1 / 30)
+		}
 	}
 })
 Events.on("UIStateChanged", newState => (GameState.UIState = newState))
 
 function TryLoadMapFiles(): void {
 	const mapName = GameState.MapName
-	if (mapName !== "<empty>") WASM.ParseVHCG()
-	else WASM.ResetVHCG()
+	if (mapName !== "<empty>") {
+		WASM.ParseVHCG()
+	} else {
+		WASM.ResetVHCG()
+	}
 	{
 		const buf = fopen(`maps/${mapName}.gnv`)
-		if (buf !== undefined)
+		if (buf !== undefined) {
 			try {
 				ParseGNV(new FileBinaryStream(buf))
 			} finally {
 				buf.close()
 			}
-		else ResetGNV()
+		} else {
+			ResetGNV()
+		}
 	}
 	{
 		ResetEntityLump()
 		const worldKV = parseKV(`maps/${mapName}/world.vwrld_c`)
 		const entityLumps = worldKV.get("m_entityLumps")
-		if (entityLumps instanceof Map || Array.isArray(entityLumps))
+		if (entityLumps instanceof Map || Array.isArray(entityLumps)) {
 			entityLumps.forEach((path: RecursiveMapValue) => {
-				if (typeof path !== "string") return
+				if (typeof path !== "string") {
+					return
+				}
 				const buf = fopen(`${path}_c`)
-				if (buf === undefined) return
+				if (buf === undefined) {
+					return
+				}
 				try {
 					ParseEntityLump(new FileBinaryStream(buf))
 				} finally {
 					buf.close()
 				}
 			})
+		}
 		EventsSDK.emit("MapDataLoaded", false)
 	}
 }
 
 EventsSDK.on("ServerInfo", info => {
 	let mapName = (info.get("map_name") as string) ?? "<empty>"
-	if (mapName === "start") mapName = "dota"
+	if (mapName === "start") {
+		mapName = "dota"
+	}
 	GameState.MapName = mapName
 	const addonName = (info.get("addon_name") as string) ?? ""
 	GameState.AddonName = addonName
@@ -1340,14 +1347,18 @@ EventsSDK.on("ServerInfo", info => {
 			const langToken =
 				langTokens.get(`DOTA_Tooltip_ability_${name}`) ??
 				langTokens.get(`DOTA_Tooltip_Ability_${name}`)
-			if (langToken !== undefined) namesMapping.set(name, langToken)
+			if (langToken !== undefined) {
+				namesMapping.set(name, langToken)
+			}
 		}
-		for (const [k, v] of langTokens)
+		for (const [k, v] of langTokens) {
 			if (
 				k.startsWith("dota_matchgroup_") ||
 				k.startsWith("DOTA_TopBar_LaneSelection")
-			)
+			) {
 				namesMapping.set(k, v)
+			}
+		}
 		Localization.AddLocalizationUnit(language, namesMapping)
 	}
 	EventsSDK.emit("UnitAbilityDataUpdated", false)
@@ -1355,7 +1366,9 @@ EventsSDK.on("ServerInfo", info => {
 
 function GetLocalTeam(): Team {
 	const player = LocalPlayer
-	if (player === undefined) return Team.Observer
+	if (player === undefined) {
+		return Team.Observer
+	}
 
 	let team = player.Team
 	if (team === Team.Observer) {
@@ -1366,8 +1379,12 @@ function GetLocalTeam(): Team {
 				const coachTeam = data.CoachTeam
 				if (coachTeam === Team.Invalid || coachTeam === Team.None) {
 					team = data.LiveSpectatorTeam
-					if (team === Team.Invalid || team === Team.None) team = Team.Observer
-				} else team = coachTeam
+					if (team === Team.Invalid || team === Team.None) {
+						team = Team.Observer
+					}
+				} else {
+					team = coachTeam
+				}
 			}
 		}
 	}
@@ -1376,7 +1393,9 @@ function GetLocalTeam(): Team {
 
 EventsSDK.on("MidDataUpdate", () => {
 	const team = GetLocalTeam()
-	if (GameState.LocalTeam === team) return
+	if (GameState.LocalTeam === team) {
+		return
+	}
 	GameState.LocalTeam = team
 	EventsSDK.emit("LocalTeamChanged", false)
 })

@@ -58,30 +58,25 @@ export class TeamData extends Entity {
 }
 
 RegisterFieldHandler(TeamData, "m_vecNeutralItemsEarned", (data, newVal) => {
-	data.NeutralItemsEarned = (newVal as bigint[]).map(bigintId =>
-		Number(bigintId >> 1n)
-	)
+	data.NeutralItemsEarned = (newVal as bigint[]).map(bigintId => Number(bigintId >> 1n))
 })
 
 RegisterFieldHandler(TeamData, "m_vecDataTeam", (data, newVal) => {
-	data.DataTeam = (newVal as EntityPropertiesNode[]).map(
-		map => new DataTeamPlayer(map)
-	)
+	data.DataTeam = (newVal as EntityPropertiesNode[]).map(map => new DataTeamPlayer(map))
 })
 
-RegisterFieldHandler(
-	TeamData,
-	"m_vecWorldTreeModelReplacements",
-	(data, newVal) => {
-		data.WorldTreeModelReplacements = (newVal as EntityPropertiesNode[]).map(
-			map => new TreeModelReplacement(map)
-		)
-	}
-)
+RegisterFieldHandler(TeamData, "m_vecWorldTreeModelReplacements", (data, newVal) => {
+	data.WorldTreeModelReplacements = (newVal as EntityPropertiesNode[]).map(
+		map => new TreeModelReplacement(map)
+	)
+})
 RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, newValue) => {
 	Tree.TreeActiveMask = newValue as bigint[]
-	if (GridNav !== undefined)
-		for (const tree of Trees) GridNav.UpdateTreeState(tree)
+	if (GridNav !== undefined) {
+		for (const tree of Trees) {
+			GridNav.UpdateTreeState(tree)
+		}
+	}
 })
 
 Events.on("NewConnection", () => (Tree.TreeActiveMask = []))

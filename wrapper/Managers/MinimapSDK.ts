@@ -21,11 +21,7 @@ class MinimapIcon {
 		public readonly size: Vector2
 	) {}
 
-	public Draw(
-		pos: Vector2,
-		size = new Vector2(-1, -1),
-		color = Color.White
-	): void {
+	public Draw(pos: Vector2, size = new Vector2(-1, -1), color = Color.White): void {
 		RendererSDK.Image(
 			this.path,
 			pos,
@@ -76,15 +72,19 @@ class MinimapIconRenderer {
 		const minimapIconSize = this.icon.size.MultiplyScalar(
 			MinimapIconRenderer.GetSizeMultiplier(size)
 		)
-		if (this.isHeroIcon) minimapIconSize.MultiplyScalarForThis(heroIconScale)
+		if (this.isHeroIcon) {
+			minimapIconSize.MultiplyScalarForThis(heroIconScale)
+		}
 		const screenSize = RendererSDK.WindowSize
 		minimapIconSize.x = GUIInfo.ScaleWidth(minimapIconSize.x, screenSize)
 		minimapIconSize.y = GUIInfo.ScaleHeight(minimapIconSize.y, screenSize)
-		const minimapIconPos = MinimapSDK.WorldToMinimap(
-			this.worldPos
-		).SubtractForThis(minimapIconSize.DivideScalar(2).RoundForThis())
+		const minimapIconPos = MinimapSDK.WorldToMinimap(this.worldPos).SubtractForThis(
+			minimapIconSize.DivideScalar(2).RoundForThis()
+		)
 		const color = additionalAlpha !== 1 ? this.color.Clone() : this.color
-		if (additionalAlpha !== 1) color.a *= additionalAlpha
+		if (additionalAlpha !== 1) {
+			color.a *= additionalAlpha
+		}
 		this.icon.Draw(minimapIconPos, minimapIconSize, color)
 	}
 }
@@ -98,9 +98,9 @@ class MinimapOverview {
 	) {}
 }
 function ParseMinimapOverview(): void {
-	const kv = [
-		...parseKV(`resource/overviews/${GameState.MapName}.txt`).values()
-	].find(val => val instanceof Map) as Nullable<RecursiveMap>
+	const kv = [...parseKV(`resource/overviews/${GameState.MapName}.txt`).values()].find(
+		val => val instanceof Map
+	) as Nullable<RecursiveMap>
 	if (kv === undefined) {
 		MinimapSDK.CurrentMinimapOverview = undefined
 		return
@@ -126,17 +126,20 @@ function LoadMinimapBoundsData() {
 			data.get("classname") === "dota_minimap_boundary" &&
 			typeof data.get("origin") === "string"
 	).map(data => Vector3.FromString(data.get("origin") as string))
-	if (minimapBoundsData.length < 2) return
+	if (minimapBoundsData.length < 2) {
+		return
+	}
 	MinimapSDK.MinimapBounds.Left = minimapBoundsData[0].x
 	MinimapSDK.MinimapBounds.Top = minimapBoundsData[0].y
 	MinimapSDK.MinimapBounds.Right = minimapBoundsData[1].x
 	MinimapSDK.MinimapBounds.Bottom = minimapBoundsData[1].y
 	ParseMinimapOverview()
 	const overview = MinimapSDK.CurrentMinimapOverview
-	if (overview !== undefined)
-		MinimapSDK.MinimapBounds.Subtract(
-			Vector2.FromVector3(minimapBoundsData[0])
-		).Add(overview.pos)
+	if (overview !== undefined) {
+		MinimapSDK.MinimapBounds.Subtract(Vector2.FromVector3(minimapBoundsData[0])).Add(
+			overview.pos
+		)
+	}
 }
 EventsSDK.on("MapDataLoaded", LoadMinimapBoundsData)
 
@@ -146,9 +149,13 @@ function LoadIcons(): void {
 	const textureData = (
 		parseKV("scripts/mod_textures.txt").get("sprites/640_hud") as RecursiveMap
 	)?.get("TextureData") as RecursiveMap
-	if (textureData === undefined) return
+	if (textureData === undefined) {
+		return
+	}
 	textureData.forEach((v, k) => {
-		if (!(v instanceof Map) || !k.startsWith("minimap_")) return
+		if (!(v instanceof Map) || !k.startsWith("minimap_")) {
+			return
+		}
 		try {
 			minimapIconStorage.set(
 				k.slice(8),
@@ -175,8 +182,9 @@ EventsSDK.on("Draw", () => {
 	if (
 		!GameRules?.IsInGame ||
 		GameState.UIState !== DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME
-	)
+	) {
 		return
+	}
 	heroIconScale = MinimapIconRenderer.GetSizeMultiplier(
 		ConVarsSDK.GetFloat("dota_minimap_hero_size", 600)
 	)
@@ -186,7 +194,9 @@ EventsSDK.on("Draw", () => {
 	).forEach(icon => icon.Draw())
 	const iconsKeysToBeRemoved: any[] = []
 	minimapIconsActive.forEach((icon, key) => {
-		if (icon.endTime < GameState.RawGameTime) iconsKeysToBeRemoved.push(key)
+		if (icon.endTime < GameState.RawGameTime) {
+			iconsKeysToBeRemoved.push(key)
+		}
 	})
 	iconsKeysToBeRemoved.forEach(key => minimapIconsActive.delete(key))
 })
@@ -224,7 +234,7 @@ export const MinimapSDK = new (class CMinimapSDK {
 			activeIcon.endTime = endTime
 			activeIcon.minSizeAnimated = minSizeAnimated
 			activeIcon.animationCycle = animationCycle
-		} else
+		} else {
 			minimapIconsActive.set(
 				uid,
 				new MinimapIconRenderer(
@@ -245,6 +255,7 @@ export const MinimapSDK = new (class CMinimapSDK {
 					name.startsWith("heroicon_")
 				)
 			)
+		}
 	}
 	public DeleteIcon(uid: any): void {
 		minimapIconsActive.delete(uid)

@@ -12,14 +12,18 @@ class EconReplacements {
 			origAr = []
 			this.orig2repl.set(orig, origAr)
 		}
-		if (!origAr.includes(repl)) origAr.push(repl)
+		if (!origAr.includes(repl)) {
+			origAr.push(repl)
+		}
 
 		let replAr = this.repl2orig.get(repl)
 		if (replAr === undefined) {
 			replAr = []
 			this.repl2orig.set(repl, replAr)
 		}
-		if (!replAr.includes(orig)) replAr.push(orig)
+		if (!replAr.includes(orig)) {
+			replAr.push(orig)
+		}
 
 		this.repl2id.set(repl, id)
 	}
@@ -42,11 +46,17 @@ function LoadEconData() {
 	ItemNames.clear()
 	ItemHealthBarOffsets.clear()
 	const itemsGame = parseKV("scripts/items/items_game.txt").get("items_game")
-	if (!(itemsGame instanceof Map)) return
+	if (!(itemsGame instanceof Map)) {
+		return
+	}
 	const items = itemsGame.get("items")
-	if (!(items instanceof Map)) return
+	if (!(items instanceof Map)) {
+		return
+	}
 	for (const [idStr, item] of items) {
-		if (!(item instanceof Map)) continue
+		if (!(item instanceof Map)) {
+			continue
+		}
 		let id = 0n
 		try {
 			id = BigInt(idStr)
@@ -54,33 +64,42 @@ function LoadEconData() {
 			continue
 		}
 		const itemName = item.get("name")
-		if (typeof itemName === "string") ItemNames.set(id, itemName)
+		if (typeof itemName === "string") {
+			ItemNames.set(id, itemName)
+		}
 		const visuals = item.get("visuals")
-		if (!(visuals instanceof Map)) continue
+		if (!(visuals instanceof Map)) {
+			continue
+		}
 		for (const [name, visual] of visuals) {
-			if (!(visual instanceof Map) || !name.startsWith("asset_modifier"))
+			if (!(visual instanceof Map) || !name.startsWith("asset_modifier")) {
 				continue
+			}
 			const type = visual.get("type")
 			switch (type) {
 				case "healthbar_offset":
 					const offset = visual.get("offset")
-					if (typeof offset === "string")
+					if (typeof offset === "string") {
 						try {
 							ItemHealthBarOffsets.set(id, parseFloat(offset))
 						} catch {
 							continue
 						}
+					}
 					continue
 				default:
 					break
 			}
 			const orig = visual.get("asset"),
 				repl = visual.get("modifier")
-			if (typeof orig !== "string" || typeof repl !== "string") continue
+			if (typeof orig !== "string" || typeof repl !== "string") {
+				continue
+			}
 			switch (type) {
 				case "particle":
-					if (repl !== "particles/error/null.vpcf")
+					if (repl !== "particles/error/null.vpcf") {
 						Particles.AddPair(orig, id, repl)
+					}
 					break
 				case "icon_replacement_hero":
 					IconReplacements.AddPair(orig, id, repl)
@@ -98,12 +117,11 @@ LoadEconData()
 
 export const PresentEconItems = new Map<number, RecursiveMap>()
 EventsSDK.on("UpdateStringTable", (name, update) => {
-	if (name !== "EconItems") return
+	if (name !== "EconItems") {
+		return
+	}
 	for (const [index, [, itemSerialized]] of update) {
-		const item = ParseProtobufNamed(
-			new Uint8Array(itemSerialized),
-			"CSOEconItem"
-		)
+		const item = ParseProtobufNamed(new Uint8Array(itemSerialized), "CSOEconItem")
 		PresentEconItems.set(index, item)
 	}
 })

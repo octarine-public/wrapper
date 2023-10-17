@@ -7,15 +7,23 @@ import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Creep")
 export class Creep extends Unit {
-	public PredictedIsWaitingToSpawn = true
 	public Lane = MapArea.Unknown
+	public PredictedIsWaitingToSpawn = true
+	public readonly IsLaneCreep: boolean
 
-	public get IsLaneCreep(): boolean {
-		return (
+	/** @ignore */
+	constructor(
+		public readonly Index: number,
+		serial: number
+	) {
+		super(Index, serial)
+
+		this.IsCreep = true
+		this.IsLaneCreep =
 			this.ClassName === "CDOTA_BaseNPC_Creep_Lane" ||
 			this.ClassName === "CDOTA_BaseNPC_Creep_Siege"
-		)
 	}
+
 	public get IsDeniable(): boolean {
 		return this.HPPercent <= 50 || super.IsDeniable
 	}
@@ -23,12 +31,9 @@ export class Creep extends Unit {
 		return 60
 	}
 	public TryAssignLane(): void {
-		if (
-			this.IsNeutral ||
-			this.Owner !== undefined ||
-			this.Lane !== MapArea.Unknown
-		)
+		if (this.IsNeutral || this.Owner !== undefined || this.Lane !== MapArea.Unknown) {
 			return
+		}
 		const area = GetMapArea(this.Position, true)
 		switch (area[0]) {
 			case MapArea.Top:
@@ -41,8 +46,10 @@ export class Creep extends Unit {
 		}
 	}
 }
-export const Creeps = EntityManager.GetEntitiesByClass(Creep)
 
+export const Creeps = EntityManager.GetEntitiesByClass(Creep)
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent instanceof Creep) ent.TryAssignLane()
+	if (ent instanceof Creep) {
+		ent.TryAssignLane()
+	}
 })

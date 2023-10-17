@@ -7,10 +7,7 @@ import { Entity } from "../Objects/Base/Entity"
 import { FakeUnit } from "../Objects/Base/FakeUnit"
 import { Modifier } from "../Objects/Base/Modifier"
 import { CPlayerResource } from "../Objects/Base/PlayerResource"
-import {
-	LinearProjectile,
-	TrackingProjectile
-} from "../Objects/Base/Projectile"
+import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import { Unit } from "../Objects/Base/Unit"
 import { RecursiveProtobuf } from "../Utils/Protobuf"
 import { EventEmitter } from "./Events"
@@ -57,39 +54,23 @@ interface EventsSDK extends EventEmitter {
 	 * Emitted every time GameRules.RawGameTime changes, a.k.a. tick,
 	 * right after PostUpdate
 	 */
-	on(
-		name: "Tick",
-		callback: (dt: number) => void,
-		priority?: number
-	): EventEmitter
+	on(name: "Tick", callback: (dt: number) => void, priority?: number): EventEmitter
 	/**
 	 * Emitted before every server entity update.
 	 * Gets called when game is paused, and might be called faster than actual server ticks.
 	 */
-	on(
-		name: "PreDataUpdate",
-		callback: () => void,
-		priority?: number
-	): EventEmitter
+	on(name: "PreDataUpdate", callback: () => void, priority?: number): EventEmitter
 	/**
 	 * Emitted before all EntityCreateds, but after all PreEntityCreateds were emitted
 	 * and entity properties were changed
 	 * Gets called when game is paused, and might be called faster than actual server ticks.
 	 */
-	on(
-		name: "MidDataUpdate",
-		callback: () => void,
-		priority?: number
-	): EventEmitter
+	on(name: "MidDataUpdate", callback: () => void, priority?: number): EventEmitter
 	/**
 	 * Emitted after every server entity update.
 	 * Gets called when game is paused, and might be called faster than actual server ticks.
 	 */
-	on(
-		name: "PostDataUpdate",
-		callback: () => void,
-		priority?: number
-	): EventEmitter
+	on(name: "PostDataUpdate", callback: () => void, priority?: number): EventEmitter
 	on(
 		name: "ControllableByPlayerMaskChanged",
 		callback: (npc: Unit) => void,
@@ -124,10 +105,7 @@ interface EventsSDK extends EventEmitter {
 	): EventEmitter
 	on(
 		name: "ParticleUnitPositionUpdated",
-		callback: (
-			unit: FakeUnit | Unit,
-			particle: Nullable<NetworkedParticle>
-		) => void,
+		callback: (unit: FakeUnit | Unit, particle: Nullable<NetworkedParticle>) => void,
 		priority?: number
 	): EventEmitter
 	on(
@@ -340,10 +318,7 @@ interface EventsSDK extends EventEmitter {
 	): EventEmitter
 	on(
 		name: "UpdateStringTable",
-		listener: (
-			name: string,
-			update: Map<number, [string, ArrayBuffer]>
-		) => void,
+		listener: (name: string, update: Map<number, [string, ArrayBuffer]>) => void,
 		priority?: number
 	): EventEmitter
 	on(
@@ -373,16 +348,8 @@ interface EventsSDK extends EventEmitter {
 		) => void,
 		priority?: number
 	): EventEmitter
-	on(
-		name: "MapDataLoaded",
-		listener: () => void,
-		priority?: number
-	): EventEmitter
-	on(
-		name: "WindowSizeChanged",
-		listener: () => void,
-		priority?: number
-	): EventEmitter
+	on(name: "MapDataLoaded", listener: () => void, priority?: number): EventEmitter
+	on(name: "WindowSizeChanged", listener: () => void, priority?: number): EventEmitter
 	on(
 		name: "MatchmakingStatsUpdated",
 		listener: (msg: RecursiveMap) => void,
@@ -393,11 +360,7 @@ interface EventsSDK extends EventEmitter {
 		listener: (typeID: SOType, reason: number, msg: RecursiveMap) => void,
 		priority?: number
 	): EventEmitter
-	on(
-		name: "LocalTeamChanged",
-		listener: () => void,
-		priority?: number
-	): EventEmitter
+	on(name: "LocalTeamChanged", listener: () => void, priority?: number): EventEmitter
 	on(
 		name: "UnitAbilityDataUpdated",
 		listener: () => void,
@@ -411,6 +374,23 @@ interface EventsSDK extends EventEmitter {
 	on(
 		name: "PlayerResourceUpdated",
 		listener: (playerResource: CPlayerResource) => void,
+		priority?: number
+	): EventEmitter
+	// TODO: add logic in Managers -> Monitors
+	on(
+		name: "AttackStarted",
+		callback: (unit: Unit, castpoint: number, names: string[]) => void,
+		priority?: number
+	): EventEmitter
+	// TODO: add logic in Managers -> Monitors
+	on(
+		name: "AttackEnded",
+		listener: (unit: Unit) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "UnitVisibilityChanged",
+		listener: (unit: Unit) => void,
 		priority?: number
 	): EventEmitter
 }

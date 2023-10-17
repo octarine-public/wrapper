@@ -80,8 +80,12 @@ export class Node extends Base {
 		return this.parent.IsOpen && this.IsVisible && this.IsOpen_
 	}
 	public set IsOpen(val: boolean) {
-		if (this.IsOpen_ === val) return
-		if (!val) this.OnMouseLeftUp(true)
+		if (this.IsOpen_ === val) {
+			return
+		}
+		if (!val) {
+			this.OnMouseLeftUp(true)
+		}
 		this.IsOpen_ = val
 		this.isActive = val
 	}
@@ -102,20 +106,30 @@ export class Node extends Base {
 	}
 
 	public get ConfigValue() {
-		if (!this.SaveUnusedConfigs && this.entries.length === 0) return undefined
-		if (!this.SaveUnusedConfigs) this.configStorage = Object.create(null)
+		if (!this.SaveUnusedConfigs && this.entries.length === 0) {
+			return undefined
+		}
+		if (!this.SaveUnusedConfigs) {
+			this.configStorage = Object.create(null)
+		}
 		this.entries.forEach(entry => {
-			if (entry.SaveConfig)
+			if (entry.SaveConfig) {
 				this.configStorage[entry.InternalName] = entry.ConfigValue
+			}
 		})
 		return this.configStorage
 	}
 	public set ConfigValue(obj) {
-		if (obj === undefined || typeof obj !== "object" || Array.isArray(obj))
+		if (obj === undefined || typeof obj !== "object" || Array.isArray(obj)) {
 			return
-		if (this.SaveUnusedConfigs) this.configStorage = obj
+		}
+		if (this.SaveUnusedConfigs) {
+			this.configStorage = obj
+		}
 		this.entries.forEach(entry => {
-			if (entry.SaveConfig) entry.ConfigValue = obj[entry.InternalName]
+			if (entry.SaveConfig) {
+				entry.ConfigValue = obj[entry.InternalName]
+			}
 		})
 	}
 	public get ClassPriority(): number {
@@ -123,13 +137,20 @@ export class Node extends Base {
 	}
 	public get ScrollVisible() {
 		let remaining = -this.VisibleEntries
-		for (const entry of this.entries) if (entry.IsVisible) remaining++
+		for (const entry of this.entries) {
+			if (entry.IsVisible) {
+				remaining++
+			}
+		}
 		return remaining > 0
 	}
 	private get EntriesSizeX_(): number {
 		let width = 0
-		for (const entry of this.entries)
-			if (entry.IsVisible) width = Math.max(width, entry.Size.x)
+		for (const entry of this.entries) {
+			if (entry.IsVisible) {
+				width = Math.max(width, entry.Size.x)
+			}
+		}
 		return width
 	}
 	private get EntriesSizeY_(): number {
@@ -138,9 +159,13 @@ export class Node extends Base {
 			cnt = 0,
 			skip = this.ScrollPosition
 		for (const entry of this.entries) {
-			if (!entry.IsVisible || skip-- > 0) continue
+			if (!entry.IsVisible || skip-- > 0) {
+				continue
+			}
 			height += entry.Size.y
-			if (++cnt >= visibleEntries) break
+			if (++cnt >= visibleEntries) {
+				break
+			}
 		}
 		return height
 	}
@@ -155,19 +180,27 @@ export class Node extends Base {
 	}
 	public OnConfigLoaded() {
 		this.entries.forEach(entry => {
-			if (entry.SaveConfig) entry.OnConfigLoaded()
+			if (entry.SaveConfig) {
+				entry.OnConfigLoaded()
+			}
 		})
 	}
 	public Update(recursive = false): boolean {
-		if (!super.Update(recursive)) return false
+		if (!super.Update(recursive)) {
+			return false
+		}
 		this.Size.x =
-			this.nameSize.x +
-			Node.arrowSize.x +
-			Node.arrowOffset.x +
-			Node.arrowTextGap
-		if (this.IconPath !== "") this.Size.AddScalarX(Node.textOffsetWithIcon.x)
-		else this.Size.AddScalarX(this.textOffset.x)
-		if (recursive) for (const entry of this.entries) entry.Update(true)
+			this.nameSize.x + Node.arrowSize.x + Node.arrowOffset.x + Node.arrowTextGap
+		if (this.IconPath !== "") {
+			this.Size.AddScalarX(Node.textOffsetWithIcon.x)
+		} else {
+			this.Size.AddScalarX(this.textOffset.x)
+		}
+		if (recursive) {
+			for (const entry of this.entries) {
+				entry.Update(true)
+			}
+		}
 		this.SortEntries()
 		this.UpdateScrollbar()
 		this.EntriesSizeX = this.EntriesSizeX_
@@ -191,14 +224,14 @@ export class Node extends Base {
 		}
 		if (this.IsOpen) {
 			this.UpdateScrollbar()
-			const position = this.Position.Clone().AddScalarX(
-				this.parent.EntriesSizeX
-			)
+			const position = this.Position.Clone().AddScalarX(this.parent.EntriesSizeX)
 			position.y = Math.min(position.y, this.WindowSize.y - this.EntriesSizeY)
 			let skip = this.ScrollPosition,
 				visibleEntries = this.VisibleEntries
 			for (const entry of this.entries) {
-				if (!entry.IsVisible || skip-- > 0) continue
+				if (!entry.IsVisible || skip-- > 0) {
+					continue
+				}
 				position.CopyTo(entry.Position)
 				if (entry.QueuedUpdate) {
 					entry.QueuedUpdate = false
@@ -207,9 +240,13 @@ export class Node extends Base {
 				updatedEntries = updatedEntries || entry.NeedsRootUpdate
 				entry.Render()
 				position.AddScalarY(entry.Size.y)
-				if (--visibleEntries <= 0) break
+				if (--visibleEntries <= 0) {
+					break
+				}
 			}
-			if (updatedEntries) this.Update()
+			if (updatedEntries) {
+				this.Update()
+			}
 		}
 
 		super.Render(this.parent instanceof Node) // only draw bars on non-root nodes
@@ -223,7 +260,9 @@ export class Node extends Base {
 				this.IconRound,
 				Node.iconSize
 			)
-		} else textPos.AddForThis(this.textOffset)
+		} else {
+			textPos.AddForThis(this.textOffset)
+		}
 
 		this.RenderTextDefault(this.Name, textPos)
 		const arrowPos = this.Position.Clone()
@@ -231,13 +270,21 @@ export class Node extends Base {
 			.AddScalarY(this.Size.y)
 			.SubtractForThis(Node.arrowOffset)
 			.SubtractForThis(Node.arrowSize)
-		if (this.IsOpen)
+		if (this.IsOpen) {
 			RendererSDK.Image(Node.arrowActivePath, arrowPos, -1, Node.arrowSize)
-		else RendererSDK.Image(Node.arrowInactivePath, arrowPos, -1, Node.arrowSize)
+		} else {
+			RendererSDK.Image(Node.arrowInactivePath, arrowPos, -1, Node.arrowSize)
+		}
 	}
 	public PostRender(): void {
-		if (!this.IsOpen) return
-		for (const entry of this.entries) if (entry.IsVisible) entry.PostRender()
+		if (!this.IsOpen) {
+			return
+		}
+		for (const entry of this.entries) {
+			if (entry.IsVisible) {
+				entry.PostRender()
+			}
+		}
 		if (this.ScrollVisible) {
 			const rect = this.GetScrollbarRect(
 				this.GetScrollbarPositionsRect(this.EntriesRect)
@@ -247,43 +294,58 @@ export class Node extends Base {
 	}
 
 	public OnParentNotVisible(ignoreOpen = false): void {
-		if (ignoreOpen || this.IsOpen)
+		if (ignoreOpen || this.IsOpen) {
 			this.entries.forEach(entry => entry.OnParentNotVisible())
+		}
 	}
 
 	public OnMouseLeftDown(): boolean {
-		if (this.activeElement !== undefined || this.IsHovered) return false
-		if (!this.IsOpen) return true
-		for (const entry of this.entries)
+		if (this.activeElement !== undefined || this.IsHovered) {
+			return false
+		}
+		if (!this.IsOpen) {
+			return true
+		}
+		for (const entry of this.entries) {
 			if (entry.IsVisible && !entry.OnPreMouseLeftDown()) {
 				this.activeElement = entry
 				return false
 			}
-		for (const entry of this.entries)
+		}
+		for (const entry of this.entries) {
 			if (entry.IsVisible && !entry.OnMouseLeftDown()) {
 				this.activeElement = entry
 				return false
 			}
+		}
 		return true
 	}
 	public OnMouseLeftUp(ignoreMyself = false): boolean {
 		if (!ignoreMyself && this.IsHovered) {
 			this.IsOpen = !this.IsOpen
-			if (this.IsOpen)
+			if (this.IsOpen) {
 				this.parent.entries.forEach(entry => {
-					if (entry instanceof Node && entry !== this) entry.IsOpen = false
+					if (entry instanceof Node && entry !== this) {
+						entry.IsOpen = false
+					}
 				})
-			else this.OnParentNotVisible(true)
+			} else {
+				this.OnParentNotVisible(true)
+			}
 			return false
 		}
-		if (this.activeElement === undefined) return true
+		if (this.activeElement === undefined) {
+			return true
+		}
 		const ret = this.activeElement.OnMouseLeftUp()
 		this.activeElement = undefined
 		Base.SaveConfigASAP = true
 		return ret
 	}
 	public OnMouseWheel(up: boolean): boolean {
-		if (!this.IsOpen) return false
+		if (!this.IsOpen) {
+			return false
+		}
 		if (this.ScrollVisible) {
 			const rect = this.EntriesRect
 			if (rect.Contains(this.MousePosition)) {
@@ -341,14 +403,13 @@ export class Node extends Base {
 			entry => entry instanceof Node && entry.InternalName === name
 		) as Node
 		if (node !== undefined) {
-			if (node.IconPath === "") node.IconPath = iconPath
+			if (node.IconPath === "") {
+				node.IconPath = iconPath
+			}
 			// TODO: should we do the same for tooltips?
 			return node
 		}
-		return this.AddEntry(
-			new Node(this, name, iconPath, tooltip, iconRound),
-			priority
-		)
+		return this.AddEntry(new Node(this, name, iconPath, tooltip, iconRound), priority)
 	}
 	public AddDropdown(
 		name: string,
@@ -425,28 +486,24 @@ export class Node extends Base {
 	) {
 		const node = this.AddNode(name)
 
-		if (typeof minVector === "number")
+		if (typeof minVector === "number") {
 			minVector = new Vector2(minVector, minVector)
+		}
 
-		if (!(minVector instanceof Vector2)) minVector = new Vector2(0, 0)
+		if (!(minVector instanceof Vector2)) {
+			minVector = new Vector2(0, 0)
+		}
 
-		if (typeof maxVector === "number")
+		if (typeof maxVector === "number") {
 			maxVector = new Vector2(maxVector, maxVector)
+		}
 
-		if (!(maxVector instanceof Vector2)) maxVector = new Vector2(95, 95)
+		if (!(maxVector instanceof Vector2)) {
+			maxVector = new Vector2(95, 95)
+		}
 
-		const xSlider = node.AddSlider(
-			"Position: X",
-			vector.x,
-			minVector.x,
-			maxVector.x
-		)
-		const ySlider = node.AddSlider(
-			"Position: Y",
-			vector.y,
-			minVector.y,
-			maxVector.y
-		)
+		const xSlider = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
+		const ySlider = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
 
 		return {
 			node,
@@ -469,34 +526,25 @@ export class Node extends Base {
 	) {
 		const node = this.AddNode(name)
 
-		if (typeof minVector === "number")
+		if (typeof minVector === "number") {
 			minVector = new Vector3(minVector, minVector, minVector)
+		}
 
-		if (!(minVector instanceof Vector3)) minVector = new Vector3(0, 0)
+		if (!(minVector instanceof Vector3)) {
+			minVector = new Vector3(0, 0)
+		}
 
-		if (typeof maxVector === "number")
+		if (typeof maxVector === "number") {
 			maxVector = new Vector3(maxVector, maxVector, maxVector)
+		}
 
-		if (!(maxVector instanceof Vector3)) maxVector = new Vector3(95, 95)
+		if (!(maxVector instanceof Vector3)) {
+			maxVector = new Vector3(95, 95)
+		}
 
-		const xSlider = node.AddSlider(
-			"Position: X",
-			vector.x,
-			minVector.x,
-			maxVector.x
-		)
-		const ySlider = node.AddSlider(
-			"Position: Y",
-			vector.y,
-			minVector.y,
-			maxVector.y
-		)
-		const zSlider = node.AddSlider(
-			"Position: Z",
-			vector.z,
-			minVector.z,
-			maxVector.z
-		)
+		const xSlider = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
+		const ySlider = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
+		const zSlider = node.AddSlider("Position: Z", vector.z, minVector.z, maxVector.z)
 
 		return {
 			node,
@@ -519,10 +567,7 @@ export class Node extends Base {
 		tooltip = "",
 		priority = 0
 	): ColorPicker {
-		return this.AddEntry(
-			new ColorPicker(this, name, defaultColor, tooltip),
-			priority
-		)
+		return this.AddEntry(new ColorPicker(this, name, defaultColor, tooltip), priority)
 	}
 
 	public AddParticlePicker(
@@ -534,10 +579,13 @@ export class Node extends Base {
 		const node = this.AddNode(name)
 
 		let state: Nullable<Toggle>
-		if (addStateToTree !== undefined && addStateToTree[0])
+		if (addStateToTree !== undefined && addStateToTree[0]) {
 			state = node.AddToggle("State", addStateToTree[1])
+		}
 
-		if (typeof color === "number") color = new Color(color, color, color)
+		if (typeof color === "number") {
+			color = new Color(color, color, color)
+		}
 
 		return {
 			Node: node,
@@ -582,11 +630,15 @@ export class Node extends Base {
 			skip = this.ScrollPosition
 		for (let i = 0; i < this.entries.length; i++) {
 			const entry = this.entries[i]
-			if (!entry.IsVisible || skip-- > 0) continue
+			if (!entry.IsVisible || skip-- > 0) {
+				continue
+			}
 			height += entry.Size.y
 			this.VisibleEntries++
 			if (height >= maxHeight) {
-				if (i < this.entries.length - 1) this.IsAtScrollEnd = false
+				if (i < this.entries.length - 1) {
+					this.IsAtScrollEnd = false
+				}
 				break
 			}
 		}
@@ -619,14 +671,20 @@ export class Node extends Base {
 	}
 
 	private SortEntries(): void {
-		if (!this.SortNodes) return
+		if (!this.SortNodes) {
+			return
+		}
 		this.entries = this.entries
 			.sort((a, b) => a.Name.localeCompare(b.Name))
 			.sort((a, b) => a.ClassPriority - b.ClassPriority)
 			.sort((a, b) => a.Priority - b.Priority)
 			.sort((a, b) => {
-				if (a.InternalName === "State") return -1
-				if (b.InternalName === "State") return 1
+				if (a.InternalName === "State") {
+					return -1
+				}
+				if (b.InternalName === "State") {
+					return 1
+				}
 				return 0
 			})
 	}

@@ -72,8 +72,9 @@ function CanBeIgnored(order: ExecuteOrder): boolean {
 				issuer === undefined ||
 				!(abil instanceof Ability) ||
 				abil.IsCastRangeFake
-			)
+			) {
 				return false
+			}
 			const target = order.Target
 			if (target instanceof Entity) {
 				const targetPos = target.Position
@@ -88,8 +89,9 @@ function CanBeIgnored(order: ExecuteOrder): boolean {
 				issuer === undefined ||
 				!(abil instanceof Ability) ||
 				abil.IsCastRangeFake
-			)
+			) {
 				return false
+			}
 			return issuer.Distance2D(order.Position) > abil.CastRange
 		}
 		default:
@@ -99,12 +101,7 @@ function CanBeIgnored(order: ExecuteOrder): boolean {
 
 const sameMovePositionThreshold = 30
 export class ExecuteOrder {
-	public static readonly orderQueue: [
-		ExecuteOrder,
-		number,
-		boolean,
-		boolean
-	][] = []
+	public static readonly orderQueue: [ExecuteOrder, number, boolean, boolean][] = []
 	public static lastMove: Nullable<[Vector3, number]>
 	public static DebugOrders = false
 	public static DebugDraw = false
@@ -147,7 +144,9 @@ export class ExecuteOrder {
 		return this.DisableHumanizer_ || this.unsafeMode
 	}
 	public static set DisableHumanizer(newVal: boolean) {
-		if (this.DisableHumanizer_ === newVal) return
+		if (this.DisableHumanizer_ === newVal) {
+			return
+		}
 		this.DisableHumanizer_ = newVal
 		ToggleRequestUserCmd(!this.DisableHumanizer_)
 		EventsSDK.emit("HumanizerStateChanged", false)
@@ -202,11 +201,7 @@ export class ExecuteOrder {
 			showEffects
 		})
 	}
-	public static Scan(
-		position: Vector3,
-		queue?: boolean,
-		showEffects?: boolean
-	): void {
+	public static Scan(position: Vector3, queue?: boolean, showEffects?: boolean): void {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR,
 			position,
@@ -293,7 +288,9 @@ export class ExecuteOrder {
 				}
 				break
 			default:
-				if (ExecuteOrder.DisableHumanizer) return
+				if (ExecuteOrder.DisableHumanizer) {
+					return
+				}
 				break
 		}
 
@@ -323,12 +320,13 @@ export class ExecuteOrder {
 				ExecuteOrder.lastMove !== undefined &&
 				ExecuteOrder.lastMove[0].Equals(this.Position) &&
 				currentTime - ExecuteOrder.lastMove[1] < sameMovePositionThreshold
-			)
+			) {
 				return
+			}
 			ExecuteOrder.lastMove = [this.Position, currentTime]
 		}
 
-		if (!this.Queue && WillInterruptOrderQueue(this))
+		if (!this.Queue && WillInterruptOrderQueue(this)) {
 			while (
 				arrayRemoveCallback(
 					ExecuteOrder.orderQueue,
@@ -340,8 +338,10 @@ export class ExecuteOrder {
 								this.Issuers.includes(order.Issuers[0]))) &&
 						CanBeIgnored(order)
 				)
-			)
+			) {
 				continue
+			}
+		}
 		ExecuteOrder.orderQueue.push([this, hrtime(), false, false])
 	}
 
@@ -358,8 +358,9 @@ export class ExecuteOrder {
 			height <= -edgeSize ||
 			this.Position.z < -1024 || // idk, max negative height number on "map dota" -100
 			(heightMap !== undefined && !heightMap.Contains(this.Position))
-		)
+		) {
 			return false
+		}
 
 		return true
 	}

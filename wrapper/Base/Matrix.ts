@@ -3,11 +3,7 @@ import { QAngle } from "./QAngle"
 import { Vector3 } from "./Vector3"
 
 export class Matrix3x4 {
-	public static AngleMatrix(
-		ang: QAngle,
-		pos: Vector3,
-		scale: number
-	): Matrix3x4 {
+	public static AngleMatrix(ang: QAngle, pos: Vector3, scale: number): Matrix3x4 {
 		const matrix = new Matrix3x4()
 		const yaw = DegreesToRadian(ang.y),
 			pitch = DegreesToRadian(ang.x),

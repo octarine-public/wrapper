@@ -10,17 +10,21 @@ export const EntityManager = new (class CEntityManager {
 	public readonly SERIAL_MASK = (1 << this.SERIAL_BITS) - 1
 	public readonly AllEntities: Entity[] = []
 
-	public EntityByIndex(handle: Nullable<number>): Nullable<Entity> {
-		if (handle === 0 || handle === undefined) return undefined
+	public EntityByIndex<T extends Entity>(handle: Nullable<number>): Nullable<T> {
+		if (handle === 0 || handle === undefined) {
+			return undefined
+		}
 		const index = handle & this.INDEX_MASK,
 			serial = (handle >> this.INDEX_BITS) & this.SERIAL_MASK
-		const ent = AllEntitiesAsMap.get(index)
+		const ent = AllEntitiesAsMap.get(index) as T
 		return ent?.SerialMatches(serial) ? ent : undefined
 	}
 
 	public GetEntitiesByClass<T>(class_: Constructor<T>): T[] {
 		const ar = ClassToEntities.get(class_)
-		if (ar === undefined) throw "Invalid entity class"
+		if (ar === undefined) {
+			throw "Invalid entity class"
+		}
 		return ar as []
 	}
 })()

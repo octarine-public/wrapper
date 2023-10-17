@@ -8,8 +8,8 @@ export class PhysicalItem extends Entity {
 	@NetworkedBasicField("m_hItem")
 	public Item_ = 0
 
-	public get Item(): Nullable<Item> {
-		return EntityManager.EntityByIndex(this.Item_) as Nullable<Item>
+	public get Item() {
+		return EntityManager.EntityByIndex<Item>(this.Item_)
 	}
 	public get RingRadius(): number {
 		return 64

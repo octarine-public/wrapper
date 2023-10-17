@@ -15,8 +15,8 @@ export class Courier extends Unit {
 	@NetworkedBasicField("m_hCourierStateEntity")
 	public StateHero_ = 0
 
-	public get StateHero(): Nullable<Hero> {
-		return EntityManager.EntityByIndex(this.StateHero_) as Nullable<Hero>
+	public get StateHero() {
+		return EntityManager.EntityByIndex<Hero>(this.StateHero_)
 	}
 	public get ShouldUnifyOrders(): boolean {
 		return false

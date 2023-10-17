@@ -1,0 +1,39 @@
+name: Check
+on: [push, pull_request]
+jobs:
+  check-types:
+    runs-on: ubuntu-latest
+    steps:
+     - uses: actions/checkout@v3
+     - name: Set Node.js 18.x
+       uses: actions/setup-node@v3
+       with:
+         node-version: 18.x
+     - name: Run install
+       uses: borales/actions-yarn@v4
+       with:
+         cmd: install # will run `yarn install` command
+     - name: Run check-types
+       uses: borales/actions-yarn@v4
+       with:
+         cmd: check-types # will run `yarn check-types` command
+  lint:
+    needs: [check-types]
+    runs-on: ubuntu-latest #${{ matrix.os }}
+    #strategy:
+    #  matrix:
+    #    os: [ubuntu-latest] # or macos-latest, windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Run install
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install # will run `yarn install` command
+      - name: Run lint
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: lint # will run `yarn lint` command
