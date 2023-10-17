@@ -3,7 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("skywrath_mage_concussive_shot")
 export class skywrath_mage_concussive_shot extends Ability {
-	
 	public get Speed(): number {
 		return this.GetSpecialValue("speed")
 	}

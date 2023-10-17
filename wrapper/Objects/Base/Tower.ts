@@ -8,8 +8,8 @@ export class Tower extends Building {
 	@NetworkedBasicField("m_hTowerAttackTarget")
 	public TowerAttackTarget_ = 0
 
-	public get TowerAttackTarget(): Nullable<Unit> {
-		return EntityManager.EntityByIndex(this.TowerAttackTarget_) as Nullable<Unit>
+	public get TowerAttackTarget() {
+		return EntityManager.EntityByIndex<Unit>(this.TowerAttackTarget_)
 	}
 	public get IsDeniable(): boolean {
 		return super.IsDeniable || this.HPPercent <= 10

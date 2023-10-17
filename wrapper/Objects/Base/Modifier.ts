@@ -169,14 +169,10 @@ export class Modifier {
 			case "modifier_bonus_armor":
 				return
 		}
-		const newCaster = EntityManager.EntityByIndex(this.kv.Caster) as Nullable<Unit>,
-			newAbility = EntityManager.EntityByIndex(
-				this.kv.Ability
-			) as Nullable<Ability>,
-			newAuraOwner = EntityManager.EntityByIndex(
-				this.kv.AuraOwner
-			) as Nullable<Unit>,
-			newParent = EntityManager.EntityByIndex(this.kv.Parent) as Nullable<Unit>,
+		const newCaster = EntityManager.EntityByIndex<Unit>(this.kv.Caster),
+			newAbility = EntityManager.EntityByIndex<Ability>(this.kv.Ability),
+			newAuraOwner = EntityManager.EntityByIndex<Unit>(this.kv.AuraOwner),
+			newParent = EntityManager.EntityByIndex<Unit>(this.kv.Parent),
 			newAbilityLevel = this.kv.AbilityLevel ?? 0,
 			newDuration = this.kv.Duration ?? 0,
 			newStackCount = this.kv.StackCount ?? 0,
@@ -187,9 +183,7 @@ export class Modifier {
 			newBonusAllStats = this.kv.BonusAllStats ?? 0,
 			newBonusHealth = this.kv.BonusHealth ?? 0,
 			newBonusMana = this.kv.BonusMana ?? 0,
-			newCustomEntity = EntityManager.EntityByIndex(
-				this.kv.CustomEntity
-			) as Nullable<Unit>
+			newCustomEntity = EntityManager.EntityByIndex<Unit>(this.kv.CustomEntity)
 
 		if (this.Parent !== newParent) {
 			this.Remove()

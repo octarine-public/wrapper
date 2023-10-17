@@ -15,15 +15,15 @@ export class meepo_divided_we_stand extends Ability {
 	@NetworkedBasicField("m_entNextDividedWeStand")
 	public NextDividedWeStand_ = 0
 
-	public get PrimeDividedWeStand(): Nullable<meepo_divided_we_stand> {
-		return EntityManager.EntityByIndex(
+	public get PrimeDividedWeStand() {
+		return EntityManager.EntityByIndex<meepo_divided_we_stand>(
 			this.PrimeDividedWeStand_
-		) as Nullable<meepo_divided_we_stand>
+		)
 	}
-	public get NextDividedWeStand(): Nullable<meepo_divided_we_stand> {
-		return EntityManager.EntityByIndex(
+	public get NextDividedWeStand() {
+		return EntityManager.EntityByIndex<meepo_divided_we_stand>(
 			this.NextDividedWeStand_
-		) as Nullable<meepo_divided_we_stand>
+		)
 	}
 }
 

@@ -3,7 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("queenofpain_shadow_strike")
 export class queenofpain_shadow_strike extends Ability {
-	
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")
 	}

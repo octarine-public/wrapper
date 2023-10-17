@@ -29,7 +29,7 @@ RegisterFieldHandler(Wearable, "m_iItemDefinitionIndex", (ent, newVal) => {
 })
 RegisterFieldHandler(Wearable, "m_hAdditionalWearable", (ent, newVal) => {
 	ent.AdditionalWearable_ = newVal as number
-	ent.AdditionalWearable = EntityManager.EntityByIndex(ent.Owner_) as Nullable<Wearable>
+	ent.AdditionalWearable = EntityManager.EntityByIndex(ent.Owner_)
 })
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent.Index === 0) {

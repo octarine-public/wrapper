@@ -1336,12 +1336,12 @@ function ProcessUserCmd(force = false): void {
 		}
 	}
 
-	InputManager.QueryUnit = EntityManager.EntityByIndex(GetQueryUnit()) as Nullable<Unit>
+	InputManager.QueryUnit = EntityManager.EntityByIndex<Unit>(GetQueryUnit())
 
 	if (InputManager.QueryUnit === undefined) {
-		InputManager.QueryUnit = EntityManager.EntityByIndex(
+		InputManager.QueryUnit = EntityManager.EntityByIndex<Unit>(
 			GetQueryUnit() & EntityManager.INDEX_MASK
-		) as Nullable<Unit>
+		)
 	}
 
 	InputManager.SelectedUnit = !ConVarsSDK.GetBoolean("dota_hud_new_query_panel", false)

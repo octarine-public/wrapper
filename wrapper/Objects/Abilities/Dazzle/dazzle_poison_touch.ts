@@ -3,7 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("dazzle_poison_touch")
 export class dazzle_poison_touch extends Ability {
-	
 	public get EndRadius(): number {
 		return this.GetSpecialValue("end_radius")
 	}
