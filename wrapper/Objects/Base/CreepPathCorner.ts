@@ -31,7 +31,6 @@ export class CreepPathCorner extends Entity {
 	}
 }
 export const CreepPathCorners = EntityManager.GetEntitiesByClass(CreepPathCorner)
-
 let curLocalID = 0x3000
 function LoadCreepSpawnersAndPathCorners(): void {
 	while (curLocalID > 0x3000) {

@@ -17,6 +17,14 @@ export class Roshan extends Unit {
 	@NetworkedBasicField("m_bGoldenRoshan")
 	public GoldenRoshan = false
 
+	constructor(
+		public readonly Index: number,
+		serial: number
+	) {
+		super(Index, serial)
+		this.IsRoshan = true
+	}
+
 	public get RingRadius(): number {
 		return 80
 	}

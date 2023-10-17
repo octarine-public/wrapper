@@ -127,9 +127,17 @@ export class Entity {
 	private CustomDrawColor_: Nullable<[Color, RenderMode]>
 	private RingRadius_ = 30
 
+	/**
+	 * Demarcate recursions.
+	 * Recommended: use instanceof for get unique property
+	 */
+	public IsShop = false
+	public IsGameRules = false
+	/** ================================================= */
+
 	constructor(
 		public readonly Index: number,
-		private readonly Serial: number
+		private readonly serial: number
 	) {}
 
 	public get CustomGlowColor(): Nullable<Color> {
@@ -183,23 +191,27 @@ export class Entity {
 	}
 	public get NetworkedRotation(): number {
 		const ang = this.NetworkedAngles.y
-		if (ang >= 180) {
-			return ang - 360
-		}
-		return ang
+		return ang >= 180 ? ang - 360 : ang
 	}
 	public get Rotation(): number {
 		const ang = this.Angles.y
-		if (ang >= 180) {
-			return ang - 360
-		}
-		return ang
+		return ang >= 180 ? ang - 360 : ang
 	}
 	public get CreateTime() {
 		return this.CreateTime_ !== 0 ? this.CreateTime_ : this.FakeCreateTime_
 	}
+	/**
+	 * The percentage of HP remaining.
+	 * @description Calculates the percentage of HP remaining.
+	 * @returns {number}
+	 */
 	public get HPPercent(): number {
-		return Math.floor((this.HP / this.MaxHP) * 100) || 0
+		// Calculate the value by dividing current HP by maximum HP.
+		const value = this.HP / this.MaxHP
+		// If value is Infinity, set percentage to Infinity, otherwise round down to the nearest integer.
+		const percentage = value === Infinity ? value >> 0 : value
+		// Return the percentage multiplied by 100, capped at a minimum of 0.
+		return Math.max(percentage * 100, 0)
 	}
 	public get IsAlive(): boolean {
 		return (
@@ -232,25 +244,16 @@ export class Entity {
 	public get RingRadius(): number {
 		return this.RingRadius_
 	}
-	public get IsGameRules(): boolean {
-		return false
-	}
-	public get IsShop(): boolean {
-		return false
-	}
-	public get IsHero(): boolean {
-		return false
-	}
 	public get CustomNativeID(): number {
 		return this.Index << 1
 	}
 
 	public get Handle(): number {
-		return (this.Serial << EntityManager.INDEX_BITS) | this.Index
+		return (this.serial << EntityManager.INDEX_BITS) | this.Index
 	}
 
 	public SerialMatches(serial: number): boolean {
-		return serial === 0 || this.Serial === 0 || serial === this.Serial
+		return serial === 0 || this.serial === 0 || serial === this.serial
 	}
 	public HandleMatches(handle: number): boolean {
 		const index = handle & EntityManager.INDEX_MASK

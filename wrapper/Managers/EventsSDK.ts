@@ -376,6 +376,23 @@ interface EventsSDK extends EventEmitter {
 		listener: (playerResource: CPlayerResource) => void,
 		priority?: number
 	): EventEmitter
+	// TODO: add logic in Managers -> Monitors
+	on(
+		name: "AttackStarted",
+		callback: (unit: Unit, castpoint: number, names: string[]) => void,
+		priority?: number
+	): EventEmitter
+	// TODO: add logic in Managers -> Monitors
+	on(
+		name: "AttackEnded",
+		listener: (unit: Unit) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "UnitVisibilityChanged",
+		listener: (unit: Unit) => void,
+		priority?: number
+	): EventEmitter
 }
 
 export const EventsSDK: EventsSDK = new EventEmitter()

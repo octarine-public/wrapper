@@ -148,9 +148,32 @@ export class Unit extends Entity {
 	public Spawner: Nullable<NeutralSpawner>
 	public Spawner_ = 0
 
+	/** @readonly */
+	public IsVisibleForEnemiesLastTime = 0
+
+	/** @ignore */
+	public cellIsVisibleToEnemies_ = false // TODO: calculate grid nav from enemies
+
 	/**
-	 * @deprecated
+	 * Demarcate recursions.
+	 * Recommended: use instanceof for get unique property
 	 */
+	/** @readonly */
+	public IsRoshan = false
+	/** @readonly */
+	public IsHero = false
+	/** @readonly */
+	public IsSpiritBear = false
+	/** @readonly */
+	public IsCreep = false
+	/** @readonly */
+	public IsTower = false
+	/** @readonly */
+	public IsBuilding = false
+	/** @readonly */
+	public IsOutpost = false
+
+	/** @deprecated  */
 	public UnitStateMask = 0n
 	public TPStartTime = -1
 	public readonly PredictedPosition = new Vector3().Invalidate()
@@ -183,7 +206,6 @@ export class Unit extends Entity {
 	public get IsClone(): boolean {
 		return this.IsClone_
 	}
-
 	/* ======== modifierstate ======== */
 	public get IsIllusion(): boolean {
 		return this.IsIllusion_
@@ -494,6 +516,14 @@ export class Unit extends Entity {
 	}
 	public get ShouldUnifyOrders(): boolean {
 		return true
+	}
+
+	public IsVisibleToEnemies(seconds = 2): boolean {
+		return (
+			this.cellIsVisibleToEnemies_ ||
+			this.HasAnyBuffByNames(Modifier.VisibleToEnemies) ||
+			GameState.RawGameTime < this.IsVisibleForEnemiesLastTime + seconds
+		)
 	}
 
 	public VelocityWaypoint(time: number, movespeed: number): Vector3 {

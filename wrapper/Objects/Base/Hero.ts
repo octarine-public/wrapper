@@ -61,6 +61,14 @@ export class Hero extends Unit {
 	public HeroTeamData: Nullable<HeroTeamData>
 	public ReplicatingOtherHeroModel: Nullable<Unit | FakeUnit>
 
+	/** @ignore */
+	constructor(
+		public readonly Index: number,
+		serial: number
+	) {
+		super(Index, serial)
+		this.IsHero = true
+	}
 	/**
 	 * Returns the color of the hero based on their team.
 	 *
@@ -70,14 +78,6 @@ export class Hero extends Unit {
 		return this.Team === Team.Dire
 			? Hero.colorDire[this.TeamSlot]
 			: Hero.colorRadiant[this.TeamSlot]
-	}
-	/**
-	 * @deprecated use instanceof Hero
-	 * Determines if the Hero is a hero.
-	 * @returns {boolean} true if the Hero is a hero, false otherwise.
-	 */
-	public get IsHero(): boolean {
-		return true
 	}
 	/**
 	 * Returns whether the hero is a real hero.

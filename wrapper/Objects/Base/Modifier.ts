@@ -21,6 +21,13 @@ import { Unit } from "./Unit"
 const scepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
 export class Modifier {
+	public static VisibleToEnemies: string[] = [
+		"modifier_bounty_hunter_track",
+		"modifier_slardar_amplify_damage",
+		"modifier_bloodseeker_thirst_vision",
+		"modifier_spirit_breaker_charge_of_darkness_vision"
+	]
+
 	public static HasTrueSightBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => {
 			switch (buff.Name) {
