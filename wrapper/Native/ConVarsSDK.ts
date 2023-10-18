@@ -70,4 +70,19 @@ export class ConVarsSDK {
 		}
 		return res.toString()
 	}
+	/**
+	 *
+	 * @description Set new the value of ConVar.
+	 * @param {string} name - The name of the variable.
+	 * @param {T} value - The value to set.
+	 * @template T - The type of the value.
+	 * @returns {void}
+	 */
+	public static Set<T extends string | number | boolean>(name: string, value: T): void {
+		// Check if the name is not an empty string and value is defined
+		// TODO: improve by types for T
+		if (name.length && value !== undefined) {
+			ConVars.Set(name, value)
+		}
+	}
 }

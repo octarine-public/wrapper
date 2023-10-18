@@ -1,5 +1,4 @@
-import { Menu, SOType } from "../../../wrapper/Imports"
-import { InternalLanguageID, internalUtil } from "../Util"
+import { ConVarsSDK, Menu, MenuLanguageID, SOType } from "../../../wrapper/Imports"
 
 const enum CSODOTALobbyState {
 	UI = 0,
@@ -56,25 +55,25 @@ export const internalHomeMenu = new (class {
 		}
 	}
 
-	public SetLanguage(language: InternalLanguageID): void {
+	public SetLanguage(language: MenuLanguageID): void {
 		switch (language) {
 			default:
-			case InternalLanguageID.english:
+			case MenuLanguageID.english:
 				Menu.Localization.PreferredUnitName = "english"
 				break
-			case InternalLanguageID.russian:
+			case MenuLanguageID.russian:
 				Menu.Localization.PreferredUnitName = "russian"
 				break
-			case InternalLanguageID.chinese:
+			case MenuLanguageID.chinese:
 				Menu.Localization.PreferredUnitName = "chinese"
 				break
 		}
 	}
 
 	protected UpdateConvars() {
-		internalUtil.SetConVar("fog_enable", !this.FowConvars.value)
-		internalUtil.SetConVar("fog_override", 0)
-		internalUtil.SetConVar("fow_client_visibility", 0)
+		ConVarsSDK.Set("fog_override", 0)
+		ConVarsSDK.Set("fow_client_visibility", 0)
+		ConVarsSDK.Set("fog_enable", !this.FowConvars.value)
 	}
 
 	protected UpdateAutoAccept() {

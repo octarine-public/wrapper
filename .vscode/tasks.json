@@ -10,14 +10,5 @@
 				"runOn": "folderOpen"
 			}
 		},
-		{
-			"label": "Upgrade all modules version",
-			"type": "npm",
-			"script": "upgrade-pack",
-			"isBackground": true,
-			"runOptions": {
-				"runOn": "folderOpen"
-			}
-		}
 	]
 }

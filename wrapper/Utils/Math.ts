@@ -200,3 +200,28 @@ export function HSVToRGB(h: number, s: number, v: number): [number, number, numb
 
 	return [r * 255, g * 255, b * 255]
 }
+
+/**
+ * Returns a new value based on the given input value.
+ * If the input value is not finite or is NaN, the value will be converted to an integer using the right shift operator.
+ * Otherwise, the input value will be returned as is.
+ *
+ * @param value - The input value.
+ * @returns The new value.
+ */
+const newValue = (value: number) =>
+	!Number.isFinite(value) || Number.isNaN(value) ? value >> 0 : value
+
+/**
+ * The percentage value.
+ * @description Converts a number to a percentage.
+ * @param currentValue - The current value.
+ * @param maxValue - The maximum value (optional).
+ * @return {number}
+ */
+export function toPercentage(currentValue: number, maxValue?: number): number {
+	// Calculate the value based on whether a maximum value is provided or not
+	const value = maxValue === undefined ? currentValue : currentValue / maxValue
+	// Convert the value to a percentage and return it
+	return newValue(value) * 100
+}

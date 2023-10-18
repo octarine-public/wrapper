@@ -2,6 +2,7 @@
 	"name": "octarine-wrapper",
 	"version": "1.0.0",
 	"description": "Octarine: Wrapper",
+	"license": "GPL-3.0-or-later",
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^6.8.0",
 		"@typescript-eslint/parser": "^6.8.0",
@@ -35,10 +36,12 @@
 		"Bulb4",
 		"0h"
 	],
-	"license": "GPL-3.0-or-later",
 	"repository": {
 		"type": "git",
 		"directory": "/",
-		"url": "https://github.com/octarine-public/wrapper/"
+		"url": "https://github.com/octarine-public/wrapper.git"
+	},
+	"engines": {
+		"node": ">=18"
 	}
 }

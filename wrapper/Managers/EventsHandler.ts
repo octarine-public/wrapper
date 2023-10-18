@@ -643,8 +643,8 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 	const index = msg.get("index") as number
 	const par = NetworkedParticle.Instances.get(index)
 	const msgType = msg.get("type") as PARTICLE_MESSAGE
-	let changedEntPos = false,
-		changedEnt: Nullable<FakeUnit | Unit>
+	let changedEntPos = false
+	let changedEnt: Nullable<FakeUnit | Unit>
 	switch (msgType) {
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENTITY_POSITION: {
 			const submsg = msg.get("update_entity_position") as RecursiveProtobuf

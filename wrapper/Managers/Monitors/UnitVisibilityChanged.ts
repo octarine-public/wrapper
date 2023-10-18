@@ -6,8 +6,9 @@ import { Unit } from "../../Objects/Base/Unit"
 import { GameState } from "../../Utils/GameState"
 import { EventsSDK } from "../EventsSDK"
 
-const Monitor = new (class {
-	private readonly sleeper = new GameSleeper()
+const Monitor = new (class CUnitVisibilityChanged {
+	private static readonly sleeper = new GameSleeper()
+
 	private readonly ignoreBuffs = [
 		"modifier_monkey_king_bounce_leap",
 		"modifier_monkey_king_arc_to_ground",
@@ -29,7 +30,7 @@ const Monitor = new (class {
 			return
 		}
 
-		if (this.sleeper.Sleeping(parent.Index)) {
+		if (CUnitVisibilityChanged.sleeper.Sleeping(parent.Index)) {
 			return
 		}
 
@@ -62,12 +63,12 @@ const Monitor = new (class {
 
 	public UnitItemsChanged(unit: Unit) {
 		if (!unit.IsEnemy()) {
-			this.sleeper.Sleep(2 * 1000, unit.Index)
+			CUnitVisibilityChanged.sleeper.Sleep(2 * 1000, unit.Index)
 		}
 	}
 
 	public GameEnded() {
-		this.sleeper.FullReset()
+		CUnitVisibilityChanged.sleeper.FullReset()
 	}
 })()
 

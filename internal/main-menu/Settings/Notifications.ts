@@ -8,7 +8,6 @@ import {
 	RendererSDK,
 	Vector2
 } from "../../../wrapper/Imports"
-import { internalUtil } from "../Util"
 import { internalSettingsMenu } from "./index"
 
 export const internalNotifications = new (class {
@@ -17,13 +16,12 @@ export const internalNotifications = new (class {
 	private readonly clickState: Menu.Toggle
 
 	constructor(settings: Menu.Node) {
-		this.tree = settings.AddNode("Notifications", internalUtil.NotificationIcon)
+		const icon = "menu/icons/notification.svg"
+
+		this.tree = settings.AddNode("Notifications", icon)
 		this.tree.SortNodes = false
 
-		const treeScripts = this.tree.AddNode(
-			"Updates notifications",
-			internalUtil.NotificationIcon
-		)
+		const treeScripts = this.tree.AddNode("Updates notifications", icon)
 
 		this.stateScripts = treeScripts.AddToggle(
 			"State",
