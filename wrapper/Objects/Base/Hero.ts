@@ -15,6 +15,7 @@ import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Hero")
 export class Hero extends Unit {
+	// m_iRecentDamage ?
 	private static readonly colorRadiant: Color[] = [
 		new Color(0x33, 0x75, 0xff),
 		new Color(0x66, 0xff, 0xbf),

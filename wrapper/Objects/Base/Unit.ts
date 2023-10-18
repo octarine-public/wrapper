@@ -41,6 +41,8 @@ const MAX_ITEMS = 16
 
 @WrapperClass("CDOTA_BaseNPC")
 export class Unit extends Entity {
+	// m_ModifierManager ?
+	// m_iUnitType ?
 	// TODO: find a better way to do this
 	public IsClone_ = false
 

@@ -9,7 +9,6 @@ import { Unit } from "./Unit"
 export class Creep extends Unit {
 	public Lane = MapArea.Unknown
 	public PredictedIsWaitingToSpawn = true
-	public readonly IsLaneCreep: boolean
 
 	/** @ignore */
 	constructor(
@@ -17,11 +16,14 @@ export class Creep extends Unit {
 		serial: number
 	) {
 		super(Index, serial)
-
 		this.IsCreep = true
-		this.IsLaneCreep =
+	}
+
+	public get IsLaneCreep() {
+		return (
 			this.ClassName === "CDOTA_BaseNPC_Creep_Lane" ||
 			this.ClassName === "CDOTA_BaseNPC_Creep_Siege"
+		)
 	}
 
 	public get IsDeniable(): boolean {
