@@ -19,7 +19,7 @@ import { Player } from "../../Objects/Base/Player"
 import { FieldHandler, RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { GameState } from "../../Utils/GameState"
-import { DegreesToRadian } from "../../Utils/Math"
+import { DegreesToRadian, toPercentage } from "../../Utils/Math"
 import { CGameRules } from "./GameRules"
 import { Item } from "./Item"
 
@@ -206,12 +206,7 @@ export class Entity {
 	 * @returns {number}
 	 */
 	public get HPPercent(): number {
-		// Calculate the value by dividing current HP by maximum HP.
-		const value = this.HP / this.MaxHP
-		// If value is Infinity, set percentage to Infinity, otherwise round down to the nearest integer.
-		const percentage = value === Infinity ? value >> 0 : value
-		// Return the percentage multiplied by 100, capped at a minimum of 0.
-		return Math.max(percentage * 100, 0)
+		return toPercentage(this.HP, this.MaxHP)
 	}
 	public get IsAlive(): boolean {
 		return (
@@ -521,9 +516,7 @@ export class Entity {
 		return Vector3.fromIOBuffer()
 	}
 
-	/**
-	 * @deprecated
-	 */
+	/** @deprecated */
 	public ForwardNativeProperties(_healthBarOffset: number) {
 		// To be implemented in child classes
 	}
@@ -580,7 +573,12 @@ export class Entity {
 		return this.Name
 	}
 
-	private GetTransform() {
+	/**
+	 * The transformation matrix.
+	 * @description Returns a transformation matrix based on the networked angles, position, and model scale.
+	 * @returns {Matrix3x4}
+	 */
+	private GetTransform(): Matrix3x4 {
 		return Matrix3x4.AngleMatrix(
 			this.NetworkedAngles,
 			this.NetworkedPosition,

@@ -1,5 +1,4 @@
-import { GameState, Menu } from "../../../wrapper/Imports"
-import { internalUtil } from "../Util"
+import { ConVarsSDK, GameState, Menu } from "../../../wrapper/Imports"
 import { internalSettingsMenu } from "./index"
 
 export const internalChanger = new (class {
@@ -61,7 +60,7 @@ export const internalChanger = new (class {
 	]
 
 	constructor(settings: Menu.Node) {
-		const settingsTree = settings.AddNode("Changer", internalUtil.ChangerIcon)
+		const settingsTree = settings.AddNode("Changer", "menu/icons/changer.svg")
 		settingsTree.SortNodes = false
 
 		this.emoticons = settingsTree.AddToggle("Emoticons chat", true)
@@ -82,16 +81,11 @@ export const internalChanger = new (class {
 			this.OnChangeTreeModels(call.SelectedID, this.treeModelSize.value)
 		})
 
-		this.weather.OnValue(call =>
-			internalUtil.SetConVar("cl_weather", call.SelectedID)
-		)
-
-		this.riverPaint.OnValue(val =>
-			internalUtil.SetConVar("dota_river_type", val.SelectedID)
-		)
+		this.weather.OnValue(call => ConVarsSDK.Set("cl_weather", call.SelectedID))
+		this.riverPaint.OnValue(val => ConVarsSDK.Set("dota_river_type", val.SelectedID))
 
 		this.emoticons.OnValue(call =>
-			internalUtil.SetConVar("dota_hud_chat_enable_all_emoticons", call.value)
+			ConVarsSDK.Set("dota_hud_chat_enable_all_emoticons", call.value)
 		)
 
 		this.treeModelSize.OnValue(call => {
@@ -101,9 +95,9 @@ export const internalChanger = new (class {
 	}
 
 	public GameStarted(): void {
-		internalUtil.SetConVar("cl_weather", this.weather.SelectedID)
-		internalUtil.SetConVar("dota_river_type", this.riverPaint.SelectedID)
-		internalUtil.SetConVar("dota_hud_chat_enable_all_emoticons", this.emoticons.value)
+		ConVarsSDK.Set("cl_weather", this.weather.SelectedID)
+		ConVarsSDK.Set("dota_river_type", this.riverPaint.SelectedID)
+		ConVarsSDK.Set("dota_hud_chat_enable_all_emoticons", this.emoticons.value)
 		this.OnChangeTreeModels(
 			this.treeModelMenuNames.SelectedID,
 			this.treeModelSize.value

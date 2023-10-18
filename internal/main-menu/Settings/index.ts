@@ -1,5 +1,4 @@
-import { ExecuteOrder, Menu } from "../../../wrapper/Imports"
-import { InternalLanguageID, internalUtil } from "../Util"
+import { ExecuteOrder, Menu, MenuLanguageID } from "../../../wrapper/Imports"
 
 export const internalSettingsMenu = new (class {
 	public readonly Tree: Menu.Node
@@ -25,7 +24,7 @@ export const internalSettingsMenu = new (class {
 		)
 
 		/** Node Reload Scripts */
-		const reloadTree = this.Tree.AddNode("Reload Scripts", internalUtil.ReloadIcon)
+		const reloadTree = this.Tree.AddNode("Reload Scripts", "menu/icons/reload.svg")
 		reloadTree.AddKeybind("Key Bind").OnValue(() => reload())
 		reloadTree.AddButton("Reload").OnValue(() => reload())
 		/** end Node Reload Scripts */
@@ -36,13 +35,13 @@ export const internalSettingsMenu = new (class {
 			return
 		}
 		switch (call.SelectedID) {
-			case InternalLanguageID.english:
+			case MenuLanguageID.english:
 				Menu.Localization.SelectedUnitName = "english"
 				break
-			case InternalLanguageID.russian:
+			case MenuLanguageID.russian:
 				Menu.Localization.SelectedUnitName = "russian"
 				break
-			case InternalLanguageID.chinese:
+			case MenuLanguageID.chinese:
 				Menu.Localization.SelectedUnitName = "chinese"
 				break
 		}

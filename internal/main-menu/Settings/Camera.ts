@@ -1,4 +1,5 @@
 import {
+	ConVarsSDK,
 	DOTAGameUIState,
 	ExecuteOrder,
 	GameRules,
@@ -9,7 +10,6 @@ import {
 	Vector2,
 	VKeys
 } from "../../../wrapper/Imports"
-import { internalUtil } from "../Util"
 import { internalSettingsMenu } from "./index"
 
 /** Camera Menu Manager  */
@@ -29,7 +29,7 @@ export const internalCamera = new (class {
 	}
 
 	constructor(settings: Menu.Node) {
-		const treeMenu = settings.AddNode("Camera", internalUtil.CameraIcon)
+		const treeMenu = settings.AddNode("Camera", "menu/icons/camera.svg")
 
 		this.distance = treeMenu.AddSlider("Camera Distance", 1200, 1200, 3500)
 		this.angles = treeMenu.AddVector2(
@@ -68,7 +68,7 @@ export const internalCamera = new (class {
 		IOBuffer[2] = 0
 		Camera.Angles = true
 		Camera.Distance = cameraHacks ? this.distance.value : -1
-		internalUtil.SetConVar("r_farz", cameraHacks ? this.distance.value * 10 : -1)
+		ConVarsSDK.Set("r_farz", cameraHacks ? this.distance.value * 10 : -1)
 	}
 
 	public MouseWheel(up: boolean): boolean {

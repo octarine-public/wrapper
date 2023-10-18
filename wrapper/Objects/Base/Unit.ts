@@ -22,6 +22,7 @@ import { GridNav } from "../../Resources/ParseGNV"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
 import { GameState } from "../../Utils/GameState"
+import { toPercentage } from "../../Utils/Math"
 import { Inventory } from "../DataBook/Inventory"
 import { UnitData } from "../DataBook/UnitData"
 import { Ability } from "./Ability"
@@ -360,8 +361,13 @@ export class Unit extends Entity {
 	public get IsSpawned(): boolean {
 		return !this.IsWaitingToSpawn
 	}
+	/**
+	 * The percentage of MP remaining.
+	 * @description Calculates the percentage of MP remaining.
+	 * @returns {number}
+	 */
 	public get ManaPercent(): number {
-		return Math.floor((this.Mana / this.MaxMana) * 100) || 0
+		return toPercentage(this.Mana, this.MaxMana)
 	}
 	public get MinimapIcon(): string {
 		return this.UnitData.MinimapIcon

@@ -1,3 +1,4 @@
+import { MenuLanguageID } from "../Enums/MenuLanguageID"
 import { SOType } from "../Enums/SOType"
 import { arrayRemoveCallback } from "../Utils/ArrayExtensions"
 
@@ -158,7 +159,11 @@ declare interface Events extends EventEmitter {
 		priority?: number
 	): Events
 	on(name: "ScriptsUpdated", listener: () => void, priority?: number): Events
-	on(name: "SetLanguage", func: (language: number) => void, priority?: number): Events
+	on(
+		name: "SetLanguage",
+		func: (language: MenuLanguageID) => void,
+		priority?: number
+	): Events
 }
 
 export const Events: Events = new EventEmitter()
