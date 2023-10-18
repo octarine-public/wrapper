@@ -9,13 +9,13 @@ import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { HeroTeamData } from "../DataBook/HeroTeamData"
+import { LocalPlayer } from "./Entity"
 import { FakeUnit, GetPredictionTarget } from "./FakeUnit"
 import { PlayerResource } from "./PlayerResource"
 import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Hero")
 export class Hero extends Unit {
-	// m_iRecentDamage ?
 	private static readonly colorRadiant: Color[] = [
 		new Color(0x33, 0x75, 0xff),
 		new Color(0x66, 0xff, 0xbf),
@@ -59,7 +59,9 @@ export class Hero extends Unit {
 	@NetworkedBasicField("m_flStrengthTotal")
 	public TotalStrength = 0
 
+	/** @readonly */
 	public HeroTeamData: Nullable<HeroTeamData>
+	/** @readonly */
 	public ReplicatingOtherHeroModel: Nullable<Unit | FakeUnit>
 
 	/** @ignore */
@@ -71,9 +73,9 @@ export class Hero extends Unit {
 		this.IsHero = true
 	}
 	/**
-	 * Returns the color of the hero based on their team.
-	 *
-	 * @returns {Color} The color of the hero.
+	 * The color of the hero.
+	 * @description Returns the color of the hero based on their team.
+	 * @returns {Color}
 	 */
 	public get PlayerColor(): Color {
 		return this.Team === Team.Dire
@@ -82,57 +84,58 @@ export class Hero extends Unit {
 	}
 	/**
 	 * Returns whether the hero is a real hero.
-	 * A hero is considered real if it is not a clone or an illusion.
-	 *
-	 * @returns {boolean} True if the hero is a real hero, false otherwise.
+	 * @description A hero is considered real if it is not a clone or an illusion.
+	 * @returns {boolean}
 	 */
 	public get IsRealHero(): boolean {
 		return !this.IsClone && !this.IsIllusion
 	}
 	/**
-	 * Get the ID of the hero.
-	 *
-	 * @returns {number} The ID of the hero.
+	 * @description Get the ID of the hero.
+	 * @returns {number}
 	 */
 	public get HeroID(): number {
 		return this.UnitData.HeroID
 	}
 	/**
-	 * Checks if the hero is an illusion.
-	 *
-	 * @returns {boolean} - Returns true if the hero is an illusion, false otherwise.
+	 * @description Checks if the hero is an illusion.
+	 * @returns {boolean}
 	 */
 	public get IsIllusion(): boolean {
 		return this.ReplicatingOtherHeroModel !== undefined
 	}
 	/**
-	 * Gets the respawn position for the hero.
-	 *
-	 * @returns {Vector3 | undefined} The respawn position for the hero.
+	 * @description Determines if the instance is the current player's hero.
+	 * @returns {boolean}
+	 */
+	public get IsMyHero(): boolean {
+		return this === LocalPlayer?.Hero
+	}
+	/**
+	 * @description Gets the respawn position for the hero.
+	 * @returns {Vector3 | undefined}
 	 */
 	public get RespawnPosition(): Nullable<Vector3> {
 		return PlayerResource?.RespawnPositions[this.PlayerID]
 	}
 	/**
 	 * Retrieves the team slot of the hero.
-	 *
-	 * @returns {number} The team slot of the hero. If the hero's team data is not available, return -1.
+	 * @description The team slot of the hero. If the hero's team data is not available, return -1.
+	 * @returns {number}
 	 */
 	public get TeamSlot(): number {
 		return this.PlayerTeamData?.TeamSlot ?? -1
 	}
 	/**
-	 * Get the name of the player.
-	 *
-	 * @returns {string | undefined} The name of the player.
+	 * @description Get the name of the player.
+	 * @returns {string | undefined}
 	 */
 	public get PlayerName(): Nullable<string> {
 		return PlayerResource?.PlayerData[this.PlayerID]?.Name
 	}
 	/**
-	 * Retrieves the team data for the hero.
-	 *
-	 * @returns {PlayerTeamData | undefined} The team data for the hero.
+	 * @description Retrieves the team data for the hero.
+	 * @returns {PlayerTeamData | undefined}
 	 */
 	public get PlayerTeamData(): Nullable<PlayerTeamData> {
 		return PlayerResource?.PlayerTeamData[this.PlayerID]

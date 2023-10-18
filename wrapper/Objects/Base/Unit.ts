@@ -41,11 +41,6 @@ const MAX_ITEMS = 16
 
 @WrapperClass("CDOTA_BaseNPC")
 export class Unit extends Entity {
-	// m_ModifierManager ?
-	// m_iUnitType ?
-	// TODO: find a better way to do this
-	public IsClone_ = false
-
 	public UnitData = UnitData.empty
 	public readonly Inventory = new Inventory(this)
 	public IsTrueSightedForEnemies = false
@@ -152,10 +147,13 @@ export class Unit extends Entity {
 	public Spawner_ = 0
 
 	/** @readonly */
+	public CanUseItems = false
+	/** @readonly */
+	public CanUseAbilities = false
+	/** @readonly */
 	public IsVisibleForEnemiesLastTime = 0
-
 	/** @ignore */
-	public cellIsVisibleToEnemies_ = false // TODO: calculate grid nav from enemies
+	public cellIsVisibleForEnemies_ = false // TODO: calculate grid nav from enemies
 
 	/**
 	 * Demarcate recursions.
@@ -187,6 +185,9 @@ export class Unit extends Entity {
 	private LastRealPredictedPositionUpdate_ = 0
 	private LastPredictedPositionUpdate_ = 0
 
+	/** @ignore */
+	public IsClone_ = false
+
 	public get LastRealPredictedPositionUpdate(): number {
 		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
 			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime
@@ -205,9 +206,19 @@ export class Unit extends Entity {
 	public set LastPredictedPositionUpdate(val: number) {
 		this.LastPredictedPositionUpdate_ = val
 	}
-
+	/**
+	 * Returns a boolean value indicating if the Unit is a clone.
+	 * @returns {boolean}
+	 */
 	public get IsClone(): boolean {
 		return this.IsClone_
+	}
+	/**
+	 * @description Determines if the instance is the current player's hero.
+	 * @returns {boolean}
+	 */
+	public get IsMyHero(): boolean {
+		return false
 	}
 	/* ======== modifierstate ======== */
 	public get IsIllusion(): boolean {
@@ -526,12 +537,26 @@ export class Unit extends Entity {
 		return true
 	}
 
-	public IsVisibleToEnemies(seconds = 2): boolean {
-		return (
-			this.cellIsVisibleToEnemies_ ||
-			this.HasAnyBuffByNames(Modifier.VisibleToEnemies) ||
-			GameState.RawGameTime < this.IsVisibleForEnemiesLastTime + seconds
-		)
+	/**
+	 * @description Checks if the Unit is visible for enemies.
+	 * @param {number} seconds - The duration in seconds for which the Unit needs to be visible.
+	 * @returns {boolean}
+	 */
+	public IsVisibleForEnemies(seconds: number = 2): boolean {
+		// Check if the Unit is visible for enemies in the current cell
+		if (this.cellIsVisibleForEnemies_) {
+			return true
+		}
+		// Check if the Unit has any buff that makes it visible for enemies
+		if (this.HasAnyBuffByNames(Modifier.VisibleForEnemies)) {
+			return true
+		}
+		// Check if the current game time is less than the time when the Unit
+		// was last visible for enemies plus the given duration
+		if (this.IsVisibleForEnemiesLastTime + seconds > GameState.RawGameTime) {
+			return true
+		}
+		return false
 	}
 
 	public VelocityWaypoint(time: number, movespeed: number): Vector3 {
@@ -1477,6 +1502,8 @@ function OnWearableChanged(ent: Wearable) {
 
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof Unit) {
+		ent.CanUseItems = !ent.IsIllusion
+		ent.CanUseAbilities = !ent.IsIllusion
 		ent.PredictedPosition.CopyFrom(ent.NetworkedPosition)
 		ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 		ent.LastPredictedPositionUpdate = GameState.RawGameTime

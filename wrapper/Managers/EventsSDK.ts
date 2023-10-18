@@ -376,6 +376,13 @@ interface EventsSDK extends EventEmitter {
 		listener: (playerResource: CPlayerResource) => void,
 		priority?: number
 	): EventEmitter
+	/** if the properties of an unit have changed
+	 * (for e.x: Unit#IsClone, Unit#CanUseItems, Unit#CanUseAbilities) */
+	on(
+		name: "UnitPropertyChanged",
+		listener: (unit: Unit) => void,
+		priority?: number
+	): EventEmitter
 	// TODO: add logic in Managers -> Monitors
 	on(
 		name: "AttackStarted",

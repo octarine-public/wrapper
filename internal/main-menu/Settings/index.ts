@@ -25,7 +25,7 @@ export const internalSettingsMenu = new (class {
 
 		/** Node Reload Scripts */
 		const reloadTree = this.Tree.AddNode("Reload Scripts", "menu/icons/reload.svg")
-		reloadTree.AddKeybind("Key Bind").OnValue(() => reload())
+		reloadTree.AddKeybind("Key Bind").OnPressed(() => reload())
 		reloadTree.AddButton("Reload").OnValue(() => reload())
 		/** end Node Reload Scripts */
 	}

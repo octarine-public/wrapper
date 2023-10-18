@@ -985,6 +985,7 @@ export { CCustomHeroPickRules, CustomHeroPickRules } from "./Objects/Base/Custom
 export { DOTABaseGameMode, GameMode } from "./Objects/Base/DOTABaseGameMode"
 export { DOTAGameModeMutation } from "./Objects/Base/DOTAGameModeMutation"
 export { DOTAGameModeTurbo } from "./Objects/Base/DOTAGameModeTurbo"
+export { EarthSpiritStone } from "./Objects/Base/EarthSpiritStone"
 export { Entity, GameRules, LocalPlayer } from "./Objects/Base/Entity"
 export { FakeUnit, FakeUnits } from "./Objects/Base/FakeUnit"
 export { Filler } from "./Objects/Base/Filler"
