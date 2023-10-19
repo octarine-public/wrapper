@@ -8,9 +8,8 @@ import {
 	RendererSDK,
 	Vector2
 } from "../../../wrapper/Imports"
-import { internalSettingsMenu } from "./index"
 
-export const internalNotifications = new (class {
+export class InternalNotifications {
 	private readonly tree: Menu.Node
 	private readonly stateScripts: Menu.Toggle
 	private readonly clickState: Menu.Toggle
@@ -52,16 +51,16 @@ export const internalNotifications = new (class {
 			.OnValue(slider => (NotificationsSDK.limit = slider.value))
 	}
 
-	public Draw(): void {
+	public onDraw(): void {
 		NotificationsSDK.debug = this.tree.IsOpen
 	}
 
-	public ScriptsUpdated(): void {
+	public onScriptsUpdated(): void {
 		if (this.stateScripts.value) {
 			NotificationsSDK.Push(new ScriptsUpdated(this.clickState.value))
 		}
 	}
-})(internalSettingsMenu.Tree)
+}
 
 class ScriptsUpdated extends Notification {
 	constructor(private readonly clickState: boolean) {

@@ -1,7 +1,6 @@
 import { ConVarsSDK, GameState, Menu } from "../../../wrapper/Imports"
-import { internalSettingsMenu } from "./index"
 
-export const internalChanger = new (class {
+export class InternalChanger {
 	private readonly weather: Menu.Dropdown
 	private readonly emoticons: Menu.Toggle
 	private readonly riverPaint: Menu.Dropdown
@@ -94,7 +93,7 @@ export const internalChanger = new (class {
 		})
 	}
 
-	public GameStarted(): void {
+	public onGameStarted(): void {
 		ConVarsSDK.Set("cl_weather", this.weather.SelectedID)
 		ConVarsSDK.Set("dota_river_type", this.riverPaint.SelectedID)
 		ConVarsSDK.Set("dota_hud_chat_enable_all_emoticons", this.emoticons.value)
@@ -123,4 +122,4 @@ export const internalChanger = new (class {
 		this.treeModelMenuNames.SelectedID = 0
 		this.OnChangeTreeModels(0, 0)
 	}
-})(internalSettingsMenu.Tree)
+}

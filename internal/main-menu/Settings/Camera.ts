@@ -10,10 +10,9 @@ import {
 	Vector2,
 	VKeys
 } from "../../../wrapper/Imports"
-import { internalSettingsMenu } from "./index"
 
 /** Camera Menu Manager  */
-export const internalCamera = new (class {
+export class InternalCamera {
 	private readonly step: Menu.Slider
 	private readonly inverseDire: Menu.Toggle
 
@@ -51,7 +50,7 @@ export const internalCamera = new (class {
 			.OnValue(() => this.OnResetCameraSettings())
 	}
 
-	public Draw(): void {
+	public onDraw(): void {
 		const cameraHacks = !ExecuteOrder.DisableHumanizer
 
 		if (cameraHacks) {
@@ -71,7 +70,7 @@ export const internalCamera = new (class {
 		ConVarsSDK.Set("r_farz", cameraHacks ? this.distance.value * 10 : -1)
 	}
 
-	public MouseWheel(up: boolean): boolean {
+	public onMouseWheel(up: boolean): boolean {
 		if (!this.mouseState.value || !GameRules?.IsInGame) {
 			return true
 		}
@@ -110,4 +109,4 @@ export const internalCamera = new (class {
 		this.inverseDire.value = false
 		this.ctrlState.value = false
 	}
-})(internalSettingsMenu.Tree)
+}

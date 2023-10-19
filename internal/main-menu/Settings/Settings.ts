@@ -1,10 +1,20 @@
 import { ExecuteOrder, Menu, MenuLanguageID } from "../../../wrapper/Imports"
+import { InternalCamera } from "./Camera"
+import { InternalChanger } from "./Changer"
+import { InternalNotifications } from "./Notifications"
 
-export const internalSettingsMenu = new (class {
-	public readonly Tree: Menu.Node
+export const InternalSettings = new (class {
+	private readonly Tree: Menu.Node
+	private readonly InternalCamera: InternalCamera
+	private readonly InternalChanger: InternalChanger
+	private readonly InternalNotifications: InternalNotifications
 
 	constructor() {
 		this.Tree = Menu.AddEntry("Settings")
+
+		this.InternalCamera = new InternalCamera(this.Tree)
+		this.InternalChanger = new InternalChanger(this.Tree)
+		this.InternalNotifications = new InternalNotifications(this.Tree)
 
 		this.Tree.AddToggle(
 			"Humanizer",
@@ -20,7 +30,7 @@ export const internalSettingsMenu = new (class {
 		})
 
 		this.Tree.AddDropdown("Language", ["English", "Russian"], 1).OnValue(call =>
-			this.OnLangugeChanged(call)
+			this.onLangugeChanged(call)
 		)
 
 		/** Node Reload Scripts */
@@ -30,7 +40,23 @@ export const internalSettingsMenu = new (class {
 		/** end Node Reload Scripts */
 	}
 
-	protected OnLangugeChanged(call: Menu.Dropdown) {
+	public onDraw() {
+		this.InternalCamera.onDraw()
+	}
+
+	public onMouseWheel(up: boolean) {
+		return this.InternalCamera.onMouseWheel(up)
+	}
+
+	public onGameStarted() {
+		this.InternalChanger.onGameStarted()
+	}
+
+	public onScriptsUpdated() {
+		this.InternalNotifications.onScriptsUpdated()
+	}
+
+	protected onLangugeChanged(call: Menu.Dropdown) {
 		if (Menu.MenuManager.emptyConfig) {
 			return
 		}
