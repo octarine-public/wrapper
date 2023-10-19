@@ -1,30 +1,27 @@
 import { Events, EventsSDK, InputEventSDK } from "../../wrapper/Imports"
-import { internalHomeMenu } from "./Home/index"
-import { internalCamera } from "./Settings/Camera"
-import { internalChanger } from "./Settings/Changer"
-import { internalNotifications } from "./Settings/Notifications"
+import { InternalHome } from "./Home/Home"
+import { InternalSettings } from "./Settings/Settings"
 
 EventsSDK.on("Draw", () => {
-	internalCamera.Draw()
-	internalHomeMenu.Draw()
-	internalNotifications.Draw()
+	InternalHome.onDraw()
+	InternalSettings.onDraw()
 })
 
 EventsSDK.on("GameStarted", () => {
-	internalChanger.GameStarted()
+	InternalSettings.onGameStarted()
 })
 
 Events.on("SetLanguage", language => {
-	internalHomeMenu.SetLanguage(language)
+	InternalHome.onSetLanguage(language)
 })
 
 Events.on("ScriptsUpdated", () => {
-	internalNotifications.ScriptsUpdated()
+	InternalSettings.onScriptsUpdated()
 	console.info("Scripts Updated...")
 })
 
 EventsSDK.on("SharedObjectChanged", (id, _, obj) => {
-	internalHomeMenu.SharedObjectChanged(id, obj)
+	InternalHome.onSharedObjectChanged(id, obj)
 })
 
-InputEventSDK.on("MouseWheel", up => internalCamera.MouseWheel(up))
+InputEventSDK.on("MouseWheel", up => InternalSettings.onMouseWheel(up))

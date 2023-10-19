@@ -21,7 +21,7 @@ import { Unit } from "./Unit"
 const scepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
 export class Modifier {
-	public static VisibleToEnemies: string[] = [
+	public static VisibleForEnemies: string[] = [
 		"modifier_bounty_hunter_track",
 		"modifier_slardar_amplify_damage",
 		"modifier_bloodseeker_thirst_vision",
@@ -264,6 +264,7 @@ export class Modifier {
 			this.Parent = newParent
 			this.AddModifier()
 		} else if (this.Parent !== undefined && updated) {
+			this.UnitPropertyChanged()
 			EventsSDK.emit("ModifierChanged", false, this)
 		} else if (this.Parent !== undefined) {
 			EventsSDK.emit("ModifierChangedVBE", false, this)
@@ -275,6 +276,7 @@ export class Modifier {
 			return
 		}
 		arrayRemove(this.Parent.Buffs, this)
+		this.UnitPropertyChanged(false)
 		EventsSDK.emit("ModifierRemoved", false, this)
 		this.Parent.ChangeFieldsByEvents()
 	}
@@ -283,7 +285,34 @@ export class Modifier {
 			return
 		}
 		this.Parent.Buffs.push(this)
+		this.UnitPropertyChanged()
 		EventsSDK.emit("ModifierCreated", false, this)
 		this.Parent.ChangeFieldsByEvents()
+	}
+
+	private UnitPropertyChanged(changed?: boolean) {
+		const owner = this.Parent
+		if (owner === undefined) {
+			return
+		}
+		const state = (changed ??= true)
+		switch (this.Name) {
+			case "modifier_arc_warden_tempest_double":
+				owner.IsClone_ = state
+				owner.CanUseItems = state
+				owner.CanUseAbilities = state
+				EventsSDK.emit("UnitPropertyChanged", false, owner)
+				break
+			case "modifier_vengefulspirit_hybrid_special":
+				owner.IsClone_ = state && owner.IsAlive
+				owner.CanUseAbilities = state && owner.IsAlive
+				EventsSDK.emit("UnitPropertyChanged", false, owner)
+				break
+			case "modifier_muerta_parting_shot_soul_clone":
+				owner.IsClone_ = state
+				owner.CanUseAbilities = state
+				EventsSDK.emit("UnitPropertyChanged", false, owner)
+				break
+		}
 	}
 }

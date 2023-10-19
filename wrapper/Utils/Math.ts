@@ -202,15 +202,12 @@ export function HSVToRGB(h: number, s: number, v: number): [number, number, numb
 }
 
 /**
- * Returns a new value based on the given input value.
- * If the input value is not finite or is NaN, the value will be converted to an integer using the right shift operator.
- * Otherwise, the input value will be returned as is.
- *
- * @param value - The input value.
- * @returns The new value.
+ * @description Return 0 if the value is a finite number or NaN
+ * @param value - The input value to check.
+ * @returns {number}
  */
-const newValue = (value: number) =>
-	!Number.isFinite(value) || Number.isNaN(value) ? value >> 0 : value
+const newValue = (value: number): number =>
+	!Number.isFinite(value) || Number.isNaN(value) ? 0 : value
 
 /**
  * The percentage value.

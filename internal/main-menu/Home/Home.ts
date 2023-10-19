@@ -11,7 +11,7 @@ const enum CSODOTALobbyState {
 }
 
 /** Main menu manager  */
-export const internalHomeMenu = new (class {
+export const InternalHome = new (class {
 	private acceptTime = -1
 	private readonly FowConvars: Menu.Toggle
 	private readonly AcceptDelay: Menu.Slider
@@ -39,12 +39,12 @@ export const internalHomeMenu = new (class {
 			.OnValue(toggle => (Menu.Base.triggerOnChat = toggle.value))
 	}
 
-	public Draw(): void {
+	public onDraw(): void {
 		this.UpdateConvars()
 		this.UpdateAutoAccept()
 	}
 
-	public SharedObjectChanged(_id: SOType, obj: RecursiveMap): void {
+	public onSharedObjectChanged(_id: SOType, obj: RecursiveMap): void {
 		if (obj.get("state") === CSODOTALobbyState.READYUP && this.acceptTime === -1) {
 			this.acceptTime = hrtime()
 		} else if (
@@ -55,7 +55,7 @@ export const internalHomeMenu = new (class {
 		}
 	}
 
-	public SetLanguage(language: MenuLanguageID): void {
+	public onSetLanguage(language: MenuLanguageID): void {
 		switch (language) {
 			default:
 			case MenuLanguageID.english:

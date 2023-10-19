@@ -17,6 +17,7 @@ export class Roshan extends Unit {
 	@NetworkedBasicField("m_bGoldenRoshan")
 	public GoldenRoshan = false
 
+	/** @ignore */
 	constructor(
 		public readonly Index: number,
 		serial: number

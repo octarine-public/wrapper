@@ -6,9 +6,8 @@ import { Unit } from "../../Objects/Base/Unit"
 import { GameState } from "../../Utils/GameState"
 import { EventsSDK } from "../EventsSDK"
 
-const Monitor = new (class CUnitVisibilityChanged {
-	private static readonly sleeper = new GameSleeper()
-
+const Monitor = new (class {
+	private readonly eventSleeper = new GameSleeper()
 	private readonly ignoreBuffs = [
 		"modifier_monkey_king_bounce_leap",
 		"modifier_monkey_king_arc_to_ground",
@@ -30,22 +29,25 @@ const Monitor = new (class CUnitVisibilityChanged {
 			return
 		}
 
-		if (CUnitVisibilityChanged.sleeper.Sleeping(parent.Index)) {
+		if (this.eventSleeper.Sleeping(parent.Index)) {
 			return
 		}
 
 		const ability = mod.Ability
-		if (!(ability instanceof Item) || ability.IsNeutralDrop) {
+		if (!(ability instanceof Item)) {
 			return
 		}
 
-		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)) {
+		if (
+			ability.IsNeutralDrop &&
+			ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
+		) {
 			return
 		}
 
 		const maxEndTime = 2
 		const item = parent.TotalItems.find(x => x === ability)
-		if (item === undefined || item.CreateTime + maxEndTime > GameState.RawGameTime) {
+		if (item === undefined) {
 			return
 		}
 
@@ -63,17 +65,25 @@ const Monitor = new (class CUnitVisibilityChanged {
 
 	public UnitItemsChanged(unit: Unit) {
 		if (!unit.IsEnemy()) {
-			CUnitVisibilityChanged.sleeper.Sleep(2 * 1000, unit.Index)
+			this.eventSleeper.Sleep(2 * 1000, unit.Index)
 		}
 	}
 
 	public GameEnded() {
-		CUnitVisibilityChanged.sleeper.FullReset()
+		this.eventSleeper.FullReset()
 	}
 })()
 
-EventsSDK.on("GameEnded", Monitor.GameEnded, Number.MIN_SAFE_INTEGER)
+EventsSDK.on(
+	"UnitItemsChanged",
+	unit => Monitor.UnitItemsChanged(unit),
+	Number.MIN_SAFE_INTEGER
+)
 
-EventsSDK.on("UnitItemsChanged", Monitor.UnitItemsChanged, Number.MIN_SAFE_INTEGER)
+EventsSDK.on(
+	"ModifierChangedVBE",
+	mod => Monitor.ModifierChangedVBE(mod),
+	Number.MIN_SAFE_INTEGER
+)
 
-EventsSDK.on("ModifierChangedVBE", Monitor.ModifierChangedVBE, Number.MIN_SAFE_INTEGER)
+EventsSDK.on("GameEnded", () => Monitor.GameEnded(), Number.MIN_SAFE_INTEGER)
