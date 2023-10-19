@@ -10,7 +10,6 @@ import { RegisterFieldHandler } from "../NativeToSDK"
 import { Entity } from "./Entity"
 import { Hero } from "./Hero"
 import { Item } from "./Item"
-import { CPlayerResource, PlayerResource } from "./PlayerResource"
 
 @WrapperClass("CDOTAPlayerController")
 export class Player extends Entity {
@@ -18,16 +17,17 @@ export class Player extends Entity {
 	public SteamID64 = -1n
 	@NetworkedBasicField("m_nPlayerID", EPropertyType.INT32)
 	public PlayerID = -1
-	public QuickBuyItems: number[] = []
 	@NetworkedBasicField("m_iTotalEarnedGold")
 	public TotalEarnedGold = 0
 	@NetworkedBasicField("m_iTotalEarnedXP")
 	public TotalEarnedXP = 0
-	public Hero: Nullable<Hero>
-	public Hero_ = 0
-	public Pawn: Nullable<Entity>
+	@NetworkedBasicField("m_hAssignedHero")
+	public Hero_ = -1
 	@NetworkedBasicField("m_hPawn", EPropertyType.UINT32)
 	public Pawn_ = -1
+	public Hero: Nullable<Hero>
+	public Pawn: Nullable<Entity>
+	public QuickBuyItems: number[] = []
 
 	public get IsSpectator(): boolean {
 		return (
@@ -40,7 +40,7 @@ export class Player extends Entity {
 	public CannotUseItem(item: Item): boolean {
 		return (
 			item.Shareability === EShareAbility.ITEM_NOT_SHAREABLE &&
-			this.PlayerID !== item.PurchaserID
+			(this.Hero?.PlayerID ?? this.PlayerID) !== item.PurchaserID
 		)
 	}
 	public Buyback(queue?: boolean, showEffects?: boolean): void {
@@ -66,16 +66,6 @@ export class Player extends Entity {
 	public Scan(position: Vector3, queue?: boolean, showEffects?: boolean): void {
 		return ExecuteOrder.Scan(position, queue, showEffects)
 	}
-
-	public UpdateHero(playerResource: Nullable<CPlayerResource>): void {
-		const teamDataAr = playerResource?.PlayerTeamData
-		if (teamDataAr === undefined) {
-			return
-		}
-		this.Hero_ = teamDataAr[this.PlayerID]?.SelectedHeroIndex ?? this.Hero_
-		const ent = EntityManager.EntityByIndex(this.Hero_)
-		this.Hero = ent instanceof Hero ? ent : undefined
-	}
 }
 RegisterFieldHandler(Player, "m_quickBuyItems", (player, newVal) => {
 	player.QuickBuyItems = (newVal as bigint[]).map(val => Number(val >> 1n))
@@ -84,16 +74,12 @@ RegisterFieldHandler(Player, "m_quickBuyItems", (player, newVal) => {
 export const Players = EntityManager.GetEntitiesByClass(Player)
 
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent instanceof Player) {
-		ent.UpdateHero(PlayerResource)
-		return
-	}
 	for (const player of Players) {
 		if (ent.HandleMatches(player.Pawn_)) {
 			player.Pawn = ent
 		}
 	}
-	if (ent instanceof Hero && ent.CanBeMainHero) {
+	if (ent instanceof Hero) {
 		for (const player of Players) {
 			if (ent.HandleMatches(player.Hero_)) {
 				player.Hero = ent
@@ -114,11 +100,5 @@ EventsSDK.on("EntityDestroyed", ent => {
 				player.Hero = undefined
 			}
 		}
-	}
-})
-
-EventsSDK.on("PlayerResourceUpdated", playerResource => {
-	for (const player of Players) {
-		player.UpdateHero(playerResource)
 	}
 })

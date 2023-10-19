@@ -4,17 +4,17 @@ import { RuneSpawnerType } from "../../Enums/RuneSpawnerType"
 import { RuneSpawner } from "../Extensions/RuneSpawner"
 import { RegisterFieldHandler } from "../NativeToSDK"
 
-@WrapperClass("CDOTA_Item_RuneSpawner_Powerup")
-export class RuneSpawnerPowerup extends RuneSpawner {
-	public readonly Type = RuneSpawnerType.Pwowerup
+@WrapperClass("CDOTA_Item_RuneSpawner_XP")
+export class RuneSpawnerXP extends RuneSpawner {
+	public readonly Type = RuneSpawnerType.XP
 }
 
-function UpdateGameData(ent: RuneSpawnerPowerup) {
-	Runes.PowerUpSpawnEveryMinutes = ent.RuneSpawnTime()
-	Runes.PowerUpSpawnEverySeconds = ent.RuneSpawnTime("seconds")
+function UpdateGameData(ent: RuneSpawnerXP) {
+	Runes.XPSpawnEveryMinutes = ent.RuneSpawnTime()
+	Runes.XPSpawnEverySeconds = ent.RuneSpawnTime("seconds")
 }
 
-RegisterFieldHandler(RuneSpawnerPowerup, "m_flLastSpawnTime", (ent, newVal) => {
+RegisterFieldHandler(RuneSpawnerXP, "m_flLastSpawnTime", (ent, newVal) => {
 	const oldState = ent.LastSpawnTime
 	ent.LastSpawnTime = newVal as number
 	if (ent.IsValid && oldState !== ent.LastSpawnTime) {
@@ -22,7 +22,7 @@ RegisterFieldHandler(RuneSpawnerPowerup, "m_flLastSpawnTime", (ent, newVal) => {
 	}
 })
 
-RegisterFieldHandler(RuneSpawnerPowerup, "m_flNextSpawnTime", (ent, newVal) => {
+RegisterFieldHandler(RuneSpawnerXP, "m_flNextSpawnTime", (ent, newVal) => {
 	const oldState = ent.NextSpawnTime
 	ent.NextSpawnTime = newVal as number
 	if (ent.IsValid && oldState !== ent.LastSpawnTime) {

@@ -3,10 +3,9 @@ import { DOTAGameMode } from "../../Enums/DOTAGameMode"
 import { Team } from "../../Enums/Team"
 import { GameSleeper } from "../../Helpers/Sleeper"
 import { EntityManager } from "../../Managers/EntityManager"
-import { EventsSDK } from "../../Managers/EventsSDK"
-import * as ArrayExtensions from "../../Utils/ArrayExtensions"
+import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { GameState } from "../../Utils/GameState"
-import { Entity, GameRules } from "../Base/Entity"
+import { GameRules } from "../Base/Entity"
 import { Hero } from "../Base/Hero"
 import { TeamData } from "../Base/TeamData"
 import { item_philosophers_stone } from "../Items/item_philosophers_stone"
@@ -44,13 +43,14 @@ export class HeroTeamData {
 	private gpm = 90
 	private denyCount = 0
 	private lastHitCount = 0
+	private readonly maxBuyBackCooldown = 480 // seconds
 
 	private reliableGold = 0
 	private unreliableGold = 600 /** base start gold */
 	private philosopherStoneCounter: Nullable<GPMCounter>
 
 	/** @ignore */
-	constructor(private readonly Owner: Hero) {
+	constructor(private readonly owner: Hero) {
 		this.ReCalculateUnreliableGold()
 	}
 
@@ -60,7 +60,7 @@ export class HeroTeamData {
 	 */
 	public get AvailableSalutes(): number {
 		return (
-			this.Owner.PlayerTeamData?.PlayerEventsData.find(data => data.EventID === 19)
+			this.owner.PlayerTeamData?.PlayerEventsData.find(data => data.EventID === 19)
 				?.AvailableSalutes ?? 0
 		)
 	}
@@ -145,7 +145,7 @@ export class HeroTeamData {
 	 * @returns {number}
 	 */
 	public get TimeOfLastSaluteSent(): number {
-		return this.Owner.PlayerTeamData?.TimeOfLastSaluteSent ?? 0
+		return this.owner.PlayerTeamData?.TimeOfLastSaluteSent ?? 0
 	}
 	/**
 	 * @description Determines if the hero has enough gold to perform a buyback.
@@ -156,15 +156,15 @@ export class HeroTeamData {
 	}
 	/** @ignore */
 	protected get IsEnemy() {
-		return this.Owner.IsEnemy() && GameState.LocalTeam !== Team.Observer
+		return this.owner.IsEnemy() && GameState.LocalTeam !== Team.Observer
 	}
 	/** @ignore */
-	public SetBuyBack(ms: number) {
-		this.sleeper.Sleep(ms, this.Owner.PlayerID)
+	public SetBuyBack() {
+		this.sleeper.Sleep(this.maxBuyBackCooldown * 1000, this.owner.PlayerID)
 		this.SubtractGold(this.BuyBackCost)
 	}
 	/*** @ignore */
-	public AddGoldAfterTime(sec: number, count: number) {
+	public AddGoldAfterTime(count: number, sec: number) {
 		this.goldAfterTimeAr.push([GameState.RawGameTime + sec, count])
 	}
 	/** @ignore */
@@ -176,11 +176,11 @@ export class HeroTeamData {
 		}
 		if (this.TeamData === undefined && !this.IsEnemy) {
 			this.TeamData = EntityManager.GetEntitiesByClass(TeamData).find(
-				x => x.Team === this.Owner.Team
+				x => x.Team === this.owner.Team
 			)
 		}
 		if (this.TeamData !== undefined && this.Player === undefined && !this.IsEnemy) {
-			this.Player = this.TeamData.DataTeam[this.Owner.TeamSlot]
+			this.Player = this.TeamData.DataTeam[this.owner.TeamSlot]
 		}
 	}
 	/** @ignore */
@@ -203,7 +203,7 @@ export class HeroTeamData {
 			}
 		}
 		for (const ar of deletedGold) {
-			ArrayExtensions.arrayRemove(this.goldAfterTimeAr, ar)
+			arrayRemove(this.goldAfterTimeAr, ar)
 		}
 	}
 	/** @ignore */
@@ -223,7 +223,7 @@ export class HeroTeamData {
 		if (GameRules.GameMode === DOTAGameMode.DOTA_GAMEMODE_EVENT) {
 			return
 		}
-		const itemStone = this.Owner.GetAbilityByClass(item_philosophers_stone)
+		const itemStone = this.owner.GetAbilityByClass(item_philosophers_stone)
 		if (itemStone === undefined || !itemStone.IsUsable) {
 			this.philosopherStoneCounter = undefined
 			return
@@ -237,7 +237,7 @@ export class HeroTeamData {
 	}
 	/** @ignore */
 	protected ReCalculateUnreliableGold() {
-		if (GameRules === undefined || !this.Owner.IsEnemy()) {
+		if (GameRules === undefined || !this.owner.IsEnemy()) {
 			return
 		}
 
@@ -246,7 +246,7 @@ export class HeroTeamData {
 			return
 		}
 
-		for (const item of this.Owner.TotalItems) {
+		for (const item of this.owner.TotalItems) {
 			if (item === undefined) {
 				continue
 			}
@@ -256,33 +256,3 @@ export class HeroTeamData {
 		}
 	}
 }
-
-/** @ignore */
-const heroes = new Set<Hero>()
-
-/** @ignore */
-function PostDataUpdate() {
-	for (const hero of heroes) {
-		hero.HeroTeamData?.PostDataUpdate()
-	}
-}
-/** @ignore */
-function EntityCreated(ent: Entity) {
-	// TODO add check ent.IsClone
-	if (ent instanceof Hero && !ent.IsIllusion && !heroes.has(ent)) {
-		ent.HeroTeamData = new HeroTeamData(ent)
-		heroes.add(ent)
-	}
-}
-/** @ignore */
-function EntityDestroyed(ent: Entity) {
-	if (ent instanceof Hero) {
-		heroes.delete(ent)
-	}
-}
-
-EventsSDK.on("PostDataUpdate", PostDataUpdate, Number.MIN_SAFE_INTEGER)
-
-EventsSDK.on("EntityCreated", EntityCreated, Number.MIN_SAFE_INTEGER)
-
-EventsSDK.on("EntityDestroyed", EntityDestroyed)

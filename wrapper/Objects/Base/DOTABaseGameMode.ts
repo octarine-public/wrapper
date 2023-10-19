@@ -4,6 +4,7 @@ import { EventsSDK } from "../../Managers/EventsSDK"
 import { HasBitBigInt } from "../../Utils/BitsExtensions"
 import { Entity } from "./Entity"
 
+// only local server
 @WrapperClass("CDOTABaseGameMode")
 export class DOTABaseGameMode extends Entity {
 	@NetworkedBasicField("m_nHUDVisibilityBits")

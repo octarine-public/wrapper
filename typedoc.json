@@ -7,7 +7,7 @@
 	"hideGenerator": true,
 	"tsconfig": "./tsconfig.json",
 	"plugin": ["typedoc-plugin-markdown", "typedoc-gitlab-wiki-theme"],
-	"exclude": ["./internal/**/*"],
+	"exclude": ["./internal/**/*", "./wrapper/Managers/Monitors/**/*"],
 	"entryPoints": ["./**/*.ts"],
 	"out": "docs",
 }

@@ -104,6 +104,7 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_bIsWaitingToSpawn")
 	public IsWaitingToSpawn = false
 	public PredictedIsWaitingToSpawn = true
+	/** @readonly */
 	@NetworkedBasicField("m_iCurrentLevel")
 	public Level = 0
 	@NetworkedBasicField("m_flMagicalResistanceValue")

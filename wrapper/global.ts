@@ -6,6 +6,7 @@ import { QAngle as _QAngle } from "./Base/QAngle"
 import { Vector2 as _Vector2 } from "./Base/Vector2"
 import { Vector3 as _Vector3 } from "./Base/Vector3"
 import { Vector4 as _Vector4 } from "./Base/Vector4"
+import * as _GameData from "./Data/GameData"
 import { GUIInfo as _GUIInfo } from "./GUI/GUIInfo"
 import * as _DotaMap from "./Helpers/DotaMap"
 import { EntityManager as _EntityManager } from "./Managers/EntityManager"
@@ -36,6 +37,7 @@ globalThis.Vector3 = _Vector3
 globalThis.Vector4 = _Vector4
 globalThis.AABB = _AABB
 globalThis.DotaMap = _DotaMap
+globalThis.GameData = _GameData
 globalThis.NetworkedParticle = _NetworkedParticle
 globalThis.FakeUnits = _FakeUnits
 
