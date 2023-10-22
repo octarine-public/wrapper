@@ -1,4 +1,4 @@
-import { Entity } from "../Base/Entity"
+import { Entity } from "./Entity"
 
 export class RuneSpawner extends Entity {
 	/** @readonly */

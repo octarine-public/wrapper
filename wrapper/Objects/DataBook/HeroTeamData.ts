@@ -1,5 +1,6 @@
 import { DataTeamPlayer } from "../../Base/DataTeamPlayer"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
+import { DOTAGameState } from "../../Enums/DOTAGameState"
 import { Team } from "../../Enums/Team"
 import { GameSleeper } from "../../Helpers/Sleeper"
 import { EntityManager } from "../../Managers/EntityManager"
@@ -12,23 +13,43 @@ import { item_philosophers_stone } from "../Items/item_philosophers_stone"
 
 /** @ignore */
 class GPMCounter {
-	private counter = 0
+	private counter = 1
 	private lastUpdate: Nullable<number>
 
-	public Update(data: HeroTeamData, gpm: number, isPassive: boolean) {
+	public Update(data: HeroTeamData, isPassive: boolean, gpm?: number) {
+		const gameTime = GameRules?.GameTime ?? 0
+
+		gpm ??= this.getGPMAtTime(gameTime / 60)
+
 		if (isPassive && this.lastUpdate === undefined) {
-			this.counter += (gpm * (GameRules?.GameTime ?? 0)) / 60
-			this.lastUpdate = GameState.RawGameTime
+			this.counter += (gpm * gameTime) / 60
+			this.lastUpdate = gameTime
 		}
 
 		if (this.lastUpdate !== undefined) {
-			this.counter += (gpm * (GameState.RawGameTime - this.lastUpdate)) / 60
+			this.counter += (gpm * (gameTime - this.lastUpdate)) / 60
 		}
 
-		this.lastUpdate = GameState.RawGameTime
+		this.lastUpdate = gameTime
 		const rem = this.counter % 1
 		data.ReliableGold += this.counter - rem
 		this.counter = rem
+	}
+
+	// see https://dota2.fandom.com/wiki/Gold#Periodic_Gold
+	private getGPMAtTime(time: number): number {
+		switch (true) {
+			case time >= 12 && time < 15:
+				return 94.6
+			case time >= 15 && time < 17:
+				return 95.7
+			case time >= 17 && time < 30:
+				return 96.6
+			case time >= 30 && time < 45:
+				return 99.8
+			default:
+				return 90
+		}
 	}
 }
 
@@ -40,18 +61,21 @@ export class HeroTeamData {
 	private readonly sleeper = new GameSleeper()
 	private readonly goldAfterTimeAr: [number, number][] = []
 
-	private gpm = 90
 	private denyCount = 0
 	private lastHitCount = 0
 	private readonly maxBuyBackCooldown = 480 // seconds
 
 	private reliableGold = 0
-	private unreliableGold = 600 /** base start gold */
+	private unreliableGold = 700 /** base start gold */
 	private philosopherStoneCounter: Nullable<GPMCounter>
 
 	/** @ignore */
-	constructor(private readonly owner: Hero) {
+	constructor(public readonly Owner: Hero) {
 		this.ReCalculateUnreliableGold()
+	}
+
+	public get EventsData() {
+		return this.Owner.PlayerTeamData?.PlayerEventsData ?? []
 	}
 
 	/**
@@ -59,17 +83,14 @@ export class HeroTeamData {
 	 * @returns {number}
 	 */
 	public get AvailableSalutes(): number {
-		return (
-			this.owner.PlayerTeamData?.PlayerEventsData.find(data => data.EventID === 19)
-				?.AvailableSalutes ?? 0
-		)
+		return this.EventsData.find(data => data.EventID === 19)?.AvailableSalutes ?? 0
 	}
 	/**
 	 * @description Returns the buyback cost based on the net worth of the player.
 	 * @returns {number}
 	 */
 	public get BuyBackCost(): number {
-		return Math.floor(200 + this.NetWorth / 13)
+		return 200 + this.NetWorth / 13
 	}
 	/**
 	 * @description Returns the deny count of the hero.
@@ -141,11 +162,18 @@ export class HeroTeamData {
 		}
 	}
 	/**
+	 * @description Calculate the gold loss on death.
+	 * @returns {number}
+	 */
+	public get GoldLossOnDeath(): number {
+		return Math.round(Math.min(this.UnreliableGold, this.NetWorth / 40))
+	}
+	/**
 	 * @description Returns the time of the last salute sent by the hero's PlayerTeamData.
 	 * @returns {number}
 	 */
 	public get TimeOfLastSaluteSent(): number {
-		return this.owner.PlayerTeamData?.TimeOfLastSaluteSent ?? 0
+		return this.Owner.PlayerTeamData?.TimeOfLastSaluteSent ?? 0
 	}
 	/**
 	 * @description Determines if the hero has enough gold to perform a buyback.
@@ -155,12 +183,19 @@ export class HeroTeamData {
 		return this.ReliableGold + this.UnreliableGold >= this.BuyBackCost
 	}
 	/** @ignore */
+	protected get InProgress() {
+		return (
+			(GameRules?.GameState ?? DOTAGameState.DOTA_GAMERULES_STATE_INIT) ===
+			DOTAGameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS
+		)
+	}
+	/** @ignore */
 	protected get IsEnemy() {
-		return this.owner.IsEnemy() && GameState.LocalTeam !== Team.Observer
+		return this.Owner.IsEnemy() && GameState.LocalTeam !== Team.Observer
 	}
 	/** @ignore */
 	public SetBuyBack() {
-		this.sleeper.Sleep(this.maxBuyBackCooldown * 1000, this.owner.PlayerID)
+		this.sleeper.Sleep(this.maxBuyBackCooldown * 1000, this.Owner.PlayerID)
 		this.SubtractGold(this.BuyBackCost)
 	}
 	/*** @ignore */
@@ -168,29 +203,30 @@ export class HeroTeamData {
 		this.goldAfterTimeAr.push([GameState.RawGameTime + sec, count])
 	}
 	/** @ignore */
-	public PostDataUpdate() {
-		if (this.IsEnemy) {
-			this.UpdateGoldPerMinute()
-			this.UpdateGoldAfterTime()
-			this.UpdatePhilosophersStone()
-		}
-		if (this.TeamData === undefined && !this.IsEnemy) {
-			this.TeamData = EntityManager.GetEntitiesByClass(TeamData).find(
-				x => x.Team === this.owner.Team
-			)
-		}
-		if (this.TeamData !== undefined && this.Player === undefined && !this.IsEnemy) {
-			this.Player = this.TeamData.DataTeam[this.owner.TeamSlot]
-		}
-	}
-	/** @ignore */
-	protected SubtractGold(amount: number) {
+	public SubtractGold(amount: number) {
 		if (this.Player === undefined || !this.IsEnemy) {
 			return
 		}
 		const unreliableCost = Math.min(this.unreliableGold, amount)
 		this.unreliableGold -= unreliableCost
 		this.reliableGold -= amount - unreliableCost
+	}
+	/** @ignore */
+	public UpdateTick() {
+		if (this.IsEnemy) {
+			this.UpdateGoldPerMinute()
+			this.UpdateGoldAfterTime()
+			this.UpdatePhilosophersStone()
+		}
+
+		if (this.TeamData === undefined && !this.IsEnemy) {
+			this.TeamData = EntityManager.GetEntitiesByClass(TeamData).find(
+				x => x.Team === this.Owner.Team
+			)
+		}
+		if (this.TeamData !== undefined && this.Player === undefined && !this.IsEnemy) {
+			this.Player = this.TeamData.DataTeam[this.Owner.TeamSlot]
+		}
 	}
 	/** @ignore */
 	protected UpdateGoldAfterTime() {
@@ -208,22 +244,22 @@ export class HeroTeamData {
 	}
 	/** @ignore */
 	protected UpdateGoldPerMinute() {
-		if (GameRules === undefined || GameRules.IsPaused) {
+		if (GameRules === undefined || !this.InProgress) {
 			return
 		}
 		if (GameRules.GameMode !== DOTAGameMode.DOTA_GAMEMODE_EVENT) {
-			this.counter.Update(this, this.gpm, true)
+			this.counter.Update(this, true)
 		}
 	}
 	/** @ignore */
 	protected UpdatePhilosophersStone() {
-		if (GameRules === undefined || GameRules.IsPaused) {
+		if (GameRules === undefined) {
 			return
 		}
 		if (GameRules.GameMode === DOTAGameMode.DOTA_GAMEMODE_EVENT) {
 			return
 		}
-		const itemStone = this.owner.GetAbilityByClass(item_philosophers_stone)
+		const itemStone = this.Owner.GetAbilityByClass(item_philosophers_stone)
 		if (itemStone === undefined || !itemStone.IsUsable) {
 			this.philosopherStoneCounter = undefined
 			return
@@ -233,11 +269,11 @@ export class HeroTeamData {
 			counter = new GPMCounter()
 			this.philosopherStoneCounter = counter
 		}
-		counter.Update(this, itemStone.GetSpecialValue("bonus_gpm"), false)
+		counter.Update(this, false, itemStone.GetSpecialValue("bonus_gpm"))
 	}
 	/** @ignore */
 	protected ReCalculateUnreliableGold() {
-		if (GameRules === undefined || !this.owner.IsEnemy()) {
+		if (GameRules === undefined || !this.Owner.IsEnemy()) {
 			return
 		}
 
@@ -246,7 +282,7 @@ export class HeroTeamData {
 			return
 		}
 
-		for (const item of this.owner.TotalItems) {
+		for (const item of this.Owner.TotalItems) {
 			if (item === undefined) {
 				continue
 			}

@@ -2,13 +2,20 @@ import { NetworkedParticle } from "../../Base/NetworkedParticle"
 import { Runes } from "../../Data/GameData"
 import { DOTA_CHAT_MESSAGE } from "../../Enums/DOTA_CHAT_MESSAGE"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
+import { Team } from "../../Enums/Team"
 import { alchemist_goblins_greed } from "../../Objects/Abilities/Alchemist/alchemist_goblins_greed"
+import { bounty_hunter_jinada } from "../../Objects/Abilities/BountyHunter/bounty_hunter_jinada"
+import { doom_bringer_devour } from "../../Objects/Abilities/DoomBringer/doom_bringer_devour"
 import { AetherRemnant } from "../../Objects/Base/AetherRemnant"
+import { Barrack } from "../../Objects/Base/Barrack"
+import { Building } from "../../Objects/Base/Building"
+import { Courier } from "../../Objects/Base/Courier"
 import { Entity, GameRules } from "../../Objects/Base/Entity"
 import { FakeUnit } from "../../Objects/Base/FakeUnit"
 import { Hero } from "../../Objects/Base/Hero"
 import { Player } from "../../Objects/Base/Player"
 import { Unit } from "../../Objects/Base/Unit"
+import { WardObserver } from "../../Objects/Base/WardObserver"
 import { HeroTeamData } from "../../Objects/DataBook/HeroTeamData"
 import { npc_dota_hero_arc_warden } from "../../Objects/Heroes/npc_dota_hero_arc_warden"
 import { npc_dota_hero_vengefulspirit } from "../../Objects/Heroes/npc_dota_hero_vengefulspirit"
@@ -17,7 +24,95 @@ import { GameState } from "../../Utils/GameState"
 import { EntityManager } from "../EntityManager"
 import { EventsSDK } from "../EventsSDK"
 
-/** @ignore */
+const enum TowerTier {
+	None,
+	T1,
+	T2,
+	T3,
+	T4
+}
+
+const buildingData = new (class BuildingData {
+	// https://dota2.fandom.com/wiki/Gold#Buildings
+	private readonly bonusTowerGold = 20
+	private readonly baseTowerGolds = [90, 110, 125, 145]
+	private readonly towerMapNames = new Map<string, TowerTier>([
+		["npc_dota_badguys_tower4", TowerTier.T4],
+		["npc_dota_badguys_tower1_mid", TowerTier.T1],
+		["npc_dota_badguys_tower2_mid", TowerTier.T2],
+		["npc_dota_badguys_tower3_mid", TowerTier.T3],
+		["npc_dota_badguys_tower1_bot", TowerTier.T1],
+		["npc_dota_badguys_tower2_bot", TowerTier.T2],
+		["npc_dota_badguys_tower3_bot", TowerTier.T3],
+		["npc_dota_badguys_tower1_top", TowerTier.T1],
+		["npc_dota_badguys_tower2_top", TowerTier.T2],
+		["npc_dota_badguys_tower3_top", TowerTier.T3]
+	])
+
+	protected get IsTurbo() {
+		return (
+			GameRules !== undefined &&
+			GameRules.GameMode === DOTAGameMode.DOTA_GAMEMODE_TURBO
+		)
+	}
+
+	public GetGoldTower(name: string, isDeny = false) {
+		const tier = this.GetTowerTierByName(name)
+		if (tier < 1) {
+			throw `Invalid tier: ${tier}`
+		}
+		let gold = this.baseTowerGolds[tier - 1]
+		if (isDeny) {
+			gold /= 2
+		}
+		if (this.IsTurbo) {
+			gold *= 2
+		}
+		return gold
+	}
+
+	public GetAverageGoldTower(name: string) {
+		const min = this.GetGoldTower(name) + this.bonusTowerGold
+		const max = min + this.bonusTowerGold
+		return (min + max) / 2
+	}
+
+	public GetGoldBarracks(isMelee: boolean) {
+		let gold = isMelee ? 155 : 90
+		if (this.IsTurbo) {
+			gold *= 2
+		}
+		return gold
+	}
+
+	public GetAverageGoldBarrack(_isMelee: boolean) {
+		const min = 90
+		const max = 135
+		let gold = (min + max) / 2
+		if (this.IsTurbo) {
+			gold *= 2
+		}
+		return gold
+	}
+
+	// ex: Filler
+	// Effigy_Statue maybe removed
+	public EffigyLastHit() {
+		let gold = 68
+		if (this.IsTurbo) {
+			gold *= 2
+		}
+		return gold
+	}
+
+	public GetTowerTierByName(name: string): TowerTier {
+		if (name.length === 0 || !this.towerMapNames.has(name)) {
+			throw `Invalid tower name: ${name}`
+		}
+		return this.towerMapNames.get(name)!
+	}
+})()
+
 const Monitor = new (class {
 	private BonusGoldHandOfMidas = 160
 	private readonly heroes = new Set<Hero>()
@@ -29,9 +124,20 @@ const Monitor = new (class {
 		"modifier_phantom_lancer_juxtapose_illusion"
 	]
 
+	protected get IsTurbo() {
+		return (
+			GameRules !== undefined &&
+			GameRules.GameMode === DOTAGameMode.DOTA_GAMEMODE_TURBO
+		)
+	}
+
+	public Tick(_dt: number) {
+		/** */
+	}
+
 	public PostDataUpdate() {
 		for (const hero of this.heroes) {
-			hero.HeroTeamData?.PostDataUpdate()
+			hero.HeroTeamData?.UpdateTick()
 		}
 	}
 
@@ -43,23 +149,30 @@ const Monitor = new (class {
 		value3: number,
 		...args: number[] // players (PlayerID)
 	) {
-		if (!this.IsAllowChatMessage(typeMessage)) {
-			return
+		switch (typeMessage) {
+			default:
+			case DOTA_CHAT_MESSAGE.CHAT_MESSAGE_HERO_KILL:
+				this.KillHeroMessageChanged(value, value2, value3, ...args)
+				break
+			case DOTA_CHAT_MESSAGE.CHAT_MESSAGE_ROSHAN_KILL:
+				this.KillRoshanMessageChanged(value, value2, value3, ...args)
+				break
+			case DOTA_CHAT_MESSAGE.CHAT_MESSAGE_COURIER_LOST:
+				this.KillCourierMessageChanged(value, value2, value3, ...args)
+				break
 		}
-
-		console.log(typeMessage, value, value2, value3, args)
 	}
 
 	public GameEvent(name: string, obj: any) {
 		switch (name) {
 			case "dota_buyback":
-				this.BuyBackChanged(obj.entindex)
+				this.buyBackChanged(obj.entindex)
 				break
 			case "entity_killed":
-				this.LastHitChanged(obj.entindex_killed, obj.entindex_attacker)
+				this.lastHitChanged(obj.entindex_killed, obj.entindex_attacker)
 				break
 			case "entity_hurt":
-				this.IllusionOrCloneGoldChanged(
+				this.illusionOrCloneGoldChanged(
 					obj.entindex_killed,
 					obj.entindex_attacker,
 					obj.server_tick
@@ -164,7 +277,10 @@ const Monitor = new (class {
 		switch (option.PathNoEcon) {
 			default:
 			case "particles/generic_gameplay/rune_bounty_owner.vpcf":
-				this.BountyGoldChanged(option)
+				this.bountyGoldChanged(option)
+				break
+			case "particles/units/heroes/hero_doom_bringer/doom_bringer_devour.vpcf":
+				this.devourGoldChanged(option)
 				break
 		}
 	}
@@ -173,19 +289,31 @@ const Monitor = new (class {
 		switch (option.PathNoEcon) {
 			default:
 			case "particles/items2_fx/hand_of_midas.vpcf":
-				this.HandOfMidasGoldChanged(option)
+				this.handOfMidasGoldChanged(option)
+				break
+			case "particles/units/heroes/hero_bounty_hunter/bounty_hunter_jinada.vpcf":
+				this.jinadaGoldChanged(option)
 				break
 		}
 	}
 
-	protected BuyBackChanged(entIndex: number) {
-		const hero = this.FindHeroByIndex(entIndex)
+	protected findHero(id: number, byPlayerID = false) {
+		for (const hero of this.heroes) {
+			if (!byPlayerID ? hero.HandleMatches(id) : hero.PlayerID === id) {
+				return hero
+			}
+		}
+		return undefined
+	}
+
+	private buyBackChanged(entIndex: number) {
+		const hero = this.findHero(entIndex)
 		if (hero !== undefined && hero.HeroTeamData !== undefined) {
 			hero.HeroTeamData.SetBuyBack()
 		}
 	}
 
-	protected LastHitChanged(indexKilled: number, indexAttacker: number) {
+	private lastHitChanged(indexKilled: number, indexAttacker: number) {
 		if (GameRules === undefined) {
 			return
 		}
@@ -197,6 +325,11 @@ const Monitor = new (class {
 			!(killer instanceof Unit) ||
 			target instanceof AetherRemnant
 		) {
+			return
+		}
+
+		if (target instanceof Building) {
+			this.KillBuildingChanged(killer, target)
 			return
 		}
 
@@ -225,7 +358,7 @@ const Monitor = new (class {
 		}
 
 		//  don't nothing, use dota chat message or any event
-		if (target.IsClone || target.IsIllusion) {
+		if (target.IsClone || target.IsIllusion || target instanceof Courier) {
 			return
 		}
 
@@ -234,17 +367,20 @@ const Monitor = new (class {
 			return
 		}
 
-		const glodMin = target.GoldBountyMin
-		const glodMax = target.GoldBountyMax
-		const isEqual = glodMin === glodMax
-		const isTurbo = GameRules.GameMode === DOTAGameMode.DOTA_GAMEMODE_TURBO
-		const totalGold = Math.floor(isEqual ? glodMax : glodMin + glodMax / 2)
+		let averageGold = !this.IsTurbo
+			? target.GoldBountyAverage
+			: target.GoldBountyAverage * 2
 
-		heroTeamData.UnreliableGold += isTurbo ? totalGold * 2 : totalGold
+		// https://dota2.fandom.com/wiki/Gold#Wards
+		if (target instanceof WardObserver) {
+			averageGold += (GameRules.GameTime / 60) * (!this.IsTurbo ? 4 : 8)
+		}
+
+		heroTeamData.UnreliableGold += averageGold
 		heroTeamData.LastHitCount++
 	}
 
-	protected IllusionOrCloneGoldChanged(
+	private illusionOrCloneGoldChanged(
 		indexKilled: number,
 		indexAttacker: number,
 		serverTick: number
@@ -273,22 +409,21 @@ const Monitor = new (class {
 		}
 	}
 
-	protected BountyGoldChanged(option: NetworkedParticle) {
+	private bountyGoldChanged(option: NetworkedParticle) {
 		if (GameRules === undefined) {
 			return
 		}
 
 		const owner = option.AttachedTo
-		const isTurbo = GameRules.GameMode === DOTAGameMode.DOTA_GAMEMODE_TURBO
 
 		let reliableGold = Runes.CalculateGoldBountyByTime(GameRules.GameTime)
-		if (isTurbo) {
+		if (this.IsTurbo) {
 			reliableGold *= 2
 		}
 
 		if (owner instanceof FakeUnit) {
 			if (owner.Name === "npc_dota_hero_alchemist") {
-				reliableGold *= isTurbo ? 1 : 2
+				reliableGold *= this.IsTurbo ? 1 : 2
 			}
 			this.fakeHeroes.set(owner, [owner, reliableGold])
 			return
@@ -303,7 +438,7 @@ const Monitor = new (class {
 			return
 		}
 
-		if (!isTurbo) {
+		if (!this.IsTurbo) {
 			const greed = owner.GetAbilityByClass(alchemist_goblins_greed)
 			const multiplier = greed?.GetSpecialValue("bounty_multiplier") ?? 1
 			reliableGold *= multiplier
@@ -312,33 +447,68 @@ const Monitor = new (class {
 		heroTeamData.ReliableGold += reliableGold
 	}
 
-	// WIP
-	protected DevourGoldChanged(option: NetworkedParticle) {
-		if (GameRules === undefined) {
+	private devourGoldChanged(option: NetworkedParticle) {
+		const caster = option.AttachedTo
+		if (!(caster instanceof Hero) || caster.HeroTeamData === undefined) {
 			return
 		}
 
-		console.log("DevourGoldChanged", option)
+		const devour = caster.GetAbilityByClass(doom_bringer_devour)
+		if (devour !== undefined) {
+			caster.HeroTeamData.AddGoldAfterTime(
+				devour.GetSpecialValue("bonus_gold"),
+				devour.MaxCooldown
+			)
+		}
 	}
 
-	// WIP
-	protected JinadaGoldChanged(option: NetworkedParticle) {
-		/** */
+	private jinadaGoldChanged(option: NetworkedParticle) {
+		const caster = option.ControlPointsEnt.get(0)
+		const target = option.ControlPointsEnt.get(1)
+
+		if (
+			caster === undefined ||
+			target === undefined ||
+			!(target[0] instanceof Hero) ||
+			!(caster[0] instanceof Hero)
+		) {
+			return
+		}
+
+		if (
+			caster[0].HeroTeamData === undefined ||
+			target[0].HeroTeamData === undefined
+		) {
+			return
+		}
+
+		const jinada = caster[0].GetAbilityByClass(bounty_hunter_jinada)
+		if (jinada === undefined) {
+			return
+		}
+
+		const casterTeamData = caster[0].HeroTeamData
+		const targetTeamData = target[0].HeroTeamData
+
+		const targetGold = targetTeamData.UnreliableGold + targetTeamData.ReliableGold
+		const goldSteal = Math.min(targetGold, jinada.GetSpecialValue("gold_steal"))
+
+		casterTeamData.UnreliableGold += goldSteal
+		targetTeamData.SubtractGold(goldSteal)
 	}
 
-	protected HandOfMidasGoldChanged(option: NetworkedParticle) {
+	private handOfMidasGoldChanged(option: NetworkedParticle) {
 		if (GameRules === undefined) {
 			return
 		}
 
 		const caster = option.ControlPointsEnt.get(1)
-		const isTurbo = GameRules.GameMode === DOTAGameMode.DOTA_GAMEMODE_TURBO
 		if (caster === undefined || caster[0] === undefined) {
 			return
 		}
 
 		if (caster[0] instanceof FakeUnit) {
-			const fakeGold = !isTurbo
+			const fakeGold = !this.IsTurbo
 				? this.BonusGoldHandOfMidas
 				: this.BonusGoldHandOfMidas * 2
 			this.fakeHeroes.set(caster[0], [caster[0], fakeGold])
@@ -350,7 +520,7 @@ const Monitor = new (class {
 			return
 		}
 
-		this.BonusGoldHandOfMidas = !isTurbo
+		this.BonusGoldHandOfMidas = !this.IsTurbo
 			? midas.GetSpecialValue("bonus_gold")
 			: midas.GetSpecialValue("bonus_gold") * 2
 
@@ -380,24 +550,137 @@ const Monitor = new (class {
 		}
 	}
 
-	private FindHeroByIndex(index: number) {
-		for (const hero of this.heroes) {
-			return hero.HandleMatches(index) ? hero : undefined
+	private KillHeroMessageChanged(
+		value: number,
+		value2: number,
+		value3: number,
+		...args: number[]
+	) {
+		const target = this.findHero(args[0], true)
+		const killer = this.findHero(args[1], true)
+		if (target === undefined || killer === undefined) {
+			return
+		}
+
+		// idk, Array.from(this.heroes) faster on 2-3% compared [...this.heroes.keys()]
+		const heroes = Array.from(this.heroes).filter(
+			x => x !== killer && !x.IsEnemy(killer) && target.Distance2D(x) <= 1500
+		)
+
+		const goldBetween = value2 / value3
+
+		for (const hero of heroes) {
+			const teamDataBetween = hero.HeroTeamData
+			if (teamDataBetween !== undefined) {
+				teamDataBetween.UnreliableGold += goldBetween
+			}
+		}
+
+		const teamDataKiller = killer.HeroTeamData
+		if (teamDataKiller !== undefined) {
+			teamDataKiller.UnreliableGold += value
+		}
+
+		const teamDataTarget = target.HeroTeamData
+		if (teamDataTarget !== undefined && !this.IsTurbo) {
+			teamDataTarget.UnreliableGold -= teamDataTarget.GoldLossOnDeath
 		}
 	}
 
-	// private FindHeroByPlayerID(playerID: number) {
-	// 	for (const hero of this.heroes) {
-	// 		return hero.PlayerID === playerID ? hero : undefined
-	// 	}
-	// }
-
-	private IsAllowChatMessage(typeMessage: DOTA_CHAT_MESSAGE) {
-		return (
-			typeMessage === DOTA_CHAT_MESSAGE.CHAT_MESSAGE_ROSHAN_KILL ||
-			typeMessage === DOTA_CHAT_MESSAGE.CHAT_MESSAGE_HERO_KILL
-		)
+	private KillRoshanMessageChanged(
+		value: number,
+		value2: number,
+		value3: number,
+		...args: number[]
+	) {
+		console.log("KillRoshanMessageChanged", value, value2, value3, args)
 	}
+
+	private KillCourierMessageChanged(
+		gold: number,
+		_value2: number,
+		_value3: number,
+		...args: number[]
+	) {
+		const killer = this.findHero(args[0], true)
+		if (killer !== undefined) {
+			this.addUnreliableGoldTeams(args[1], gold)
+		}
+	}
+
+	// https://dota2.fandom.com/wiki/Gold#Buildings
+	private KillBuildingChanged(killer: Unit, target: Building) {
+		if (killer instanceof Hero) {
+			const replicate = killer.ReplicatingOtherHeroModel
+			const heroTeamData = !killer.IsRealHero
+				? replicate instanceof Hero
+					? replicate.HeroTeamData
+					: undefined
+				: killer.HeroTeamData
+
+			if (heroTeamData === undefined) {
+				return
+			}
+
+			const isDeny = !killer.IsEnemy(target)
+
+			if (target instanceof Barrack) {
+				const team = killer.Team
+				const isRanged = target.IsRanged
+				this.addUnreliableGoldTeams(team, buildingData.GetGoldBarracks(isRanged))
+
+				const bonusGold = buildingData.GetAverageGoldBarrack(isRanged)
+
+				console.log(killer, isDeny, bonusGold)
+
+				heroTeamData.UnreliableGold += bonusGold
+				return
+			}
+
+			if (target.IsTower) {
+				// const goldTower = buildingData.GetGoldTower(target.Name, isDeny)
+				// this.addUnreliableGoldTeams(team, goldTower)
+				// ((GameRules.GameTime / 60) * 5)
+				const goldPerMinute = (GameRules!.GameTime / 60) * 5
+				const bonusGold = buildingData.GetAverageGoldTower(target.Name)
+				heroTeamData.UnreliableGold += bonusGold
+				return
+			}
+
+			return
+		}
+
+		console.log("KillTowerMessageChanged", killer, target)
+	}
+
+	private addUnreliableGoldTeams(gold: number, team: Team) {
+		for (const hero of this.heroes) {
+			if (hero.Team === team && hero.HeroTeamData !== undefined) {
+				hero.HeroTeamData.UnreliableGold += gold
+			}
+		}
+	}
+
+	// https://dota2.fandom.com/wiki/Gold#Lane_creeps
+	// we can calculate gold per minute for lane creeps
+	// private calculateGoldCreepByTime(
+	// 	gameTime: number,
+	// 	isSuperCreep: boolean,
+	// 	isTurbo = this.IsTurbo
+	// ) {
+	// 	// Increase in gold per minute based on game mode
+	// 	let increasePerMinute = isTurbo ? 3 : 1
+	// 	// Adjust increase per minute for super creeps
+	// 	if (isSuperCreep) {
+	// 		increasePerMinute = isTurbo ? 4.5 : 1.5
+	// 	}
+	// 	// Calculate the increase in gold per second
+	// 	const increasePerSecond = increasePerMinute / (60 * 7.5)
+	// 	// Calculate the total bounty gold earned based on game time
+	// 	const bountyGold = increasePerSecond * gameTime
+	// 	// Round down the bounty gold to the nearest integer
+	// 	return Math.floor(bountyGold)
+	// }
 })()
 
 EventsSDK.on(
@@ -445,4 +728,5 @@ EventsSDK.on(
 	Number.MIN_SAFE_INTEGER
 )
 
+EventsSDK.on("Tick", dt => Monitor.Tick(dt), Number.MIN_SAFE_INTEGER)
 EventsSDK.on("PostDataUpdate", () => Monitor.PostDataUpdate(), Number.MIN_SAFE_INTEGER)

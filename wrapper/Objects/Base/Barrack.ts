@@ -6,4 +6,12 @@ export class Barrack extends Building {
 	public get RingRadius(): number {
 		return 140
 	}
+
+	public get IsRanged(): boolean {
+		return (
+			this.Name === "bad_rax_range_top" ||
+			this.Name === "bad_rax_range_mid" ||
+			this.Name === "bad_rax_range_bot"
+		)
+	}
 }

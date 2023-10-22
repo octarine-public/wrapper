@@ -221,6 +221,11 @@ export class Unit extends Entity {
 	public get IsMyHero(): boolean {
 		return false
 	}
+
+	public get GoldBountyAverage(): number {
+		return (this.GoldBountyMin + this.GoldBountyMax) / 2
+	}
+
 	/* ======== modifierstate ======== */
 	public get IsIllusion(): boolean {
 		return this.IsIllusion_

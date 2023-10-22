@@ -1,7 +1,7 @@
 import { Runes } from "../../Data/GameData"
 import { WrapperClass } from "../../Decorators"
 import { RuneSpawnerType } from "../../Enums/RuneSpawnerType"
-import { RuneSpawner } from "../Extensions/RuneSpawner"
+import { RuneSpawner } from "./RuneSpawner"
 import { RegisterFieldHandler } from "../NativeToSDK"
 
 @WrapperClass("CDOTA_Item_RuneSpawner_Bounty")
