@@ -14,6 +14,7 @@ import { GameActivity } from "../../Enums/GameActivity"
 import { GridNavCellFlags } from "../../Enums/GridNavCellFlags"
 import { modifierstate } from "../../Enums/modifierstate"
 import { EPropertyType } from "../../Enums/PropertyType"
+import { Team } from "../../Enums/Team"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
@@ -41,8 +42,30 @@ const MAX_ITEMS = 16
 
 @WrapperClass("CDOTA_BaseNPC")
 export class Unit extends Entity {
+	public static IsVisibleForEnemies(unit: Unit): boolean {
+		// don't check not existing team (0), spectators (1), neutrals (4) and shop (5)
+		const validTeams = ~(
+			(1 << Team.None) |
+			(1 << Team.Observer) |
+			(1 << Team.Neutral) |
+			(1 << Team.Shop)
+		)
+		const entTeam = unit.Team
+		const localTeam = GameState.LocalTeam
+		const flags = unit.IsVisibleForTeamMask & validTeams
+		for (let i = 14; i--; ) {
+			if (i !== localTeam && i !== entTeam && (flags >> i) & 1) {
+				return true
+			}
+		}
+		return false
+	}
+
+	public IsVisibleForTeamMask = 0
+	public IsVisibleForEnemies_ = false
 	public UnitData = UnitData.empty
 	public readonly Inventory = new Inventory(this)
+
 	public IsTrueSightedForEnemies = false
 	public HasScepterModifier = false
 	public HasShardModifier = false
@@ -538,25 +561,35 @@ export class Unit extends Entity {
 	}
 
 	/**
-	 * @description Checks if the Unit is visible for enemies.
-	 * @param {number} seconds - The duration in seconds for which the Unit needs to be visible.
+	 * @description Determines if the unit is visible for enemies.
+	 * @param seconds - The duration in seconds for which the unit should be visible.
+	 * @param method - The method to use for checking visibility.
+	 *                  0: Old method
+	 *                  Default: Predicted method (buffs / cell / etc.)
 	 * @returns {boolean}
 	 */
-	public IsVisibleForEnemies(seconds: number = 2): boolean {
-		// Check if the Unit is visible for enemies in the current cell
-		if (this.cellIsVisibleForEnemies_) {
-			return true
+	public IsVisibleForEnemies(seconds: number = 2, method: number = 0): boolean {
+		switch (method) {
+			case 0: // old method
+				return this.IsVisibleForEnemies_
+			default: {
+				// predicted (buffs / cell / etc..) method
+				// Check if the Unit is visible for enemies in the current cell
+				if (this.cellIsVisibleForEnemies_) {
+					return true
+				}
+				// Check if the Unit has any buff that makes it visible for enemies
+				if (this.HasAnyBuffByNames(Modifier.VisibleForEnemies)) {
+					return true
+				}
+				// Check if the current game time is less than the time when the Unit
+				// was last visible for enemies plus the given duration
+				if (this.IsVisibleForEnemiesLastTime + seconds > GameState.RawGameTime) {
+					return true
+				}
+				return false
+			}
 		}
-		// Check if the Unit has any buff that makes it visible for enemies
-		if (this.HasAnyBuffByNames(Modifier.VisibleForEnemies)) {
-			return true
-		}
-		// Check if the current game time is less than the time when the Unit
-		// was last visible for enemies plus the given duration
-		if (this.IsVisibleForEnemiesLastTime + seconds > GameState.RawGameTime) {
-			return true
-		}
-		return false
 	}
 
 	public VelocityWaypoint(time: number, movespeed: number): Vector3 {
@@ -1369,6 +1402,18 @@ RegisterFieldHandler(Unit, "m_nameStringableIndex", unit => {
 		unit.UnitName_ = unit.Name_
 	}
 	UnitNameChanged(unit)
+})
+RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, newValue) => {
+	unit.IsVisibleForTeamMask = newValue as number
+	unit.IsVisibleForEnemies_ = Unit.IsVisibleForEnemies(unit)
+	if (unit.IsValid) {
+		EventsSDK.emit("UnitTeamVisibilityChanged", false, unit)
+	}
+})
+EventsSDK.on("LocalTeamChanged", () => {
+	for (const unit of Units) {
+		unit.IsVisibleForEnemies_ = Unit.IsVisibleForEnemies(unit)
+	}
 })
 RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", (unit, newVal) => {
 	unit.IsControllableByPlayerMask = newVal as bigint
