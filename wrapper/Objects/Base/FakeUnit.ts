@@ -5,23 +5,28 @@ import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { GameState } from "../../Utils/GameState"
 import { UnitData } from "../DataBook/UnitData"
 import { Entity } from "./Entity"
+import { Player } from "./Player"
 import { PlayerResource } from "./PlayerResource"
 import { Unit } from "./Unit"
 
 export class FakeUnit {
-	public TPStartTime = -1
 	public readonly PredictedPosition = new Vector3().Invalidate()
 	public readonly TPStartPosition = new Vector3().Invalidate()
 	public readonly TPEndPosition = new Vector3().Invalidate()
 	public readonly LastTPStartPosition = new Vector3().Invalidate()
 	public readonly LastTPEndPosition = new Vector3().Invalidate()
 	public Name = ""
+	public Level = 0
+	public TPStartTime = -1
+	// NOTE: Player set in -> Managers -> Monitors -> FakeUnitChanged
+	/** @readonly */
+	public Player: Nullable<Player>
 	private LastRealPredictedPositionUpdate_ = 0
 	private LastPredictedPositionUpdate_ = 0
 
 	constructor(
 		public readonly Index: number,
-		private Serial: number
+		private serial: number
 	) {}
 
 	public get LastRealPredictedPositionUpdate(): number {
@@ -43,7 +48,7 @@ export class FakeUnit {
 		this.LastPredictedPositionUpdate_ = val
 	}
 	public SerialMatches(serial: number): boolean {
-		return serial === 0 || this.Serial === 0 || serial === this.Serial
+		return serial === 0 || this.serial === 0 || serial === this.serial
 	}
 	public HandleMatches(handle: number): boolean {
 		const index = handle & EntityManager.INDEX_MASK
@@ -51,15 +56,17 @@ export class FakeUnit {
 		if (this.Index !== index) {
 			return false
 		}
-		if (this.Serial !== 0) {
+		if (this.serial !== 0) {
 			return this.SerialMatches(serial)
 		}
-		this.Serial = serial
+		this.serial = serial
 		return true
 	}
 	public EntityMatches(ent: Entity): boolean {
-		return ent.HandleMatches((this.Serial << EntityManager.INDEX_BITS) | this.Index)
+		return ent.HandleMatches((this.serial << EntityManager.INDEX_BITS) | this.Index)
 	}
+	// idk needed ? if we can find out Name in Player ?
+	// Player set in -> Managers -> Monitors -> FakeUnitChanged
 	public UpdateName(): void {
 		if (this.Name !== "") {
 			return
@@ -99,6 +106,7 @@ export function GetPredictionTarget(
 		fakeUnitsMap.set(index, fakeUnit)
 		FakeUnits.push(fakeUnit)
 		fakeUnit.UpdateName()
+		EventsSDK.emit("FakeUnitCreated", false, fakeUnit)
 	}
 	return fakeUnit
 }
@@ -110,6 +118,7 @@ EventsSDK.on("EntityCreated", ent => {
 	}
 	fakeUnitsMap.delete(ent.Index)
 	arrayRemove(FakeUnits, fakeUnit)
+	EventsSDK.emit("FakeUnitDestroyed", false, fakeUnit)
 	if (!(ent instanceof Unit)) {
 		return
 	}

@@ -62,10 +62,8 @@ export class Unit extends Entity {
 	}
 
 	public IsVisibleForTeamMask = 0
-	public IsVisibleForEnemies_ = false
 	public UnitData = UnitData.empty
 	public readonly Inventory = new Inventory(this)
-
 	public IsTrueSightedForEnemies = false
 	public HasScepterModifier = false
 	public HasShardModifier = false
@@ -168,8 +166,8 @@ export class Unit extends Entity {
 	public LastActivityEndTime = 0
 	public LastActivityAnimationPoint = 0
 	public Spawner: Nullable<NeutralSpawner>
+	/** @ignore */
 	public Spawner_ = 0
-
 	/** @readonly */
 	public CanUseItems = false
 	/** @readonly */
@@ -177,8 +175,9 @@ export class Unit extends Entity {
 	/** @readonly */
 	public IsVisibleForEnemiesLastTime = 0
 	/** @ignore */
+	public IsVisibleForEnemies_ = false
+	/** @ignore */
 	public cellIsVisibleForEnemies_ = false // TODO: calculate grid nav from enemies
-
 	/**
 	 * Demarcate recursions.
 	 * Recommended: use instanceof for get unique property
@@ -580,7 +579,7 @@ export class Unit extends Entity {
 			case 0: // old method
 				return this.IsVisibleForEnemies_
 			case 1: {
-				// old method
+				// new method
 				// predicted (buffs / cell / etc..) method
 				// Check if the Unit is visible for enemies in the current cell
 				if (this.cellIsVisibleForEnemies_) {
@@ -1509,50 +1508,6 @@ RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, newVal) => {
 	}
 })
 
-function OnAbilityChanged(ent: Ability) {
-	if (ent instanceof Item) {
-		for (const unit of Units) {
-			for (let i = 0, end = unit.TotalItems_.length; i < end; i++) {
-				if (ent.HandleMatches(unit.TotalItems_[i])) {
-					unit.TotalItems[i] = ent
-					ent.Owner_ = unit.Handle
-					ent.OwnerEntity = unit
-					EventsSDK.emit("UnitItemsChanged", false, unit)
-					break
-				}
-			}
-		}
-		return
-	}
-
-	for (const unit of Units) {
-		for (let i = 0, end = unit.Spells_.length; i < end; i++) {
-			if (ent.HandleMatches(unit.Spells_[i])) {
-				unit.Spells[i] = ent
-				ent.Owner_ = unit.Handle
-				ent.OwnerEntity = unit
-				EventsSDK.emit("UnitAbilitiesChanged", false, unit)
-				break
-			}
-		}
-	}
-}
-
-function OnWearableChanged(ent: Wearable) {
-	for (const unit of Units) {
-		for (let i = 0, end = unit.MyWearables_.length; i < end; i++) {
-			if (
-				ent.HandleMatches(unit.MyWearables_[i]) &&
-				!unit.MyWearables.includes(ent)
-			) {
-				unit.MyWearables.push(ent)
-				EventsSDK.emit("UnitWearablesChanged", false, unit)
-				break
-			}
-		}
-	}
-}
-
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof Unit) {
 		ent.CanUseItems = !ent.IsIllusion
@@ -1567,14 +1522,6 @@ EventsSDK.on("PreEntityCreated", ent => {
 				unit.Spawner = ent
 			}
 		}
-	}
-
-	if (ent instanceof Wearable) {
-		OnWearableChanged(ent)
-	}
-
-	if (ent instanceof Item || ent instanceof Ability) {
-		OnAbilityChanged(ent)
 	}
 
 	const owner = ent.Owner

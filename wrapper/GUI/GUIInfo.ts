@@ -149,19 +149,26 @@ export const GUIInfo = new (class CGUIInfo {
 		return hud
 	}
 	public DebugDraw(): void {
-		if (GameRules?.GameState !== DOTAGameState.DOTA_GAMERULES_STATE_HERO_SELECTION) {
-			this.TopBar.DebugDraw()
-			this.Minimap.DebugDraw()
-			this.Shop.DebugDraw()
-			if (InputManager.IsShopOpen) {
-				this.OpenShopLarge.DebugDraw()
-			}
-			this.GetLowerHUDForUnit()?.DebugDraw()
-			if (InputManager.IsScoreboardOpen) {
-				this.Scoreboard.DebugDraw()
-			}
-		} else {
-			this.PreGame.DebugDraw()
+		const gameState = GameRules?.GameState ?? DOTAGameState.DOTA_GAMERULES_STATE_INIT
+		switch (gameState) {
+			case DOTAGameState.DOTA_GAMERULES_STATE_PLAYER_DRAFT:
+			case DOTAGameState.DOTA_GAMERULES_STATE_STRATEGY_TIME:
+			case DOTAGameState.DOTA_GAMERULES_STATE_HERO_SELECTION:
+			case DOTAGameState.DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD:
+				this.PreGame.DebugDraw()
+				break
+			default:
+				this.TopBar.DebugDraw()
+				this.Minimap.DebugDraw()
+				this.Shop.DebugDraw()
+				if (InputManager.IsShopOpen) {
+					this.OpenShopLarge.DebugDraw()
+				}
+				this.GetLowerHUDForUnit()?.DebugDraw()
+				if (InputManager.IsScoreboardOpen) {
+					this.Scoreboard.DebugDraw()
+				}
+				break
 		}
 	}
 	public GetWidthScale(screenSize = RendererSDK.WindowSize): number {

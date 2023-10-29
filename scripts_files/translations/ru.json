@@ -67,5 +67,6 @@
 	"Updates notifications": "Оповещения об обновлениях",
 	"Notifications if scripts updated": "Уведомления при обновлении скриптов",
 	"Reload on click": "Обновить по нажатию",
-	"Reload scripts on click on notification": "Обновить скрипты по нажатию на уведомление"
+	"Reload scripts on click on notification": "Обновить скрипты по нажатию на уведомление",
+	"Settings reset": "Настройки сброшены"
 }

@@ -3,6 +3,15 @@ import { Building } from "./Building"
 
 @WrapperClass("CDOTA_BaseNPC_Barracks")
 export class Barrack extends Building {
+	/** @ignore */
+	constructor(
+		public readonly Index: number,
+		serial: number
+	) {
+		super(Index, serial)
+		this.IsBarrack = true
+	}
+
 	public get RingRadius(): number {
 		return 140
 	}

@@ -1,35 +1,15 @@
-import { Color } from "../../Base/Color"
-import { PlayerTeamData } from "../../Base/PlayerTeamData"
-import { Vector3 } from "../../Base/Vector3"
 import { DamageAmplifyPerIntellectPrecent } from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { EPropertyType } from "../../Enums/PropertyType"
-import { Team } from "../../Enums/Team"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
-import { HeroTeamData } from "../DataBook/HeroTeamData"
 import { LocalPlayer } from "./Entity"
 import { FakeUnit, GetPredictionTarget } from "./FakeUnit"
-import { PlayerResource } from "./PlayerResource"
 import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Hero")
 export class Hero extends Unit {
-	private static readonly colorRadiant: Color[] = [
-		new Color(0x33, 0x75, 0xff),
-		new Color(0x66, 0xff, 0xbf),
-		new Color(0xbf, 0x0, 0xbf),
-		new Color(0xf3, 0xf0, 0xb),
-		new Color(0xff, 0x6b, 0x0)
-	]
-	private static readonly colorDire: Color[] = [
-		new Color(0xfe, 0x86, 0xc2),
-		new Color(0xa1, 0xb4, 0x47),
-		new Color(0x65, 0xd9, 0xf7),
-		new Color(0x0, 0x83, 0x21),
-		new Color(0xa4, 0x69, 0x0)
-	]
 	@NetworkedBasicField("m_iAbilityPoints")
 	public AbilityPoints = 0
 	@NetworkedBasicField("m_iCurrentXP")
@@ -60,8 +40,6 @@ export class Hero extends Unit {
 	public TotalStrength = 0
 
 	/** @readonly */
-	public HeroTeamData: Nullable<HeroTeamData>
-	/** @readonly */
 	public ReplicatingOtherHeroModel: Nullable<Unit | FakeUnit>
 
 	/** @ignore */
@@ -71,16 +49,6 @@ export class Hero extends Unit {
 	) {
 		super(Index, serial)
 		this.IsHero = true
-	}
-	/**
-	 * The color of the hero.
-	 * @description Returns the color of the hero based on their team.
-	 * @returns {Color}
-	 */
-	public get PlayerColor(): Color {
-		return this.Team === Team.Dire
-			? Hero.colorDire[this.TeamSlot]
-			: Hero.colorRadiant[this.TeamSlot]
 	}
 	/**
 	 * Returns whether the hero is a real hero.
@@ -111,36 +79,6 @@ export class Hero extends Unit {
 	public get IsMyHero(): boolean {
 		return this === LocalPlayer?.Hero
 	}
-	/**
-	 * @description Gets the respawn position for the hero.
-	 * @returns {Vector3 | undefined}
-	 */
-	public get RespawnPosition(): Nullable<Vector3> {
-		return PlayerResource?.RespawnPositions[this.PlayerID]
-	}
-	/**
-	 * Retrieves the team slot of the hero.
-	 * @description The team slot of the hero. If the hero's team data is not available, return -1.
-	 * @returns {number}
-	 */
-	public get TeamSlot(): number {
-		return this.PlayerTeamData?.TeamSlot ?? -1
-	}
-	/**
-	 * @description Get the name of the player.
-	 * @returns {string | undefined}
-	 */
-	public get PlayerName(): Nullable<string> {
-		return PlayerResource?.PlayerData[this.PlayerID]?.Name
-	}
-	/**
-	 * @description Retrieves the team data for the hero.
-	 * @returns {PlayerTeamData | undefined}
-	 */
-	public get PlayerTeamData(): Nullable<PlayerTeamData> {
-		return PlayerResource?.PlayerTeamData[this.PlayerID]
-	}
-
 	public get SpellAmplification(): number {
 		return (
 			super.SpellAmplification +

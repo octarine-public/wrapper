@@ -1,13 +1,16 @@
 import { EntityPropertiesNode } from "../../Base/EntityProperties"
 import { NeutralSpawnBox } from "../../Base/NeutralSpawnBox"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { DOTACustomHeroPickRulesPhase } from "../../Enums/DOTACustomHeroPickRulesPhase"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
 import { DOTAGameState } from "../../Enums/DOTAGameState"
 import { EPropertyType } from "../../Enums/PropertyType"
+import { Team } from "../../Enums/Team"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GameState } from "../../Utils/GameState"
 import { Entity } from "../Base/Entity"
 import { StockInfo } from "./../../Base/StockInfo"
+import { TurboHeroPickRules } from "./TurboPickRules"
 
 @WrapperClass("CDOTAGamerulesProxy")
 export class CGameRules extends Entity {
@@ -30,6 +33,8 @@ export class CGameRules extends Entity {
 	public GameLoadTime = 0
 	@NetworkedBasicField("m_flStateTransitionTime")
 	public StateTransitionTime = 0
+	@NetworkedBasicField("m_flHeroPickStateTransitionTime")
+	public HeroPickStateTransitionTime: number = 0
 	@NetworkedBasicField("m_fGoodGlyphCooldown")
 	public GlyphCooldownRadiantTime = 0
 	@NetworkedBasicField("m_fBadGlyphCooldown")
@@ -45,15 +50,19 @@ export class CGameRules extends Entity {
 	@NetworkedBasicField("m_bIsNightstalkerNight")
 	public IsNightstalkerNight = false
 	@NetworkedBasicField("m_bIsTemporaryNight")
-	// public HeroPickState = DOTA_HeroPickState.DOTA_HEROPICK_STATE_NONE
-	// @NetworkedBasicField("m_nHeroPickState") // ?? return boolean
-	// public HeroMinimapIconScale = 0 // ?? return boolean
-	// @NetworkedBasicField("m_flHeroMinimapIconScale")
-	// public CreepMinimapIconScale = 0 // return bigint
-	// @NetworkedBasicField("m_flCreepMinimapIconScale")
 	public IsTemporaryNight = false
+	@NetworkedBasicField("m_nAllDraftPhase")
+	public AllDraftPhase = 0
 	@NetworkedBasicField("m_nLoadedPlayers")
 	public LoadedPlayers = 0
+	/**
+	 * @readonly
+	 * @description Only is supported immortal draft
+	 * */
+	@NetworkedBasicField("m_nPlayerDraftActiveTeam")
+	public PlayerDraftActiveTeam = Team.None
+	@NetworkedBasicField("m_bAllDraftRadiantFirst")
+	public AllDraftRadiantFirst = false
 	@NetworkedBasicField("m_unMatchID64", EPropertyType.UINT64)
 	public MatchID = 0n
 	public NeutralSpawnBoxes: NeutralSpawnBox[] = []
@@ -74,7 +83,6 @@ export class CGameRules extends Entity {
 				this.GameState !== DOTAGameState.DOTA_GAMERULES_STATE_PRE_GAME
 					? this.GameStartTime + this.GameLoadTime
 					: this.StateTransitionTime
-
 		return time - transitionTime
 	}
 	public get GlyphCooldownRadiant(): number {
@@ -91,7 +99,6 @@ export class CGameRules extends Entity {
 	}
 	public get IsInGame(): boolean {
 		const gameState = this.GameState
-
 		return (
 			gameState === DOTAGameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS ||
 			(gameState === DOTAGameState.DOTA_GAMERULES_STATE_PRE_GAME &&
@@ -113,6 +120,21 @@ export class CGameRules extends Entity {
 			this.GameState === DOTAGameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS &&
 			(this.GameTime / 60 / 5) % 2 >= 1
 		)
+	}
+
+	public get IsBanPhase() {
+		if (this.GameState !== DOTAGameState.DOTA_GAMERULES_STATE_HERO_SELECTION) {
+			return false
+		}
+		switch (this.GameMode) {
+			case DOTAGameMode.DOTA_GAMEMODE_AP:
+			case DOTAGameMode.DOTA_GAMEMODE_ALL_DRAFT:
+				return this.AllDraftPhase === 0 // any modes ?
+			case DOTAGameMode.DOTA_GAMEMODE_TURBO:
+				return TurboHeroPickRules?.Phase === DOTACustomHeroPickRulesPhase.Ban
+			default:
+				return false
+		}
 	}
 }
 

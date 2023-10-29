@@ -4,6 +4,7 @@ import { Notification } from "./AbstractNotification"
 import { Notifications, Queue } from "./Data"
 
 export { Notification } from "./AbstractNotification"
+export { ResetSettingsUpdated } from "./Prepared/ResetSettingsUpdated"
 
 export const NotificationsSDK = new (class CNotificationsSDK {
 	public size = 230

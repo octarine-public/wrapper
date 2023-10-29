@@ -405,6 +405,16 @@ interface EventsSDK extends EventEmitter {
 		listener: (unit: Unit) => void,
 		priority?: number
 	): EventEmitter
+	on(
+		name: "FakeUnitCreated",
+		listener: (unit: FakeUnit) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "FakeUnitDestroyed",
+		listener: (unit: FakeUnit) => void,
+		priority?: number
+	): EventEmitter
 }
 
 export const EventsSDK: EventsSDK = new EventEmitter()

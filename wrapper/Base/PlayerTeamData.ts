@@ -1,3 +1,4 @@
+import { LaneSelectionFlags } from "../Enums/LaneSelectionFlags"
 import { EntityPropertiesNode } from "./EntityProperties"
 import { PlayerEventData } from "./PlayerEventData"
 
@@ -115,7 +116,15 @@ export class PlayerTeamData {
 	public get SelectedHeroBadgeXP(): number {
 		return this.properties.get("m_unSelectedHeroBadgeXP") as number
 	}
-
+	public get LaneSelectionFlags(): LaneSelectionFlags {
+		return this.properties.get("m_eLaneSelectionFlags") as LaneSelectionFlags
+	}
+	public get PlayerDraftPreferredRoles(): LaneSelectionFlags {
+		return this.properties.get("m_nPlayerDraftPreferredRoles") as LaneSelectionFlags
+	}
+	public get PlayerDraftPreferredTeam(): number {
+		return this.properties.get("m_nPlayerDraftPreferredTeam") as number
+	}
 	public toJSON() {
 		return {
 			SelectedHeroID: this.SelectedHeroID,

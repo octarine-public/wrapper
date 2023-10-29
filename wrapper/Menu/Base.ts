@@ -17,12 +17,6 @@ export interface IMenu {
 	IsVisible: boolean
 }
 
-export interface ILanguage {
-	Ru: string
-	En: string
-	Cn: string
-}
-
 export class Base {
 	public static ForwardConfigASAP = false
 	public static SaveConfigASAP = true

@@ -26,18 +26,12 @@ export class Creep extends Unit {
 		)
 	}
 
-	public get IsMegaCreep() {
-		return (
-			this.Name === "npc_dota_creep_badguys_ranged_upgraded_mega" ||
-			this.Name === "npc_dota_creep_badguys_melee_upgraded_mega"
-		)
+	public get IsSuperCreep() {
+		return this.Name.endsWith("_upgraded")
 	}
 
-	public get IsSuperCreep() {
-		return (
-			this.Name === "npc_dota_creep_badguys_melee_upgraded" ||
-			this.Name === "npc_dota_creep_badguys_ranged_upgraded"
-		)
+	public get IsMegaCreep() {
+		return this.Name.endsWith("_upgraded_mega")
 	}
 
 	public get IsDeniable(): boolean {

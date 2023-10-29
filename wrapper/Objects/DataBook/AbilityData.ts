@@ -1,6 +1,7 @@
 import { ABILITY_TYPES } from "../../Enums/ABILITY_TYPES"
 import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
 import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
+import { DOTA_ITEM_DISASSEMBLE } from "../../Enums/DOTA_ITEM_DISASSEMBLE"
 import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
 import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
@@ -76,6 +77,9 @@ export class AbilityData {
 	public readonly HasScepterUpgrade: boolean
 	public readonly CastAnimation: Nullable<GameActivity>
 	public readonly LinkedAbility: string
+	public readonly ShouldBeInitiallySuggested: boolean
+	public readonly ItemStockInitial: Nullable<number>
+	public readonly ItemDisassembleRule: DOTA_ITEM_DISASSEMBLE
 
 	private readonly SpecialValueCache = new Map<
 		string,
@@ -221,9 +225,25 @@ export class AbilityData {
 		}
 		this.ItemResult = kv.get("ItemResult") as Nullable<string>
 		this.ItemQuality = kv.get("ItemQuality") as Nullable<string>
+
+		this.ItemStockInitial = kv.has("ItemStockInitial")
+			? parseInt(kv.get("ItemStockInitial") as string)
+			: undefined
+
+		this.ShouldBeInitiallySuggested = kv.has("ShouldBeInitiallySuggested")
+			? parseInt(kv.get("ShouldBeInitiallySuggested") as string) !== 0
+			: false
+
 		this.ItemStockTime = kv.has("ItemStockTime")
 			? parseInt(kv.get("ItemStockTime") as string)
 			: 0
+
+		this.ItemDisassembleRule = kv.has("ItemDisassembleRule")
+			? parseEnumString(
+					DOTA_ITEM_DISASSEMBLE,
+					kv.get("ItemDisassembleRule") as string
+			  )
+			: DOTA_ITEM_DISASSEMBLE.DOTA_ITEM_DISASSEMBLE_NONE
 	}
 
 	public GetSpecialValue(name: string, level: number): number {

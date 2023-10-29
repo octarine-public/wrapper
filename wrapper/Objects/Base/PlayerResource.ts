@@ -45,6 +45,7 @@ RegisterFieldHandler(CPlayerResource, "m_vecPlayerData", (playerResource, newVal
 		map => new PlayerData(map)
 	)
 	UpdateRespawnPositions(playerResource)
+	EventsSDK.emit("PlayerResourceUpdated", false, playerResource)
 })
 
 export let PlayerResource: Nullable<CPlayerResource>
@@ -59,9 +60,8 @@ EventsSDK.on("EntityDestroyed", ent => {
 	}
 })
 
-const GoodGuysSpawners = EntityManager.GetEntitiesByClass(InfoPlayerStartGoodGuys)
-
 const BadGuysSpawners = EntityManager.GetEntitiesByClass(InfoPlayerStartBadGuys)
+const GoodGuysSpawners = EntityManager.GetEntitiesByClass(InfoPlayerStartGoodGuys)
 
 function GetTeamDeaths(playerResource: CPlayerResource, team: Team) {
 	let deaths = 0

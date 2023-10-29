@@ -67,13 +67,13 @@ export class Item extends Ability {
 	 * @description Indicates whether the item is locked and cannot be combined.
 	 */
 	@NetworkedBasicField("m_bCombineLocked")
-	public IsCombineLocked = false
+	public IsCombineLocked: boolean = false
 	/**
 	 * @readonly
 	 * @description Indicates whether the item can be disassembled.
 	 */
 	@NetworkedBasicField("m_bDisassemblable")
-	public IsDisassemblable = false
+	public IsDisassemblable: boolean = false
 	/**
 	 * @readonly
 	 * @description Check if the item is killable.
