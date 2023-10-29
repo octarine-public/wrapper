@@ -561,18 +561,20 @@ export class Unit extends Entity {
 	}
 
 	/**
-	 * @description Determines if the unit is visible for enemies.
+	 * @description  Check if the unit is visible for enemies.
 	 * @param seconds - The duration in seconds for which the unit should be visible.
-	 * @param method - The method to use for checking visibility.
-	 *                  0: Old method
-	 *                  Default: Predicted method (buffs / cell / etc.)
+	 * @param method - The method of checking visibility.
+	 *     - 0: Old method (default).
+	 *     - 1: Predicted method (buffs / cell / etc..).
 	 * @returns {boolean}
 	 */
 	public IsVisibleForEnemies(seconds: number = 2, method: number = 0): boolean {
 		switch (method) {
+			default:
 			case 0: // old method
 				return this.IsVisibleForEnemies_
-			default: {
+			case 1: {
+				// old method
 				// predicted (buffs / cell / etc..) method
 				// Check if the Unit is visible for enemies in the current cell
 				if (this.cellIsVisibleForEnemies_) {
