@@ -635,6 +635,7 @@ export function ReloadGlobalAbilityStorage() {
 			LoadAbilityFile("scripts/npc/items.txt").entries(),
 			LoadAbilityFile("scripts/npc/npc_items_custom.txt").entries()
 		)
+
 		const fixedCache: RecursiveMap = new Map()
 		for (const [abilName, map] of abilsMap) {
 			if (map instanceof Map) {

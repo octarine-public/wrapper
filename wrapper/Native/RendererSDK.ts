@@ -378,7 +378,7 @@ class CRendererSDK {
 		round = -1,
 		vecSize = new Vector2(-1, -1),
 		color = Color.White,
-		rotationDeg = 0,
+		rotationDeg = 0, // not currently working?
 		customScissor?: Rectangle,
 		grayscale = false,
 		subtexOffset?: Vector2,
@@ -420,43 +420,43 @@ class CRendererSDK {
 			this.commandStream.WriteFloat32(vecSize.y)
 			this.commandStream.WriteColor(color)
 			this.commandStream.WriteBoolean(grayscale)
-		} else {
-			if (customScissor !== undefined) {
-				this.SetScissor(customScissor)
-			}
-			this.Translate(vecPos)
-			this.Rotate(rotationDeg)
-			if (round >= 0) {
-				this.AllocateCommandSpace(CommandID.PATH_ADD_ELLIPSE, 4 * 4)
-				this.commandStream.WriteFloat32(halfRound)
-				this.commandStream.WriteFloat32(halfRound)
-				this.commandStream.WriteFloat32(vecSize.x - halfRound)
-				this.commandStream.WriteFloat32(vecSize.y - halfRound)
-			} else {
-				this.AllocateCommandSpace(CommandID.PATH_ADD_RECT, 4 * 4)
-				this.commandStream.WriteFloat32(0)
-				this.commandStream.WriteFloat32(0)
-				this.commandStream.WriteFloat32(vecSize.x)
-				this.commandStream.WriteFloat32(vecSize.y)
-			}
-			const flags = PathFlags.FILL | PathFlags.IMAGESHADER
-			const sizeX = subtexSize?.x ?? origSize.x,
-				sizey = subtexSize?.y ?? origSize.y
-			this.Path(
-				1,
-				color,
-				color,
-				flags,
-				grayscale,
-				LineCap.Square,
-				LineJoin.Round,
-				textureID,
-				(subtexOffset?.x ?? 0) * (vecSize.x / sizeX),
-				(subtexOffset?.y ?? 0) * (vecSize.x / sizey),
-				vecSize.x * (origSize.x / sizeX),
-				vecSize.y * (origSize.y / sizey)
-			)
+			return
 		}
+		if (customScissor !== undefined) {
+			this.SetScissor(customScissor)
+		}
+		this.Translate(vecPos)
+		this.Rotate(rotationDeg)
+		if (round >= 0) {
+			this.AllocateCommandSpace(CommandID.PATH_ADD_ELLIPSE, 4 * 4)
+			this.commandStream.WriteFloat32(halfRound)
+			this.commandStream.WriteFloat32(halfRound)
+			this.commandStream.WriteFloat32(vecSize.x - halfRound)
+			this.commandStream.WriteFloat32(vecSize.y - halfRound)
+		} else {
+			this.AllocateCommandSpace(CommandID.PATH_ADD_RECT, 4 * 4)
+			this.commandStream.WriteFloat32(0)
+			this.commandStream.WriteFloat32(0)
+			this.commandStream.WriteFloat32(vecSize.x)
+			this.commandStream.WriteFloat32(vecSize.y)
+		}
+		const flags = PathFlags.FILL | PathFlags.IMAGESHADER
+		const sizeX = subtexSize?.x ?? origSize.x,
+			sizey = subtexSize?.y ?? origSize.y
+		this.Path(
+			1,
+			color,
+			color,
+			flags,
+			grayscale,
+			LineCap.Square,
+			LineJoin.Round,
+			textureID,
+			(subtexOffset?.x ?? 0) * (vecSize.x / sizeX),
+			(subtexOffset?.y ?? 0) * (vecSize.x / sizey),
+			vecSize.x * (origSize.x / sizeX),
+			vecSize.y * (origSize.y / sizey)
+		)
 	}
 	public GetImageSize(path: string): Vector2 {
 		return this.tex2size.get(this.GetTexture(path)) ?? new Vector2(1, 1)
@@ -571,7 +571,6 @@ class CRendererSDK {
 
 		this.Text(text, vecMouse, color, fontName, fontSize, weight, italic, outlined)
 	}
-
 	public BeforeDraw(w: number, h: number) {
 		this.inDraw = true
 		const prevWidth = this.WindowSize.x,
