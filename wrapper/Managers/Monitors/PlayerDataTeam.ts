@@ -144,34 +144,18 @@ const LaneSelection = new (class CPlayerLaneSelection {
 		if (members.length > 10) {
 			return
 		}
-		this.laneSelection[0].push(
-			[0, LaneSelectionFlags.MID_LANE],
-			[1, LaneSelectionFlags.OFF_LANE],
-			[2, LaneSelectionFlags.Core],
-			[3, LaneSelectionFlags.HARD_SUPPORT],
-			[4, LaneSelectionFlags.ALL]
-		)
-
-		this.laneSelection[1].push(
-			[0, LaneSelectionFlags.MID_LANE],
-			[1, LaneSelectionFlags.OFF_LANE],
-			[2, LaneSelectionFlags.ALL],
-			[3, LaneSelectionFlags.HARD_SUPPORT],
-			[4, LaneSelectionFlags.SOFT_SUPPORT]
-		)
-
-		// this.laneSelection[0] = members
-		// 	.filter(member => member.get("team") === 0)
-		// 	.map(member => [
-		// 		member.get("slot") as number,
-		// 		member.get("lane_selection_flags") as Nullable<LaneSelectionFlags>
-		// 	])
-		// this.laneSelection[1] = members
-		// 	.filter(member => member.get("team") === 1)
-		// 	.map(member => [
-		// 		member.get("slot") as number,
-		// 		member.get("lane_selection_flags") as Nullable<LaneSelectionFlags>
-		// 	])
+		this.laneSelection[0] = members
+			.filter(member => member.get("team") === 0)
+			.map(member => [
+				member.get("slot") as number,
+				member.get("lane_selection_flags") as Nullable<LaneSelectionFlags>
+			])
+		this.laneSelection[1] = members
+			.filter(member => member.get("team") === 1)
+			.map(member => [
+				member.get("slot") as number,
+				member.get("lane_selection_flags") as Nullable<LaneSelectionFlags>
+			])
 	}
 
 	public PlayerResourceСhanged() {

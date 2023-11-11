@@ -1,4 +1,5 @@
 import { Color } from "../../Base/Color"
+import { DataTeamPlayer } from "../../Base/DataTeamPlayer"
 import { Vector3 } from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
@@ -221,8 +222,14 @@ export class Player extends Entity {
 	public get PlayerTeamData() {
 		return PlayerResource?.GetPlayerTeamDataByPlayerID(this.PlayerID)
 	}
-	// TODO: description
-	public get DataTeamPlayer() {
+	/**
+	 * Retrieves the DataTeamPlayer for the current player.
+	 * @description The  for the current player. If the player is a spectator,
+	 * the DataTeamPlayer of the player's team and slot is returned. If the player is not
+	 * an enemy, the DataTeamPlayer of the first team and slot is returned. Otherwise, `undefined` is returned.
+	 * @return {DataTeamPlayer}
+	 */
+	public get DataTeamPlayer(): Nullable<DataTeamPlayer> {
 		const arrTeamData = Array.from(Player.TeamData)
 		if (LocalPlayer?.IsSpectator) {
 			return arrTeamData.find(x => x.Team === this.Team)?.DataTeam[this.TeamSlot]
@@ -394,7 +401,6 @@ export class Player extends Entity {
 			this.UpdateGoldAfterTime()
 		}
 	}
-
 	/**
 	 * @ignore
 	 * @internal
