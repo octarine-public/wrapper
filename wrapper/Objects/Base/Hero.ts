@@ -79,6 +79,7 @@ export class Hero extends Unit {
 	public get IsMyHero(): boolean {
 		return this === LocalPlayer?.Hero
 	}
+
 	public get SpellAmplification(): number {
 		return (
 			super.SpellAmplification +

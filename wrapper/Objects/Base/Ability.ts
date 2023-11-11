@@ -19,6 +19,8 @@ import { Unit } from "./Unit"
 @WrapperClass("CDOTABaseAbility")
 export class Ability extends Entity {
 	public readonly AbilityData: AbilityData
+	/** @readonly */
+	public IsEmpty = false
 	@NetworkedBasicField("m_bInIndefiniteCooldown")
 	public IsInIndefiniteCooldown = false
 	@NetworkedBasicField("m_bActivated")
@@ -78,6 +80,28 @@ export class Ability extends Entity {
 		this.AbilityData = AbilityData.globalStorage.get(name) ?? AbilityData.empty
 	}
 
+	/**
+	 * @description Determines if the Ability should be drawable
+	 * @return {boolean}
+	 */
+	public get ShouldBeDrawable(): boolean {
+		if (this.IsEmpty || this.MaxLevel === 0) {
+			return false
+		}
+		if (this.Name.startsWith("seasonal_")) {
+			return false
+		}
+		return !this.HasTargetFlags(
+			DOTA_UNIT_TARGET_FLAGS.DOTA_UNIT_TARGET_FLAG_INVULNERABLE
+		)
+	}
+	/**
+	 * @description A boolean indicating whether the ability is an ultimate ability
+	 * @return {boolean}
+	 */
+	public get IsUltimate(): boolean {
+		return this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE
+	}
 	/**
 	 * @description Determines if the ability can hit a spell immune enemy.
 	 * @returns {boolean}
