@@ -10,6 +10,7 @@ import { GameActivity } from "../../Enums/GameActivity"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
 import { Unit } from "../Base/Unit"
+import { UnitData } from "./UnitData"
 
 function LoadAbilityFile(path: string): RecursiveMap {
 	const res = parseKV(path).get("DOTAAbilities")
@@ -630,6 +631,9 @@ export function ReloadGlobalAbilityStorage() {
 	AbilityData.globalStorage.clear()
 	try {
 		const abilsMap = createMapFromMergedIterators<string, RecursiveMapValue>(
+			...Array.from(UnitData.globalStorage.keys())
+				.filter(name => name.includes("npc_dota_hero_"))
+				.map(name => LoadAbilityFile(`scripts/npc/heroes/${name}.txt`).entries()),
 			LoadAbilityFile("scripts/npc/npc_abilities.txt").entries(),
 			LoadAbilityFile("scripts/npc/npc_abilities_custom.txt").entries(),
 			LoadAbilityFile("scripts/npc/items.txt").entries(),
