@@ -80,6 +80,7 @@ export function DeleteEntity(id: number): void {
 
 	EventsSDK.emit("EntityDestroyed", false, entity)
 	entity.IsVisible = false
+	EventsSDK.emit("EntityVisibleChanged", false, entity)
 	AllEntitiesAsMap.delete(id)
 	for (const classEntities of ClassToEntitiesAr.get(entity.constructor as any)!) {
 		ArrayExtensions.arrayRemove(classEntities, entity)
@@ -193,6 +194,7 @@ function ParseEntityUpdate(
 	}
 	if (ent !== undefined) {
 		ent.IsVisible = true
+		EventsSDK.emit("EntityVisibleChanged", false, ent)
 		if (entWasCreated) {
 			ent.IsValid = false
 		}
@@ -306,6 +308,7 @@ function ParseEntityPacket(stream: ReadableBinaryStream): void {
 				if (ent !== undefined) {
 					ent.BecameDormantTime = GameState.RawGameTime
 					ent.IsVisible = false
+					EventsSDK.emit("EntityVisibleChanged", false, ent)
 				}
 				break
 			}
