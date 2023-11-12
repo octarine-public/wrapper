@@ -410,6 +410,14 @@ export class Unit extends Entity {
 	public get ManaPercent(): number {
 		return toPercentage(this.Mana, this.MaxMana)
 	}
+	/**
+	 * The decimal representation of the mana percentage.
+	 * @description Calculates the decimal representation of the mana percentage
+	 * @return {number}
+	 */
+	public get ManaPercentDecimal(): number {
+		return this.ManaPercent / 100
+	}
 	public get MinimapIcon(): string {
 		return this.UnitData.MinimapIcon
 	}

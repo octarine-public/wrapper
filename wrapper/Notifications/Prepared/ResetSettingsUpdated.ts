@@ -7,7 +7,7 @@ import { RendererSDK } from "../../Native/RendererSDK"
 import { Notification } from "../AbstractNotification"
 
 export class ResetSettingsUpdated extends Notification {
-	constructor(timeToShow: number = 6 * 1000) {
+	constructor(timeToShow: number = 4 * 1000) {
 		super({ timeToShow })
 	}
 

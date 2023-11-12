@@ -208,6 +208,14 @@ export class Entity {
 	public get HPPercent(): number {
 		return toPercentage(this.HP, this.MaxHP)
 	}
+	/**
+	 * The HP percentage as a decimal value.
+	 * @description Returns the HP percentage as a decimal value.
+	 * @return {number}
+	 */
+	public get HPPercentDecimal(): number {
+		return this.HPPercent / 100
+	}
 	public get IsAlive(): boolean {
 		return (
 			this.LifeState === LifeState.LIFE_ALIVE ||

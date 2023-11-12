@@ -3,6 +3,11 @@ import { Team } from "../Enums/Team"
 import { AbilityData } from "../Objects/DataBook/AbilityData"
 
 export const Paths = new (class BaseImageData {
+	public readonly Wrapper = "github.com/octarine-public/wrapper"
+	public readonly WrapperImages = `${this.Wrapper}/scripts_files/images`
+
+	public readonly Runes = `${this.WrapperImages}/runes`
+
 	public readonly Images = "panorama/images"
 	public readonly Hero = `${this.Images}/heroes`
 	public readonly HeroIcons = `${this.Hero}/icons`
@@ -73,11 +78,11 @@ export const Paths = new (class BaseImageData {
 		icon_combat_log: `${this.reborn}/icon_combat_log_psd.vtex_c`,
 		empty_slot: `${this.reborn}/inventory_item_well_psd.vtex_c`,
 		magic_resist: `${this.reborn}/icon_magic_resist_psd.vtex_c`,
-		// TODO: ult_ready_blind: `${this.PathFiles}/images/panels/ult_ready_blind_psd.png`,
-		// TODO: arrow_gold_dif_blind: `${this.PathFiles}/images/panels/arrow_gold_dif_blind_psd.png`,
-		// TODO: bg_deathsummary: `${this.PathFiles}/images/panels/item_purchase_bg_psd.png`,
-		courier_dire: "images/couriers/dire.png",
-		courier_radiant: "images/couriers/radiant.png"
+		ult_ready_blind: `${this.WrapperImages}/panels/ult_ready_blind_psd.png`,
+		arrow_gold_dif_blind: `${this.WrapperImages}/panels/arrow_gold_dif_blind_psd.png`,
+		bg_deathsummary: `${this.WrapperImages}/panels/item_purchase_bg_psd.png`,
+		courier_dire: `${this.WrapperImages}/couriers/dire.png`,
+		courier_radiant: `${this.WrapperImages}/couriers/radiant.png`
 	}
 })()
 
@@ -110,7 +115,12 @@ export function GetCourier(small?: boolean, team?: Team): string {
 		: Paths.Icons.courier_radiant
 }
 
-// TODO: spells, items, runes
+export function GetRune(name: string, small?: boolean): string {
+	return !small
+		? Paths.Runes + "/" + name + ".png"
+		: Paths.Runes + "/mini/" + name + ".png"
+}
+
 export function GetEntity(entityName: string, small?: boolean, team?: Team): string {
 	team ??= Team.Radiant
 	switch (true) {

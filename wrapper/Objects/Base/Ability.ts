@@ -245,11 +245,12 @@ export class Ability extends Entity {
 	public get TexturePath(): string {
 		return this.AbilityData.TexturePath
 	}
-
 	public get IsPassive(): boolean {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
 	}
-
+	public get IsToggle(): boolean {
+		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
+	}
 	/**
 	 * In real time cooldown (in fog)
 	 */
@@ -257,6 +258,12 @@ export class Ability extends Entity {
 		return Math.max(
 			this.Cooldown_ - (GameState.RawGameTime - this.CooldownChangeTime),
 			0
+		)
+	}
+	public get BaseCooldown() {
+		return (
+			Math.max(this.AbilityData.GetMaxCooldownForLevel(this.Level), 0) ||
+			Math.max(this.GetSpecialValue("AbilityCooldown"), 0)
 		)
 	}
 	public get MaxDuration(): number {
