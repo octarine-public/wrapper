@@ -3,6 +3,7 @@ import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { SOType } from "../Enums/SOType"
 import { ExecuteOrder } from "../Native/ExecuteOrder"
+import { Ability } from "../Objects/Base/Ability"
 import { Entity } from "../Objects/Base/Entity"
 import { FakeUnit } from "../Objects/Base/FakeUnit"
 import { Modifier } from "../Objects/Base/Modifier"
@@ -403,6 +404,11 @@ interface EventsSDK extends EventEmitter {
 	on(
 		name: "EntityVisibleChanged",
 		listener: (entity: Entity) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "IsInAbilityPhase",
+		listener: (ability: Ability) => void,
 		priority?: number
 	): EventEmitter
 	on(

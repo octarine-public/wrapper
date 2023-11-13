@@ -153,6 +153,14 @@ export class Item extends Ability {
 	@NetworkedBasicField("m_iCurrentCharges")
 	public ItemCurrentCharges: number = 0
 
+	public get Cooldown() {
+		let cooldown = super.Cooldown
+		if (this.IsItem && this.EnableTime > GameState.RawGameTime) {
+			cooldown = Math.max(cooldown, this.EnableTime - GameState.RawGameTime)
+		}
+		return cooldown
+	}
+
 	public get IsReady(): boolean {
 		const unit = this.Owner
 		return (

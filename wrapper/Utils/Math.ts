@@ -222,3 +222,13 @@ export function toPercentage(currentValue: number, maxValue?: number): number {
 	// Convert the value to a percentage and return it
 	return newValue(value) * 100
 }
+
+export function FormatTime(time: number, isChat = false) {
+	time = Math.ceil(time)
+	return (
+		Math.floor(time / 60) +
+		(!isChat ? ":" : " ") +
+		(time % 60 < 10 ? "0" : "") +
+		(time % 60)
+	)
+}

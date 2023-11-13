@@ -8,10 +8,12 @@ import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
 import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
+import { EventsSDK } from "../../Managers/EventsSDK"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { HasMask, MaskToArrayNumber } from "../../Utils/BitsExtensions"
 import { GameState } from "../../Utils/GameState"
+import { toPercentage } from "../../Utils/Math"
 import { AbilityData } from "../DataBook/AbilityData"
 import { Entity } from "./Entity"
 import { Unit } from "./Unit"
@@ -248,20 +250,64 @@ export class Ability extends Entity {
 	public get IsPassive(): boolean {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
 	}
-	/**
-	 * In real time cooldown (in fog)
-	 */
 	public get Cooldown(): number {
 		return Math.max(
 			this.Cooldown_ - (GameState.RawGameTime - this.CooldownChangeTime),
 			0
 		)
 	}
+	/**
+	 * The cooldown percentage.
+	 * @description Returns the cooldown percentage based on the current cooldown and maximum cooldown.
+	 * @return {number}
+	 */
+	public get CooldownPercent(): number {
+		return toPercentage(this.Cooldown, this.MaxCooldown)
+	}
+	/**
+	 * Calculates the cooldown percentage.
+	 * @description The cooldown percentage as a decimal value.
+	 * @return {number}
+	 */
+	public get CooldownPercentDecimal(): number {
+		return this.CooldownPercent / 100
+	}
+	/**
+	 * @description The remaining cooldown duration for the CooldownDuration property.
+	 * @return {number}
+	 */
+	public get CooldownDuration(): number {
+		return Math.max(
+			this.MaxDuration - (GameState.RawGameTime - this.CastStartTime),
+			0
+		)
+	}
+	/**
+	 * @description The cooldown duration as a percentage.
+	 * @return {number}
+	 */
+	public get CooldownDurationPercent(): number {
+		return toPercentage(this.CooldownDuration, this.MaxDuration)
+	}
+	/**
+	 * @description The cooldown duration as a decimal value.
+	 * @return {number}
+	 */
+	public get CooldownDurationPercentDecimal(): number {
+		return this.CooldownDurationPercent / 100
+	}
+	/**
+	 * @description example: Axe Culling blade, Legion commander Duel and others
+	 * @return {number}
+	 */
 	public get StackCount(): number {
 		return 0
 	}
 	public get MaxDuration(): number {
-		return this.AbilityData.GetMaxDurationForLevel(this.Level)
+		return (
+			this.GetSpecialValue("duration") ||
+			this.AbilityData.GetMaxDurationForLevel(this.Level)
+		)
 	}
 	public get MaxCooldown(): number {
 		return (
@@ -449,6 +495,7 @@ RegisterFieldHandler(
 RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, newValue) => {
 	abil.IsInAbilityPhase_ = newValue as boolean
 	abil.IsInAbilityPhaseChangeTime = GameState.RawGameTime
+	EventsSDK.emit("IsInAbilityPhase", false, abil)
 })
 RegisterFieldHandler(Ability, "m_fCooldown", (abil, newValue) => {
 	abil.Cooldown_ = newValue as number

@@ -82,7 +82,8 @@ export const Paths = new (class BaseImageData {
 		arrow_gold_dif_blind: `${this.WrapperImages}/panels/arrow_gold_dif_blind_psd.png`,
 		bg_deathsummary: `${this.WrapperImages}/panels/item_purchase_bg_psd.png`,
 		courier_dire: `${this.WrapperImages}/couriers/dire.png`,
-		courier_radiant: `${this.WrapperImages}/couriers/radiant.png`
+		courier_radiant: `${this.WrapperImages}/couriers/radiant.png`,
+		icon_levelup_button_3: `${this.reborn}/levelup_button_3_psd.vtex_c`
 	}
 })()
 

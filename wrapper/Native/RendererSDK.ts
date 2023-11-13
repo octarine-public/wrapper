@@ -3,6 +3,7 @@ import { QAngle } from "../Base/QAngle"
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
+import { TextFlags } from "../Enums/TextFlags"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputManager } from "../Managers/InputManager"
 import { ParseMaterial } from "../Resources/ParseMaterial"
@@ -74,6 +75,10 @@ class Font {
 }
 
 class CRendererSDK {
+	// Looks like it's hardcoded
+	// Do not change it unless anything breaks.
+	public readonly ProportionalBase = 1080
+
 	public readonly DefaultFontName = "Roboto"
 	public readonly DefaultTextSize = 18
 	/**
@@ -115,7 +120,25 @@ class CRendererSDK {
 		const cv = ConVarsSDK.GetFloat("dota_camera_distance", -1)
 		return cv !== -1 ? cv : 1200
 	}
-
+	public GetWidthScale(screenSize = this.WindowSize): number {
+		let screenHeight = screenSize.y
+		if (screenSize.x === 1280 && screenHeight === 1024) {
+			screenHeight = 960
+		} else if (screenSize.x === 720 && screenHeight === 576) {
+			screenHeight = 540
+		}
+		return screenHeight / this.ProportionalBase
+	}
+	public GetHeightScale(screenSize = RendererSDK.WindowSize): number {
+		const screenHeight = screenSize.y
+		return screenHeight / this.ProportionalBase
+	}
+	public ScaleWidth(w: number, screenSize = RendererSDK.WindowSize): number {
+		return Math.round(w * this.GetWidthScale(screenSize))
+	}
+	public ScaleHeight(h: number, screenSize = RendererSDK.WindowSize): number {
+		return Math.round(h * this.GetHeightScale(screenSize))
+	}
 	/**
 	 * @param pos world position that needs to be turned to screen position
 	 * @returns screen position, or undefined
@@ -518,6 +541,24 @@ class CRendererSDK {
 			this.commandStream.WriteColor(color)
 			this.commandStream.RelativeSeek(cmdSize - (this.commandStream.pos - newPos))
 		}
+	}
+	public TextByFlags(
+		text: string,
+		recPosition: Rectangle,
+		division = 1.2,
+		flags = TextFlags.Center,
+		width = 600,
+		fontName = this.DefaultFontName,
+		italic = false,
+		outlined = true
+	) {
+		const digits = text.slice().replace(/\d/g, "0")
+		const size = recPosition.Height / Math.max(division, 1.2)
+		const getTextSize = this.GetTextSize(digits, fontName, size, width, italic)
+		const textSize = Vector2.FromVector3(getTextSize)
+		const position = this.flagPositionBox(textSize, recPosition, flags)
+		this.Text(text, position, Color.White, fontName, size, width, italic, outlined)
+		return new Rectangle(position, textSize)
 	}
 	/**
 	 * @returns text size defined as new Vector3(width, height, underLine)
@@ -1110,6 +1151,71 @@ class CRendererSDK {
 		res.x = Math.min(Math.max(res.x, 0), 1)
 		res.y = Math.min(Math.max(res.y, 0), 1)
 		return res.MultiplyForThis(vecSize)
+	}
+	private flagPositionBox(newPos: Vector2, box: Rectangle, flag: TextFlags) {
+		const position = newPos
+			.MultiplyScalarForThis(-1)
+			.AddScalarX(box.Width)
+			.AddScalarY(box.Height)
+		switch (true) {
+			case HasMask(flag, TextFlags.Center):
+				return position
+					.DivideScalarForThis(2)
+					.AddScalarX(box.x)
+					.AddScalarY(box.y)
+					.RoundForThis()
+			case HasMask(flag, TextFlags.Top):
+				return position
+					.DivideScalarForThis(2)
+					.AddScalarX(box.x)
+					.AddScalarY(box.y - position.y)
+					.RoundForThis()
+			case HasMask(flag, TextFlags.Bottom):
+				position
+					.DivideScalarForThis(2)
+					.AddScalarX(box.x)
+					.AddScalarY(box.y + position.y)
+					.RoundForThis()
+			case HasMask(flag, TextFlags.Top | TextFlags.Left):
+				return position
+					.DivideScalarForThis(2)
+					.AddScalarX(box.x - position.x)
+					.AddScalarY(box.y - position.y)
+					.RoundForThis()
+			case HasMask(flag, TextFlags.Top | TextFlags.Right):
+				return position
+					.DivideScalarForThis(2)
+					.AddScalarX(box.x + position.x)
+					.AddScalarY(box.y - position.y)
+					.RoundForThis()
+			case HasMask(flag, TextFlags.Bottom | TextFlags.Left):
+				return position
+					.DivideScalarForThis(2)
+					.AddScalarX(box.x - position.x)
+					.AddScalarY(box.y + position.y)
+					.RoundForThis()
+				break
+			case HasMask(flag, TextFlags.Bottom | TextFlags.Right):
+				return position
+					.DivideScalarForThis(2)
+					.AddScalarX(box.x + position.x)
+					.AddScalarY(box.y + position.y)
+					.RoundForThis()
+			case HasMask(flag, TextFlags.Center | TextFlags.Left):
+				return position
+					.DivideScalarForThis(2)
+					.AddScalarX(box.x - position.x)
+					.AddScalarY(box.y)
+					.RoundForThis()
+			case HasMask(flag, TextFlags.Center | TextFlags.Right):
+				return position
+					.DivideScalarForThis(2)
+					.AddScalarX(box.x + position.x)
+					.AddScalarY(box.y)
+					.RoundForThis()
+			default:
+				return position
+		}
 	}
 }
 
