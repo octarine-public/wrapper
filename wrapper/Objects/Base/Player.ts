@@ -106,9 +106,6 @@ export class Player extends Entity {
 	/** @redonly */
 	public QuickBuyItems: number[] = []
 
-	/** @redonly */
-	public LaneSelectionFlags = LaneSelectionFlags.None
-
 	/**
 	 * @internal
 	 * @ignore
@@ -147,6 +144,20 @@ export class Player extends Entity {
 			this.Team === Team.Shop
 		)
 	}
+
+	/**
+	 * The LaneSelectionFlags for the player.
+	 * @description Returns the LaneSelectionFlags for the player.
+	 * @return {LaneSelectionFlags}
+	 */
+	public get LaneSelectionFlags(): LaneSelectionFlags {
+		const pTeamData = this.PlayerTeamData
+		if (pTeamData === undefined) {
+			return LaneSelectionFlags.None
+		}
+		return pTeamData.PlayerDraftPreferredRoles || pTeamData.LaneSelectionFlags
+	}
+
 	/**
 	 * @description Returns array the selected player roles.
 	 * @return {Array<LaneSelection>}

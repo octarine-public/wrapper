@@ -2,8 +2,6 @@ import { NetworkedParticle } from "../../Base/NetworkedParticle"
 import { Runes } from "../../Data/GameData"
 import { DOTA_CHAT_MESSAGE } from "../../Enums/DOTA_CHAT_MESSAGE"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
-import { LaneSelectionFlags } from "../../Enums/LaneSelectionFlags"
-import { SOType } from "../../Enums/SOType"
 import { Team } from "../../Enums/Team"
 import { alchemist_goblins_greed } from "../../Objects/Abilities/Alchemist/alchemist_goblins_greed"
 import { bounty_hunter_jinada } from "../../Objects/Abilities/BountyHunter/bounty_hunter_jinada"
@@ -21,7 +19,6 @@ import { Item } from "../../Objects/Base/Item"
 import { Modifier } from "../../Objects/Base/Modifier"
 import { GPMCounter, Player, Players } from "../../Objects/Base/Player"
 import { PlayerPawn } from "../../Objects/Base/PlayerPawn"
-import { CPlayerResource } from "../../Objects/Base/PlayerResource"
 import { TeamData } from "../../Objects/Base/TeamData"
 import { Unit } from "../../Objects/Base/Unit"
 import { WardObserver } from "../../Objects/Base/WardObserver"
@@ -126,102 +123,6 @@ const buildingData = new (class CBuildingData {
 	}
 })()
 
-const LaneSelection = new (class CPlayerLaneSelection {
-	private readonly laneSelection: [number, Nullable<LaneSelectionFlags>][][] = [[], []]
-
-	public SharedObjectChanged(id: SOType, reason: number, msg: RecursiveMap) {
-		if (id !== SOType.Lobby) {
-			return
-		}
-		if (reason === 2) {
-			this.laneSelection[0] = []
-			this.laneSelection[1] = []
-		}
-		if (reason !== 0) {
-			return
-		}
-		const members = msg.get("all_members") as RecursiveMap[]
-		if (members.length > 10) {
-			return
-		}
-		this.laneSelection[0] = members
-			.filter(member => member.get("team") === 0)
-			.map(member => [
-				member.get("slot") as number,
-				member.get("lane_selection_flags") as Nullable<LaneSelectionFlags>
-			])
-		this.laneSelection[1] = members
-			.filter(member => member.get("team") === 1)
-			.map(member => [
-				member.get("slot") as number,
-				member.get("lane_selection_flags") as Nullable<LaneSelectionFlags>
-			])
-	}
-
-	public PlayerResourceСhanged() {
-		for (const player of Players) {
-			if (player.PlayerID === -1 || player.TeamSlot === -1) {
-				continue
-			}
-			const currLaneSelections = this.LaneSelectionTeam(player.Team)
-			const dataLaneSelections = currLaneSelections.find(
-				([slotId]) => slotId === player.TeamSlot
-			)
-			if (dataLaneSelections !== undefined && dataLaneSelections[1] !== undefined) {
-				player.LaneSelectionFlags = dataLaneSelections[1]
-				continue
-			}
-			const playerTeamData = player.PlayerTeamData
-			if (playerTeamData === undefined) {
-				continue
-			}
-			let playerTeamDataFlags = playerTeamData.PlayerDraftPreferredRoles
-			if (playerTeamDataFlags === undefined) {
-				playerTeamDataFlags = playerTeamData.LaneSelectionFlags
-			}
-			if (playerTeamDataFlags !== undefined) {
-				player.LaneSelectionFlags = playerTeamDataFlags
-			}
-		}
-	}
-
-	public GameEvent(playerid1: number, playerid2: number): void {
-		const target = Players.find(player => player.PlayerID === playerid1)
-		const caster = Players.find(player => player.PlayerID === playerid2)
-		if (target === undefined || caster === undefined) {
-			return
-		}
-		const tCurrLaneSelections = this.LaneSelectionTeam(target.Team).find(
-			([slotId]) => slotId === target.TeamSlot
-		)
-		const cCurrLaneSelections = this.LaneSelectionTeam(caster.Team).find(
-			([slotId]) => slotId === caster.TeamSlot
-		)
-		if (
-			tCurrLaneSelections === undefined ||
-			cCurrLaneSelections === undefined ||
-			tCurrLaneSelections[1] !== LaneSelectionFlags.None ||
-			cCurrLaneSelections[1] !== LaneSelectionFlags.None
-		) {
-			return
-		}
-		tCurrLaneSelections[0] = playerid2
-		cCurrLaneSelections[0] = playerid1
-	}
-
-	private LaneSelectionTeam(team?: Team) {
-		team ??= GameState.LocalTeam
-		switch (team) {
-			case Team.Radiant:
-				return this.laneSelection[1]
-			case Team.Dire:
-				return this.laneSelection[0]
-			default:
-				return []
-		}
-	}
-})()
-
 const Monitor = new (class CPlayerGold {
 	private fakeGoldHandOfMidas = 160
 	private readonly playersItems = new Map<Player, Item[]>()
@@ -254,9 +155,6 @@ const Monitor = new (class CPlayerGold {
 	public EntityChanged(entity: Entity, destroyed = false) {
 		if (entity instanceof Item && destroyed) {
 			this.TotalItemsDestroyed(entity)
-		}
-		if (entity instanceof CPlayerResource && !destroyed) {
-			LaneSelection.PlayerResourceСhanged()
 		}
 		if (entity instanceof Player && destroyed) {
 			this.playersItems.delete(entity)
@@ -350,9 +248,6 @@ const Monitor = new (class CPlayerGold {
 
 	public GameEvent(name: string, obj: any) {
 		switch (name) {
-			case "dota_hero_swap":
-				LaneSelection.GameEvent(obj.playerid1, obj.playerid2)
-				break
 			case "dota_buyback":
 				this.findPlayer(obj.entindex)?.SetBuyBack()
 				break
@@ -389,10 +284,6 @@ const Monitor = new (class CPlayerGold {
 				this.jinadaParticleChanged(option)
 				break
 		}
-	}
-
-	public SharedObjectChanged(id: SOType, reason: number, msg: RecursiveMap) {
-		LaneSelection.SharedObjectChanged(id, reason, msg)
 	}
 
 	private lastHitAndGoldChanged(indexKilled: number, indexAttacker: number) {
@@ -1182,19 +1073,6 @@ EventsSDK.on(
 	mod => Monitor.ModifierChanged(mod, true),
 	Number.MIN_SAFE_INTEGER
 )
-
-EventsSDK.on(
-	"PlayerResourceUpdated",
-	() => LaneSelection.PlayerResourceСhanged(),
-	Number.MIN_SAFE_INTEGER
-)
-
-EventsSDK.on(
-	"SharedObjectChanged",
-	(typeID, reason, data) => Monitor.SharedObjectChanged(typeID, reason, data),
-	Number.MIN_SAFE_INTEGER
-)
-
 EventsSDK.on("EntityDestroyed", entity => Monitor.EntityChanged(entity, true))
 
 EventsSDK.on("GameStarted", () => Monitor.GameStarted(), Number.MIN_SAFE_INTEGER)
