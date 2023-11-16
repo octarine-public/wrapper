@@ -230,11 +230,14 @@ export class Player extends Entity {
 	 * @return {DataTeamPlayer}
 	 */
 	public get DataTeamPlayer(): Nullable<DataTeamPlayer> {
-		const arrTeamData = Array.from(Player.TeamData)
+		const arr = Array.from(Player.TeamData)
 		if (LocalPlayer?.IsSpectator) {
-			return arrTeamData.find(x => x.Team === this.Team)?.DataTeam[this.TeamSlot]
+			return arr.find(x => x.Team === this.Team)?.DataTeam[this.TeamSlot]
 		}
-		return !this.IsEnemy() ? arrTeamData[0].DataTeam[this.TeamSlot] : undefined
+		if (this.IsEnemy()) {
+			return
+		}
+		return arr[0]?.DataTeam[this.TeamSlot]
 	}
 	/**
 	 * @description Returns the net worth of the hero.

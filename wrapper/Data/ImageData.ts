@@ -12,6 +12,9 @@ export const Paths = new (class BaseImageData {
 	public readonly Hero = `${this.Images}/heroes`
 	public readonly HeroIcons = `${this.Hero}/icons`
 
+	public readonly ItemIcons = `${this.Images}/items`
+	public readonly AbilityIcons = `${this.Images}/spellicons`
+
 	private readonly hud = `${this.Images}/hud`
 	private readonly mask = `${this.Images}/masks`
 	private readonly reborn = `${this.hud}/reborn`
@@ -87,11 +90,22 @@ export const Paths = new (class BaseImageData {
 	}
 })()
 
-const getTexturePath = (name: string): string =>
-	AbilityData.GetAbilityByName(name)?.TexturePath ?? ""
+const getTexturePath = (name: string, isItem = false): string => {
+	const abilityData = AbilityData.GetAbilityByName(name)
+	if (abilityData !== undefined) {
+		return abilityData.TexturePath
+	}
+	if (!isItem) {
+		return Paths.AbilityIcons + "/" + name + "_png.vtex_c"
+	}
+	name = !name.includes("recipe_")
+		? name.replace("item_", "")
+		: name.replace("item_", "recipe_")
+	return Paths.ItemIcons + "/" + name + "_png.vtex_c"
+}
 
 export function GetItem(name: string): string {
-	return getTexturePath(name)
+	return getTexturePath(name, true)
 }
 
 export function GetSpell(name: string): string {
