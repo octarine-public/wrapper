@@ -870,6 +870,13 @@ const Monitor = new (class CPlayerGold {
 
 	// TODO: add after support neutral creeps & fix total
 	private TotalItemsChanged(player: Nullable<Entity>, unit: Unit) {
+		if (
+			(unit instanceof Unit && unit.IsIllusion) ||
+			(unit instanceof Hero && !unit.IsRealHero)
+		) {
+			return
+		}
+
 		if (player === undefined || !(player instanceof Player)) {
 			return
 		}
@@ -878,9 +885,15 @@ const Monitor = new (class CPlayerGold {
 			return
 		}
 
-		const newTotalItems = unit.TotalItems.filter(
-			x => x !== undefined && x.Cost !== 0
-		) as Item[]
+		const items: Nullable<Item>[] = []
+
+		if (!unit.IsHero) {
+			items.push(...unit.TotalItems)
+		} else {
+			items.push(...player.Hero.TotalItems)
+		}
+
+		const newTotalItems = items.filter(x => x !== undefined && x.Cost !== 0) as Item[]
 
 		let oldItems = this.playersItems.get(player)
 		if (oldItems === undefined) {
@@ -981,6 +994,12 @@ const Monitor = new (class CPlayerGold {
 	private TotalItemsDestroyed(item: Item) {
 		let player = item.Owner ?? item.Purchaser?.Owner
 		if (player === undefined) {
+			return
+		}
+		if (
+			(player instanceof Unit && player.IsIllusion) ||
+			(player instanceof Hero && !player.IsRealHero)
+		) {
 			return
 		}
 		if (!(player instanceof Player)) {

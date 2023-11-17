@@ -144,7 +144,6 @@ export class Player extends Entity {
 			this.Team === Team.Shop
 		)
 	}
-
 	/**
 	 * The LaneSelectionFlags for the player.
 	 * @description Returns the LaneSelectionFlags for the player.
@@ -157,13 +156,20 @@ export class Player extends Entity {
 		}
 		return pTeamData.PlayerDraftPreferredRoles || pTeamData.LaneSelectionFlags
 	}
-
 	/**
 	 * @description Returns array the selected player roles.
 	 * @return {Array<LaneSelection>}
 	 */
 	public get LaneSelections(): LaneSelection[] {
 		return MaskToArrayNumber(this.LaneSelectionFlags)
+	}
+	/**
+	 * TODO: need test
+	 * @description Determines whether the player chooses a hero
+	 * @return {boolean}
+	 */
+	public get IsPreparedSelectionHero(): boolean {
+		return (this.PlayerTeamData?.SelectedHeroID ?? -1) === 0
 	}
 	/**
 	 * @description Checks if the instance is the local player.
@@ -513,7 +519,7 @@ export class Player extends Entity {
 			const [time, gold] = ar
 			if (GameState.RawGameTime >= time) {
 				deletedGold.push(ar)
-				this.UnreliableGold += gold
+				this.unreliableGold += gold
 			}
 		}
 		for (const ar of deletedGold) {
