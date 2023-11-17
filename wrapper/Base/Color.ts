@@ -1,5 +1,27 @@
 export class Color {
 	/**
+	 * @description Player color | Index arr (playerID)
+	 * @type {Array<Color>}
+	 */
+	public static readonly PlayerColorDire: Color[] = [
+		new Color(0xfe, 0x86, 0xc2),
+		new Color(0xa1, 0xb4, 0x47),
+		new Color(0x65, 0xd9, 0xf7),
+		new Color(0x0, 0x83, 0x21),
+		new Color(0xa4, 0x69, 0x0)
+	]
+	/**
+	 * @description Player color | Index arr (playerID)
+	 * @type {Array<Color>}
+	 */
+	public static readonly PlayerColorRadiant: Color[] = [
+		new Color(0x33, 0x75, 0xff),
+		new Color(0x66, 0xff, 0xbf),
+		new Color(0xbf, 0x0, 0xbf),
+		new Color(0xf3, 0xf0, 0xb),
+		new Color(0xff, 0x6b, 0x0)
+	]
+	/**
 	 * Create new Color with r, g, b, a
 	 *
 	 * @example

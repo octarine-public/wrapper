@@ -1391,14 +1391,18 @@ function GetLocalTeam(): Team {
 	return team
 }
 
-EventsSDK.on("MidDataUpdate", () => {
+function UpdateLocalTeam() {
 	const team = GetLocalTeam()
 	if (GameState.LocalTeam === team) {
 		return
 	}
 	GameState.LocalTeam = team
 	EventsSDK.emit("LocalTeamChanged", false)
-})
+}
+
+EventsSDK.on("PlayerResourceUpdated", () => UpdateLocalTeam())
+
+EventsSDK.on("PlayerCustomDataUpdated", () => UpdateLocalTeam())
 
 Events.on("Draw", (visualData, w, h, x, y) => {
 	InputManager.UpdateCursorOnScreen(x, y)

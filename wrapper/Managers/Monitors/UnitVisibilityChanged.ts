@@ -60,7 +60,7 @@ const Monitor = new (class {
 		}
 
 		parent.IsVisibleForEnemiesLastTime = GameState.RawGameTime
-		EventsSDK.emit("UnitVisibilityChanged", false, parent)
+		EventsSDK.emit("UnitVBEModifierChanged", false, parent)
 	}
 
 	public UnitItemsChanged(unit: Unit) {

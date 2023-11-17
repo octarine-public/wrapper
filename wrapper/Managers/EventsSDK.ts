@@ -10,6 +10,7 @@ import { Modifier } from "../Objects/Base/Modifier"
 import { CPlayerResource } from "../Objects/Base/PlayerResource"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import { Unit } from "../Objects/Base/Unit"
+import { PlayerCustomData } from "../Objects/DataBook/PlayerCustomData"
 import { RecursiveProtobuf } from "../Utils/Protobuf"
 import { EventEmitter } from "./Events"
 
@@ -290,6 +291,11 @@ interface EventsSDK extends EventEmitter {
 		priority?: number
 	): EventEmitter
 	on(
+		name: "UnitVBEModifierChanged",
+		listener: (unit: Unit) => void,
+		priority?: number
+	): EventEmitter
+	on(
 		name: "ModifierRemoved",
 		listener: (mod: Modifier) => void,
 		priority?: number
@@ -378,7 +384,7 @@ interface EventsSDK extends EventEmitter {
 		priority?: number
 	): EventEmitter
 	/** if the properties of an unit have changed
-	 * (for e.x: Unit#IsClone, Unit#CanUseItems, Unit#CanUseAbilities) */
+	 * (for e.x: Unit#IsClone, Unit#IsIllusion, Unit#CanUseItems, Unit#CanUseAbilities) */
 	on(
 		name: "UnitPropertyChanged",
 		listener: (unit: Unit) => void,
@@ -396,24 +402,20 @@ interface EventsSDK extends EventEmitter {
 		listener: (unit: Unit) => void,
 		priority?: number
 	): EventEmitter
-	on(
-		name: "UnitVisibilityChanged",
-		listener: (unit: Unit) => void,
-		priority?: number
-	): EventEmitter
+	/** Equivalently to Entity#IsVisible */
 	on(
 		name: "EntityVisibleChanged",
 		listener: (entity: Entity) => void,
 		priority?: number
 	): EventEmitter
 	on(
-		name: "IsInAbilityPhase",
-		listener: (ability: Ability) => void,
+		name: "UnitTeamVisibilityChanged",
+		listener: (unit: Unit) => void,
 		priority?: number
 	): EventEmitter
 	on(
-		name: "UnitTeamVisibilityChanged",
-		listener: (unit: Unit) => void,
+		name: "IsInAbilityPhase",
+		listener: (ability: Ability) => void,
 		priority?: number
 	): EventEmitter
 	on(
@@ -424,6 +426,11 @@ interface EventsSDK extends EventEmitter {
 	on(
 		name: "FakeUnitDestroyed",
 		listener: (unit: FakeUnit) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "PlayerCustomDataUpdated",
+		listener: (player: PlayerCustomData) => void,
 		priority?: number
 	): EventEmitter
 }

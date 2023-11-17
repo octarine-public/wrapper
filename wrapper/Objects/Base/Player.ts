@@ -1,7 +1,7 @@
 import { Color } from "../../Base/Color"
 import { DataTeamPlayer } from "../../Base/DataTeamPlayer"
 import { Vector3 } from "../../Base/Vector3"
-import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { ReencodeProperty, WrapperClass } from "../../Decorators"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
 import { DOTAGameState } from "../../Enums/DOTAGameState"
 import { EShareAbility } from "../../Enums/EShareAbility"
@@ -15,6 +15,7 @@ import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { MaskToArrayNumber } from "../../Utils/BitsExtensions"
 import { GameState } from "../../Utils/GameState"
+import { PlayerCustomData } from "../DataBook/PlayerCustomData"
 import { UnitData } from "../DataBook/UnitData"
 import { RegisterFieldHandler } from "../NativeToSDK"
 import { Entity, GameRules, LocalPlayer } from "./Entity"
@@ -63,39 +64,7 @@ export class GPMCounter {
 
 @WrapperClass("CDOTAPlayerController")
 export class Player extends Entity {
-	// arr index (PlayerID)
-	public static readonly ColorRadiant: Color[] = [
-		new Color(0x33, 0x75, 0xff),
-		new Color(0x66, 0xff, 0xbf),
-		new Color(0xbf, 0x0, 0xbf),
-		new Color(0xf3, 0xf0, 0xb),
-		new Color(0xff, 0x6b, 0x0)
-	]
-	// arr index (PlayerID)
-	public static readonly ColorDire: Color[] = [
-		new Color(0xfe, 0x86, 0xc2),
-		new Color(0xa1, 0xb4, 0x47),
-		new Color(0x65, 0xd9, 0xf7),
-		new Color(0x0, 0x83, 0x21),
-		new Color(0xa4, 0x69, 0x0)
-	]
-	/** @redonly */
-	public static readonly TeamData = new Set<TeamData>()
-
-	/**
-	 * @readonly
-	 * @description Get the steamID of the player.
-	 * @returns {bigint | -1n}
-	 */
-	@NetworkedBasicField("m_steamID")
-	public readonly SteamID: bigint = -1n
-	/**
-	 * @readonly
-	 * @description Get the name of the player.
-	 * @returns {string | undefined}
-	 */
-	@NetworkedBasicField("m_iszPlayerName")
-	public readonly PlayerName: Nullable<string>
+	public static readonly TeamData = new Set<TeamData>() // TODO remove
 
 	/** @redonly */
 	public Hero: Nullable<Hero>
@@ -107,34 +76,39 @@ export class Player extends Entity {
 	public QuickBuyItems: number[] = []
 
 	/**
-	 * @internal
 	 * @ignore
+	 * @internal
 	 */
-	public ItemsGold = 0
+	public ItemsGold = 0 // TODO remove
+
+	/**
+	 * @ignore
+	 * @internal
+	 */
+	public hero_ = -1
+	/**
+	 * @ignore
+	 * @internal
+	 */
+	public pawn_ = -1
+	/**
+	 * @ignore
+	 * @internal
+	 */
+	public playerID_ = -1
 
 	/** @ignore */
-	@NetworkedBasicField("m_hAssignedHero")
-	public readonly Hero_ = -1
+	private denyCount = 0 // TODO remove
+	private lastHitCount = 0 // TODO remove
 
-	/** @ignore */
-	@NetworkedBasicField("m_nPlayerID", EPropertyType.INT32)
-	private readonly PlayerID_ = -1
-
-	/** @ignore */
-	@NetworkedBasicField("m_hPawn", EPropertyType.UINT32)
-	private readonly Pawn_ = -1
-
-	private denyCount = 0
-	private lastHitCount = 0
-
-	private reliableGold = 0
+	private reliableGold = 0 // TODO remove
 	/** base start gold */
-	private unreliableGold = 600
+	private unreliableGold = 600 // TODO remove
 
-	private readonly maxBuyBackCooldown = 480
-	private readonly sleeper = new GameSleeper()
-	private readonly goldAfterTimeAr: [number, number][] = []
-	private readonly counters = new Map<string, GPMCounter>([["GPM", new GPMCounter()]])
+	private readonly maxBuyBackCooldown = 480 // TODO remove
+	private readonly sleeper = new GameSleeper() // TODO remove
+	private readonly goldAfterTimeAr: [number, number][] = [] // TODO remove
+	private readonly counters = new Map<string, GPMCounter>([["GPM", new GPMCounter()]]) // TODO remove
 
 	public get IsSpectator(): boolean {
 		return (
@@ -143,6 +117,21 @@ export class Player extends Entity {
 			this.Team === Team.None ||
 			this.Team === Team.Shop
 		)
+	}
+
+	/**
+	 * @description Get the steamID of the player.
+	 * @returns {bigint | undefined}
+	 */
+	public get SteamID(): Nullable<bigint> {
+		return PlayerCustomData.get(this.PlayerID)?.SteamID
+	}
+	/**
+	 * @description Get the name of the player.
+	 * @returns {string | undefined}
+	 */
+	public get PlayerName(): Nullable<string> {
+		return PlayerCustomData.get(this.PlayerID)?.PlayerName
 	}
 	/**
 	 * The LaneSelectionFlags for the player.
@@ -194,7 +183,7 @@ export class Player extends Entity {
 	 * @returns {number | -1}
 	 */
 	public get PlayerID(): number {
-		return this.Hero?.PlayerID ?? this.PlayerID_
+		return this.Hero?.PlayerID ?? this.playerID_
 	}
 	/**
 	 * Retrieves the team slot of the hero.
@@ -212,8 +201,8 @@ export class Player extends Entity {
 	public get PlayerColor(): Color {
 		return (
 			(this.Team === Team.Dire
-				? Player.ColorDire[this.TeamSlot]
-				: Player.ColorRadiant[this.TeamSlot]) ?? Color.Red
+				? Color.PlayerColorDire[this.TeamSlot]
+				: Color.PlayerColorRadiant[this.TeamSlot]) ?? Color.Red
 		)
 	}
 	/**
@@ -372,11 +361,6 @@ export class Player extends Entity {
 		return this.PlayerTeamData?.HasRandomed ?? false
 	}
 
-	public IsEnemy(ent?: Entity): boolean {
-		ent ??= LocalPlayer?.IsSpectator ?? true ? this : LocalPlayer
-		return super.IsEnemy(ent)
-	}
-
 	public CannotUseItem(item: Item): boolean {
 		return (
 			item.Shareability === EShareAbility.ITEM_NOT_SHAREABLE &&
@@ -455,15 +439,16 @@ export class Player extends Entity {
 	 * @ignore
 	 * @internal
 	 */
-	public UpdateProperties(entity: Hero | PlayerPawn, destroyed = false) {
+	public UpdateProperties(entity: Nullable<Hero | PlayerPawn>) {
 		if (entity instanceof Hero) {
-			if (entity.HandleMatches(this.Hero_)) {
-				this.Hero = destroyed ? undefined : entity
+			if (entity.HandleMatches(this.hero_)) {
+				this.Hero = !entity.IsValid ? undefined : entity
+				PlayerCustomData.set(this.PlayerID, entity)
 			}
 		}
 		if (entity instanceof PlayerPawn) {
-			if (entity.HandleMatches(this.Pawn_)) {
-				this.Pawn = destroyed ? undefined : entity
+			if (entity.HandleMatches(this.pawn_)) {
+				this.Pawn = !entity.IsValid ? undefined : entity
 			}
 		}
 	}
@@ -530,6 +515,21 @@ export class Player extends Entity {
 
 RegisterFieldHandler(Player, "m_quickBuyItems", (player, newVal) => {
 	player.QuickBuyItems = (newVal as bigint[]).map(val => Number(val >> 1n))
+})
+
+RegisterFieldHandler(Player, "m_nPlayerID", (player, newVal) => {
+	player.playerID_ = ReencodeProperty(newVal, EPropertyType.INT32) as number
+	PlayerCustomData.set(player.PlayerID)
+})
+
+RegisterFieldHandler(Player, "m_hPawn", (player, newVal) => {
+	player.pawn_ = ReencodeProperty(newVal, EPropertyType.UINT32) as number
+	player.UpdateProperties(EntityManager.EntityByIndex<PlayerPawn>(player.pawn_))
+})
+
+RegisterFieldHandler(Player, "m_hAssignedHero", (player, newVal) => {
+	player.hero_ = newVal as number
+	player.UpdateProperties(EntityManager.EntityByIndex<Hero>(player.hero_))
 })
 
 export const Players = EntityManager.GetEntitiesByClass(Player)

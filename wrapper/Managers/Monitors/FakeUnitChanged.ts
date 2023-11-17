@@ -1,18 +1,20 @@
 import { FakeUnit } from "../../Objects/Base/FakeUnit"
-import { Players } from "../../Objects/Base/Player"
+import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { EventsSDK } from "../EventsSDK"
 
 const Monitor = new (class CMonitorFakeUnit {
 	public FakeUnitChanged(entity: FakeUnit) {
-		if (entity.Player === undefined) {
-			const player = this.findPlayer(entity)
+		if (entity.PlayerCustomData === undefined) {
+			const player = this.findPlayerCustomData(entity)
 			entity.Level = player !== undefined ? 1 : 0
-			entity.Player = player
+			entity.PlayerCustomData = player
 		}
 	}
 
-	private findPlayer(ent: FakeUnit) {
-		return Players.find(player => ent.HandleMatches(player.Hero_))
+	private findPlayerCustomData(ent: FakeUnit) {
+		return PlayerCustomData.Array.find(player =>
+			ent.HandleMatches(player.SelectedHeroIndex)
+		)
 	}
 })()
 

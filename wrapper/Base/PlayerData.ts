@@ -1,3 +1,4 @@
+import { ConnectionState } from "../Enums/ConnectionState"
 import { Team } from "../Enums/Team"
 import { EntityPropertiesNode } from "./EntityProperties"
 
@@ -34,8 +35,8 @@ export class PlayerData {
 	public get IsBroadcasterChannelCameraman(): boolean {
 		return this.properties.get("m_bIsBroadcasterChannelCameraman") as boolean
 	}
-	public get ConnectionState(): number {
-		return this.properties.get("m_iConnectionState") as number
+	public get ConnectionState(): ConnectionState {
+		return this.properties.get("m_iConnectionState") as ConnectionState
 	}
 	public get SteamID(): bigint {
 		return this.properties.get("m_iPlayerSteamID") as bigint
@@ -75,32 +76,5 @@ export class PlayerData {
 	}
 	public get HasRedeemedNeutralTier(): boolean[] {
 		return this.properties.get("m_bHasRedeemedNeutralTier") as boolean[]
-	}
-	public toJSON() {
-		return {
-			IsValid: this.IsValid,
-			Name: this.Name,
-			Team: this.Team,
-			FullyJoinedServer: this.FullyJoinedServer,
-			IsFakeClient: this.IsFakeClient,
-			IsBroadcaster: this.IsBroadcaster,
-			BroadcasterChannel: this.BroadcasterChannel,
-			BroadcasterChannelSlot: this.BroadcasterChannelSlot,
-			IsBroadcasterChannelCameraman: this.IsBroadcasterChannelCameraman,
-			ConnectionState: this.ConnectionState,
-			SteamID: this.SteamID,
-			CoachTeam: this.CoachTeam,
-			CoachRating: this.CoachRating,
-			LiveSpectatorTeam: this.LiveSpectatorTeam,
-			IsPlusSubscriber: this.IsPlusSubscriber,
-			WasMVPLastGame: this.WasMVPLastGame,
-			AccoladeType: this.AccoladeType,
-			AccoladeData: this.AccoladeData,
-			RankTier: this.RankTier,
-			Title: this.Title,
-			FavTeamPacked: this.FavTeamPacked,
-			HasNeutralTier: this.HasNeutralTier,
-			HasRedeemedNeutralTier: this.HasRedeemedNeutralTier
-		}
 	}
 }

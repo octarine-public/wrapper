@@ -125,44 +125,4 @@ export class PlayerTeamData {
 	public get PlayerDraftPreferredTeam(): number {
 		return this.properties.get("m_nPlayerDraftPreferredTeam") as number
 	}
-	public toJSON() {
-		return {
-			SelectedHeroID: this.SelectedHeroID,
-			Kills: this.Kills,
-			Assists: this.Assists,
-			Deaths: this.Deaths,
-			Streak: this.Streak,
-			Level: this.Level,
-			RespawnSeconds: this.RespawnSeconds,
-			LastBuybackTime: this.LastBuybackTime,
-			SelectedHeroIndex: this.SelectedHeroIndex,
-			IsAFK: this.IsAFK,
-			SuggestedHeroes: this.SuggestedHeroes,
-			BanSuggestedHeroes: this.BanSuggestedHeroes,
-			VoiceChatBanned: this.VoiceChatBanned,
-			CompendiumLevel: this.CompendiumLevel,
-			CanRepick: this.CanRepick,
-			CanEarnRewards: this.CanEarnRewards,
-			HasRandomed: this.HasRandomed,
-			RandomedHeroID: this.RandomedHeroID,
-			BattleBonusActive: this.BattleBonusActive,
-			BattleBonusRate: this.BattleBonusRate,
-			CustomBuybackCost: this.CustomBuybackCost,
-			HasPredictedVictory: this.HasPredictedVictory,
-			UnitShareMasks: this.UnitShareMasks,
-			TeamSlot: this.TeamSlot,
-			BattleCupWinStreak: this.BattleCupWinStreak,
-			BattleCupWinDate: this.BattleCupWinDate,
-			BattleCupSkillLevel: this.BattleCupSkillLevel,
-			BattleCupTeamID: this.BattleCupTeamID,
-			BattleCupTournamentID: this.BattleCupTournamentID,
-			BattleCupDivision: this.BattleCupDivision,
-			TeamFightParticipation: this.TeamFightParticipation,
-			FirstBloodClaimed: this.FirstBloodClaimed,
-			FirstBloodGiven: this.FirstBloodGiven,
-			PickOrder: this.PickOrder,
-			TimeOfLastSaluteSent: this.TimeOfLastSaluteSent,
-			SelectedHeroBadgeXP: this.SelectedHeroBadgeXP
-		}
-	}
 }

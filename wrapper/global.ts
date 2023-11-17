@@ -24,6 +24,7 @@ import {
 } from "./Objects/Base/Entity"
 import { FakeUnits as _FakeUnits } from "./Objects/Base/FakeUnit"
 import { PlayerResource as _PlayerResource } from "./Objects/Base/PlayerResource"
+import { PlayerCustomData as _PlayerCustomData } from "./Objects/DataBook/PlayerCustomData"
 import { SDKClasses } from "./Objects/NativeToSDK"
 import { EntityDataLump as _EntityDataLump } from "./Resources/ParseEntityLump"
 import { GridNav as _GridNav } from "./Resources/ParseGNV"
@@ -54,6 +55,13 @@ globalThis.Events = _Events
 Object.defineProperty(globalThis, "PlayerResource", {
 	get: () => {
 		return _PlayerResource
+	},
+	configurable: false,
+	enumerable: true
+})
+Object.defineProperty(globalThis, "PlayerCustomData", {
+	get: () => {
+		return _PlayerCustomData.Array
 	},
 	configurable: false,
 	enumerable: true
@@ -99,8 +107,3 @@ globalThis.GetEntityClassByName = (name: string) => {
 	}
 	return undefined
 }
-
-// "Don't know how to serialize bigint" fix
-/*BigInt.prototype.toJSON = function () {
-	return this.toString() + "n"
-}*/

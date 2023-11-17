@@ -18,13 +18,21 @@ export class CPlayerResource extends Entity {
 	public RespawnPositions: Nullable<Vector3>[] = []
 	public PlayerTeamData: Nullable<PlayerTeamData>[] = []
 
-	public GetPlayerTeamDataByPlayerID(playerID: number): Nullable<PlayerTeamData> {
-		return this.PlayerTeamData[playerID]
-	}
 	public GetPlayerDataByPlayerID(playerID: number): Nullable<PlayerData> {
 		return this.PlayerData[playerID]
 	}
+	public GetPlayerTeamDataByPlayerID(playerID: number): Nullable<PlayerTeamData> {
+		return this.PlayerTeamData[playerID]
+	}
 }
+
+RegisterFieldHandler(CPlayerResource, "m_vecPlayerData", (playerResource, newVal) => {
+	playerResource.PlayerData = (newVal as EntityPropertiesNode[]).map(
+		map => new PlayerData(map)
+	)
+	UpdateRespawnPositions(playerResource)
+	EventsSDK.emit("PlayerResourceUpdated", false, playerResource)
+})
 
 RegisterFieldHandler(CPlayerResource, "m_vecPlayerTeamData", (playerResource, newVal) => {
 	playerResource.PlayerTeamData = (newVal as EntityPropertiesNode[]).map(map => {
@@ -40,20 +48,13 @@ RegisterFieldHandler(CPlayerResource, "m_vecPlayerTeamData", (playerResource, ne
 	EventsSDK.emit("PlayerResourceUpdated", false, playerResource)
 })
 
-RegisterFieldHandler(CPlayerResource, "m_vecPlayerData", (playerResource, newVal) => {
-	playerResource.PlayerData = (newVal as EntityPropertiesNode[]).map(
-		map => new PlayerData(map)
-	)
-	UpdateRespawnPositions(playerResource)
-	EventsSDK.emit("PlayerResourceUpdated", false, playerResource)
-})
-
 export let PlayerResource: Nullable<CPlayerResource>
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof CPlayerResource) {
 		PlayerResource = ent
 	}
 })
+
 EventsSDK.on("EntityDestroyed", ent => {
 	if (ent instanceof CPlayerResource) {
 		PlayerResource = undefined

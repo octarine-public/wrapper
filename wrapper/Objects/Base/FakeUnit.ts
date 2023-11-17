@@ -3,9 +3,9 @@ import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { GameState } from "../../Utils/GameState"
+import { PlayerCustomData } from "../DataBook/PlayerCustomData"
 import { UnitData } from "../DataBook/UnitData"
 import { Entity } from "./Entity"
-import { Player } from "./Player"
 import { PlayerResource } from "./PlayerResource"
 import { Unit } from "./Unit"
 
@@ -18,9 +18,9 @@ export class FakeUnit {
 	public Name = ""
 	public Level = 0
 	public TPStartTime = -1
-	// NOTE: Player set in -> Managers -> Monitors -> FakeUnitChanged
+	// NOTE: PlayerCustomData set in -> Managers -> Monitors -> FakeUnitChanged
 	/** @readonly */
-	public Player: Nullable<Player>
+	public PlayerCustomData: Nullable<PlayerCustomData>
 	private LastRealPredictedPositionUpdate_ = 0
 	private LastPredictedPositionUpdate_ = 0
 

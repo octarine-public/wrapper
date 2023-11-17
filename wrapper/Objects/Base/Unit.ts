@@ -1,6 +1,7 @@
+import { Color } from "../../Base/Color"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
-import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { NetworkedBasicField, ReencodeProperty, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { Attributes } from "../../Enums/Attributes"
@@ -25,6 +26,7 @@ import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensi
 import { GameState } from "../../Utils/GameState"
 import { toPercentage } from "../../Utils/Math"
 import { Inventory } from "../DataBook/Inventory"
+import { PlayerCustomData } from "../DataBook/PlayerCustomData"
 import { UnitData } from "../DataBook/UnitData"
 import { Ability } from "./Ability"
 import { Entity, LocalPlayer } from "./Entity"
@@ -104,7 +106,6 @@ export class Unit extends Entity {
 	public HasUpgradeableAbilities = false
 	@NetworkedBasicField("m_bCanBeDominated")
 	public IsDominatable = false
-	@NetworkedBasicField("m_bIsIllusion")
 	public IsIllusion_ = false
 	@NetworkedBasicField("m_iAttackCapabilities")
 	public AttackCapabilities = 0
@@ -166,6 +167,7 @@ export class Unit extends Entity {
 	public LastActivityEndTime = 0
 	public LastActivityAnimationPoint = 0
 	public Spawner: Nullable<NeutralSpawner>
+
 	/** @ignore */
 	public Spawner_ = 0
 	/** @readonly */
@@ -185,6 +187,10 @@ export class Unit extends Entity {
 	/** @readonly */
 	public IsRoshan = false
 	/** @readonly */
+	public PlayerID = -1
+	/** @readonly */
+	public OwnerPlayerID = -1
+	/** @readonly */
 	public IsHero = false
 	/** @readonly */
 	public IsSpiritBear = false
@@ -196,20 +202,43 @@ export class Unit extends Entity {
 	public IsBuilding = false
 	/** @readonly */
 	public IsOutpost = false
+	/**
+	 * @ignore
+	 * @internal
+	 */
+	public IsClone_ = false
+	/**
+	 * @ignore
+	 * @internal
+	 */
+	public OwnerNPC_ = 0
+	/**
+	 * @readonly
+	 * @description The owner of the Unit. (example: Spirit Bear)
+	 */
+	public OwnerNPC: Nullable<Unit> = undefined
+
+	public TPStartTime = -1
 
 	/** @deprecated  */
 	public UnitStateMask = 0n
-	public TPStartTime = -1
+
 	public readonly PredictedPosition = new Vector3().Invalidate()
 	public readonly TPStartPosition = new Vector3().Invalidate()
 	public readonly TPEndPosition = new Vector3().Invalidate()
 	public readonly LastTPStartPosition = new Vector3().Invalidate()
 	public readonly LastTPEndPosition = new Vector3().Invalidate()
-	private LastRealPredictedPositionUpdate_ = 0
-	private LastPredictedPositionUpdate_ = 0
 
-	/** @ignore */
-	public IsClone_ = false
+	private LastPredictedPositionUpdate_ = 0
+	private LastRealPredictedPositionUpdate_ = 0
+
+	public get Color() {
+		return (
+			(this.Team === Team.Dire
+				? Color.PlayerColorDire[this.PlayerID]
+				: Color.PlayerColorRadiant[this.PlayerID]) ?? Color.Red
+		)
+	}
 
 	public get LastRealPredictedPositionUpdate(): number {
 		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
@@ -1424,6 +1453,21 @@ RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, newValue) => {
 	if (unit.IsValid) {
 		EventsSDK.emit("UnitTeamVisibilityChanged", false, unit)
 	}
+})
+RegisterFieldHandler(Unit, "m_iPlayerID", (unit, newVal) => {
+	unit.PlayerID = ReencodeProperty(newVal, EPropertyType.INT32) as number
+	PlayerCustomData.set(unit.PlayerID)
+})
+RegisterFieldHandler(Unit, "m_hOwnerNPC", (unit, newVal) => {
+	unit.OwnerNPC_ = newVal as number
+	unit.OwnerNPC = EntityManager.EntityByIndex(unit.OwnerNPC_)
+})
+RegisterFieldHandler(Unit, "m_nPlayerOwnerID", (unit, newVal) => {
+	unit.OwnerPlayerID = ReencodeProperty(newVal, EPropertyType.INT32) as number
+})
+RegisterFieldHandler(Unit, "m_bIsIllusion", (unit, newVal) => {
+	unit.IsIllusion_ = newVal as boolean
+	EventsSDK.emit("UnitPropertyChanged", false, unit)
 })
 EventsSDK.on("LocalTeamChanged", () => {
 	for (const unit of Units) {

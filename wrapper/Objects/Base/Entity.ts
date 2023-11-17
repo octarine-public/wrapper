@@ -97,10 +97,7 @@ export class Entity {
 	public TotalAgility = 0
 	public TotalIntellect = 0
 	public TotalStrength = 0
-	public Owner_ = 0
-	public OwnerEntity: Nullable<Entity> = undefined
-	public Parent_ = 0
-	public ParentEntity: Nullable<Entity> = undefined
+
 	public HierarchyAttachName = 0
 	public Children: Entity[] = []
 	@NetworkedBasicField("CBodyComponent")
@@ -125,6 +122,12 @@ export class Entity {
 	public AttachmentsHashMap: Nullable<Map<number, number>>
 	private CustomGlowColor_: Nullable<Color>
 	private CustomDrawColor_: Nullable<[Color, RenderMode]>
+
+	public Owner_ = 0
+	public OwnerEntity: Nullable<Entity> = undefined
+	public Parent_ = 0
+	public ParentEntity: Nullable<Entity> = undefined
+
 	private RingRadius_ = 30
 
 	/**
@@ -628,7 +631,6 @@ RegisterFieldHandler(Entity, "m_angRotation", (ent, newVal) => {
 RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, newVal) => {
 	ent.Name_ = StringTables.GetString("EntityNames", newVal as number) ?? ent.Name_
 })
-
 RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, newVal) => {
 	ent.Owner_ = newVal as number
 	ent.OwnerEntity = EntityManager.EntityByIndex(ent.Owner_)

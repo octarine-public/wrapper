@@ -15,10 +15,10 @@ const convertUint8 = new Uint8Array(convertBuf),
 	convertUint32 = new Uint32Array(convertBuf),
 	convertUint64 = new BigUint64Array(convertBuf),
 	convertFloat32 = new Float32Array(convertBuf)
-function ReencodeProperty(
+export function ReencodeProperty(
 	prop: any,
 	newType: EPropertyType,
-	networkedType: EPropertyType
+	networkedType = EPropertyType.INVALID
 ): PropertyType {
 	convertUint8.fill(0)
 	if (typeof prop === "string") {
