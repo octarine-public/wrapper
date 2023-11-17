@@ -545,19 +545,21 @@ class CRendererSDK {
 	public TextByFlags(
 		text: string,
 		recPosition: Rectangle,
+		color = Color.White,
 		division = 1.2,
 		flags = TextFlags.Center,
 		width = 600,
 		fontName = this.DefaultFontName,
+		fixDigits = true,
 		italic = false,
 		outlined = true
 	) {
-		const digits = text.slice().replace(/\d/g, "0")
+		const digits = fixDigits ? text.slice().replace(/\d/g, "0") : text
 		const size = recPosition.Height / Math.max(division, 1.2)
 		const getTextSize = this.GetTextSize(digits, fontName, size, width, italic)
 		const textSize = Vector2.FromVector3(getTextSize)
 		const position = this.flagPositionBox(textSize, recPosition, flags)
-		this.Text(text, position, Color.White, fontName, size, width, italic, outlined)
+		this.Text(text, position, color, fontName, size, width, italic, outlined)
 		return new Rectangle(position, textSize)
 	}
 	/**
