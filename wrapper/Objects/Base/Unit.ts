@@ -233,11 +233,7 @@ export class Unit extends Entity {
 	private LastRealPredictedPositionUpdate_ = 0
 
 	public get Color() {
-		return (
-			(this.Team === Team.Dire
-				? Color.PlayerColorDire[this.PlayerID]
-				: Color.PlayerColorRadiant[this.PlayerID]) ?? Color.Red
-		)
+		return PlayerCustomData.get(this.PlayerID)?.Color ?? Color.Red
 	}
 
 	public get LastRealPredictedPositionUpdate(): number {

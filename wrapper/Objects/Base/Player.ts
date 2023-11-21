@@ -100,11 +100,7 @@ export class Player extends Entity {
 	 * @returns {Color}
 	 */
 	public get PlayerColor(): Color {
-		return (
-			(this.Team === Team.Dire
-				? Color.PlayerColorDire[this.TeamSlot]
-				: Color.PlayerColorRadiant[this.TeamSlot]) ?? Color.Red
-		)
+		return this.PlayerCustomData?.Color ?? Color.Red
 	}
 	/**
 	 * @description Gets the name of the hero.

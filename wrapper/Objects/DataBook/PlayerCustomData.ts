@@ -7,6 +7,7 @@ import { LaneSelection } from "../../Enums/LaneSelection"
 import { LaneSelectionFlags } from "../../Enums/LaneSelectionFlags"
 import { Team } from "../../Enums/Team"
 import { GameSleeper } from "../../Helpers/Sleeper"
+import { Color } from "../../Base/Color"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { MaskToArrayNumber } from "../../Utils/BitsExtensions"
@@ -248,6 +249,13 @@ export class PlayerCustomData {
 	}
 	public get Team() {
 		return this.PlayerData?.Team ?? Team.None
+	}
+	public get Color() {
+		return (
+			(this.Team === Team.Dire
+				? Color.PlayerColorDire[this.TeamSlot]
+				: Color.PlayerColorRadiant[this.TeamSlot]) ?? Color.Red
+		)
 	}
 	public get PlayerName(): Nullable<string> {
 		return this.PlayerData?.Name

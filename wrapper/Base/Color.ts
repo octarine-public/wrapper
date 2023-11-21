@@ -1,6 +1,6 @@
 export class Color {
 	/**
-	 * @description Player color | Index arr (playerID)
+	 * @description Player color | Index arr (TeamSlot)
 	 * @type {Array<Color>}
 	 */
 	public static readonly PlayerColorDire: Color[] = [
@@ -11,7 +11,7 @@ export class Color {
 		new Color(0xa4, 0x69, 0x0)
 	]
 	/**
-	 * @description Player color | Index arr (playerID)
+	 * @description Player color | Index arr (TeamSlot)
 	 * @type {Array<Color>}
 	 */
 	public static readonly PlayerColorRadiant: Color[] = [
