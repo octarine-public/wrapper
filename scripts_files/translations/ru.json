@@ -68,5 +68,6 @@
 	"Notifications if scripts updated": "Уведомления при обновлении скриптов",
 	"Reload on click": "Обновить по нажатию",
 	"Reload scripts on click on notification": "Обновить скрипты по нажатию на уведомление",
-	"Settings reset": "Настройки сброшены"
+	"Settings reset": "Настройки сброшены",
+	"Currently, the cheat does not work correctly in the local lobby, to configure and test, create a lobby on Valve servers.": "Сейчас чит не работает правильно в локальном лобби, для настройки и тестирования создайте лобби на серверах valve."
 }
