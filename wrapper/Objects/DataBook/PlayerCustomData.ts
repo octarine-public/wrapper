@@ -354,7 +354,7 @@ export class PlayerCustomData {
 	 */
 	public get BuyBackColdown(): number {
 		return this.DataTeamPlayer === undefined
-			? this.sleeper.RemainingSleepTime(this.PlayerID)
+			? this.sleeper.RemainingSleepTime(this.PlayerID) / 1000
 			: Math.max(this.DataTeamPlayer.BuybackCooldownTime - GameState.RawGameTime, 0)
 	}
 	/**
