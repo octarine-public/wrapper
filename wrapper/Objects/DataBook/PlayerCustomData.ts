@@ -258,6 +258,9 @@ export class PlayerCustomData {
 	public get SelectedHeroIndex(): number {
 		return this.PlayerTeamData?.SelectedHeroIndex ?? -1
 	}
+	public get SelectedHeroID(): number {
+		return this.PlayerTeamData?.SelectedHeroID ?? -1
+	}
 	public get DataTeamPlayer(): Nullable<DataTeamPlayer> {
 		const arr = Array.from(PlayerCustomData.TeamData)
 		if (arr.length > 1) {

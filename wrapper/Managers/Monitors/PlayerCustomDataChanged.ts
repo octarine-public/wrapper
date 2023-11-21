@@ -7,6 +7,7 @@ import { alchemist_goblins_greed } from "../../Objects/Abilities/Alchemist/alche
 import { bounty_hunter_jinada } from "../../Objects/Abilities/BountyHunter/bounty_hunter_jinada"
 import { doom_bringer_devour } from "../../Objects/Abilities/DoomBringer/doom_bringer_devour"
 import { flagbearer_creep_aura_effect } from "../../Objects/Abilities/FlagbearerCreep/flagbearer_creep_aura_effect"
+import { Ability } from "../../Objects/Base/Ability"
 import { AetherRemnant } from "../../Objects/Base/AetherRemnant"
 import { Building } from "../../Objects/Base/Building"
 import { Courier } from "../../Objects/Base/Courier"
@@ -229,32 +230,30 @@ const Monitor = new (class PlayerDataCustomChanged {
 	}
 
 	// Events
-	public ModifierChanged(_modifier: Modifier, _destroyed?: boolean) {
-		// const parent = modifier.Parent
-		// const ability = modifier.Ability
-		// if (parent === undefined || !(ability instanceof Ability)) {
-		// 	return
-		// }
-		// let player = parent.Owner
-		// if (player === undefined) {
-		// 	return
-		// }
-		// if (!(player instanceof Player)) {
-		// 	player = player.Owner
-		// }
-		// if (!(player instanceof Player)) {
-		// 	return
-		// }
-		// if (modifier.Name === "modifier_kobold_tunneler_prospecting_aura_money") {
-		// 	if (destroyed) {
-		// 		player.DeleteCounter(modifier.Name)
-		// 		return
-		// 	}
-		// 	if (ability.Name === "kobold_tunneler_prospecting") {
-		// 		const gpm = ability.GetSpecialValue("gpm_aura", modifier.AbilityLevel)
-		// 		player.SetCounter(modifier.Name, new GPMCounter(gpm))
-		// 	}
-		// }
+	public ModifierChanged(modifier: Modifier, destroyed?: boolean) {
+		const parent = modifier.Parent
+		const ability = modifier.Ability
+		if (parent === undefined || !(ability instanceof Ability)) {
+			return
+		}
+		let playerID = parent.PlayerID
+		if (playerID === -1) {
+			playerID = parent.OwnerPlayerID // example: courier
+		}
+		const playerData = PlayerCustomData.get(playerID)
+		if (playerData === undefined || playerData.Hero === undefined) {
+			return
+		}
+		if (modifier.Name === "modifier_kobold_tunneler_prospecting_aura_money") {
+			if (destroyed) {
+				playerData.DeleteCounter(modifier.Name)
+				return
+			}
+			if (ability.Name === "kobold_tunneler_prospecting") {
+				const gpm = ability.GetSpecialValue("gpm_aura", modifier.AbilityLevel)
+				playerData.AddCounter(modifier.Name, new GPMCounter(gpm))
+			}
+		}
 	}
 
 	// Events
