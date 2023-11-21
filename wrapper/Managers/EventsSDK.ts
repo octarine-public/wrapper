@@ -428,6 +428,7 @@ interface EventsSDK extends EventEmitter {
 		listener: (unit: FakeUnit) => void,
 		priority?: number
 	): EventEmitter
+	/** @description Includes PlayerResourceUpdated */
 	on(
 		name: "PlayerCustomDataUpdated",
 		listener: (player: PlayerCustomData) => void,

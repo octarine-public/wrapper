@@ -62,12 +62,6 @@ export class Ability extends Entity {
 	@NetworkedBasicField("m_fAbilityChargeRestoreTimeRemaining")
 	public AbilityChargeRestoreTimeRemaining = 0
 
-	/**
-	 * @readonly
-	 * @description The purchaser of the item (NOTE: only Item).
-	 */
-	public Purchaser: Nullable<Unit>
-
 	/** @ignore */
 	public Cooldown_ = 0
 	public CooldownChangeTime = 0

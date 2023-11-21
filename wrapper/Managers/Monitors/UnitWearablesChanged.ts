@@ -1,13 +1,10 @@
 import { Entity } from "../../Objects/Base/Entity"
-import { Unit } from "../../Objects/Base/Unit"
+import { Units } from "../../Objects/Base/Unit"
 import { Wearable } from "../../Objects/Base/Wearable"
-import { EntityManager } from "../EntityManager"
 import { EventsSDK } from "../EventsSDK"
 
-const Units = EntityManager.GetEntitiesByClass(Unit)
-
 const Monitor = new (class {
-	public OnWearableChanged(entity: Entity) {
+	public PreEntityCreated(entity: Entity) {
 		if (!(entity instanceof Wearable)) {
 			return
 		}
@@ -29,6 +26,6 @@ const Monitor = new (class {
 
 EventsSDK.on(
 	"PreEntityCreated",
-	ent => Monitor.OnWearableChanged(ent),
+	ent => Monitor.PreEntityCreated(ent),
 	Number.MIN_SAFE_INTEGER
 )

@@ -37,14 +37,15 @@ export function CountInArray<T>(array: T[], el: T): number {
  */
 export function arrayRemove<T>(ar: T[], el: T, deleteEl: boolean = false): boolean {
 	const id = ar.indexOf(el)
-	if (id !== -1) {
-		if (deleteEl) {
-			delete ar[id]
-		} else {
-			ar.splice(id, 1)
-		}
+	if (id === -1) {
+		return false
 	}
-	return id !== -1
+	if (deleteEl) {
+		delete ar[id]
+	} else {
+		ar.splice(id, 1)
+	}
+	return true
 }
 
 /**

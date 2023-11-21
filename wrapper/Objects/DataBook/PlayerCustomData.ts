@@ -1,5 +1,7 @@
 import { Color } from "../../Base/Color"
 import { DataTeamPlayer } from "../../Base/DataTeamPlayer"
+import { PlayerData } from "../../Base/PlayerData"
+import { PlayerTeamData } from "../../Base/PlayerTeamData"
 import { Vector3 } from "../../Base/Vector3"
 import { ConnectionState } from "../../Enums/ConnectionState"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
@@ -20,7 +22,11 @@ import { UnitData } from "./UnitData"
 
 /**
  * ====================================================
- * NOTE: don't import this file into PlayerResource.ts
+ * NOTE: don't import this files into
+ * PlayerData.ts
+ * PlayerResource.ts
+ * DataTeamPlayer.ts
+ * PlayerTeamData.ts
  * ====================================================
  * */
 
@@ -72,17 +78,42 @@ export class GPMCounter {
 }
 
 export class PlayerCustomData {
+	/**
+	 * @description max cooldown of buyback in seconds
+	 */
 	public static readonly MaxBuyBackCooldown = 480
+	/**
+	 * @description Retrieves an array PlayerCustomData.
+	 * @return {Array<PlayerCustomData>}
+	 */
+	public static readonly Array: PlayerCustomData[] = []
+	/**
+	 * @ignore
+	 * @internal
+	 * @description internal only for wrapper
+	 */
 	public static readonly TeamData = new Set<TeamData>()
-
-	public static get(playerID: number) {
+	/**
+	 * @description Retrieves the player data for the given player ID.
+	 * @param {number} playerID - The ID of the player.
+	 * @return {PlayerCustomData | undefined}
+	 */
+	public static get(playerID: number): Nullable<PlayerCustomData> {
 		return playerDataCustomMap.get(playerID)
 	}
-
-	public static has(playerID: number) {
+	/**
+	 * @description Checks if the given player ID exists in the PlayerCustomData.
+	 * @param {number} playerID - The ID of the player to check.
+	 * @return {boolean}
+	 */
+	public static has(playerID: number): boolean {
 		return playerDataCustomMap.has(playerID)
 	}
-
+	/**
+	 * @ignore
+	 * @internal
+	 * @description internal only for wrapper
+	 */
 	public static set(playerID: number, hero?: Hero) {
 		if (playerID === -1) {
 			return
@@ -91,6 +122,7 @@ export class PlayerCustomData {
 		if (playerData === undefined) {
 			playerData = new PlayerCustomData(playerID)
 			playerData.PlayerDataChanged(hero)
+			this.Array.push(playerData)
 			playerDataCustomMap.set(playerID, playerData)
 			EventsSDK.emit("PlayerCustomDataUpdated", false, playerData)
 		}
@@ -99,11 +131,22 @@ export class PlayerCustomData {
 			EventsSDK.emit("PlayerCustomDataUpdated", false, playerData)
 		}
 	}
-
-	public static get Array() {
-		return Array.from(playerDataCustomMap.values())
+	/**
+	 * @ignore
+	 * @internal
+	 * @description internal only for wrapper
+	 */
+	public static PlayerResourceUpdated() {
+		for (let index = this.Array.length - 1; index > -1; index--) {
+			const playerData = this.Array[index]
+			EventsSDK.emit("PlayerCustomDataUpdated", false, playerData)
+		}
 	}
-
+	/**
+	 * @ignore
+	 * @internal
+	 * @description internal only for wrapper
+	 */
 	public static Delete(playerID: number) {
 		const playerData = this.get(playerID)
 		if (playerData === undefined) {
@@ -111,28 +154,34 @@ export class PlayerCustomData {
 		}
 		playerData.IsValid = false
 		EventsSDK.emit("PlayerCustomDataUpdated", false, playerData)
+		arrayRemove(this.Array, playerData)
 		playerDataCustomMap.delete(playerData.PlayerID)
 		return true
 	}
-
+	/**
+	 * @ignore
+	 * @internal
+	 * @description internal only for wrapper
+	 */
 	public static DeleteAll() {
-		for (const playerData of this.Array) {
+		for (let index = this.Array.length - 1; index > -1; index--) {
+			const playerData = this.Array[index]
 			this.Delete(playerData.PlayerID)
 		}
 	}
 
 	/** @readonly */
 	public IsValid = true
+
 	/** @readonly */
 	public Hero: Nullable<Hero>
+
 	/**
-	 * @internal
 	 * @ignore
+	 * @internal
+	 * @description internal only for wrapper
 	 */
 	public ItemsGold = 0
-	private readonly sleeper = new GameSleeper()
-	private readonly goldAfterTimeAr: [number, number][] = []
-	private readonly counters = new Map<string, GPMCounter>([["GPM", new GPMCounter()]])
 
 	private denyCount = 0
 	private lastHitCount = 0
@@ -140,16 +189,32 @@ export class PlayerCustomData {
 	private unreliableGold = 600
 	private changeDetectedUnload = false
 
+	private readonly sleeper = new GameSleeper()
+	private readonly goldAfterTimeAr: [number, number][] = []
+	private readonly counters = new Map<string, GPMCounter>([["GPM", new GPMCounter()]])
+
 	constructor(public readonly PlayerID: number) {}
 
-	public get IsChangeDetectedUnload() {
+	/**
+	 * @description if after start game player reconnected or reload scripts
+	 * @return {boolean}
+	 */
+	public get IsChangeDetectedUnload(): boolean {
 		return this.changeDetectedUnload
 	}
-
-	public get IsLocalPlayer() {
+	/**
+	 *
+	 * @description Returns whether the player is the local player.
+	 * @return {boolean}
+	 */
+	public get IsLocalPlayer(): boolean {
 		return (LocalPlayer?.PlayerID ?? -1) === this.PlayerID
 	}
-	public get IsSpectator() {
+	/**
+	 * @description Check if the player is a spectator.
+	 * @return {boolean}
+	 */
+	public get IsSpectator(): boolean {
 		return (
 			this.Team === Team.Observer ||
 			this.Team === Team.Neutral ||
@@ -157,21 +222,47 @@ export class PlayerCustomData {
 			this.Team === Team.Shop
 		)
 	}
-	public get ConnectionState() {
+	/**
+	 * Returns the connection state of the player.
+	 * @description The connection state of the player.
+	 * @return {ConnectionState}
+	 */
+	public get ConnectionState(): ConnectionState {
 		return this.PlayerData?.ConnectionState ?? ConnectionState.Unknown
 	}
-	public get IsAbandoned() {
+	/**
+	 * Returns a boolean indicating whether the connection is in an abandoned state.
+	 * @description The value indicating whether the connection is abandoned.
+	 * @return {boolean}
+	 */
+	public get IsAbandoned(): boolean {
 		return this.ConnectionState === ConnectionState.Abandoned
 	}
-	public get IsDisconnected() {
+	/**
+	 * @description Returns a boolean indicating whether the connection is disconnected.
+	 * @return {boolean}
+	 */
+	public get IsDisconnected(): boolean {
 		return this.ConnectionState === ConnectionState.Disconnected
 	}
+	/**
+	 * @description Retrieves the name of the hero.
+	 * @return {string | undefined}
+	 */
 	public get HeroName(): Nullable<string> {
 		return UnitData.GetHeroNameByID(this.PlayerTeamData?.SelectedHeroID ?? -1)
 	}
+	/**
+	 * @description Retrieve the SteamID associated with this player.
+	 * @return {bigint | undefined}
+	 */
 	public get SteamID(): Nullable<bigint> {
 		return this.PlayerData?.SteamID
 	}
+	/**
+	 * @description Returns an array of LaneSelection (roles that the player has selected).
+	 * @return {Array<LaneSelection>}
+	 */
 	public get LaneSelections(): LaneSelection[] {
 		return MaskToArrayNumber(this.LaneSelectionFlags)
 	}
@@ -249,34 +340,73 @@ export class PlayerCustomData {
 			this.lastHitCount = value
 		}
 	}
-	public get PlayerData() {
+	/**
+	 * @description Returns the player data for the current player.
+	 * @return {PlayerData | undefined}
+	 */
+	public get PlayerData(): Nullable<PlayerData> {
 		return PlayerResource?.GetPlayerDataByPlayerID(this.PlayerID)
 	}
-	public get PlayerTeamData() {
+	/**
+	 * @description Returns the player's team data.
+	 * @return {PlayerTeamData | undefined}
+	 */
+	public get PlayerTeamData(): Nullable<PlayerTeamData> {
 		return PlayerResource?.GetPlayerTeamDataByPlayerID(this.PlayerID)
 	}
-	public get Team() {
+	/**
+	 * @description Returns the team of the player.
+	 * @return {Team}
+	 */
+	public get Team(): Team {
 		return this.PlayerData?.Team ?? Team.None
 	}
-	public get Color() {
+	/**
+	 * @description Returns the color of the player.
+	 * @return {Color}
+	 */
+	public get Color(): Color {
 		return (
 			(this.Team === Team.Dire
 				? Color.PlayerColorDire[this.TeamSlot]
 				: Color.PlayerColorRadiant[this.TeamSlot]) ?? Color.Red
 		)
 	}
+	/**
+	 * @description Get the name of the player.
+	 * @return {string | undefined}
+	 */
 	public get PlayerName(): Nullable<string> {
 		return this.PlayerData?.Name
 	}
+	/**
+	 * Returns the TeamSlot of the PlayerTeamData.
+	 * @description The TeamSlot value if PlayerTeamData is defined, otherwise -1.
+	 * @return {number}
+	 */
 	public get TeamSlot(): number {
 		return this.PlayerTeamData?.TeamSlot ?? -1
 	}
+	/**
+	 * Get the index of the selected hero.
+	 * @description The index of the selected hero, or -1 if no hero is selected.
+	 * @return {number}
+	 */
 	public get SelectedHeroIndex(): number {
 		return this.PlayerTeamData?.SelectedHeroIndex ?? -1
 	}
+	/**
+	 * Returns the ID of the selected hero.
+	 * @description The ID of the selected hero, or -1 if no hero is selected.
+	 * @return {number}
+	 */
 	public get SelectedHeroID(): number {
 		return this.PlayerTeamData?.SelectedHeroID ?? -1
 	}
+	/**
+	 * @description Retrieves the DataTeamPlayer for the current player.
+	 * @return {DataTeamPlayer | undefined}
+	 */
 	public get DataTeamPlayer(): Nullable<DataTeamPlayer> {
 		const arr = Array.from(PlayerCustomData.TeamData)
 		if (arr.length > 1) {
@@ -367,11 +497,22 @@ export class PlayerCustomData {
 	protected get IsDisabled() {
 		return this.DataTeamPlayer === undefined && this.changeDetectedUnload
 	}
-	public IsEnemy(ent?: Entity) {
+	/**
+	 * @description Determines whether the specified entity is an enemy.
+	 * @param {Entity} ent - The entity to check. Defaults to undefined.
+	 * @return {boolean}
+	 */
+	public IsEnemy(ent?: Entity): boolean {
 		const team = ent?.Team ?? GameState.LocalTeam
 		return this.Team !== team
 	}
-	public Distance2D(target: Entity) {
+	/**
+	 * Calculates the 2D distance between this entity and the target entity.
+	 * @description The 2D distance between this entity and the target entity. If the hero is not defined, returns Number.MAX_SAFE_INTEGER.
+	 * @param {Entity} target - The target entity to calculate the distance to.
+	 * @return {number}
+	 */
+	public Distance2D(target: Entity): number {
 		return this.Hero?.Distance2D(target) ?? Number.MAX_SAFE_INTEGER
 	}
 	/**
@@ -434,6 +575,7 @@ export class PlayerCustomData {
 		if (this.DataTeamPlayer === undefined) {
 			this.UpdateCounters()
 			this.UpdateGoldAfterTime()
+			this.UpdateGPMBetweenPlayers()
 		}
 	}
 	/**
@@ -477,19 +619,18 @@ export class PlayerCustomData {
 		) {
 			return
 		}
-
-		for (const [name, counter] of this.counters) {
+		this.counters.forEach((counter, name) => {
 			if (name !== "GPM") {
 				counter.Update(this)
-				continue
+				return
 			}
 			if (
-				GameRules.GameState ===
+				GameRules!.GameState ===
 				DOTAGameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS
 			) {
 				counter.Update(this)
 			}
-		}
+		})
 	}
 	/**
 	 * @ignore
@@ -513,29 +654,32 @@ export class PlayerCustomData {
 	 * @internal
 	 */
 	protected UpdateGPMBetweenPlayers() {
-		const connectionState = this.PlayerData?.ConnectionState
-		if (
-			connectionState === undefined ||
-			connectionState !== ConnectionState.Abandoned
-		) {
+		const connectionState = this.ConnectionState
+		if (connectionState !== ConnectionState.Abandoned) {
 			return
 		}
 		const gpm = this.counters.get("GPM")
 		if (gpm === undefined) {
 			return
 		}
-		const players = PlayerCustomData.Array.filter(
-			x => x.PlayerID !== this.PlayerID && x.Team === this.Team
-		)
-		for (const playerData of players) {
+		const players = PlayerCustomData.Array
+		for (let index = players.length - 1; index > -1; index--) {
+			const player = players[index]
+			if (player.PlayerID === this.PlayerID || player.Team !== this.Team) {
+				continue
+			}
 			const gold = gpm.AbandonedGPM / Math.max(players.length, 1)
-			playerData.ReliableGold += gold
+			player.ReliableGold += gold
 		}
 	}
 }
 
 /**
  * ====================================================
- * NOTE: don't import this file into PlayerResource.ts
+ * NOTE: don't import this file into
+ * PlayerData.ts
+ * PlayerResource.ts
+ * DataTeamPlayer.ts
+ * PlayerTeamData.ts
  * ====================================================
  * */

@@ -146,6 +146,7 @@ EventsSDK.after("EntityCreated", ent => {
 	if (!(ent instanceof Unit)) {
 		return
 	}
+
 	for (const par of NetworkedParticle.Instances.values()) {
 		let changedAnything = false
 		if (par.AttachedTo?.EntityMatches(ent)) {

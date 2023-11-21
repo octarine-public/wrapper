@@ -80,7 +80,10 @@ export class Particle {
 		if (!this.IsValid && !this.IsHidden) {
 			return
 		}
-		controlPoints.forEach(([id, param]) => this.SetControlPoint(id, param))
+		for (let index = controlPoints.length - 1; index > -1; index--) {
+			const [id, param] = controlPoints[index]
+			this.SetControlPoint(id, param)
+		}
 	}
 
 	public SetInFogVisible(state = true) {
@@ -126,7 +129,6 @@ export class Particle {
 		if (this.IsValid) {
 			return this
 		}
-
 		let path = this.Path
 		if (!path.endsWith("_c")) {
 			path += "_c"

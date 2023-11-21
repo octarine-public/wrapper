@@ -4,7 +4,7 @@ import { GameState } from "../Utils/GameState"
  * Sleeper by hrtime()
  */
 export class Sleeper {
-	protected SleepDB = new Map<any, number>()
+	protected readonly SleepDB = new Map<any, number>()
 
 	protected get TickCount(): number {
 		return hrtime()

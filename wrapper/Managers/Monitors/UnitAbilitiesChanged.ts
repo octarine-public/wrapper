@@ -1,15 +1,12 @@
 import { Ability } from "../../Objects/Base/Ability"
 import { Entity } from "../../Objects/Base/Entity"
 import { Item } from "../../Objects/Base/Item"
-import { Player } from "../../Objects/Base/Player"
-import { Unit } from "../../Objects/Base/Unit"
-import { EntityManager } from "../EntityManager"
+import { Units } from "../../Objects/Base/Unit"
+import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { EventsSDK } from "../EventsSDK"
 
-const Units = EntityManager.GetEntitiesByClass(Unit)
-
 const Monitor = new (class {
-	public OnAbilityChanged(entity: Entity) {
+	public EntityCreated(entity: Entity) {
 		if (!(entity instanceof Ability)) {
 			return
 		}
@@ -39,9 +36,7 @@ const Monitor = new (class {
 					unit.TotalItems[i] = entity
 					entity.Owner_ = unit.Handle
 					entity.OwnerEntity = unit
-					if (unit.RootOwner instanceof Player) {
-						entity.Purchaser = unit.RootOwner.Hero
-					}
+					entity.Purchaser = PlayerCustomData.get(entity.PlayerOwnerID)?.Hero
 					EventsSDK.emit("UnitItemsChanged", false, unit)
 					break
 				}
@@ -50,8 +45,4 @@ const Monitor = new (class {
 	}
 })()
 
-EventsSDK.on(
-	"EntityCreated",
-	ent => Monitor.OnAbilityChanged(ent),
-	Number.MIN_SAFE_INTEGER
-)
+EventsSDK.on("EntityCreated", ent => Monitor.EntityCreated(ent), Number.MIN_SAFE_INTEGER)
