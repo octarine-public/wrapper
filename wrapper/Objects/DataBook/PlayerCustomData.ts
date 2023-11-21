@@ -1,3 +1,4 @@
+import { Color } from "../../Base/Color"
 import { DataTeamPlayer } from "../../Base/DataTeamPlayer"
 import { Vector3 } from "../../Base/Vector3"
 import { ConnectionState } from "../../Enums/ConnectionState"
@@ -7,7 +8,6 @@ import { LaneSelection } from "../../Enums/LaneSelection"
 import { LaneSelectionFlags } from "../../Enums/LaneSelectionFlags"
 import { Team } from "../../Enums/Team"
 import { GameSleeper } from "../../Helpers/Sleeper"
-import { Color } from "../../Base/Color"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { MaskToArrayNumber } from "../../Utils/BitsExtensions"
@@ -148,6 +148,14 @@ export class PlayerCustomData {
 
 	public get IsLocalPlayer() {
 		return (LocalPlayer?.PlayerID ?? -1) === this.PlayerID
+	}
+	public get IsSpectator() {
+		return (
+			this.Team === Team.Observer ||
+			this.Team === Team.Neutral ||
+			this.Team === Team.None ||
+			this.Team === Team.Shop
+		)
 	}
 	public get ConnectionState() {
 		return this.PlayerData?.ConnectionState ?? ConnectionState.Unknown
