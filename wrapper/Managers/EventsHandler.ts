@@ -1440,6 +1440,8 @@ function UpdateLocalTeam() {
 	EventsSDK.emit("LocalTeamChanged", false)
 }
 
+EventsSDK.on("PlayerResourceUpdated", () => UpdateLocalTeam())
+
 EventsSDK.on("PlayerCustomDataUpdated", () => UpdateLocalTeam())
 
 Events.on("Draw", (visualData, w, h, x, y) => {

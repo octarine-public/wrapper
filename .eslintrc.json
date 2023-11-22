@@ -1,7 +1,6 @@
 {
 	"root": true,
 	"ignorePatterns": [
-		"wrapper_autogen/**/*",
 		"node_modules/**/*",
 		"scripts_files/**/*",
 		"standard.d.ts",

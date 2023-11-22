@@ -21,7 +21,6 @@
 		"../../**/*.d.ts"
 	],
 	"exclude": [
-		"wrapper_autogen/**/*",
 		"node_modules/**/*",
 		"scripts_files/**/*",
 	]

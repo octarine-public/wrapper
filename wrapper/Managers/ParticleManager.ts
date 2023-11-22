@@ -67,7 +67,7 @@ export interface IDrawBoundingAreaOptions {
 export class ParticlesSDK {
 	public static readonly Instances: ParticlesSDK[] = []
 	public readonly AllParticles = new Map<any, Particle>()
-	private readonly AllParticlesRange = new Map<Particle, number>()
+	private readonly AllParticlesRange = new WeakMap<Particle, number>()
 
 	constructor() {
 		ParticlesSDK.Instances.push(this)
@@ -268,26 +268,32 @@ export class ParticlesSDK {
 		this.AllParticles.get(key)?.Restart()
 	}
 	public DestroyByKey(key: any, immediate = true) {
-		this.AllParticles.get(key)?.Destroy(immediate)
-		this.AllParticlesRange.delete(key)
+		const particle = this.AllParticles.get(key)?.Destroy(immediate)
+		if (particle !== undefined) {
+			this.AllParticlesRange.delete(particle)
+		}
 	}
 
 	public DestroyAll(immediate = true) {
-		this.AllParticles.forEach(particle => particle.Destroy(immediate))
-		this.AllParticlesRange.clear()
+		this.AllParticles.forEach(particle => {
+			particle.Destroy(immediate)
+			this.AllParticlesRange.delete(particle)
+		})
 	}
 
 	public CheckChangedRange(key: any, range: number) {
-		const particleRange = this.AllParticlesRange.get(key)
-
-		if (particleRange !== undefined && particleRange !== range) {
-			this.DestroyByKey(key)
-			this.AllParticlesRange.set(key, range)
+		const particle = this.AllParticles.get(key)
+		if (particle === undefined) {
 			return
 		}
-
+		const particleRange = this.AllParticlesRange.get(particle)
+		if (particleRange !== undefined && particleRange !== range) {
+			this.DestroyByKey(key)
+			this.AllParticlesRange.set(particle, range)
+			return
+		}
 		if (particleRange === undefined) {
-			this.AllParticlesRange.set(key, range)
+			this.AllParticlesRange.set(particle, range)
 		}
 	}
 }

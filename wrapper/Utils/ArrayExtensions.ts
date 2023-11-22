@@ -32,8 +32,8 @@ export function CountInArray<T>(array: T[], el: T): number {
 }
 
 /**
- *
  * @param deleteEl uses operator 'delete' instead of 'splice'
+ * @deprecated - use your own arr.remove(el, deleteEl)
  */
 export function arrayRemove<T>(ar: T[], el: T, deleteEl: boolean = false): boolean {
 	const id = ar.indexOf(el)
@@ -49,8 +49,8 @@ export function arrayRemove<T>(ar: T[], el: T, deleteEl: boolean = false): boole
 }
 
 /**
- *
  * @param deleteEl uses operator 'delete' instead of 'splice'
+ * @deprecated - use your own arr.removeCallback(cb, deleteEl)
  */
 export function arrayRemoveCallback<T>(
 	ar: T[],
@@ -87,18 +87,30 @@ export function orderByFirst<T>(ar: T[], cb: (obj: T) => number): Nullable<T> {
 	return lowestScored
 }
 
+/**
+ * @deprecated - use your own arr.orderBy(cb)
+ */
 export function orderBy<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return ar.sort((a, b) => (cb(a) as number) - (cb(b) as number))
 }
 
+/**
+ * @deprecated - use your own arr.qorderBy(cb)
+ */
 export function qorderBy<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return qsort(ar, (a, b) => (cb(a) as number) - (cb(b) as number))
 }
 
+/**
+ * @deprecated - use your own arr.orderBy(cb)
+ */
 export function orderByRevert<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return ar.sort((a, b) => (cb(b) as number) - (cb(a) as number))
 }
 
+/**
+ * @deprecated - use your own arr.qorderBy(cb)
+ */
 export function qorderByRevert<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return qsort(ar, (a, b) => (cb(b) as number) - (cb(a) as number))
 }

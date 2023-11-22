@@ -4,16 +4,17 @@ import { ParseProtobufDesc, ParseProtobufNamed } from "../Utils/Protobuf"
 import { MapToObject } from "../Utils/Utils"
 import { Entity } from "./Base/Entity"
 
-export type FieldHandler = (entity: Entity, newValue: EntityPropertyType) => any
-export const ClassToEntities = new Map<Constructor<any>, Entity[]>(),
-	ClassToEntitiesAr = new Map<Constructor<any>, Entity[][]>(),
-	SDKClasses: [Constructor<Entity>, Entity[]][] = [],
-	FieldHandlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>()
 const constructors = new Map<string, Constructor<Entity>>()
-export const CachedFieldHandlers = new Map<
+export type FieldHandler = (entity: Entity, newValue: EntityPropertyType) => any
+
+export const SDKClasses: [Constructor<Entity>, Entity[]][] = []
+export const ClassToEntities = new WeakMap<Constructor<any>, Entity[]>()
+export const ClassToEntitiesAr = new WeakMap<Constructor<any>, Entity[][]>()
+export const CachedFieldHandlers = new WeakMap<
 	Constructor<Entity>,
 	Map<number, FieldHandler>
 >()
+export const FieldHandlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>()
 
 function RegisterClassInternal(constructor: Constructor<Entity>) {
 	const prototype = constructor.prototype

@@ -1,12 +1,11 @@
 import { MenuLanguageID } from "../Enums/MenuLanguageID"
 import { SOType } from "../Enums/SOType"
-import { arrayRemoveCallback } from "../Utils/ArrayExtensions"
 
 type Listener = (...args: any) => false | any
 export class EventEmitter {
 	protected readonly events = new Map<string, [Listener, number][]>()
 	protected readonly eventsAfter = new Map<string, [Listener, number][]>()
-	protected readonly listener2line = new Map<Listener, string>()
+	protected readonly listener2line = new WeakMap<Listener, string>()
 
 	public on(name: string, listener: Listener, priority = 0): EventEmitter {
 		this.listener2line.set(listener, new Error().stack?.split("\n")[2] ?? "")
@@ -38,8 +37,7 @@ export class EventEmitter {
 		if (listeners === undefined) {
 			return this
 		}
-
-		if (arrayRemoveCallback(listeners, val => val[0] === listener)) {
+		if (listeners.removeCallback(val => val[0] === listener)) {
 			this.listener2line.delete(listener)
 		}
 		return this

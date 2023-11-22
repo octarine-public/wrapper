@@ -23,8 +23,8 @@ export const ProjectileManager = new (class CProjectileManager {
 	public readonly AllLinearProjectiles: LinearProjectile[] = []
 	public readonly AllTrackingProjectiles: TrackingProjectile[] = []
 
-	public readonly AllLinearProjectilesMap: Map<number, LinearProjectile> = new Map()
-	public readonly AllTrackingProjectilesMap: Map<number, TrackingProjectile> = new Map()
+	public readonly AllLinearProjectilesMap = new Map<number, LinearProjectile>()
+	public readonly AllTrackingProjectilesMap = new Map<number, TrackingProjectile>()
 })()
 
 EventsSDK.on("GameEnded", () => {
@@ -54,7 +54,9 @@ EventsSDK.on("EntityCreated", ent => {
 	if (!(ent instanceof Unit)) {
 		return
 	}
-	for (const proj of ProjectileManager.AllTrackingProjectiles) {
+	const arrTracking = ProjectileManager.AllTrackingProjectiles
+	for (let index = arrTracking.length - 1; index > -1; index--) {
+		const proj = arrTracking[index]
 		if (proj.Source?.EntityMatches(ent)) {
 			proj.Source = ent
 		}
@@ -62,7 +64,9 @@ EventsSDK.on("EntityCreated", ent => {
 			proj.Target = ent
 		}
 	}
-	for (const proj of ProjectileManager.AllLinearProjectiles) {
+	const arrLinear = ProjectileManager.AllLinearProjectiles
+	for (let index = arrLinear.length - 1; index > -1; index--) {
+		const proj = arrLinear[index]
 		if (proj.Source?.EntityMatches(ent)) {
 			proj.Source = ent
 		}
@@ -72,7 +76,9 @@ EventsSDK.on("EntityDestroyed", ent => {
 	if (!(ent instanceof Unit)) {
 		return
 	}
-	for (const proj of ProjectileManager.AllTrackingProjectiles) {
+	const arrTracking = ProjectileManager.AllTrackingProjectiles
+	for (let index = arrTracking.length - 1; index > -1; index--) {
+		const proj = arrTracking[index]
 		if (proj.Source === ent) {
 			proj.Source = undefined
 		}
@@ -80,7 +86,9 @@ EventsSDK.on("EntityDestroyed", ent => {
 			proj.Target = undefined
 		}
 	}
-	for (const proj of ProjectileManager.AllLinearProjectiles) {
+	const arrLinear = ProjectileManager.AllLinearProjectiles
+	for (let index = arrLinear.length - 1; index > -1; index--) {
+		const proj = arrLinear[index]
 		if (proj.Source === ent) {
 			proj.Source = undefined
 		}
@@ -90,7 +98,9 @@ EventsSDK.on("EntityDestroyed", ent => {
 EventsSDK.on("PostDataUpdate", () => {
 	const curTime = GameState.RawGameTime
 	const expiredLinearProjectiles: LinearProjectile[] = []
-	for (const proj of ProjectileManager.AllLinearProjectiles) {
+	const arrLinear = ProjectileManager.AllLinearProjectiles
+	for (let index = arrLinear.length - 1; index > -1; index--) {
+		const proj = arrLinear[index]
 		if (proj.LastUpdate === 0) {
 			proj.LastUpdate = curTime
 			continue
@@ -104,12 +114,16 @@ EventsSDK.on("PostDataUpdate", () => {
 			expiredLinearProjectiles.push(proj)
 		}
 	}
-	for (const proj of expiredLinearProjectiles) {
+	for (let index = expiredLinearProjectiles.length - 1; index > -1; index--) {
+		const proj = expiredLinearProjectiles[index]
 		EventsSDK.emit("LinearProjectileDestroyed", false, proj)
 		arrayRemove(ProjectileManager.AllLinearProjectiles, proj)
 		ProjectileManager.AllLinearProjectilesMap.delete(proj.ID)
 	}
-	for (const proj of ProjectileManager.AllTrackingProjectiles) {
+
+	const arrTracking = ProjectileManager.AllTrackingProjectiles
+	for (let index = arrTracking.length - 1; index > -1; index--) {
+		const proj = arrTracking[index]
 		proj.UpdateTargetLoc()
 		if (proj.LastUpdate === 0) {
 			proj.LastUpdate = curTime
@@ -316,7 +330,9 @@ Events.on("ServerMessage", (msgID, buf_) => {
 			}
 			const attacksOnly = msg.get("attacks_only") as boolean
 			EventsSDK.emit("TrackingProjectilesDodged", false, ent, attacksOnly)
-			for (const proj of ProjectileManager.AllTrackingProjectiles) {
+			const arrTracking = ProjectileManager.AllTrackingProjectiles
+			for (let index = arrTracking.length - 1; index > -1; index--) {
+				const proj = arrTracking[index]
 				if (
 					proj.IsDodgeable &&
 					proj.Target === ent &&

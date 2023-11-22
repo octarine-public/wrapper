@@ -1135,6 +1135,7 @@ export { npc_dota_hero_pangolier } from "./Objects/Heroes/npc_dota_hero_pangolie
 export { npc_dota_hero_phantom_assassin } from "./Objects/Heroes/npc_dota_hero_phantom_assassin"
 export { npc_dota_hero_phantom_lancer } from "./Objects/Heroes/npc_dota_hero_phantom_lancer"
 export { npc_dota_hero_phoenix } from "./Objects/Heroes/npc_dota_hero_phoenix"
+export { npc_dota_hero_primal_beast } from "./Objects/Heroes/npc_dota_hero_primal_beast"
 export { npc_dota_hero_puck } from "./Objects/Heroes/npc_dota_hero_puck"
 export { npc_dota_hero_pudge } from "./Objects/Heroes/npc_dota_hero_pudge"
 export { npc_dota_hero_pugna } from "./Objects/Heroes/npc_dota_hero_pugna"
