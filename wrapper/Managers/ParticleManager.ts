@@ -4,7 +4,7 @@ import { Vector3 } from "../Base/Vector3"
 import { ParticleAttachment } from "../Enums/ParticleAttachment"
 import { Entity } from "../Objects/Base/Entity"
 
-export enum PARTICLE_RENDER_NAME {
+export const enum PARTICLE_RENDER_NAME {
 	NORMAL = "Normal",
 	ROPE = "Rope",
 	ANIMATION = "Animation"

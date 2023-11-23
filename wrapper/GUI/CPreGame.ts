@@ -50,6 +50,7 @@ export class CPreGame {
 		this.CalculateRoles(screenSize)
 	}
 
+	// only for debug
 	public DebugDraw(): void {
 		RendererSDK.FilledRect(this.Center.pos1, this.Center.Size, Color.White.SetA(128))
 		RendererSDK.FilledRect(
@@ -66,6 +67,7 @@ export class CPreGame {
 		for (const rect of this.RadiantPlayersNames) {
 			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Yellow.SetA(128))
 		}
+
 		for (const rect of this.DirePlayersNames) {
 			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Yellow.SetA(128))
 		}
@@ -203,7 +205,9 @@ export class CPreGame {
 		direBarArray: Rectangle[],
 		centerWidth = false
 	): void {
-		for (const playerRect of this.RadiantPlayers) {
+		const arrRadiantPlayers = this.RadiantPlayers
+		for (let i = 0, end = arrRadiantPlayers.length; i < end; i++) {
+			const playerRect = arrRadiantPlayers[i]
 			radiantBarArray.push(
 				this.CalculateBar(
 					playerRect,
@@ -215,7 +219,9 @@ export class CPreGame {
 				)
 			)
 		}
-		for (const playerRect of this.DirePlayers) {
+		const arrDirePlayers = this.DirePlayers
+		for (let i = 0, end = arrDirePlayers.length; i < end; i++) {
+			const playerRect = arrDirePlayers[i]
 			direBarArray.push(
 				this.CalculateBar(
 					playerRect,

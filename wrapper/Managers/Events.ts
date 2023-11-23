@@ -48,7 +48,8 @@ export class EventEmitter {
 			listenersAfter = this.eventsAfter.get(name)
 
 		if (listeners !== undefined) {
-			for (const [listener] of listeners) {
+			for (let index = 0; index < listeners.length; index++) {
+				const [listener] = listeners[index]
 				try {
 					if (listener(...args) === false && cancellable) {
 						return false
@@ -62,7 +63,8 @@ export class EventEmitter {
 			}
 		}
 		if (listenersAfter !== undefined) {
-			for (const [listener] of listenersAfter) {
+			for (let index = 0; index < listenersAfter.length; index++) {
+				const [listener] = listenersAfter[index]
 				try {
 					listener(...args)
 				} catch (e: any) {

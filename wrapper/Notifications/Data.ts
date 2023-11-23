@@ -5,6 +5,6 @@ export const Queue: Notification[] = []
 export const Notifications: Notification[] = []
 
 EventsSDK.on("GameEnded", () => {
-	Queue.splice(0)
-	Notifications.splice(0)
+	Queue.clear()
+	Notifications.clear()
 })

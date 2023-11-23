@@ -82,7 +82,8 @@ function GetTeamDeaths(playerResource: CPlayerResource, team: Team) {
 
 function GetNextSpawn(playerResource: CPlayerResource, team: Team) {
 	let res = GetTeamDeaths(playerResource, team) + 5
-	for (const data of playerResource.PlayerData) {
+	for (let i = 0, end = playerResource.PlayerData.length; i < end; i++) {
+		const data = playerResource.PlayerData[i]
 		if (data?.Team === team) {
 			res++
 		}
@@ -93,9 +94,9 @@ function GetNextSpawn(playerResource: CPlayerResource, team: Team) {
 function UpdateRespawnPositions(playerResource: CPlayerResource) {
 	const playerSpawners = GoodGuysSpawners.concat(BadGuysSpawners)
 
-	for (const [team, positions] of [
-		...new Set(playerSpawners.map(x => x.SpawnerTeam))
-	].map(
+	// TODO find better way (for now just use Set)
+	const arrSet = new Set(playerSpawners.map(x => x.SpawnerTeam))
+	for (const [team, positions] of [...arrSet.keys()].map(
 		team_ =>
 			[
 				team_,

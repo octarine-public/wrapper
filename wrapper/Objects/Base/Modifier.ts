@@ -3,7 +3,6 @@ import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { IModifier } from "../../Managers/ModifierManager"
 import * as StringTables from "../../Managers/StringTables"
-import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { GameState } from "../../Utils/GameState"
 import { AbilityData } from "../DataBook/AbilityData"
 import { Ability } from "./Ability"
@@ -275,7 +274,7 @@ export class Modifier {
 		if (this.Parent === undefined || !this.Parent.Buffs.includes(this)) {
 			return
 		}
-		arrayRemove(this.Parent.Buffs, this)
+		this.Parent.Buffs.remove(this)
 		this.UnitPropertyChanged(false)
 		EventsSDK.emit("ModifierRemoved", false, this)
 		this.Parent.ChangeFieldsByEvents()

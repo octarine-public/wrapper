@@ -180,7 +180,8 @@ function ReadTypedValue(stream: ReadableBinaryStream): EntityDataMapValue {
 // }
 
 function ParseEntityKeyValues(entityKeyValues: RecursiveMapValue[]) {
-	for (const entityKV of entityKeyValues) {
+	for (let index = 0, end = entityKeyValues.length; index < end; index++) {
+		const entityKV = entityKeyValues[index]
 		if (!(entityKV instanceof Map)) {
 			continue
 		}
@@ -205,7 +206,7 @@ function ParseEntityKeyValues(entityKeyValues: RecursiveMapValue[]) {
 				continue
 			}
 
-			for (const [name, value] of values) {
+			values.forEach((value, name) => {
 				let entityValue: RecursiveMapValue | EntityDataMapValue = value
 				if (Array.isArray(entityValue)) {
 					switch (entityValue.length) {
@@ -221,7 +222,7 @@ function ParseEntityKeyValues(entityKeyValues: RecursiveMapValue[]) {
 					}
 				}
 				map.set(MurmurHash2(name, 0x31415926) >>> 0, value as EntityDataMapValue)
-			}
+			})
 		} else if (entityKV.has("m_keyValuesData")) {
 			let kvData = entityKV.get("m_keyValuesData")
 			if (typeof kvData === "string") {
@@ -267,7 +268,8 @@ function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
 		if (!Array.isArray(childLumps)) {
 			return
 		}
-		for (const childLump of childLumps) {
+		for (let index = 0, end = childLumps.length; index < end; index++) {
+			const childLump = childLumps[index]
 			if (typeof childLump !== "string") {
 				continue
 			}
@@ -284,10 +286,9 @@ function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
 
 	if (kv.has("m_entityKeyValues")) {
 		const entityKeyValues = kv.get("m_entityKeyValues")
-		if (!Array.isArray(entityKeyValues)) {
-			return
+		if (Array.isArray(entityKeyValues)) {
+			ParseEntityKeyValues(entityKeyValues)
 		}
-		ParseEntityKeyValues(entityKeyValues)
 	}
 }
 

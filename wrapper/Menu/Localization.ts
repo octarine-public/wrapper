@@ -20,9 +20,9 @@ export const Localization = new (class CLocalization {
 			existingUnit = new Map()
 			this.LocalizationUnits.set(unitName, existingUnit)
 		}
-		for (const [k, v] of unit) {
-			existingUnit.set(k, v)
-		}
+		unit.forEach((v, k) => {
+			existingUnit!.set(k, v)
+		})
 		this.wasChanged = true
 	}
 

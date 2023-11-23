@@ -21,8 +21,6 @@ import { EventsSDK } from "../../Managers/EventsSDK"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GridNav } from "../../Resources/ParseGNV"
-import { arrayRemove } from "../../Utils/ArrayExtensions"
-import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
 import { GameState } from "../../Utils/GameState"
 import { toPercentage } from "../../Utils/Math"
 import { Inventory } from "../DataBook/Inventory"
@@ -461,10 +459,11 @@ export class Unit extends Entity {
 		return mask
 	}
 	public get UnitState(): modifierstate[] {
-		return MaskToArrayBigInt(this.UnitStateMask_)
+		return this.UnitStateMask_.toMask
 	}
 	public get IsEthereal(): boolean {
-		for (const buff of this.Buffs) {
+		for (let index = this.Buffs.length - 1; index > -1; index--) {
+			const buff = this.Buffs[index]
 			switch (buff.Name) {
 				case "modifier_ghost_state":
 				case "modifier_item_ethereal_blade_ethereal":
@@ -478,7 +477,8 @@ export class Unit extends Entity {
 		return false
 	}
 	public get CanUseAbilitiesInInvisibility(): boolean {
-		for (const buff of this.Buffs) {
+		for (let index = this.Buffs.length - 1; index > -1; index--) {
+			const buff = this.Buffs[index]
 			switch (buff.Name) {
 				case "modifier_riki_permanent_invisibility":
 				case "modifier_treant_natures_guise_invis":
@@ -677,10 +677,10 @@ export class Unit extends Entity {
 	}
 
 	public IsUnitStateFlagSet(flag: modifierstate): boolean {
-		return HasBitBigInt(this.UnitStateMask_, BigInt(flag))
+		return this.UnitStateMask_.hasBit(BigInt(flag))
 	}
 	public IsControllableByPlayer(playerID: number): boolean {
-		return HasBitBigInt(this.IsControllableByPlayerMask, BigInt(playerID))
+		return this.IsControllableByPlayerMask.hasBit(BigInt(playerID))
 	}
 	/**
 	 * @deprecated
@@ -934,7 +934,6 @@ export class Unit extends Entity {
 			direction = direction.Clone().Negate()
 		}
 		distance = Math.abs(distance)
-
 		const step = GridNav.EdgeSize / 2,
 			stepVec = direction.MultiplyScalar(step),
 			testPoint = start.Clone(),
@@ -944,9 +943,9 @@ export class Unit extends Entity {
 			const flags = GridNav.GetCellFlagsForPos(testPoint)
 			if (
 				(!flying &&
-					(!HasBit(flags, GridNavCellFlags.Walkable) ||
-						HasBit(flags, GridNavCellFlags.Tree))) ||
-				HasBit(flags, GridNavCellFlags.MovementBlocker)
+					(!flags.hasBit(GridNavCellFlags.Walkable) ||
+						flags.hasBit(GridNavCellFlags.Tree))) ||
+				flags.hasBit(GridNavCellFlags.MovementBlocker)
 			) {
 				break
 			}
@@ -1466,7 +1465,8 @@ RegisterFieldHandler(Unit, "m_bIsIllusion", (unit, newVal) => {
 	EventsSDK.emit("UnitPropertyChanged", false, unit)
 })
 EventsSDK.on("LocalTeamChanged", () => {
-	for (const unit of Units) {
+	for (let index = Units.length - 1; index > -1; index--) {
+		const unit = Units[index]
 		unit.IsVisibleForEnemies_ = Unit.IsVisibleForEnemies(unit)
 	}
 })
@@ -1565,7 +1565,8 @@ EventsSDK.on("PreEntityCreated", ent => {
 		ent.LastPredictedPositionUpdate = GameState.RawGameTime
 	}
 	if (ent instanceof NeutralSpawner) {
-		for (const unit of Units) {
+		for (let index = Units.length - 1; index > -1; index--) {
+			const unit = Units[index]
 			if (ent.HandleMatches(unit.Spawner_)) {
 				unit.Spawner = ent
 			}
@@ -1625,7 +1626,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 			}
 		}
 	} else if (ent instanceof Wearable) {
-		if (arrayRemove(owner.MyWearables, ent)) {
+		if (owner.MyWearables.remove(ent)) {
 			EventsSDK.emit("UnitWearablesChanged", false, owner)
 		}
 	}
@@ -1642,7 +1643,8 @@ EventsSDK.on(
 )
 
 EventsSDK.on("Tick", dt => {
-	for (const unit of Units) {
+	for (let index = Units.length - 1; index > -1; index--) {
+		const unit = Units[index]
 		unit.HPRegenCounter += unit.HPRegen * Math.min(dt, 0.1)
 		const regenAmountFloor = Math.floor(unit.HPRegenCounter)
 		unit.HPRegenCounter -= regenAmountFloor

@@ -146,60 +146,45 @@ EventsSDK.after("EntityCreated", ent => {
 	if (!(ent instanceof Unit)) {
 		return
 	}
-
-	for (const par of NetworkedParticle.Instances.values()) {
+	NetworkedParticle.Instances.forEach(par => {
 		let changedAnything = false
 		if (par.AttachedTo?.EntityMatches(ent)) {
 			par.AttachedTo = ent
 			changedAnything = true
 		}
-		for (const data of par.ControlPointsEnt.values()) {
+		par.ControlPointsEnt.forEach(data => {
 			if (data[0].EntityMatches(ent)) {
 				data[0] = ent
 				changedAnything = true
 			}
-		}
+		})
 		if (changedAnything) {
 			EventsSDK.emit("ParticleUpdated", false, par)
 		}
-	}
+	})
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	const destroyedParticles: NetworkedParticle[] = []
-	for (const par of NetworkedParticle.Instances.values()) {
-		if (par.AttachedTo === ent) {
-			destroyedParticles.push(par)
-		}
-	}
-	for (const par of destroyedParticles) {
-		par.Destroy()
-	}
-	for (const par of NetworkedParticle.Instances.values()) {
+	NetworkedParticle.Instances.forEach(par => {
 		let changedAnything = false
-		const destroyedCPsEnt: number[] = []
-		for (const [cp, data] of par.ControlPointsEnt) {
+		if (par.AttachedTo === ent) {
+			par.Destroy()
+		}
+		par.ControlPointsEnt.forEach((data, cp) => {
 			if (data[0] === ent) {
-				destroyedCPsEnt.push(cp)
+				par.ControlPointsEnt.delete(cp)
 				changedAnything = true
 			}
-		}
-		for (const cp of destroyedCPsEnt) {
-			par.ControlPointsEnt.delete(cp)
-		}
+		})
 		if (changedAnything) {
 			EventsSDK.emit("ParticleUpdated", false, par)
 		}
-	}
+	})
 })
 
 EventsSDK.on("Tick", () => {
-	const destroyedParticles: NetworkedParticle[] = []
-	for (const par of NetworkedParticle.Instances.values()) {
-		if (par.Released && par.EndTime !== -1 && par.EndTime <= GameState.RawGameTime) {
-			destroyedParticles.push(par)
+	NetworkedParticle.Instances.forEach(par => {
+		if (par.EndTime !== -1 && par.EndTime <= GameState.RawGameTime) {
+			par.Destroy()
 		}
-	}
-	for (const par of destroyedParticles) {
-		par.Destroy()
-	}
+	})
 })

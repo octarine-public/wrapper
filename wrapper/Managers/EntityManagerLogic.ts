@@ -10,7 +10,6 @@ import {
 	EntitiesSymbols,
 	GetConstructorByName
 } from "../Objects/NativeToSDK"
-import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import { GameState } from "../Utils/GameState"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { AllEntitiesAsMap, EntityManager } from "./EntityManager"
@@ -35,11 +34,14 @@ function ClassFromNative(
 	return new constructor(id, serial, entName)
 }
 
-export function CreateEntityInternal(ent: Entity): void {
-	AllEntitiesAsMap.set(ent.Index, ent)
-	EntityManager.AllEntities.push(ent)
-	for (const classEntities of ClassToEntitiesAr.get(ent.constructor as any)!) {
-		classEntities.push(ent)
+export function CreateEntityInternal(entity: Entity): void {
+	AllEntitiesAsMap.set(entity.Index, entity)
+	EntityManager.AllEntities.push(entity)
+
+	const entities = ClassToEntitiesAr.get(entity.constructor as Constructor<Entity>)!
+	for (let index = 0; index < entities.length; index++) {
+		const classEntities = entities[index]
+		classEntities.push(entity)
 	}
 }
 
@@ -68,21 +70,24 @@ function CreateEntity(
 	return entity
 }
 
-export function DeleteEntity(id: number): void {
-	const entity = AllEntitiesAsMap.get(id)
+export function DeleteEntity(entID: number): void {
+	const entity = AllEntitiesAsMap.get(entID)
 	if (entity === undefined) {
 		return
 	}
 
 	entity.IsValid = false
 	entity.BecameDormantTime = GameState.RawGameTime
-	ArrayExtensions.arrayRemove(EntityManager.AllEntities, entity)
+	EntityManager.AllEntities.remove(entity)
 
 	EventsSDK.emit("EntityDestroyed", false, entity)
 	entity.IsVisible = false
-	AllEntitiesAsMap.delete(id)
-	for (const classEntities of ClassToEntitiesAr.get(entity.constructor as any)!) {
-		ArrayExtensions.arrayRemove(classEntities, entity)
+	AllEntitiesAsMap.delete(entID)
+
+	const entities = ClassToEntitiesAr.get(entity.constructor as Constructor<Entity>)!
+	for (let index = entities.length - 1; index > -1; index--) {
+		const classEntities = entities[index]
+		classEntities.remove(entity)
 	}
 }
 
@@ -317,14 +322,16 @@ function ParseEntityPacket(stream: ReadableBinaryStream): void {
 				break
 		}
 	}
-	for (const [entID, healthBarOffset] of nativeChanges) {
+	for (let index = 0, end = nativeChanges.length; index < end; index++) {
+		const [entID, healthBarOffset] = nativeChanges[index]
 		const ent = EntityManager.EntityByIndex(entID)
 		if (ent !== undefined) {
 			ent.ForwardNativeProperties(healthBarOffset)
 		}
 	}
 	EventsSDK.emit("MidDataUpdate", false)
-	for (const ent of createdEntities) {
+	for (let index = 0, end = createdEntities.length; index < end; index++) {
+		const ent = createdEntities[index]
 		EventsSDK.emit("EntityCreated", false, ent)
 	}
 	EventsSDK.emit("PostDataUpdate", false)
@@ -343,7 +350,5 @@ Events.on("ServerMessage", (msgID, buf) => {
 })
 
 Events.on("NewConnection", () => {
-	for (const entID of AllEntitiesAsMap.keys()) {
-		DeleteEntity(entID)
-	}
+	AllEntitiesAsMap.forEach((_, entID) => DeleteEntity(entID))
 })

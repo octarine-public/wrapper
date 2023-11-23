@@ -59,7 +59,9 @@ function LoadTreeMap(stream: ReadableBinaryStream): void {
 		}
 	}
 	const trees: Tree[] = []
-	for (const pos of ParseTRMP(stream)) {
+	const positionTRMP = ParseTRMP(stream)
+	for (let i = 0, end = positionTRMP.length; i < end; i++) {
+		const pos = positionTRMP[i]
 		TempTreeIDOffset++
 		// for some reason there are trees duplicates, but earlier ones override them
 		if (trees.some(tree => tree.Position.Equals(pos))) {
@@ -83,7 +85,9 @@ function LoadTreeMap(stream: ReadableBinaryStream): void {
 		EventsSDK.emit("EntityCreated", false, entity)
 		trees.push(entity)
 	}
-	for (const data of EntityDataLump) {
+
+	for (let index = EntityDataLump.length - 1; index > -1; index--) {
+		const data = EntityDataLump[index]
 		if (data.get("classname") !== "ent_dota_tree") {
 			return
 		}

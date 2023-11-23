@@ -1,1 +1,1 @@
-import "./internal/prototypes/index"
+import "./prototypes/index"

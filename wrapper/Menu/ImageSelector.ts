@@ -38,13 +38,17 @@ export class ImageSelector extends Base {
 		super(parent, name, tooltip)
 		this.enabledValues = defaultValues
 	}
+
+	// TODO: check current state
 	public get IsZeroSelected(): boolean {
-		for (const value of this.enabledValues.values()) {
+		let state = false
+		this.enabledValues.forEach((_, value) => {
 			if (value) {
-				return false
+				return
 			}
-		}
-		return true
+			state = true
+		})
+		return state
 	}
 
 	public get IconsRect() {
@@ -154,15 +158,15 @@ export class ImageSelector extends Base {
 		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
 		const basePos = this.IconsRect.pos1
-		for (let i = 0; i < this.values.length; i++) {
-			const imagePath = this.renderedPaths[i]
+		for (let index = this.values.length - 1; index > -1; index--) {
+			const imagePath = this.renderedPaths[index]
 			if (imagePath === undefined) {
 				continue
 			}
 			const size = this.imageSize,
 				pos = new Vector2(
-					i % ImageSelector.elementsPerRow,
-					Math.floor(i / ImageSelector.elementsPerRow)
+					index % ImageSelector.elementsPerRow,
+					Math.floor(index / ImageSelector.elementsPerRow)
 				)
 					.Multiply(
 						this.imageSize.AddScalar(
@@ -179,10 +183,10 @@ export class ImageSelector extends Base {
 				Color.White,
 				0,
 				undefined,
-				!this.IsEnabled(this.values[i])
+				!this.IsEnabled(this.values[index])
 			)
 
-			if (this.IsEnabled(this.values[i])) {
+			if (this.IsEnabled(this.values[index])) {
 				RendererSDK.OutlinedRect(
 					pos,
 					size,

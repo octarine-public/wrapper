@@ -3,7 +3,6 @@ import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
 import { Ability } from "../Objects/Base/Ability"
 import { Modifier } from "../Objects/Base/Modifier"
 import { Unit } from "../Objects/Base/Unit"
-import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import { GameState } from "../Utils/GameState"
 import {
 	ParseProtobufDesc,
@@ -168,14 +167,27 @@ EventsSDK.on("EntityCreated", ent => {
 		queuedEnts.push(ent)
 	}
 })
-EventsSDK.on("EntityDestroyed", ent => ArrayExtensions.arrayRemove(queuedEnts, ent))
+EventsSDK.on("EntityDestroyed", ent => {
+	if (ent instanceof Unit || ent instanceof Ability) {
+		queuedEnts.remove(ent)
+	}
+})
+
 EventsSDK.on("PostDataUpdate", () => {
 	if (queuedEnts.length === 0) {
 		return
 	}
-	for (const ent of queuedEnts) {
+	for (let index = 0; index < queuedEnts.length; index++) {
+		const ent = queuedEnts[index]
+		if (ent instanceof Ability) {
+			activeModifiers.forEach(mod => {
+				if (ent.HandleMatches(mod.kv.Ability ?? 0)) {
+					mod.Update()
+				}
+			})
+		}
 		if (ent instanceof Unit) {
-			for (const mod of activeModifiers.values()) {
+			activeModifiers.forEach(mod => {
 				if (
 					ent.HandleMatches(mod.kv.Parent ?? 0) ||
 					ent.HandleMatches(mod.kv.Caster ?? 0) ||
@@ -184,24 +196,17 @@ EventsSDK.on("PostDataUpdate", () => {
 				) {
 					mod.Update()
 				}
-			}
-		}
-		if (ent instanceof Ability) {
-			for (const mod of activeModifiers.values()) {
-				if (ent.HandleMatches(mod.kv.Ability ?? 0)) {
-					mod.Update()
-				}
-			}
+			})
 		}
 	}
-	queuedEnts.splice(0)
+	queuedEnts.clear()
 })
 function EmitModifierRemoved(mod: Modifier) {
 	activeModifiers.delete(mod.SerialNumber)
 	mod.Remove()
 }
 EventsSDK.on("EntityDestroyed", ent => {
-	for (const mod of activeModifiers.values()) {
+	activeModifiers.forEach(mod => {
 		if (
 			mod.Parent === ent ||
 			mod.Ability === ent ||
@@ -210,7 +215,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 		) {
 			mod.Update()
 		}
-	}
+	})
 })
 function EmitModifierChanged(oldMod: Modifier, mod: IModifier) {
 	oldMod.kv = mod
@@ -267,14 +272,14 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 	if (name !== "ActiveModifiers") {
 		return
 	}
-	for (const [index, [, modSerialized]] of update) {
-		const replaced = activeModifiersRaw.get(index)
+	update.forEach(([, modSerialized], key) => {
+		const replaced = activeModifiersRaw.get(key)
 		if (modSerialized.byteLength === 0 && replaced?.SerialNum !== undefined) {
 			const replacedMod = activeModifiers.get(replaced.SerialNum)
 			if (replacedMod !== undefined) {
 				EmitModifierRemoved(replacedMod)
 			}
-			continue
+			return
 		}
 		const mod = new IModifier(
 			ParseProtobufNamed(
@@ -288,7 +293,7 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 				EmitModifierRemoved(replacedMod)
 			}
 		}
-		activeModifiersRaw.set(index, mod)
+		activeModifiersRaw.set(key, mod)
 		const oldMod = activeModifiers.get(mod.SerialNum as number)
 		if (mod.EntryType === DOTA_MODIFIER_ENTRY_TYPE.DOTA_MODIFIER_ENTRY_TYPE_ACTIVE) {
 			if (oldMod === undefined) {
@@ -299,11 +304,9 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 		} else if (oldMod !== undefined) {
 			EmitModifierRemoved(oldMod)
 		}
-	}
+	})
 })
 EventsSDK.on("RemoveAllStringTables", () => {
-	for (const mod of activeModifiers.values()) {
-		EmitModifierRemoved(mod)
-	}
+	activeModifiers.forEach(mod => EmitModifierRemoved(mod))
 	activeModifiers.clear()
 })

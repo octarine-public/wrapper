@@ -6,7 +6,6 @@ import { GUIInfo } from "../GUI/GUIInfo"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputManager } from "../Managers/InputManager"
 import { RendererSDK } from "../Native/RendererSDK"
-import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import { Localization } from "./Localization"
 
 export interface IMenu {
@@ -234,7 +233,7 @@ export class Base {
 	 * @returns true on success
 	 */
 	public DetachFromParent(): boolean {
-		return ArrayExtensions.arrayRemove(this.parent.entries, this)
+		return this.parent.entries.remove(this)
 	}
 	protected ApplyLocalization() {
 		this.Name = Localization.Localize(this.InternalName)
@@ -263,8 +262,10 @@ export class Base {
 		)
 	}
 	protected TriggerOnValueChangedCBs(): void {
-		for (const cb of this.OnValueChangedCBs) {
-			cb(this)
+		const arr = this.OnValueChangedCBs
+		for (let index = arr.length - 1; index > -1; index--) {
+			const callback = arr[index]
+			callback(this)
 		}
 	}
 

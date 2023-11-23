@@ -259,33 +259,33 @@ export class UnitData {
 		if (kv.has("AttackSpeedActivityModifiers")) {
 			const m = kv.get("AttackSpeedActivityModifiers")
 			if (m instanceof Map) {
-				for (const [k, v] of m) {
+				m.forEach((v, k) => {
 					if (typeof v === "string") {
 						this.AttackSpeedActivityModifiers.push([parseFloat(v), k])
 					}
-				}
+				})
 			}
 			this.AttackSpeedActivityModifiers.sort((a, b) => b[0] - a[0])
 		}
 		if (kv.has("MovementSpeedActivityModifiers")) {
 			const m = kv.get("MovementSpeedActivityModifiers")
 			if (m instanceof Map) {
-				for (const [k, v] of m) {
+				m.forEach((v, k) => {
 					if (typeof v === "string") {
 						this.MovementSpeedActivityModifiers.push([parseFloat(v), k])
 					}
-				}
+				})
 			}
 			this.MovementSpeedActivityModifiers.sort((a, b) => b[0] - a[0])
 		}
 		if (kv.has("AttackRangeActivityModifiers")) {
 			const m = kv.get("AttackRangeActivityModifiers")
 			if (m instanceof Map) {
-				for (const [k, v] of m) {
+				m.forEach((v, k) => {
 					if (typeof v === "string") {
 						this.AttackRangeActivityModifiers.push([parseFloat(v), k])
 					}
-				}
+				})
 			}
 			this.AttackRangeActivityModifiers.sort((a, b) => b[0] - a[0])
 		}

@@ -17,7 +17,6 @@ import * as StringTables from "../../Managers/StringTables"
 import { RendererSDK } from "../../Native/RendererSDK"
 import { Player } from "../../Objects/Base/Player"
 import { FieldHandler, RegisterFieldHandler } from "../../Objects/NativeToSDK"
-import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { GameState } from "../../Utils/GameState"
 import { DegreesToRadian, toPercentage } from "../../Utils/Math"
 import { CGameRules } from "./GameRules"
@@ -465,7 +464,8 @@ export class Entity {
 			const anim = this.Animations[i]
 			let score = 0,
 				hasMovement = false
-			for (const activityData of anim.activities) {
+			for (let index = 0, end = anim.activities.length; index < end; index++) {
+				const activityData = anim.activities[index]
 				if (modifiers.includes(activityData.name)) {
 					hasMovement ||= activityData.name === "ACT_DOTA_RUN"
 					score += activityData.weight
@@ -566,8 +566,8 @@ export class Entity {
 				this.NetworkedPosition.CopyFrom(transform.Translation)
 				this.NetworkedAngles.CopyFrom(transform.Angles)
 			}
-
-			for (const child of this.Children) {
+			for (let index = this.Children.length - 1; index > -1; index--) {
+				const child = this.Children[index]
 				child.UpdatePositions(transform)
 			}
 		}
@@ -641,7 +641,7 @@ RegisterFieldHandler(Entity, "m_hParent", (ent, newVal) => {
 		prevParentEnt = ent.ParentEntity
 	if (parentEnt !== ent.ParentEntity) {
 		if (prevParentEnt !== undefined) {
-			arrayRemove(prevParentEnt.Children, ent)
+			prevParentEnt.Children.remove(ent)
 		}
 		parentEnt?.Children.push(ent)
 		ent.ParentEntity = parentEnt
@@ -658,7 +658,9 @@ EventsSDK.on("PreEntityCreated", ent => {
 	if (ent.Index === 0) {
 		return
 	}
-	for (const iter of EntityManager.AllEntities) {
+	const arrEntities = EntityManager.AllEntities
+	for (let index = arrEntities.length - 1; index > -1; index--) {
+		const iter = arrEntities[index]
 		if (ent.HandleMatches(iter.Owner_)) {
 			iter.OwnerEntity = ent
 		}
@@ -674,12 +676,14 @@ EventsSDK.on("EntityDestroyed", ent => {
 	if (ent.Index === 0) {
 		return
 	}
-	for (const iter of EntityManager.AllEntities) {
+	const arrEntities = EntityManager.AllEntities
+	for (let index = arrEntities.length - 1; index > -1; index--) {
+		const iter = arrEntities[index]
 		if (ent.HandleMatches(iter.Owner_)) {
 			iter.OwnerEntity = undefined
 		}
 		if (ent.HandleMatches(iter.Parent_)) {
-			arrayRemove(ent.Children, iter)
+			ent.Children.remove(iter)
 			iter.ParentEntity = undefined
 			iter.UpdatePositions()
 		}
@@ -770,10 +774,10 @@ EventsSDK.on("GameEvent", (name, obj) => {
 
 const lastGlowEnts = new Set<Entity>()
 function CustomGlowEnts(): void {
-	for (const ent of lastGlowEnts) {
+	lastGlowEnts.forEach(ent => {
 		if (!ent.IsValid) {
 			lastGlowEnts.delete(ent)
-			continue
+			return
 		}
 		const customID = ent.CustomNativeID
 		const customGlowColor = ent.CustomGlowColor
@@ -784,15 +788,15 @@ function CustomGlowEnts(): void {
 			lastGlowEnts.delete(ent)
 		}
 		SetEntityGlow(customID, colorU32)
-	}
+	})
 }
 
 const lastColoredEnts = new Set<Entity>()
 function CustomColorEnts(): void {
-	for (const ent of lastColoredEnts) {
+	lastColoredEnts.forEach(ent => {
 		if (!ent.IsValid) {
 			lastColoredEnts.delete(ent)
-			continue
+			return
 		}
 		const customDrawColor = ent.CustomDrawColor
 		let colorU32 = 0,
@@ -805,7 +809,7 @@ function CustomColorEnts(): void {
 			lastColoredEnts.delete(ent)
 		}
 		SetEntityColor(ent.CustomNativeID, colorU32, renderMode)
-	}
+	})
 }
 
 EventsSDK.after("PostDataUpdate", () => {

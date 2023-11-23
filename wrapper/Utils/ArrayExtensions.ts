@@ -12,12 +12,16 @@ export function CompareArrays<T>(a: T[], b: T[]): boolean {
 }
 
 /**
+ * @deprecated - use your own arr.intersect(arr2)
  * @returns intersect values in Arrays
  */
 export function IntersectArrays<T>(a: T[], b: T[]): T[] {
 	return a.filter(val1 => b.some(val2 => val1 === val2))
 }
 
+/**
+ * @deprecated - use your own arr.hasIntersect(arr2)
+ */
 export function HasIntersectArrays<T>(a: T[], b: T[]): boolean {
 	return a.some(val1 => b.some(val2 => val1 === val2))
 }
@@ -50,7 +54,7 @@ export function arrayRemove<T>(ar: T[], el: T, deleteEl: boolean = false): boole
 
 /**
  * @param deleteEl uses operator 'delete' instead of 'splice'
- * @deprecated - use your own arr.removeCallback(cb, deleteEl)
+ * @deprecated - use your own arr.removeCallback(callback, deleteEl)
  */
 export function arrayRemoveCallback<T>(
 	ar: T[],
@@ -73,6 +77,7 @@ export function arrayRemoveCallback<T>(
 
 /**
  * Similar to orderBy(ar, cb)[0]
+ * @deprecated - use your own arr.orderByFirst(callback)
  */
 export function orderByFirst<T>(ar: T[], cb: (obj: T) => number): Nullable<T> {
 	let lowestScore = Infinity,
@@ -88,28 +93,28 @@ export function orderByFirst<T>(ar: T[], cb: (obj: T) => number): Nullable<T> {
 }
 
 /**
- * @deprecated - use your own arr.orderBy(cb)
+ * @deprecated - use your own arr.orderBy(callback)
  */
 export function orderBy<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return ar.sort((a, b) => (cb(a) as number) - (cb(b) as number))
 }
 
 /**
- * @deprecated - use your own arr.qorderBy(cb)
+ * @deprecated - this slow use ar.orderBy(callback)
  */
 export function qorderBy<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return qsort(ar, (a, b) => (cb(a) as number) - (cb(b) as number))
 }
 
 /**
- * @deprecated - use your own arr.orderBy(cb)
+ * @deprecated - use your own arr.orderByDescending(callback)
  */
 export function orderByRevert<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return ar.sort((a, b) => (cb(b) as number) - (cb(a) as number))
 }
 
 /**
- * @deprecated - use your own arr.qorderBy(cb)
+ * @deprecated - this slow use ar.orderByDescending(callback)
  */
 export function qorderByRevert<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return qsort(ar, (a, b) => (cb(b) as number) - (cb(a) as number))

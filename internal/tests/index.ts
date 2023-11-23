@@ -1,45 +1,65 @@
-// import { ArrayExtensions, Menu } from "../../wrapper/Imports"
+// import { Menu } from "../../wrapper/Imports"
 
-// class Test {}
-// const arr = [...new Array(100_000)].fill(new Test())
-// const arr2 = [...new Array(100_000)].fill(new Test())
+// // class Test {
+// // 	public Primary = -1
+// // 	public Secondary = -1
+// // 	constructor(index: number, index2: number) {
+// // 		this.Primary = index
+// // 		this.Secondary = index2
+// // 	}
+// // }
 
+// // /** one */
+// // const arr = [
+// // 	new Test(1, 2),
+// // 	new Test(0, 1),
+// // 	new Test(2, 1),
+// // 	new Test(2, 0),
+// // 	new Test(0, 2),
+// // 	new Test(0, 3)
+// // ]
+
+// const arr = [...new Array(100_000).keys()]
+// const arr2 = [...new Array(100_000).keys()]
+// // const arr2 = [...new Array(100_000)]
 // const menu = Menu.AddEntry("Test")
 
 // menu.SortNodes = false
 
-// const key = menu.AddKeybind("ArrayExtensions.arrayRemove")
-// const key2 = menu.AddKeybind("Array.prototype.remove")
+// const key = menu.AddKeybind("Test 1")
+// const key2 = menu.AddKeybind("Test 2")
 
+// const newItems: number[] = []
 // key.OnRelease(() => {
-// 	let count = 0
 // 	const start = hrtime()
-// 	for (let index = arr.length - 1; index > -1; index--) {
-// 		const element = arr[index]
-// 		ArrayExtensions.arrayRemove(arr, element)
-// 		count++
+// 	for (let i = 0, end = arr.length; i < end; i++) {
+// 		const x = arr[i]
+// 		if (x > 1000) {
+// 			newItems.push(arr[i])
+// 		}
 // 	}
-// 	console.log(`
-// 		Use: [ArrayExtensions.arrayRemove]
-// 		Time: ${hrtime() - start} ms,
-// 		Removed: ${count}k elements
-// 	`)
+// 	console.log("for++ push", hrtime() - start)
 // })
 
 // key2.OnRelease(() => {
-// 	let count = 0
 // 	const start = hrtime()
-// 	for (let index = arr2.length - 1; index > -1; index--) {
-// 		const element = arr2[index]
-// 		const id = arr2.indexOf(element)
-// 		if (id !== -1) {
-// 			arr2.splice(id, 1)
-// 			count++
-// 		}
-// 	}
-// 	console.log(`
-// 		Use: [indexOf + splice]
-// 		Time: ${hrtime() - start} ms,
-// 		Removed: ${count}k elements
-// 	`)
+// 	arr2.filter(x => x > 1000)
+// 	console.log("filter", hrtime() - start)
 // })
+
+// // key3.OnRelease(() => {
+// // 	const start = hrtime()
+// // 	for (let index = arr.length - 1; index > -1; index--) {
+// // 		const element = arr[index]
+// // 		/** */
+// // 	}
+// // 	console.log("for--", hrtime() - start)
+// // })
+
+// // key4.OnRelease(() => {
+// // 	const start = hrtime()
+// // 	arr.forEach(element => {
+// // 		/** */
+// // 	})
+// // 	console.log("forEach", hrtime() - start)
+// // })

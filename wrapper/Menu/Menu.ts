@@ -78,17 +78,18 @@ class CMenuManager {
 
 	public get ScrollVisible() {
 		let remaining = -this.VisibleEntries
-		for (const entry of this.entries) {
-			if (entry.IsVisible) {
-				remaining++
-			}
+		const entries = this.entries
+		for (let i = 0, end = entries.length; i < end; i++) {
+			remaining++
 		}
 		return remaining > 0
 	}
 
 	private get EntriesSizeX_(): number {
 		let width = this.header.Size.x
-		for (const entry of this.entries) {
+		const entries = this.entries
+		for (let i = 0, end = entries.length; i < end; i++) {
+			const entry = entries[i]
 			if (entry.IsVisible) {
 				width = Math.max(width, entry.Size.x)
 			}
@@ -100,7 +101,9 @@ class CMenuManager {
 		let height = this.header.Size.y,
 			cnt = 0,
 			skip = this.ScrollPosition
-		for (const entry of this.entries) {
+		const entries = this.entries
+		for (let i = 0, end = entries.length; i < end; i++) {
+			const entry = entries[i]
 			if (!entry.IsVisible || skip-- > 0) {
 				continue
 			}
@@ -165,7 +168,9 @@ class CMenuManager {
 			this.header.Update(this.header.QueuedUpdateRecursive)
 		}
 		let updatedEntries = false
-		for (const entry of this.entries) {
+		const arrEntries = this.entries
+		for (let i = 0, end = arrEntries.length; i < end; i++) {
+			const entry = arrEntries[i]
 			if (entry.QueuedUpdate) {
 				entry.QueuedUpdate = false
 				entry.Update(entry.QueuedUpdateRecursive)
@@ -182,7 +187,9 @@ class CMenuManager {
 		const position = this.header.Position.Clone().AddScalarY(this.header.Size.y)
 		let skip = this.ScrollPosition,
 			visibleEntries = this.VisibleEntries
-		for (const entry of this.entries) {
+		const entries = this.entries
+		for (let i = 0, end = entries.length; i < end; i++) {
+			const entry = entries[i]
 			if (!entry.IsVisible || skip-- > 0) {
 				continue
 			}
@@ -201,7 +208,9 @@ class CMenuManager {
 		if (updatedEntries) {
 			this.Update()
 		}
-		for (const node of this.entries) {
+		const arrEntries2 = this.entries
+		for (let i = 0, end = arrEntries2.length; i < end; i++) {
+			const node = arrEntries2[i]
 			if (node.IsVisible) {
 				node.PostRender()
 			}
@@ -210,7 +219,9 @@ class CMenuManager {
 	}
 	public Update(recursive = false): void {
 		if (recursive) {
-			for (const entry of this.entries) {
+			const entries = this.entries
+			for (let i = 0, end = entries.length; i < end; i++) {
+				const entry = entries[i]
 				entry.Update(true)
 			}
 		}
@@ -227,7 +238,9 @@ class CMenuManager {
 			this.activeElement = this.header
 			return false
 		}
-		for (const node of this.entries) {
+		const entries = this.entries
+		for (let i = 0, end = entries.length; i < end; i++) {
+			const node = entries[i]
 			if (node.IsVisible && !node.OnMouseLeftDown()) {
 				this.activeElement = node
 				return false

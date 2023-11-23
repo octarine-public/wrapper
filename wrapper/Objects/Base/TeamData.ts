@@ -73,8 +73,8 @@ RegisterFieldHandler(TeamData, "m_vecWorldTreeModelReplacements", (data, newVal)
 RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, newValue) => {
 	Tree.TreeActiveMask = newValue as bigint[]
 	if (GridNav !== undefined) {
-		for (const tree of Trees) {
-			GridNav.UpdateTreeState(tree)
+		for (let i = 0, end = Trees.length; i < end; i++) {
+			GridNav.UpdateTreeState(Trees[i])
 		}
 	}
 })

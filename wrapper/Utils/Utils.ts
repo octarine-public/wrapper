@@ -80,7 +80,6 @@ export function readJSON(path: string): any {
 	}
 }
 
-type CompareFunc<T> = (a: T, b: T) => number
 function partition<T>(items: T[], cmpFunc: CompareFunc<T>, left: number, right: number) {
 	const pivot = items[Math.floor((right + left) / 2)]
 	let i = left,
@@ -95,17 +94,16 @@ function partition<T>(items: T[], cmpFunc: CompareFunc<T>, left: number, right: 
 		if (i > j) {
 			break
 		}
-
 		const temp = items[i]
 		items[i] = items[j]
 		items[j] = temp
-
 		i++
 		j--
 	}
 	return i
 }
 
+type CompareFunc<T> = (a: T, b: T) => number
 export function qsort<T>(
 	items: T[],
 	cmpFunc: CompareFunc<T>,
@@ -123,7 +121,6 @@ export function qsort<T>(
 	}
 	return items
 }
-
 function insertMapElement<K, V>(map: Map<K, V>, k: K, v: V): void {
 	if (map.has(k) && v instanceof Map) {
 		const prevVal = map.get(k)
@@ -141,7 +138,8 @@ export function createMapFromMergedIterators<K, V>(
 	...iters: IterableIterator<[K, V]>[]
 ): Map<K, V> {
 	const map = new Map<K, V>()
-	for (const iter of iters) {
+	for (let index = 0, end = iters.length; index < end; index++) {
+		const iter = iters[index]
 		for (const [k, v] of iter) {
 			insertMapElement(map, k, v)
 		}
