@@ -1,4 +1,2 @@
 node_modules/
-wrapper_autogen/**/*.ts
 scripts/
-latest_circular.txt
