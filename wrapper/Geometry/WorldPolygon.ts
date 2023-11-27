@@ -17,10 +17,14 @@ export class WorldPolygon {
 		).DivideScalarForThis(this.Points.length)
 	}
 	public Add(polygon: WorldPolygon | Vector3): void {
-		if (polygon instanceof WorldPolygon) {
-			polygon.Points.forEach(point => this.AddPoint(point))
-		} else {
+		if (!(polygon instanceof WorldPolygon)) {
 			this.AddPoint(polygon)
+			return
+		}
+		const arr = polygon.Points
+		for (let index = 0; index < arr.length; index++) {
+			const point = arr[index]
+			this.AddPoint(point)
 		}
 	}
 

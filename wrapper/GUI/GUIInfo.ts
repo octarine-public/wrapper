@@ -98,16 +98,18 @@ export const GUIInfo = new (class CGUIInfo {
 			this.DebugDraw()
 		}
 	}
-	public GetVisibleAbilitiesForUnit(unit: Unit): Ability[] {
-		return unit.Spells.filter(
-			abil =>
-				abil !== undefined &&
-				abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES &&
-				abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_HIDDEN &&
-				!abil.Name.startsWith("plus_") &&
-				!abil.Name.startsWith("seasonal_") &&
-				!abil.IsHidden
-		) as Ability[]
+	public GetVisibleAbilitiesForUnit(unit: Nullable<Unit>): Ability[] {
+		return (
+			(unit?.Spells.filter(
+				abil =>
+					abil !== undefined &&
+					abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES &&
+					abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_HIDDEN &&
+					!abil.Name.startsWith("plus_") &&
+					!abil.Name.startsWith("seasonal_") &&
+					!abil.IsHidden
+			) as Ability[]) ?? []
+		)
 	}
 	public GetLowerHUDForUnit(
 		unit: Nullable<Unit> = InputManager.SelectedUnit

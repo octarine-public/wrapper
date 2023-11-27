@@ -1,5 +1,4 @@
 import { BackgroundCover } from "../Enums/BackgroundCover"
-import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import { Notification } from "./AbstractNotification"
 import { Notifications, Queue } from "./Data"
 
@@ -50,10 +49,7 @@ export const NotificationsSDK = new (class CNotificationsSDK {
 		notification.Cover = backgroundCover
 
 		if (uniqCheck) {
-			ArrayExtensions.arrayRemoveCallback(
-				Notifications,
-				x => x.UniqueKey === x.UniqueKey && !x.IsExpired
-			)
+			Notifications.removeCallback(x => x.UniqueKey === x.UniqueKey && !x.IsExpired)
 			if (!Queue.some(x => x.UniqueKey === notification.UniqueKey)) {
 				Queue.push(notification)
 			}

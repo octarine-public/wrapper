@@ -26,7 +26,6 @@ import { TempTree } from "../Objects/Base/TempTree"
 import { Tree } from "../Objects/Base/Tree"
 import { Unit, Units } from "../Objects/Base/Unit"
 import { EntityDataLump } from "../Resources/ParseEntityLump"
-import { orderByFirst } from "../Utils/ArrayExtensions"
 import { GameState } from "../Utils/GameState"
 import { ConVarsSDK } from "./ConVarsSDK"
 import { ExecuteOrder } from "./ExecuteOrder"
@@ -900,16 +899,14 @@ function MoveCamera(
 		lookatposDist > defaultCameraDist ||
 		currentTime - lastUnitSwitch > shortUnitSwitchDelay
 	) {
-		const nearest = orderByFirst(
-			Units.filter(
-				ent =>
-					ent.IsControllable &&
-					ent.RootOwner === LocalPlayer &&
-					(ent.IsAlive || ent === LocalPlayer?.Hero) &&
-					!ent.IsEnemy()
-			),
-			ent => ent.DistanceSqr2D(targetPos)
-		)
+		const nearest = Units.filter(
+			ent =>
+				ent.IsControllable &&
+				ent.RootOwner === LocalPlayer &&
+				(ent.IsAlive || ent === LocalPlayer?.Hero) &&
+				!ent.IsEnemy()
+		).orderByFirst(ent => ent.DistanceSqr2D(targetPos))
+
 		if (nearest !== undefined) {
 			const nearestDist = targetPos.Distance2D(nearest.VisualPosition)
 			if (nearestDist < lookatposDist) {
@@ -1283,7 +1280,7 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 		lastOrderTarget instanceof Unit &&
 		intersectedUnits.includes(lastOrderTarget)
 			? lastOrderTarget
-			: orderByFirst(intersectedUnits, ent =>
+			: intersectedUnits.orderByFirst(ent =>
 					latestUsercmd.VectorUnderCursor.DistanceSqr(ent.VisualPosition)
 			  )
 
@@ -1322,7 +1319,7 @@ function ProcessUserCmd(force = false): void {
 	InputManager.IsScoreboardOpen =
 		ConVarsSDK.GetInt("dota_spectator_stats_panel", 0) === 1
 	const numSelected = GetSelectedEntities()
-	InputManager.SelectedEntities.splice(0)
+	InputManager.SelectedEntities.clear()
 	for (let i = 0; i < numSelected; i++) {
 		const ent = EntityManager.EntityByIndex(IOBufferView.getUint32(i * 4, true))
 		if (ent !== undefined) {
@@ -1562,7 +1559,7 @@ Events.on("DebuggerPrepareUnitOrders", (isUserInput, wasCancelled) => {
 })
 
 function ClearHumanizerState() {
-	ExecuteOrder.orderQueue.splice(0)
+	ExecuteOrder.orderQueue.clear()
 	ExecuteOrder.lastMove = undefined
 	lastOrderFinish = 0
 	latestCameraX = 0
@@ -1581,14 +1578,14 @@ function ClearHumanizerState() {
 	initializedMousePosition = false
 	InputManager.IsShopOpen = false
 	InputManager.IsScoreboardOpen = false
-	InputManager.SelectedEntities.splice(0)
+	InputManager.SelectedEntities.clear()
 	InputManager.CursorOnWorld = new Vector3()
 	paramsX = getParams()
 	paramsY = getParams()
 }
 
 function RestartHumanizerState() {
-	ExecuteOrder.orderQueue.splice(0)
+	ExecuteOrder.orderQueue.clear()
 	ExecuteOrder.lastMove = undefined
 	lastOrderFinish = 0
 	latestCameraX = 0

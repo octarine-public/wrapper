@@ -9,11 +9,4 @@ export class TreeModelReplacement {
 	public get Model(): string {
 		return this.properties.get("m_szModel") as string
 	}
-
-	public toJSON(): any {
-		return {
-			BinaryObjectID: this.BinaryObjectID,
-			Model: this.Model
-		}
-	}
 }

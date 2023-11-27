@@ -96,7 +96,8 @@ EventsSDK.on("PreEntityCreated", ent => {
 	if (!(ent instanceof Unit)) {
 		return
 	}
-	for (const hero of Heroes) {
+	for (let index = Heroes.length - 1; index > -1; index--) {
+		const hero = Heroes[index]
 		if (hero.ReplicatingOtherHeroModel?.EntityMatches(ent)) {
 			hero.ReplicatingOtherHeroModel = ent
 		}
@@ -107,7 +108,8 @@ EventsSDK.on("EntityDestroyed", ent => {
 	if (!(ent instanceof Unit)) {
 		return
 	}
-	for (const hero of Heroes) {
+	for (let index = Heroes.length - 1; index > -1; index--) {
+		const hero = Heroes[index]
 		if (hero.ReplicatingOtherHeroModel === ent) {
 			hero.ReplicatingOtherHeroModel = undefined
 		}

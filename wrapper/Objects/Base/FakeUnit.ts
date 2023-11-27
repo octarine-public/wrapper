@@ -1,7 +1,6 @@
 import { Vector3 } from "../../Base/Vector3"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
-import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { GameState } from "../../Utils/GameState"
 import { PlayerCustomData } from "../DataBook/PlayerCustomData"
 import { UnitData } from "../DataBook/UnitData"
@@ -117,7 +116,7 @@ EventsSDK.on("EntityCreated", ent => {
 		return
 	}
 	fakeUnitsMap.delete(ent.Index)
-	arrayRemove(FakeUnits, fakeUnit)
+	FakeUnits.remove(fakeUnit)
 	EventsSDK.emit("FakeUnitDestroyed", false, fakeUnit)
 	if (!(ent instanceof Unit)) {
 		return
@@ -130,11 +129,12 @@ EventsSDK.on("EntityCreated", ent => {
 })
 EventsSDK.on("GameEnded", () => {
 	fakeUnitsMap.clear()
-	FakeUnits.splice(0)
+	FakeUnits.clear()
 })
 
 EventsSDK.on("PostDataUpdate", () => {
-	for (const fakeUnit of FakeUnits) {
+	for (let index = FakeUnits.length - 1; index > -1; index--) {
+		const fakeUnit = FakeUnits[index]
 		fakeUnit.UpdateName()
 	}
 })

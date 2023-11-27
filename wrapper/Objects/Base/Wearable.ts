@@ -36,7 +36,8 @@ EventsSDK.on("PreEntityCreated", ent => {
 		return
 	}
 	if (ent instanceof Wearable) {
-		for (const wearable of Wearables) {
+		for (let index = Wearables.length - 1; index > -1; index--) {
+			const wearable = Wearables[index]
 			if (ent.HandleMatches(wearable.AdditionalWearable_)) {
 				wearable.AdditionalWearable = ent
 			}
@@ -48,7 +49,8 @@ EventsSDK.on("EntityDestroyed", ent => {
 		return
 	}
 	if (ent instanceof Wearable) {
-		for (const wearable of Wearables) {
+		for (let index = Wearables.length - 1; index > -1; index--) {
+			const wearable = Wearables[index]
 			if (ent.HandleMatches(wearable.AdditionalWearable_)) {
 				wearable.AdditionalWearable = undefined
 			}

@@ -4,23 +4,25 @@ import { ParseProtobufDesc, ParseProtobufNamed } from "../Utils/Protobuf"
 import { MapToObject } from "../Utils/Utils"
 import { Entity } from "./Base/Entity"
 
-export type FieldHandler = (entity: Entity, newValue: EntityPropertyType) => any
-export const ClassToEntities = new Map<Constructor<any>, Entity[]>(),
-	ClassToEntitiesAr = new Map<Constructor<any>, Entity[][]>(),
-	SDKClasses: [Constructor<Entity>, Entity[]][] = [],
-	FieldHandlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>()
 const constructors = new Map<string, Constructor<Entity>>()
-export const CachedFieldHandlers = new Map<
+export type FieldHandler = (entity: Entity, newValue: EntityPropertyType) => any
+
+export const SDKClasses: [Constructor<Entity>, Entity[]][] = []
+export const ClassToEntities = new WeakMap<Constructor<any>, Entity[]>()
+export const ClassToEntitiesAr = new WeakMap<Constructor<any>, Entity[][]>()
+export const CachedFieldHandlers = new WeakMap<
 	Constructor<Entity>,
 	Map<number, FieldHandler>
 >()
+export const FieldHandlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>()
 
 function RegisterClassInternal(constructor: Constructor<Entity>) {
 	const prototype = constructor.prototype
 	if (!ClassToEntities.has(constructor)) {
 		const ar: Entity[][] = [[]]
 		ClassToEntities.set(constructor, ar[0])
-		for (const [constr, entitiesAr] of SDKClasses) {
+		for (let i = 0, end = SDKClasses.length; i < end; i++) {
+			const [constr, entitiesAr] = SDKClasses[i]
 			if (prototype instanceof constr) {
 				ar.push(entitiesAr)
 			}
@@ -32,13 +34,13 @@ function RegisterClassInternal(constructor: Constructor<Entity>) {
 	}
 	SDKClasses.push([constructor, ClassToEntities.get(constructor)!])
 	const map = new Map<string, FieldHandler>()
-	for (const [constr, classFieldHandlers] of FieldHandlers) {
+
+	FieldHandlers.forEach((classFieldHandlers, constr) => {
 		if (prototype instanceof constr) {
-			for (const [k, v] of classFieldHandlers) {
-				map.set(k, v)
-			}
+			classFieldHandlers.forEach((v, k) => map.set(k, v))
 		}
-	}
+	})
+
 	FieldHandlers.set(constructor, map)
 }
 
@@ -130,7 +132,8 @@ export function GetConstructorByName(
 
 	// if neither fixed or original class name have got wrapped entities - try to walk up inherited classes
 	const inherited = SchemaClassesInheritance.get(fixedClassName)!
-	for (const inheritedClassName of inherited) {
+	for (let index = inherited.length - 1; index > -1; index--) {
+		const inheritedClassName = inherited[index]
 		const constructor = GetConstructorByName(inheritedClassName)
 		if (constructor !== undefined) {
 			return constructor
@@ -270,19 +273,19 @@ declare class ${name} {
 				}
 				return sym
 			})
-			for (const [construct, map] of FieldHandlers) {
+			FieldHandlers.forEach((map, construct) => {
 				const map2 = CachedFieldHandlers.get(construct)!
-				for (const [fieldName, fieldHandler] of map) {
+				map.forEach((fieldHandler, fieldName) => {
 					const id = EntitiesSymbols.indexOf(fieldName)
 					if (id === -1) {
 						console.log(
 							`[WARNING] Index of "${fieldName}" not found in CSVCMsg_FlattenedSerializer.`
 						)
-						continue
+						return
 					}
 					map2.set(id, fieldHandler)
-				}
-			}
+				})
+			})
 			break
 		}
 	}

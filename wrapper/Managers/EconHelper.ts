@@ -53,15 +53,19 @@ function LoadEconData() {
 	if (!(items instanceof Map)) {
 		return
 	}
-	for (const [idStr, item] of items) {
+
+	items.forEach((item, idStr) => {
 		if (!(item instanceof Map)) {
-			continue
+			return
+		}
+		if (!(item instanceof Map)) {
+			return
 		}
 		let id = 0n
 		try {
 			id = BigInt(idStr)
 		} catch {
-			continue
+			return
 		}
 		const itemName = item.get("name")
 		if (typeof itemName === "string") {
@@ -69,11 +73,11 @@ function LoadEconData() {
 		}
 		const visuals = item.get("visuals")
 		if (!(visuals instanceof Map)) {
-			continue
+			return
 		}
-		for (const [name, visual] of visuals) {
+		visuals.forEach((visual, name) => {
 			if (!(visual instanceof Map) || !name.startsWith("asset_modifier")) {
-				continue
+				return
 			}
 			const type = visual.get("type")
 			switch (type) {
@@ -83,17 +87,17 @@ function LoadEconData() {
 						try {
 							ItemHealthBarOffsets.set(id, parseFloat(offset))
 						} catch {
-							continue
+							return
 						}
 					}
-					continue
+					return
 				default:
 					break
 			}
 			const orig = visual.get("asset"),
 				repl = visual.get("modifier")
 			if (typeof orig !== "string" || typeof repl !== "string") {
-				continue
+				return
 			}
 			switch (type) {
 				case "particle":
@@ -110,8 +114,8 @@ function LoadEconData() {
 				default:
 					break
 			}
-		}
-	}
+		})
+	})
 }
 LoadEconData()
 
@@ -120,10 +124,10 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 	if (name !== "EconItems") {
 		return
 	}
-	for (const [index, [, itemSerialized]] of update) {
+	update.forEach(([, itemSerialized], key) => {
 		const item = ParseProtobufNamed(new Uint8Array(itemSerialized), "CSOEconItem")
-		PresentEconItems.set(index, item)
-	}
+		PresentEconItems.set(key, item)
+	})
 })
 EventsSDK.on("RemoveAllStringTables", () => {
 	PresentEconItems.clear()

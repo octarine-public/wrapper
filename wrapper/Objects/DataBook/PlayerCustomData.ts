@@ -11,8 +11,6 @@ import { LaneSelectionFlags } from "../../Enums/LaneSelectionFlags"
 import { Team } from "../../Enums/Team"
 import { GameSleeper } from "../../Helpers/Sleeper"
 import { EventsSDK } from "../../Managers/EventsSDK"
-import { arrayRemove } from "../../Utils/ArrayExtensions"
-import { MaskToArrayNumber } from "../../Utils/BitsExtensions"
 import { GameState } from "../../Utils/GameState"
 import { Entity, GameRules, LocalPlayer } from "../Base/Entity"
 import { Hero } from "../Base/Hero"
@@ -153,9 +151,9 @@ export class PlayerCustomData {
 			return false
 		}
 		playerData.IsValid = false
-		EventsSDK.emit("PlayerCustomDataUpdated", false, playerData)
-		arrayRemove(this.Array, playerData)
+		this.Array.remove(playerData)
 		playerDataCustomMap.delete(playerData.PlayerID)
+		EventsSDK.emit("PlayerCustomDataUpdated", false, playerData)
 		return true
 	}
 	/**
@@ -264,7 +262,7 @@ export class PlayerCustomData {
 	 * @return {Array<LaneSelection>}
 	 */
 	public get LaneSelections(): LaneSelection[] {
-		return MaskToArrayNumber(this.LaneSelectionFlags)
+		return this.LaneSelectionFlags.toMask
 	}
 	public get LaneSelectionFlags(): LaneSelectionFlags {
 		const pTeamData = this.PlayerTeamData
@@ -638,15 +636,18 @@ export class PlayerCustomData {
 	 */
 	protected UpdateGoldAfterTime() {
 		const deletedGold: [number, number][] = []
-		for (const ar of this.goldAfterTimeAr) {
-			const [time, gold] = ar
+		const arrGoldAfater = this.goldAfterTimeAr
+		for (let i = 0, end = arrGoldAfater.length; i < end; i++) {
+			const arr = arrGoldAfater[i]
+			const [time, gold] = arr
 			if (GameState.RawGameTime >= time) {
-				deletedGold.push(ar)
+				deletedGold.push(arr)
 				this.unreliableGold += gold
 			}
 		}
-		for (const ar of deletedGold) {
-			arrayRemove(this.goldAfterTimeAr, ar)
+		for (let i = 0, end = deletedGold.length; i < end; i++) {
+			const arr = deletedGold[i]
+			this.goldAfterTimeAr.remove(arr)
 		}
 	}
 	/**

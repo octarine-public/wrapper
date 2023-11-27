@@ -30,7 +30,6 @@ import { item_faerie_fire } from "../../Objects/Items/item_faerie_fire"
 import { item_hand_of_midas } from "../../Objects/Items/item_hand_of_midas"
 import { item_philosophers_stone } from "../../Objects/Items/item_philosophers_stone"
 import { item_tpscroll } from "../../Objects/Items/item_tpscroll"
-import { arrayRemove, orderByRevert } from "../../Utils/ArrayExtensions"
 import { GameState } from "../../Utils/GameState"
 import { EntityManager } from "../EntityManager"
 import { EventsSDK } from "../EventsSDK"
@@ -144,7 +143,9 @@ const Monitor = new (class PlayerDataCustomChanged {
 		if (GameRules?.IsPaused) {
 			return
 		}
-		for (const playerData of PlayerCustomData.Array) {
+		const arr = PlayerCustomData.Array
+		for (let index = arr.length - 1; index > -1; index--) {
+			const playerData = arr[index]
 			playerData.PostDataUpdate()
 		}
 	}
@@ -332,7 +333,8 @@ const Monitor = new (class PlayerDataCustomChanged {
 			oldItems = newTotalItems
 			this.playersItems.set(playerID, oldItems)
 
-			for (const item of oldItems) {
+			for (let index = oldItems.length - 1; index > -1; index--) {
+				const item = oldItems[index]
 				switch (!playerData.IsChangeDetectedUnload) {
 					case item instanceof item_tpscroll:
 						playerData.ItemsGold += item.Cost
@@ -414,7 +416,9 @@ const Monitor = new (class PlayerDataCustomChanged {
 
 		const flagbearerAura = target.GetAbilityByClass(flagbearer_creep_aura_effect)
 		if (flagbearerAura !== undefined) {
-			for (const player of PlayerCustomData.Array) {
+			const arr = PlayerCustomData.Array
+			for (let index = arr.length - 1; index > -1; index--) {
+				const player = arr[index]
 				if (player.Team !== attacker.Team) {
 					continue
 				}
@@ -653,15 +657,18 @@ const Monitor = new (class PlayerDataCustomChanged {
 			const players = PlayerCustomData.Array.filter(
 				x => x.IsEnemy(targetHero) && x.PlayerID !== exlcudePlayerID
 			)
-			const orderByPlayers = orderByRevert(
-				players,
+			const orderByPlayers = players.orderBy(
 				x =>
-					x.Hero !== undefined &&
-					(x.Hero.IsVisible || x.Hero.Distance2D(targetHero) <= 1500)
+					!(
+						x.Hero !== undefined &&
+						(x.Hero.IsVisible || x.Hero.Distance2D(targetHero) <= 1500)
+					)
 			)
 			const arrPlayers = orderByPlayers.filter((_, i) => i + 1 <= betweenPlayers)
 			const goldBetweenBonus = (betweenGold / arrPlayers.length) >> 0
-			for (const player of arrPlayers) {
+
+			for (let index = arrPlayers.length - 1; index > -1; index--) {
+				const player = arrPlayers[index]
 				player.UnreliableGold += goldBetweenBonus
 			}
 		}
@@ -669,7 +676,8 @@ const Monitor = new (class PlayerDataCustomChanged {
 		if (killer === undefined) {
 			const players = PlayerCustomData.Array.filter(x => x.IsEnemy(targetHero))
 			const goldAllTeam = (gold / players.length) >> 0
-			for (const player of players) {
+			for (let index = players.length - 1; index > -1; index--) {
+				const player = players[index]
 				player.UnreliableGold += goldAllTeam
 			}
 			if (betweenGold === 0) {
@@ -814,7 +822,9 @@ const Monitor = new (class PlayerDataCustomChanged {
 	}
 
 	private addUnreliableGoldTeam(gold: number, team: Team) {
-		for (const playerData of PlayerCustomData.Array) {
+		const arr = PlayerCustomData.Array
+		for (let index = arr.length - 1; index > -1; index--) {
+			const playerData = arr[index]
 			if (playerData.Team === team) {
 				playerData.UnreliableGold += gold
 			}
@@ -854,7 +864,7 @@ const Monitor = new (class PlayerDataCustomChanged {
 			itemQuality === "consumable"
 		if (allowedQuality) {
 			playerData.ItemsGold -= item.Cost
-			arrayRemove(getPlayerItem, item)
+			getPlayerItem.remove(item)
 		}
 	}
 
@@ -907,9 +917,10 @@ const Monitor = new (class PlayerDataCustomChanged {
 			}
 			return !oldItemsPlayer.some(oldItem => oldItem.Name === fixName)
 		})
-		for (const oldItem of oldItemsPlayer) {
+		for (let index = oldItemsPlayer.length - 1; index > -1; index--) {
+			const oldItem = oldItemsPlayer[index]
 			if (lastPurchaseItem.some(name => oldItem.Name === name)) {
-				arrayRemove(oldItemsPlayer, oldItem)
+				oldItemsPlayer.remove(oldItem)
 			}
 		}
 		const changeGold = (cost: number) => {
@@ -920,7 +931,8 @@ const Monitor = new (class PlayerDataCustomChanged {
 			changeGold(newItem.Cost)
 			return
 		}
-		for (const name of lastPurchaseItem) {
+		for (let index = lastPurchaseItem.length - 1; index > -1; index--) {
+			const name = lastPurchaseItem[index]
 			changeGold(AbilityData.GetAbilityByName(name)?.Cost ?? 0)
 		}
 	}
@@ -946,7 +958,9 @@ const Monitor = new (class PlayerDataCustomChanged {
 	}
 
 	private changeDetectedUnload() {
-		for (const playerData of PlayerCustomData.Array) {
+		const arr = PlayerCustomData.Array
+		for (let index = arr.length - 1; index > -1; index--) {
+			const playerData = arr[index]
 			playerData.ChangeDetectedUnload()
 		}
 	}
@@ -956,7 +970,8 @@ const Monitor = new (class PlayerDataCustomChanged {
 		oldItems: Item[],
 		playerData: PlayerCustomData
 	) {
-		for (const newItem of newTotalItems) {
+		for (let index = newTotalItems.length - 1; index > -1; index--) {
+			const newItem = newTotalItems[index]
 			if (oldItems.includes(newItem)) {
 				continue
 			}

@@ -13,7 +13,8 @@ const Monitor = new (class CPlayer {
 		if (entity instanceof Hero && entity.IsIllusion) {
 			return
 		}
-		for (const player of Players) {
+		for (let index = Players.length - 1; index > -1; index--) {
+			const player = Players[index]
 			player.UpdateProperties(entity)
 		}
 		if (entity instanceof Hero) {
@@ -22,7 +23,8 @@ const Monitor = new (class CPlayer {
 	}
 
 	public UnitPropertyChanged() {
-		for (const hero of Heroes) {
+		for (let index = Heroes.length - 1; index > -1; index--) {
+			const hero = Heroes[index]
 			if (this.isValidHero(hero)) {
 				PlayerCustomData.set(hero.PlayerID, hero)
 			}
@@ -30,7 +32,7 @@ const Monitor = new (class CPlayer {
 	}
 
 	private isValidHero = (hero: Hero) =>
-		hero.IsRealHero && hero.CanUseAbilities && hero.CanUseItems
+		hero.IsValid && hero.IsRealHero && hero.CanUseAbilities && hero.CanUseItems
 })()
 
 EventsSDK.on(

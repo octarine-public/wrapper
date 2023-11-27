@@ -340,7 +340,9 @@ export class CTopBar {
 		direBarArray: Rectangle[],
 		centerWidth = false
 	): void {
-		for (const playerRect of this.RadiantPlayers) {
+		const arrRadiantPlayers = this.RadiantPlayers
+		for (let i = 0, end = arrRadiantPlayers.length; i < end; i++) {
+			const playerRect = arrRadiantPlayers[i]
 			radiantBarArray.push(
 				this.CalculateBar(
 					playerRect,
@@ -352,7 +354,9 @@ export class CTopBar {
 				)
 			)
 		}
-		for (const playerRect of this.DirePlayers) {
+		const arrDirePlayers = this.DirePlayers
+		for (let i = 0, end = arrDirePlayers.length; i < end; i++) {
+			const playerRect = arrDirePlayers[i]
 			direBarArray.push(
 				this.CalculateBar(
 					playerRect,

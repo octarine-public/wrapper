@@ -8,12 +8,12 @@ const Monitor = new (class CEntityVisibleChanged {
 	private readonly entities = new Map<Entity, [boolean]>()
 
 	public PreDataUpdate() {
-		for (const [ent, entData] of this.entities) {
+		this.entities.forEach((entData, ent) => {
 			if (entData[0] !== ent.IsVisible) {
 				entData[0] = ent.IsVisible
 				EventsSDK.emit("EntityVisibleChanged", false, ent)
 			}
-		}
+		})
 	}
 
 	public PreEntityCreated(entity: Entity) {

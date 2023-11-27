@@ -1,7 +1,6 @@
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { Unit } from "../Objects/Base/Unit"
-import { FixInt16 } from "../Utils/BitsExtensions"
 import { EventEmitter, Events } from "./Events"
 
 const keysDown = new Map<VKeys, boolean>()
@@ -111,7 +110,7 @@ Events.on("WndProc", (msg, wParam, _lParam, x, y) => {
 			return InputEventSDK.emit("MouseKeyUp", true, mKey)
 
 		case InputMessage.WM_MOUSEWHEEL:
-			return InputEventSDK.emit("MouseWheel", true, FixInt16(hidword(wParam)) > 0)
+			return InputEventSDK.emit("MouseWheel", true, hidword(wParam).toInt16 > 0)
 
 		default:
 			break

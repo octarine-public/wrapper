@@ -10,7 +10,6 @@ import { RendererSDK } from "../Native/RendererSDK"
 import { GetPositionHeight } from "../Native/WASM"
 import { Entity, GameRules } from "../Objects/Base/Entity"
 import { EntityDataLump } from "../Resources/ParseEntityLump"
-import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import { GameState } from "../Utils/GameState"
 import { EventsSDK } from "./EventsSDK"
 
@@ -188,16 +187,18 @@ EventsSDK.on("Draw", () => {
 	heroIconScale = MinimapIconRenderer.GetSizeMultiplier(
 		ConVarsSDK.GetFloat("dota_minimap_hero_size", 600)
 	)
-	ArrayExtensions.orderBy(
-		[...minimapIconsActive.values()],
-		icon => icon.priority
-	).forEach(icon => icon.Draw())
+
+	Array.from(minimapIconsActive.values())
+		.orderBy(icon => icon.priority)
+		.forEach(icon => icon.Draw())
+
 	const iconsKeysToBeRemoved: any[] = []
 	minimapIconsActive.forEach((icon, key) => {
 		if (icon.endTime < GameState.RawGameTime) {
 			iconsKeysToBeRemoved.push(key)
 		}
 	})
+
 	iconsKeysToBeRemoved.forEach(key => minimapIconsActive.delete(key))
 })
 

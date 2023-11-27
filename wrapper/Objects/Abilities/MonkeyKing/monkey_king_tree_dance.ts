@@ -3,7 +3,6 @@ import { WrapperClass } from "../../../Decorators"
 import { EntityManager } from "../../../Managers/EntityManager"
 import { EventsSDK } from "../../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../../Native/WASM"
-import * as ArrayExtensions from "../../../Utils/ArrayExtensions"
 import { GameState } from "../../../Utils/GameState"
 import { DegreesToRadian } from "../../../Utils/Math"
 import { Ability } from "../../Base/Ability"
@@ -103,7 +102,8 @@ EventsSDK.on("ParticleDestroyed", par => {
 
 const abils = EntityManager.GetEntitiesByClass(monkey_king_tree_dance)
 EventsSDK.on("Tick", dt => {
-	for (const abil of abils) {
+	for (let i = abils.length - 1; i > -1; i--) {
+		const abil = abils[i]
 		const owner = abil.Owner
 		if (owner === undefined || !owner.IsAlive) {
 			abil.TargetTree = undefined
@@ -134,7 +134,8 @@ EventsSDK.on("Tick", dt => {
 				!abil.IsJumping &&
 				Math.abs(GameState.RawGameTime - abil.EndedJumpingTime) < 0.01,
 			finishedJumpingTrees: (Tree | TempTree)[] = []
-		for (const predictedAr of abil.PredictedPositionsPerTree) {
+		for (let index = abil.PredictedPositionsPerTree.length - 1; index > -1; index--) {
+			const predictedAr = abil.PredictedPositionsPerTree[index]
 			const [currentPos, tree, timeFinished] = predictedAr
 			if (timeFinished !== 0) {
 				continue
@@ -188,17 +189,14 @@ EventsSDK.on("Tick", dt => {
 		}
 		const heroAngle =
 			owner.NetworkedRotationRad - DegreesToRadian(owner.RotationDifference)
-		const bestPredictedPos = ArrayExtensions.orderByFirst(
-			abil.PredictedPositionsPerTree.filter(
-				ar =>
-					ar[2] === 0 &&
-					Math.abs(
-						heroAngle -
-							abil.StartPosition.GetDirectionTo(ar[1].Position).Angle
-					) < 0.05 // 0.05rad = 2.8deg
-			),
-			ar => owner.NetworkedPosition.Distance(ar[0])
-		)
+		const bestPredictedPos = abil.PredictedPositionsPerTree.filter(
+			ar =>
+				ar[2] === 0 &&
+				Math.abs(
+					heroAngle - abil.StartPosition.GetDirectionTo(ar[1].Position).Angle
+				) < 0.05 // 0.05rad = 2.8deg
+		).orderByFirst(ar => owner.NetworkedPosition.Distance(ar[0]))
+
 		if (bestPredictedPos !== undefined) {
 			abil.TargetTree = bestPredictedPos[1]
 		}
