@@ -42,7 +42,8 @@ function LoadCreepSpawnersAndPathCorners(): void {
 	}
 	const ent2target = new Map<CreepPathCorner, string>(),
 		ent2name = new Map<CreepPathCorner, string>()
-	for (const data of EntityDataLump) {
+	for (let i = 0, end = EntityDataLump.length; i < end; i++) {
+		const data = EntityDataLump[i]
 		if (data.get("classname") !== "path_corner") {
 			continue
 		}
@@ -78,17 +79,16 @@ function LoadCreepSpawnersAndPathCorners(): void {
 		entity.VisualAngles.CopyFrom(ang)
 		entity.NetworkedAngles.CopyFrom(ang)
 	}
-
-	for (const [ent, name] of ent2name) {
-		for (const [prev, target] of ent2target) {
+	ent2name.forEach((name, ent) => {
+		ent2target.forEach((target, prev) => {
 			if (ent !== prev && name === target) {
 				prev.Target = ent
 				ent.Referencing.add(prev)
 			}
-		}
-	}
-
-	for (const data of EntityDataLump) {
+		})
+	})
+	for (let i = 0, end = EntityDataLump.length; i < end; i++) {
+		const data = EntityDataLump[i]
 		let team: Nullable<Team>, lane: Nullable<MapArea>
 		switch (data.get("classname")) {
 			case "npc_dota_spawner_good_bot":
@@ -136,18 +136,18 @@ function LoadCreepSpawnersAndPathCorners(): void {
 		entity.Name_ = "npc_dota_spawner"
 		entity.Team = team
 		entity.Lane = lane
-		for (const [ent, name] of ent2name) {
-			if (name === npcfirstwaypoint) {
-				entity.Target = ent
-				let currentCorner: Nullable<CreepPathCorner> = ent
-				while (currentCorner !== undefined) {
-					currentCorner.Spawner = entity
-					currentCorner.Team = entity.Team
-					currentCorner = currentCorner.Target
-				}
-				break
+		ent2name.forEach((name, ent) => {
+			if (name !== npcfirstwaypoint) {
+				return
 			}
-		}
+			entity.Target = ent
+			let currentCorner: Nullable<CreepPathCorner> = ent
+			while (currentCorner !== undefined) {
+				currentCorner.Spawner = entity
+				currentCorner.Team = entity.Team
+				currentCorner = currentCorner.Target
+			}
+		})
 		CreateEntityInternal(entity)
 		EventsSDK.emit("PreEntityCreated", false, entity)
 		const pos = Vector3.FromString(originStr),
@@ -160,40 +160,7 @@ function LoadCreepSpawnersAndPathCorners(): void {
 		EventsSDK.emit("EntityCreated", false, entity)
 	}
 
-	// for (const data of EntityDataLump) {
-	// 	if (data.get("classname") !== "info_target") continue
-	// 	const originStr = data.get("origin"),
-	// 		anglesStr = data.get("angles"),
-	// 		targetname = data.get("targetname")
-	// 	if (
-	// 		typeof originStr !== "string" ||
-	// 		typeof anglesStr !== "string" ||
-	// 		typeof targetname !== "string"
-	// 	)
-	// 		continue
-
-	// 	const spawnflags = Number(data.get("spawnflags"))
-	// 	if (spawnflags <= 0) continue
-
-	// 	let id = curLocalID++
-	// 	while (EntityManager.EntityByIndex(id) !== undefined) id = curLocalID++
-	// 	const entity = new WardSpawner(id, 0)
-	// 	entity.Name_ = targetname
-	// 	CreateEntityInternal(entity)
-	// 	EventsSDK.emit("PreEntityCreated", false, entity)
-	// 	const pos = Vector3.FromString(originStr),
-	// 		ang = QAngle.FromString(anglesStr)
-	// 	pos.SetZ(GetPositionHeight(pos))
-	// 	entity.VisualPosition.CopyFrom(pos)
-	// 	entity.NetworkedPosition.CopyFrom(pos)
-	// 	entity.VisualAngles.CopyFrom(ang)
-	// 	entity.NetworkedAngles.CopyFrom(ang)
-	// 	EventsSDK.emit("EntityCreated", false, entity)
-	// }
-
-	for (const [ent] of ent2name) {
-		EventsSDK.emit("EntityCreated", false, ent)
-	}
+	ent2name.forEach((_, ent) => EventsSDK.emit("EntityCreated", false, ent))
 }
 
 EventsSDK.after("ServerInfo", () => {

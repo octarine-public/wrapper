@@ -408,11 +408,11 @@ export class AbilityData {
 		if (abilitySpecial === undefined) {
 			return
 		}
-		for (const special of abilitySpecial.values()) {
+		abilitySpecial.forEach(special => {
 			if (!(special instanceof Map)) {
-				continue
+				return
 			}
-			for (const [name, value] of special) {
+			special.forEach((value, name) => {
 				if (
 					name === "var_type" ||
 					name === "LinkedSpecialBonus" ||
@@ -421,7 +421,7 @@ export class AbilityData {
 					name === "RequiresShard" ||
 					typeof value !== "string"
 				) {
-					continue
+					return
 				}
 				const ar = this.ExtendLevelArray(
 					value.split(" ").map(str => this.parseFloat(str))
@@ -451,8 +451,8 @@ export class AbilityData {
 					linkedSpecialBonusFieldStr,
 					linkedSpecialBonusOperation
 				] as [number[], string, string, EDOTASpecialBonusOperation])
-			}
-		}
+			})
+		})
 	}
 
 	private CacheSpecialValuesNew(kv: RecursiveMap) {
@@ -460,7 +460,7 @@ export class AbilityData {
 		if (abilityValues === undefined) {
 			return
 		}
-		for (const [name, special] of abilityValues) {
+		abilityValues.forEach((special, name) => {
 			if (!(special instanceof Map)) {
 				if (typeof special === "string") {
 					this.SpecialValueCache.set(name, [
@@ -472,11 +472,11 @@ export class AbilityData {
 						EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 					] as [number[], string, number, EDOTASpecialBonusOperation])
 				}
-				continue
+				return
 			}
 			let linkedSpecialBonus = "",
 				talentChangeStr = "+0"
-			for (const [specialName, specialValue] of special) {
+			special.forEach((specialValue, specialName) => {
 				if (
 					specialName === "value" ||
 					specialName === "LinkedSpecialBonus" ||
@@ -485,11 +485,11 @@ export class AbilityData {
 					specialName === "RequiresShard" ||
 					typeof specialValue !== "string"
 				) {
-					continue
+					return
 				}
 				linkedSpecialBonus = specialName
 				talentChangeStr = specialValue
-			}
+			})
 			let value = special.get("value") ?? ""
 			if (typeof value !== "string") {
 				value = ""
@@ -530,7 +530,7 @@ export class AbilityData {
 				talentChange,
 				linkedSpecialBonusOperation
 			] as [number[], string, number | number[], EDOTASpecialBonusOperation])
-		}
+		})
 	}
 
 	private GetCachedSpecialValue(name: string) {
@@ -538,7 +538,6 @@ export class AbilityData {
 		if (ar !== undefined) {
 			return ar
 		}
-
 		return [[0], "", "value", EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD] as [
 			number[],
 			string,
@@ -639,13 +638,12 @@ export function ReloadGlobalAbilityStorage() {
 			LoadAbilityFile("scripts/npc/items.txt").entries(),
 			LoadAbilityFile("scripts/npc/npc_items_custom.txt").entries()
 		)
-
 		const fixedCache: RecursiveMap = new Map()
-		for (const [abilName, map] of abilsMap) {
+		abilsMap.forEach((map, abilName) => {
 			if (map instanceof Map) {
 				FixAbilityInheritance(abilsMap, fixedCache, map, abilName)
 			}
-		}
+		})
 	} catch (e) {
 		console.error("Error in ReloadGlobalAbilityStorage", e)
 	}

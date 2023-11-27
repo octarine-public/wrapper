@@ -6,7 +6,6 @@ import { EventsSDK } from "../Managers/EventsSDK"
 import { InputEventSDK, InputManager, VKeys } from "../Managers/InputManager"
 import { RendererSDK } from "../Native/RendererSDK"
 import { AbilityData } from "../Objects/DataBook/AbilityData"
-import { orderBy } from "../Utils/ArrayExtensions"
 import { Base, IMenu } from "./Base"
 
 type IDefaultValues = Map<
@@ -58,13 +57,16 @@ export class DynamicImageSelector extends Base {
 		this.enabledValues = defaultValues
 	}
 
+	// TODO: check current state
 	public get IsZeroSelected(): boolean {
-		for (const [value] of this.enabledValues.values()) {
+		let state = false
+		this.enabledValues.forEach((_, value) => {
 			if (value) {
-				return false
+				return
 			}
-		}
-		return true
+			state = true
+		})
+		return state
 	}
 
 	public get IconsRect() {
@@ -112,15 +114,15 @@ export class DynamicImageSelector extends Base {
 
 		this.enabledValues = new Map(value)
 
-		for (const [] of this.enabledValues.keys()) {
+		this.enabledValues.forEach(() => {
 			this.autoPriority++
-		}
+		})
 
-		for (const [name, [defaultState, defaultShow]] of this.QueueImages) {
+		this.QueueImages.forEach(([defaultState, defaultShow], name) => {
 			const hasInConfig = this.enabledValues.get(name)
 			if (hasInConfig !== undefined) {
 				this.QueueImages.delete(name)
-				continue
+				return
 			}
 			this.enabledValues.set(name, [
 				defaultState,
@@ -129,13 +131,12 @@ export class DynamicImageSelector extends Base {
 				this.autoPriority++
 			])
 			this.QueueImages.delete(name)
-		}
+		})
 
 		this.values = [
-			...orderBy(
-				[...this.enabledValues.keys()].filter(name => this.IsVisibleImage(name)),
-				x => this.GetPriority(x)
-			)
+			...Array.from([...this.enabledValues.keys()])
+				.filter(name => this.IsVisibleImage(name))
+				.orderBy(x => this.GetPriority(x))
 		]
 	}
 
@@ -149,16 +150,16 @@ export class DynamicImageSelector extends Base {
 		}
 
 		this.values = [
-			...orderBy(
-				[...this.enabledValues.keys()].filter(name => this.IsVisibleImage(name)),
-				x => this.GetPriority(x)
-			)
+			...Array.from([...this.enabledValues.keys()])
+				.filter(name => this.IsVisibleImage(name))
+				.orderBy(x => this.GetPriority(x))
 		]
 
 		this.renderedPaths.clear()
 		this.imageSize.x = this.imageSize.y = DynamicImageSelector.baseImageHeight
 
-		for (const name of this.values) {
+		for (let index = this.values.length - 1; index > -1; index--) {
+			const name = this.values[index]
 			if (!this.IsVisibleImage(name)) {
 				continue
 			}
@@ -259,7 +260,8 @@ export class DynamicImageSelector extends Base {
 
 	public OnHideImages(names?: string[]) {
 		if (names === undefined) {
-			for (const name of this.values) {
+			for (let index = this.values.length - 1; index > -1; index--) {
+				const name = this.values[index]
 				const enabledValues = this.enabledValues.get(name)
 				if (enabledValues === undefined || enabledValues[1]) {
 					continue
@@ -270,7 +272,8 @@ export class DynamicImageSelector extends Base {
 			return
 		}
 
-		for (const name of names) {
+		for (let index = names.length - 1; index > -1; index--) {
+			const name = names[index]
 			const enabledValues = this.enabledValues.get(name)
 			if (enabledValues !== undefined && !enabledValues[1]) {
 				enabledValues[2] = false
@@ -284,9 +287,8 @@ export class DynamicImageSelector extends Base {
 		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
 
 		const basePos = this.IconsRect.pos1
-		for (let i = 0; i < this.values.length; i++) {
-			const value = this.values[i]
-
+		for (let index = this.values.length - 1; index > -1; index--) {
+			const value = this.values[index]
 			if (!this.IsVisibleImage(value)) {
 				continue
 			}
@@ -298,8 +300,8 @@ export class DynamicImageSelector extends Base {
 
 			const size = this.imageSize,
 				pos = new Vector2(
-					i % DynamicImageSelector.elementsPerRow,
-					Math.floor(i / DynamicImageSelector.elementsPerRow)
+					index % DynamicImageSelector.elementsPerRow,
+					Math.floor(index / DynamicImageSelector.elementsPerRow)
 				)
 					.Multiply(
 						this.imageSize.AddScalar(
@@ -347,7 +349,7 @@ export class DynamicImageSelector extends Base {
 				this.DrawTextRealPriority(this.enabledValues.get(value), pos, size)
 			}
 
-			this.DrawTextPriority(i + 1, pos, size)
+			this.DrawTextPriority(index + 1, pos, size)
 
 			if (this.IsEnabled(value)) {
 				RendererSDK.OutlinedRect(
@@ -360,15 +362,13 @@ export class DynamicImageSelector extends Base {
 		}
 
 		// over all images
-		for (const [name] of this.itemDrop) {
+		this.itemDrop.forEach((_, name) => {
 			const imagePath = this.renderedPaths.get(name)
 			if (imagePath === undefined) {
-				continue
+				return
 			}
-
 			const size = this.imageSize
 			const pos = this.MousePosition.Subtract(this.imageSize.DivideScalar(2))
-
 			RendererSDK.Image(
 				imagePath,
 				pos,
@@ -379,7 +379,6 @@ export class DynamicImageSelector extends Base {
 				undefined,
 				!this.IsEnabled(name)
 			)
-
 			if (this.IsEnabled(name)) {
 				RendererSDK.OutlinedRect(
 					pos,
@@ -388,7 +387,7 @@ export class DynamicImageSelector extends Base {
 					DynamicImageSelector.imageActivatedBorderColor
 				)
 			}
-		}
+		})
 	}
 
 	public OnMouseLeftDown(): boolean {
@@ -412,7 +411,7 @@ export class DynamicImageSelector extends Base {
 		const rect = this.IconsRect,
 			off = rect.GetOffset(this.MousePosition)
 
-		for (const [dragName, dragPriority] of this.itemDrop) {
+		this.itemDrop.forEach((dragPriority, dragName) => {
 			this.ImageValueChanged(off, (currName, _, currPriority) => {
 				const dragNameValue = this.enabledValues.get(dragName)
 				const currNameValue = this.enabledValues.get(currName)
@@ -440,7 +439,7 @@ export class DynamicImageSelector extends Base {
 			})
 
 			this.itemDrop.delete(dragName)
-		}
+		})
 
 		if (!rect.Contains(this.MousePosition) || InputManager.IsKeyDown(VKeys.CONTROL)) {
 			return false
@@ -462,15 +461,15 @@ export class DynamicImageSelector extends Base {
 		off: Vector2,
 		callback: (value: string, state: boolean, priority: number) => void
 	) {
-		for (let i = 0; i < this.values.length; i++) {
-			const value = this.values[i]
+		for (let index = this.values.length - 1; index > -1; index--) {
+			const value = this.values[index]
 			const enabledValues = this.enabledValues.get(value)
 			if (enabledValues === undefined || !this.IsVisibleImage(value)) {
 				return
 			}
 			const basePos = new Vector2(
-				i % DynamicImageSelector.elementsPerRow,
-				Math.floor(i / DynamicImageSelector.elementsPerRow)
+				index % DynamicImageSelector.elementsPerRow,
+				Math.floor(index / DynamicImageSelector.elementsPerRow)
 			).Multiply(
 				this.imageSize.AddScalar(
 					DynamicImageSelector.imageBorderWidth * 2 +
@@ -490,7 +489,8 @@ export class DynamicImageSelector extends Base {
 		const decrease = entriesEnables.filter(([name, [, , , priority]]) =>
 			this.FilterDecrease(name, currName, dragName, currPriority, priority)
 		)
-		for (const [insertName] of decrease) {
+		for (let index = decrease.length - 1; index > -1; index--) {
+			const [insertName] = decrease[index]
 			const insert = this.enabledValues.get(insertName)
 			if (insert === undefined) {
 				continue
@@ -513,7 +513,8 @@ export class DynamicImageSelector extends Base {
 			)
 		)
 
-		for (const [insertName] of increase) {
+		for (let index = increase.length - 1; index > -1; index--) {
+			const [insertName] = increase[index]
 			const insert = this.enabledValues.get(insertName)
 			if (insert === undefined) {
 				continue

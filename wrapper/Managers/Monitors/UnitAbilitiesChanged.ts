@@ -10,13 +10,12 @@ const Monitor = new (class {
 		if (!(entity instanceof Ability)) {
 			return
 		}
-
 		if (entity instanceof Item) {
 			this.OnItemChanged(entity)
 			return
 		}
-
-		for (const unit of Units) {
+		for (let index = Units.length - 1; index > -1; index--) {
+			const unit = Units[index]
 			for (let i = 0, end = unit.Spells_.length; i < end; i++) {
 				if (entity.HandleMatches(unit.Spells_[i])) {
 					unit.Spells[i] = entity
@@ -30,7 +29,8 @@ const Monitor = new (class {
 	}
 
 	private OnItemChanged(entity: Item) {
-		for (const unit of Units) {
+		for (let index = Units.length - 1; index > -1; index--) {
+			const unit = Units[index]
 			for (let i = 0, end = unit.TotalItems_.length; i < end; i++) {
 				if (entity.HandleMatches(unit.TotalItems_[i])) {
 					unit.TotalItems[i] = entity

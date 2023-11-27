@@ -848,12 +848,12 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 				entID = submsg.get("entity_handle") as number
 			const ent = EntityManager.EntityByIndex(entID) ?? entID
 			let changedAnything = false
-			for (const data of par.ControlPointsEnt.values()) {
+			par.ControlPointsEnt.forEach(data => {
 				if (data[2] === attachmentOld && data[0] === ent) {
 					data[2] = attachmentNew
 					changedAnything = true
 				}
-			}
+			})
 			if (!changedAnything) {
 				return
 			}
@@ -867,12 +867,12 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 				entID = submsg.get("entity_handle") as number
 			const ent = EntityManager.EntityByIndex(entID) ?? entID
 			let changedAnything = false
-			for (const [cp, data] of par.ControlPointsEnt) {
+			par.ControlPointsEnt.forEach((data, cp) => {
 				if (data[0] === ent) {
 					par.ControlPointsFallback.set(cp, position)
 					changedAnything = true
 				}
-			}
+			})
 			if (!changedAnything) {
 				return
 			}
@@ -1333,7 +1333,9 @@ EventsSDK.on("ServerInfo", info => {
 	ReloadGlobalAbilityStorage()
 
 	// TODO: load other languages as well
-	for (const language of ["russian", "english"]) {
+	const arrLanguage = ["russian", "english"]
+	for (let i = 0, end = arrLanguage.length; i < end; i++) {
+		const language = arrLanguage[i]
 		// automatically localize units, abilities and items in menu
 		const namesMapping = new Map<string, string>()
 		const langTokens = ((
@@ -1344,26 +1346,30 @@ EventsSDK.on("ServerInfo", info => {
 				parseKV(`panorama/localization/addon_${language}.txt`).entries()
 			).get("lang") as RecursiveMap
 		)?.get("Tokens") ?? new Map()) as Map<string, string>
-		for (const [name, data] of UnitData.globalStorage) {
+
+		UnitData.globalStorage.forEach((data, name) => {
 			const langToken = langTokens.get(name)
 			namesMapping.set(name, langToken ?? data.WorkshopName)
-		}
-		for (const name of AbilityData.globalStorage.keys()) {
+		})
+
+		AbilityData.globalStorage.forEach((_, name) => {
 			const langToken =
 				langTokens.get(`DOTA_Tooltip_ability_${name}`) ??
 				langTokens.get(`DOTA_Tooltip_Ability_${name}`)
 			if (langToken !== undefined) {
 				namesMapping.set(name, langToken)
 			}
-		}
-		for (const [k, v] of langTokens) {
+		})
+
+		langTokens.forEach((val, key) => {
 			if (
-				k.startsWith("dota_matchgroup_") ||
-				k.startsWith("DOTA_TopBar_LaneSelection")
+				key.startsWith("dota_matchgroup_") ||
+				key.startsWith("DOTA_TopBar_LaneSelection")
 			) {
-				namesMapping.set(k, v)
+				namesMapping.set(key, val)
 			}
-		}
+		})
+
 		Localization.AddLocalizationUnit(language, namesMapping)
 	}
 	EventsSDK.emit("UnitAbilityDataUpdated", false)
@@ -1439,6 +1445,8 @@ function UpdateLocalTeam() {
 	GameState.LocalTeam = team
 	EventsSDK.emit("LocalTeamChanged", false)
 }
+
+EventsSDK.on("PlayerResourceUpdated", () => UpdateLocalTeam())
 
 EventsSDK.on("PlayerCustomDataUpdated", () => UpdateLocalTeam())
 

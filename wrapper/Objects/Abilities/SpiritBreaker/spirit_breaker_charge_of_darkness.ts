@@ -34,7 +34,8 @@ EventsSDK.on("TrackingProjectileCreated", proj => {
 	if (proj.ParticlePath !== undefined || proj.Source !== undefined) {
 		return
 	}
-	for (const abil of abils) {
+	for (let index = abils.length - 1; index > -1; index--) {
+		const abil = abils[index]
 		if (
 			abil.StartedChargingTime === GameState.RawGameTime &&
 			abil.CurrentProjectile === undefined
@@ -45,7 +46,8 @@ EventsSDK.on("TrackingProjectileCreated", proj => {
 	}
 })
 EventsSDK.on("TrackingProjectileDestroyed", proj => {
-	for (const abil of abils) {
+	for (let index = abils.length - 1; index > -1; index--) {
+		const abil = abils[index]
 		if (abil.CurrentProjectile === proj) {
 			abil.CurrentProjectile = undefined
 			break

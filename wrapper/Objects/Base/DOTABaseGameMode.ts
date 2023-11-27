@@ -1,7 +1,6 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAHUDVisibility } from "../../Enums/DOTAHUDVisibility"
 import { EventsSDK } from "../../Managers/EventsSDK"
-import { HasBitBigInt } from "../../Utils/BitsExtensions"
 import { Entity } from "./Entity"
 
 // only local server
@@ -11,7 +10,7 @@ export class DOTABaseGameMode extends Entity {
 	public HUDVisibilityBits: bigint = 0xffffffffffffffffn
 
 	public IsHUDVisible(elem: DOTAHUDVisibility): boolean {
-		return HasBitBigInt(this.HUDVisibilityBits, BigInt(elem))
+		return this.HUDVisibilityBits.hasBit(BigInt(elem))
 	}
 }
 

@@ -8,7 +8,6 @@ import { EventsSDK } from "../Managers/EventsSDK"
 import { InputManager } from "../Managers/InputManager"
 import { ParseMaterial } from "../Resources/ParseMaterial"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
-import { orderByFirst } from "../Utils/ArrayExtensions"
 import { HasMask } from "../Utils/BitsExtensions"
 import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { fread } from "../Utils/fread"
@@ -624,11 +623,11 @@ class CRendererSDK {
 			EventsSDK.emit("WindowSizeChanged", false)
 		}
 		if (this.clearTextureCache) {
-			for (const tex of this.textureCache.values()) {
+			this.textureCache.forEach(tex => {
 				if (tex !== -1) {
 					this.FreeTexture(tex)
 				}
-			}
+			})
 			this.textureCache.clear()
 			this.tex2size.clear()
 			this.clearTextureCache = false
@@ -637,7 +636,7 @@ class CRendererSDK {
 		this.queuedFonts.forEach(([name, path, weight, italic, stack]) =>
 			this.CreateFont(name, path, weight, italic, stack)
 		)
-		this.queuedFonts.splice(0)
+		this.queuedFonts.clear()
 	}
 	public EmitDraw() {
 		Renderer.ExecuteCommandBuffer(
@@ -998,8 +997,7 @@ class CRendererSDK {
 			return -1
 		}
 		return (
-			orderByFirst(
-				fontAr,
+			fontAr.orderByFirst(
 				font =>
 					Math.abs(font.Weight - weight) - (font.Italic === italic ? 10000 : 0)
 			)?.FontID ?? -1

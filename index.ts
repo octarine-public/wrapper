@@ -1,2 +1,3 @@
-import "./internal/index"
+import "./global"
+import "./translations"
 export * from "./wrapper/Imports"

@@ -44,19 +44,4 @@ export class StockInfo {
 	public GetAbilityName(): string {
 		return AbilityData.GetAbilityNameByID(this.AbilityID) ?? ""
 	}
-	public toJSON(): any {
-		return {
-			AbilityID: this.AbilityID,
-			PlayerID: this.PlayerID,
-			InitStockDuration: this.InitStockDuration,
-			StockDuration: this.StockDuration,
-			StockTime: this.StockTime,
-			MaxCount: this.MaxCount,
-			Team: this.Team,
-			IsAvalible: this.IsAvalible,
-			StockCount: this.StockCount,
-			PlayerNumber: this.PlayerNumber,
-			BonusDelayedStockCount: this.BonusDelayedStockCount
-		}
-	}
 }

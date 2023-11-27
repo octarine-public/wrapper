@@ -4,7 +4,6 @@ import { GUIInfo } from "../GUI/GUIInfo"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputEventSDK, VKeys, VMouseKeys } from "../Managers/InputManager"
 import { RendererSDK } from "../Native/RendererSDK"
-import { arrayRemove } from "../Utils/ArrayExtensions"
 import { GameState } from "../Utils/GameState"
 import { Base, IMenu } from "./Base"
 import { KeyNames } from "./KeyNames"
@@ -88,7 +87,7 @@ export class KeyBind extends Base {
 			return false
 		}
 		KeyBind.callbacks.forEach((keybinds, key) => {
-			if (arrayRemove(keybinds, this) && keybinds.length === 0) {
+			if (keybinds.remove(this) && keybinds.length === 0) {
 				KeyBind.callbacks.delete(key)
 			}
 		})

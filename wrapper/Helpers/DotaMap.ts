@@ -5,33 +5,34 @@ import { Team } from "../Enums/Team"
 import { Buildings } from "../Objects/Base/Building"
 import { CreepPathCorner, CreepPathCorners } from "../Objects/Base/CreepPathCorner"
 import { Fountains } from "../Objects/Base/Fountain"
-import { orderBy, orderByFirst } from "../Utils/ArrayExtensions"
 
 export function IsRiver(pos: Vector3 | Vector2): boolean {
 	return WorldUtils.IsPointUnderWater(pos.x, pos.y)
 }
 export function GetPathCornerNearestTeam(corner: CreepPathCorner): Team {
 	return (
-		orderByFirst(Buildings, building => corner.Distance2D(building))?.Team ??
-		Team.None
+		Buildings.orderByFirst(building => corner.Distance2D(building))?.Team ?? Team.None
 	)
 }
+
 export function GetMapArea(pos: Vector3 | Vector2, ignoreBases = false): [MapArea, Team] {
 	if (!ignoreBases) {
-		for (const fountain of Fountains) {
+		for (let index = 0; index < Fountains.length; index++) {
+			const fountain = Fountains[index]
 			if (fountain.Distance2D(pos) < 4500) {
 				return [MapArea.Base, fountain.Team]
 			}
 		}
 	}
 	// TODO: MapArea.RoshanPit
-	const nearestCorners = orderBy(
-		CreepPathCorners.filter(corner => corner.Spawner !== undefined),
-		corner => corner.Distance2D(pos)
-	)
+	const nearestCorners = CreepPathCorners.filter(
+		corner => corner.Spawner !== undefined
+	).orderBy(corner => corner.Distance2D(pos))
+
 	if (nearestCorners.length === 0) {
 		return [MapArea.Unknown, Team.None]
 	}
+
 	const nearestCorner = nearestCorners[0]
 	if (IsRiver(pos)) {
 		switch (nearestCorner.Spawner!.Lane) {
@@ -76,32 +77,35 @@ export function GetMapArea(pos: Vector3 | Vector2, ignoreBases = false): [MapAre
 	}
 	return [MapArea.Unknown, Team.None]
 }
+
 export function GetCreepCurrentTarget(
 	position: Vector3 | Vector2,
 	team: Team,
 	lane = MapArea.Unknown
 ): Nullable<CreepPathCorner> {
-	const nearestCorner = orderByFirst(
-		CreepPathCorners.filter(
-			corner =>
-				corner.Team === team &&
-				(lane === MapArea.Unknown || corner.Spawner?.Lane === lane)
-		),
-		corner => corner.Distance2D(position)
-	)
+	const nearestCorner = CreepPathCorners.filter(
+		corner =>
+			corner.Team === team &&
+			(lane === MapArea.Unknown || corner.Spawner?.Lane === lane)
+	).orderByFirst(corner => corner.Distance2D(position))
+
 	if (nearestCorner === undefined || nearestCorner.Referencing.size === 0) {
 		return nearestCorner?.Target
 	}
+
 	if (nearestCorner.Target === undefined) {
 		return nearestCorner
 	}
+
 	const nextCorner = nearestCorner.Target,
 		nextDelta = Math.abs(
 			nearestCorner.Distance2D(position) +
 				nextCorner.Distance2D(position) -
 				nearestCorner.Distance2D(nextCorner)
 		)
-	for (const prevCorner of nearestCorner.Referencing) {
+
+	let found = false
+	nearestCorner.Referencing.forEach(prevCorner => {
 		if (
 			Math.abs(
 				nearestCorner.Distance2D(position) +
@@ -109,8 +113,13 @@ export function GetCreepCurrentTarget(
 					nearestCorner.Distance2D(prevCorner)
 			) < nextDelta
 		) {
-			return nearestCorner
+			found = true
 		}
+	})
+
+	if (found) {
+		return nearestCorner
 	}
+
 	return nextCorner
 }

@@ -137,7 +137,9 @@ export class Node extends Base {
 	}
 	public get ScrollVisible() {
 		let remaining = -this.VisibleEntries
-		for (const entry of this.entries) {
+		const entries = this.entries
+		for (let i = 0, end = entries.length; i < end; i++) {
+			const entry = entries[i]
 			if (entry.IsVisible) {
 				remaining++
 			}
@@ -146,7 +148,9 @@ export class Node extends Base {
 	}
 	private get EntriesSizeX_(): number {
 		let width = 0
-		for (const entry of this.entries) {
+		const entries = this.entries
+		for (let i = 0, end = entries.length; i < end; i++) {
+			const entry = entries[i]
 			if (entry.IsVisible) {
 				width = Math.max(width, entry.Size.x)
 			}
@@ -158,7 +162,9 @@ export class Node extends Base {
 		let height = 0,
 			cnt = 0,
 			skip = this.ScrollPosition
-		for (const entry of this.entries) {
+		const entries = this.entries
+		for (let i = 0, end = entries.length; i < end; i++) {
+			const entry = entries[i]
 			if (!entry.IsVisible || skip-- > 0) {
 				continue
 			}
@@ -197,7 +203,9 @@ export class Node extends Base {
 			this.Size.AddScalarX(this.textOffset.x)
 		}
 		if (recursive) {
-			for (const entry of this.entries) {
+			const entries = this.entries
+			for (let i = 0, end = entries.length; i < end; i++) {
+				const entry = entries[i]
 				entry.Update(true)
 			}
 		}
@@ -210,7 +218,9 @@ export class Node extends Base {
 
 	public Render(): void {
 		let updatedEntries = false
-		for (const entry of this.entries) {
+		const entries = this.entries
+		for (let i = 0, end = entries.length; i < end; i++) {
+			const entry = entries[i]
 			if (entry.QueuedUpdate) {
 				entry.QueuedUpdate = false
 				entry.Update(entry.QueuedUpdateRecursive)
@@ -228,7 +238,9 @@ export class Node extends Base {
 			position.y = Math.min(position.y, this.WindowSize.y - this.EntriesSizeY)
 			let skip = this.ScrollPosition,
 				visibleEntries = this.VisibleEntries
-			for (const entry of this.entries) {
+			const entries2 = this.entries
+			for (let i = 0, end = entries2.length; i < end; i++) {
+				const entry = entries2[i]
 				if (!entry.IsVisible || skip-- > 0) {
 					continue
 				}
@@ -280,7 +292,9 @@ export class Node extends Base {
 		if (!this.IsOpen) {
 			return
 		}
-		for (const entry of this.entries) {
+		const entries = this.entries
+		for (let i = 0, end = entries.length; i < end; i++) {
+			const entry = entries[i]
 			if (entry.IsVisible) {
 				entry.PostRender()
 			}
@@ -306,13 +320,17 @@ export class Node extends Base {
 		if (!this.IsOpen) {
 			return true
 		}
-		for (const entry of this.entries) {
+		const entries = this.entries
+		for (let i = 0, end = entries.length; i < end; i++) {
+			const entry = entries[i]
 			if (entry.IsVisible && !entry.OnPreMouseLeftDown()) {
 				this.activeElement = entry
 				return false
 			}
 		}
-		for (const entry of this.entries) {
+		const entries2 = this.entries
+		for (let i = 0, end = entries2.length; i < end; i++) {
+			const entry = entries2[i]
 			if (entry.IsVisible && !entry.OnMouseLeftDown()) {
 				this.activeElement = entry
 				return false

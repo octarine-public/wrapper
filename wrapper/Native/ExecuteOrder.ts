@@ -8,7 +8,6 @@ import { TempTree } from "../Objects/Base/TempTree"
 import { Tree } from "../Objects/Base/Tree"
 import { Unit } from "../Objects/Base/Unit"
 import { GridNav } from "../Resources/ParseGNV"
-import { arrayRemoveCallback } from "../Utils/ArrayExtensions"
 import * as WASM from "./WASM"
 
 function WillInterruptOrderQueue(order: ExecuteOrder): boolean {
@@ -328,8 +327,7 @@ export class ExecuteOrder {
 
 		if (!this.Queue && WillInterruptOrderQueue(this)) {
 			while (
-				arrayRemoveCallback(
-					ExecuteOrder.orderQueue,
+				ExecuteOrder.orderQueue.removeCallback(
 					([order, _orderStartTime, _orderUsedMinimap, executed], i) =>
 						i !== 0 &&
 						!executed &&

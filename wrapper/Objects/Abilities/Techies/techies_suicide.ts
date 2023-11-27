@@ -22,7 +22,8 @@ EventsSDK.on("PostDataUpdate", () => {
 		return
 	}
 
-	for (const abil of abils) {
+	for (let index = abils.length - 1; index > -1; index--) {
+		const abil = abils[index]
 		if (abil.TargetPosition.IsValid) {
 			continue
 		}

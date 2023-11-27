@@ -8,8 +8,8 @@ const Monitor = new (class {
 		if (!(entity instanceof Wearable)) {
 			return
 		}
-
-		for (const unit of Units) {
+		for (let index = Units.length - 1; index > -1; index--) {
+			const unit = Units[index]
 			for (let i = 0, end = unit.MyWearables_.length; i < end; i++) {
 				if (
 					entity.HandleMatches(unit.MyWearables_[i]) &&

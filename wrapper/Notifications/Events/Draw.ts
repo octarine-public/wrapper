@@ -4,13 +4,12 @@ import { GUIInfo } from "../../GUI/GUIInfo"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { InputManager } from "../../Managers/InputManager"
 import { RendererSDK } from "../../Native/RendererSDK"
-import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { Notifications, Queue } from "../Data"
 import { NotificationsSDK } from "../index"
 import { GetPanel } from "../Util"
 
 EventsSDK.after("Draw", () => {
-	arrayRemove(Notifications, Notifications.filter(x => x.IsExpired)[0])
+	Notifications.removeCallback(x => x.IsExpired)
 	if (InputManager.IsShopOpen) {
 		return
 	}
