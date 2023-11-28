@@ -248,7 +248,7 @@ export class PlayerCustomData {
 	 * @return {string | undefined}
 	 */
 	public get HeroName(): Nullable<string> {
-		return UnitData.GetHeroNameByID(this.PlayerTeamData?.SelectedHeroID ?? -1)
+		return UnitData.GetHeroNameByID(this.SelectedHeroID ?? -1)
 	}
 	/**
 	 * @description Retrieve the SteamID associated with this player.

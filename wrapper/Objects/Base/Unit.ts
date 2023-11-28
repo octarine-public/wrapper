@@ -1,6 +1,7 @@
 import { Color } from "../../Base/Color"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
+import { GetUnitTexture } from "../../Data/ImageData"
 import { NetworkedBasicField, ReencodeProperty, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
@@ -233,7 +234,9 @@ export class Unit extends Entity {
 	public get Color() {
 		return PlayerCustomData.get(this.PlayerID)?.Color ?? Color.Red
 	}
-
+	public TexturePath(small?: boolean, team = this.Team): Nullable<string> {
+		return GetUnitTexture(this.Name, small, team)
+	}
 	public get LastRealPredictedPositionUpdate(): number {
 		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
 			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime

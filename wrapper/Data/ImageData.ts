@@ -92,7 +92,7 @@ export const Paths = new (class BaseImageData {
 
 const getTexturePath = (name: string, isItem = false): string => {
 	const abilityData = AbilityData.GetAbilityByName(name)
-	if (abilityData !== undefined) {
+	if (abilityData !== undefined && abilityData.TexturePath.length !== 0) {
 		return abilityData.TexturePath
 	}
 	if (!isItem) {
@@ -104,58 +104,59 @@ const getTexturePath = (name: string, isItem = false): string => {
 	return Paths.ItemIcons + "/" + name + "_png.vtex_c"
 }
 
-export function GetItem(name: string): string {
+export function GetItemTexture(name: string): string {
 	return getTexturePath(name, true)
 }
 
-export function GetSpell(name: string): string {
+export function GetSpellTexture(name: string): string {
 	return getTexturePath(name)
 }
 
-export function GetTower(): string {
+export function GetTowerTexture(): string {
 	return Paths.Icons.tower_radiant
 }
 
-export function GetHero(name: string, small?: boolean): string {
+export function GetHeroTexture(name: string, small?: boolean): string {
 	return !small
 		? `${Paths.Hero + "/" + name}_png.vtex_c`
 		: `${Paths.HeroIcons + "/" + name}_png.vtex_c`
 }
 
-export function GetCourier(small?: boolean, team?: Team): string {
+export function GetCourierTexture(small?: boolean, team?: Team): string {
 	return small
 		? Paths.Icons.icon_courier
 		: team === Team.Dire
-		? Paths.Icons.courier_dire
-		: Paths.Icons.courier_radiant
+		  ? Paths.Icons.courier_dire
+		  : Paths.Icons.courier_radiant
 }
 
-export function GetRune(name: string, small?: boolean): string {
+export function GetRuneTexture(name: string, small?: boolean): string {
 	return !small
 		? Paths.Runes + "/" + name + ".png"
 		: Paths.Runes + "/mini/" + name + ".png"
 }
 
-export function GetEntity(entityName: string, small?: boolean, team?: Team): string {
+export function GetUnitTexture(
+	unitName: string,
+	small?: boolean,
+	team?: Team
+): Nullable<string> {
 	team ??= Team.Radiant
 	switch (true) {
-		case entityName.includes("npc_dota_hero_"):
-			return GetHero(entityName, small)
-		case entityName.includes("_courier"):
-			return GetCourier(small, team)
-		case entityName.includes("badguys_tower") ||
-			entityName.includes("goodguys_tower"):
-			return GetTower()
-		case entityName.includes("roshan"):
+		case unitName.includes("npc_dota_hero_"):
+			return GetHeroTexture(unitName, small)
+		case unitName.includes("_courier"):
+			return GetCourierTexture(small, team)
+		case unitName.includes("badguys_tower") || unitName.includes("goodguys_tower"):
+			return GetTowerTexture()
+		case unitName.includes("roshan"):
 			return Paths.Icons.roshan_halloween_angry
-		case entityName.includes("psionic_trap"):
-			return GetSpell("templar_assassin_psionic_trap")
-		default:
-			return GetHero(entityName)
+		case unitName.includes("psionic_trap"):
+			return GetSpellTexture("templar_assassin_psionic_trap")
 	}
 }
 
-export function GetRank(lane: LaneSelection): string {
+export function GetRankTexture(lane: LaneSelection): string {
 	switch (lane) {
 		case LaneSelection.OFF_LANE:
 			return Paths.Icons.offlane

@@ -1,4 +1,5 @@
 import { Vector3 } from "../../Base/Vector3"
+import { GetSpellTexture } from "../../Data/ImageData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { ABILITY_TYPES } from "../../Enums/ABILITY_TYPES"
 import { AbilityLogicType } from "../../Enums/AbilityLogicType"
@@ -124,8 +125,8 @@ export class Ability extends Entity {
 	 * @description Check if the ability is not hidden and is activated
 	 * @returns {boolean}
 	 */
-	public get IsUsable(): boolean {
-		return !this.IsHidden && this.IsActivated
+	public get CanBeUsable(): boolean {
+		return this.IsValid && !this.IsHidden && this.IsActivated
 	}
 	public get Owner(): Nullable<Unit> {
 		return this.OwnerEntity as Nullable<Unit>
@@ -201,12 +202,14 @@ export class Ability extends Entity {
 		return this.Cooldown === 0
 	}
 	public get IsReady(): boolean {
-		const unit = this.Owner
-		return (
-			this.IsCooldownReady &&
-			this.Level !== 0 &&
-			(unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsSilenced))
-		)
+		if (!this.IsCooldownReady || this.Level === 0) {
+			return false
+		}
+		const owner = this.Owner
+		if (owner === undefined || owner.Mana < this.ManaCost) {
+			return false
+		}
+		return true
 	}
 	public get IsGrantedByScepter(): boolean {
 		return this.AbilityData.IsGrantedByScepter
@@ -239,7 +242,7 @@ export class Ability extends Entity {
 		return MaskToArrayNumber(this.AbilityData.TargetType)
 	}
 	public get TexturePath(): string {
-		return this.AbilityData.TexturePath
+		return GetSpellTexture(this.Name)
 	}
 	public get IsPassive(): boolean {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
@@ -344,6 +347,15 @@ export class Ability extends Entity {
 	}
 	public set CurrentCharges(newVal: number) {
 		this.AbilityCurrentCharges = newVal
+	}
+	protected get CanBeCastedWhileRooted() {
+		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_ROOT_DISABLES)
+	}
+	protected get CanBeCastedWhileStunned() {
+		return false
+	}
+	protected get CanBeCastedWhileSilenced() {
+		return false
 	}
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.AbilityData.GetCastRange(level)
@@ -465,13 +477,11 @@ export class Ability extends Entity {
 		return this.Owner.Distance2D(target) < range
 	}
 	public CanBeCasted(bonusMana: number = 0): boolean {
-		return (
-			this.IsValid &&
-			this.Level !== 0 &&
-			this.IsCooldownReady &&
-			!this.Owner?.IsSilenced &&
-			this.IsManaEnough(bonusMana)
-		)
+		if (!this.CanBeUsable || !this.IsReady) {
+			return false
+		}
+		// TODO: Add other checks
+		return this.IsManaEnough(bonusMana)
 	}
 	public IsDoubleTap(_order: ExecuteOrder): boolean {
 		return false
