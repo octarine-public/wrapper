@@ -142,112 +142,112 @@ export class NetworkedParticle {
 	}
 }
 
-// return after move icore
-// EventsSDK.after("EntityCreated", ent => {
-// 	if (!(ent instanceof Unit)) {
-// 		return
-// 	}
-
-// 	for (const par of NetworkedParticle.Instances.values()) {
-// 		let changedAnything = false
-// 		if (par.AttachedTo?.EntityMatches(ent)) {
-// 			par.AttachedTo = ent
-// 			changedAnything = true
-// 		}
-// 		for (const data of par.ControlPointsEnt.values()) {
-// 			if (data[0].EntityMatches(ent)) {
-// 				data[0] = ent
-// 				changedAnything = true
-// 			}
-// 		}
-// 		if (changedAnything) {
-// 			EventsSDK.emit("ParticleUpdated", false, par)
-// 		}
-// 	}
-// })
-// EventsSDK.on("EntityDestroyed", ent => {
-// 	const destroyedParticles: NetworkedParticle[] = []
-// 	for (const par of NetworkedParticle.Instances.values()) {
-// 		if (par.AttachedTo === ent) {
-// 			destroyedParticles.push(par)
-// 		}
-// 	}
-// 	for (const par of destroyedParticles) {
-// 		par.Destroy()
-// 	}
-// 	for (const par of NetworkedParticle.Instances.values()) {
-// 		let changedAnything = false
-// 		const destroyedCPsEnt: number[] = []
-// 		for (const [cp, data] of par.ControlPointsEnt) {
-// 			if (data[0] === ent) {
-// 				destroyedCPsEnt.push(cp)
-// 				changedAnything = true
-// 			}
-// 		}
-// 		for (const cp of destroyedCPsEnt) {
-// 			par.ControlPointsEnt.delete(cp)
-// 		}
-// 		if (changedAnything) {
-// 			EventsSDK.emit("ParticleUpdated", false, par)
-// 		}
-// 	}
-// })
-
-// EventsSDK.on("Tick", () => {
-// 	const destroyedParticles: NetworkedParticle[] = []
-// 	for (const par of NetworkedParticle.Instances.values()) {
-// 		if (par.Released && par.EndTime !== -1 && par.EndTime <= GameState.RawGameTime) {
-// 			destroyedParticles.push(par)
-// 		}
-// 	}
-// 	for (const par of destroyedParticles) {
-// 		par.Destroy()
-// 	}
-// })
-
 EventsSDK.after("EntityCreated", ent => {
 	if (!(ent instanceof Unit)) {
 		return
 	}
-	NetworkedParticle.Instances.forEach(par => {
+
+	for (const par of NetworkedParticle.Instances.values()) {
 		let changedAnything = false
 		if (par.AttachedTo?.EntityMatches(ent)) {
 			par.AttachedTo = ent
 			changedAnything = true
 		}
-		par.ControlPointsEnt.forEach(data => {
+		for (const data of par.ControlPointsEnt.values()) {
 			if (data[0].EntityMatches(ent)) {
 				data[0] = ent
 				changedAnything = true
 			}
-		})
+		}
 		if (changedAnything) {
 			EventsSDK.emit("ParticleUpdated", false, par)
 		}
-	})
+	}
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	NetworkedParticle.Instances.forEach(par => {
-		let changedAnything = false
+	const destroyedParticles: NetworkedParticle[] = []
+	for (const par of NetworkedParticle.Instances.values()) {
 		if (par.AttachedTo === ent) {
-			par.Destroy()
+			destroyedParticles.push(par)
 		}
-		par.ControlPointsEnt.forEach((data, cp) => {
+	}
+	for (const par of destroyedParticles) {
+		par.Destroy()
+	}
+	for (const par of NetworkedParticle.Instances.values()) {
+		let changedAnything = false
+		const destroyedCPsEnt: number[] = []
+		for (const [cp, data] of par.ControlPointsEnt) {
 			if (data[0] === ent) {
-				par.ControlPointsEnt.delete(cp)
+				destroyedCPsEnt.push(cp)
 				changedAnything = true
 			}
-		})
+		}
+		for (const cp of destroyedCPsEnt) {
+			par.ControlPointsEnt.delete(cp)
+		}
 		if (changedAnything) {
 			EventsSDK.emit("ParticleUpdated", false, par)
 		}
-	})
+	}
 })
 
 EventsSDK.on("Tick", () => {
-	NetworkedParticle.Instances.forEach(par => {
-		if (par.EndTime !== -1 && par.EndTime <= GameState.RawGameTime) {
-			par.Destroy()
+	const destroyedParticles: NetworkedParticle[] = []
+	for (const par of NetworkedParticle.Instances.values()) {
+		if (par.Released && par.EndTime !== -1 && par.EndTime <= GameState.RawGameTime) {
+			destroyedParticles.push(par)
 		}
-	})
+	}
+	for (const par of destroyedParticles) {
+		par.Destroy()
+	}
 })
+
+// return after move icore
+// EventsSDK.after("EntityCreated", ent => {
+// 	if (!(ent instanceof Unit)) {
+// 		return
+// 	}
+// 	NetworkedParticle.Instances.forEach(par => {
+// 		let changedAnything = false
+// 		if (par.AttachedTo?.EntityMatches(ent)) {
+// 			par.AttachedTo = ent
+// 			changedAnything = true
+// 		}
+// 		par.ControlPointsEnt.forEach(data => {
+// 			if (data[0].EntityMatches(ent)) {
+// 				data[0] = ent
+// 				changedAnything = true
+// 			}
+// 		})
+// 		if (changedAnything) {
+// 			EventsSDK.emit("ParticleUpdated", false, par)
+// 		}
+// 	})
+// })
+// EventsSDK.on("EntityDestroyed", ent => {
+// 	NetworkedParticle.Instances.forEach(par => {
+// 		let changedAnything = false
+// 		if (par.AttachedTo === ent) {
+// 			par.Destroy()
+// 		}
+// 		par.ControlPointsEnt.forEach((data, cp) => {
+// 			if (data[0] === ent) {
+// 				par.ControlPointsEnt.delete(cp)
+// 				changedAnything = true
+// 			}
+// 		})
+// 		if (changedAnything) {
+// 			EventsSDK.emit("ParticleUpdated", false, par)
+// 		}
+// 	})
+// })
+
+// EventsSDK.on("Tick", () => {
+// 	NetworkedParticle.Instances.forEach(par => {
+// 		if (par.EndTime !== -1 && par.EndTime <= GameState.RawGameTime) {
+// 			par.Destroy()
+// 		}
+// 	})
+// })
