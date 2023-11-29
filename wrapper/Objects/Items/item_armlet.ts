@@ -1,3 +1,4 @@
+import { Paths } from "../../Data/ImageData"
 import { WrapperClass } from "../../Decorators"
 import { Item } from "../Base/Item"
 
@@ -7,5 +8,11 @@ export class item_armlet extends Item {
 
 	public get ToggleCooldown(): number {
 		return this.GetSpecialValue("toggle_cooldown")
+	}
+
+	public get TexturePath(): string {
+		return !this.IsToggled
+			? super.TexturePath
+			: Paths.ItemIcons + "/armlet_active_png.vtex_c"
 	}
 }

@@ -162,9 +162,6 @@ const Monitor = new (class PlayerDataCustomChanged {
 		value3: number,
 		...args: number[] // players (PlayerID)
 	) {
-		if (value === 4294967295) {
-			return
-		}
 		switch (typeMessage) {
 			case DOTA_CHAT_MESSAGE.CHAT_MESSAGE_HERO_KILL:
 				this.killHeroMessageChanged(value, value2, value3, ...args)
@@ -653,9 +650,15 @@ const Monitor = new (class PlayerDataCustomChanged {
 		if (targetHero === undefined) {
 			return
 		}
+
 		if (!this.IsTurbo) {
 			target.UnreliableGold -= target.GoldLossOnDeath
 		}
+
+		if (gold === 4294967295) {
+			return
+		}
+
 		const addBetweenGold = (exlcudePlayerID?: number) => {
 			const players = PlayerCustomData.Array.filter(
 				x => x.IsEnemy(targetHero) && x.PlayerID !== exlcudePlayerID
@@ -732,6 +735,9 @@ const Monitor = new (class PlayerDataCustomChanged {
 		_value3: number,
 		...args: number[]
 	) {
+		if (gold === 4294967295) {
+			return
+		}
 		// we do not calculate gold (for team) for turbo we know in the chat
 		const [killerPlayerId, killerTeam] = args
 		this.addUnreliableGoldTeam(gold, killerTeam)
@@ -757,6 +763,9 @@ const Monitor = new (class PlayerDataCustomChanged {
 		_value3: number,
 		...args: number[]
 	) {
+		if (gold === 4294967295) {
+			return
+		}
 		// couriers cannot be killed in Turbo
 		const [, courierTeam] = args
 		const team = courierTeam === Team.Dire ? Team.Radiant : Team.Dire
