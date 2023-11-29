@@ -162,6 +162,9 @@ const Monitor = new (class PlayerDataCustomChanged {
 		value3: number,
 		...args: number[] // players (PlayerID)
 	) {
+		if (value === 4294967295) {
+			return
+		}
 		switch (typeMessage) {
 			case DOTA_CHAT_MESSAGE.CHAT_MESSAGE_HERO_KILL:
 				this.killHeroMessageChanged(value, value2, value3, ...args)
