@@ -33,6 +33,7 @@ const Monitor = new (class {
 			const unit = Units[index]
 			for (let i = 0, end = unit.TotalItems_.length; i < end; i++) {
 				if (entity.HandleMatches(unit.TotalItems_[i])) {
+					entity.Slot = i
 					unit.TotalItems[i] = entity
 					entity.Owner_ = unit.Handle
 					entity.OwnerEntity = unit

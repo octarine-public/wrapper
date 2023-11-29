@@ -48,6 +48,7 @@ export const Paths = new (class BaseImageData {
 		icon_ward_sentry: `${this.Images}/items/ward_sentry_png.vtex_c`,
 		icon_settings: `${this.Images}/control_icons/gear_png.vtex_c`,
 		check_png: `${this.Images}/control_icons/check_png.vtex_c`,
+		icon_brackets: `${this.Images}/control_icons/brackets_png.vtex_c`,
 		icon_roshan: `${this.reborn}/icon_roshan_psd.vtex_c`,
 		icon_glyph_small: `${this.reborn}/icon_glyph_small_psd.vtex_c`,
 		kill_mask: `${this.Images}/status_icons/modifier_kill_effect_psd.vtex_c`,
@@ -86,7 +87,16 @@ export const Paths = new (class BaseImageData {
 		bg_deathsummary: `${this.WrapperImages}/panels/item_purchase_bg_psd.png`,
 		courier_dire: `${this.WrapperImages}/couriers/dire.png`,
 		courier_radiant: `${this.WrapperImages}/couriers/radiant.png`,
-		icon_levelup_button_3: `${this.reborn}/levelup_button_3_psd.vtex_c`
+		icon_levelup_button_3: `${this.reborn}/levelup_button_3_psd.vtex_c`,
+		icon_svg_health: `${this.WrapperImages}/icons/health.svg`,
+		icon_svg_level: `${this.WrapperImages}/icons/level.svg`,
+		icon_svg_charges: `${this.WrapperImages}/icons/charges.svg`,
+		icon_svg_duration: `${this.WrapperImages}/icons/duration.svg`,
+		icon_svg_hamburger: `${this.WrapperImages}/icons/hamburger.svg`,
+		icon_svg_format_time: `${this.WrapperImages}/icons/format_time.svg`,
+		icon_svg_fow_time: `${this.WrapperImages}/icons/fow_time.svg`,
+		icon_svg_keyboard: `${this.WrapperImages}/icons/keyboard.svg`,
+		icon_close_cross_eye_hidden: `${this.WrapperImages}/icons/close-cross-eye-hidden.svg`
 	}
 })()
 
@@ -136,6 +146,10 @@ export function GetRuneTexture(name: string, small?: boolean): string {
 		: Paths.Runes + "/mini/" + name + ".png"
 }
 
+export function GetBearTexture(): string {
+	return Paths.Hero + "/npc_dota_lone_druid_bear_png.vtex_c"
+}
+
 export function GetUnitTexture(
 	unitName: string,
 	small?: boolean,
@@ -145,6 +159,8 @@ export function GetUnitTexture(
 	switch (true) {
 		case unitName.includes("npc_dota_hero_"):
 			return GetHeroTexture(unitName, small)
+		case unitName.includes("druid_bear"):
+			return GetBearTexture()
 		case unitName.includes("_courier"):
 			return GetCourierTexture(small, team)
 		case unitName.includes("badguys_tower") || unitName.includes("goodguys_tower"):

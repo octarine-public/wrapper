@@ -1525,6 +1525,7 @@ RegisterFieldHandler(Unit, "m_hItems", (unit, newVal) => {
 		unit.TotalItems_[i] = ar[i]
 		const ent = EntityManager.EntityByIndex(ar[i])
 		if (ent instanceof Item) {
+			ent.Slot = i
 			ent.Owner_ = unit.Handle
 			ent.OwnerEntity = unit
 			unit.TotalItems[i] = ent

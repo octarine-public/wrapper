@@ -13,6 +13,12 @@ import { Unit } from "./Unit"
 export class Item extends Ability {
 	/**
 	 * @readonly
+	 * @description The slot the item is in
+	 * @returns {DOTAScriptInventorySlot}
+	 */
+	public Slot = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1
+	/**
+	 * @readonly
 	 * @description The time at which the item is enabled. Example: the item was moved to backpack and returned
 	 */
 	@NetworkedBasicField("m_flEnableTime")

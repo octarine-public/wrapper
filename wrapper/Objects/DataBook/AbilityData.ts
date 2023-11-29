@@ -76,6 +76,8 @@ export class AbilityData {
 	public readonly ItemStockTime: number
 	public readonly HasShardUpgrade: boolean
 	public readonly HasScepterUpgrade: boolean
+	public readonly ItemIsNeutralDrop: boolean
+	public readonly ShouldBeSuggested: number
 	public readonly CastAnimation: Nullable<GameActivity>
 	public readonly LinkedAbility: string
 	public readonly ShouldBeInitiallySuggested: boolean
@@ -129,6 +131,14 @@ export class AbilityData {
 			? parseInt(kv.get("HasScepterUpgrade") as string) === 1
 			: false
 
+		this.ShouldBeSuggested = kv.has("ShouldBeSuggested")
+			? parseInt(kv.get("ShouldBeSuggested") as string)
+			: -1
+
+		this.ItemIsNeutralDrop = kv.has("ItemIsNeutralDrop")
+			? parseInt(kv.get("ItemIsNeutralDrop") as string) === 1
+			: false
+
 		this.TexturePath = (kv.get("AbilityTexturePath") as string) ?? ""
 		this.TargetFlags = kv.has("AbilityUnitTargetFlags")
 			? parseEnumString(
@@ -176,8 +186,8 @@ export class AbilityData {
 		this.RequiredLevel = kv.has("RequiredLevel")
 			? parseInt(kv.get("RequiredLevel") as string)
 			: this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE
-			? 6
-			: 1
+			  ? 6
+			  : 1
 		this.AbilityImmunityType = kv.has("SpellImmunityType")
 			? parseEnumString(SPELL_IMMUNITY_TYPES, kv.get("SpellImmunityType") as string)
 			: SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE
@@ -292,8 +302,8 @@ export class AbilityData {
 			typeof val === "string"
 				? this.GetSpecialValue(val, level)
 				: Array.isArray(val)
-				? val[Math.min(level, val.length) - 1]
-				: val
+				  ? val[Math.min(level, val.length) - 1]
+				  : val
 
 		switch (ar[3]) {
 			default:
@@ -513,8 +523,8 @@ export class AbilityData {
 				linkedSpecialBonusOperation = !isPercent
 					? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 					: talentChangeStr.startsWith("+")
-					? EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD
-					: EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT
+					  ? EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD
+					  : EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT
 				talentChange = isArray
 					? talentChangeStr
 							.split(" ")
