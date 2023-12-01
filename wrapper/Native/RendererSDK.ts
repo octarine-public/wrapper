@@ -70,7 +70,7 @@ class Font {
 		public readonly FontID: number,
 		public readonly Weight: number,
 		public readonly Italic: boolean
-	) {}
+	) { }
 }
 
 class CRendererSDK {
@@ -501,6 +501,8 @@ class CRendererSDK {
 		if (fontID === -1) {
 			return
 		}
+
+		vecPos.RoundForThis()
 
 		this.Translate(
 			outlined ? vecPos.Clone().SubtractScalarX(1).AddScalarY(1) : vecPos
