@@ -21,6 +21,10 @@
 
 // const arr = [...new Array(100_000).keys()]
 // const arr2 = [...new Array(100_000).keys()]
+
+// const arr3 = [...new Array(100_000).keys()]
+// const arr4 = [...new Array(100_000).keys()]
+
 // // // const arr2 = [...new Array(100_000)]
 // const menu = Menu.AddEntry("Test")
 
@@ -29,17 +33,27 @@
 // const key = menu.AddKeybind("Test 1")
 // const key2 = menu.AddKeybind("Test 2")
 
-// const newItems: number[] = []
+// // inventory
+// // .GetItems(
+// // 	DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1,
+// // 	DOTAScriptInventorySlot.DOTA_ITEM_SLOT_9
+// // )
+// // .concat(
+// // 	inventory.GetItems(
+// // 		DOTAScriptInventorySlot.DOTA_ITEM_TP_SCROLL,
+// // 		DOTAScriptInventorySlot.DOTA_ITEM_NEUTRAL_SLOT
+// // 	)
+// // )
+
 // key.OnRelease(() => {
 // 	const start = hrtime()
-// 	newItems.push(...arr)
+// 	const arra = arr.concat(arr2)
 // 	console.log("newItems", hrtime() - start)
 // })
 
-// let newItems2: number[] = []
 // key2.OnRelease(() => {
 // 	const start = hrtime()
-// 	newItems2 = [...arr2]
+// 	const arra = [...arr3, ...arr4]
 // 	console.log("newItems2", hrtime() - start)
 // })
 
