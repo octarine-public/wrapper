@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* eslint-disable @typescript-eslint/naming-convention */
 import { AABB as _AABB } from "./Base/AABB"
 import { Color as _Color } from "./Base/Color"
 import { NetworkedParticle as _NetworkedParticle } from "./Base/NetworkedParticle"
