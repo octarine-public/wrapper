@@ -48,6 +48,7 @@ export const Paths = new (class BaseImageData {
 		icon_ward_sentry: `${this.Images}/items/ward_sentry_png.vtex_c`,
 		icon_settings: `${this.Images}/control_icons/gear_png.vtex_c`,
 		check_png: `${this.Images}/control_icons/check_png.vtex_c`,
+		icon_brackets: `${this.Images}/control_icons/brackets_png.vtex_c`,
 		icon_roshan: `${this.reborn}/icon_roshan_psd.vtex_c`,
 		icon_glyph_small: `${this.reborn}/icon_glyph_small_psd.vtex_c`,
 		kill_mask: `${this.Images}/status_icons/modifier_kill_effect_psd.vtex_c`,
@@ -86,13 +87,22 @@ export const Paths = new (class BaseImageData {
 		bg_deathsummary: `${this.WrapperImages}/panels/item_purchase_bg_psd.png`,
 		courier_dire: `${this.WrapperImages}/couriers/dire.png`,
 		courier_radiant: `${this.WrapperImages}/couriers/radiant.png`,
-		icon_levelup_button_3: `${this.reborn}/levelup_button_3_psd.vtex_c`
+		icon_levelup_button_3: `${this.reborn}/levelup_button_3_psd.vtex_c`,
+		icon_svg_health: `${this.WrapperImages}/icons/health.svg`,
+		icon_svg_level: `${this.WrapperImages}/icons/level.svg`,
+		icon_svg_charges: `${this.WrapperImages}/icons/charges.svg`,
+		icon_svg_duration: `${this.WrapperImages}/icons/duration.svg`,
+		icon_svg_hamburger: `${this.WrapperImages}/icons/hamburger.svg`,
+		icon_svg_format_time: `${this.WrapperImages}/icons/format_time.svg`,
+		icon_svg_fow_time: `${this.WrapperImages}/icons/fow_time.svg`,
+		icon_svg_keyboard: `${this.WrapperImages}/icons/keyboard.svg`,
+		icon_close_cross_eye_hidden: `${this.WrapperImages}/icons/close-cross-eye-hidden.svg`
 	}
 })()
 
 const getTexturePath = (name: string, isItem = false): string => {
 	const abilityData = AbilityData.GetAbilityByName(name)
-	if (abilityData !== undefined) {
+	if (abilityData !== undefined && abilityData.TexturePath.length !== 0) {
 		return abilityData.TexturePath
 	}
 	if (!isItem) {
@@ -104,58 +114,65 @@ const getTexturePath = (name: string, isItem = false): string => {
 	return Paths.ItemIcons + "/" + name + "_png.vtex_c"
 }
 
-export function GetItem(name: string): string {
+export function GetItemTexture(name: string): string {
 	return getTexturePath(name, true)
 }
 
-export function GetSpell(name: string): string {
+export function GetSpellTexture(name: string): string {
 	return getTexturePath(name)
 }
 
-export function GetTower(): string {
+export function GetTowerTexture(): string {
 	return Paths.Icons.tower_radiant
 }
 
-export function GetHero(name: string, small?: boolean): string {
+export function GetHeroTexture(name: string, small?: boolean): string {
 	return !small
 		? `${Paths.Hero + "/" + name}_png.vtex_c`
 		: `${Paths.HeroIcons + "/" + name}_png.vtex_c`
 }
 
-export function GetCourier(small?: boolean, team?: Team): string {
+export function GetCourierTexture(small?: boolean, team?: Team): string {
 	return small
 		? Paths.Icons.icon_courier
 		: team === Team.Dire
-		? Paths.Icons.courier_dire
-		: Paths.Icons.courier_radiant
+		  ? Paths.Icons.courier_dire
+		  : Paths.Icons.courier_radiant
 }
 
-export function GetRune(name: string, small?: boolean): string {
+export function GetRuneTexture(name: string, small?: boolean): string {
 	return !small
 		? Paths.Runes + "/" + name + ".png"
 		: Paths.Runes + "/mini/" + name + ".png"
 }
 
-export function GetEntity(entityName: string, small?: boolean, team?: Team): string {
+export function GetBearTexture(): string {
+	return Paths.Hero + "/npc_dota_lone_druid_bear_png.vtex_c"
+}
+
+export function GetUnitTexture(
+	unitName: string,
+	small?: boolean,
+	team?: Team
+): Nullable<string> {
 	team ??= Team.Radiant
 	switch (true) {
-		case entityName.includes("npc_dota_hero_"):
-			return GetHero(entityName, small)
-		case entityName.includes("_courier"):
-			return GetCourier(small, team)
-		case entityName.includes("badguys_tower") ||
-			entityName.includes("goodguys_tower"):
-			return GetTower()
-		case entityName.includes("roshan"):
+		case unitName.includes("npc_dota_hero_"):
+			return GetHeroTexture(unitName, small)
+		case unitName.includes("druid_bear"):
+			return GetBearTexture()
+		case unitName.includes("_courier"):
+			return GetCourierTexture(small, team)
+		case unitName.includes("badguys_tower") || unitName.includes("goodguys_tower"):
+			return GetTowerTexture()
+		case unitName.includes("roshan"):
 			return Paths.Icons.roshan_halloween_angry
-		case entityName.includes("psionic_trap"):
-			return GetSpell("templar_assassin_psionic_trap")
-		default:
-			return GetHero(entityName)
+		case unitName.includes("psionic_trap"):
+			return GetSpellTexture("templar_assassin_psionic_trap")
 	}
 }
 
-export function GetRank(lane: LaneSelection): string {
+export function GetRankTexture(lane: LaneSelection): string {
 	switch (lane) {
 		case LaneSelection.OFF_LANE:
 			return Paths.Icons.offlane
