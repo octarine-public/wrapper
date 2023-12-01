@@ -64,9 +64,15 @@ export class Inventory {
 		)
 	}
 	public get HasAnyItemInventory(): boolean {
-		return this.HasAnyItem(
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1,
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6
+		return (
+			this.HasAnyItem(
+				DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1,
+				DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6
+			) &&
+			this.HasAnyItem(
+				DOTAScriptInventorySlot.DOTA_ITEM_TP_SCROLL,
+				DOTAScriptInventorySlot.DOTA_ITEM_NEUTRAL_SLOT
+			)
 		)
 	}
 	public get HasAnyItemBackpack(): boolean {
@@ -103,6 +109,16 @@ export class Inventory {
 	public GetItem(slot: DOTAScriptInventorySlot): Nullable<Item> {
 		return this.Owner.TotalItems[slot]
 	}
+	public GetItemSlot(item: Item): Nullable<DOTAScriptInventorySlot> {
+		if (!this.Owner.IsValid) {
+			return
+		}
+		for (let index = 0, end = MAX_ITEMS; index < end; index++) {
+			if (this.GetItem(index) === item) {
+				return index
+			}
+		}
+	}
 	public GetItems(
 		start: DOTAScriptInventorySlot,
 		end: DOTAScriptInventorySlot
@@ -126,15 +142,15 @@ export class Inventory {
 		start: DOTAScriptInventorySlot,
 		end: DOTAScriptInventorySlot
 	): DOTAScriptInventorySlot[] {
+		if (!this.Owner.IsValid) {
+			return []
+		}
 		start = Math.min(start, MAX_ITEMS)
 		end = Math.min(end, MAX_ITEMS)
-
 		const items: DOTAScriptInventorySlot[] = []
-		if (this.Owner.IsValid) {
-			for (let i = start; i <= end; i++) {
-				if (this.GetItem(i) === undefined) {
-					items.push(i)
-				}
+		for (let i = start; i <= end; i++) {
+			if (this.GetItem(i) === undefined) {
+				items.push(i)
 			}
 		}
 		return items
@@ -143,14 +159,14 @@ export class Inventory {
 		start: DOTAScriptInventorySlot,
 		end: DOTAScriptInventorySlot
 	): boolean {
+		if (!this.Owner.IsValid) {
+			return false
+		}
 		start = Math.min(start, MAX_ITEMS)
 		end = Math.min(end, MAX_ITEMS)
-
-		if (this.Owner.IsValid) {
-			for (let i = start; i < Math.min(end + 1, MAX_ITEMS); i++) {
-				if (this.GetItem(i) !== undefined) {
-					return true
-				}
+		for (let i = start; i < Math.min(end + 1, MAX_ITEMS); i++) {
+			if (this.GetItem(i) !== undefined) {
+				return true
 			}
 		}
 		return false
@@ -159,14 +175,14 @@ export class Inventory {
 		start: DOTAScriptInventorySlot,
 		end: DOTAScriptInventorySlot
 	): boolean {
+		if (!this.Owner.IsValid) {
+			return false
+		}
 		start = Math.min(start, MAX_ITEMS)
 		end = Math.min(end, MAX_ITEMS)
-
-		if (this.Owner.IsValid) {
-			for (let i = start; i <= end; i++) {
-				if (this.GetItem(i) === undefined) {
-					return true
-				}
+		for (let i = start; i <= end; i++) {
+			if (this.GetItem(i) === undefined) {
+				return true
 			}
 		}
 		return false
@@ -179,7 +195,6 @@ export class Inventory {
 		if (!this.Owner.IsValid) {
 			return false
 		}
-
 		start = Math.min(start, MAX_ITEMS)
 		end = Math.min(end, MAX_ITEMS)
 		let man = 0

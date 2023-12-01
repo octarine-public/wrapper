@@ -1158,60 +1158,59 @@ class CRendererSDK {
 			.AddScalarX(box.Width)
 			.AddScalarY(box.Height)
 		switch (true) {
-			case HasMask(flag, TextFlags.Center):
+			case flag.hasMask(TextFlags.Bottom | TextFlags.Right):
 				return position
 					.DivideScalarForThis(2)
-					.AddScalarX(box.x)
+					.AddScalarX(box.x + position.x)
+					.AddScalarY(box.y + position.y)
+					.RoundForThis()
+			case flag.hasMask(TextFlags.Bottom | TextFlags.Left):
+				return position
+					.DivideScalarForThis(2)
+					.AddScalarX(box.x - position.x)
+					.AddScalarY(box.y + position.y)
+					.RoundForThis()
+			case flag.hasMask(TextFlags.Center | TextFlags.Right):
+				return position
+					.DivideScalarForThis(2)
+					.AddScalarX(box.x + position.x)
 					.AddScalarY(box.y)
 					.RoundForThis()
-			case HasMask(flag, TextFlags.Top):
+			case flag.hasMask(TextFlags.Center | TextFlags.Left):
 				return position
 					.DivideScalarForThis(2)
-					.AddScalarX(box.x)
+					.AddScalarX(box.x - position.x)
+					.AddScalarY(box.y)
+					.RoundForThis()
+			case flag.hasMask(TextFlags.Top | TextFlags.Right):
+				return position
+					.DivideScalarForThis(2)
+					.AddScalarX(box.x + position.x)
 					.AddScalarY(box.y - position.y)
 					.RoundForThis()
-			case HasMask(flag, TextFlags.Bottom):
+			case flag.hasMask(TextFlags.Top | TextFlags.Left):
+				return position
+					.DivideScalarForThis(2)
+					.AddScalarX(box.x - position.x)
+					.AddScalarY(box.y - position.y)
+					.RoundForThis()
+			case flag.hasMask(TextFlags.Bottom):
 				position
 					.DivideScalarForThis(2)
 					.AddScalarX(box.x)
 					.AddScalarY(box.y + position.y)
 					.RoundForThis()
-			case HasMask(flag, TextFlags.Top | TextFlags.Left):
+			case flag.hasMask(TextFlags.Center):
 				return position
 					.DivideScalarForThis(2)
-					.AddScalarX(box.x - position.x)
-					.AddScalarY(box.y - position.y)
-					.RoundForThis()
-			case HasMask(flag, TextFlags.Top | TextFlags.Right):
-				return position
-					.DivideScalarForThis(2)
-					.AddScalarX(box.x + position.x)
-					.AddScalarY(box.y - position.y)
-					.RoundForThis()
-			case HasMask(flag, TextFlags.Bottom | TextFlags.Left):
-				return position
-					.DivideScalarForThis(2)
-					.AddScalarX(box.x - position.x)
-					.AddScalarY(box.y + position.y)
-					.RoundForThis()
-				break
-			case HasMask(flag, TextFlags.Bottom | TextFlags.Right):
-				return position
-					.DivideScalarForThis(2)
-					.AddScalarX(box.x + position.x)
-					.AddScalarY(box.y + position.y)
-					.RoundForThis()
-			case HasMask(flag, TextFlags.Center | TextFlags.Left):
-				return position
-					.DivideScalarForThis(2)
-					.AddScalarX(box.x - position.x)
+					.AddScalarX(box.x)
 					.AddScalarY(box.y)
 					.RoundForThis()
-			case HasMask(flag, TextFlags.Center | TextFlags.Right):
+			case flag.hasMask(TextFlags.Top):
 				return position
 					.DivideScalarForThis(2)
-					.AddScalarX(box.x + position.x)
-					.AddScalarY(box.y)
+					.AddScalarX(box.x)
+					.AddScalarY(box.y - position.y)
 					.RoundForThis()
 			default:
 				return position

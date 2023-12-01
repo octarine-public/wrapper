@@ -1,3 +1,4 @@
+import { GetItemTexture } from "../../Data/ImageData"
 import { NetworkedBasicField, ReencodeProperty, WrapperClass } from "../../Decorators"
 import { DOTAScriptInventorySlot } from "../../Enums/DOTAScriptInventorySlot"
 import { EShareAbility } from "../../Enums/EShareAbility"
@@ -10,6 +11,12 @@ import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_Item")
 export class Item extends Ability {
+	/**
+	 * @readonly
+	 * @description The slot the item is in
+	 * @returns {DOTAScriptInventorySlot}
+	 */
+	public Slot = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1
 	/**
 	 * @readonly
 	 * @description The time at which the item is enabled. Example: the item was moved to backpack and returned
@@ -167,6 +174,10 @@ export class Item extends Ability {
 	 */
 	public Purchaser: Nullable<Unit>
 
+	public get TexturePath(): string {
+		return GetItemTexture(this.Name)
+	}
+
 	public get Cooldown() {
 		let cooldown = super.Cooldown
 		if (this.IsItem && this.EnableTime > GameState.RawGameTime) {
@@ -183,14 +194,23 @@ export class Item extends Ability {
 			(unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsMuted))
 		)
 	}
+
 	/**
-	 * Returns whether the item is usable.
-	 *
-	 * @description Check if the item is not muted or if the owner cannot use it
-	 * @returns {boolean}
+	 * @description Determines whether the item can be used.
+	 * @return {boolean}
 	 */
-	public get IsUsable(): boolean {
-		return !this.IsMuted || (this.Owner?.CannotUseItem(this) ?? false)
+	public get CanBeUsable(): boolean {
+		if (!this.IsValid || this.IsMuted) {
+			return false
+		}
+		const owner = this.Owner
+		if (owner === undefined || !owner.IsValid) {
+			return false
+		}
+		if (owner.CannotUseItem(this)) {
+			return false
+		}
+		return owner.Inventory.HasAnyItemInventory
 	}
 	/**
 	 * The remaining time in seconds.
@@ -266,6 +286,14 @@ export class Item extends Ability {
 	public ItemUnlock() {
 		return this.Owner?.ItemLock(this, false)
 	}
+
+	// public CanBeCasted(bonusMana: number = 0): boolean {
+	// 	if (!this.CanBeUsable || !this.IsReady) {
+	// 		return false
+	// 	}
+	// 	// TODO: Add other checks
+	// 	return this.IsManaEnough(bonusMana)
+	// }
 
 	public CanBeCasted(bonusMana: number = 0): boolean {
 		if (!this.IsValid || this.IsMuted) {
