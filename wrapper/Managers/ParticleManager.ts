@@ -203,16 +203,16 @@ export class ParticlesSDK {
 			startOpt instanceof Vector3
 				? startOpt
 				: startOpt instanceof Vector3
-				? startOpt
-				: startOpt?.Position ?? entity.Position
+				  ? startOpt
+				  : startOpt?.Position ?? entity.Position
 
 		const endOpt = options.End
 		const ctrl7 =
 			endOpt instanceof Vector3
 				? endOpt
 				: endOpt instanceof Vector3
-				? endOpt
-				: endOpt?.Position ?? target.Position
+				  ? endOpt
+				  : endOpt?.Position ?? target.Position
 
 		return this.AddOrUpdate(
 			key,

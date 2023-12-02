@@ -383,9 +383,9 @@ interface EventsSDK extends EventEmitter {
 		listener: (playerResource: CPlayerResource) => void,
 		priority?: number
 	): EventEmitter
-	/** 
+	/**
 	 * @description Emitted if the properties of an unit have changed
-	 * (for e.x: SpiritBear#ShouldRespawn, Unit#IsClone, Unit#IsIllusion, Unit#CanUseItems, Unit#CanUseAbilities) 
+	 * (for e.x: SpiritBear#ShouldRespawn, Unit#IsClone, Unit#IsIllusion, Unit#CanUseItems, Unit#CanUseAbilities)
 	 * */
 	on(
 		name: "UnitPropertyChanged",
