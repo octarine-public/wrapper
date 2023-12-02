@@ -14,8 +14,8 @@ Array.prototype.orderBy = function <T>(
 			return thenByResultA > thenByResultB
 				? 1
 				: thenByResultA < thenByResultB
-				? -1
-				: 0
+				  ? -1
+				  : 0
 		}
 		return 0
 	})
@@ -37,8 +37,8 @@ Array.prototype.orderByDescending = function <T>(
 			return thenByResultA > thenByResultB
 				? 1
 				: thenByResultA < thenByResultB
-				? -1
-				: 0
+				  ? -1
+				  : 0
 		}
 		return 0
 	})
