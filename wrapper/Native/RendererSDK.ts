@@ -70,7 +70,7 @@ class Font {
 		public readonly FontID: number,
 		public readonly Weight: number,
 		public readonly Italic: boolean
-	) { }
+	) {}
 }
 
 class CRendererSDK {

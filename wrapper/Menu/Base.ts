@@ -262,10 +262,8 @@ export class Base {
 		)
 	}
 	protected TriggerOnValueChangedCBs(): void {
-		const arr = this.OnValueChangedCBs
-		for (let index = arr.length - 1; index > -1; index--) {
-			const callback = arr[index]
-			callback(this)
+		for (let i = this.OnValueChangedCBs.length - 1; i > -1; i--) {
+			this.OnValueChangedCBs[i](this)
 		}
 	}
 

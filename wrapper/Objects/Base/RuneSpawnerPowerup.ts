@@ -1,8 +1,8 @@
 import { Runes } from "../../Data/GameData"
 import { WrapperClass } from "../../Decorators"
 import { RuneSpawnerType } from "../../Enums/RuneSpawnerType"
-import { RuneSpawner } from "./RuneSpawner"
 import { RegisterFieldHandler } from "../NativeToSDK"
+import { RuneSpawner } from "./RuneSpawner"
 
 @WrapperClass("CDOTA_Item_RuneSpawner_Powerup")
 export class RuneSpawnerPowerup extends RuneSpawner {
