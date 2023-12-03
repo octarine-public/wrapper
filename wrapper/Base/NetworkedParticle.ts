@@ -1,5 +1,6 @@
 import { ParticleAttachment } from "../Enums/ParticleAttachment"
 import * as EconHelper from "../Managers/EconHelper"
+import { Events } from "../Managers/Events"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { FakeUnit } from "../Objects/Base/FakeUnit"
 import { Unit } from "../Objects/Base/Unit"
@@ -199,24 +200,22 @@ EventsSDK.on("Tick", () => {
 			destroyedParticles.push(par)
 		}
 	}
-	for (const par of destroyedParticles) {
-		par.Destroy()
+	for (let index = 0, end = destroyedParticles.length; index < end; index++) {
+		destroyedParticles[index].Destroy()
 	}
 })
 
-EventsSDK.on("PostDataUpdate", () => {
-	if (GameState.RawGameTime !== 0 || GameState.IsConnected) {
-		return
-	}
-	if (NetworkedParticle.Instances.size === 0) {
+Events.on("NewConnection", () => {
+	const instances = NetworkedParticle.Instances
+	if (instances.size === 0) {
 		return
 	}
 	const destroyedParticles: NetworkedParticle[] = []
-	for (const par of NetworkedParticle.Instances.values()) {
+	for (const par of instances.values()) {
 		destroyedParticles.push(par)
 	}
-	for (const par of destroyedParticles) {
-		par.Destroy()
+	for (let index = destroyedParticles.length - 1; index > -1; index--) {
+		destroyedParticles[index].Destroy()
 	}
 })
 
