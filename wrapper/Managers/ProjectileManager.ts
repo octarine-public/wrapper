@@ -120,7 +120,7 @@ EventsSDK.on("PostDataUpdate", () => {
 		ProjectileManager.AllLinearProjectilesMap.delete(proj.ID)
 	}
 	const arrTraking = ProjectileManager.AllTrackingProjectiles
-	for (let index = 0; index < arrLinear.length; index++) {
+	for (let index = 0; index < arrTraking.length; index++) {
 		const proj = arrTraking[index]
 		proj.UpdateTargetLoc()
 		if (proj.LastUpdate === 0) {
