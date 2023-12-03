@@ -90,7 +90,7 @@ export class PlayerCustomData {
 	 * @internal
 	 * @description internal only for wrapper
 	 */
-	public static readonly TeamData = new Set<TeamData>()
+	public static readonly TeamData: TeamData[] = []
 	/**
 	 * @description Retrieves the player data for the given player ID.
 	 * @param {number} playerID - The ID of the player.
@@ -122,11 +122,9 @@ export class PlayerCustomData {
 			playerData.PlayerDataChanged(hero)
 			this.Array.push(playerData)
 			playerDataCustomMap.set(playerID, playerData)
-			EventsSDK.emit("PlayerCustomDataUpdated", false, playerData)
 		}
 		if (hero !== undefined && hero !== playerData.Hero) {
 			playerData.PlayerDataChanged(hero)
-			EventsSDK.emit("PlayerCustomDataUpdated", false, playerData)
 		}
 	}
 	/**
@@ -134,7 +132,7 @@ export class PlayerCustomData {
 	 * @internal
 	 * @description internal only for wrapper
 	 */
-	public static PlayerResourceUpdated() {
+	public static PlayerCustomDataUpdatedAll() {
 		for (let index = this.Array.length - 1; index > -1; index--) {
 			const playerData = this.Array[index]
 			EventsSDK.emit("PlayerCustomDataUpdated", false, playerData)
@@ -570,6 +568,8 @@ export class PlayerCustomData {
 	 * @description internal only for wrapper
 	 */
 	public PostDataUpdate() {
+		this.TeamChanged()
+
 		if (this.DataTeamPlayer === undefined) {
 			this.UpdateCounters()
 			this.UpdateGoldAfterTime()
@@ -582,9 +582,13 @@ export class PlayerCustomData {
 	 * @description internal only for wrapper
 	 */
 	public PlayerDataChanged(hero?: Hero) {
+		if (!this.IsValid) {
+			return
+		}
 		if (hero !== undefined) {
 			this.Hero = hero?.IsValid ? hero : undefined
 		}
+		EventsSDK.emit("PlayerCustomDataUpdated", false, this)
 	}
 	/**
 	 * @ignore
@@ -671,6 +675,13 @@ export class PlayerCustomData {
 			}
 			const gold = gpm.AbandonedGPM / Math.max(players.length, 1)
 			player.ReliableGold += gold
+		}
+	}
+
+	protected TeamChanged() {
+		const playerData = PlayerCustomData.get(this.PlayerID)
+		if (playerData?.IsValid && playerData.Team !== this.Team) {
+			EventsSDK.emit("PlayerCustomDataUpdated", false, playerData)
 		}
 	}
 }

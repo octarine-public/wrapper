@@ -206,12 +206,8 @@ EventsSDK.on("Tick", () => {
 })
 
 Events.on("NewConnection", () => {
-	const instances = NetworkedParticle.Instances
-	if (instances.size === 0) {
-		return
-	}
 	const destroyedParticles: NetworkedParticle[] = []
-	for (const par of instances.values()) {
+	for (const par of NetworkedParticle.Instances.values()) {
 		destroyedParticles.push(par)
 	}
 	for (let index = destroyedParticles.length - 1; index > -1; index--) {

@@ -100,7 +100,7 @@ export const GUIInfo = new (class CGUIInfo {
 	}
 	public GetVisibleAbilitiesForUnit(unit: Nullable<Unit>): Ability[] {
 		return (
-			(unit?.Spells.filter(
+			(unit?.Spells?.filter(
 				abil =>
 					abil !== undefined &&
 					abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES &&

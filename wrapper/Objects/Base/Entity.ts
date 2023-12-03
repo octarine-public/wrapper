@@ -96,7 +96,6 @@ export class Entity {
 	public TotalAgility = 0
 	public TotalIntellect = 0
 	public TotalStrength = 0
-
 	public HierarchyAttachName = 0
 	public Children: Entity[] = []
 	@NetworkedBasicField("CBodyComponent")

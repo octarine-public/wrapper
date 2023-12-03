@@ -6,6 +6,7 @@ import { DOTAGameMode } from "../../Enums/DOTAGameMode"
 import { DOTAGameState } from "../../Enums/DOTAGameState"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { Team } from "../../Enums/Team"
+import { EventsSDK } from "../../Managers/EventsSDK"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GameState } from "../../Utils/GameState"
 import { Entity } from "../Base/Entity"
@@ -25,7 +26,6 @@ export class CGameRules extends Entity {
 	public ExpectedPlayers = 0
 	@NetworkedBasicField("m_iGameMode")
 	public GameMode = DOTAGameMode.DOTA_GAMEMODE_NONE
-	@NetworkedBasicField("m_nGameState")
 	public GameState = DOTAGameState.DOTA_GAMERULES_STATE_INIT
 	@NetworkedBasicField("m_flGameStartTime")
 	public GameStartTime = 0
@@ -143,6 +143,12 @@ RegisterFieldHandler(CGameRules, "m_NeutralSpawnBoxes", (game, newVal) => {
 		map => new NeutralSpawnBox(map)
 	)
 })
+
 RegisterFieldHandler(CGameRules, "m_vecItemStockInfo", (game, newVal) => {
 	game.StockInfo = (newVal as EntityPropertiesNode[]).map(map => new StockInfo(map))
+})
+
+RegisterFieldHandler(CGameRules, "m_nGameState", (game, newVal) => {
+	game.GameState = newVal as DOTAGameState
+	EventsSDK.emit("GameStateChanged", false, newVal)
 })
