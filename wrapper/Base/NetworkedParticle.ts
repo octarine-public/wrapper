@@ -204,6 +204,22 @@ EventsSDK.on("Tick", () => {
 	}
 })
 
+EventsSDK.on("PostDataUpdate", () => {
+	if (GameState.RawGameTime !== 0 || GameState.IsConnected) {
+		return
+	}
+	if (NetworkedParticle.Instances.size === 0) {
+		return
+	}
+	const destroyedParticles: NetworkedParticle[] = []
+	for (const par of NetworkedParticle.Instances.values()) {
+		destroyedParticles.push(par)
+	}
+	for (const par of destroyedParticles) {
+		par.Destroy()
+	}
+})
+
 // return after move icore
 // EventsSDK.after("EntityCreated", ent => {
 // 	if (!(ent instanceof Unit)) {
