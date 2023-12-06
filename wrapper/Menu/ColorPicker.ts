@@ -114,7 +114,12 @@ export class ColorPicker extends Base {
 	protected draggingAlpha = false
 	protected readonly draggingOffset = new Vector2()
 
-	constructor(parent: IMenu, name: string, defaultColor = Color.White, tooltip = "") {
+	constructor(
+		parent: IMenu,
+		name: string,
+		public readonly defaultColor = Color.White,
+		tooltip = ""
+	) {
 		super(parent, name, tooltip)
 		defaultColor.CopyTo(this.SelectedColor)
 	}

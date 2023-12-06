@@ -31,7 +31,7 @@ export class ImageSelector extends Base {
 		parent: IMenu,
 		name: string,
 		public values: string[],
-		defaultValues = new Map<string, boolean>(),
+		public readonly defaultValues = new Map<string, boolean>(),
 		tooltip = "",
 		public createdDefaultState = false
 	) {

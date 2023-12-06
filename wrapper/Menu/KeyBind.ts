@@ -36,7 +36,12 @@ export class KeyBind extends Base {
 	protected readonly keybindTextSize = new Vector2()
 	protected readonly executeOnAdd = false
 
-	constructor(parent: IMenu, name: string, defaultKey = "None", tooltip = "") {
+	constructor(
+		parent: IMenu,
+		name: string,
+		public readonly defaultKey = "None",
+		tooltip = ""
+	) {
 		super(parent, name, tooltip)
 		this.assignedKey = KeyNames.indexOf(defaultKey)
 	}
