@@ -11,32 +11,35 @@ import {
 } from "../Utils/Protobuf"
 import { EventsSDK } from "./EventsSDK"
 
+const activeModifiers = new Map<number, Modifier>()
+const activeModifiersRaw = new Map<number, IModifier>()
+
 export class IModifier {
 	constructor(public readonly kv: RecursiveProtobuf) {
 		if (!this.kv.has("creation_time")) {
 			this.kv.set("creation_time", GameState.RawGameTime)
 		}
 	}
-	public get EntryType(): Nullable<DOTA_MODIFIER_ENTRY_TYPE> {
-		return this.GetProperty("entry_type")
+	public get EntryType() {
+		return this.GetProperty<DOTA_MODIFIER_ENTRY_TYPE>("entry_type")
 	}
-	public get Parent(): Nullable<number> {
-		return this.GetProperty("parent")
+	public get Parent() {
+		return this.GetProperty<number>("parent")
 	}
-	public get Index(): Nullable<number> {
-		return this.GetProperty("index")
+	public get Index() {
+		return this.GetProperty<number>("index")
 	}
-	public get SerialNum(): Nullable<number> {
-		return this.GetProperty("serial_num")
+	public get SerialNum() {
+		return this.GetProperty<number>("serial_num")
 	}
-	public get ModifierClass(): Nullable<number> {
-		return this.GetProperty("modifier_class")
+	public get ModifierClass() {
+		return this.GetProperty<number>("modifier_class")
 	}
-	public get AbilityLevel(): Nullable<number> {
-		return this.GetProperty("ability_level")
+	public get AbilityLevel() {
+		return this.GetProperty<number>("ability_level")
 	}
-	public get StackCount(): Nullable<number> {
-		return this.GetProperty("stack_count")
+	public get StackCount() {
+		return this.GetProperty<number>("stack_count")
 	}
 	public get CreationTime(): number {
 		return this.GetProperty("creation_time") as number
@@ -44,95 +47,95 @@ export class IModifier {
 	public get Duration(): number {
 		return this.GetProperty("duration") as number
 	}
-	public get Caster(): Nullable<number> {
-		return this.GetProperty("caster")
+	public get Caster() {
+		return this.GetProperty<number>("caster")
 	}
-	public get Ability(): Nullable<number> {
-		return this.GetProperty("ability")
+	public get Ability() {
+		return this.GetProperty<number>("ability")
 	}
 	public get Armor(): Nullable<number> {
-		return this.GetProperty("armor")
+		return this.GetProperty<number>("armor")
 	}
-	public get FadeTime(): Nullable<number> {
-		return this.GetProperty("fade_time")
+	public get FadeTime() {
+		return this.GetProperty<number>("fade_time")
 	}
-	public get Subtle(): Nullable<boolean> {
-		return this.GetProperty("subtle")
+	public get Subtle() {
+		return this.GetProperty<boolean>("subtle")
 	}
-	public get ChannelTime(): Nullable<number> {
-		return this.GetProperty("channel_time")
+	public get ChannelTime() {
+		return this.GetProperty<number>("channel_time")
 	}
-	public get vStart(): Nullable<Vector3> {
+	public get vStart() {
 		return this.GetVector("v_start")
 	}
-	public get vEnd(): Nullable<Vector3> {
+	public get vEnd() {
 		return this.GetVector("v_end")
 	}
-	public get PortalLoopAppear(): Nullable<string> {
-		return this.GetProperty("portal_loop_appear")
+	public get PortalLoopAppear() {
+		return this.GetProperty<string>("portal_loop_appear")
 	}
-	public get PortalLoopDisappear(): Nullable<string> {
-		return this.GetProperty("portal_loop_disappear")
+	public get PortalLoopDisappear() {
+		return this.GetProperty<string>("portal_loop_disappear")
 	}
-	public get HeroLoopAppear(): Nullable<string> {
-		return this.GetProperty("hero_loop_appear")
+	public get HeroLoopAppear() {
+		return this.GetProperty<string>("hero_loop_appear")
 	}
-	public get HeroLoopDisappear(): Nullable<string> {
-		return this.GetProperty("hero_loop_disappear")
+	public get HeroLoopDisappear() {
+		return this.GetProperty<string>("hero_loop_disappear")
 	}
-	public get MovementSpeed(): Nullable<number> {
-		return this.GetProperty("movement_speed")
+	public get MovementSpeed() {
+		return this.GetProperty<number>("movement_speed")
 	}
-	public get IsAura(): Nullable<boolean> {
-		return this.GetProperty("aura")
+	public get IsAura() {
+		return this.GetProperty<boolean>("aura")
 	}
-	public get Activity(): Nullable<number> {
-		return this.GetProperty("activity")
+	public get Activity() {
+		return this.GetProperty<number>("activity")
 	}
-	public get Damage(): Nullable<number> {
-		return this.GetProperty("damage")
+	public get Damage() {
+		return this.GetProperty<number>("damage")
 	}
-	public get Range(): Nullable<number> {
-		return this.GetProperty("range")
+	public get Range() {
+		return this.GetProperty<number>("range")
 	}
-	public get DDModifierID(): Nullable<number> {
-		return this.GetProperty("dd_modifier_index")
+	public get DDModifierID() {
+		return this.GetProperty<number>("dd_modifier_index")
 	}
-	public get DDAbilityID(): Nullable<number> {
-		return this.GetProperty("dd_ability_id")
+	public get DDAbilityID() {
+		return this.GetProperty<number>("dd_ability_id")
 	}
-	public get IllusionLevel(): Nullable<number> {
-		return this.GetProperty("illusion_level")
+	public get IllusionLevel() {
+		return this.GetProperty<number>("illusion_level")
 	}
-	public get IsActive(): Nullable<boolean> {
-		return this.GetProperty("active")
+	public get IsActive() {
+		return this.GetProperty<boolean>("active")
 	}
-	public get PlayerIDs(): Nullable<string> {
-		return this.GetProperty("player_ids")
+	public get PlayerIDs() {
+		return this.GetProperty<string>("player_ids")
 	}
-	public get LuaName(): Nullable<string> {
-		return this.GetProperty("lua_name")
+	public get LuaName() {
+		return this.GetProperty<string>("lua_name")
 	}
-	public get AttackSpeed(): Nullable<number> {
-		return this.GetProperty("attack_speed")
+	public get AttackSpeed() {
+		return this.GetProperty<number>("attack_speed")
 	}
-	public get AuraOwner(): Nullable<number> {
-		return this.GetProperty("aura_owner")
+	public get AuraOwner() {
+		return this.GetProperty<number>("aura_owner")
 	}
-	public get BonusAllStats(): Nullable<number> {
-		return this.GetProperty("bonus_all_stats")
+	public get BonusAllStats() {
+		return this.GetProperty<number>("bonus_all_stats")
 	}
-	public get BonusHealth(): Nullable<number> {
-		return this.GetProperty("bonus_health")
+	public get BonusHealth() {
+		return this.GetProperty<number>("bonus_health")
 	}
-	public get BonusMana(): Nullable<number> {
-		return this.GetProperty("bonus_mana")
+	public get BonusMana() {
+		return this.GetProperty<number>("bonus_mana")
 	}
-	public get CustomEntity(): Nullable<number> {
-		return this.GetProperty("custom_entity")
+	public get CustomEntity() {
+		return this.GetProperty<number>("custom_entity")
 	}
-	public get IllusionLabel(): Nullable<string> {
-		return this.GetProperty("illusion_label")
+	public get IllusionLabel() {
+		return this.GetProperty<string>("illusion_label")
 	}
 	public GetProperty<T>(name: string): Nullable<T> {
 		return this.kv.get(name) as any as T
@@ -146,9 +149,6 @@ export class IModifier {
 	}
 }
 
-const activeModifiersRaw = new Map<number, IModifier>(),
-	activeModifiers = new Map<number, Modifier>()
-
 function EmitModifierCreated(modKV: IModifier) {
 	if (
 		modKV.Index === undefined ||
@@ -161,12 +161,26 @@ function EmitModifierCreated(modKV: IModifier) {
 	activeModifiers.set(mod.SerialNumber, mod)
 	mod.Update()
 }
+
+function EmitModifierChanged(oldMod: Modifier, mod: IModifier) {
+	oldMod.kv = mod
+	oldMod.Update()
+}
+
+function EmitModifierRemoved(mod: Nullable<Modifier>) {
+	if (mod !== undefined) {
+		activeModifiers.delete(mod.SerialNumber)
+		mod.Remove()
+	}
+}
+
 const queuedEnts: (Unit | Ability)[] = []
-EventsSDK.on("EntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof Unit || ent instanceof Ability) {
 		queuedEnts.push(ent)
 	}
 })
+
 EventsSDK.on("EntityDestroyed", ent => {
 	if (ent instanceof Unit || ent instanceof Ability) {
 		queuedEnts.remove(ent)
@@ -201,10 +215,7 @@ EventsSDK.on("PostDataUpdate", () => {
 	}
 	queuedEnts.clear()
 })
-function EmitModifierRemoved(mod: Modifier) {
-	activeModifiers.delete(mod.SerialNumber)
-	mod.Remove()
-}
+
 EventsSDK.on("EntityDestroyed", ent => {
 	activeModifiers.forEach(mod => {
 		if (
@@ -217,10 +228,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 		}
 	})
 })
-function EmitModifierChanged(oldMod: Modifier, mod: IModifier) {
-	oldMod.kv = mod
-	oldMod.Update()
-}
+
 ParseProtobufDesc(`
 enum DOTA_MODIFIER_ENTRY_TYPE {
 	DOTA_MODIFIER_ENTRY_TYPE_ACTIVE = 1;
@@ -275,10 +283,7 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 	update.forEach(([, modSerialized], key) => {
 		const replaced = activeModifiersRaw.get(key)
 		if (modSerialized.byteLength === 0 && replaced?.SerialNum !== undefined) {
-			const replacedMod = activeModifiers.get(replaced.SerialNum)
-			if (replacedMod !== undefined) {
-				EmitModifierRemoved(replacedMod)
-			}
+			EmitModifierRemoved(activeModifiers.get(replaced.SerialNum))
 			return
 		}
 		const mod = new IModifier(
@@ -288,25 +293,26 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 			)
 		)
 		if (replaced?.SerialNum !== undefined && replaced.SerialNum !== mod.SerialNum) {
-			const replacedMod = activeModifiers.get(replaced.SerialNum)
-			if (replacedMod !== undefined) {
-				EmitModifierRemoved(replacedMod)
-			}
+			EmitModifierRemoved(activeModifiers.get(replaced.SerialNum))
 		}
 		activeModifiersRaw.set(key, mod)
 		const oldMod = activeModifiers.get(mod.SerialNum as number)
-		if (mod.EntryType === DOTA_MODIFIER_ENTRY_TYPE.DOTA_MODIFIER_ENTRY_TYPE_ACTIVE) {
-			if (oldMod === undefined) {
-				EmitModifierCreated(mod)
-			} else {
-				EmitModifierChanged(oldMod, mod)
-			}
-		} else if (oldMod !== undefined) {
-			EmitModifierRemoved(oldMod)
+		switch (mod.EntryType) {
+			case DOTA_MODIFIER_ENTRY_TYPE.DOTA_MODIFIER_ENTRY_TYPE_ACTIVE:
+				if (oldMod === undefined) {
+					EmitModifierCreated(mod)
+				} else {
+					EmitModifierChanged(oldMod, mod)
+				}
+				break
+			default:
+				EmitModifierRemoved(oldMod)
+				break
 		}
 	})
 })
 EventsSDK.on("RemoveAllStringTables", () => {
 	activeModifiers.forEach(mod => EmitModifierRemoved(mod))
 	activeModifiers.clear()
+	activeModifiersRaw.clear()
 })

@@ -150,10 +150,6 @@ const Monitor = new (class PlayerDataCustomChanged {
 		}
 	}
 
-	public PlayerResourceUpdated() {
-		PlayerCustomData.PlayerResourceUpdated()
-	}
-
 	// Events
 	public ChatEvent(
 		typeMessage: DOTA_CHAT_MESSAGE,
@@ -774,10 +770,12 @@ const Monitor = new (class PlayerDataCustomChanged {
 
 	private teamDataChanged(entity: TeamData, destroyed = false) {
 		if (!destroyed) {
-			PlayerCustomData.TeamData.add(entity)
+			PlayerCustomData.TeamData.push(entity)
+			PlayerCustomData.PlayerCustomDataUpdatedAll()
 			return
 		}
-		PlayerCustomData.TeamData.delete(entity)
+		PlayerCustomData.TeamData.remove(entity)
+		PlayerCustomData.PlayerCustomDataUpdatedAll()
 	}
 
 	private killBuildingChanged(killer: Unit, target: Building) {
@@ -1109,12 +1107,6 @@ EventsSDK.on(
 EventsSDK.on(
 	"PlayerCustomDataUpdated",
 	player => Monitor.PlayerCustomDataUpdated(player),
-	Number.MIN_SAFE_INTEGER
-)
-
-EventsSDK.on(
-	"PlayerResourceUpdated",
-	() => Monitor.PlayerResourceUpdated(),
 	Number.MIN_SAFE_INTEGER
 )
 

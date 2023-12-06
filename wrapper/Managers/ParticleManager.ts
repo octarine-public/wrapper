@@ -77,35 +77,27 @@ export class ParticlesSDK {
 		key: any,
 		path: string,
 		attachment: ParticleAttachment,
-		entity: Nullable<Entity> | Vector3,
+		entity: Entity,
 		...points: ControlPointParam[]
 	): Particle {
+		if (entity === undefined || path === undefined) {
+			throw "entity or path is undefined"
+		}
 		let particle = this.AllParticles.get(key)
-
 		if (
 			particle === undefined ||
-			particle.AttachedTo !== entity ||
 			particle.Path !== path ||
+			particle.AttachedTo !== entity ||
 			particle.Attachment !== attachment
 		) {
-			if (particle !== undefined) {
-				particle.Destroy(true)
-			}
-
-			particle = new Particle(
-				this,
-				key,
-				path,
-				attachment,
-				entity instanceof Entity ? entity : entity,
-				...points
-			)
-
+			particle?.Destroy(true)
+			particle = new Particle(this, key, path, attachment, entity, ...points)
 			this.AllParticles.set(key, particle)
-		} else if (points !== undefined) {
+			return particle
+		}
+		if (points !== undefined && points.length !== 0) {
 			particle.SetControlPoints(...points)
 		}
-
 		return particle
 	}
 

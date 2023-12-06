@@ -27,8 +27,7 @@ export class Particle {
 		public readonly Key: any,
 		public readonly Path: string,
 		public readonly Attachment: ParticleAttachment,
-		// tslint:disable-next-line: no-shadowed-variable
-		public readonly AttachedTo?: Entity | Vector3,
+		public readonly AttachedTo: Entity,
 		...controlPoints: ControlPointParam[]
 	) {
 		this.Create(...controlPoints)
@@ -135,15 +134,7 @@ export class Particle {
 		}
 		path = tryFindFile(path, 2) ?? path
 		path = path.substring(0, path.length - 2)
-		this.EffectIndex = Particles.Create(
-			path,
-			this.Attachment,
-			this.AttachedTo?.IsValid
-				? this.AttachedTo instanceof Entity
-					? this.AttachedTo.Index
-					: this.AttachedTo.Length
-				: -1
-		)
+		this.EffectIndex = Particles.Create(path, this.Attachment, this.AttachedTo.Index)
 		this.IsValid = true
 		this.SetInFogVisible()
 		this.SetControlPoints(...controlPoints)
