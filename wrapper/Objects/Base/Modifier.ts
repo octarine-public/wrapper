@@ -40,9 +40,11 @@ export class Modifier {
 			}
 		})
 	}
+
 	public static HasScepterBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => scepterRegExp.test(buff.Name))
 	}
+
 	public static HasShardBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => buff.Name === "modifier_item_aghanims_shard")
 	}

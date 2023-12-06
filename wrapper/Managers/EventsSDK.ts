@@ -1,6 +1,7 @@
 import { NetworkedParticle } from "../Base/NetworkedParticle"
 import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
+import { DOTAGameState } from "../Enums/DOTAGameState"
 import { SOType } from "../Enums/SOType"
 import { ExecuteOrder } from "../Native/ExecuteOrder"
 import { Ability } from "../Objects/Base/Ability"
@@ -434,6 +435,11 @@ interface EventsSDK extends EventEmitter {
 	on(
 		name: "PlayerCustomDataUpdated",
 		listener: (player: PlayerCustomData) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "GameStateChanged",
+		listener: (newState: DOTAGameState) => void,
 		priority?: number
 	): EventEmitter
 }
