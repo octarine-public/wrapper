@@ -64,7 +64,7 @@ export class Toggle extends Base {
 	constructor(
 		parent: IMenu,
 		name: string,
-		defaultValue: boolean,
+		public readonly defaultValue: boolean,
 		tooltip = "",
 		private iconPath_ = "",
 		private iconRound_ = -1

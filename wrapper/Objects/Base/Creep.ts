@@ -19,11 +19,19 @@ export class Creep extends Unit {
 		this.IsCreep = true
 	}
 
+	public get IsEidolon() {
+		return this.Name.endsWith("_lesser_eidolon")
+	}
+
 	public get IsLaneCreep() {
 		return (
 			this.ClassName === "CDOTA_BaseNPC_Creep_Lane" ||
 			this.ClassName === "CDOTA_BaseNPC_Creep_Siege"
 		)
+	}
+
+	public get IsNeutral() {
+		return super.IsNeutral || this.ClassName === "CDOTA_BaseNPC_Creep_Neutral"
 	}
 
 	public get IsSuperCreep() {

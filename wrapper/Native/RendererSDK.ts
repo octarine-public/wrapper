@@ -501,12 +501,10 @@ class CRendererSDK {
 		if (fontID === -1) {
 			return
 		}
-
-		vecPos.RoundForThis()
-
-		this.Translate(
-			outlined ? vecPos.Clone().SubtractScalarX(1).AddScalarY(1) : vecPos
-		)
+		const vecTranslate = outlined
+			? vecPos.Clone().SubtractScalarX(1).AddScalarY(1)
+			: vecPos
+		this.Translate(vecTranslate)
 		const startPos = this.commandCacheSize
 		this.AllocateCommandSpace(CommandID.TEXT, 2 * 2 + 2 * 4)
 		this.commandStream.WriteUint16(fontID)
@@ -1111,8 +1109,8 @@ class CRendererSDK {
 			return
 		}
 		this.AllocateCommandSpace(CommandID.TRANSLATE, 2 * 4)
-		this.commandStream.WriteFloat32(vecPos.x)
-		this.commandStream.WriteFloat32(vecPos.y)
+		this.commandStream.WriteFloat32(Math.round(vecPos.x))
+		this.commandStream.WriteFloat32(Math.round(vecPos.y))
 	}
 	private NormalizedAngle(ang: number): number {
 		while (ang < 0) {
