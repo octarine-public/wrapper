@@ -72,7 +72,7 @@ export class Dropdown extends Base {
 		parent: IMenu,
 		name: string,
 		public InternalValuesNames: string[],
-		defaultValue = 0,
+		public readonly defaultValue = 0,
 		tooltip = ""
 	) {
 		super(parent, name, tooltip)

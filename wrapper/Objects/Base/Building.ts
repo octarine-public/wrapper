@@ -7,6 +7,10 @@ import { Unit } from "./Unit"
 @WrapperClass("CDOTA_BaseNPC_Building")
 export class Building extends Unit {
 	/** @readonly */
+	public IsFiller = false
+	/** @readonly */
+	public IsWatcher = false
+	/** @readonly */
 	public IsBarrack = false
 	/**
 	 * The owner player ID of the hero statue.

@@ -4,7 +4,7 @@ import { MapArea } from "../Enums/MapArea"
 import { Team } from "../Enums/Team"
 import { Buildings } from "../Objects/Base/Building"
 import { CreepPathCorner, CreepPathCorners } from "../Objects/Base/CreepPathCorner"
-import { Fountains } from "../Objects/Base/Fountain"
+import { Fountains } from "../Objects/Buildings/Fountain"
 
 export function IsRiver(pos: Vector3 | Vector2): boolean {
 	return WorldUtils.IsPointUnderWater(pos.x, pos.y)

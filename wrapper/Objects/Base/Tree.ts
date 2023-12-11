@@ -30,9 +30,6 @@ export class Tree extends Entity {
 	public get CustomNativeID(): number {
 		return (this.BinaryID << 1) | 1
 	}
-	public set CustomGlowColor(_: Nullable<Color>) {
-		// N/A for non-networked entities
-	}
 	public set CustomDrawColor(_: Nullable<[Color, RenderMode]>) {
 		// N/A for non-networked entities
 	}

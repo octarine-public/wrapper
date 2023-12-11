@@ -1,8 +1,8 @@
-import { PlayerCustomData } from "../../Imports"
 import { Entity } from "../../Objects/Base/Entity"
 import { Hero, Heroes } from "../../Objects/Base/Hero"
 import { Players } from "../../Objects/Base/Player"
 import { PlayerPawn } from "../../Objects/Base/PlayerPawn"
+import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { EventsSDK } from "../EventsSDK"
 
 const Monitor = new (class CPlayer {

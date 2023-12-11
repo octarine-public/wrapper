@@ -32,7 +32,7 @@ export class Slider extends Base {
 	constructor(
 		parent: IMenu,
 		name: string,
-		defaultValue = 0,
+		public readonly defaultValue = 0,
 		public min = 0,
 		public max = 100,
 		public precision = 0,

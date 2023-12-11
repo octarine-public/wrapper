@@ -8,7 +8,6 @@ import { bounty_hunter_jinada } from "../../Objects/Abilities/BountyHunter/bount
 import { doom_bringer_devour } from "../../Objects/Abilities/DoomBringer/doom_bringer_devour"
 import { flagbearer_creep_aura_effect } from "../../Objects/Abilities/FlagbearerCreep/flagbearer_creep_aura_effect"
 import { Ability } from "../../Objects/Base/Ability"
-import { AetherRemnant } from "../../Objects/Base/AetherRemnant"
 import { Building } from "../../Objects/Base/Building"
 import { Courier } from "../../Objects/Base/Courier"
 import { Creep } from "../../Objects/Base/Creep"
@@ -359,7 +358,7 @@ const Monitor = new (class PlayerDataCustomChanged {
 			return
 		}
 
-		if (target instanceof AetherRemnant) {
+		if (target.Name === "npc_dota_aether_remnant") {
 			return
 		}
 

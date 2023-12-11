@@ -49,8 +49,8 @@ export const Paths = new (class BaseImageData {
 		icon_settings: `${this.Images}/control_icons/gear_png.vtex_c`,
 		check_png: `${this.Images}/control_icons/check_png.vtex_c`,
 		icon_brackets: `${this.Images}/control_icons/brackets_png.vtex_c`,
-		icon_roshan: `${this.reborn}/icon_roshan_psd.vtex_c`,
-		icon_glyph_small: `${this.reborn}/icon_glyph_small_psd.vtex_c`,
+		icon_roshan: `${this.hud}/icon_roshan_psd.vtex_c`,
+		icon_glyph_small: `${this.hud}/icon_glyph_small_psd.vtex_c`,
 		kill_mask: `${this.Images}/status_icons/modifier_kill_effect_psd.vtex_c`,
 		dead_icon: `${this.reborn}/dead_icon_psd.vtex_c`,
 		gold_large: `${this.reborn}/gold_large_png.vtex_c`,
@@ -88,6 +88,12 @@ export const Paths = new (class BaseImageData {
 		courier_dire: `${this.WrapperImages}/couriers/dire.png`,
 		courier_radiant: `${this.WrapperImages}/couriers/radiant.png`,
 		icon_levelup_button_3: `${this.reborn}/levelup_button_3_psd.vtex_c`,
+		icon_svg_creep: `${this.WrapperImages}/icons/creeps.svg`,
+		icon_svg_tower: `${this.WrapperImages}/icons/towers.svg`,
+		icon_svg_courier: `${this.WrapperImages}/icons/couriers.svg`,
+		icon_svg_lock: `${this.WrapperImages}/icons/lock.svg`,
+		icon_svg_roashan: `${this.WrapperImages}/icons/roashan.svg`,
+		icon_svg_weather_effects: `${this.WrapperImages}/icons/weather_effects.svg`,
 		icon_svg_health: `${this.WrapperImages}/icons/health.svg`,
 		icon_svg_level: `${this.WrapperImages}/icons/level.svg`,
 		icon_svg_charges: `${this.WrapperImages}/icons/charges.svg`,
@@ -96,6 +102,7 @@ export const Paths = new (class BaseImageData {
 		icon_svg_format_time: `${this.WrapperImages}/icons/format_time.svg`,
 		icon_svg_fow_time: `${this.WrapperImages}/icons/fow_time.svg`,
 		icon_svg_keyboard: `${this.WrapperImages}/icons/keyboard.svg`,
+		icon_svg_other: `${this.WrapperImages}/icons/other.svg`,
 		icon_close_cross_eye_hidden: `${this.WrapperImages}/icons/close-cross-eye-hidden.svg`
 	}
 })()
@@ -122,8 +129,8 @@ export function GetSpellTexture(name: string): string {
 	return getTexturePath(name)
 }
 
-export function GetTowerTexture(): string {
-	return Paths.Icons.tower_radiant
+export function GetTowerTexture(small?: boolean): string {
+	return small ? Paths.Icons.icon_svg_tower : Paths.Icons.tower_radiant
 }
 
 export function GetHeroTexture(name: string, small?: boolean): string {
@@ -134,7 +141,7 @@ export function GetHeroTexture(name: string, small?: boolean): string {
 
 export function GetCourierTexture(small?: boolean, team?: Team): string {
 	return small
-		? Paths.Icons.icon_courier
+		? Paths.Icons.icon_svg_courier
 		: team === Team.Dire
 		  ? Paths.Icons.courier_dire
 		  : Paths.Icons.courier_radiant
@@ -164,7 +171,7 @@ export function GetUnitTexture(
 		case unitName.includes("_courier"):
 			return GetCourierTexture(small, team)
 		case unitName.includes("badguys_tower") || unitName.includes("goodguys_tower"):
-			return GetTowerTexture()
+			return GetTowerTexture(small)
 		case unitName.includes("roshan"):
 			return Paths.Icons.roshan_halloween_angry
 		case unitName.includes("psionic_trap"):
