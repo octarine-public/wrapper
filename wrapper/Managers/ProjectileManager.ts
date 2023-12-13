@@ -158,7 +158,7 @@ EventsSDK.on("PostDataUpdate", () => {
 									? proj.Source.LastActivityAnimationPoint
 									: Infinity,
 								new Vector3()
-						  )
+							)
 						: undefined
 				if (attachmentPos !== undefined) {
 					proj.Position.AddForThis(attachmentPos)

@@ -144,19 +144,19 @@ export class AbilityData {
 			? parseEnumString(
 					DOTA_UNIT_TARGET_FLAGS,
 					kv.get("AbilityUnitTargetFlags") as string
-			  )
+				)
 			: DOTA_UNIT_TARGET_FLAGS.DOTA_UNIT_TARGET_FLAG_NONE
 		this.TargetTeam = kv.has("AbilityUnitTargetTeam")
 			? parseEnumString(
 					DOTA_UNIT_TARGET_TEAM,
 					kv.get("AbilityUnitTargetTeam") as string
-			  )
+				)
 			: DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_NONE
 		this.TargetType = kv.has("AbilityUnitTargetType")
 			? parseEnumString(
 					DOTA_UNIT_TARGET_TYPE,
 					kv.get("AbilityUnitTargetType") as string
-			  )
+				)
 			: DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_NONE
 		this.CastAnimation = kv.has("AbilityCastAnimation")
 			? parseEnumString(GameActivity, kv.get("AbilityCastAnimation") as string)
@@ -186,8 +186,8 @@ export class AbilityData {
 		this.RequiredLevel = kv.has("RequiredLevel")
 			? parseInt(kv.get("RequiredLevel") as string)
 			: this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE
-			  ? 6
-			  : 1
+				? 6
+				: 1
 		this.AbilityImmunityType = kv.has("SpellImmunityType")
 			? parseEnumString(SPELL_IMMUNITY_TYPES, kv.get("SpellImmunityType") as string)
 			: SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE
@@ -253,7 +253,7 @@ export class AbilityData {
 			? parseEnumString(
 					DOTA_ITEM_DISASSEMBLE,
 					kv.get("ItemDisassembleRule") as string
-			  )
+				)
 			: DOTA_ITEM_DISASSEMBLE.DOTA_ITEM_DISASSEMBLE_NONE
 	}
 
@@ -302,8 +302,8 @@ export class AbilityData {
 			typeof val === "string"
 				? this.GetSpecialValue(val, level)
 				: Array.isArray(val)
-				  ? val[Math.min(level, val.length) - 1]
-				  : val
+					? val[Math.min(level, val.length) - 1]
+					: val
 
 		switch (ar[3]) {
 			default:
@@ -523,8 +523,8 @@ export class AbilityData {
 				linkedSpecialBonusOperation = !isPercent
 					? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 					: talentChangeStr.startsWith("+")
-					  ? EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD
-					  : EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT
+						? EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD
+						: EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT
 				talentChange = isArray
 					? talentChangeStr
 							.split(" ")

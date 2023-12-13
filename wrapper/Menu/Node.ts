@@ -112,11 +112,13 @@ export class Node extends Base {
 		if (!this.SaveUnusedConfigs) {
 			this.configStorage = Object.create(null)
 		}
-		this.entries.forEach(entry => {
+		const entries = this.entries
+		for (let index = 0; index < entries.length; index++) {
+			const entry = entries[index]
 			if (entry.SaveConfig) {
 				this.configStorage[entry.InternalName] = entry.ConfigValue
 			}
-		})
+		}
 		return this.configStorage
 	}
 	public set ConfigValue(obj) {
@@ -126,11 +128,13 @@ export class Node extends Base {
 		if (this.SaveUnusedConfigs) {
 			this.configStorage = obj
 		}
-		this.entries.forEach(entry => {
+		const entries = this.entries
+		for (let index = 0; index < entries.length; index++) {
+			const entry = entries[index]
 			if (entry.SaveConfig) {
 				entry.ConfigValue = obj[entry.InternalName]
 			}
-		})
+		}
 	}
 	public get ClassPriority(): number {
 		return 7
@@ -185,11 +189,13 @@ export class Node extends Base {
 		)
 	}
 	public OnConfigLoaded() {
-		this.entries.forEach(entry => {
+		const entries = this.entries
+		for (let i = 0, end = entries.length; i < end; i++) {
+			const entry = entries[i]
 			if (entry.SaveConfig) {
 				entry.OnConfigLoaded()
 			}
-		})
+		}
 	}
 	public Update(recursive = false): boolean {
 		if (!super.Update(recursive)) {
@@ -309,7 +315,10 @@ export class Node extends Base {
 
 	public OnParentNotVisible(ignoreOpen = false): void {
 		if (ignoreOpen || this.IsOpen) {
-			this.entries.forEach(entry => entry.OnParentNotVisible())
+			const entries = this.entries
+			for (let i = 0, end = entries.length; i < end; i++) {
+				entries[i].OnParentNotVisible()
+			}
 		}
 	}
 
@@ -342,11 +351,13 @@ export class Node extends Base {
 		if (!ignoreMyself && this.IsHovered) {
 			this.IsOpen = !this.IsOpen
 			if (this.IsOpen) {
-				this.parent.entries.forEach(entry => {
+				const entries = this.parent.entries
+				for (let i = 0, end = entries.length; i < end; i++) {
+					const entry = entries[i]
 					if (entry instanceof Node && entry !== this) {
 						entry.IsOpen = false
 					}
-				})
+				}
 			} else {
 				this.OnParentNotVisible(true)
 			}

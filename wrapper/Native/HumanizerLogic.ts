@@ -687,7 +687,7 @@ function ProcessOrderQueue(currentTime: number) {
 							finishedSrc: false,
 							srcRng: Math.random(),
 							dstRng: Math.random()
-					  }
+						}
 					: undefined
 			break
 		case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM:
@@ -704,7 +704,7 @@ function ProcessOrderQueue(currentTime: number) {
 							finishedSrc: false,
 							srcRng: Math.random(),
 							dstRng: Math.random()
-					  }
+						}
 					: undefined
 			break
 		case dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM:
@@ -720,7 +720,7 @@ function ProcessOrderQueue(currentTime: number) {
 							finishedSrc: false,
 							srcRng: Math.random(),
 							dstRng: Math.random()
-					  }
+						}
 					: undefined
 			break
 		default:
@@ -870,13 +870,13 @@ function MoveCameraByScreen(
 			? Math.min(
 					0.9,
 					Math.max(0.1, 0.5 + Math.cos(lastcameraMoveSeed) ** 3 * 0.2 - 0.1)
-			  )
+				)
 			: cameraDirection.x,
 		cameraDirection.y === 0.5
 			? Math.min(
 					0.9,
 					Math.max(0.1, 0.5 + Math.sin(lastcameraMoveSeed) ** 3 * 0.2 - 0.1)
-			  )
+				)
 			: cameraDirection.y
 	)
 }
@@ -992,7 +992,7 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 			ExecuteOrder.HoldOrdersTarget instanceof Vector3
 				? ExecuteOrder.HoldOrdersTarget.Clone().SetZ(
 						WASM.GetPositionHeight(ExecuteOrder.HoldOrdersTarget)
-				  )
+					)
 				: ExecuteOrder.HoldOrdersTarget
 	}
 	if (
@@ -1282,7 +1282,7 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 			? lastOrderTarget
 			: intersectedUnits.orderByFirst(ent =>
 					latestUsercmd.VectorUnderCursor.DistanceSqr(ent.VisualPosition)
-			  )
+				)
 
 	// console.log(latestUsercmd.WeaponSelect, latestUsercmd.WeaponSubType)
 	latestUsercmd.Write()

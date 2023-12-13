@@ -124,7 +124,7 @@ export const GUIInfo = new (class CGUIInfo {
 							!abil.AbilityBehavior.includes(
 								DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_HIDDEN
 							)
-				  ).length
+					).length
 				: 4
 		const isHero = unit?.IsHero ?? false
 		let heroMap = this.LowerHUD_.get(isHero)

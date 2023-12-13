@@ -101,14 +101,20 @@ export class ImageSelector extends Base {
 		if (!super.Update()) {
 			return false
 		}
-		this.values.forEach(value => {
-			if (!this.enabledValues.has(value)) {
-				this.enabledValues.set(value, this.createdDefaultState)
+
+		const values = this.values
+		for (let index = values.length - 1; index > -1; index--) {
+			const path = values[index]
+			if (!this.enabledValues.has(path)) {
+				this.enabledValues.set(path, this.createdDefaultState)
 			}
-		})
+		}
+
 		this.imageSize.x = this.imageSize.y = ImageSelector.baseImageHeight
 		this.renderedPaths = []
-		for (let path of this.values) {
+
+		for (let index = values.length - 1; index > -1; index--) {
+			let path = values[index]
 			if (path.startsWith("rune_")) {
 				path = `panorama/images/spellicons/${path}_png.vtex_c`
 			} else if (path.startsWith("item_bottle_")) {
