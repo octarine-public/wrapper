@@ -769,6 +769,7 @@ export { seasonal_decorate_tree } from "./Objects/Abilities/Seasonal/seasonal_de
 export { seasonal_diretide2020_high_five } from "./Objects/Abilities/Seasonal/seasonal_diretide2020_high_five"
 export { seasonal_festive_firework } from "./Objects/Abilities/Seasonal/seasonal_festive_firework"
 export { seasonal_firecrackers } from "./Objects/Abilities/Seasonal/seasonal_firecrackers"
+export { seasonal_party_hat } from "./Objects/Abilities/Seasonal/seasonal_party_hat"
 export { seasonal_summon_cny_balloon } from "./Objects/Abilities/Seasonal/seasonal_summon_cny_balloon"
 export { seasonal_summon_cny_tree } from "./Objects/Abilities/Seasonal/seasonal_summon_cny_tree"
 export { seasonal_summon_dragon } from "./Objects/Abilities/Seasonal/seasonal_summon_dragon"
