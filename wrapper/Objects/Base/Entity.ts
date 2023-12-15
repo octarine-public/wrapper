@@ -316,18 +316,16 @@ export class Entity {
 	}
 	public Closest(ents: Entity[]): Entity {
 		const thisPos = this.Position
-
 		let entity: Nullable<Entity>
 		let distance = Number.POSITIVE_INFINITY
-
-		ents.forEach(ent => {
+		for (let i = 0, end = ents.length; i < end; i++) {
+			const ent = ents[i]
 			const tempDist = ent.Distance(thisPos)
 			if (tempDist < distance) {
 				distance = tempDist
 				entity = ent
 			}
-		})
-
+		}
 		return entity as Entity
 	}
 	/**
@@ -343,17 +341,16 @@ export class Entity {
 		let entities: Entity[] = []
 		let vec = new Vector3()
 		let distance = Number.POSITIVE_INFINITY
-
-		groups.forEach(group => {
+		for (let i = 0, end = groups.length; i < end; i++) {
+			const group = groups[i]
 			const tempVec = callback(group)
 			const tempDist = thisPos.Distance(tempVec)
-
 			if (tempDist < distance) {
 				distance = tempDist
 				entities = group
 				vec = tempVec
 			}
-		})
+		}
 		return [entities, vec]
 	}
 	/**

@@ -143,8 +143,8 @@ export function GetCourierTexture(small?: boolean, team?: Team): string {
 	return small
 		? Paths.Icons.icon_svg_courier
 		: team === Team.Dire
-		  ? Paths.Icons.courier_dire
-		  : Paths.Icons.courier_radiant
+			? Paths.Icons.courier_dire
+			: Paths.Icons.courier_radiant
 }
 
 export function GetRuneTexture(name: string, small?: boolean): string {

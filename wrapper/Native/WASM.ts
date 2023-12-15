@@ -122,11 +122,10 @@ export function ScreenToWorldFar(
 	IOBuffer[8] = cameraDistance
 	IOBuffer[9] = fov
 	IOBuffer[10] = screens.length
-
-	screens.forEach((screen, i) => {
-		screen.toIOBuffer(11 + i * 2)
-	})
-
+	for (let index = 0; index < screens.length; index++) {
+		const screen = screens[index]
+		screen.toIOBuffer(11 + index * 2)
+	}
 	WorldUtils.ScreenToWorldFar()
 	return screens.map((_, i) => Vector3.fromIOBuffer(i * 3))
 }
@@ -221,16 +220,15 @@ export function BatchCheckRayBox(
 	startPos.toIOBuffer()
 	ray.toIOBuffer(3)
 	IOBuffer[6] = hitboxes.length
-
-	hitboxes.forEach((hitbox, i) => {
+	for (let i = 0, end = hitboxes.length; i < end; i++) {
+		const hitbox = hitboxes[i]
 		IOBuffer[7 + i * 3 * 2 + 0] = hitbox.Base.x + hitbox.MinOffset.x
 		IOBuffer[7 + i * 3 * 2 + 1] = hitbox.Base.y + hitbox.MinOffset.y
 		IOBuffer[7 + i * 3 * 2 + 2] = hitbox.Base.z + hitbox.MinOffset.z + hitbox.DeltaZ
 		IOBuffer[7 + i * 3 * 2 + 3] = hitbox.Base.x + hitbox.MaxOffset.x
 		IOBuffer[7 + i * 3 * 2 + 4] = hitbox.Base.y + hitbox.MaxOffset.y
 		IOBuffer[7 + i * 3 * 2 + 5] = hitbox.Base.z + hitbox.MaxOffset.z + hitbox.DeltaZ
-	})
-
+	}
 	WorldUtils.BatchCheckRayBox()
 	return hitboxes.map((_, i) => IOBufferView.getUint8(i) !== 0)
 }
