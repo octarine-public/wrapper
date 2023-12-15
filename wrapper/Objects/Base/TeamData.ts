@@ -12,7 +12,6 @@ import { Tree, Trees } from "./Tree"
 @WrapperClass("CDOTA_DataNonSpectator")
 export class TeamData extends Entity {
 	public DataTeam: DataTeamPlayer[] = []
-	public NeutralItemsEarned: number[] = []
 	public WorldTreeModelReplacements: TreeModelReplacement[] = []
 	@NetworkedBasicField("m_vDesiredWardPlacement")
 	public DesiredWardPlacement: Vector2[] = []
@@ -51,15 +50,10 @@ export class TeamData extends Entity {
 			SuggestedLaneWeights: this.SuggestedLaneWeights,
 			SuggestedLaneRoam: this.SuggestedLaneRoam,
 			SuggestedLaneJungle: this.SuggestedLaneJungle,
-			NeutralItemsEarned: this.NeutralItemsEarned,
 			NeutralItemsConsumed: this.NeutralItemsConsumed
 		}
 	}
 }
-
-RegisterFieldHandler(TeamData, "m_vecNeutralItemsEarned", (data, newVal) => {
-	data.NeutralItemsEarned = (newVal as bigint[]).map(bigintId => Number(bigintId >> 1n))
-})
 
 RegisterFieldHandler(TeamData, "m_vecDataTeam", (data, newVal) => {
 	data.DataTeam = (newVal as EntityPropertiesNode[]).map(map => new DataTeamPlayer(map))
