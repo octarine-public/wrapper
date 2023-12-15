@@ -21239,49 +21239,6 @@ declare class CDOTA_Ability_Holdout_GladiatorsUnite {
 	m_nMaxLevelOverride: number
 }
 
-declare class CDOTA_Ability_Holdout_Omnislash {
-	m_iLevel: number
-	m_bInAbilityPhase: boolean
-	m_fCooldown: number
-	m_iManaCost: number
-	m_bAutoCastState: boolean
-	m_bAltCastState: boolean
-	m_fAbilityChargeRestoreTimeRemaining: number
-	CBodyComponent: CBodyComponentPoint2
-	m_pEntity: CEntityIdentity
-	m_takedamage: DamageOptions_t
-	m_MoveCollide: MoveCollide_t
-	m_MoveType: MoveType_t
-	m_nSubclassID: CUtlStringToken
-	m_ubInterpolationFrame: number
-	m_iTeamNum: number
-	m_hEffectEntity: CEntityIndex<CBaseEntity>
-	m_fEffects: number
-	m_flElasticity: number
-	m_bSimulatedEveryTick: boolean
-	m_bAnimatedEveryTick: boolean
-	m_flNavIgnoreUntilTime: number
-	m_bRefCountsModifiers: boolean
-	m_bHidden: boolean
-	m_bActivated: boolean
-	m_nAbilityBarType: AbilityBarType_t
-	m_iDirtyButtons: number
-	m_bToggleState: boolean
-	m_flAbilityMuteDuration: number
-	m_flCooldownLength: number
-	m_flChannelStartTime: number
-	m_flCastStartTime: number
-	m_bInIndefiniteCooldown: boolean
-	m_bFrozenCooldown: boolean
-	m_flOverrideCastPoint: number
-	m_bStolen: boolean
-	m_bReplicated: boolean
-	m_bStealable: boolean
-	m_nAbilityCurrentCharges: number
-	m_bUpgradeRecommended: boolean
-	m_nMaxLevelOverride: number
-}
-
 declare class CDOTA_Ability_Hoodwink_AcornShot {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
@@ -32527,6 +32484,49 @@ declare class CDOTA_Ability_Riki_TricksOfTheTrade {
 	m_nMaxLevelOverride: number
 }
 
+declare class CDOTA_Ability_Roshan_RevengeRoar {
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_bAltCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flAbilityMuteDuration: number
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_nMaxLevelOverride: number
+}
+
 declare class CDOTA_Ability_Roshan_Teleport {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
@@ -33219,6 +33219,49 @@ declare class CDOTA_Ability_Seasonal_Festive_Firework {
 }
 
 declare class CDOTA_Ability_Seasonal_Firecrackers {
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_bAltCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flAbilityMuteDuration: number
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_nMaxLevelOverride: number
+}
+
+declare class CDOTA_Ability_Seasonal_PartyHat {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
 	m_fCooldown: number
@@ -53409,6 +53452,12 @@ declare class PingConfirmationState_t {
 	m_nAgreeState: number[]
 }
 
+declare class CDOTATeleportInfo_t {
+	m_flTime: number
+	m_vPosition: Vector2
+	m_bIsOutpost: boolean
+}
+
 declare class CDOTA_DataCustomTeam {
 	m_iTeamNum: number
 	m_vecDataTeam: DataTeamPlayer_t
@@ -53424,13 +53473,13 @@ declare class CDOTA_DataCustomTeam {
 	m_bSuggestedLaneRoam: boolean[]
 	m_bSuggestedLaneJungle: boolean[]
 	m_vecNeutralItemsTierInfo: TierNeutralInfo_t
-	m_vecNeutralItemsEarned: AbilityID_t[]
 	m_vecNeutralStashItems: CEntityIndex<CBaseEntity>[]
 	m_vecNeutralItemsConsumed: AbilityID_t[]
 	m_PingConfirmationStates: PingConfirmationState_t
 	m_vecKnownClearCamps: CEntityIndex<CBaseEntity>[]
 	m_vPossibleWardPlacement: Vector2[]
 	m_vPossibleWardRadii: number[]
+	m_vecTrackedTeleports: CDOTATeleportInfo_t
 }
 
 declare class CDOTA_DataDire {
@@ -53448,13 +53497,13 @@ declare class CDOTA_DataDire {
 	m_bSuggestedLaneRoam: boolean[]
 	m_bSuggestedLaneJungle: boolean[]
 	m_vecNeutralItemsTierInfo: TierNeutralInfo_t
-	m_vecNeutralItemsEarned: AbilityID_t[]
 	m_vecNeutralStashItems: CEntityIndex<CBaseEntity>[]
 	m_vecNeutralItemsConsumed: AbilityID_t[]
 	m_PingConfirmationStates: PingConfirmationState_t
 	m_vecKnownClearCamps: CEntityIndex<CBaseEntity>[]
 	m_vPossibleWardPlacement: Vector2[]
 	m_vPossibleWardRadii: number[]
+	m_vecTrackedTeleports: CDOTATeleportInfo_t
 }
 
 declare class CDOTA_DataNonSpectator {
@@ -53472,13 +53521,13 @@ declare class CDOTA_DataNonSpectator {
 	m_bSuggestedLaneRoam: boolean[]
 	m_bSuggestedLaneJungle: boolean[]
 	m_vecNeutralItemsTierInfo: TierNeutralInfo_t
-	m_vecNeutralItemsEarned: AbilityID_t[]
 	m_vecNeutralStashItems: CEntityIndex<CBaseEntity>[]
 	m_vecNeutralItemsConsumed: AbilityID_t[]
 	m_PingConfirmationStates: PingConfirmationState_t
 	m_vecKnownClearCamps: CEntityIndex<CBaseEntity>[]
 	m_vPossibleWardPlacement: Vector2[]
 	m_vPossibleWardRadii: number[]
+	m_vecTrackedTeleports: CDOTATeleportInfo_t
 }
 
 declare class CDOTA_DataRadiant {
@@ -53496,13 +53545,13 @@ declare class CDOTA_DataRadiant {
 	m_bSuggestedLaneRoam: boolean[]
 	m_bSuggestedLaneJungle: boolean[]
 	m_vecNeutralItemsTierInfo: TierNeutralInfo_t
-	m_vecNeutralItemsEarned: AbilityID_t[]
 	m_vecNeutralStashItems: CEntityIndex<CBaseEntity>[]
 	m_vecNeutralItemsConsumed: AbilityID_t[]
 	m_PingConfirmationStates: PingConfirmationState_t
 	m_vecKnownClearCamps: CEntityIndex<CBaseEntity>[]
 	m_vPossibleWardPlacement: Vector2[]
 	m_vPossibleWardRadii: number[]
+	m_vecTrackedTeleports: CDOTATeleportInfo_t
 }
 
 declare class CDOTAThreatLevelInfo_t {
@@ -53525,13 +53574,13 @@ declare class CDOTA_DataSpectator {
 	m_bSuggestedLaneRoam: boolean[]
 	m_bSuggestedLaneJungle: boolean[]
 	m_vecNeutralItemsTierInfo: TierNeutralInfo_t
-	m_vecNeutralItemsEarned: AbilityID_t[]
 	m_vecNeutralStashItems: CEntityIndex<CBaseEntity>[]
 	m_vecNeutralItemsConsumed: AbilityID_t[]
 	m_PingConfirmationStates: PingConfirmationState_t
 	m_vecKnownClearCamps: CEntityIndex<CBaseEntity>[]
 	m_vPossibleWardPlacement: Vector2[]
 	m_vPossibleWardRadii: number[]
+	m_vecTrackedTeleports: CDOTATeleportInfo_t
 	m_hPowerupRune_1: CEntityIndex<CBaseEntity>
 	m_hPowerupRune_2: CEntityIndex<CBaseEntity>
 	m_hBountyRune_1: CEntityIndex<CBaseEntity>
@@ -53918,7 +53967,7 @@ declare class CDOTA_Item_Aether_Lens {
 	m_bPurchasedWhileDead: boolean
 }
 
-declare class CDOTA_Item_Aetherial_Halo {
+declare class CDOTA_Item_AetherialHalo {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
 	m_fCooldown: number
@@ -54344,6 +54393,91 @@ declare class CDOTA_Item_Ancient_Janggo {
 }
 
 declare class CDOTA_Item_Ancient_Perseverance {
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_bAltCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flAbilityMuteDuration: number
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_nMaxLevelOverride: number
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bRecipeConsumesCharges: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_flReclaimTime: number
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_bIsUpgradeable: boolean
+	m_nUpgradeProgress: number
+	m_nUpgradeGoal: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: PlayerID_t
+	m_bPurchasedWhileDead: boolean
+}
+
+declare class CDOTA_Item_Angels_Demise {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
 	m_fCooldown: number
@@ -54854,6 +54988,91 @@ declare class CDOTA_Item_Arcane_Scout {
 }
 
 declare class CDOTA_Item_Armlet {
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_bAltCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flAbilityMuteDuration: number
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_nMaxLevelOverride: number
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bRecipeConsumesCharges: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_flReclaimTime: number
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_bIsUpgradeable: boolean
+	m_nUpgradeProgress: number
+	m_nUpgradeGoal: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: PlayerID_t
+	m_bPurchasedWhileDead: boolean
+}
+
+declare class CDOTA_Item_Avianas_Feather {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
 	m_fCooldown: number
@@ -56879,6 +57098,91 @@ declare class CDOTA_Item_Demonicon {
 	m_bPurchasedWhileDead: boolean
 }
 
+declare class CDOTA_Item_Devastator {
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_bAltCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flAbilityMuteDuration: number
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_nMaxLevelOverride: number
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bRecipeConsumesCharges: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_flReclaimTime: number
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_bIsUpgradeable: boolean
+	m_nUpgradeProgress: number
+	m_nUpgradeGoal: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: PlayerID_t
+	m_bPurchasedWhileDead: boolean
+}
+
 declare class CDOTA_Item_Diffusal_Blade {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
@@ -57135,6 +57439,91 @@ declare class CDOTA_Item_Dimensional_Doorway {
 }
 
 declare class CDOTA_Item_Disperser {
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_bAltCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flAbilityMuteDuration: number
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_nMaxLevelOverride: number
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bRecipeConsumesCharges: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_flReclaimTime: number
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_bIsUpgradeable: boolean
+	m_nUpgradeProgress: number
+	m_nUpgradeGoal: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: PlayerID_t
+	m_bPurchasedWhileDead: boolean
+}
+
+declare class CDOTA_Item_Doubloon {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
 	m_fCooldown: number
@@ -59431,91 +59820,6 @@ declare class CDOTA_Item_Gungir {
 	m_bPurchasedWhileDead: boolean
 }
 
-declare class CDOTA_Item_Halo {
-	m_iLevel: number
-	m_bInAbilityPhase: boolean
-	m_fCooldown: number
-	m_iManaCost: number
-	m_bAutoCastState: boolean
-	m_bAltCastState: boolean
-	m_fAbilityChargeRestoreTimeRemaining: number
-	m_bPermanent: boolean
-	m_bStackable: boolean
-	m_iStackableMax: number
-	m_iSharability: number
-	m_iInitialCharges: number
-	m_flEnableTime: number
-	m_flPurchaseTime: number
-	m_iCurrentCharges: number
-	CBodyComponent: CBodyComponentPoint2
-	m_pEntity: CEntityIdentity
-	m_takedamage: DamageOptions_t
-	m_MoveCollide: MoveCollide_t
-	m_MoveType: MoveType_t
-	m_nSubclassID: CUtlStringToken
-	m_ubInterpolationFrame: number
-	m_iTeamNum: number
-	m_hEffectEntity: CEntityIndex<CBaseEntity>
-	m_fEffects: number
-	m_flElasticity: number
-	m_bSimulatedEveryTick: boolean
-	m_bAnimatedEveryTick: boolean
-	m_flNavIgnoreUntilTime: number
-	m_bRefCountsModifiers: boolean
-	m_bHidden: boolean
-	m_bActivated: boolean
-	m_nAbilityBarType: AbilityBarType_t
-	m_iDirtyButtons: number
-	m_bToggleState: boolean
-	m_flAbilityMuteDuration: number
-	m_flCooldownLength: number
-	m_flChannelStartTime: number
-	m_flCastStartTime: number
-	m_bInIndefiniteCooldown: boolean
-	m_bFrozenCooldown: boolean
-	m_flOverrideCastPoint: number
-	m_bStolen: boolean
-	m_bReplicated: boolean
-	m_bStealable: boolean
-	m_nAbilityCurrentCharges: number
-	m_bUpgradeRecommended: boolean
-	m_nMaxLevelOverride: number
-	m_bCombinable: boolean
-	m_bRecipe: boolean
-	m_bRecipeConsumesCharges: boolean
-	m_bDroppable: boolean
-	m_bPurchasable: boolean
-	m_bSellable: boolean
-	m_bInitiallySellable: boolean
-	m_bForceUnsellable: boolean
-	m_bRequiresCharges: boolean
-	m_bKillable: boolean
-	m_bGloballyCombinable: boolean
-	m_bDisassemblable: boolean
-	m_bIsNeutralDrop: boolean
-	m_nNeutralDropTeam: number
-	m_bAlertable: boolean
-	m_bCastOnPickup: boolean
-	m_bOnlyPlayerHeroPickup: boolean
-	m_bCreepHeroPickup: boolean
-	m_bCanBeUsedOutOfInventory: boolean
-	m_bItemEnabled: boolean
-	m_flReclaimTime: number
-	m_bDisplayOwnership: boolean
-	m_bShowOnMinimap: boolean
-	m_flMinimapIconSize: number
-	m_bIsUpgradeable: boolean
-	m_nUpgradeProgress: number
-	m_nUpgradeGoal: number
-	m_vecPreGameTransferPlayerIDs: number[]
-	m_flAssembledTime: number
-	m_iValuelessCharges: number
-	m_iSecondaryCharges: number
-	m_bCombineLocked: boolean
-	m_iPlayerOwnerID: PlayerID_t
-	m_bPurchasedWhileDead: boolean
-}
-
 declare class CDOTA_Item_HandOfMidas {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
@@ -60452,6 +60756,91 @@ declare class CDOTA_Item_Iron_Talon {
 }
 
 declare class CDOTA_Item_Keen_Optic {
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_bAltCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flAbilityMuteDuration: number
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_nMaxLevelOverride: number
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bRecipeConsumesCharges: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_flReclaimTime: number
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_bIsUpgradeable: boolean
+	m_nUpgradeProgress: number
+	m_nUpgradeGoal: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: PlayerID_t
+	m_bPurchasedWhileDead: boolean
+}
+
+declare class CDOTA_Item_Light_Collector {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
 	m_fCooldown: number
@@ -62067,6 +62456,91 @@ declare class CDOTA_Item_Necronomicon_Level2 {
 }
 
 declare class CDOTA_Item_Necronomicon_Level3 {
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_bAltCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flAbilityMuteDuration: number
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_nMaxLevelOverride: number
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bRecipeConsumesCharges: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_flReclaimTime: number
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_bIsUpgradeable: boolean
+	m_nUpgradeProgress: number
+	m_nUpgradeGoal: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: PlayerID_t
+	m_bPurchasedWhileDead: boolean
+}
+
+declare class CDOTA_Item_Nemesis_Curse {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
 	m_fCooldown: number
@@ -65541,6 +66015,91 @@ declare class CDOTA_Item_RingOfAquila {
 	m_bPurchasedWhileDead: boolean
 }
 
+declare class CDOTA_Item_Roshans_Banner {
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_bAltCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flAbilityMuteDuration: number
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_nMaxLevelOverride: number
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bRecipeConsumesCharges: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_flReclaimTime: number
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_bIsUpgradeable: boolean
+	m_nUpgradeProgress: number
+	m_nUpgradeGoal: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: PlayerID_t
+	m_bPurchasedWhileDead: boolean
+}
+
 declare class CDOTA_Item_Royal_jelly {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
@@ -65995,6 +66554,91 @@ declare class CDOTA_Item_RuneSpawner_XP {
 	m_flNextSpawnTime: number
 	m_bvDisabledHitGroups: number[]
 	CRenderComponent: CRenderComponent
+}
+
+declare class CDOTA_Item_Safety_Bubble {
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_bAltCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flAbilityMuteDuration: number
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_nMaxLevelOverride: number
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bRecipeConsumesCharges: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_flReclaimTime: number
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_bIsUpgradeable: boolean
+	m_nUpgradeProgress: number
+	m_nUpgradeGoal: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: PlayerID_t
+	m_bPurchasedWhileDead: boolean
 }
 
 declare class CDOTA_Item_Samurai_Tabi {
@@ -67614,6 +68258,91 @@ declare class CDOTA_Item_Tango_Single {
 }
 
 declare class CDOTA_Item_TeleportScroll {
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_bAltCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flAbilityMuteDuration: number
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_nMaxLevelOverride: number
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bRecipeConsumesCharges: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_flReclaimTime: number
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_bIsUpgradeable: boolean
+	m_nUpgradeProgress: number
+	m_nUpgradeGoal: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: PlayerID_t
+	m_bPurchasedWhileDead: boolean
+}
+
+declare class CDOTA_Item_Terror_Mask {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
 	m_fCooldown: number
@@ -69319,6 +70048,91 @@ declare class CDOTA_Item_UltimateScepter_Roshan {
 	m_bPurchasedWhileDead: boolean
 }
 
+declare class CDOTA_Item_Unwavering_Condition {
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_bAltCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flAbilityMuteDuration: number
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_nMaxLevelOverride: number
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bRecipeConsumesCharges: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_flReclaimTime: number
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_bIsUpgradeable: boolean
+	m_nUpgradeProgress: number
+	m_nUpgradeGoal: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: PlayerID_t
+	m_bPurchasedWhileDead: boolean
+}
+
 declare class CDOTA_Item_Urn_Of_Shadows {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
@@ -70255,6 +71069,91 @@ declare class CDOTA_Item_Warhammer {
 	m_bPurchasedWhileDead: boolean
 }
 
+declare class CDOTA_Item_Whisper_Of_The_Dread {
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_bAltCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flAbilityMuteDuration: number
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_nMaxLevelOverride: number
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bRecipeConsumesCharges: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_flReclaimTime: number
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_bIsUpgradeable: boolean
+	m_nUpgradeProgress: number
+	m_nUpgradeGoal: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: PlayerID_t
+	m_bPurchasedWhileDead: boolean
+}
+
 declare class CDOTA_Item_Wind_Waker {
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
@@ -70870,6 +71769,7 @@ declare class CDOTA_MinibossSpawner {
 	m_bSimulatedEveryTick: boolean
 	m_bAnimatedEveryTick: boolean
 	m_flNavIgnoreUntilTime: number
+	m_bIsRadiantMiniboss: boolean
 }
 
 declare class CDOTA_Muerta_Revenant {
@@ -73311,6 +74211,7 @@ declare class CDOTA_RoshanSpawner {
 	m_bSimulatedEveryTick: boolean
 	m_bAnimatedEveryTick: boolean
 	m_flNavIgnoreUntilTime: number
+	m_iLastKillerTeam: number
 	m_iKillCount: number
 	m_vRoshanAltLocation: Vector3
 }
@@ -99062,6 +99963,155 @@ declare class CDOTA_Unit_Roshan {
 	m_hGoalEntity: CEntityIndex<CBaseEntity>
 }
 
+declare class CDOTA_Unit_Roshans_Banner {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iCurrentLevel: number
+	m_nTotalDamageTaken: bigint
+	m_iAttackCapabilities: number
+	m_iSpecialAbility: number
+	m_iTaggedAsVisibleByTeam: number
+	m_anglediff: number
+	m_NetworkActivity: number
+	m_NetworkSequenceIndex: number
+	m_hAbilities: CEntityIndex<CBaseEntity>[]
+	m_iHealth: number
+	m_lifeState: number
+	m_fFlags: number
+	CBodyComponent: CBodyComponentBaseAnimatingOverlay1
+	m_pEntity: CEntityIdentity
+	m_iMaxHealth: number
+	m_takedamage: DamageOptions_t
+	m_bTakesDamage: boolean
+	m_nTakeDamageFlags: TakeDamageFlags_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_nRenderMode: RenderMode_t
+	m_nRenderFX: RenderFx_t
+	m_clrRender: Color
+	m_vecRenderAttributes: EntityRenderAttribute_t
+	m_LightGroup: CUtlStringToken
+	m_bRenderToCubemaps: boolean
+	m_nInteractsAs: bigint
+	m_nInteractsWith: bigint
+	m_nInteractsExclude: bigint
+	m_nEntityId: number
+	m_nOwnerId: number
+	m_nHierarchyId: number
+	m_nCollisionGroup: number
+	m_nCollisionFunctionMask: number
+	m_usSolidFlags: number
+	m_nSolidType: SolidType_t
+	m_triggerBloat: number
+	m_nSurroundType: SurroundingBoundsType_t
+	m_CollisionGroup: number
+	m_nEnablePhysics: number
+	m_vCapsuleCenter1: Vector3
+	m_vCapsuleCenter2: Vector3
+	m_flCapsuleRadius: number
+	m_iGlowType: number
+	m_iGlowTeam: number
+	m_nGlowRange: number
+	m_nGlowRangeMin: number
+	m_glowColorOverride: Color
+	m_bFlashing: boolean
+	m_flGlowTime: number
+	m_flGlowStartTime: number
+	m_flGlowBackfaceMult: number
+	m_fadeMinDist: number
+	m_fadeMaxDist: number
+	m_flFadeScale: number
+	m_flShadowStrength: number
+	m_nObjectCulling: number
+	m_nAddDecal: number
+	m_vDecalPosition: Vector3
+	m_vDecalForwardAxis: Vector3
+	m_flDecalHealBloodRate: number
+	m_flDecalHealHeightRate: number
+	m_ConfigEntitiesToPropagateMaterialDecalsTo: CEntityIndex<CBaseModelEntity>[]
+	m_bShouldAnimateDuringGameplayPause: boolean
+	m_bInitiallyPopulateInterpHistory: boolean
+	m_hMyWearables: CEntityIndex<CEconWearable>[]
+	m_flFieldOfView: number
+	m_nLod: number
+	m_bSelectionRingVisible: boolean
+	m_flMana: number
+	m_flMaxMana: number
+	m_flManaThinkRegen: number
+	m_flHealthThinkRegen: number
+	m_nHealthBarOffsetOverride: number
+	m_bIsPhantom: boolean
+	m_bIsAncient: boolean
+	m_bIsBossCreature: boolean
+	m_bIsNeutralUnitType: boolean
+	m_bIsSummoned: boolean
+	m_bCanBeDominated: boolean
+	m_bCanRespawn: boolean
+	m_bHasUpgradeableAbilities: boolean
+	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
+	m_flRefresherUseTime: number
+	m_flRefresherLastCooldown: number
+	m_flLastDealtDamageTime: number
+	m_iBotDebugData: number
+	m_bIsMoving: boolean
+	m_bCanUseWards: boolean
+	m_bCanUseAllItems: boolean
+	m_hNeutralSpawner: CEntityIndex<CDOTA_NeutralSpawner>
+	m_flManaRegen: number
+	m_flHealthRegen: number
+	m_iMoveSpeed: number
+	m_flTauntCooldown: number
+	m_flTauntCooldown2: number
+	m_fRevealRadius: number
+	m_iDayTimeVisionRange: number
+	m_iNightTimeVisionRange: number
+	m_flPhysicalArmorValue: number
+	m_flMagicalResistanceValue: number
+	m_iXPBounty: number
+	m_iXPBountyExtra: number
+	m_iGoldBountyMin: number
+	m_iGoldBountyMax: number
+	m_nPlayerOwnerID: PlayerID_t
+	m_flLastDamageTime: number
+	m_flLastAttackTime: number
+	m_nUnitState64: bigint
+	m_nUnitModelVariant: number
+	m_iIsControllableByPlayer64: bigint
+	m_iUnitNameIndex: number
+	m_iDamageMin: number
+	m_iDamageMax: number
+	m_iDamageBonus: number
+	m_bIsWaitingToSpawn: boolean
+	m_nUnitLabelIndex: number
+	m_szScaleset: string
+	m_szUnitLabel: string
+	m_hOwnerNPC: CEntityIndex<CBaseEntity>
+	m_hItems: CEntityIndex<CBaseEntity>[]
+	m_iParity: number
+	m_bStashEnabled: boolean
+	m_hTransientCastItem: CEntityIndex<CBaseEntity>
+	m_iCurShop: CDOTA_SHOP_TYPE
+	m_szCurShopEntName: string
+	m_bStolenScepter: boolean
+	m_bShouldDoFlyHeightVisual: boolean
+	m_flStartSequenceCycle: number
+	m_CustomHealthLabel: string
+	m_CustomHealthLabelColor: Color
+	m_bvDisabledHitGroups: number[]
+	CRenderComponent: CRenderComponent
+	m_hGoalEntity: CEntityIndex<CBaseEntity>
+}
+
 declare class CDOTA_Unit_Scout {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iCurrentLevel: number
@@ -101405,6 +102455,7 @@ declare class CDOTAGameRules {
 	m_BotDebugPushLane: number[]
 	m_nTotalPausedTicks: number
 	m_nPauseStartTick: number
+	m_nRuneCycle: number
 	m_bGamePaused: boolean
 	m_iMiscHeroPickCounter: number
 	m_hEndGameCinematicEntity: CEntityIndex<CBaseEntity>
@@ -104746,6 +105797,53 @@ declare class CIngameEvent_FV2018 {
 }
 
 declare class CIngameEvent_FV2019 {
+	m_flAnimTime: number
+	m_flSimulationTime: number
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	CBodyComponent: CBodyComponentPoint
+	m_pEntity: CEntityIdentity
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_CompendiumChallengeEventID: number[]
+	m_CompendiumChallengeSequenceID: number[]
+	m_CompendiumChallengeCoinReward: number[]
+	m_CompendiumChallengeCoinSplash: number[]
+	m_CompendiumChallengePointReward: number[]
+	m_CompendiumChallengeCompleted: boolean[]
+	m_CompendiumChallengeFailed: boolean[]
+	m_CompendiumChallengeProgress: number[]
+	m_QueryIDForProgress: number[]
+	m_SubChallenges: CDOTASubChallengeInfo
+	m_CompendiumCoinWager: number[]
+	m_CompendiumTokenWagerItemID: itemid_t[]
+	m_CompendiumWagerTokenBonusPct: number[]
+	m_CompendiumCoinWagerResults: number[]
+	m_CompendiumRankWagers: number[]
+	m_flWagerTimer: number
+	m_flWagerEndTime: number
+	m_CompendiumChallengeInfo: CDOTA_PlayerChallengeInfo
+	m_PlayerQueryIDs: CDOTA_CombatLogQueryProgress
+	m_ProgressForQueryID: number[]
+	m_GoalForQueryID: number[]
+	m_PlayerQuestRankPreviouslyCompleted: number[]
+	m_PlayerQuestRankCompleted: number[]
+	m_PlayerBountyTarget: PlayerID_t[]
+	m_flPlayerBountyTimestamp: number[]
+	m_PlayerBountyCount: number[]
+}
+
+declare class CIngameEvent_FV2023 {
 	m_flAnimTime: number
 	m_flSimulationTime: number
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
