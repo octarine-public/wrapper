@@ -60,7 +60,7 @@ class MinimapIconRenderer {
 		const size =
 			this.animationCycle !== 0
 				? this.minSizeAnimated +
-				  ((this.size - this.minSizeAnimated) *
+					((this.size - this.minSizeAnimated) *
 						(Math.sin(
 							(Math.PI * 2 * (hrtime() % this.animationCycle)) /
 								this.animationCycle
@@ -199,7 +199,10 @@ EventsSDK.on("Draw", () => {
 		}
 	})
 
-	iconsKeysToBeRemoved.forEach(key => minimapIconsActive.delete(key))
+	for (let i = 0, end = iconsKeysToBeRemoved.length; i < end; i++) {
+		const key = iconsKeysToBeRemoved[i]
+		minimapIconsActive.delete(key)
+	}
 })
 
 EventsSDK.on("GameEnded", () => minimapIconsActive.clear())

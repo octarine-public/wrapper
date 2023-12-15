@@ -153,7 +153,7 @@ export class UnitData {
 			? parseEnumString(
 					DOTAUnitMoveCapability,
 					kv.get("MovementCapabilities") as string
-			  )
+				)
 			: DOTAUnitMoveCapability.DOTA_UNIT_CAP_MOVE_GROUND
 		this.AttackDamageType = kv.has("CombatClassAttack")
 			? FixCombatClassAttack(
@@ -161,7 +161,7 @@ export class UnitData {
 						DOTA_COMBAT_CLASS_ATTACK,
 						kv.get("CombatClassAttack") as string
 					)
-			  )
+				)
 			: AttackDamageType.Basic
 		this.ArmorType = kv.has("CombatClassDefend")
 			? FixCombatClassDefend(
@@ -169,7 +169,7 @@ export class UnitData {
 						DOTA_COMBAT_CLASS_DEFEND,
 						kv.get("CombatClassDefend") as string
 					)
-			  )
+				)
 			: ArmorType.Basic
 		const boundsHull = kv.has("BoundsHullName")
 			? parseEnumString(DOTAHullSize, kv.get("BoundsHullName") as string)

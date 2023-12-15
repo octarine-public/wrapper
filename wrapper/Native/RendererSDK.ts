@@ -633,10 +633,12 @@ class CRendererSDK {
 			this.clearTextureCache = false
 		}
 
-		this.queuedFonts.forEach(([name, path, weight, italic, stack]) =>
+		const queuedFonts = this.queuedFonts
+		for (let index = 0; index < queuedFonts.length; index++) {
+			const [name, path, weight, italic, stack] = queuedFonts[index]
 			this.CreateFont(name, path, weight, italic, stack)
-		)
-		this.queuedFonts.clear()
+		}
+		queuedFonts.clear()
 	}
 	public EmitDraw() {
 		Renderer.ExecuteCommandBuffer(

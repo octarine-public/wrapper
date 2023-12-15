@@ -52,7 +52,10 @@ class CMenuManager {
 		}
 		if (!val) {
 			this.OnMouseLeftUp()
-			this.entries.forEach(entry => entry.OnParentNotVisible())
+			const entries = this.entries
+			for (let i = 0, end = entries.length; i < end; i++) {
+				entries[i].OnParentNotVisible()
+			}
 		}
 		this.IsOpen_ = val
 	}
@@ -62,11 +65,13 @@ class CMenuManager {
 
 	public get ConfigValue() {
 		this.config = Object.create(null)
-		this.entries.forEach(entry => {
+		const entries = this.entries
+		for (let i = 0, end = entries.length; i < end; i++) {
+			const entry = entries[i]
 			if (entry.SaveConfig) {
 				this.config[entry.InternalName] = entry.ConfigValue
 			}
-		})
+		}
 		this.config.Header = this.header.ConfigValue
 		this.config.SelectedLocalization = Localization.SelectedUnitName
 		return this.config
@@ -392,16 +397,19 @@ class CMenuManager {
 	private ForwardConfig() {
 		while (Base.ForwardConfigASAP && this.config !== undefined) {
 			Base.ForwardConfigASAP = false
-			this.entries.forEach(entry => {
+			const entries = this.entries
+			for (let i = 0, end = entries.length; i < end; i++) {
+				const entry = entries[i]
 				if (entry.SaveConfig) {
 					entry.ConfigValue = this.config[entry.InternalName]
 				}
-			})
-			this.entries.forEach(entry => {
+			}
+			for (let i = 0, end = entries.length; i < end; i++) {
+				const entry = entries[i]
 				if (entry.SaveConfig) {
 					entry.OnConfigLoaded()
 				}
-			})
+			}
 		}
 	}
 }

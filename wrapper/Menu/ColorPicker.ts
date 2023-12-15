@@ -10,6 +10,11 @@ import { Base, IMenu } from "./Base"
 export class ColorPicker extends Base {
 	public static activeColorpicker: Nullable<ColorPicker>
 	public static OnWindowSizeChanged(): void {
+		ColorPicker.iconSize.x = GUIInfo.ScaleWidth(24)
+		ColorPicker.iconSize.y = GUIInfo.ScaleHeight(24)
+		ColorPicker.iconOffset.x = GUIInfo.ScaleWidth(12)
+		ColorPicker.iconOffset.y = GUIInfo.ScaleHeight(8)
+
 		ColorPicker.selectedColorSize.x = GUIInfo.ScaleWidth(
 			ColorPicker.origSelectedColorSize.x
 		)
@@ -60,6 +65,12 @@ export class ColorPicker extends Base {
 		ColorPicker.colorpickerTextYOffset = GUIInfo.ScaleHeight(10)
 		ColorPicker.colorpickerTextXSize = GUIInfo.ScaleWidth(43)
 		ColorPicker.colorpickerTextXGap = GUIInfo.ScaleWidth(3)
+
+		ColorPicker.textOffsetNode.x = GUIInfo.ScaleWidth(15)
+		ColorPicker.textOffsetNode.y = GUIInfo.ScaleHeight(13)
+
+		ColorPicker.textOffsetWithIcon.x = GUIInfo.ScaleWidth(48)
+		ColorPicker.textOffsetWithIcon.y = ColorPicker.textOffsetNode.y
 	}
 
 	private static readonly selectedColorPath = "menu/colorpicker_selected_color.svg"
@@ -103,7 +114,13 @@ export class ColorPicker extends Base {
 	private static readonly origColorpickerPickerRectSize = RendererSDK.GetImageSize(
 		ColorPicker.colorpickerPickerRectPath
 	)
+
+	private static readonly iconSize = new Vector2()
+	private static readonly iconOffset = new Vector2()
+	private static readonly textOffsetWithIcon = new Vector2()
+	private static readonly textOffsetNode = new Vector2(15, 14)
 	private static readonly colorpickerPickerRectSize = new Vector2()
+
 	private static colorpickerTextYOffset = 0
 	private static colorpickerTextXSize = 0
 	private static colorpickerTextXGap = 0
@@ -199,7 +216,16 @@ export class ColorPicker extends Base {
 	public Render(): void {
 		this.isActive = ColorPicker.activeColorpicker === this
 		super.Render()
-		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
+		const textPos = this.Position.Clone()
+		textPos.AddForThis(ColorPicker.textOffsetWithIcon)
+		RendererSDK.Image(
+			"menu/icons/color_picker_paint_palette.svg",
+			this.Position.Add(ColorPicker.iconOffset),
+			-1,
+			ColorPicker.iconSize,
+			Color.White
+		)
+		this.RenderTextDefault(this.Name, textPos)
 		const selectedColorRect = this.SelectedColorRect
 		RendererSDK.Image(
 			ColorPicker.selectedColorTransparencyPath,

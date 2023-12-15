@@ -213,7 +213,7 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 		return String.fromCharCode(
 			nPart > 251 && nPart < 254 && size >= 5 /* six bytes */
 				? /* (nPart - 252 << 30) may be not so safe in ECMAScript! So...: */
-				  (nPart - 252) * 1073741824 +
+					(nPart - 252) * 1073741824 +
 						((this.ReadUint8() - 128) << 24) +
 						((this.ReadUint8() - 128) << 18) +
 						((this.ReadUint8() - 128) << 12) +
@@ -221,27 +221,27 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 						this.ReadUint8() -
 						128
 				: nPart > 247 && nPart < 252 && size >= 4 /* five bytes */
-				  ? ((nPart - 248) << 24) +
-				    ((this.ReadUint8() - 128) << 18) +
-				    ((this.ReadUint8() - 128) << 12) +
-				    ((this.ReadUint8() - 128) << 6) +
-				    this.ReadUint8() -
-				    128
-				  : nPart > 239 && nPart < 248 && size >= 3 /* four bytes */
-				    ? ((nPart - 240) << 18) +
-				      ((this.ReadUint8() - 128) << 12) +
-				      ((this.ReadUint8() - 128) << 6) +
-				      this.ReadUint8() -
-				      128
-				    : nPart > 223 && nPart < 240 && size >= 2 /* three bytes */
-				      ? ((nPart - 224) << 12) +
-				        ((this.ReadUint8() - 128) << 6) +
-				        this.ReadUint8() -
-				        128
-				      : nPart > 191 && nPart < 224 && size >= 1 /* two bytes */
-				        ? ((nPart - 192) << 6) + this.ReadUint8() - 128
-				        : /* nPart < 127 ? */ /* one byte */
-				          nPart
+					? ((nPart - 248) << 24) +
+						((this.ReadUint8() - 128) << 18) +
+						((this.ReadUint8() - 128) << 12) +
+						((this.ReadUint8() - 128) << 6) +
+						this.ReadUint8() -
+						128
+					: nPart > 239 && nPart < 248 && size >= 3 /* four bytes */
+						? ((nPart - 240) << 18) +
+							((this.ReadUint8() - 128) << 12) +
+							((this.ReadUint8() - 128) << 6) +
+							this.ReadUint8() -
+							128
+						: nPart > 223 && nPart < 240 && size >= 2 /* three bytes */
+							? ((nPart - 224) << 12) +
+								((this.ReadUint8() - 128) << 6) +
+								this.ReadUint8() -
+								128
+							: nPart > 191 && nPart < 224 && size >= 1 /* two bytes */
+								? ((nPart - 192) << 6) + this.ReadUint8() - 128
+								: /* nPart < 127 ? */ /* one byte */
+									nPart
 		)
 	}
 	public ReadUtf16Char(): string {

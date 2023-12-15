@@ -541,17 +541,18 @@ export class Unit extends Entity {
 				castrange += gadget.GetSpecialValue("cast_range")
 			}
 		}
-
-		this.Spells.forEach(spell => {
+		for (let i = 0, end = this.Spells.length; i < end; i++) {
+			const spell = this.Spells[i]
 			if (spell !== undefined) {
-				castrange += spell.BonusCastRange
+				castrange += spell.CastRange
 			}
-		})
-		this.Items.forEach(item => {
+		}
+		for (let i = 0, end = this.Items.length; i < end; i++) {
+			const item = this.Items[i]
 			if (item !== undefined) {
 				castrange += item.BonusCastRange
 			}
-		})
+		}
 		return castrange
 	}
 	public get SpellAmplification(): number {
