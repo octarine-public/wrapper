@@ -543,7 +543,7 @@ class CRendererSDK {
 	}
 	public TextByFlags(
 		text: string,
-		recPosition: Rectangle,
+		position: Rectangle,
 		color = Color.White,
 		division = 1.2,
 		flags = TextFlags.Center,
@@ -551,15 +551,22 @@ class CRendererSDK {
 		fontName = this.DefaultFontName,
 		fixDigits = true,
 		italic = false,
-		outlined = true
+		outlined = true,
+		filledRect = false,
+		filledRectColor = Color.Black.SetA(200)
 	) {
 		const digits = fixDigits ? text.slice().replace(/\d/g, "0") : text
-		const size = recPosition.Height / Math.max(division, 1.2)
+		const size = position.Height / Math.max(division, 1.2)
 		const getTextSize = this.GetTextSize(digits, fontName, size, width, italic)
+
 		const textSize = Vector2.FromVector3(getTextSize)
-		const position = this.flagPositionBox(textSize, recPosition, flags)
-		this.Text(text, position, color, fontName, size, width, italic, outlined)
-		return new Rectangle(position, textSize)
+		const newPosition = this.flagPositionBox(textSize.Clone(), position, flags)
+
+		if (filledRect) {
+			RendererSDK.FilledRect(newPosition, textSize, filledRectColor)
+		}
+		this.Text(text, newPosition, color, fontName, size, width, italic, outlined)
+		return new Rectangle(newPosition, textSize)
 	}
 	/**
 	 * @returns text size defined as new Vector3(width, height, underLine)
@@ -1154,8 +1161,8 @@ class CRendererSDK {
 		res.y = Math.min(Math.max(res.y, 0), 1)
 		return res.MultiplyForThis(vecSize)
 	}
-	private flagPositionBox(newPos: Vector2, box: Rectangle, flag: TextFlags) {
-		const position = newPos
+	private flagPositionBox(textSize: Vector2, box: Rectangle, flag: TextFlags) {
+		const position = textSize
 			.MultiplyScalarForThis(-1)
 			.AddScalarX(box.Width)
 			.AddScalarY(box.Height)

@@ -8,15 +8,16 @@ import { RuneSpawner } from "./RuneSpawner"
 export class RuneSpawnerBounty extends RuneSpawner {
 	public readonly Type = RuneSpawnerType.Bounty
 }
+
 function UpdateGameData(ent: RuneSpawnerBounty) {
-	Runes.BountySpawnEveryMinutes = ent.RuneSpawnTime()
-	Runes.BountySpawnEverySeconds = ent.RuneSpawnTime("seconds")
+	Runes.BountySpawnEveryMinutes = ent.MaxDuration()
+	Runes.BountySpawnEverySeconds = ent.MaxDuration("seconds")
 }
 
 RegisterFieldHandler(RuneSpawnerBounty, "m_flLastSpawnTime", (ent, newVal) => {
 	const oldState = ent.LastSpawnTime
 	ent.LastSpawnTime = newVal as number
-	if (ent.IsValid && oldState !== ent.LastSpawnTime) {
+	if (ent.IsValid && oldState !== ent.LastSpawnTime && oldState !== -1000) {
 		UpdateGameData(ent)
 	}
 })
@@ -24,7 +25,7 @@ RegisterFieldHandler(RuneSpawnerBounty, "m_flLastSpawnTime", (ent, newVal) => {
 RegisterFieldHandler(RuneSpawnerBounty, "m_flNextSpawnTime", (ent, newVal) => {
 	const oldState = ent.NextSpawnTime
 	ent.NextSpawnTime = newVal as number
-	if (ent.IsValid && oldState !== ent.LastSpawnTime) {
+	if (ent.IsValid && oldState !== ent.LastSpawnTime && oldState !== -1000) {
 		UpdateGameData(ent)
 	}
 })

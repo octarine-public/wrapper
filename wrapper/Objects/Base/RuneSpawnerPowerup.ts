@@ -10,8 +10,8 @@ export class RuneSpawnerPowerup extends RuneSpawner {
 }
 
 function UpdateGameData(ent: RuneSpawnerPowerup) {
-	Runes.PowerUpSpawnEveryMinutes = ent.RuneSpawnTime()
-	Runes.PowerUpSpawnEverySeconds = ent.RuneSpawnTime("seconds")
+	Runes.PowerUpSpawnEveryMinutes = ent.MaxDuration()
+	Runes.PowerUpSpawnEverySeconds = ent.MaxDuration("seconds")
 }
 
 RegisterFieldHandler(RuneSpawnerPowerup, "m_flLastSpawnTime", (ent, newVal) => {
