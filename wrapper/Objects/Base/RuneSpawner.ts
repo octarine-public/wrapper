@@ -1,12 +1,11 @@
-import { Runes } from "../../Data/GameData"
 import { DOTAGameState } from "../../Enums/DOTAGameState"
 import { Entity, GameRules } from "./Entity"
 
 export class RuneSpawner extends Entity {
 	/** @readonly */
-	public LastSpawnTime = 0 // game time (seconds)
+	public LastSpawnTime = -1 // game time (seconds)
 	/** @readonly */
-	public NextSpawnTime = 0 // game time (seconds)
+	public NextSpawnTime = -1 // game time (seconds)
 
 	public get ModuleTime() {
 		return this.GameTime % this.MaxDuration("seconds")
@@ -23,8 +22,12 @@ export class RuneSpawner extends Entity {
 			case DOTAGameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS:
 				return gameTime
 			default:
-				return GameRules.GameTime + this.MaxDuration("seconds")
+				return gameTime + this.MaxDuration("seconds")
 		}
+	}
+	protected get SpawnsTime(): [number, number] {
+		// Get the last spawn time and next spawn time
+		return [0, 0] // [lastSpawnTime, nextSpawnTime]
 	}
 	/**
 	 * Get the appearance time of a rune.
@@ -34,10 +37,7 @@ export class RuneSpawner extends Entity {
 	 */
 	public MaxDuration(timeType: "seconds" | "minutes" = "minutes"): number {
 		// Get the last spawn time and next spawn time
-		const lastSpawnTime = this.LastSpawnTime - 1 / 20
-		const nextSpawnTime = this.NextSpawnTime
-
-		console.log(Runes.BountySpawnEverySeconds)
+		const [lastSpawnTime, nextSpawnTime] = this.SpawnsTime
 		// Calculate the time format based on the given time type
 		const timeFormat = timeType === "seconds" ? 1 : 60
 		// Calculate the appearance time based on the last spawn time and next spawn time

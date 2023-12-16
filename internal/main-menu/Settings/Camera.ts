@@ -50,7 +50,7 @@ export class InternalCamera {
 			.OnValue(() => this.OnResetCameraSettings())
 	}
 
-	public onDraw(): void {
+	public Draw(): void {
 		const cameraHacks = !ExecuteOrder.DisableHumanizer
 
 		if (cameraHacks) {

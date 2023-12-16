@@ -103,7 +103,7 @@ export class ImageSelector extends Base {
 		}
 
 		const values = this.values
-		for (let index = values.length - 1; index > -1; index--) {
+		for (let index = 0, end = values.length; index < end; index++) {
 			const path = values[index]
 			if (!this.enabledValues.has(path)) {
 				this.enabledValues.set(path, this.createdDefaultState)
@@ -113,7 +113,7 @@ export class ImageSelector extends Base {
 		this.imageSize.x = this.imageSize.y = ImageSelector.baseImageHeight
 		this.renderedPaths = []
 
-		for (let index = values.length - 1; index > -1; index--) {
+		for (let index = 0, end = values.length; index < end; index++) {
 			let path = values[index]
 			if (path.startsWith("rune_")) {
 				path = `panorama/images/spellicons/${path}_png.vtex_c`
@@ -164,7 +164,7 @@ export class ImageSelector extends Base {
 		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
 		const basePos = this.IconsRect.pos1
-		for (let index = this.values.length - 1; index > -1; index--) {
+		for (let index = 0, end = this.values.length; index < end; index++) {
 			const imagePath = this.renderedPaths[index]
 			if (imagePath === undefined) {
 				continue
@@ -213,7 +213,7 @@ export class ImageSelector extends Base {
 			return false
 		}
 		const off = rect.GetOffset(this.MousePosition)
-		for (let i = 0; i < this.values.length; i++) {
+		for (let i = 0, end = this.values.length; i < end; i++) {
 			const basePos = new Vector2(
 				i % ImageSelector.elementsPerRow,
 				Math.floor(i / ImageSelector.elementsPerRow)

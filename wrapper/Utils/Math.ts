@@ -232,3 +232,33 @@ export function FormatTime(time: number, isChat = false) {
 		(time % 60)
 	)
 }
+
+/**
+ * Linearly interpolates between two numbers.
+ *
+ * @param start - The starting number.
+ * @param end - The ending number.
+ * @param amount - The amount to interpolate between the start and end numbers.
+ *                 Should be a value between 0 and 1.
+ * @return {number}
+ */
+export function Lerp(start: number, end: number, amount: number): number {
+	return (1 - amount) * start + amount * end
+}
+/**
+ * SmoothStep function returns a smooth interpolation value between 0 and 1 based on the input amount.
+ * If the amount is less than or equal to 0, it returns 0.
+ * If the amount is greater than or equal to 1, it returns 1.
+ * For any other value of amount, it performs a smooth interpolation calculation and returns the result.
+ * @param amount - The input amount to interpolate.
+ * @return {number}
+ */
+export function SmoothStep(amount: number): number {
+	if (amount <= 0) {
+		return 0
+	}
+	if (amount >= 1) {
+		return 1
+	}
+	return amount * amount * (3 - 2 * amount)
+}

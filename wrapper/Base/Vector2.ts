@@ -57,16 +57,14 @@ export class Vector2 {
 	 * Is this vector valid? (every value must not be infinity/NaN)
 	 */
 	public get IsValid(): boolean {
-		const x = this.x,
-			y = this.y
-		return (
-			!Number.isNaN(x) &&
-			Number.isFinite(x) &&
-			!Number.isNaN(y) &&
-			Number.isFinite(y)
-		)
+		return !this.IsNaN && this.IsFinite
 	}
-
+	public get IsNaN(): boolean {
+		return Number.isNaN(this.x) && Number.isNaN(this.y)
+	}
+	public get IsFinite(): boolean {
+		return Number.isFinite(this.x) && Number.isFinite(this.y)
+	}
 	/**
 	 * Get the length of the vector squared. This operation is cheaper than Length().
 	 */

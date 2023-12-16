@@ -3,25 +3,25 @@ import { InternalHome } from "./Home/Home"
 import { InternalSettings } from "./Settings/Settings"
 
 EventsSDK.on("Draw", () => {
-	InternalHome.onDraw()
-	InternalSettings.onDraw()
+	InternalHome.Draw()
+	InternalSettings.Draw()
 })
 
 EventsSDK.on("GameStarted", () => {
-	InternalSettings.onGameStarted()
+	InternalSettings.GameStarted()
 })
 
 Events.on("SetLanguage", language => {
-	InternalHome.onSetLanguage(language)
+	InternalHome.SetLanguage(language)
 })
 
 Events.on("ScriptsUpdated", () => {
-	InternalSettings.onScriptsUpdated()
+	InternalSettings.ScriptsUpdated()
 	console.info("Scripts Updated...")
 })
 
 EventsSDK.on("SharedObjectChanged", (id, _, obj) => {
-	InternalHome.onSharedObjectChanged(id, obj)
+	InternalHome.SharedObjectChanged(id, obj)
 })
 
-InputEventSDK.on("MouseWheel", up => InternalSettings.onMouseWheel(up))
+InputEventSDK.on("MouseWheel", up => InternalSettings.MouseWheel(up))

@@ -1,7 +1,7 @@
 import { AABB } from "../../Base/AABB"
 import { Color } from "../../Base/Color"
 import { EntityPropertiesNode } from "../../Base/EntityProperties"
-import { Matrix3x4 } from "../../Base/Matrix"
+import { Matrix3x4 } from "../../Base/Matrix3x4"
 import { QAngle } from "../../Base/QAngle"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
@@ -22,6 +22,7 @@ import { DegreesToRadian, toPercentage } from "../../Utils/Math"
 import { CGameRules } from "./GameRules"
 import { Item } from "./Item"
 
+// === TODO move to manager or monitor ===>
 export var LocalPlayer: Nullable<Player>
 let playerSlot = NaN
 EventsSDK.on(
@@ -70,13 +71,31 @@ const activity2name = new Map<GameActivity, string>(
 )
 const modelDataCache = new Map<string, [AnimationData[], Map<number, number>, string[]]>()
 EventsSDK.on("ServerInfo", () => modelDataCache.clear())
+// <=== TODO move to manager or monitor ===
 
 @WrapperClass("CBaseEntity")
 export class Entity {
+	/**
+	 * @readonly
+	 * @description Whether the entity is valid.
+	 * @return {boolean}
+	 */
 	public IsValid = true
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	public Name_ = ""
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	@NetworkedBasicField("m_flCreateTime")
 	public CreateTime_ = 0
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	public FakeCreateTime_ = GameState.RawGameTime
 	public Team = Team.None
 	public LifeState = LifeState.LIFE_DEAD
@@ -93,24 +112,104 @@ export class Entity {
 	public Agility = 0
 	public Intellect = 0
 	public Strength = 0
+	/**
+	 * @readonly
+	 * @description The total agility of the entity.
+	 * @return {number}
+	 */
 	public TotalAgility = 0
+	/**
+	 * @readonly
+	 * @description The total intelligence of the entity.
+	 * @return {number}
+	 */
 	public TotalIntellect = 0
+	/**
+	 * @readonly
+	 * @description The total strength of the entity.
+	 * @return {number}
+	 */
 	public TotalStrength = 0
+	/**
+	 * @readonly
+	 * @description The hierarchy attach name of the entity.
+	 * @return {number}
+	 */
 	public HierarchyAttachName = 0
+	/**
+	 * @readonly
+	 * @description The children of the entity.
+	 * @return {Array<Entity>}
+	 */
 	public Children: Entity[] = []
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	@NetworkedBasicField("CBodyComponent")
 	public CBodyComponent_: Nullable<EntityPropertiesNode> = undefined
+	/**
+	 * @readonly
+	 * @description Determines if the entity is visible.
+	 * @return {boolean}
+	 */
 	public IsVisible = true
+	/**
+	 * @readonly
+	 * @return {number}
+	 */
 	public DeltaZ = 0
+	/**
+	 * @readonly
+	 * @description The angle between the entity's forward vector and the local player's view direction.
+	 * @return {number}
+	 */
 	public RotationDifference = 0
+	/**
+	 * @readonly
+	 * @description The animation time of the entity.
+	 * @return {number}
+	 */
 	public AnimationTime = 0
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	public FieldHandlers_: Nullable<Map<number, FieldHandler>>
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	public Properties_ = new EntityPropertiesNode()
+	/**
+	 * @description The visual position of the entity.
+	 * @return {Vector3}
+	 */
 	public readonly VisualPosition = new Vector3()
+	/**
+	 * @description The networked position of the entity.
+	 * @return {Vector3}
+	 */
 	public readonly NetworkedPosition = new Vector3()
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	public readonly NetworkedPosition_ = new Vector3()
+	/**
+	 * @description The visual angles of the entity.
+	 * @return {QAngle}
+	 */
 	public readonly VisualAngles = new QAngle()
+	/**
+	 * @description The networked angles of the entity.
+	 * @return {QAngle}
+	 */
 	public readonly NetworkedAngles = new QAngle()
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	public readonly NetworkedAngles_ = new QAngle()
 	public readonly BoundingBox = new AABB(this.VisualPosition)
 	public readonly SpawnPosition = new Vector3()
@@ -118,21 +217,50 @@ export class Entity {
 	public Animations: AnimationData[] = []
 	public Attachments: string[] = []
 	public AttachmentsHashMap: Nullable<Map<number, number>>
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	private CustomGlowColor_: Nullable<Color>
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	private CustomDrawColor_: Nullable<[Color, RenderMode]>
-
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	public Owner_ = 0
 	public OwnerEntity: Nullable<Entity> = undefined
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	public Parent_ = 0
 	public ParentEntity: Nullable<Entity> = undefined
-
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	private RingRadius_ = 30
-
 	/**
 	 * Demarcate recursions.
 	 * Recommended: use instanceof for get unique property
 	 */
+	/**
+	 * @readonly
+	 * @default `Base Entity is false`
+	 * @description Determines if the entity is a shop.
+	 * @return {boolean}
+	 */
 	public IsShop = false
+	/**
+	 * @readonly
+	 * @default `Base Entity is false`
+	 * @description Determines if the entity is a game rules.
+	 * @return {boolean}
+	 */
 	public IsGameRules = false
 	/** ================================================= */
 
@@ -594,13 +722,20 @@ export class Entity {
 	}
 }
 
+/**
+ * @ignore
+ * @internal
+ */
 function QuantitizedVecCoordToCoord(
 	cell: Nullable<number>,
 	inside: Nullable<number>
 ): number {
 	return ((cell ?? 0) - 128) * 128 + (inside ?? 0)
 }
-
+/**
+ * @ignore
+ * @internal
+ */
 RegisterFieldHandler(Entity, "m_iTeamNum", (ent, newVal) => {
 	const oldTeam = ent.Team
 	ent.Team = newVal as Team
@@ -608,6 +743,10 @@ RegisterFieldHandler(Entity, "m_iTeamNum", (ent, newVal) => {
 		EventsSDK.emit("EntityTeamChanged", false, ent)
 	}
 })
+/**
+ * @ignore
+ * @internal
+ */
 RegisterFieldHandler(Entity, "m_lifeState", (ent, newVal) => {
 	const oldState = ent.LifeState
 	ent.LifeState = newVal as LifeState
@@ -615,22 +754,42 @@ RegisterFieldHandler(Entity, "m_lifeState", (ent, newVal) => {
 		EventsSDK.emit("LifeStateChanged", false, ent)
 	}
 })
+/**
+ * @ignore
+ * @internal
+ */
 RegisterFieldHandler(Entity, "m_hModel", (ent, newVal) => {
 	ent.ModelName = GetPathByHash(newVal as bigint) ?? ""
 	ent.OnModelUpdated()
 })
+/**
+ * @ignore
+ * @internal
+ */
 RegisterFieldHandler(Entity, "m_angRotation", (ent, newVal) => {
 	const angRotation = newVal as QAngle
 	ent.NetworkedAngles_.CopyFrom(angRotation)
 	ent.UpdatePositions()
 })
+/**
+ * @ignore
+ * @internal
+ */
 RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, newVal) => {
 	ent.Name_ = StringTables.GetString("EntityNames", newVal as number) ?? ent.Name_
 })
+/**
+ * @ignore
+ * @internal
+ */
 RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, newVal) => {
 	ent.Owner_ = newVal as number
 	ent.OwnerEntity = EntityManager.EntityByIndex(ent.Owner_)
 })
+/**
+ * @ignore
+ * @internal
+ */
 RegisterFieldHandler(Entity, "m_hParent", (ent, newVal) => {
 	ent.Parent_ = Number(newVal as bigint)
 	const parentEnt = EntityManager.EntityByIndex(ent.Parent_),
@@ -644,11 +803,90 @@ RegisterFieldHandler(Entity, "m_hParent", (ent, newVal) => {
 		ent.UpdatePositions()
 	}
 })
+/**
+ * @ignore
+ * @internal
+ */
 RegisterFieldHandler(Entity, "m_hierarchyAttachName", (ent, newVal) => {
 	ent.HierarchyAttachName = Number(newVal as bigint) >>> 0
 	ent.UpdatePositions()
 })
+/**
+ * @ignore
+ * @internal
+ */
+RegisterFieldHandler(Entity, "m_cellX", (ent, newVal) => {
+	ent.NetworkedPosition_.x = QuantitizedVecCoordToCoord(
+		newVal as number,
+		ent.CBodyComponent_?.get("m_vecX") as Nullable<number>
+	)
+	ent.UpdatePositions()
+})
+/**
+ * @ignore
+ * @internal
+ */
+RegisterFieldHandler(Entity, "m_vecX", (ent, newVal) => {
+	ent.NetworkedPosition_.x = QuantitizedVecCoordToCoord(
+		ent.CBodyComponent_?.get("m_cellX") as Nullable<number>,
+		newVal as number
+	)
+	ent.UpdatePositions()
+})
+/**
+ * @ignore
+ * @internal
+ */
+RegisterFieldHandler(Entity, "m_cellY", (ent, newVal) => {
+	ent.NetworkedPosition_.y = QuantitizedVecCoordToCoord(
+		newVal as number,
+		ent.CBodyComponent_?.get("m_vecY") as Nullable<number>
+	)
+	ent.UpdatePositions()
+})
+/**
+ * @ignore
+ * @internal
+ */
+RegisterFieldHandler(Entity, "m_vecY", (ent, newVal) => {
+	ent.NetworkedPosition_.y = QuantitizedVecCoordToCoord(
+		ent.CBodyComponent_?.get("m_cellY") as Nullable<number>,
+		newVal as number
+	)
+	ent.UpdatePositions()
+})
+/**
+ * @ignore
+ * @internal
+ */
+RegisterFieldHandler(Entity, "m_cellZ", (ent, newVal) => {
+	ent.NetworkedPosition_.z = QuantitizedVecCoordToCoord(
+		newVal as number,
+		ent.CBodyComponent_?.get("m_vecZ") as Nullable<number>
+	)
+	ent.UpdatePositions()
+})
+/**
+ * @ignore
+ * @internal
+ */
+RegisterFieldHandler(Entity, "m_vecZ", (ent, newVal) => {
+	ent.NetworkedPosition_.z = QuantitizedVecCoordToCoord(
+		ent.CBodyComponent_?.get("m_cellZ") as Nullable<number>,
+		newVal as number
+	)
+	ent.UpdatePositions()
+})
+/**
+ * @ignore
+ * @internal
+ */
+RegisterFieldHandler(Entity, "m_flScale", (ent, newVal) => {
+	ent.ModelScale = newVal as number
+	ent.UpdatePositions()
+})
 
+// === TODO move to manager or monitor ===>
 EventsSDK.on("PreEntityCreated", ent => {
 	ent.SpawnPosition.CopyFrom(ent.NetworkedPosition)
 	if (ent.Index === 0) {
@@ -684,53 +922,6 @@ EventsSDK.on("EntityDestroyed", ent => {
 			iter.UpdatePositions()
 		}
 	}
-})
-
-RegisterFieldHandler(Entity, "m_cellX", (ent, newVal) => {
-	ent.NetworkedPosition_.x = QuantitizedVecCoordToCoord(
-		newVal as number,
-		ent.CBodyComponent_?.get("m_vecX") as Nullable<number>
-	)
-	ent.UpdatePositions()
-})
-RegisterFieldHandler(Entity, "m_vecX", (ent, newVal) => {
-	ent.NetworkedPosition_.x = QuantitizedVecCoordToCoord(
-		ent.CBodyComponent_?.get("m_cellX") as Nullable<number>,
-		newVal as number
-	)
-	ent.UpdatePositions()
-})
-RegisterFieldHandler(Entity, "m_cellY", (ent, newVal) => {
-	ent.NetworkedPosition_.y = QuantitizedVecCoordToCoord(
-		newVal as number,
-		ent.CBodyComponent_?.get("m_vecY") as Nullable<number>
-	)
-	ent.UpdatePositions()
-})
-RegisterFieldHandler(Entity, "m_vecY", (ent, newVal) => {
-	ent.NetworkedPosition_.y = QuantitizedVecCoordToCoord(
-		ent.CBodyComponent_?.get("m_cellY") as Nullable<number>,
-		newVal as number
-	)
-	ent.UpdatePositions()
-})
-RegisterFieldHandler(Entity, "m_cellZ", (ent, newVal) => {
-	ent.NetworkedPosition_.z = QuantitizedVecCoordToCoord(
-		newVal as number,
-		ent.CBodyComponent_?.get("m_vecZ") as Nullable<number>
-	)
-	ent.UpdatePositions()
-})
-RegisterFieldHandler(Entity, "m_vecZ", (ent, newVal) => {
-	ent.NetworkedPosition_.z = QuantitizedVecCoordToCoord(
-		ent.CBodyComponent_?.get("m_cellZ") as Nullable<number>,
-		newVal as number
-	)
-	ent.UpdatePositions()
-})
-RegisterFieldHandler(Entity, "m_flScale", (ent, newVal) => {
-	ent.ModelScale = newVal as number
-	ent.UpdatePositions()
 })
 
 EventsSDK.on("GameEvent", (name, obj) => {
@@ -812,6 +1003,7 @@ EventsSDK.after("PostDataUpdate", () => {
 	CustomColorEnts()
 	CustomGlowEnts()
 })
+
 Events.on("NewConnection", () => {
 	lastGlowEnts.clear()
 	lastColoredEnts.clear()
