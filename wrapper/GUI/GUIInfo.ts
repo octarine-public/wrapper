@@ -45,7 +45,7 @@ export const GUIInfo = new (class CGUIInfo {
 
 	public OnDraw(): void {
 		const screenSize = RendererSDK.WindowSize
-		const hudFlipped = ConVarsSDK.GetBoolean("dota_hud_flip", false)
+		const hudFlipped = ConVarsSDK.GetInt("dota_minimap_position_option", 0) === 1
 		const everythingChanged =
 			this.HUDFlipped !== hudFlipped || !latestScreenSize.Equals(screenSize)
 		latestScreenSize.CopyFrom(screenSize)
