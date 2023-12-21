@@ -9,16 +9,32 @@ export class Header extends Base {
 	public static OnWindowSizeChanged(): void {
 		Header.LogoOffset.x = GUIInfo.ScaleWidth(14)
 		Header.LogoOffset.y = GUIInfo.ScaleHeight(7)
+
+		Header.CapOffset.x = GUIInfo.ScaleWidth(4)
+		Header.CapOffset.y = GUIInfo.ScaleHeight(2)
+
 		Header.TextOffset.x = GUIInfo.ScaleWidth(49)
 		Header.TextOffset.y = GUIInfo.ScaleHeight(12)
 		Header.FontSize = GUIInfo.ScaleHeight(18)
+
 		Header.LogoSize.x = GUIInfo.ScaleWidth(Header.OriginalLogoSize.x)
 		Header.LogoSize.y = GUIInfo.ScaleHeight(Header.OriginalLogoSize.y)
+
+		Header.CapSize.x = GUIInfo.ScaleWidth(Header.OriginalCapSize.x)
+		Header.CapSize.y = GUIInfo.ScaleHeight(Header.OriginalCapSize.y)
+
 		Header.OriginalSize_.x = GUIInfo.ScaleWidth(Header.ActualOriginalSize_.x)
 		Header.OriginalSize_.y = GUIInfo.ScaleHeight(Header.ActualOriginalSize_.y)
 	}
+
 	private static readonly imagePath = "menu/header.svg"
 	private static readonly logoPath = "menu/logo.svg"
+
+	private static readonly capPath = "menu/cap.png"
+	private static readonly CapOffset = new Vector2()
+	private static readonly OriginalCapSize = RendererSDK.GetImageSize(Header.capPath)
+	private static readonly CapSize = new Vector2()
+
 	private static readonly TextOffset = new Vector2()
 	private static readonly LogoOffset = new Vector2()
 	private static readonly OriginalLogoSize = RendererSDK.GetImageSize(Header.logoPath)
@@ -70,6 +86,7 @@ export class Header extends Base {
 			0
 		)
 		this.Position.RoundForThis()
+
 		RendererSDK.Image(Header.imagePath, this.Position, -1, this.RenderSize)
 		RendererSDK.Image(
 			Header.logoPath,
@@ -77,6 +94,7 @@ export class Header extends Base {
 			-1,
 			Header.LogoSize
 		)
+		RendererSDK.Image(Header.capPath, this.Position.Clone().AddScalarX(Header.CapOffset.x).SubtractScalarY(Header.CapOffset.y), -1, Header.CapSize)
 		RendererSDK.Text(
 			"octarine",
 			this.Position.Add(Header.TextOffset),
