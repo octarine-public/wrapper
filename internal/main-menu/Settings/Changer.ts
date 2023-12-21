@@ -93,7 +93,7 @@ export class InternalChanger {
 		})
 	}
 
-	public onGameStarted(): void {
+	public GameStarted(): void {
 		ConVarsSDK.Set("cl_weather", this.weather.SelectedID)
 		ConVarsSDK.Set("dota_river_type", this.riverPaint.SelectedID)
 		ConVarsSDK.Set("dota_hud_chat_enable_all_emoticons", this.emoticons.value)

@@ -1055,7 +1055,6 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				position.y = stream.ReadFloat32()
 				position.z = stream.ReadFloat32()
 			}
-
 			EventsSDK.emit("StartSound", false, soundName, ent, position, seed, startTime)
 			break
 		}

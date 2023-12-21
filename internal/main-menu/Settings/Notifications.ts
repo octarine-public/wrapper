@@ -55,7 +55,7 @@ export class InternalNotifications {
 		NotificationsSDK.debug = this.tree.IsOpen
 	}
 
-	public onScriptsUpdated(): void {
+	public ScriptsUpdated(): void {
 		if (this.stateScripts.value) {
 			NotificationsSDK.Push(new ScriptsUpdated(this.clickState.value))
 		}

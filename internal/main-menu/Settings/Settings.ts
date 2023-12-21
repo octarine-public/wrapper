@@ -40,20 +40,20 @@ export const InternalSettings = new (class {
 		/** end Node Reload Scripts */
 	}
 
-	public onDraw() {
-		this.InternalCamera.onDraw()
+	public Draw() {
+		this.InternalCamera.Draw()
 	}
 
-	public onMouseWheel(up: boolean) {
+	public MouseWheel(up: boolean) {
 		return this.InternalCamera.onMouseWheel(up)
 	}
 
-	public onGameStarted() {
-		this.InternalChanger.onGameStarted()
+	public GameStarted() {
+		this.InternalChanger.GameStarted()
 	}
 
-	public onScriptsUpdated() {
-		this.InternalNotifications.onScriptsUpdated()
+	public ScriptsUpdated() {
+		this.InternalNotifications.ScriptsUpdated()
 	}
 
 	protected onLangugeChanged(call: Menu.Dropdown) {
