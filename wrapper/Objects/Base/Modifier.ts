@@ -1,4 +1,4 @@
-import { Vector3 } from "../../Base/Vector3"
+import { Vector4 } from "../../Base/Vector4"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { IModifier } from "../../Managers/ModifierManager"
@@ -149,34 +149,24 @@ export class Modifier {
 	public get DDModifierID(): Nullable<number> {
 		return this.kv.DDModifierID
 	}
-	public get vStart(): Vector3 {
+	public get vStart(): Vector4 {
 		const vec = this.kv.vStart
-
 		if (vec === undefined) {
-			return new Vector3().Invalidate()
+			return new Vector4().Invalidate()
 		}
-
-		return new Vector3(vec.x, vec.y, vec.z)
+		return new Vector4(vec.x, vec.y, vec.z, vec.w)
 	}
-	public get vEnd(): Vector3 {
+	public get vEnd(): Vector4 {
 		const vec = this.kv.vEnd
 
 		if (vec === undefined) {
-			return new Vector3().Invalidate()
+			return new Vector4().Invalidate()
 		}
 
-		return new Vector3(vec.x, vec.y, vec.z)
+		return new Vector4(vec.x, vec.y, vec.z, vec.w)
 	}
 
 	public Update(): void {
-		//** skip(spam) */
-		switch (this.Name) {
-			case "modifier_hp_regen":
-			case "modifier_mp_regen":
-			case "modifier_bonus_damage":
-			case "modifier_bonus_armor":
-				return
-		}
 		const newCaster = EntityManager.EntityByIndex<Unit>(this.kv.Caster),
 			newAbility = EntityManager.EntityByIndex<Ability>(this.kv.Ability),
 			newAuraOwner = EntityManager.EntityByIndex<Unit>(this.kv.AuraOwner),

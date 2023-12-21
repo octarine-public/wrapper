@@ -28,7 +28,7 @@ import { Inventory } from "../DataBook/Inventory"
 import { PlayerCustomData } from "../DataBook/PlayerCustomData"
 import { UnitData } from "../DataBook/UnitData"
 import { Ability } from "./Ability"
-import { Entity, LocalPlayer } from "./Entity"
+import { Entity, GameRules, LocalPlayer } from "./Entity"
 import { Item } from "./Item"
 import { Modifier } from "./Modifier"
 import { NeutralSpawner } from "./NeutralSpawner"
@@ -230,8 +230,21 @@ export class Unit extends Entity {
 
 	private LastPredictedPositionUpdate_ = 0
 	private LastRealPredictedPositionUpdate_ = 0
+	// private cellPositions: Vector2[] = []
 
-	public get Color() {
+	/**
+	 * The vision value
+	 * @description Returns the vision value based on the current game state.
+	 * @return {number}
+	 */
+	public get Vision(): number {
+		return GameRules?.IsNight ? this.NightVision : this.DayVision
+	}
+	/**
+	 * @description The color assigned to the player.
+	 * @return {Color}
+	 */
+	public get Color(): Color {
 		return PlayerCustomData.get(this.PlayerID)?.Color ?? Color.Red
 	}
 	public TexturePath(small?: boolean, team = this.Team): Nullable<string> {
@@ -635,6 +648,16 @@ export class Unit extends Entity {
 			}
 		}
 	}
+	// need optimize UpdateVisibleCellsPosition or move to c++
+	// public UpdatePositions(parentTransform?: Matrix3x4) {
+	// 	super.UpdatePositions(parentTransform)
+	// 	GridNav?.UpdateVisibleCellsPosition(
+	// 		this.Position,
+	// 		this.Vision,
+	// 		this.IsFlyingVisually || this.HasFlyingVision,
+	// 		this.cellPositions
+	// 	)
+	// }
 
 	public VelocityWaypoint(time: number, movespeed: number): Vector3 {
 		return this.InFront(movespeed * time)

@@ -18,6 +18,7 @@ import { MinimapSDK as _MinimapSDK } from "./Managers/MinimapSDK"
 import { ParticlesSDK as _ParticlesSDK } from "./Managers/ParticleManager"
 import { MenuManager as _Menu } from "./Menu/Menu"
 import { RendererSDK as _RendererSDK } from "./Native/RendererSDK"
+import { SoundSDK as _SoundSDK } from "./Native/SoundSDK"
 import * as _WASM from "./Native/WASM"
 import {
 	GameRules as _GameRules,
@@ -42,6 +43,7 @@ globalThis.DotaMap = _DotaMap
 globalThis.GameData = _GameData
 globalThis.NetworkedParticle = _NetworkedParticle
 globalThis.FakeUnits = _FakeUnits
+globalThis.SoundSDK = _SoundSDK
 
 Object.defineProperty(globalThis, "LocalPlayer", {
 	get: () => {

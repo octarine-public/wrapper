@@ -18,6 +18,8 @@ export class CGameRules extends Entity {
 	public RawGameTime = 0
 	@NetworkedBasicField("m_bGamePaused")
 	public IsPaused = false
+	@NetworkedBasicField("m_nRuneCycle")
+	public RuneCycle = 0
 	@NetworkedBasicField("m_nTotalPausedTicks")
 	public TotalPausedTicks: number | number[] = -1
 	@NetworkedBasicField("m_nPauseStartTick")

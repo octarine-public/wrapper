@@ -19,6 +19,7 @@ type IDefaultValues = Map<
 >
 
 // every icon: 32x32, 1x1 border
+/** @deprecated */
 export class DynamicImageSelector extends Base {
 	public static ServicePriorityToggle = false
 
@@ -158,7 +159,7 @@ export class DynamicImageSelector extends Base {
 		this.renderedPaths.clear()
 		this.imageSize.x = this.imageSize.y = DynamicImageSelector.baseImageHeight
 
-		for (let index = this.values.length - 1; index > -1; index--) {
+		for (let index = 0, end = this.values.length; index < end; index++) {
 			const name = this.values[index]
 			if (!this.IsVisibleImage(name)) {
 				continue
@@ -260,7 +261,7 @@ export class DynamicImageSelector extends Base {
 
 	public OnHideImages(names?: string[]) {
 		if (names === undefined) {
-			for (let index = this.values.length - 1; index > -1; index--) {
+			for (let index = 0, end = this.values.length; index < end; index++) {
 				const name = this.values[index]
 				const enabledValues = this.enabledValues.get(name)
 				if (enabledValues === undefined || enabledValues[1]) {
@@ -272,7 +273,7 @@ export class DynamicImageSelector extends Base {
 			return
 		}
 
-		for (let index = names.length - 1; index > -1; index--) {
+		for (let index = 0, end = this.values.length; index < end; index++) {
 			const name = names[index]
 			const enabledValues = this.enabledValues.get(name)
 			if (enabledValues !== undefined && !enabledValues[1]) {
@@ -287,7 +288,7 @@ export class DynamicImageSelector extends Base {
 		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
 
 		const basePos = this.IconsRect.pos1
-		for (let index = this.values.length - 1; index > -1; index--) {
+		for (let index = 0, end = this.values.length; index < end; index++) {
 			const value = this.values[index]
 			if (!this.IsVisibleImage(value)) {
 				continue
@@ -461,7 +462,7 @@ export class DynamicImageSelector extends Base {
 		off: Vector2,
 		callback: (value: string, state: boolean, priority: number) => void
 	) {
-		for (let index = this.values.length - 1; index > -1; index--) {
+		for (let index = 0, end = this.values.length; index < end; index++) {
 			const value = this.values[index]
 			const enabledValues = this.enabledValues.get(value)
 			if (enabledValues === undefined || !this.IsVisibleImage(value)) {
@@ -489,7 +490,7 @@ export class DynamicImageSelector extends Base {
 		const decrease = entriesEnables.filter(([name, [, , , priority]]) =>
 			this.FilterDecrease(name, currName, dragName, currPriority, priority)
 		)
-		for (let index = decrease.length - 1; index > -1; index--) {
+		for (let index = 0, end = decrease.length; index < end; index++) {
 			const [insertName] = decrease[index]
 			const insert = this.enabledValues.get(insertName)
 			if (insert === undefined) {
@@ -512,8 +513,7 @@ export class DynamicImageSelector extends Base {
 				entriesEnables.length
 			)
 		)
-
-		for (let index = increase.length - 1; index > -1; index--) {
+		for (let index = 0, end = increase.length; index < end; index++) {
 			const [insertName] = increase[index]
 			const insert = this.enabledValues.get(insertName)
 			if (insert === undefined) {

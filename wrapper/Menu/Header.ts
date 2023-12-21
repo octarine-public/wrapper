@@ -94,7 +94,14 @@ export class Header extends Base {
 			-1,
 			Header.LogoSize
 		)
-		RendererSDK.Image(Header.capPath, this.Position.Clone().AddScalarX(Header.CapOffset.x).SubtractScalarY(Header.CapOffset.y), -1, Header.CapSize)
+		RendererSDK.Image(
+			Header.capPath,
+			this.Position.Clone()
+				.AddScalarX(Header.CapOffset.x)
+				.SubtractScalarY(Header.CapOffset.y),
+			-1,
+			Header.CapSize
+		)
 		RendererSDK.Text(
 			"octarine",
 			this.Position.Add(Header.TextOffset),

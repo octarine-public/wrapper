@@ -60,17 +60,16 @@ export class Vector3 {
 	 * Is this vector valid? (every value must not be infinity/NaN)
 	 */
 	public get IsValid(): boolean {
-		const x = this.x,
-			y = this.y,
-			z = this.z
+		return !this.IsNaN && this.IsFinite
+	}
 
+	public get IsNaN(): boolean {
+		return Number.isNaN(this.x) && Number.isNaN(this.y) && Number.isNaN(this.z)
+	}
+
+	public get IsFinite(): boolean {
 		return (
-			!Number.isNaN(x) &&
-			Number.isFinite(x) &&
-			!Number.isNaN(y) &&
-			Number.isFinite(y) &&
-			!Number.isNaN(z) &&
-			Number.isFinite(z)
+			Number.isFinite(this.x) && Number.isFinite(this.y) && Number.isFinite(this.z)
 		)
 	}
 

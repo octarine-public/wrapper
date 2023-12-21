@@ -1,4 +1,4 @@
-import { Vector3 } from "../Base/Vector3"
+import { Vector4 } from "../Base/Vector4"
 import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
 import { Ability } from "../Objects/Base/Ability"
 import { Modifier } from "../Objects/Base/Modifier"
@@ -37,6 +37,9 @@ export class IModifier {
 	}
 	public get AbilityLevel() {
 		return this.GetProperty<number>("ability_level")
+	}
+	public get IsAuraWithInRange() {
+		return this.GetProperty<boolean>("aura_within_range")
 	}
 	public get StackCount() {
 		return this.GetProperty<number>("stack_count")
@@ -140,12 +143,12 @@ export class IModifier {
 	public GetProperty<T>(name: string): Nullable<T> {
 		return this.kv.get(name) as any as T
 	}
-	public GetVector(name: string): Nullable<Vector3> {
+	public GetVector(name: string): Nullable<Vector4> {
 		const vec = this.GetProperty<Map<string, number>>(name)
 		if (vec === undefined) {
 			return undefined
 		}
-		return new Vector3(vec.get("x"), vec.get("y"), vec.get("z"))
+		return new Vector4(vec.get("x"), vec.get("y"), vec.get("z"), vec.get("w"))
 	}
 }
 
@@ -274,6 +277,7 @@ message CDOTAModifierBuffTableEntry {
 	optional int32 bonus_health = 36;
 	optional int32 bonus_mana = 37;
 	optional uint32 custom_entity = 38 [default = 16777215];
+	optional bool aura_within_range = 39;
 }
 `)
 EventsSDK.on("UpdateStringTable", (name, update) => {
@@ -313,6 +317,5 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 })
 EventsSDK.on("RemoveAllStringTables", () => {
 	activeModifiers.forEach(mod => EmitModifierRemoved(mod))
-	activeModifiers.clear()
 	activeModifiersRaw.clear()
 })

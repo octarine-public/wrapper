@@ -475,6 +475,7 @@ export class Node extends Base {
 			priority
 		)
 	}
+	/** @deprecated */
 	public AddDynamicImageSelector(
 		name: string,
 		values: string[],

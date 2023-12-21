@@ -39,12 +39,12 @@ export const InternalHome = new (class {
 			.OnValue(toggle => (Menu.Base.triggerOnChat = toggle.value))
 	}
 
-	public onDraw(): void {
+	public Draw(): void {
 		this.UpdateConvars()
 		this.UpdateAutoAccept()
 	}
 
-	public onSharedObjectChanged(_id: SOType, obj: RecursiveMap): void {
+	public SharedObjectChanged(_id: SOType, obj: RecursiveMap): void {
 		if (obj.get("state") === CSODOTALobbyState.READYUP && this.acceptTime === -1) {
 			this.acceptTime = hrtime()
 		} else if (
@@ -55,7 +55,7 @@ export const InternalHome = new (class {
 		}
 	}
 
-	public onSetLanguage(language: MenuLanguageID): void {
+	public SetLanguage(language: MenuLanguageID): void {
 		switch (language) {
 			default:
 			case MenuLanguageID.english:
