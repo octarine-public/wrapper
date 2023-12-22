@@ -158,27 +158,18 @@ export class Unit extends Entity {
 	public GoldBountyMin = 0
 	@NetworkedBasicField("m_iGoldBountyMax")
 	public GoldBountyMax = 0
-	@NetworkedBasicField("m_flStartSequenceCycle")
-	public StartSequenceCycle = 0
-	public StartSequenceCyclePrev = -1
 	public LastActivity = 0 as GameActivity
 	public LastActivitySequenceVariant = 0
 	public LastActivityEndTime = 0
 	public LastActivityAnimationPoint = 0
 	public Spawner: Nullable<NeutralSpawner>
 
-	/** @ignore */
-	public Spawner_ = 0
 	/** @readonly */
 	public CanUseItems = false
 	/** @readonly */
 	public CanUseAbilities = false
 	/** @readonly */
 	public IsVisibleForEnemiesLastTime = 0
-	/** @ignore */
-	public IsVisibleForEnemies_ = false
-	/** @ignore */
-	public cellIsVisibleForEnemies_ = false // TODO: calculate grid nav from enemies
 	/**
 	 * Demarcate recursions.
 	 * Recommended: use instanceof for get unique property
@@ -201,6 +192,24 @@ export class Unit extends Entity {
 	public IsBuilding = false
 	/** @readonly */
 	public IsOutpost = false
+
+	/**
+	 * @readonly
+	 * @description The owner of the Unit. (example: Spirit Bear)
+	 */
+	public OwnerNPC: Nullable<Unit> = undefined
+
+	public TPStartTime = -1
+
+	/** @readonly */
+	public FixedMoveSpeed = 0
+
+	/** @readonly */
+	public IsLimitMoveSpeed = true
+
+	/** @deprecated  */
+	public UnitStateMask = 0n
+
 	/**
 	 * @ignore
 	 * @internal
@@ -212,15 +221,20 @@ export class Unit extends Entity {
 	 */
 	public OwnerNPC_ = 0
 	/**
-	 * @readonly
-	 * @description The owner of the Unit. (example: Spirit Bear)
+	 * @ignore
+	 * @internal
 	 */
-	public OwnerNPC: Nullable<Unit> = undefined
-
-	public TPStartTime = -1
-
-	/** @deprecated  */
-	public UnitStateMask = 0n
+	public Spawner_ = 0
+	/**
+	 * @ignore
+	 * @internal
+	 */
+	public IsVisibleForEnemies_ = false
+	/**
+	 * @ignore
+	 * @internal
+	 */
+	public cellIsVisibleForEnemies_ = false // TODO: calculate grid nav from enemies
 
 	public readonly PredictedPosition = new Vector3().Invalidate()
 	public readonly TPStartPosition = new Vector3().Invalidate()
@@ -247,9 +261,15 @@ export class Unit extends Entity {
 	public get Color(): Color {
 		return PlayerCustomData.get(this.PlayerID)?.Color ?? Color.Red
 	}
-	public TexturePath(small?: boolean, team = this.Team): Nullable<string> {
-		return GetUnitTexture(this.Name, small, team)
+
+	public get Speed() {
+		if (this.FixedMoveSpeed) {
+			return this.FixedMoveSpeed
+		}
+
+		return 0
 	}
+
 	public get LastRealPredictedPositionUpdate(): number {
 		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
 			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime
@@ -467,12 +487,7 @@ export class Unit extends Entity {
 	 * @deprecated
 	 */
 	public get UnitStateMask_(): bigint {
-		let mask = this.UnitStateNetworked
-		// TODO: use buffs to calculate this
-		if (GetEntityUnitState(this.Index)) {
-			mask |= IOBufferView.getBigUint64(0, true)
-		}
-		return mask
+		return this.UnitStateNetworked
 	}
 	public get UnitState(): modifierstate[] {
 		return this.UnitStateMask_.toMask
@@ -614,7 +629,9 @@ export class Unit extends Entity {
 	public get ShouldUnifyOrders(): boolean {
 		return true
 	}
-
+	public TexturePath(small?: boolean, team = this.Team): Nullable<string> {
+		return GetUnitTexture(this.Name, small, team)
+	}
 	/**
 	 * @description  Check if the unit is visible for enemies.
 	 * @param seconds - The duration in seconds for which the unit should be visible.

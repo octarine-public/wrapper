@@ -284,11 +284,6 @@ declare function EmitStopSoundEvent( // pass location: Vector2 at IOBuffer offse
 	sourceEntityID: number
 ): void
 /**
- * @deprecated
- * @returns bigint to IOBuffer offset 0, and return value is true if function succeeded
- */
-declare function GetEntityUnitState(entityID: number): boolean
-/**
  * @param customEntityID (entityID << 1) or (binaryID << 1) | 1
  * @param renderMode RenderMode
  */

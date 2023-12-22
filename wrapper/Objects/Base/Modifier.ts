@@ -1,4 +1,5 @@
 import { Vector4 } from "../../Base/Vector4"
+import { modifierstate } from "../../Enums/modifierstate"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { IModifier } from "../../Managers/ModifierManager"
@@ -51,6 +52,12 @@ export class Modifier {
 
 	public IsValid = true
 
+	/** @readonly */
+	public IsHidden = false
+
+	/** @readonly */
+	public VisibleForEnemies = false
+
 	public readonly Index: number
 	public readonly SerialNumber: number
 	public readonly IsAura: boolean
@@ -59,6 +66,7 @@ export class Modifier {
 	public CreationTime = 0
 	public Armor = 0
 	public AttackSpeed = 0
+	/** @deprecated */
 	public MovementSpeed = 0
 	public BonusAllStats = 0
 	public BonusHealth = 0
@@ -72,6 +80,8 @@ export class Modifier {
 	public Ability: Nullable<Ability>
 	public Caster: Nullable<Unit>
 	public AuraOwner: Nullable<Unit>
+
+	protected State = 0n
 
 	constructor(public kv: IModifier) {
 		this.Index = this.kv.Index as number
@@ -91,6 +101,22 @@ export class Modifier {
 				? AbilityData.GetAbilityNameByID(ddAbilityID)
 				: undefined
 		this.DDAbilityName = ddAbilityName ?? "ability_base"
+	}
+
+	public get IsBuff() {
+		return false
+	}
+
+	public get IsDebuff() {
+		return this.Name.endsWith("_debuff")
+	}
+
+	public get IsStunDebuff() {
+		return this.IsDebuff && this.IsModifierState(modifierstate.MODIFIER_STATE_STUNNED)
+	}
+
+	public get MoveSpeed() {
+		return 0
 	}
 
 	public get InvisibilityLevel(): number {
@@ -137,18 +163,23 @@ export class Modifier {
 			this.Name === "modifier_monkey_king_bounce_perch"
 		)
 	}
+
 	public get DieTime(): number {
 		return this.CreationTime + this.Duration
 	}
+
 	public get ElapsedTime(): number {
 		return Math.max(GameState.RawGameTime - this.CreationTime, 0)
 	}
+
 	public get RemainingTime(): number {
 		return Math.max(this.DieTime - GameState.RawGameTime, 0)
 	}
+
 	public get DDModifierID(): Nullable<number> {
 		return this.kv.DDModifierID
 	}
+
 	public get vStart(): Vector4 {
 		const vec = this.kv.vStart
 		if (vec === undefined) {
@@ -156,14 +187,29 @@ export class Modifier {
 		}
 		return new Vector4(vec.x, vec.y, vec.z, vec.w)
 	}
+
 	public get vEnd(): Vector4 {
 		const vec = this.kv.vEnd
-
 		if (vec === undefined) {
 			return new Vector4().Invalidate()
 		}
-
 		return new Vector4(vec.x, vec.y, vec.z, vec.w)
+	}
+
+	public get ModifierState(): modifierstate[] {
+		return this.State?.toMask ?? []
+	}
+
+	public IsModifierState(flag: modifierstate): boolean {
+		return this.State.hasBit(BigInt(flag))
+	}
+
+	public get BonusMoveSpeed() {
+		return 0
+	}
+
+	public get AmplifierMoveSpeed() {
+		return 0
 	}
 
 	public Update(): void {
@@ -262,29 +308,32 @@ export class Modifier {
 		}
 	}
 
-	public Remove(): void {
+	public Remove(): boolean {
 		if (this.Parent === undefined || !this.Parent.Buffs.includes(this)) {
-			return
+			return false
 		}
 		this.Parent.Buffs.remove(this)
 		this.UnitPropertyChanged(false)
 		EventsSDK.emit("ModifierRemoved", false, this)
 		this.Parent.ChangeFieldsByEvents()
+		return true
 	}
-	private AddModifier(): void {
+
+	protected AddModifier(): boolean {
 		if (this.Parent === undefined || this.Parent.Buffs.includes(this)) {
-			return
+			return false
 		}
 		this.Parent.Buffs.push(this)
 		this.UnitPropertyChanged()
 		EventsSDK.emit("ModifierCreated", false, this)
 		this.Parent.ChangeFieldsByEvents()
+		return true
 	}
 
-	private UnitPropertyChanged(changed?: boolean) {
+	protected UnitPropertyChanged(changed?: boolean): boolean {
 		const owner = this.Parent
 		if (owner === undefined) {
-			return
+			return false
 		}
 		const state = (changed ??= true)
 		switch (this.Name) {
@@ -305,5 +354,6 @@ export class Modifier {
 				EventsSDK.emit("UnitPropertyChanged", false, owner)
 				break
 		}
+		return true
 	}
 }

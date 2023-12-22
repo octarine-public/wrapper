@@ -3,11 +3,26 @@ import { Vector3 } from "./Base/Vector3"
 import { Vector4 } from "./Base/Vector4"
 import { EPropertyType, PropertyType } from "./Enums/PropertyType"
 import { Entity } from "./Objects/Base/Entity"
-import { RegisterClass, RegisterFieldHandler } from "./Objects/NativeToSDK"
+import { Modifier } from "./Objects/Base/Modifier"
+import {
+	RegisterClass,
+	RegisterClassModifier,
+	RegisterFieldHandler
+} from "./Objects/NativeToSDK"
 
 export function WrapperClass(networkedClassName: string) {
-	return (constructor: object) =>
-		RegisterClass(networkedClassName, constructor as Constructor<Entity>)
+	return (constructor: Constructor<Entity>) =>
+		RegisterClass(networkedClassName, constructor)
+}
+
+/**
+ * Creates a class modifier that registers the class with a given name.
+ *
+ * @param {string} modName - The name of the class modifier.
+ */
+export function WrapperClassModifier(modName?: string) {
+	return (constructor: Constructor<Modifier>) =>
+		RegisterClassModifier(modName ?? constructor.name, constructor)
 }
 
 const convertBuf = new ArrayBuffer(16)
