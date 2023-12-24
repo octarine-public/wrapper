@@ -1,8 +1,10 @@
 import { Vector4 } from "../Base/Vector4"
 import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
+import * as StringTables from "../Managers/StringTables"
 import { Ability } from "../Objects/Base/Ability"
 import { Modifier } from "../Objects/Base/Modifier"
 import { Unit } from "../Objects/Base/Unit"
+import { ModifierSDKClass } from "../Objects/NativeToSDK"
 import { GameState } from "../Utils/GameState"
 import {
 	ParseProtobufDesc,
@@ -160,7 +162,17 @@ function EmitModifierCreated(modKV: IModifier) {
 	) {
 		return
 	}
-	const mod = new Modifier(modKV)
+
+	const luaName = modKV.LuaName
+	const ModifierClass = modKV.ModifierClass as number
+
+	const Name =
+		luaName === undefined || luaName === ""
+			? StringTables.GetString("ModifierNames", ModifierClass)
+			: luaName
+
+	const instance = ModifierSDKClass.get(Name)
+	const mod = instance === undefined ? new Modifier(modKV) : new instance(modKV)
 	activeModifiers.set(mod.SerialNumber, mod)
 	mod.Update()
 }
@@ -176,6 +188,10 @@ function EmitModifierRemoved(mod: Nullable<Modifier>) {
 		mod.Remove()
 	}
 }
+
+export const ModifierManager = new (class CModifierManager {
+	/** @todo */
+})()
 
 const queuedEnts: (Unit | Ability)[] = []
 EventsSDK.on("PreEntityCreated", ent => {
@@ -315,6 +331,7 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 		}
 	})
 })
+
 EventsSDK.on("RemoveAllStringTables", () => {
 	activeModifiers.forEach(mod => EmitModifierRemoved(mod))
 	activeModifiersRaw.clear()

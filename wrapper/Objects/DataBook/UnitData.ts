@@ -128,6 +128,7 @@ export class UnitData {
 	constructor(name: string, kv: RecursiveMap) {
 		this.HeroID = kv.has("HeroID") ? parseInt(kv.get("HeroID") as string) : 0
 		this.ModelName = (kv.get("Model") as string) ?? "models/dev/error.vmdl"
+
 		this.MovementTurnRate = kv.has("MovementTurnRate")
 			? parseFloat(kv.get("MovementTurnRate") as string)
 			: 0
