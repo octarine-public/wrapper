@@ -572,7 +572,7 @@ export class Unit extends Entity {
 		for (let i = 0, end = this.Spells.length; i < end; i++) {
 			const spell = this.Spells[i]
 			if (spell !== undefined) {
-				castrange += spell.CastRange
+				castrange += spell.BonusCastRange
 			}
 		}
 		for (let i = 0, end = this.Items.length; i < end; i++) {
