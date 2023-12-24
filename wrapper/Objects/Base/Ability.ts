@@ -364,7 +364,7 @@ export class Ability extends Entity {
 		return this.AbilityData.GetManaCost(level)
 	}
 	public GetCastRangeForLevel(level: number): number {
-		return this.GetBaseCastRangeForLevel(level)
+		return this.GetBaseCastRangeForLevel(level) + (this.Owner?.CastRangeBonus ?? 0)
 	}
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
