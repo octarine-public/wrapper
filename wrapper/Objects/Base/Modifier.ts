@@ -20,6 +20,7 @@ import { Unit } from "./Unit"
 const scepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
 export class Modifier {
+	// TODO: rework this after add ModifierManager
 	public static VisibleForEnemies: string[] = [
 		"modifier_bounty_hunter_track",
 		"modifier_slardar_amplify_damage",
@@ -27,6 +28,7 @@ export class Modifier {
 		"modifier_spirit_breaker_charge_of_darkness_vision"
 	]
 
+	// TODO: rework this after add ModifierManager
 	public static HasTrueSightBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => {
 			switch (buff.Name) {
@@ -41,15 +43,46 @@ export class Modifier {
 		})
 	}
 
+	// TODO: rework this after add ModifierManager
 	public static HasScepterBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => scepterRegExp.test(buff.Name))
 	}
 
+	// TODO: rework this after add ModifierManager
 	public static HasShardBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => buff.Name === "modifier_item_aghanims_shard")
 	}
 
+	/** @readonly */
 	public IsValid = true
+	/** @readonly */
+	public IsHidden = false
+	/** @readonly */
+	public IsBuff = false
+	/** @readonly */
+	public IsDebuff = false
+	/** @readonly */
+	public IsStunDebuff = false
+	/** @readonly */
+	public IsHiddenWhenStolen = false
+	/** @readonly */
+	public VisibleForEnemies = false
+	/** @readonly */
+	public BonusArmor = 0
+	/** @readonly */
+	public BonusAttackSpeed = 0
+	/** @readonly */
+	public BonusAttackRange = 0
+	/** @readonly */
+	public ReductionCastRange = 0
+	/** @readonly */
+	public ReductionAttackRange = 0
+	/** @readonly */
+	public BonusCastRange = 0
+	/** @readonly */
+	public BonusMoveSpeed = 0
+	/** @readonly */
+	public BonusMoveSpeedAmplifier = 0
 
 	public readonly Index: number
 	public readonly SerialNumber: number
@@ -59,6 +92,7 @@ export class Modifier {
 	public CreationTime = 0
 	public Armor = 0
 	public AttackSpeed = 0
+	/** @deprecated */
 	public MovementSpeed = 0
 	public BonusAllStats = 0
 	public BonusHealth = 0
@@ -80,10 +114,13 @@ export class Modifier {
 		this.IsAura = this.kv.IsAura as boolean
 
 		const luaName = this.kv.LuaName
-		this.Name =
-			luaName === undefined || luaName === ""
-				? StringTables.GetString("ModifierNames", this.kv.ModifierClass as number)
-				: luaName
+		const byModifierClass = StringTables.GetString(
+			"ModifierNames",
+			this.kv.ModifierClass as number
+		)
+
+		this.Name = luaName === undefined || luaName === "" ? byModifierClass : luaName
+		this.IsDebuff = this.Name.endsWith("_debuff")
 
 		const ddAbilityID = this.kv.DDAbilityID
 		const ddAbilityName =
@@ -93,6 +130,7 @@ export class Modifier {
 		this.DDAbilityName = ddAbilityName ?? "ability_base"
 	}
 
+	// TODO: rework this after add ModifierManager
 	public get InvisibilityLevel(): number {
 		if (
 			this.Name === "modifier_monkey_king_bounce_leap" ||
@@ -110,6 +148,7 @@ export class Modifier {
 		return Math.min(this.ElapsedTime / (fadeTime * 2), 1)
 	}
 
+	// TODO: rework this after add ModifierManager
 	public get DeltaZ(): number {
 		if (
 			(this.Name === "modifier_monkey_king_bounce_leap" ||
@@ -129,6 +168,7 @@ export class Modifier {
 		}
 	}
 
+	// TODO: rework this after add ModifierManager
 	public get ShouldDoFlyHeightVisual(): boolean {
 		return (
 			this.Name === "modifier_winter_wyvern_arctic_burn_flight" ||
@@ -137,18 +177,23 @@ export class Modifier {
 			this.Name === "modifier_monkey_king_bounce_perch"
 		)
 	}
+
 	public get DieTime(): number {
 		return this.CreationTime + this.Duration
 	}
+
 	public get ElapsedTime(): number {
 		return Math.max(GameState.RawGameTime - this.CreationTime, 0)
 	}
+
 	public get RemainingTime(): number {
 		return Math.max(this.DieTime - GameState.RawGameTime, 0)
 	}
+
 	public get DDModifierID(): Nullable<number> {
 		return this.kv.DDModifierID
 	}
+
 	public get vStart(): Vector4 {
 		const vec = this.kv.vStart
 		if (vec === undefined) {
@@ -156,13 +201,12 @@ export class Modifier {
 		}
 		return new Vector4(vec.x, vec.y, vec.z, vec.w)
 	}
+
 	public get vEnd(): Vector4 {
 		const vec = this.kv.vEnd
-
 		if (vec === undefined) {
 			return new Vector4().Invalidate()
 		}
-
 		return new Vector4(vec.x, vec.y, vec.z, vec.w)
 	}
 
@@ -262,16 +306,18 @@ export class Modifier {
 		}
 	}
 
-	public Remove(): void {
+	public Remove(): boolean {
 		if (this.Parent === undefined || !this.Parent.Buffs.includes(this)) {
-			return
+			return false
 		}
 		this.Parent.Buffs.remove(this)
 		this.UnitPropertyChanged(false)
 		EventsSDK.emit("ModifierRemoved", false, this)
 		this.Parent.ChangeFieldsByEvents()
+		return true
 	}
-	private AddModifier(): void {
+
+	protected AddModifier(): void {
 		if (this.Parent === undefined || this.Parent.Buffs.includes(this)) {
 			return
 		}
@@ -281,10 +327,10 @@ export class Modifier {
 		this.Parent.ChangeFieldsByEvents()
 	}
 
-	private UnitPropertyChanged(changed?: boolean) {
+	protected UnitPropertyChanged(changed?: boolean): boolean {
 		const owner = this.Parent
 		if (owner === undefined) {
-			return
+			return false
 		}
 		const state = (changed ??= true)
 		switch (this.Name) {
@@ -305,5 +351,14 @@ export class Modifier {
 				EventsSDK.emit("UnitPropertyChanged", false, owner)
 				break
 		}
+		return true
+	}
+
+	// TODO: call in unique classes, after add ModifierManager
+	protected GetSpecialValue(specialName?: string, level = this.AbilityLevel): number {
+		if (specialName === undefined || level === 0) {
+			return 0
+		}
+		return this.Ability?.GetSpecialValue(specialName, level) ?? 0
 	}
 }
