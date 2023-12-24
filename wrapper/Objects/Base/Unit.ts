@@ -207,9 +207,6 @@ export class Unit extends Entity {
 	/** @readonly */
 	public IsLimitMoveSpeed = true
 
-	/** @deprecated  */
-	public UnitStateMask = 0n
-
 	/**
 	 * @ignore
 	 * @internal
@@ -483,14 +480,12 @@ export class Unit extends Entity {
 	public get MinimapIconSize(): number {
 		return this.UnitData.MinimapIconSize
 	}
-	/**
-	 * @deprecated
-	 */
-	public get UnitStateMask_(): bigint {
+	public get UnitStateMask(): bigint {
+		// TODO: add prediction cast order + maybe calculate modifiers
 		return this.UnitStateNetworked
 	}
 	public get UnitState(): modifierstate[] {
-		return this.UnitStateMask_.toMask
+		return this.UnitStateMask.toMask
 	}
 	public get IsEthereal(): boolean {
 		for (let index = this.Buffs.length - 1; index > -1; index--) {
@@ -721,7 +716,7 @@ export class Unit extends Entity {
 	}
 
 	public IsUnitStateFlagSet(flag: modifierstate): boolean {
-		return this.UnitStateMask_.hasBit(BigInt(flag))
+		return this.UnitStateMask.hasBit(BigInt(flag))
 	}
 	public IsControllableByPlayer(playerID: number): boolean {
 		return this.IsControllableByPlayerMask.hasBit(BigInt(playerID))
