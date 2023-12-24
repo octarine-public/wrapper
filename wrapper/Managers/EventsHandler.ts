@@ -2,6 +2,7 @@ import { Color } from "../Base/Color"
 import { NetworkedParticle } from "../Base/NetworkedParticle"
 import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
+import { DOTAGameState } from "../Enums/DOTAGameState"
 import { DOTAGameUIState } from "../Enums/DOTAGameUIState"
 import { Team } from "../Enums/Team"
 import { GUIInfo } from "../GUI/GUIInfo"
@@ -32,6 +33,7 @@ import { SetLatestTickDelta } from "./EntityManagerLogic"
 import { Events } from "./Events"
 import { EventsSDK } from "./EventsSDK"
 import { InputManager } from "./InputManager"
+import { StringTables } from "./StringTables"
 
 enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_CREATE = 0,
@@ -1382,10 +1384,16 @@ EventsSDK.on("Draw", () => {
 	if (isDedicated || GameState.UIState !== DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME) {
 		return
 	}
-
+	if (
+		StringTables.Size !== 0 ||
+		(GameRules !== undefined &&
+			GameRules.GameState <=
+				DOTAGameState.DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD)
+	) {
+		return
+	}
 	const size = GUIInfo.ScaleHeight(24)
 	const wSize = RendererSDK.WindowSize.Clone()
-
 	const windowSize = wSize.DivideScalar(2)
 	const textSize = RendererSDK.GetTextSize(
 		Localization.Localize(text),
@@ -1393,12 +1401,9 @@ EventsSDK.on("Draw", () => {
 		size,
 		600
 	)
-
 	const position = windowSize.SubtractScalarY(wSize.y / 2 - textSize.y / 2)
-
 	position.SubtractScalarX(textSize.x / 2)
 	position.AddScalarY(GUIInfo.ScaleHeight(100))
-
 	RendererSDK.Text(
 		Localization.Localize(text),
 		position,
