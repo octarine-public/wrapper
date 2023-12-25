@@ -393,6 +393,11 @@ interface EventsSDK extends EventEmitter {
 		listener: (unit: Unit) => void,
 		priority?: number
 	): EventEmitter
+	on(
+		name: "UnitStateChanged",
+		listener: (unit: Unit) => void,
+		priority?: number
+	): EventEmitter
 	// TODO: add logic in Managers -> Monitors
 	on(
 		name: "AttackStarted",

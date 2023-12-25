@@ -291,8 +291,8 @@ export class AbilityData {
 		}
 
 		if (
-			!(ar[1] === "special_bonus_shard" && owner.HasShard) &&
-			!(ar[1] === "special_bonus_scepter" && owner.HasScepter)
+			(ar[1] === "special_bonus_shard" && !owner.HasShard) ||
+			(ar[1] === "special_bonus_scepter" && !owner.HasScepter)
 		) {
 			return baseVal
 		}
@@ -303,7 +303,9 @@ export class AbilityData {
 				? this.GetSpecialValue(val, level)
 				: Array.isArray(val)
 					? val[Math.min(level, val.length) - 1]
-					: val
+					: this.HasSpecialTalent(ar[1], owner)
+						? val
+						: 0
 
 		switch (ar[3]) {
 			default:
@@ -404,6 +406,11 @@ export class AbilityData {
 			return 0
 		}
 		return this.GetSpecialValue(name, talent.Level)
+	}
+
+	private HasSpecialTalent(name: string, owner: Unit) {
+		const talent = owner.GetAbilityByName(name)
+		return talent !== undefined && talent.Level !== 0
 	}
 
 	private parseFloat(str: string): number {

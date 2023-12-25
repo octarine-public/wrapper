@@ -15,6 +15,14 @@ import { StringTables } from "./StringTables"
 
 const activeModifiers = new Map<number, Modifier>()
 const activeModifiersRaw = new Map<number, IModifier>()
+export const ModifierManager = new (class CModifierManager {
+	public get Modifiers() {
+		return Array.from(activeModifiers.values())
+	}
+	public GetModifierByIndex(index: number): Nullable<Modifier> {
+		return activeModifiers.get(index)
+	}
+})()
 
 export class IModifier {
 	constructor(public readonly kv: RecursiveProtobuf) {
@@ -186,10 +194,6 @@ function EmitModifierRemoved(mod: Nullable<Modifier>) {
 		mod.Remove()
 	}
 }
-
-export const ModifierManager = new (class CModifierManager {
-	/** @todo */
-})()
 
 const queuedEnts: (Unit | Ability)[] = []
 EventsSDK.on("PreEntityCreated", ent => {

@@ -99,6 +99,7 @@ export class UnitData {
 	public readonly HeroID: number
 	public readonly ModelName: string
 	public readonly MovementTurnRate: number
+	public readonly BaseMovementSpeed: number
 	public readonly AttackAcquisitionRange: number
 	public readonly BaseAttackRange: number
 	public readonly BaseAttackTime: number
@@ -146,6 +147,9 @@ export class UnitData {
 			: 0
 		this.BaseAttackTime = kv.has("AttackRate")
 			? parseFloat(kv.get("AttackRate") as string)
+			: 0
+		this.BaseMovementSpeed = kv.has("MovementSpeed")
+			? parseFloat(kv.get("MovementSpeed") as string)
 			: 0
 		this.BaseAttackSpeed = kv.has("BaseAttackSpeed")
 			? parseFloat(kv.get("BaseAttackSpeed") as string)

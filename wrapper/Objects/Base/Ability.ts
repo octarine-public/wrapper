@@ -318,9 +318,41 @@ export class Ability extends Entity {
 	public get CastRange(): number {
 		return this.GetCastRangeForLevel(this.Level)
 	}
+	/** @deprecated */
 	public get AOERadius(): number {
 		return this.GetAOERadiusForLevel(this.Level)
 	}
+
+	public get BaseRadius() {
+		return this.GetAOERadiusForLevel(this.Level)
+	}
+
+	public get BonusRadius(): number {
+		if (this.Owner === undefined) {
+			return 0
+		}
+		let totalBonus = 0
+		const buffs = this.Owner.Buffs
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const buff = buffs[index]
+			if (!buff.BonusSpellRadius) {
+				continue
+			}
+			totalBonus += buff.BonusSpellRadius
+		}
+		return totalBonus
+	}
+
+	public get Radius(): number {
+		const baseRadius = this.BaseRadius
+		if (this.Owner === undefined) {
+			return baseRadius
+		}
+		// todo amp
+		const totalBonus = baseRadius + this.BonusRadius
+		return totalBonus
+	}
+
 	public get SkillshotRange(): number {
 		return this.CastRange
 	}

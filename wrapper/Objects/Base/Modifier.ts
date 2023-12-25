@@ -20,6 +20,10 @@ import { Unit } from "./Unit"
 const scepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
 export class Modifier {
+	private static get HasDebug(): boolean {
+		return (globalThis as any)?.DEBUGGER_INSTALLED ?? false
+	}
+
 	// TODO: rework this after add ModifierManager
 	public static VisibleForEnemies: string[] = [
 		"modifier_bounty_hunter_track",
@@ -68,8 +72,6 @@ export class Modifier {
 	/** @readonly */
 	public VisibleForEnemies = false
 	/** @readonly */
-	public BonusArmor = 0
-	/** @readonly */
 	public BonusAttackSpeed = 0
 	/** @readonly */
 	public BonusAttackRange = 0
@@ -77,26 +79,63 @@ export class Modifier {
 	public ReductionCastRange = 0
 	/** @readonly */
 	public ReductionAttackRange = 0
+
+	// bonus ability radius
 	/** @readonly */
 	public BonusCastRange = 0
 	/** @readonly */
+	public BonusSpellRadius = 0
+
+	// Base move speed
+	/** @readonly */
+	public BaseMoveSpeed = 0
+	/** @readonly */
+	public FixedMoveSpeed = 0
+
+	// Bonus move speed
+	/** @readonly */
+	public IsBoots = false
+	/** @readonly */
+	public IsLimitMoveSpeed = true
+	/** @readonly */
 	public BonusMoveSpeed = 0
 	/** @readonly */
+	public BonusMoveSpeedStack = false
+	/** @readonly */
 	public BonusMoveSpeedAmplifier = 0
+	/** @readonly */
+	public BonusMoveSpeedAmplifierStack = false
+
+	// Bonus armor
+	/** @readonly */
+	public BonusArmor = 0
+	/** @readonly */
+	public BonusArmorStack = false
+	/** @readonly */
+	public BonusArmorAmplifier = 0
+	/** @readonly */
+	public BonusArmorAmplifierStack = 0
 
 	public readonly Index: number
 	public readonly SerialNumber: number
 	public readonly IsAura: boolean
 	public readonly Name: string
 
-	public CreationTime = 0
+	// only KV
+	/** @deprecated */
 	public Armor = 0
+	/** @deprecated */
 	public AttackSpeed = 0
 	/** @deprecated */
 	public MovementSpeed = 0
+	/** @deprecated */
 	public BonusAllStats = 0
+	/** @deprecated */
 	public BonusHealth = 0
+	/** @deprecated */
 	public BonusMana = 0
+
+	public CreationTime = 0
 	public CustomEntity: Nullable<Unit>
 	public StackCount = 0
 	public Duration = 0
@@ -210,6 +249,10 @@ export class Modifier {
 		return new Vector4(vec.x, vec.y, vec.z, vec.w)
 	}
 
+	public UnitStateChaged(): void {
+		this.updateAllSpecialValues()
+	}
+
 	public Update(): void {
 		const newCaster = EntityManager.EntityByIndex<Unit>(this.kv.Caster),
 			newAbility = EntityManager.EntityByIndex<Ability>(this.kv.Ability),
@@ -317,14 +360,15 @@ export class Modifier {
 		return true
 	}
 
-	protected AddModifier(): void {
+	protected AddModifier(): boolean {
 		if (this.Parent === undefined || this.Parent.Buffs.includes(this)) {
-			return
+			return false
 		}
 		this.Parent.Buffs.push(this)
 		this.UnitPropertyChanged()
 		EventsSDK.emit("ModifierCreated", false, this)
 		this.Parent.ChangeFieldsByEvents()
+		return true
 	}
 
 	protected UnitPropertyChanged(changed?: boolean): boolean {
@@ -351,14 +395,54 @@ export class Modifier {
 				EventsSDK.emit("UnitPropertyChanged", false, owner)
 				break
 		}
+		this.updateAllSpecialValues()
 		return true
 	}
 
-	// TODO: call in unique classes, after add ModifierManager
-	protected GetSpecialValue(specialName?: string, level = this.AbilityLevel): number {
-		if (specialName === undefined || level === 0) {
+	protected GetSpecialValue(
+		specialName: string,
+		level: number = this.AbilityLevel
+	): number {
+		const abil = this.Ability
+		const lvlAbil = abil?.Level ?? level
+		if (level === 0 || level < lvlAbil) {
+			level = lvlAbil
+		}
+		if (abil === undefined || level === 0) {
 			return 0
 		}
-		return this.Ability?.GetSpecialValue(specialName, level) ?? 0
+		const specialValue = abil.GetSpecialValue(specialName, level)
+		if (specialValue === 0 && Modifier.HasDebug) {
+			console.error(
+				`${this.Name}:`,
+				"Failed to get special value",
+				`[${specialName}]`
+			)
+		}
+		return specialValue
+	}
+
+	protected SetFixedMoveSpeed(specialName?: string) {
+		if (specialName !== undefined) {
+			this.FixedMoveSpeed = this.GetSpecialValue(specialName)
+		}
+	}
+
+	protected SetBonusMoveSpeed(specialName?: string) {
+		if (specialName !== undefined) {
+			this.BonusMoveSpeed = this.GetSpecialValue(specialName)
+		}
+	}
+
+	protected SetAmplifierMoveSpeed(specialName?: string) {
+		if (specialName !== undefined) {
+			this.BonusMoveSpeedAmplifier = this.GetSpecialValue(specialName) / 100
+		}
+	}
+
+	private updateAllSpecialValues() {
+		this.SetFixedMoveSpeed()
+		this.SetBonusMoveSpeed()
+		this.SetAmplifierMoveSpeed()
 	}
 }

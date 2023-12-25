@@ -1,9 +1,9 @@
 import { EntityPropertyType } from "../Base/EntityProperties"
 import { Events } from "../Managers/Events"
-import { Modifier } from "../Objects/Base/Modifier"
 import { ParseProtobufDesc, ParseProtobufNamed } from "../Utils/Protobuf"
 import { MapToObject } from "../Utils/Utils"
 import { Entity } from "./Base/Entity"
+import { Modifier } from "./Base/Modifier"
 
 const constructors = new Map<string, Constructor<Entity>>()
 const excludedErrorClassNames = new Set<string>(["CDeferredLightBase"])
@@ -146,7 +146,7 @@ export function GetConstructorByName(
 			return constructor
 		}
 	}
-	if (excludedErrorClassNames.has(fixedClassName)) {
+	if (excludedErrorClassNames.has(className)) {
 		return undefined
 	}
 	console.error(
