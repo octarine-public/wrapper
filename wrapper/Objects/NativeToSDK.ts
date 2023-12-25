@@ -6,8 +6,9 @@ import { MapToObject } from "../Utils/Utils"
 import { Entity } from "./Base/Entity"
 
 const constructors = new Map<string, Constructor<Entity>>()
-export type FieldHandler = (entity: Entity, newValue: EntityPropertyType) => any
+const excludedErrorClassNames = new Set<string>(["CDeferredLightBase"])
 
+export type FieldHandler = (entity: Entity, newValue: EntityPropertyType) => any
 export const SDKClasses: [Constructor<Entity>, Entity[]][] = []
 export const ModifierSDKClass = new Map<string, Constructor<Modifier>>()
 export const ClassToEntities = new WeakMap<Constructor<any>, Entity[]>()
@@ -144,6 +145,9 @@ export function GetConstructorByName(
 		if (constructor !== undefined) {
 			return constructor
 		}
+	}
+	if (excludedErrorClassNames.has(fixedClassName)) {
+		return undefined
 	}
 	console.error(
 		`Can't find wrapper declared inherited classes for classname ${className}, [${inherited}]`

@@ -1,7 +1,7 @@
-import { GetTable } from "./StringTables"
+import { StringTables } from "./StringTables"
 
 export function GetValue(tableName: string, key: string): Nullable<RecursiveMap> {
-	const table = GetTable(`CustomNetTable_${tableName}`)
+	const table = StringTables.GetTable(`CustomNetTable_${tableName}`)
 	if (table === undefined) {
 		return undefined
 	}
