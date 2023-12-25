@@ -15,7 +15,7 @@ import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { AllEntitiesAsMap, EntityManager } from "./EntityManager"
 import { Events } from "./Events"
 import { EventsSDK } from "./EventsSDK"
-import * as StringTables from "./StringTables"
+import { StringTables } from "./StringTables"
 
 function ClassFromNative(
 	id: number,
