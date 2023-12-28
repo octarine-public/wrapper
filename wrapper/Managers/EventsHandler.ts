@@ -1300,17 +1300,8 @@ function TryLoadMapFiles(): void {
 		const entityLumps = worldKV.get("m_entityLumps")
 		if (entityLumps instanceof Map || Array.isArray(entityLumps)) {
 			entityLumps.forEach((path: RecursiveMapValue) => {
-				if (typeof path !== "string") {
-					return
-				}
-				const buf = fopen(`${path}_c`)
-				if (buf === undefined) {
-					return
-				}
-				try {
-					ParseEntityLump(new FileBinaryStream(buf))
-				} finally {
-					buf.close()
+				if (typeof path === "string") {
+					ParseEntityLump(path)
 				}
 			})
 		}

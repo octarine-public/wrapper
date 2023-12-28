@@ -32,8 +32,6 @@ declare interface ReadableBinaryStream {
 	// https://github.com/SteamDatabase/ValveResourceFormat/blob/cceba491d7bb60890a53236a90970b24d0a4aba9/ValveResourceFormat/Utils/StreamHelpers.cs#L43
 	ReadOffsetString(): string
 	ReadVarString(): string
-	ParseKV(block?: string | number): RecursiveMap
-	ParseKVBlock(): RecursiveMap
 	Empty(): boolean
 	CreateNestedStream(size: number, detectEncoding?: boolean): ReadableBinaryStream
 }

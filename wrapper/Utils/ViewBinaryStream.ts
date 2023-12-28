@@ -319,25 +319,6 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 	public ReadVarString(): string {
 		return this.ReadUtf8String(this.ReadVarUintAsNumber())
 	}
-	public ParseKV(block: string | number = "DATA"): RecursiveMap {
-		return parseKV(
-			new Uint8Array(
-				this.view.buffer,
-				this.view.byteOffset + this.pos,
-				this.Remaining
-			),
-			block
-		)
-	}
-	public ParseKVBlock(): RecursiveMap {
-		return parseKVBlock(
-			new Uint8Array(
-				this.view.buffer,
-				this.view.byteOffset + this.pos,
-				this.Remaining
-			)
-		)
-	}
 	public Empty(): boolean {
 		return this.pos >= this.view.byteLength
 	}

@@ -9,7 +9,6 @@ import { InputManager } from "../Managers/InputManager"
 import { ParseMaterial } from "../Resources/ParseMaterial"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
 import { HasMask } from "../Utils/BitsExtensions"
-import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { fread } from "../Utils/fread"
 import { DegreesToRadian } from "../Utils/Math"
 import { tryFindFile } from "../Utils/readFile"
@@ -975,24 +974,21 @@ class CRendererSDK {
 		}
 
 		if (readPath.endsWith(".vmat_c")) {
-			const buf = fopen(path)
-			if (buf !== undefined) {
-				try {
-					const vmat = ParseMaterial(new FileBinaryStream(buf))
-					const tColor = vmat.TextureParams.get("g_tColor")
-					if (tColor !== undefined) {
-						readPath = tColor
-						if (readPath.endsWith(".vtex")) {
-							readPath += "_c"
-						}
+			try {
+				const vmat = ParseMaterial(readPath)
+				const tColor = vmat.TextureParams.get("g_tColor")
+				if (tColor !== undefined) {
+					readPath = tColor
+					if (readPath.endsWith(".vtex")) {
+						readPath += "_c"
 					}
-				} finally {
-					buf.close()
 				}
+			} catch {
+				readPath = ""
 			}
 		}
 
-		const textureID = Renderer.CreateTexture(readPath)
+		const textureID = readPath !== "" ? Renderer.CreateTexture(readPath) : -1
 		if (textureID === -1) {
 			console.error("CreateTexture failed for", path)
 		}
