@@ -343,3 +343,7 @@ declare function GetSoundPathToName(): Map<string, string>
 declare function LookupSoundNameByHash(hash: number): Nullable<string>
 
 declare function GetModelData(path: string): Promise<ModelData>
+
+declare function GetOriginalParticlePath(path: string): string
+declare function GetEconItemName(id: number): string
+declare function GetEconItemHealthBarOffset(id: number): Nullable<number>

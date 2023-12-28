@@ -1,7 +1,6 @@
 import { Color } from "../../Base/Color"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
-import * as EconHelper from "../../Managers/EconHelper"
 import { Entity } from "./Entity"
 import { FakeUnit } from "./FakeUnit"
 import { Unit } from "./Unit"
@@ -23,9 +22,7 @@ export class Projectile {
 	}
 
 	public UpdateParticlePathNoEcon(): void {
-		const orig = EconHelper.Particles.repl2orig.get(this.ParticlePath)
-		this.ParticlePathNoEcon =
-			orig !== undefined && orig.length !== 0 ? orig[0] : this.ParticlePath
+		this.ParticlePathNoEcon = GetOriginalParticlePath(this.ParticlePath)
 	}
 }
 
