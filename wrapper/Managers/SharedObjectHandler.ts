@@ -4,52 +4,6 @@ import { Events } from "./Events"
 import { EventsSDK } from "./EventsSDK"
 
 ParseProtobufDesc(`
-message CSOEconItemEquipped {
-	optional uint32 new_class = 1;
-	optional uint32 new_slot = 2;
-}
-message CSOEconItemAttribute {
-	optional uint32 def_index = 1 [default = 65535];
-	optional uint32 value = 2;
-	optional bytes value_bytes = 3;
-}
-message CSOEconItem {
-	optional uint64 id = 1;
-	optional uint32 account_id = 2;
-	optional uint32 inventory = 3;
-	optional uint32 def_index = 4;
-	optional uint32 quantity = 5 [default = 1];
-	optional uint32 level = 6 [default = 1];
-	optional uint32 quality = 7 [default = 4];
-	optional uint32 flags = 8 [default = 0];
-	optional uint32 origin = 9 [default = 0];
-	repeated .CSOEconItemAttribute attribute = 12;
-	optional .CSOEconItem interior_item = 13;
-	optional uint32 style = 15 [default = 0];
-	optional uint64 original_id = 16;
-	repeated .CSOEconItemEquipped equipped_state = 18;
-}
-
-message CSOEconItemDropRateBonus {
-	optional uint32 account_id = 1 [(key_field) = true];
-	optional fixed32 expiration_date = 2;
-	optional float bonus = 3 [(key_field) = true];
-	optional uint32 bonus_count = 4;
-	optional uint64 item_id = 5;
-	optional uint32 def_index = 6;
-	optional uint32 seconds_left = 7;
-	optional uint32 booster_type = 8 [(key_field) = true];
-}
-message CSOEconItemTournamentPassport {
-	optional uint32 account_id = 1;
-	optional uint32 league_id = 2;
-	optional uint64 item_id = 3;
-	optional uint32 original_purchaser_id = 4;
-	optional uint32 passports_bought = 5;
-	optional uint32 version = 6;
-	optional uint32 def_index = 7;
-	optional uint32 reward_flags = 8;
-}
 enum PartnerAccountType {
 	PARTNER_NONE = 0;
 	PARTNER_PERFECT_WORLD = 1;
@@ -727,15 +681,6 @@ message CSODOTALobby {
 	optional string event_game_definition = 129;
 	repeated .CSODOTALobby.CExtraMsg extra_startup_messages = 130;
 }
-message CSODOTAGameHeroFavorites {
-	optional uint32 account_id = 1 [(key_field) = true];
-	optional uint32 hero_id = 2 [(key_field) = true];
-}
-message CSODOTAMapLocationState {
-	optional uint32 account_id = 1 [(key_field) = true];
-	optional int32 location_id = 2 [(key_field) = true];
-	optional bool completed = 3;
-}
 message CSODOTAPlayerChallenge {
 	optional uint32 account_id = 1 [(key_field) = true];
 	optional uint32 event_id = 2 [(key_field) = true];
@@ -770,32 +715,10 @@ message CSODOTALobbyInvite {
 	optional fixed64 custom_game_crc = 7;
 	optional fixed32 custom_game_timestamp = 8;
 }
-message CSOEconGameAccountClient {
-	optional uint32 additional_backpack_slots = 1 [default = 0];
-	optional bool trial_account = 2 [default = false];
-	optional bool eligible_for_online_play = 3 [default = true];
-	optional bool need_to_choose_most_helpful_friend = 4;
-	optional bool in_coaches_list = 5;
-	optional fixed32 trade_ban_expiration = 6;
-	optional fixed32 duel_ban_expiration = 7;
-	optional bool made_first_purchase = 9 [default = false];
-}
 `)
 Events.on("SharedObjectChanged", (typeID, reason, data) => {
 	let name: string
 	switch (typeID) {
-		// case SOType.EconItem:
-		// 	name = "CSOEconItem"
-		// 	break
-		case SOType.EconGameAccountClient:
-			name = "CSOEconGameAccountClient"
-			break
-		case SOType.DropRateBonus:
-			name = "CSOEconItemDropRateBonus"
-			break
-		case SOType.ItemTournamentPassport:
-			name = "CSOEconItemTournamentPassport"
-			break
 		case SOType.GameAccountClient:
 			name = "CSODOTAGameAccountClient"
 			break
@@ -807,12 +730,6 @@ Events.on("SharedObjectChanged", (typeID, reason, data) => {
 			break
 		case SOType.PartyInvite:
 			name = "CSODOTAPartyInvite"
-			break
-		case SOType.GameHeroFavorites:
-			name = "CSODOTAGameHeroFavorites"
-			break
-		case SOType.MapLocationState:
-			name = "CSODOTAMapLocationState"
 			break
 		case SOType.PlayerChallenge:
 			name = "CSODOTAPlayerChallenge"
