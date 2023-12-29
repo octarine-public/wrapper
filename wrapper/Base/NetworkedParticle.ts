@@ -1,5 +1,4 @@
 import { ParticleAttachment } from "../Enums/ParticleAttachment"
-import * as EconHelper from "../Managers/EconHelper"
 import { Events } from "../Managers/Events"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { FakeUnit } from "../Objects/Base/FakeUnit"
@@ -128,7 +127,7 @@ export class NetworkedParticle {
 		public readonly Attach: ParticleAttachment,
 		public AttachedTo: Nullable<Unit | FakeUnit>
 	) {
-		const orig = EconHelper.Particles.repl2orig.get(this.Path)
+		const orig = GetOriginalParticlePath(this.Path)
 		this.PathNoEcon = orig !== undefined && orig.length !== 0 ? orig[0] : this.Path
 		NetworkedParticle.Instances.set(this.Index, this)
 		this.EndTime = ApproximateParticleLifetime(this.Path)

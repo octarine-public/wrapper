@@ -4,7 +4,6 @@ import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { Vector4 } from "../Base/Vector4"
 import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
-import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { MapValueToNumber } from "./ParseUtils"
 
@@ -261,8 +260,8 @@ function ParseEntityKeyValues(entityKeyValues: RecursiveMapValue[]) {
 	}
 }
 
-function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
-	const kv = stream.ParseKV()
+function ParseEntityLumpInternal(path: string): void {
+	const kv = parseKV(path + "_c")
 	if (kv.has("m_childLumps")) {
 		const childLumps = kv.get("m_childLumps")
 		if (!Array.isArray(childLumps)) {
@@ -270,16 +269,8 @@ function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
 		}
 		for (let index = 0, end = childLumps.length; index < end; index++) {
 			const childLump = childLumps[index]
-			if (typeof childLump !== "string") {
-				continue
-			}
-			const childLumpBuf = fopen(`${childLump}_c`)
-			if (childLumpBuf !== undefined) {
-				try {
-					ParseEntityLumpInternal(new FileBinaryStream(childLumpBuf))
-				} finally {
-					childLumpBuf.close()
-				}
+			if (typeof childLump === "string") {
+				ParseEntityLumpInternal(childLump)
 			}
 		}
 	}
@@ -294,9 +285,9 @@ function ParseEntityLumpInternal(stream: ReadableBinaryStream): void {
 
 export let EntityDataLump: EntityDataMap[] = []
 
-export function ParseEntityLump(stream: FileBinaryStream): void {
+export function ParseEntityLump(path: string): void {
 	try {
-		ParseEntityLumpInternal(stream)
+		ParseEntityLumpInternal(path)
 	} catch (e) {
 		console.error("Error in EntityLump init", e)
 	}

@@ -1,5 +1,4 @@
 import { WrapperClass } from "../../Decorators"
-import { ItemHealthBarOffsets, ItemNames } from "../../Managers/EconHelper"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { RegisterFieldHandler } from "../NativeToSDK"
@@ -7,7 +6,7 @@ import { Entity } from "./Entity"
 
 @WrapperClass("CEconWearable")
 export class Wearable extends Entity {
-	public ItemDefinitionIndex = 0n
+	public ItemDefinitionIndex = 0
 	public ItemName = ""
 	public HealthBarOffset: Nullable<number>
 	public AdditionalWearable: Nullable<Wearable>
@@ -16,16 +15,13 @@ export class Wearable extends Entity {
 	public get Name() {
 		return this.ItemName
 	}
-	public Update() {
-		this.ItemName = ItemNames.get(this.ItemDefinitionIndex) ?? ""
-		this.HealthBarOffset = ItemHealthBarOffsets.get(this.ItemDefinitionIndex)
-	}
 }
 export const Wearables = EntityManager.GetEntitiesByClass(Wearable)
 
 RegisterFieldHandler(Wearable, "m_iItemDefinitionIndex", (ent, newVal) => {
-	ent.ItemDefinitionIndex = newVal as bigint
-	ent.Update()
+	ent.ItemDefinitionIndex = Number(newVal as bigint)
+	ent.ItemName = GetEconItemName(ent.ItemDefinitionIndex) ?? ""
+	ent.HealthBarOffset = GetEconItemHealthBarOffset(ent.ItemDefinitionIndex)
 })
 RegisterFieldHandler(Wearable, "m_hAdditionalWearable", (ent, newVal) => {
 	ent.AdditionalWearable_ = newVal as number

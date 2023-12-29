@@ -5,8 +5,8 @@ export class CMaterial {
 	public readonly NumberAttributes = new Map<string, number>()
 	public readonly StringAttributes = new Map<string, string>()
 	public readonly Flags = MaterialFlags.None
-	constructor(stream: ReadableBinaryStream) {
-		const kv = stream.ParseKV()
+	constructor(path: string) {
+		const kv = parseKV(path)
 		if (kv.size === 0) {
 			throw "Material is an invalid KV"
 		}
@@ -83,6 +83,6 @@ export class CMaterial {
 	}
 }
 
-export function ParseMaterial(stream: ReadableBinaryStream): CMaterial {
-	return new CMaterial(stream)
+export function ParseMaterial(path: string): CMaterial {
+	return new CMaterial(path)
 }
