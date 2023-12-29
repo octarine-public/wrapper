@@ -22,9 +22,7 @@ export class Projectile {
 	}
 
 	public UpdateParticlePathNoEcon(): void {
-		const orig = GetOriginalParticlePath(this.ParticlePath)
-		this.ParticlePathNoEcon =
-			orig !== undefined && orig.length !== 0 ? orig[0] : this.ParticlePath
+		this.ParticlePathNoEcon = GetOriginalParticlePath(this.ParticlePath)
 	}
 }
 
