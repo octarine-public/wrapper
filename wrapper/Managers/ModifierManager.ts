@@ -13,8 +13,12 @@ import {
 import { EventsSDK } from "./EventsSDK"
 import { StringTables } from "./StringTables"
 
+const queuedEnts: (Unit | Ability)[] = []
+const queuedCooldown = new Set<Ability>()
+
 const activeModifiers = new Map<number, Modifier>()
 const activeModifiersRaw = new Map<number, IModifier>()
+
 export const ModifierManager = new (class CModifierManager {
 	public get Modifiers() {
 		return Array.from(activeModifiers.values())
@@ -195,7 +199,6 @@ function EmitModifierRemoved(mod: Nullable<Modifier>) {
 	}
 }
 
-const queuedEnts: (Unit | Ability)[] = []
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof Unit || ent instanceof Ability) {
 		queuedEnts.push(ent)
@@ -204,6 +207,9 @@ EventsSDK.on("PreEntityCreated", ent => {
 
 EventsSDK.on("EntityDestroyed", ent => {
 	if (ent instanceof Unit || ent instanceof Ability) {
+		if (ent instanceof Ability) {
+			queuedCooldown.delete(ent)
+		}
 		queuedEnts.remove(ent)
 	}
 })
@@ -235,6 +241,29 @@ EventsSDK.on("PostDataUpdate", () => {
 		}
 	}
 	queuedEnts.clear()
+})
+
+EventsSDK.on("AbilityNetworkedCooldown", abil => {
+	if (queuedCooldown.has(abil) || abil.Cooldown === 0) {
+		return
+	}
+	queuedCooldown.add(abil)
+})
+
+EventsSDK.on("Tick", () => {
+	if (!queuedCooldown.size) {
+		return
+	}
+	activeModifiers.forEach(mod => {
+		if (mod.Ability === undefined || !queuedCooldown.has(mod.Ability)) {
+			return
+		}
+		// see: modifier_item_tranquil_boots
+		if (mod.Ability.Cooldown === 0) {
+			queuedCooldown.delete(mod.Ability)
+		}
+		mod.AbilityCooldownChanged()
+	})
 })
 
 EventsSDK.on("EntityDestroyed", ent => {

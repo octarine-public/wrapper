@@ -5,7 +5,7 @@ import { Modifier } from "../../Base/Modifier"
 export class modifier_havoc_hammer_slow extends Modifier {
 	public readonly IsDebuff = true
 
-	protected SetAmplifierMoveSpeed(specialName = "slow", subtract = true): void {
-		super.SetAmplifierMoveSpeed(specialName, subtract)
+	protected SetMoveSpeedAmplifier(specialName = "slow", subtract = true): void {
+		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
 }

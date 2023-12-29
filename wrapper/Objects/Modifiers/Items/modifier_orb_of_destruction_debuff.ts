@@ -5,14 +5,12 @@ import { Modifier } from "../../Base/Modifier"
 export class modifier_orb_of_destruction_debuff extends Modifier {
 	public readonly IsDebuff = true
 
-	protected SetAmplifierMoveSpeed(
-		specialName = this.Caster?.IsRanged ? "slow_range" : "slow_melee"
-	): void {
-		if (this.Parent === undefined) {
+	protected SetMoveSpeedAmplifier(_specialName?: string, subtract = true): void {
+		const owner = this.Parent
+		if (owner === undefined) {
 			return
 		}
-		this.BonusMoveSpeedAmplifier = !this.Parent.IsUnslowable
-			? -this.GetSpecialValue(specialName) / 100
-			: 0
+		const specialName = `slow_${owner.IsRanged ? "range" : "melee"}`
+		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
 }

@@ -5,7 +5,7 @@ import { Modifier } from "../../Base/Modifier"
 export class modifier_ogre_seal_totem_slow extends Modifier {
 	public readonly IsDebuff = true
 
-	protected SetAmplifierMoveSpeed(specialName = "slow", subtract = false): void {
-		super.SetAmplifierMoveSpeed(specialName, subtract)
+	protected SetMoveSpeedAmplifier(specialName = "slow", subtract = false): void {
+		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
 }

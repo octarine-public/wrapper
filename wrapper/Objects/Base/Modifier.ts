@@ -20,7 +20,7 @@ import { Unit } from "./Unit"
 const scepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
 export class Modifier {
-	private static get HasDebug(): boolean {
+	protected static get HasDebug(): boolean {
 		return (globalThis as any)?.DEBUGGER_INSTALLED ?? false
 	}
 
@@ -114,7 +114,17 @@ export class Modifier {
 	/** @readonly */
 	public BonusArmorAmplifier = 0
 	/** @readonly */
-	public BonusArmorAmplifierStack = 0
+	public BonusArmorAmplifierStack = false
+
+	// bonus vision
+	/** @readonly */
+	public BonusDayVision = 0
+	/** @readonly */
+	public BonusDayVisionStack = false
+	/** @readonly */
+	public BonusNightVision = 0
+	/** @readonly */
+	public BonusNightVisionStack = false
 
 	public readonly Index: number
 	public readonly SerialNumber: number
@@ -146,18 +156,19 @@ export class Modifier {
 	public Caster: Nullable<Unit>
 	public AuraOwner: Nullable<Unit>
 
-	constructor(public kv: IModifier) {
-		this.Index = this.kv.Index as number
-		this.SerialNumber = this.kv.SerialNum as number
+	/** @description need maybe only for spent abilities */
+	protected CustomAbilityName: Nullable<string> = undefined
 
-		this.IsAura = this.kv.IsAura as boolean
+	constructor(public kv: IModifier) {
+		this.Index = this.kv.Index ?? -1
+		this.SerialNumber = this.kv.SerialNum ?? -1
+		this.IsAura = this.kv.IsAura ?? false
 
 		const luaName = this.kv.LuaName
 		const byModifierClass = StringTables.GetString(
 			"ModifierNames",
 			this.kv.ModifierClass as number
 		)
-
 		this.Name = luaName === undefined || luaName === "" ? byModifierClass : luaName
 
 		const ddAbilityID = this.kv.DDAbilityID
@@ -167,11 +178,6 @@ export class Modifier {
 				: undefined
 		this.DDAbilityName = ddAbilityName ?? "ability_base"
 	}
-
-	public IsEnemy(team = this.Caster?.Team ?? GameState.LocalTeam) {
-		return this.Parent?.Team !== team
-	}
-
 	// TODO: rework this after add ModifierManager
 	public get InvisibilityLevel(): number {
 		if (
@@ -252,6 +258,10 @@ export class Modifier {
 		return new Vector4(vec.x, vec.y, vec.z, vec.w)
 	}
 
+	public IsEnemy(team = this.Caster?.Team ?? GameState.LocalTeam) {
+		return this.Parent?.Team !== team
+	}
+
 	public IsMagicImmune(unit?: Unit) {
 		return (unit ?? this.Parent)?.IsMagicImmune ?? false
 	}
@@ -274,6 +284,12 @@ export class Modifier {
 
 	public UnitStateChaged(): void {
 		this.updateAllSpecialValues()
+	}
+
+	public AbilityCooldownChanged(canBeUpdate = false): void {
+		if (canBeUpdate) {
+			this.updateAllSpecialValues()
+		}
 	}
 
 	public Update(): void {
@@ -383,6 +399,14 @@ export class Modifier {
 		return true
 	}
 
+	public ShouldUnslowable(unit?: Unit): boolean {
+		return (
+			this.IsUnslowable(unit) ||
+			this.IsMagicImmune(unit) ||
+			this.IsDebuffImmune(unit)
+		)
+	}
+
 	protected AddModifier(): boolean {
 		if (this.Parent === undefined || this.Parent.Buffs.includes(this)) {
 			return false
@@ -431,17 +455,14 @@ export class Modifier {
 		if (level === 0 || level < lvlAbil) {
 			level = lvlAbil
 		}
+		if (this.CustomAbilityName !== undefined) {
+			return this.byAbilityData(this.CustomAbilityName, specialName, level)
+		}
 		if (abil === undefined || level === 0) {
 			return 0
 		}
 		const specialValue = abil.GetSpecialValue(specialName, level)
-		if (specialValue === 0 && Modifier.HasDebug) {
-			console.error(
-				`${this.Name}:`,
-				"Failed to get special value",
-				`[${specialName}]`
-			)
-		}
+		this.SetExceptionMessage(specialValue)
 		return specialValue
 	}
 
@@ -449,7 +470,7 @@ export class Modifier {
 		if (specialName === undefined) {
 			return
 		}
-		const value = this.GetSpecialValueByState(specialName)
+		const value = this.GetSpecialSpeedByState(specialName)
 		this.FixedMoveSpeed = subtract ? value * -1 : value
 	}
 
@@ -457,27 +478,77 @@ export class Modifier {
 		if (specialName === undefined) {
 			return
 		}
-		const value = this.GetSpecialValueByState(specialName)
+		const value = this.GetSpecialSpeedByState(specialName)
 		this.BonusMoveSpeed = subtract ? value * -1 : value
 	}
 
-	protected GetSpecialValueByState(specialName: string): number {
-		const value = this.GetSpecialValue(specialName)
-		const state = this.IsUnslowable() || this.IsMagicImmune() || this.IsDebuffImmune()
-		return state && this.IsDebuff && this.IsEnemy() ? 0 : value
-	}
-
-	protected SetAmplifierMoveSpeed(specialName?: string, subtract = false) {
+	protected SetBonusDayVision(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
 		}
-		const value = this.GetSpecialValueByState(specialName)
+		const value = this.GetSpecialValue(specialName)
+		this.BonusDayVision = subtract ? value * -1 : value
+	}
+
+	protected SetBonusNightVision(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.BonusNightVision = subtract ? value * -1 : value
+	}
+
+	protected GetSpecialSpeedByState(specialName: string): number {
+		const state = this.ShouldUnslowable()
+		const value = this.GetSpecialValue(specialName)
+		return state && this.IsDebuff && this.IsEnemy() ? 0 : value
+	}
+
+	/**
+	 * @description Sets the amplifier move speed based on the provided special name.
+	 * @param {string} specialName - The special name to use for calculation.
+	 * @param {boolean} subtract - Optional. Whether to subtract the calculated value.
+	 */
+	protected SetMoveSpeedAmplifier(
+		specialName?: string,
+		subtract: boolean = false
+	): void {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialSpeedByState(specialName)
 		this.BonusMoveSpeedAmplifier = (subtract ? value * -1 : value) / 100
 	}
 
+	protected SetExceptionMessage(value: number) {
+		if (value !== 0 || !Modifier.HasDebug) {
+			return
+		}
+		console.error(`${this.Name}:`, "Failed to get special value", `[${value}]`)
+	}
+
+	protected byAbilityData(
+		abilName: string,
+		specialName: string,
+		level: number
+	): number {
+		const abilityData = AbilityData.GetAbilityByName(abilName)
+		if (abilityData === undefined || level === 0) {
+			return 0
+		}
+		const specialValue = abilityData.GetSpecialValue(specialName, level)
+		this.SetExceptionMessage(specialValue)
+		return specialValue
+	}
+
 	private updateAllSpecialValues() {
+		// bonus vision
+		this.SetBonusDayVision()
+		this.SetBonusNightVision()
+
+		// bonus move speed
 		this.SetFixedMoveSpeed()
 		this.SetBonusMoveSpeed()
-		this.SetAmplifierMoveSpeed()
+		this.SetMoveSpeedAmplifier()
 	}
 }

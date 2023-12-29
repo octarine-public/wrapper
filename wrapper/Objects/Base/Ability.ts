@@ -520,6 +520,7 @@ RegisterFieldHandler(
 	(abil, newValue) => {
 		abil.Cooldown_ = abil.CurrentCharges !== 0 ? 0 : Math.max(newValue as number, 0)
 		abil.CooldownChangeTime = GameState.RawGameTime
+		EventsSDK.emit("AbilityNetworkedCooldown", false, abil)
 	}
 )
 RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, newValue) => {
@@ -530,4 +531,5 @@ RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, newValue) => {
 RegisterFieldHandler(Ability, "m_fCooldown", (abil, newValue) => {
 	abil.Cooldown_ = newValue as number
 	abil.CooldownChangeTime = GameState.RawGameTime
+	EventsSDK.emit("AbilityNetworkedCooldown", false, abil)
 })

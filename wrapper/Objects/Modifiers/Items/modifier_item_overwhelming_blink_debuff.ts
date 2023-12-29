@@ -5,10 +5,10 @@ import { Modifier } from "../../Base/Modifier"
 export class modifier_item_overwhelming_blink_debuff extends Modifier {
 	public readonly IsDebuff = true
 
-	protected SetAmplifierMoveSpeed(
+	protected SetMoveSpeedAmplifier(
 		specialName = "movement_slow",
 		subtract = true
 	): void {
-		super.SetAmplifierMoveSpeed(specialName, subtract)
+		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
 }

@@ -4,16 +4,14 @@ import { Modifier } from "../../Base/Modifier"
 @WrapperClassModifier()
 export class modifier_item_dustofappearance extends Modifier {
 	public readonly IsDebuff = true
+	public readonly CustomAbilityName = "item_dust"
 
-	protected SetAmplifierMoveSpeed(specialName = "movespeed", subtract = false): void {
-		super.SetAmplifierMoveSpeed(specialName, subtract)
+	protected SetMoveSpeedAmplifier(specialName = "movespeed", subtract = false): void {
+		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
 
-	protected GetSpecialValueByState(specialName: string): number {
-		let value = this.GetSpecialValue(specialName)
-		if (this.IsUnslowable() || this.IsMagicImmune() || this.IsDebuffImmune()) {
-			value = 0
-		}
-		return !this.IsInvisible() ? 0 : value
+	protected GetSpecialSpeedByState(specialName: string): number {
+		const specialValue = this.GetSpecialValue(specialName)
+		return !this.ShouldUnslowable() && this.IsInvisible() ? specialValue : 0
 	}
 }

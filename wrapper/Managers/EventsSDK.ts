@@ -423,6 +423,11 @@ interface EventsSDK extends EventEmitter {
 	): EventEmitter
 	on(
 		name: "IsInAbilityPhase",
+		listener: (unit: Ability) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "AbilityNetworkedCooldown",
 		listener: (ability: Ability) => void,
 		priority?: number
 	): EventEmitter

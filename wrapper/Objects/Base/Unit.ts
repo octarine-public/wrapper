@@ -76,6 +76,12 @@ export class Unit extends Entity {
 	public NetworkActivityStartTime = 0
 	public NetworkSequenceIndex = 0
 	public HPRegenCounter = 0
+	/**
+	 * @readonly
+	 * @description The target angle of the unit, NOTE: need test only local hero?
+	 */
+	@NetworkedBasicField("m_nTargetAngle")
+	public TargetAngle = 0
 	@NetworkedBasicField("m_flHealthThinkRegen")
 	public HPRegen = 0
 	@NetworkedBasicField("m_flManaThinkRegen")
@@ -93,7 +99,7 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_iDamageBonus")
 	public BonusDamage = 0
 	@NetworkedBasicField("m_iDayTimeVisionRange")
-	public DayVision = 0
+	public NetworkedDayVision = 0
 	@NetworkedBasicField("m_flDeathTime")
 	public DeathTime = 0
 	@NetworkedBasicField("m_nArcanaLevel")
@@ -104,7 +110,6 @@ export class Unit extends Entity {
 	public HasUpgradeableAbilities = false
 	@NetworkedBasicField("m_bCanBeDominated")
 	public IsDominatable = false
-	public IsIllusion_ = false
 	@NetworkedBasicField("m_iAttackCapabilities")
 	public AttackCapabilities = 0
 	@NetworkedBasicField("m_iDamageMin")
@@ -117,10 +122,14 @@ export class Unit extends Entity {
 	public IsPhantom = false
 	@NetworkedBasicField("m_bIsSummoned")
 	public IsSummoned = false
-	@NetworkedBasicField("m_flLastDealtDamageTime")
-	public LastDealtDamageTime = 0
 	@NetworkedBasicField("m_iRecentDamage")
 	public RecentDamage = 0
+	@NetworkedBasicField("m_flLastAttackTime")
+	public LastAttackTime = 0
+	@NetworkedBasicField("m_flLastDamageTime")
+	public LastDamageTime = 0
+	@NetworkedBasicField("m_flLastDealtDamageTime")
+	public LastDealtDamageTime = 0
 	@NetworkedBasicField("m_iMoveSpeed")
 	public readonly NetworkBaseMoveSpeed = 0
 	@NetworkedBasicField("m_bIsWaitingToSpawn")
@@ -136,12 +145,19 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_flMaxMana")
 	public MaxMana = 0
 	@NetworkedBasicField("m_iNightTimeVisionRange")
-	public NightVision = 0
+	public NetworkedNightVision = 0
 	@NetworkedBasicField("m_flTauntCooldown")
 	public TauntCooldown = 0
 	@NetworkedBasicField("m_nUnitState64", EPropertyType.UINT64)
 	public UnitStateNetworked = 0n
-
+	@NetworkedBasicField("m_iXPBounty")
+	public XPBounty = 0
+	@NetworkedBasicField("m_iXPBountyExtra")
+	public XPBountyExtra = 0
+	@NetworkedBasicField("m_iGoldBountyMin")
+	public GoldBountyMin = 0
+	@NetworkedBasicField("m_iGoldBountyMax")
+	public GoldBountyMax = 0
 	@NetworkedBasicField("m_nHealthBarOffsetOverride")
 	public HealthBarOffsetOverride = 0
 	public HealthBarOffset_: Nullable<number>
@@ -152,14 +168,6 @@ export class Unit extends Entity {
 	public readonly TotalItems = new Array<Nullable<Item>>(MAX_ITEMS).fill(undefined)
 	public MyWearables: Wearable[] = []
 	public MyWearables_: number[] = []
-	@NetworkedBasicField("m_iXPBounty")
-	public XPBounty = 0
-	@NetworkedBasicField("m_iXPBountyExtra")
-	public XPBountyExtra = 0
-	@NetworkedBasicField("m_iGoldBountyMin")
-	public GoldBountyMin = 0
-	@NetworkedBasicField("m_iGoldBountyMax")
-	public GoldBountyMax = 0
 	public LastActivity = 0 as GameActivity
 	public LastActivitySequenceVariant = 0
 	public LastActivityEndTime = 0
@@ -204,7 +212,11 @@ export class Unit extends Entity {
 	public OwnerNPC: Nullable<Unit> = undefined
 
 	public TPStartTime = -1
-
+	/**
+	 * @ignore
+	 * @internal
+	 */
+	public IsIllusion_ = false
 	/**
 	 * @ignore
 	 * @internal
@@ -250,6 +262,42 @@ export class Unit extends Entity {
 		return this.NetworkBaseMoveSpeed
 	}
 
+	public get NightVision() {
+		let totalBonus = this.NetworkedNightVision
+		const arrBuffs = this.Buffs
+		const names = new Set<string>()
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.BonusNightVision) {
+				continue
+			}
+			if (buff.BonusNightVisionStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus += buff.BonusNightVision
+		}
+		return totalBonus
+	}
+
+	public get DayVision() {
+		let totalBonus = this.NetworkedDayVision
+		const arrBuffs = this.Buffs
+		const names = new Set<string>()
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.BonusDayVision) {
+				continue
+			}
+			if (buff.BonusDayVisionStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus += buff.BonusDayVision
+		}
+		return totalBonus
+	}
+
 	/**
 	 * The vision value
 	 * @description Returns the vision value based on the current game state.
@@ -280,6 +328,11 @@ export class Unit extends Entity {
 
 	public get MoveSpeedBaseData() {
 		return this.UnitData.BaseMovementSpeed
+	}
+
+	// TODO
+	public get MoveSpeedResistance() {
+		return 0
 	}
 
 	public get FixedMoveSpeed() {
@@ -314,15 +367,15 @@ export class Unit extends Entity {
 	}
 
 	public get MoveSpeedBonus() {
-		let totalBonus = 0
 		const names = new Set<string>()
 		const arrBuffs = this.Buffs
+		let totalBonus = 0
 		for (let index = arrBuffs.length - 1; index > -1; index--) {
 			const buff = arrBuffs[index]
 			if (buff.IsBoots || !buff.BonusMoveSpeed) {
 				continue
 			}
-			if (!this.IsValidBonusMoveSpeed(buff)) {
+			if (!this.ShouldCheckMaxSpeed(buff)) {
 				continue
 			}
 			if (buff.BonusMoveSpeedStack && names.has(buff.Name)) {
@@ -356,7 +409,7 @@ export class Unit extends Entity {
 		const amp = this.MoveSpeedAmplify
 		const isLimit = this.IsLimitMoveSpeed
 
-		const baseSpeed = this.MoveSpeedBase + this.MoveSpeedBonus
+		const baseSpeed = this.MoveSpeedBase + this.MoveSpeedBonus //+ this.NightBonusMoveSpeed()
 		const calculateSpeed = Math.max(baseSpeed * amp, SpeedData.Min)
 
 		const totalSpeed = isLimit
@@ -446,7 +499,10 @@ export class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_HEXED)
 	}
 	public get IsInvisible(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVISIBLE)
+		return (
+			this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVISIBLE) ||
+			this.InvisibilityLevel > 0.5
+		)
 	}
 	public get IsNoTeamMoveTo() {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_TEAM_MOVE_TO)
@@ -1591,9 +1647,31 @@ export class Unit extends Entity {
 		})
 	}
 
-	protected IsValidBonusMoveSpeed(modifier: Modifier) {
+	protected ShouldCheckMaxSpeed(modifier: Modifier) {
 		const hasBuffByName = this.IsThirst || this.IsCharge
 		return !(hasBuffByName && modifier.BonusMoveSpeed >= SpeedData.Max)
+	}
+
+	// TODO: refactor
+	protected NightBonusMoveSpeed() {
+		if (!GameRules?.IsNight) {
+			return 0
+		}
+
+		const speed = 30 // fixed value
+		const lastDamageTime = this.LastDamageTime + 5
+		const lastAttackTime = this.LastAttackTime + 5
+		const lastDealtDamageTime = this.LastDealtDamageTime + 5
+
+		const gameRawTime = GameState.RawGameTime
+		if (
+			lastAttackTime > gameRawTime ||
+			(lastDamageTime > gameRawTime && lastDealtDamageTime > gameRawTime)
+		) {
+			return 0
+		}
+
+		return speed
 	}
 }
 export const Units = EntityManager.GetEntitiesByClass(Unit)

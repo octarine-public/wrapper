@@ -5,7 +5,7 @@ import { Modifier } from "../../Base/Modifier"
 export class modifier_item_guardian_greaves extends Modifier {
 	public readonly IsBoots = true
 
-	protected SetBonusMoveSpeed(specialName = "bonus_movement"): void {
-		super.SetBonusMoveSpeed(specialName)
+	protected SetBonusMoveSpeed(specialName = "bonus_movement", subtract = false): void {
+		super.SetBonusMoveSpeed(specialName, subtract)
 	}
 }

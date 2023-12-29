@@ -5,10 +5,9 @@ import { Modifier } from "../../../Base/Modifier"
 export class modifier_necronomicon_archer_purge extends Modifier {
 	public readonly IsDebuff = true
 
-	protected SetAmplifierMoveSpeed(_specialName?: string): void {
-		if (this.Parent === undefined) {
-			return
-		}
-		this.BonusMoveSpeedAmplifier = !this.Parent.IsUnslowable ? -1 : 0
+	protected SetMoveSpeedAmplifier(_specialName?: string, _subtract?: boolean): void {
+		const state = this.ShouldUnslowable()
+		// HARDCODED: no special value data
+		this.BonusMoveSpeedAmplifier = !state ? -1 : 0
 	}
 }

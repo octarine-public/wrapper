@@ -5,7 +5,10 @@ import { Modifier } from "../../../Base/Modifier"
 export class modifier_bloodseeker_thirst extends Modifier {
 	public readonly IsLimitMoveSpeed = false
 
-	protected SetAmplifierMoveSpeed(specialName = "bonus_movement_speed"): void {
+	protected SetMoveSpeedAmplifier(
+		specialName = "bonus_movement_speed",
+		_subtract = false
+	): void {
 		if (this.Parent === undefined || this.Parent.IsNoTeamMoveTo) {
 			return
 		}

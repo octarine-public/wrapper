@@ -6,10 +6,10 @@ export class modifier_item_bullwhip_buff extends Modifier {
 	public readonly IsBuff = true
 	public readonly IsDebuff = true
 
-	protected SetAmplifierMoveSpeed(
+	protected SetMoveSpeedAmplifier(
 		specialName = "speed",
 		subtract = this.IsEnemy()
 	): void {
-		super.SetAmplifierMoveSpeed(specialName, subtract)
+		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
 }
