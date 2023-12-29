@@ -446,10 +446,7 @@ export class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_HEXED)
 	}
 	public get IsInvisible(): boolean {
-		return (
-			this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVISIBLE) ||
-			this.InvisibilityLevel > 0.5
-		)
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVISIBLE)
 	}
 	public get IsNoTeamMoveTo() {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_TEAM_MOVE_TO)
@@ -459,6 +456,9 @@ export class Unit extends Entity {
 	}
 	public get IsMagicImmune(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE)
+	}
+	public get IsDebuffImmune(): boolean {
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_DEBUFF_IMMUNE)
 	}
 	public get IsDeniable(): boolean {
 		if (this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE)) {

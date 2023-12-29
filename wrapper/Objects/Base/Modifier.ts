@@ -159,7 +159,6 @@ export class Modifier {
 		)
 
 		this.Name = luaName === undefined || luaName === "" ? byModifierClass : luaName
-		this.IsDebuff = this.Name.endsWith("_debuff")
 
 		const ddAbilityID = this.kv.DDAbilityID
 		const ddAbilityName =
@@ -167,6 +166,10 @@ export class Modifier {
 				? AbilityData.GetAbilityNameByID(ddAbilityID)
 				: undefined
 		this.DDAbilityName = ddAbilityName ?? "ability_base"
+	}
+
+	public IsEnemy(team = this.Caster?.Team ?? GameState.LocalTeam) {
+		return this.Parent?.Team !== team
 	}
 
 	// TODO: rework this after add ModifierManager
@@ -247,6 +250,26 @@ export class Modifier {
 			return new Vector4().Invalidate()
 		}
 		return new Vector4(vec.x, vec.y, vec.z, vec.w)
+	}
+
+	public IsMagicImmune(unit?: Unit) {
+		return (unit ?? this.Parent)?.IsMagicImmune ?? false
+	}
+
+	public IsUnslowable(unit?: Unit): boolean {
+		return (unit ?? this.Parent)?.IsUnslowable ?? false
+	}
+
+	public IsDebuffImmune(unit?: Unit) {
+		return (unit ?? this.Parent)?.IsDebuffImmune ?? false
+	}
+
+	public IsInvulnerable(unit?: Unit) {
+		return (unit ?? this.Parent)?.IsInvulnerable ?? false
+	}
+
+	public IsInvisible(unit?: Unit) {
+		return (unit ?? this.Parent)?.IsInvisible ?? false
 	}
 
 	public UnitStateChaged(): void {
@@ -422,22 +445,34 @@ export class Modifier {
 		return specialValue
 	}
 
-	protected SetFixedMoveSpeed(specialName?: string) {
-		if (specialName !== undefined) {
-			this.FixedMoveSpeed = this.GetSpecialValue(specialName)
+	protected SetFixedMoveSpeed(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
 		}
+		const value = this.GetSpecialValueByState(specialName)
+		this.FixedMoveSpeed = subtract ? value * -1 : value
 	}
 
-	protected SetBonusMoveSpeed(specialName?: string) {
-		if (specialName !== undefined) {
-			this.BonusMoveSpeed = this.GetSpecialValue(specialName)
+	protected SetBonusMoveSpeed(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
 		}
+		const value = this.GetSpecialValueByState(specialName)
+		this.BonusMoveSpeed = subtract ? value * -1 : value
 	}
 
-	protected SetAmplifierMoveSpeed(specialName?: string) {
-		if (specialName !== undefined) {
-			this.BonusMoveSpeedAmplifier = this.GetSpecialValue(specialName) / 100
+	protected GetSpecialValueByState(specialName: string): number {
+		const value = this.GetSpecialValue(specialName)
+		const state = this.IsUnslowable() || this.IsMagicImmune() || this.IsDebuffImmune()
+		return state && this.IsDebuff && this.IsEnemy() ? 0 : value
+	}
+
+	protected SetAmplifierMoveSpeed(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
 		}
+		const value = this.GetSpecialValueByState(specialName)
+		this.BonusMoveSpeedAmplifier = (subtract ? value * -1 : value) / 100
 	}
 
 	private updateAllSpecialValues() {

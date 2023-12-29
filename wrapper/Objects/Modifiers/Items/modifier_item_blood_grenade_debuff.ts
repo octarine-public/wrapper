@@ -3,12 +3,12 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_blood_grenade_debuff extends Modifier {
-	protected SetAmplifierMoveSpeed(specialName = "movespeed_slow"): void {
-		if (this.Parent === undefined) {
-			return
-		}
-		this.BonusMoveSpeedAmplifier = !this.Parent.IsUnslowable
-			? this.GetSpecialValue(specialName) / 100
-			: 0
+	public readonly IsDebuff = true
+
+	protected SetAmplifierMoveSpeed(
+		specialName = "movespeed_slow",
+		subtract = false
+	): void {
+		super.SetAmplifierMoveSpeed(specialName, subtract)
 	}
 }

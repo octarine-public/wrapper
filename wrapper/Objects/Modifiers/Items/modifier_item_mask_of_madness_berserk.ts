@@ -2,10 +2,11 @@ import { WrapperClassModifier } from "../../../Decorators"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_item_craggy_coat_tanky extends Modifier {
-	public readonly IsDebuff = true
-
-	protected SetBonusMoveSpeed(specialName = "move_speed", subtract = true): void {
+export class modifier_item_mask_of_madness_berserk extends Modifier {
+	protected SetBonusMoveSpeed(
+		specialName = "berserk_bonus_movement_speed",
+		subtract = false
+	): void {
 		super.SetBonusMoveSpeed(specialName, subtract)
 	}
 }
