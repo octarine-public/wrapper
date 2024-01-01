@@ -492,23 +492,23 @@ class CRendererSDK {
 		italic = false,
 		outlined = true
 	): void {
-		if (text === "") {
+		if (text.length === 0) {
 			return
 		}
 
-		const fontID = this.GetFont(fontName, weight, italic)
+		let fontID = this.GetFont(fontName, weight, italic)
 		if (fontID === -1) {
 			return
 		}
-		const vecTranslate = outlined
-			? vecPos.Clone().SubtractScalarX(1).AddScalarY(1)
-			: vecPos
-		this.Translate(vecTranslate)
-		const startPos = this.commandCacheSize
+		if (outlined) {
+			fontID |= 0x8000 // kek
+		}
+
+		this.Translate(vecPos)
 		this.AllocateCommandSpace(CommandID.TEXT, 2 * 2 + 2 * 4)
 		this.commandStream.WriteUint16(fontID)
 		this.commandStream.WriteUint16(Math.round(fontSize + 4))
-		this.commandStream.WriteColor(outlined ? Color.Black : color)
+		this.commandStream.WriteColor(color)
 		const lengthPos = this.commandStream.pos
 		this.commandStream.WriteUint32(0)
 		{
@@ -528,17 +528,6 @@ class CRendererSDK {
 		this.commandStream.RelativeSeek(lengthPos - endPos)
 		this.commandStream.WriteUint32(bytesLen)
 		this.commandStream.RelativeSeek(bytesLen)
-
-		if (outlined) {
-			this.Translate(vecPos)
-			const newPos = this.commandCacheSize,
-				cmdSize = endPos - startPos
-			this.AllocateCommandSpace(CommandID.TEXT, cmdSize - 1)
-			this.commandCache.copyWithin(newPos, startPos, endPos)
-			this.commandStream.RelativeSeek(2 * 2)
-			this.commandStream.WriteColor(color)
-			this.commandStream.RelativeSeek(cmdSize - (this.commandStream.pos - newPos))
-		}
 	}
 	public TextByFlags(
 		text: string,
@@ -1114,8 +1103,8 @@ class CRendererSDK {
 			return
 		}
 		this.AllocateCommandSpace(CommandID.TRANSLATE, 2 * 4)
-		this.commandStream.WriteFloat32(Math.round(vecPos.x))
-		this.commandStream.WriteFloat32(Math.round(vecPos.y))
+		this.commandStream.WriteFloat32(vecPos.x)
+		this.commandStream.WriteFloat32(vecPos.y)
 	}
 	private NormalizedAngle(ang: number): number {
 		while (ang < 0) {
