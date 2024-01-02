@@ -578,7 +578,7 @@ const Monitor = new (class PlayerDataCustomChanged {
 			// necessary improve at GameEvent for level?
 			// example case: doom farm jungle and not visible first 5-10min (without entity)
 			ent.PlayerCustomData.AddGoldAfterTime(
-				abilData.GetSpecialValue("bonus_gold", 1),
+				abilData.GetSpecialValue("bonus_gold", 1, name),
 				abilData.GetMaxCooldownForLevel(1)
 			)
 			return

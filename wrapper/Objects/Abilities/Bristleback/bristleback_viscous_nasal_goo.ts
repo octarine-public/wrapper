@@ -6,4 +6,7 @@ export class bristleback_viscous_nasal_goo extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("radius_scepter", level) : 0
 	}
+	public GetBaseCastRangeForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCastRange", level)
+	}
 }

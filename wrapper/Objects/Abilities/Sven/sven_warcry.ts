@@ -3,7 +3,14 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("sven_warcry")
 export class sven_warcry extends Ability {
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetAOERadiusForLevel(level: number): number {
-		return this.GetSpecialValue("warcry_radius", level)
+		return this.GetSpecialValue(
+			this.Owner?.HasShard ? "shard_radius" : "radius",
+			level
+		)
 	}
 }

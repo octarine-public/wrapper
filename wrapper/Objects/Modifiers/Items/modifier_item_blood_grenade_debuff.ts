@@ -15,8 +15,6 @@ export class modifier_item_blood_grenade_debuff extends Modifier {
 
 	// note: set "lvl is 1" (fixed bug because of dota)
 	protected GetSpecialValue(specialName: string, lvl: number = 1): number {
-		const specialValue = this.byAbilityData(this.CustomAbilityName, specialName, lvl)
-		this.SetExceptionMessage(specialValue)
-		return specialValue
+		return this.byAbilityData(this.CustomAbilityName, specialName, lvl)
 	}
 }

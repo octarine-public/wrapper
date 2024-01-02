@@ -428,6 +428,18 @@ export class Entity {
 	public InFrontFromAngle(angle: number, distance: number): Vector3 {
 		return this.Position.InFrontFromAngle(this.RotationRad + angle, distance)
 	}
+	public GetAngle(
+		position: Vector3 | Entity,
+		rotationDiff = false,
+		currPos = this.Position
+	): number {
+		let rotation = this.RotationRad
+		if (rotationDiff) {
+			rotation += DegreesToRadian(this.RotationDifference)
+		}
+		const vec = position instanceof Entity ? position.Position : position
+		return currPos.FindRotationAngle(vec, rotation)
+	}
 	public FindRotationAngle(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity) {
 			vec = vec.Position

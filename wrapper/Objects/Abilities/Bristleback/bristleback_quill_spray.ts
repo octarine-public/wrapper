@@ -6,4 +6,11 @@ export class bristleback_quill_spray extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
+	}
 }

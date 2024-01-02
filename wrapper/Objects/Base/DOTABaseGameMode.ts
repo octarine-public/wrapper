@@ -9,6 +9,15 @@ export class DOTABaseGameMode extends Entity {
 	@NetworkedBasicField("m_nHUDVisibilityBits")
 	public HUDVisibilityBits: bigint = 0xffffffffffffffffn
 
+	@NetworkedBasicField("m_flMaximumAttackSpeed")
+	public MaximumAttackSpeed: number = 0
+
+	@NetworkedBasicField("m_flMinimumAttackSpeed")
+	public MinimumAttackSpeed: number = 0
+
+	@NetworkedBasicField("m_nCustomGameForceHeroSelectionId")
+	public CustomGameForceHeroSelectionId: number = -1
+
 	public IsHUDVisible(elem: DOTAHUDVisibility): boolean {
 		return this.HUDVisibilityBits.hasBit(BigInt(elem))
 	}

@@ -45,9 +45,34 @@ export const MaxMovementSpeed = 550
 /** @deprecated */
 export const MinAttackSpeed = 20
 
-export const SpeedData = new (class CDataSpeed {
-	public readonly Max = 550
-	public readonly Min = 100
+export const MoveSpeedData = new (class CMoveSpeedData {
+	/**
+	 * @readonly
+	 */
+	public Max = 550
+	/**
+	 * @readonly
+	 */
+	public Min = 100
+})()
+
+export const AttackSpeedData = new (class CAttackSpeedData {
+	/**
+	 * @readonly
+	 */
+	public Max = 0
+	/**
+	 * @readonly
+	 */
+	public Min = 0
+	/**
+	 * @readonly
+	 */
+	public MinHaste = 0
+	/**
+	 * @readonly
+	 */
+	public MaxHaste = 0
 })()
 
 export const Runes = new (class CDataRune {

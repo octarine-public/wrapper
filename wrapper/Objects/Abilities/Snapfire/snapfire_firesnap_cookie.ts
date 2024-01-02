@@ -9,4 +9,7 @@ export class snapfire_firesnap_cookie extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("impact_radius", level)
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }

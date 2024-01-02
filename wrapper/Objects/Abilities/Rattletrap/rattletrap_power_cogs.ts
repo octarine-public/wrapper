@@ -6,4 +6,7 @@ export class rattletrap_power_cogs extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("cogs_radius", level)
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }

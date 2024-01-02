@@ -5,8 +5,8 @@ import { Modifier } from "../../Base/Modifier"
 export class modifier_item_tranquil_boots extends Modifier {
 	public readonly IsBoots = true
 
-	public AbilityCooldownChanged(canBeUpdate = true): void {
-		super.AbilityCooldownChanged(canBeUpdate)
+	public OnAbilityCooldownChanged(): void {
+		this.SetBonusMoveSpeed()
 	}
 
 	protected SetBonusMoveSpeed(_specialName?: string, subtract = false): void {

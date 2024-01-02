@@ -9,4 +9,7 @@ export class lina_laguna_blade extends Ability {
 			? DAMAGE_TYPES.DAMAGE_TYPE_PURE
 			: DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }

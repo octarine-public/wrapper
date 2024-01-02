@@ -27,6 +27,7 @@ import {
 } from "./Objects/Base/Entity"
 import { FakeUnits as _FakeUnits } from "./Objects/Base/FakeUnit"
 import { PlayerResource as _PlayerResource } from "./Objects/Base/PlayerResource"
+import { AbilityData as _AbilityData } from "./Objects/DataBook/AbilityData"
 import { PlayerCustomData as _PlayerCustomData } from "./Objects/DataBook/PlayerCustomData"
 import { SDKClasses } from "./Objects/NativeToSDK"
 import { EntityDataLump as _EntityDataLump } from "./Resources/ParseEntityLump"
@@ -40,6 +41,7 @@ globalThis.Vector2 = _Vector2
 globalThis.Vector3 = _Vector3
 globalThis.Vector4 = _Vector4
 globalThis.AABB = _AABB
+globalThis.AbilityData = _AbilityData
 globalThis.DotaMap = _DotaMap
 globalThis.GameData = _GameData
 globalThis.NetworkedParticle = _NetworkedParticle

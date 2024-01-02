@@ -20,10 +20,6 @@ import { Unit } from "./Unit"
 const scepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
 export class Modifier {
-	protected static get HasDebug(): boolean {
-		return (globalThis as any)?.DEBUGGER_INSTALLED ?? false
-	}
-
 	// TODO: rework this after add ModifierManager
 	public static VisibleForEnemies: string[] = [
 		"modifier_bounty_hunter_track",
@@ -88,15 +84,15 @@ export class Modifier {
 
 	// Base move speed
 	/** @readonly */
-	public BaseMoveSpeed = 0
+	public MoveSpeedBase = 0
 	/** @readonly */
-	public FixedMoveSpeed = 0
+	public MoveSpeedFixed = 0
 
 	// Bonus move speed
 	/** @readonly */
 	public IsBoots = false
 	/** @readonly */
-	public IsLimitMoveSpeed = true
+	public IsMoveSpeedLimit = true
 	/** @readonly */
 	public BonusMoveSpeed = 0
 	/** @readonly */
@@ -121,6 +117,10 @@ export class Modifier {
 	public BonusDayVision = 0
 	/** @readonly */
 	public BonusDayVisionStack = false
+	/** @readonly */
+	public BonusDayVisionAmplifier = 0
+	/** @readonly */
+	public BonusDayVisionAmplifierStack = false
 	/** @readonly */
 	public BonusNightVision = 0
 	/** @readonly */
@@ -282,14 +282,16 @@ export class Modifier {
 		return (unit ?? this.Parent)?.IsInvisible ?? false
 	}
 
-	public UnitStateChaged(): void {
+	public OnUnitStateChaged(): void {
 		this.updateAllSpecialValues()
 	}
 
-	public AbilityCooldownChanged(canBeUpdate = false): void {
-		if (canBeUpdate) {
-			this.updateAllSpecialValues()
-		}
+	public OnAbilityCooldownChanged(): void {
+		// implement in child classes
+	}
+
+	public OnPostDataUpdate(): void {
+		// implement in child classes
 	}
 
 	public Update(): void {
@@ -442,6 +444,7 @@ export class Modifier {
 				EventsSDK.emit("UnitPropertyChanged", false, owner)
 				break
 		}
+
 		this.updateAllSpecialValues()
 		return true
 	}
@@ -450,6 +453,9 @@ export class Modifier {
 		specialName: string,
 		level: number = this.AbilityLevel
 	): number {
+		if (!this.IsValid) {
+			return 0
+		}
 		const abil = this.Ability
 		const lvlAbil = abil?.Level ?? level
 		if (level === 0 || level < lvlAbil) {
@@ -461,9 +467,7 @@ export class Modifier {
 		if (abil === undefined || level === 0) {
 			return 0
 		}
-		const specialValue = abil.GetSpecialValue(specialName, level)
-		this.SetExceptionMessage(specialValue)
-		return specialValue
+		return abil.GetSpecialValue(specialName, level)
 	}
 
 	protected SetFixedMoveSpeed(specialName?: string, subtract = false) {
@@ -471,7 +475,7 @@ export class Modifier {
 			return
 		}
 		const value = this.GetSpecialSpeedByState(specialName)
-		this.FixedMoveSpeed = subtract ? value * -1 : value
+		this.MoveSpeedFixed = subtract ? value * -1 : value
 	}
 
 	protected SetBonusMoveSpeed(specialName?: string, subtract = false) {
@@ -488,6 +492,14 @@ export class Modifier {
 		}
 		const value = this.GetSpecialValue(specialName)
 		this.BonusDayVision = subtract ? value * -1 : value
+	}
+
+	protected SetBonusDayVisionAmplifier(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.BonusDayVisionAmplifier = (subtract ? value * -1 : value) / 100
 	}
 
 	protected SetBonusNightVision(specialName?: string, subtract = false) {
@@ -519,14 +531,6 @@ export class Modifier {
 		const value = this.GetSpecialSpeedByState(specialName)
 		this.BonusMoveSpeedAmplifier = (subtract ? value * -1 : value) / 100
 	}
-
-	protected SetExceptionMessage(value: number) {
-		if (value !== 0 || !Modifier.HasDebug) {
-			return
-		}
-		console.error(`${this.Name}:`, "Failed to get special value", `[${value}]`)
-	}
-
 	protected byAbilityData(
 		abilName: string,
 		specialName: string,
@@ -536,9 +540,7 @@ export class Modifier {
 		if (abilityData === undefined || level === 0) {
 			return 0
 		}
-		const specialValue = abilityData.GetSpecialValue(specialName, level)
-		this.SetExceptionMessage(specialValue)
-		return specialValue
+		return abilityData.GetSpecialValue(specialName, level, abilName)
 	}
 
 	private updateAllSpecialValues() {

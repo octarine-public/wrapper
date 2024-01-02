@@ -1,7 +1,7 @@
 import { Color } from "../../Base/Color"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
-import { SpeedData } from "../../Data/GameData"
+import { MoveSpeedData } from "../../Data/GameData"
 import { GetUnitTexture } from "../../Data/ImageData"
 import { NetworkedBasicField, ReencodeProperty, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
@@ -280,7 +280,25 @@ export class Unit extends Entity {
 		return totalBonus
 	}
 
-	public get DayVision() {
+	public get DayVisionAmplify() {
+		let totalBonus = 1
+		const arrBuffs = this.Buffs
+		const names = new Set<string>()
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.BonusDayVisionAmplifier) {
+				continue
+			}
+			if (buff.BonusDayVisionAmplifierStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus += buff.BonusDayVisionAmplifier
+		}
+		return totalBonus
+	}
+
+	public get DayVisionBonus() {
 		let totalBonus = this.NetworkedDayVision
 		const arrBuffs = this.Buffs
 		const names = new Set<string>()
@@ -296,6 +314,12 @@ export class Unit extends Entity {
 			totalBonus += buff.BonusDayVision
 		}
 		return totalBonus
+	}
+
+	public get DayVision() {
+		const amp = this.DayVisionAmplify
+		const bonus = this.DayVisionBonus
+		return bonus * amp
 	}
 
 	/**
@@ -322,33 +346,33 @@ export class Unit extends Entity {
 		return 0
 	}
 
-	public get IsLimitMoveSpeed() {
-		return this.Buffs.find(buff => !buff.IsLimitMoveSpeed)?.IsLimitMoveSpeed ?? true
+	// ===================================== Move Speed ===================================== //
+	public get IsMoveSpeedLimit() {
+		return this.Buffs.find(buff => !buff.IsMoveSpeedLimit)?.IsMoveSpeedLimit ?? true
 	}
 
 	public get MoveSpeedBaseData() {
 		return this.UnitData.BaseMovementSpeed
 	}
 
-	// TODO
 	public get MoveSpeedResistance() {
 		return 0
 	}
 
-	public get FixedMoveSpeed() {
+	public get MoveSpeedFixed() {
 		return (
 			this.Buffs.toOrderBy(
 				// exclude 0
-				x => x.FixedMoveSpeed === 0,
+				x => x.MoveSpeedFixed === 0,
 				// sort by min
-				x => x.FixedMoveSpeed
-			).find(buff => buff.FixedMoveSpeed !== 0)?.FixedMoveSpeed ?? 0
+				x => x.MoveSpeedFixed
+			).find(buff => buff.MoveSpeedFixed !== 0)?.MoveSpeedFixed ?? 0
 		)
 	}
 
 	public get MoveSpeedBase() {
-		if (this.FixedMoveSpeed !== 0) {
-			return this.FixedMoveSpeed
+		if (this.MoveSpeedFixed !== 0) {
+			return this.MoveSpeedFixed
 		}
 		let baseSpeed = this.NetworkBaseMoveSpeed
 		if (baseSpeed === 0) {
@@ -356,14 +380,14 @@ export class Unit extends Entity {
 		}
 		const buffs = this.Buffs.toOrderBy(
 			// exclude 0
-			x => x.BaseMoveSpeed === 0,
+			x => x.MoveSpeedBase === 0,
 			// sort by min
-			x => x.BaseMoveSpeed
+			x => x.MoveSpeedBase
 		)
-		if (buffs.length === 0 || buffs[0].BaseMoveSpeed === 0) {
+		if (buffs.length === 0 || buffs[0].MoveSpeedBase === 0) {
 			return baseSpeed
 		}
-		return buffs[0].BaseMoveSpeed
+		return buffs[0].MoveSpeedBase
 	}
 
 	public get MoveSpeedBonus() {
@@ -407,17 +431,18 @@ export class Unit extends Entity {
 
 	public get Speed() {
 		const amp = this.MoveSpeedAmplify
-		const isLimit = this.IsLimitMoveSpeed
+		const isLimit = this.IsMoveSpeedLimit
 
 		const baseSpeed = this.MoveSpeedBase + this.MoveSpeedBonus //+ this.NightBonusMoveSpeed()
-		const calculateSpeed = Math.max(baseSpeed * amp, SpeedData.Min)
+		const calculateSpeed = Math.max(baseSpeed * amp, MoveSpeedData.Min)
 
 		const totalSpeed = isLimit
-			? Math.min(SpeedData.Max, Math.max(SpeedData.Min, calculateSpeed))
-			: Math.max(SpeedData.Min, calculateSpeed)
+			? Math.min(MoveSpeedData.Max, Math.max(MoveSpeedData.Min, calculateSpeed))
+			: Math.max(MoveSpeedData.Min, calculateSpeed)
 
 		return totalSpeed >> 0
 	}
+	// ===================================== Move Speed ===================================== //
 
 	public get LastRealPredictedPositionUpdate(): number {
 		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
@@ -725,6 +750,7 @@ export class Unit extends Entity {
 	}
 	public get CastRangeBonus(): number {
 		let castrange = 0
+		// todo buffs
 		const gadgetAura = this.GetBuffByName("modifier_item_spy_gadget_aura")
 		if (gadgetAura !== undefined) {
 			const gadget = gadgetAura.Ability
@@ -811,6 +837,11 @@ export class Unit extends Entity {
 		)
 		const buff = sortBuffs.find(x => x.IsBoots && x.BonusMoveSpeedAmplifier !== 0)
 		return buff?.BonusMoveSpeedAmplifier ?? 0
+	}
+
+	// TODO
+	public GetAttacksPerSecond(_target?: Unit): number {
+		return 0
 	}
 
 	public TexturePath(small?: boolean, team = this.Team): Nullable<string> {
@@ -1050,17 +1081,6 @@ export class Unit extends Entity {
 		return false
 	}
 
-	public GetAngle(vec: Vector3): number {
-		const npcPos = this.Position
-		let angle = Math.abs(
-			Math.atan2(npcPos.y - vec.y, npcPos.x - vec.x) - this.RotationRad
-		)
-		if (angle > Math.PI) {
-			angle = Math.abs(Math.PI * 2 - angle)
-		}
-		return angle
-	}
-
 	public IsManaEnough(abil: Ability) {
 		return this.Mana >= abil.ManaCost
 	}
@@ -1223,7 +1243,6 @@ export class Unit extends Entity {
 			}
 		}
 	}
-
 	/* ================================ ORDERS ================================ */
 	public UseSmartAbility(
 		ability: Ability,
@@ -1649,7 +1668,7 @@ export class Unit extends Entity {
 
 	protected ShouldCheckMaxSpeed(modifier: Modifier) {
 		const hasBuffByName = this.IsThirst || this.IsCharge
-		return !(hasBuffByName && modifier.BonusMoveSpeed >= SpeedData.Max)
+		return !(hasBuffByName && modifier.BonusMoveSpeed >= MoveSpeedData.Max)
 	}
 
 	// TODO: refactor
@@ -1711,7 +1730,7 @@ RegisterFieldHandler(Unit, "m_iPlayerID", (unit, newVal) => {
 RegisterFieldHandler(Unit, "m_nUnitState64", (unit, newVal) => {
 	unit.UnitStateNetworked = ReencodeProperty(newVal, EPropertyType.UINT64) as bigint
 	for (let index = unit.Buffs.length - 1; index > -1; index--) {
-		unit.Buffs[index].UnitStateChaged()
+		unit.Buffs[index].OnUnitStateChaged()
 	}
 	EventsSDK.emit("UnitStateChanged", false, unit)
 })

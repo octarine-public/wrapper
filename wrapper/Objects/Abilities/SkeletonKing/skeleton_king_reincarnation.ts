@@ -9,4 +9,7 @@ export class skeleton_king_reincarnation extends Ability {
 			level
 		)
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }

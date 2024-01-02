@@ -10,4 +10,7 @@ export class invoker_ghost_walk extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("area_of_effect", level)
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }

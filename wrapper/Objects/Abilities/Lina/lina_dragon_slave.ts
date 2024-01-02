@@ -18,4 +18,7 @@ export class lina_dragon_slave extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("dragon_slave_width_initial", level)
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }

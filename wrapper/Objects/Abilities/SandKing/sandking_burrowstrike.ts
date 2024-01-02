@@ -4,15 +4,11 @@ import { Ability } from "../../Base/Ability"
 @WrapperClass("sandking_burrowstrike")
 export class sandking_burrowstrike extends Ability {
 	public get Speed(): number {
-		if (this.Owner?.HasScepter) {
-			return this.GetSpecialValue("burrow_speed_scepter")
-		}
-		return this.GetSpecialValue("burrow_speed")
+		return this.GetSpecialValue(
+			`burrow_speed${this.Owner?.HasScepter ? "_scepter" : ""}`
+		)
 	}
 	public GetBaseCastRangeForLevel(level: number): number {
-		if (this.Owner?.HasScepter) {
-			return this.GetSpecialValue("cast_range_scepter", level)
-		}
-		return super.GetBaseCastRangeForLevel(level)
+		return this.GetSpecialValue("AbilityCastRange", level)
 	}
 }

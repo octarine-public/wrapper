@@ -6,4 +6,7 @@ export class warlock_upheaval extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("aoe", level)
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }

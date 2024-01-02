@@ -12,4 +12,7 @@ export class queenofpain_sonic_wave extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("starting_aoe", level)
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }

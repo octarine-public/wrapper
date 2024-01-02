@@ -21,6 +21,8 @@ export class AbilityData {
 	public static globalStorage: Map<string, AbilityData> = new Map()
 	public static empty = new AbilityData("", new Map())
 
+	private static readonly cacheWithoutSpecialData = new Set<string>()
+
 	public static GetAbilityByName(name: string): Nullable<AbilityData> {
 		return AbilityData.globalStorage.get(name)
 	}
@@ -41,6 +43,10 @@ export class AbilityData {
 			}
 		}
 		return undefined
+	}
+
+	protected static get HasDebug(): boolean {
+		return (globalThis as any)?.DEBUGGER_INSTALLED ?? false
 	}
 
 	public readonly AbilityBehavior: number // DOTA_ABILITY_BEHAVIOR bitmask
@@ -257,39 +263,37 @@ export class AbilityData {
 			: DOTA_ITEM_DISASSEMBLE.DOTA_ITEM_DISASSEMBLE_NONE
 	}
 
-	public GetSpecialValue(name: string, level: number): number {
+	public GetSpecialValue(
+		specialName: string,
+		level: number,
+		abilityName?: string
+	): number {
 		if (level <= 0) {
 			return 0
 		}
-		const ar = this.GetCachedSpecialValue(name)
+		const ar = this.GetCachedSpecialValue(specialName, abilityName)
 		if (ar === undefined) {
 			return 0
 		}
 		return ar[0][Math.min(level, ar[0].length) - 1]
 	}
 
-	public GetSpecialValueWithTalent(owner: Unit, name: string, level: number): number {
+	public GetSpecialValueWithTalent(
+		owner: Unit,
+		specialName: string,
+		level: number,
+		abilityName: string
+	): number {
 		if (level <= 0) {
 			return 0
 		}
 
-		const ar = this.GetCachedSpecialValue(name)
+		const ar = this.GetCachedSpecialValue(specialName, abilityName)
 		if (ar === undefined || !ar[0].length) {
 			return 0
 		}
 
 		let baseVal = ar[0][Math.min(level, ar[0].length) - 1]
-		if (
-			!baseVal &&
-			!(ar[1] === "special_bonus_shard" || ar[1] === "special_bonus_scepter")
-		) {
-			return baseVal
-		}
-
-		if (name.startsWith("special_bonus_unique_")) {
-			return this.GetSpecialTalent(name, owner)
-		}
-
 		if (
 			(ar[1] === "special_bonus_shard" && !owner.HasShard) ||
 			(ar[1] === "special_bonus_scepter" && !owner.HasScepter)
@@ -297,18 +301,44 @@ export class AbilityData {
 			return baseVal
 		}
 
+		if (specialName.startsWith("special_bonus_unique_")) {
+			return this.GetSpecialTalent(specialName, owner, abilityName)
+		}
+
 		const val = ar[2]
-		const talentVal =
-			typeof val === "string"
-				? this.GetSpecialValue(val, level)
-				: Array.isArray(val)
-					? val[Math.min(level, val.length) - 1]
-					: this.HasSpecialTalent(ar[1], owner)
-						? val
-						: 0
+
+		let talentVal = 0
+		switch (true) {
+			case typeof val === "string":
+				talentVal = this.GetSpecialValue(val, level, abilityName)
+				break
+			case Array.isArray(val):
+				if (val.length === 0) {
+					talentVal = 0
+					break
+				}
+				talentVal = val[Math.min(level, val.length) - 1]
+				break
+			default:
+				if (
+					ar[1] === "special_bonus_shard" ||
+					ar[1] === "special_bonus_scepter"
+				) {
+					talentVal = Array.isArray(val)
+						? val[Math.min(level, val.length) - 1]
+						: val
+					break
+				}
+				talentVal =
+					ar[1].length !== 0 && this.HasSpecialTalent(ar[1], owner) ? val : 0
+				break
+		}
 
 		switch (ar[3]) {
 			default:
+			case EDOTASpecialBonusOperation.SPECIAL_BONUS_SET:
+				baseVal = talentVal
+				break
 			case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
 				baseVal += talentVal
 				break
@@ -400,12 +430,12 @@ export class AbilityData {
 		]
 	}
 
-	private GetSpecialTalent(name: string, owner: Unit) {
+	private GetSpecialTalent(name: string, owner: Unit, abilityName: string) {
 		const talent = owner.GetAbilityByName(name)
 		if (talent === undefined || talent.Level === 0) {
 			return 0
 		}
-		return this.GetSpecialValue(name, talent.Level)
+		return this.GetSpecialValue(name, talent.Level, abilityName)
 	}
 
 	private HasSpecialTalent(name: string, owner: Unit) {
@@ -491,6 +521,7 @@ export class AbilityData {
 				}
 				return
 			}
+
 			let linkedSpecialBonus = "",
 				talentChangeStr = "+0"
 			special.forEach((specialValue, specialName) => {
@@ -516,30 +547,38 @@ export class AbilityData {
 			)
 			let linkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 			let talentChange: number | number[]
-			if (talentChangeStr.startsWith("x")) {
-				linkedSpecialBonusOperation =
-					EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY
-				talentChange = this.parseFloat(talentChangeStr.substring(1))
-			} else if (
-				talentChangeStr.startsWith("+") ||
-				talentChangeStr.startsWith("-")
-			) {
-				const isArray = talentChangeStr.indexOf(" ") !== -1
-				const isPercent =
-					talentChangeStr[talentChangeStr.length - 1].indexOf("%") !== -1
-				linkedSpecialBonusOperation = !isPercent
-					? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-					: talentChangeStr.startsWith("+")
-						? EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD
-						: EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT
-				talentChange = isArray
-					? talentChangeStr
-							.split(" ")
-							.map(str => Math.abs(this.parseFloat(str)))
-					: Math.abs(this.parseFloat(talentChangeStr))
-			} else {
-				linkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-				talentChange = this.parseFloat(talentChangeStr)
+
+			switch (true) {
+				case talentChangeStr.startsWith("x"):
+					linkedSpecialBonusOperation =
+						EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY
+					talentChange = this.parseFloat(talentChangeStr.substring(1))
+					break
+				case talentChangeStr.startsWith("="):
+					linkedSpecialBonusOperation =
+						EDOTASpecialBonusOperation.SPECIAL_BONUS_SET
+					const newValue = this.parseFloat(talentChangeStr.substring(1))
+					talentChange = newValue <= 0 ? Number.MAX_SAFE_INTEGER : newValue
+					break
+				case talentChangeStr.startsWith("+") || talentChangeStr.startsWith("-"):
+					const isArray = talentChangeStr.indexOf(" ") !== -1
+					const isPercent =
+						talentChangeStr[talentChangeStr.length - 1].indexOf("%") !== -1
+					linkedSpecialBonusOperation = !isPercent
+						? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+						: talentChangeStr.startsWith("+")
+							? EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD
+							: EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT
+					// axe_battle_hunger -> special_bonus_unique_axe_6
+					talentChange = isArray
+						? talentChangeStr.split(" ").map(str => this.parseFloat(str))
+						: this.parseFloat(talentChangeStr)
+					break
+				default:
+					linkedSpecialBonusOperation =
+						EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+					talentChange = this.parseFloat(talentChangeStr)
+					break
 			}
 			this.SpecialValueCache.set(name, [
 				ar,
@@ -550,17 +589,12 @@ export class AbilityData {
 		})
 	}
 
-	private GetCachedSpecialValue(name: string) {
-		const ar = this.SpecialValueCache.get(name)
-		if (ar !== undefined) {
-			return ar
+	private GetCachedSpecialValue(specialName: string, abilityName?: string) {
+		const arData = this.SpecialValueCache.get(specialName)
+		if (arData !== undefined) {
+			return arData
 		}
-		return [[0], "", "value", EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD] as [
-			number[],
-			string,
-			string,
-			EDOTASpecialBonusOperation
-		]
+		this.exceptionMessage(specialName, abilityName)
 	}
 
 	private ExtendLevelArray(ar: number[]): number[] {
@@ -572,6 +606,23 @@ export class AbilityData {
 
 	private GetLevelArray(str: Nullable<string>): number[] {
 		return this.ExtendLevelArray(str?.split(" ")?.map(val => parseFloat(val)) ?? [])
+	}
+
+	private exceptionMessage(specialName: string, abilityName?: string) {
+		if (!AbilityData.HasDebug) {
+			return
+		}
+		const abilName = abilityName ?? AbilityData.GetAbilityNameByID(this.ID)
+		const keyName = `${abilName}:${specialName}`
+		if (AbilityData.cacheWithoutSpecialData.has(keyName)) {
+			return
+		}
+		console.error(
+			`${abilName}:`,
+			`Failed to get special ${specialName}`,
+			new Error().stack
+		)
+		AbilityData.cacheWithoutSpecialData.add(keyName)
 	}
 }
 

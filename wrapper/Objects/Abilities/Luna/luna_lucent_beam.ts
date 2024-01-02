@@ -6,4 +6,7 @@ export class luna_lucent_beam extends Ability {
 	public get AbilityDamage(): number {
 		return this.GetSpecialValue("beam_damage")
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }

@@ -15,4 +15,7 @@ export class nevermore_shadowraze1 extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("shadowraze_radius", level)
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }

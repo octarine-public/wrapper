@@ -7,4 +7,18 @@ export class weaver_shukuchi extends Ability {
 	public get AbilityLogicType(): AbilityLogicType {
 		return AbilityLogicType.Invisibility
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
+	}
 }

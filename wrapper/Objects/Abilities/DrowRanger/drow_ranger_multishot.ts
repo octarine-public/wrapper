@@ -3,6 +3,9 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("drow_ranger_multishot")
 export class drow_ranger_multishot extends Ability {
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 	// public GetCastRangeForLevel(level: number): number {
 	// 	return (this.Owner?.AttackRange ?? 0) * this.GetSpecialValue("arrow_range_multiplier", level)
 	// }

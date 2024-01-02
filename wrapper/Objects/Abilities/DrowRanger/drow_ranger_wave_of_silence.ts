@@ -9,4 +9,7 @@ export class drow_ranger_wave_of_silence extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("wave_width", level)
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }

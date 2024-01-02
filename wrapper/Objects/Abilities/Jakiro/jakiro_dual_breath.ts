@@ -9,6 +9,9 @@ export class jakiro_dual_breath extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("speed_fire")
 	}
+	public GetBaseCastRangeForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCastRange", level)
+	}
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("start_radius", level)
 	}

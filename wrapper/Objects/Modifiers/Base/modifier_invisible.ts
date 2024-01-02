@@ -17,6 +17,6 @@ export class modifier_invisible extends Modifier {
 		// because the condition is invisible unknown for unit
 		// we need to update the special value manually
 		// example maybe reload script or any changes
-		owner.GetBuffByName("modifier_item_dustofappearance")?.UnitStateChaged()
+		owner.GetBuffByName("modifier_item_dustofappearance")?.OnUnitStateChaged()
 	}
 }

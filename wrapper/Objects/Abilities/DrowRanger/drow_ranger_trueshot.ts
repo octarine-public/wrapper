@@ -2,4 +2,12 @@ import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("drow_ranger_trueshot")
-export class drow_ranger_trueshot extends Ability {}
+export class drow_ranger_trueshot extends Ability {
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
+	}
+}

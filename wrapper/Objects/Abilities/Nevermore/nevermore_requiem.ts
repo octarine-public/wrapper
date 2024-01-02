@@ -13,4 +13,7 @@ export class nevermore_requiem extends Ability {
 			this.GetSpecialValue("requiem_line_width_end", level)
 		)
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }

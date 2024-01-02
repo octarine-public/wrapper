@@ -6,7 +6,11 @@ export class pangolier_gyroshell extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("forward_move_speed")
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetAOERadiusForLevel(level: number): number {
-		return this.GetSpecialValue("hit_radius", level)
+		return this.GetSpecialValue("radius", level)
 	}
 }

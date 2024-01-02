@@ -6,4 +6,11 @@ export class enigma_black_hole extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("pull_speed")
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
+	}
 }

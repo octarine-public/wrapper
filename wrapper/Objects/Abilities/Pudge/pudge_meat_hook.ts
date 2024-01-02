@@ -13,4 +13,7 @@ export class pudge_meat_hook extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("hook_width", level)
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }

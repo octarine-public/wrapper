@@ -17,4 +17,7 @@ export class lion_impale extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("width", level)
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }

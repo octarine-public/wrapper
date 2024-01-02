@@ -14,6 +14,13 @@ export class techies_suicide extends Ability {
 	public readonly TargetPosition = new Vector3().Invalidate()
 	public readonly LastKnownOwnerPosition_ = new Vector3().Invalidate()
 	public LastKnownOwnerPositionTime_ = 0
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
+	}
 }
 
 const abils = EntityManager.GetEntitiesByClass(techies_suicide)

@@ -9,4 +9,7 @@ export class void_spirit_aether_remnant extends Ability {
 	public get ActivationDelay(): number {
 		return this.GetSpecialValue("activation_delay")
 	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
 }
