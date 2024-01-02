@@ -24,6 +24,7 @@ export class Node extends Base {
 		Node.arrowOffset.x = GUIInfo.ScaleWidth(8)
 		Node.arrowOffset.y = GUIInfo.ScaleHeight(8)
 		Node.arrowTextGap = GUIInfo.ScaleWidth(10)
+		Node.iconRectRounding = GUIInfo.ScaleHeight(12)
 		Node.iconSize.x = GUIInfo.ScaleWidth(24)
 		Node.iconSize.y = GUIInfo.ScaleHeight(24)
 		Node.iconOffset.x = GUIInfo.ScaleWidth(12)
@@ -48,6 +49,7 @@ export class Node extends Base {
 	private static readonly arrowSize = new Vector2()
 	private static readonly arrowOffset = new Vector2()
 	private static arrowTextGap = 0
+	private static iconRectRounding = 0
 	private static readonly iconSize = new Vector2()
 	private static readonly iconOffset = new Vector2()
 	private static readonly textOffsetNode = new Vector2(15, 14)
@@ -98,6 +100,9 @@ export class Node extends Base {
 	}
 
 	public get IconRound(): number {
+		if (this.iconRound_ === 0) {
+			return Node.iconRectRounding
+		}
 		return this.iconRound_
 	}
 	public set IconRound(val: number) {
@@ -438,6 +443,7 @@ export class Node extends Base {
 			// TODO: should we do the same for tooltips?
 			return node
 		}
+
 		return this.AddEntry(new Node(this, name, iconPath, tooltip, iconRound), priority)
 	}
 	public AddDropdown(

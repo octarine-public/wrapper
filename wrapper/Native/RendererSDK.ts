@@ -392,6 +392,7 @@ class CRendererSDK {
 	}
 	/**
 	 * @param path must end with "_c" (without double-quotes), if that's vtexC
+	 * @param round < 0 no rounding, 0 = circle, > 0 = rounded corners
 	 */
 	public Image(
 		path: string,
@@ -448,18 +449,28 @@ class CRendererSDK {
 		}
 		this.Translate(vecPos)
 		this.Rotate(rotationDeg)
-		if (round >= 0) {
-			this.AllocateCommandSpace(CommandID.PATH_ADD_ELLIPSE, 4 * 4)
-			this.commandStream.WriteFloat32(halfRound)
-			this.commandStream.WriteFloat32(halfRound)
-			this.commandStream.WriteFloat32(vecSize.x - halfRound)
-			this.commandStream.WriteFloat32(vecSize.y - halfRound)
-		} else {
+		if (round < 0) {
+			//no rounding
 			this.AllocateCommandSpace(CommandID.PATH_ADD_RECT, 4 * 4)
 			this.commandStream.WriteFloat32(0)
 			this.commandStream.WriteFloat32(0)
 			this.commandStream.WriteFloat32(vecSize.x)
 			this.commandStream.WriteFloat32(vecSize.y)
+		} else if (round > 0) {
+			// rounded corners
+			this.AllocateCommandSpace(CommandID.PATH_ADD_ROUND_RECT, 4 * 5)
+			this.commandStream.WriteFloat32(0)
+			this.commandStream.WriteFloat32(0)
+			this.commandStream.WriteFloat32(vecSize.x)
+			this.commandStream.WriteFloat32(vecSize.y)
+			this.commandStream.WriteFloat32(halfRound)
+		} else {
+			// round == 0, force circle
+			this.AllocateCommandSpace(CommandID.PATH_ADD_ELLIPSE, 4 * 4)
+			this.commandStream.WriteFloat32(halfRound)
+			this.commandStream.WriteFloat32(halfRound)
+			this.commandStream.WriteFloat32(vecSize.x - halfRound)
+			this.commandStream.WriteFloat32(vecSize.y - halfRound)
 		}
 		const flags = PathFlags.FILL | PathFlags.IMAGESHADER
 		const sizeX = subtexSize?.x ?? origSize.x,
