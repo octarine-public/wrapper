@@ -396,28 +396,43 @@ class CRendererSDK {
 	 */
 	public Image(
 		path: string,
-		vecPos: Vector2,
+		vecPos_: Vector2,
 		round = -1,
 		vecSize = new Vector2(-1, -1),
 		color = Color.White,
-		rotationDeg = 0, // not currently working?
+		rotationDeg = 0, // not currently working? // works, but not for svg's
 		customScissor?: Rectangle,
-		grayscale = false,
-		subtexOffset?: Vector2,
-		subtexSize?: Vector2
+		grayscale = false
 	): void {
+		const vecPos = vecPos_.Clone()
+
+		if (rotationDeg !== 0) {
+			//rotate around the center instead of top left corner
+			const angle = DegreesToRadian(rotationDeg),
+				s = Math.sin(angle),
+				c = Math.cos(angle)
+			const centerOffset = vecSize.Clone().DivideScalar(2)
+			const adjust = new Vector2(
+				centerOffset.x * c - centerOffset.y * s,
+				centerOffset.x * s + centerOffset.y * c
+			)
+			vecPos.SubtractForThis(adjust).AddForThis(centerOffset)
+		}
+
 		const textureID = this.GetTexture(path) // better put it BEFORE new command
 		if (textureID === -1) {
 			return
 		}
 		const origSize = this.tex2size.get(textureID)!
 		const halfRound = round / 2
+
 		if (vecSize.x <= 0) {
-			vecSize.x = subtexSize?.x ?? origSize.x
+			vecSize.x = origSize.x
 		}
 		if (vecSize.y <= 0) {
-			vecSize.y = subtexSize?.y ?? origSize.y
+			vecSize.y = origSize.y
 		}
+
 		if (path.endsWith(".svg")) {
 			if (round >= 0) {
 				this.BeginClip(false)
@@ -425,7 +440,7 @@ class CRendererSDK {
 					vecPos.AddScalar(halfRound),
 					vecSize.SubtractScalar(halfRound),
 					Color.White,
-					rotationDeg,
+					0,
 					customScissor
 				)
 				this.EndClip()
@@ -473,8 +488,18 @@ class CRendererSDK {
 			this.commandStream.WriteFloat32(vecSize.y - halfRound)
 		}
 		const flags = PathFlags.FILL | PathFlags.IMAGESHADER
-		const sizeX = subtexSize?.x ?? origSize.x,
-			sizey = subtexSize?.y ?? origSize.y
+
+		const ratio = vecSize.x / vecSize.y
+		const origRatio = origSize.x / origSize.y
+
+		let cutX = 0,
+			cutY = 0
+		if (ratio < origRatio) {
+			cutX = (ratio - origRatio) / 2 / ratio
+		} else if (ratio > origRatio) {
+			cutY = (origRatio - ratio) / 2 / origRatio
+		}
+
 		this.Path(
 			1,
 			color,
@@ -484,10 +509,10 @@ class CRendererSDK {
 			LineCap.Square,
 			LineJoin.Round,
 			textureID,
-			(subtexOffset?.x ?? 0) * (vecSize.x / sizeX),
-			(subtexOffset?.y ?? 0) * (vecSize.x / sizey),
-			vecSize.x * (origSize.x / sizeX),
-			vecSize.y * (origSize.y / sizey)
+			-cutX * vecSize.x,
+			-cutY * vecSize.y,
+			vecSize.x * (1 - cutX * 2),
+			vecSize.y * (1 - cutY * 2)
 		)
 	}
 	public GetImageSize(path: string): Vector2 {
