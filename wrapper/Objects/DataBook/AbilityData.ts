@@ -89,6 +89,7 @@ export class AbilityData {
 	public readonly ShouldBeInitiallySuggested: boolean
 	public readonly ItemStockInitial: Nullable<number>
 	public readonly ItemDisassembleRule: DOTA_ITEM_DISASSEMBLE
+	public AffectedByAOEIncrease: boolean = false
 
 	private readonly SpecialValueCache = new Map<
 		string,
@@ -272,7 +273,7 @@ export class AbilityData {
 			return 0
 		}
 		const ar = this.GetCachedSpecialValue(specialName, abilityName)
-		if (ar === undefined) {
+		if (ar === undefined || !ar[0].length) {
 			return 0
 		}
 		return ar[0][Math.min(level, ar[0].length) - 1]
@@ -302,24 +303,28 @@ export class AbilityData {
 		}
 
 		if (specialName.startsWith("special_bonus_unique_")) {
-			return this.GetSpecialTalent(specialName, owner, abilityName)
+			return this.GetSpecialTalent(specialName, "value", owner)
 		}
 
-		const val = ar[2]
-
 		let talentVal = 0
+		const val = ar[2]
 		switch (true) {
 			case typeof val === "string":
-				talentVal = this.GetSpecialValue(val, level, abilityName)
+				if (val.length !== 0) {
+					talentVal = this.GetSpecialValue(val, level, abilityName)
+					break
+				}
 				break
 			case Array.isArray(val):
 				if (val.length === 0) {
-					talentVal = 0
 					break
 				}
 				talentVal = val[Math.min(level, val.length) - 1]
 				break
 			default:
+				if (ar[1].length === 0) {
+					break
+				}
 				if (
 					ar[1] === "special_bonus_shard" ||
 					ar[1] === "special_bonus_scepter"
@@ -329,8 +334,9 @@ export class AbilityData {
 						: val
 					break
 				}
-				talentVal =
-					ar[1].length !== 0 && this.HasSpecialTalent(ar[1], owner) ? val : 0
+				if (this.hasTalent(ar[1], owner)) {
+					talentVal = val || this.GetSpecialTalent(ar[1], "value", owner)
+				}
 				break
 		}
 
@@ -357,49 +363,49 @@ export class AbilityData {
 	}
 
 	public GetCastRange(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.CastRangeCache.length) {
 			return 0
 		}
 		return this.CastRangeCache[Math.min(level, this.CastRangeCache.length) - 1]
 	}
 
 	public GetHealthCost(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.HealthCostCache.length) {
 			return 0
 		}
 		return this.HealthCostCache[Math.min(level, this.HealthCostCache.length) - 1]
 	}
 
 	public GetManaCost(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.ManaCostCache.length) {
 			return 0
 		}
 		return this.ManaCostCache[Math.min(level, this.ManaCostCache.length) - 1]
 	}
 
 	public GetMaxDurationForLevel(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.MaxDurationCache.length) {
 			return 0
 		}
 		return this.MaxDurationCache[Math.min(level, this.MaxDurationCache.length) - 1]
 	}
 
 	public GetMaxCooldownForLevel(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.MaxCooldownCache.length) {
 			return 0
 		}
 		return this.MaxCooldownCache[Math.min(level, this.MaxCooldownCache.length) - 1]
 	}
 
 	public GetChannelTime(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.ChannelTimeCache.length) {
 			return 0
 		}
 		return this.ChannelTimeCache[Math.min(level, this.ChannelTimeCache.length) - 1]
 	}
 
 	public GetAbilityDamage(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.AbilityDamageCache.length) {
 			return 0
 		}
 		return this.AbilityDamageCache[
@@ -408,21 +414,21 @@ export class AbilityData {
 	}
 
 	public GetCastPoint(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.CastPointCache.length) {
 			return 0
 		}
 		return this.CastPointCache[Math.min(level, this.CastPointCache.length) - 1]
 	}
 
 	public GetMaxCharges(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.ChargesCache.length) {
 			return 0
 		}
 		return this.ChargesCache[Math.min(level, this.ChargesCache.length) - 1]
 	}
 
 	public GetChargeRestoreTime(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.ChargeRestoreTimeCache.length) {
 			return 0
 		}
 		return this.ChargeRestoreTimeCache[
@@ -430,15 +436,15 @@ export class AbilityData {
 		]
 	}
 
-	private GetSpecialTalent(name: string, owner: Unit, abilityName: string) {
-		const talent = owner.GetAbilityByName(name)
+	private GetSpecialTalent(abilityName: string, specialName = "value", owner: Unit) {
+		const talent = owner.GetAbilityByName(abilityName)
 		if (talent === undefined || talent.Level === 0) {
 			return 0
 		}
-		return this.GetSpecialValue(name, talent.Level, abilityName)
+		return talent.GetSpecialValue(specialName, talent.Level)
 	}
 
-	private HasSpecialTalent(name: string, owner: Unit) {
+	private hasTalent(name: string, owner: Unit) {
 		const talent = owner.GetAbilityByName(name)
 		return talent !== undefined && talent.Level !== 0
 	}
@@ -466,8 +472,13 @@ export class AbilityData {
 					name === "levelkey" ||
 					name === "RequiresScepter" ||
 					name === "RequiresShard" ||
+					name === "ad_linked_abilities" ||
 					typeof value !== "string"
 				) {
+					return
+				}
+				if (name === "affected_by_aoe_increase") {
+					this.AffectedByAOEIncrease = this.parseFloat(value) === 1
 					return
 				}
 				const ar = this.ExtendLevelArray(
@@ -489,8 +500,12 @@ export class AbilityData {
 						] ?? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 				}
 				let linkedSpecialBonusFieldStr = special.get("LinkedSpecialBonusField")
-				if (typeof linkedSpecialBonusFieldStr !== "string") {
-					linkedSpecialBonusFieldStr = "value"
+				if (linkedSpecialBonusFieldStr !== undefined) {
+					if (typeof linkedSpecialBonusFieldStr !== "string") {
+						linkedSpecialBonusFieldStr = "value"
+					}
+				} else {
+					linkedSpecialBonusFieldStr = ""
 				}
 				this.SpecialValueCache.set(name, [
 					ar,
@@ -527,12 +542,18 @@ export class AbilityData {
 			special.forEach((specialValue, specialName) => {
 				if (
 					specialName === "value" ||
-					specialName === "LinkedSpecialBonus" ||
+					specialName === "CalculateSpellDamageTooltip" ||
+					specialName === "DamageTypeTooltip" ||
 					specialName === "levelkey" ||
+					specialName === "LinkedSpecialBonus" ||
 					specialName === "RequiresScepter" ||
 					specialName === "RequiresShard" ||
 					typeof specialValue !== "string"
 				) {
+					return
+				}
+				if (specialName === "affected_by_aoe_increase") {
+					this.AffectedByAOEIncrease = this.parseFloat(specialValue) === 1
 					return
 				}
 				linkedSpecialBonus = specialName
@@ -580,6 +601,13 @@ export class AbilityData {
 					talentChange = this.parseFloat(talentChangeStr)
 					break
 			}
+
+			if (!linkedSpecialBonus.length) {
+				const getlinkedSpecialBonus = special.get("LinkedSpecialBonus")
+				linkedSpecialBonus =
+					typeof getlinkedSpecialBonus !== "string" ? "" : getlinkedSpecialBonus
+			}
+
 			this.SpecialValueCache.set(name, [
 				ar,
 				linkedSpecialBonus,
@@ -618,9 +646,9 @@ export class AbilityData {
 			return
 		}
 		console.error(
-			`${abilName}:`,
-			`Failed to get special ${specialName}`,
-			new Error().stack
+			new Error(
+				`Failed to get special => [${specialName}] from ability => [${abilName}]`
+			).stack
 		)
 		AbilityData.cacheWithoutSpecialData.add(keyName)
 	}

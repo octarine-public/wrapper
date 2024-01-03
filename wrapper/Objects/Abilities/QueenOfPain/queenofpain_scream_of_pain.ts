@@ -12,4 +12,11 @@ export class queenofpain_scream_of_pain extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("area_of_effect", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage", level)
+	}
 }

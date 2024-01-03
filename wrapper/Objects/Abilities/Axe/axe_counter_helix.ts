@@ -7,6 +7,13 @@ export class axe_counter_helix extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCooldown", level)
 	}

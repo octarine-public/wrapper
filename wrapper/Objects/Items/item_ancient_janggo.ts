@@ -10,4 +10,11 @@ export class item_ancient_janggo extends Item {
 	public CanBeCasted(bonusMana: number = 0): boolean {
 		return this.CurrentCharges > 0 && super.CanBeCasted(bonusMana)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
+	}
 }

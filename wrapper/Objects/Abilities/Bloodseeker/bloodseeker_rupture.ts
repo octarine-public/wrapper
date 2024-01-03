@@ -11,10 +11,32 @@ export class bloodseeker_rupture extends Ability {
 			? this.GetSpecialValue("charge_restore_time_scepter")
 			: 0
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetMaxChargesForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCharges", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCastRange", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCooldown", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetChargeRestoreTimeForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityChargeRestoreTime", level)
 	}
 }

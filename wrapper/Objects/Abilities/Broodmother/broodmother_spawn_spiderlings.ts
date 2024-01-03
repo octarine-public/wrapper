@@ -6,4 +6,11 @@ export class broodmother_spawn_spiderlings extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage", level)
+	}
 }

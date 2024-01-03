@@ -6,7 +6,18 @@ export class mars_spear extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("spear_speed")
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("spear_width", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage", level)
 	}
 }

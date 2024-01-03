@@ -3,10 +3,25 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("rattletrap_power_cogs")
 export class rattletrap_power_cogs extends Ability {
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("cogs_radius", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCooldown", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage", level)
 	}
 }

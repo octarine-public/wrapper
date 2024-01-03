@@ -9,10 +9,25 @@ export class queenofpain_sonic_wave extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("starting_aoe", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCooldown", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage", level)
 	}
 }

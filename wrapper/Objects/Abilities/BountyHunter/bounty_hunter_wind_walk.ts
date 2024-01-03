@@ -10,4 +10,11 @@ export class bounty_hunter_wind_walk extends Ability {
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCooldown", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetChargeRestoreTimeForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityChargeRestoreTime", level)
+	}
 }

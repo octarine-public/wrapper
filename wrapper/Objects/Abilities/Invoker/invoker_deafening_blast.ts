@@ -9,7 +9,18 @@ export class invoker_deafening_blast extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("travel_speed")
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius_start", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage", level)
 	}
 }

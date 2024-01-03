@@ -10,4 +10,11 @@ export class dark_seer_ion_shell extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetMaxChargesForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCharges", level)
+	}
 }

@@ -140,40 +140,33 @@ export class Ability extends Entity {
 		return AbilityLogicType.None
 	}
 	public get AbilityDamage(): number {
-		return (
-			this.AbilityData.GetAbilityDamage(this.Level) ||
-			this.GetSpecialValue("damage")
-		)
+		return this.GetBaseDamageForLevel(this.Level)
 	}
 	public get AbilityType(): ABILITY_TYPES {
 		return this.AbilityData.AbilityType
 	}
 	public get EndRadius(): number {
+		// TODO: fix me
 		return this.GetSpecialValue("final_aoe")
 	}
 	public get ActivationDelay() {
+		// TODO: fix me
 		return this.GetSpecialValue("delay")
 	}
 	public get CastPoint(): number {
 		return this.OverrideCastPoint || this.GetBaseCastPointForLevel(this.Level)
 	}
 	public get MaxChannelTime(): number {
-		return this.AbilityData.GetChannelTime(this.Level)
+		return this.GetBaseChannelTimeForLevel(this.Level)
 	}
 	public get ChannelTime(): number {
 		return Math.max(GameState.RawGameTime - this.ChannelStartTime, 0)
 	}
 	public get MaxCharges(): number {
-		return (
-			this.AbilityData.GetMaxCharges(this.Level) +
-			this.GetSpecialValue("AbilityCharges")
-		)
+		return this.GetMaxChargesForLevel(this.Level)
 	}
 	public get ChargeRestoreTime(): number {
-		return (
-			this.AbilityData.GetChargeRestoreTime(this.Level) +
-			this.GetSpecialValue("AbilityChargeRestoreTime")
-		)
+		return this.GetChargeRestoreTimeForLevel(this.Level)
 	}
 	public get DamageType(): DAMAGE_TYPES {
 		return this.AbilityData.DamageType
@@ -315,7 +308,6 @@ export class Ability extends Entity {
 	public get AOERadius(): number {
 		return this.GetAOERadiusForLevel(this.Level)
 	}
-
 	public get BaseRadius() {
 		return this.GetAOERadiusForLevel(this.Level)
 	}
@@ -393,6 +385,20 @@ export class Ability extends Entity {
 	 * @param level
 	 * @return {number}
 	 */
+	public GetChargeRestoreTimeForLevel(level: number): number {
+		return this.AbilityData.GetChargeRestoreTime(level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetMaxChargesForLevel(level: number): number {
+		return this.AbilityData.GetMaxCharges(level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetMaxDurationForLevel(level: number): number {
 		return this.AbilityData.GetMaxDurationForLevel(level)
 	}
@@ -402,6 +408,13 @@ export class Ability extends Entity {
 	 */
 	public GetBaseCastPointForLevel(level: number): number {
 		return this.AbilityData.GetCastPoint(level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.AbilityData.GetAbilityDamage(level)
 	}
 	/**
 	 * @param level
@@ -430,6 +443,13 @@ export class Ability extends Entity {
 	 */
 	public GetAOERadiusForLevel(_level: number): number {
 		return 0 // child classes should override
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseChannelTimeForLevel(level: number): number {
+		return this.AbilityData.GetChannelTime(level)
 	}
 	/**
 	 * @param position Vector3
@@ -491,15 +511,10 @@ export class Ability extends Entity {
 	 */
 	public GetSpecialValue(specialName: string, level: number = this.Level): number {
 		const owner = this.Owner
-		if (owner === undefined) {
-			return this.AbilityData.GetSpecialValue(specialName, level, this.Name)
-		}
-		return this.AbilityData.GetSpecialValueWithTalent(
-			owner,
-			specialName,
-			level,
-			this.Name
-		)
+		const abilityData = this.AbilityData
+		return owner === undefined
+			? abilityData.GetSpecialValue(specialName, level, this.Name)
+			: abilityData.GetSpecialValueWithTalent(owner, specialName, level, this.Name)
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {
 		const owner = this.Owner

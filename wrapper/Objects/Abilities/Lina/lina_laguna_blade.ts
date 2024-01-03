@@ -1,15 +1,20 @@
 import { WrapperClass } from "../../../Decorators"
-import { DAMAGE_TYPES } from "../../../Enums/DAMAGE_TYPES"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("lina_laguna_blade")
 export class lina_laguna_blade extends Ability {
-	public get DamageType(): DAMAGE_TYPES {
-		return this.Owner?.HasScepter
-			? DAMAGE_TYPES.DAMAGE_TYPE_PURE
-			: DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL
-	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCooldown", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage", level)
 	}
 }

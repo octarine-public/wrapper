@@ -10,4 +10,11 @@ export class broodmother_spin_web extends Ability {
 	public GetAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetChargeRestoreTimeForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityChargeRestoreTime", level)
+	}
 }

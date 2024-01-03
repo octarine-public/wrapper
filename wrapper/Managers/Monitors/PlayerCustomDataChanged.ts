@@ -7,6 +7,7 @@ import { alchemist_goblins_greed } from "../../Objects/Abilities/Alchemist/alche
 import { bounty_hunter_jinada } from "../../Objects/Abilities/BountyHunter/bounty_hunter_jinada"
 import { doom_bringer_devour } from "../../Objects/Abilities/DoomBringer/doom_bringer_devour"
 import { flagbearer_creep_aura_effect } from "../../Objects/Abilities/FlagbearerCreep/flagbearer_creep_aura_effect"
+import { kobold_tunneler_prospecting } from "../../Objects/Abilities/KoboldTaskmaster/kobold_tunneler_prospecting"
 import { Ability } from "../../Objects/Base/Ability"
 import { Building } from "../../Objects/Base/Building"
 import { Courier } from "../../Objects/Base/Courier"
@@ -249,7 +250,7 @@ const Monitor = new (class PlayerDataCustomChanged {
 				playerData.DeleteCounter(modifier.Name)
 				return
 			}
-			if (ability.Name === "kobold_tunneler_prospecting") {
+			if (ability instanceof kobold_tunneler_prospecting) {
 				const gpm = ability.GetSpecialValue("gpm_aura", modifier.AbilityLevel)
 				playerData.AddCounter(modifier.Name, new GPMCounter(gpm))
 			}
