@@ -31,4 +31,11 @@ export class earth_spirit_rolling_boulder extends Ability {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseActivationDelayForLevel(level: number): number {
+		return this.GetSpecialValue("delay", level)
+	}
 }

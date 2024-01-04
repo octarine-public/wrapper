@@ -80,7 +80,7 @@ export class Modifier {
 	/** @readonly */
 	public BonusCastRange = 0
 	/** @readonly */
-	public BonusSpellRadius = 0
+	public BonusAOERadius = 0
 
 	// Base move speed
 	/** @readonly */
@@ -478,6 +478,14 @@ export class Modifier {
 		this.MoveSpeedFixed = subtract ? value * -1 : value
 	}
 
+	protected SetBonusAOERadius(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.BonusAOERadius = subtract ? value * -1 : value
+	}
+
 	protected SetBonusMoveSpeed(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -531,6 +539,7 @@ export class Modifier {
 		const value = this.GetSpecialSpeedByState(specialName)
 		this.BonusMoveSpeedAmplifier = (subtract ? value * -1 : value) / 100
 	}
+
 	protected byAbilityData(
 		abilName: string,
 		specialName: string,
@@ -552,5 +561,8 @@ export class Modifier {
 		this.SetFixedMoveSpeed()
 		this.SetBonusMoveSpeed()
 		this.SetMoveSpeedAmplifier()
+
+		// bonus spells
+		this.SetBonusAOERadius()
 	}
 }

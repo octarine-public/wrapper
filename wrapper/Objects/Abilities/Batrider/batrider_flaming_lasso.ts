@@ -17,4 +17,11 @@ export class batrider_flaming_lasso extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("grab_radius_scepter", level)
+	}
 }

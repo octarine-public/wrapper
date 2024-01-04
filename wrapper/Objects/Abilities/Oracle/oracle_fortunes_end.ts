@@ -17,4 +17,11 @@ export class oracle_fortunes_end extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseChannelTimeForLevel(level: number): number {
+		return this.GetSpecialValue("channel_time", level)
+	}
 }

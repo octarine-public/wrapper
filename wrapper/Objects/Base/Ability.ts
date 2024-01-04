@@ -152,16 +152,15 @@ export class Ability extends Entity {
 		// TODO: fix me
 		return this.GetSpecialValue("final_aoe")
 	}
-	public get ActivationDelay() {
-		// TODO: fix me
-		return this.GetSpecialValue("delay")
-	}
 	public get CastPoint(): number {
 		const overrideValue = this.OverrideCastPoint // default -1 or 0
 		if (overrideValue > 0) {
 			return overrideValue
 		}
 		return this.GetBaseCastPointForLevel(this.Level)
+	}
+	public get ActivationDelay() {
+		return this.GetBaseActivationDelayForLevel(this.Level)
 	}
 	public get MaxChannelTime(): number {
 		return this.GetBaseChannelTimeForLevel(this.Level)
@@ -302,6 +301,9 @@ export class Ability extends Entity {
 	public get Speed() {
 		return this.GetBaseSpeedForLevel(this.Level)
 	}
+	public get HasAffectedByAOEIncrease() {
+		return this.AbilityData.AffectedByAOEIncrease
+	}
 	public get MaxDuration(): number {
 		return this.GetMaxDurationForLevel(this.Level)
 	}
@@ -314,31 +316,24 @@ export class Ability extends Entity {
 	public get CastRange(): number {
 		return this.GetCastRangeForLevel(this.Level)
 	}
-	public get BonusRadius(): number {
-		if (this.Owner === undefined) {
+	public get BonusAOERadius(): number {
+		if (this.Owner === undefined || !this.HasAffectedByAOEIncrease) {
 			return 0
 		}
 		let totalBonus = 0
 		const buffs = this.Owner.Buffs
 		for (let index = buffs.length - 1; index > -1; index--) {
 			const buff = buffs[index]
-			if (!buff.BonusSpellRadius) {
+			if (!buff.BonusAOERadius) {
 				continue
 			}
-			totalBonus += buff.BonusSpellRadius
+			totalBonus += buff.BonusAOERadius
 		}
 		return totalBonus
 	}
 	public get AOERadius(): number {
-		const baseRadius = this.GetBaseAOERadiusForLevel(this.Level)
-		if (this.Owner === undefined) {
-			return baseRadius
-		}
-		// todo amp
-		const totalBonus = baseRadius + this.BonusRadius
-		return totalBonus
+		return this.GetBaseAOERadiusForLevel(this.Level) + this.BonusAOERadius
 	}
-
 	public get SkillshotRange(): number {
 		return this.CastRange
 	}
@@ -439,6 +434,13 @@ export class Ability extends Entity {
 	 */
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.AbilityData.GetCastRange(level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseActivationDelayForLevel(_level: number): number {
+		return 0 // child classes should override
 	}
 	/**
 	 * @param level

@@ -14,6 +14,13 @@ export class bloodseeker_blood_bath extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCooldown", level)
 	}
@@ -21,7 +28,7 @@ export class bloodseeker_blood_bath extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetBaseAOERadiusForLevel(level: number): number {
-		return this.GetSpecialValue("radius", level)
+	public GetBaseActivationDelayForLevel(level: number): number {
+		return this.GetSpecialValue("delay", level)
 	}
 }

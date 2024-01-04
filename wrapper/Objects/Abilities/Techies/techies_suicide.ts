@@ -28,6 +28,13 @@ export class techies_suicide extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseActivationDelayForLevel(level: number): number {
+		return this.GetSpecialValue("duration", level)
+	}
 }
 
 const abils = EntityManager.GetEntitiesByClass(techies_suicide)

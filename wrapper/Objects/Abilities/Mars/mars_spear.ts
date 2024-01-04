@@ -3,8 +3,12 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("mars_spear")
 export class mars_spear extends Ability {
-	public get Speed(): number {
-		return this.GetSpecialValue("spear_speed")
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("spear_speed", level)
 	}
 	/**
 	 * @param level

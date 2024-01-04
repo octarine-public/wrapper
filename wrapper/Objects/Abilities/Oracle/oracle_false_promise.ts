@@ -13,14 +13,14 @@ export class oracle_false_promise extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
 	}
 	/**
 	 * @param level
 	 * @return {number}
 	 */
-	public GetBaseAOERadiusForLevel(level: number): number {
-		return this.GetSpecialValue("radius", level)
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
 	}
 }

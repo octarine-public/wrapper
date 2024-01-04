@@ -10,4 +10,11 @@ export class roshan_halloween_apocalypse extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseActivationDelayForLevel(level: number): number {
+		return this.GetSpecialValue("delay", level)
+	}
 }

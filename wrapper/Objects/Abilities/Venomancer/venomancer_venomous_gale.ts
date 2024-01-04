@@ -27,4 +27,11 @@ export class venomancer_venomous_gale extends Ability {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("strike_damage", level)
+	}
 }

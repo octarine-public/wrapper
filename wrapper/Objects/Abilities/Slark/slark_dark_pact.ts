@@ -10,4 +10,11 @@ export class slark_dark_pact extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseActivationDelayForLevel(level: number): number {
+		return this.GetSpecialValue("delay", level)
+	}
 }

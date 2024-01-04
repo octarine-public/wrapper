@@ -165,6 +165,7 @@ export { neutral_spell_immunity } from "./Objects/Abilities/Base/neutral_spell_i
 export { neutral_upgrade } from "./Objects/Abilities/Base/neutral_upgrade"
 export { plus_guild_banner } from "./Objects/Abilities/Base/plus_guild_banner"
 export { plus_high_five } from "./Objects/Abilities/Base/plus_high_five"
+export { special_bonus_attributes } from "./Objects/Abilities/Base/special_bonus_attributes"
 export { twin_gate_portal_warp } from "./Objects/Abilities/Base/twin_gate_portal_warp"
 export { batrider_firefly } from "./Objects/Abilities/Batrider/batrider_firefly"
 export { batrider_flamebreak } from "./Objects/Abilities/Batrider/batrider_flamebreak"

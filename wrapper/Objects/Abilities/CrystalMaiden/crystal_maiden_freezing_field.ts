@@ -17,15 +17,15 @@ export class crystal_maiden_freezing_field extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetBaseCastRangeForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCastRange", level)
+	public GetBaseCastPointForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCastPoint", level)
 	}
 	/**
 	 * @param level
 	 * @return {number}
 	 */
-	public GetBaseCastPointForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCastPoint", level)
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityDuration", level)
 	}
 	/**
 	 * @param level
@@ -47,5 +47,12 @@ export class crystal_maiden_freezing_field extends Ability {
 	 */
 	public GetBaseManaCostForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityManaCost", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseChannelTimeForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityChannelTime", level)
 	}
 }
