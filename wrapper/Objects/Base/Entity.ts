@@ -598,13 +598,14 @@ export class Entity {
 
 		for (let i = 0; i < this.Animations.length; i++) {
 			const anim = this.Animations[i]
+			if (anim.activities.length !== modifiers.length) {
+				continue
+			}
 			let score = 0,
-				hasMovement = false,
 				foundEverything = true
 			for (let index = 0, end = anim.activities.length; index < end; index++) {
 				const activityData = anim.activities[index]
 				if (modifiers.includes(activityData.name)) {
-					hasMovement ||= activityData.name === "ACT_DOTA_RUN"
 					score += activityData.weight
 				} else {
 					foundEverything = false
@@ -614,9 +615,6 @@ export class Entity {
 			if (!foundEverything) {
 				continue
 			}
-			if (!hasMovement && anim.hasMovement && modifiers.includes("ACT_DOTA_RUN")) {
-				score += 1
-			}
 			if (score > highestScore) {
 				highestScore = score
 				highestScored = i
@@ -624,16 +622,14 @@ export class Entity {
 		}
 
 		// TODO: is this used anywhere? if so, is this correct?
-		if (highestScored !== undefined) {
-			for (let i = 0; i < this.Animations.length; i++) {
-				const anim = this.Animations[i]
-				if (
-					anim.activities.some(
-						activityData => activityData.name === "ACT_DOTA_CONSTANT_LAYER"
-					)
-				) {
-					return i
-				}
+		for (let i = 0; i < this.Animations.length; i++) {
+			const anim = this.Animations[i]
+			if (
+				anim.activities.some(
+					activityData => activityData.name === "ACT_DOTA_CONSTANT_LAYER"
+				)
+			) {
+				return i
 			}
 		}
 
