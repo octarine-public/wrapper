@@ -3,12 +3,32 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("ursa_earthshock")
 export class ursa_earthshock extends Ability {
-	public GetAOERadiusForLevel(level: number): number {
-		let baseAOE = this.GetSpecialValue("shock_radius", level)
-		const talent = this.Owner?.GetAbilityByName("special_bonus_unique_ursa_5")
-		if (talent !== undefined && talent.Level !== 0) {
-			baseAOE += talent.GetSpecialValue("value")
-		}
-		return baseAOE
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("shock_radius", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetChargeRestoreTimeForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityChargeRestoreTime", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetMaxChargesForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCharges", level)
 	}
 }

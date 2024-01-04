@@ -3,7 +3,7 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("windrunner_powershot")
 export class windrunner_powershot extends Ability {
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("arrow_width", level)
 	}
 }

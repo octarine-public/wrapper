@@ -7,7 +7,10 @@ export class invoker_ghost_walk extends Ability {
 	public get AbilityLogicType(): AbilityLogicType {
 		return AbilityLogicType.Invisibility
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("area_of_effect", level)
+	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
 	}
 }

@@ -393,6 +393,11 @@ interface EventsSDK extends EventEmitter {
 		listener: (unit: Unit) => void,
 		priority?: number
 	): EventEmitter
+	on(
+		name: "UnitStateChanged",
+		listener: (unit: Unit) => void,
+		priority?: number
+	): EventEmitter
 	// TODO: add logic in Managers -> Monitors
 	on(
 		name: "AttackStarted",
@@ -418,6 +423,11 @@ interface EventsSDK extends EventEmitter {
 	): EventEmitter
 	on(
 		name: "IsInAbilityPhase",
+		listener: (unit: Ability) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "AbilityNetworkedCooldown",
 		listener: (ability: Ability) => void,
 		priority?: number
 	): EventEmitter

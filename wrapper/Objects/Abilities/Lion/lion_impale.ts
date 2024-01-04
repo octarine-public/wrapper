@@ -6,15 +6,32 @@ export class lion_impale extends Ability {
 	public get SkillshotRange(): number {
 		return this.CastRange + this.AOERadius + this.GetSpecialValue("length_buffer")
 	}
-	public GetCastRangeForLevel(level: number): number {
-		let range = super.GetCastRangeForLevel(level)
-		const talent = this.Owner?.GetAbilityByName("special_bonus_unique_lion_2")
-		if (talent !== undefined && talent.Level > 0) {
-			range += talent.GetSpecialValue("value")
-		}
-		return range
-	}
-	public GetAOERadiusForLevel(level: number): number {
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("width", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("speed", level)
 	}
 }

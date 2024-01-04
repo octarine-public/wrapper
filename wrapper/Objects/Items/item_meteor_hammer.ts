@@ -6,7 +6,7 @@ export class item_meteor_hammer extends Item {
 	public get ActivationDelay() {
 		return this.GetSpecialValue("land_time")
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("impact_radius", level)
 	}
 }

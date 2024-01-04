@@ -9,7 +9,7 @@ export class item_radiance extends Item {
 			? super.TexturePath
 			: Paths.ItemIcons + "/radiance_inactive_png.vtex_c"
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("aura_radius", level)
 	}
 }

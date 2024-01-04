@@ -16,4 +16,11 @@ export class windrunner_windrun extends Ability {
 			? AbilityLogicType.Invisibility
 			: AbilityLogicType.None
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
+	}
 }

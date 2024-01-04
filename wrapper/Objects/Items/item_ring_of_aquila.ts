@@ -9,7 +9,7 @@ export class item_ring_of_aquila extends Item {
 			? super.TexturePath
 			: Paths.ItemIcons + "/ring_of_aquila_active_png.vtex_c"
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("aura_radius", level)
 	}
 }

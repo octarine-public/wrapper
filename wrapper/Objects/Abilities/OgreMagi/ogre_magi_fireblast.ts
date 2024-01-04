@@ -3,7 +3,18 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("ogre_magi_fireblast")
 export class ogre_magi_fireblast extends Ability {
-	public get AbilityDamage(): number {
-		return this.GetSpecialValue("fireblast_damage")
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("fireblast_damage", level)
 	}
 }

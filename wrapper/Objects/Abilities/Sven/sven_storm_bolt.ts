@@ -6,7 +6,7 @@ export class sven_storm_bolt extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("bolt_speed")
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("bolt_aoe", level)
 	}
 }

@@ -1,6 +1,7 @@
 import { Color } from "../../Base/Color"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
+import { MoveSpeedData } from "../../Data/GameData"
 import { GetUnitTexture } from "../../Data/ImageData"
 import { NetworkedBasicField, ReencodeProperty, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
@@ -75,6 +76,12 @@ export class Unit extends Entity {
 	public NetworkActivityStartTime = 0
 	public NetworkSequenceIndex = 0
 	public HPRegenCounter = 0
+	/**
+	 * @readonly
+	 * @description The target angle of the unit, NOTE: need test only local hero?
+	 */
+	@NetworkedBasicField("m_nTargetAngle")
+	public TargetAngle = 0
 	@NetworkedBasicField("m_flHealthThinkRegen")
 	public HPRegen = 0
 	@NetworkedBasicField("m_flManaThinkRegen")
@@ -85,8 +92,6 @@ export class Unit extends Entity {
 	public BaseArmor = 0
 	@NetworkedBasicField("m_iCurShop", EPropertyType.UINT32)
 	public CurrentShop = DOTA_SHOP_TYPE.DOTA_SHOP_NONE
-	@NetworkedBasicField("m_iMoveSpeed")
-	public BaseMoveSpeed = 0
 	@NetworkedBasicField("m_iBKBChargesUsed")
 	public BKBChargesUsed = 0
 	@NetworkedBasicField("m_iAeonChargesUsed")
@@ -94,7 +99,7 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_iDamageBonus")
 	public BonusDamage = 0
 	@NetworkedBasicField("m_iDayTimeVisionRange")
-	public DayVision = 0
+	public NetworkedDayVision = 0
 	@NetworkedBasicField("m_flDeathTime")
 	public DeathTime = 0
 	@NetworkedBasicField("m_nArcanaLevel")
@@ -105,7 +110,6 @@ export class Unit extends Entity {
 	public HasUpgradeableAbilities = false
 	@NetworkedBasicField("m_bCanBeDominated")
 	public IsDominatable = false
-	public IsIllusion_ = false
 	@NetworkedBasicField("m_iAttackCapabilities")
 	public AttackCapabilities = 0
 	@NetworkedBasicField("m_iDamageMin")
@@ -118,10 +122,16 @@ export class Unit extends Entity {
 	public IsPhantom = false
 	@NetworkedBasicField("m_bIsSummoned")
 	public IsSummoned = false
-	@NetworkedBasicField("m_flLastDealtDamageTime")
-	public LastDealtDamageTime = 0
 	@NetworkedBasicField("m_iRecentDamage")
 	public RecentDamage = 0
+	@NetworkedBasicField("m_flLastAttackTime")
+	public LastAttackTime = 0
+	@NetworkedBasicField("m_flLastDamageTime")
+	public LastDamageTime = 0
+	@NetworkedBasicField("m_flLastDealtDamageTime")
+	public LastDealtDamageTime = 0
+	@NetworkedBasicField("m_iMoveSpeed")
+	public readonly NetworkBaseMoveSpeed = 0
 	@NetworkedBasicField("m_bIsWaitingToSpawn")
 	public IsWaitingToSpawn = false
 	public PredictedIsWaitingToSpawn = true
@@ -135,21 +145,11 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_flMaxMana")
 	public MaxMana = 0
 	@NetworkedBasicField("m_iNightTimeVisionRange")
-	public NightVision = 0
+	public NetworkedNightVision = 0
 	@NetworkedBasicField("m_flTauntCooldown")
 	public TauntCooldown = 0
 	@NetworkedBasicField("m_nUnitState64", EPropertyType.UINT64)
 	public UnitStateNetworked = 0n
-	@NetworkedBasicField("m_nHealthBarOffsetOverride")
-	public HealthBarOffsetOverride = 0
-	public HealthBarOffset_: Nullable<number>
-	public readonly Buffs: Modifier[] = []
-	public readonly Spells_ = new Array<number>(MAX_SPELLS).fill(0)
-	public readonly Spells = new Array<Nullable<Ability>>(MAX_SPELLS).fill(undefined)
-	public readonly TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
-	public readonly TotalItems = new Array<Nullable<Item>>(MAX_ITEMS).fill(undefined)
-	public MyWearables: Wearable[] = []
-	public MyWearables_: number[] = []
 	@NetworkedBasicField("m_iXPBounty")
 	public XPBounty = 0
 	@NetworkedBasicField("m_iXPBountyExtra")
@@ -158,11 +158,23 @@ export class Unit extends Entity {
 	public GoldBountyMin = 0
 	@NetworkedBasicField("m_iGoldBountyMax")
 	public GoldBountyMax = 0
+	@NetworkedBasicField("m_nHealthBarOffsetOverride")
+	public HealthBarOffsetOverride = 0
+	public HealthBarOffset_: Nullable<number>
+
+	public readonly Spells_ = new Array<number>(MAX_SPELLS).fill(0)
+	public readonly Spells = new Array<Nullable<Ability>>(MAX_SPELLS).fill(undefined)
+	public readonly TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
+	public readonly TotalItems = new Array<Nullable<Item>>(MAX_ITEMS).fill(undefined)
+	public MyWearables: Wearable[] = []
+	public MyWearables_: number[] = []
 	public LastActivity = 0 as GameActivity
 	public LastActivitySequenceVariant = 0
 	public LastActivityEndTime = 0
 	public LastActivityAnimationPoint = 0
 	public Spawner: Nullable<NeutralSpawner>
+	/** includes all buffs */
+	public readonly Buffs: Modifier[] = []
 
 	/** @readonly */
 	public CanUseItems = false
@@ -200,13 +212,11 @@ export class Unit extends Entity {
 	public OwnerNPC: Nullable<Unit> = undefined
 
 	public TPStartTime = -1
-
-	/** @readonly */
-	public FixedMoveSpeed = 0
-
-	/** @readonly */
-	public IsLimitMoveSpeed = true
-
+	/**
+	 * @ignore
+	 * @internal
+	 */
+	public IsIllusion_ = false
 	/**
 	 * @ignore
 	 * @internal
@@ -241,7 +251,76 @@ export class Unit extends Entity {
 
 	private LastPredictedPositionUpdate_ = 0
 	private LastRealPredictedPositionUpdate_ = 0
+
 	// private cellPositions: Vector2[] = []
+
+	/**
+	 * @deprecated
+	 * @description only support for icore (remove after delete icore)
+	 */
+	public get BaseMoveSpeed() {
+		return this.NetworkBaseMoveSpeed
+	}
+
+	public get NightVision() {
+		let totalBonus = this.NetworkedNightVision
+		const arrBuffs = this.Buffs
+		const names = new Set<string>()
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.BonusNightVision) {
+				continue
+			}
+			if (buff.BonusNightVisionStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus += buff.BonusNightVision
+		}
+		return totalBonus
+	}
+
+	public get DayVisionAmplify() {
+		let totalBonus = 1
+		const arrBuffs = this.Buffs
+		const names = new Set<string>()
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.BonusDayVisionAmplifier) {
+				continue
+			}
+			if (buff.BonusDayVisionAmplifierStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus += buff.BonusDayVisionAmplifier
+		}
+		return totalBonus
+	}
+
+	public get DayVisionBonus() {
+		let totalBonus = this.NetworkedDayVision
+		const arrBuffs = this.Buffs
+		const names = new Set<string>()
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.BonusDayVision) {
+				continue
+			}
+			if (buff.BonusDayVisionStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus += buff.BonusDayVision
+		}
+		return totalBonus
+	}
+
+	public get DayVision() {
+		const amp = this.DayVisionAmplify
+		const bonus = this.DayVisionBonus
+		return bonus * amp
+	}
 
 	/**
 	 * The vision value
@@ -259,13 +338,111 @@ export class Unit extends Entity {
 		return PlayerCustomData.get(this.PlayerID)?.Color ?? Color.Red
 	}
 
-	public get Speed() {
-		if (this.FixedMoveSpeed) {
-			return this.FixedMoveSpeed
-		}
-
+	public get Armor() {
 		return 0
 	}
+
+	public get AbsoluteAttack() {
+		return 0
+	}
+
+	// ===================================== Move Speed ===================================== //
+	public get IsMoveSpeedLimit() {
+		return this.Buffs.find(buff => !buff.IsMoveSpeedLimit)?.IsMoveSpeedLimit ?? true
+	}
+
+	public get MoveSpeedBaseData() {
+		return this.UnitData.BaseMovementSpeed
+	}
+
+	public get MoveSpeedResistance() {
+		return 0
+	}
+
+	public get MoveSpeedFixed() {
+		return (
+			this.Buffs.toOrderBy(
+				// exclude 0
+				x => x.MoveSpeedFixed === 0,
+				// sort by min
+				x => x.MoveSpeedFixed
+			).find(buff => buff.MoveSpeedFixed !== 0)?.MoveSpeedFixed ?? 0
+		)
+	}
+
+	public get MoveSpeedBase() {
+		if (this.MoveSpeedFixed !== 0) {
+			return this.MoveSpeedFixed
+		}
+		let baseSpeed = this.NetworkBaseMoveSpeed
+		if (baseSpeed === 0) {
+			baseSpeed = this.MoveSpeedBaseData
+		}
+		const buffs = this.Buffs.toOrderBy(
+			// exclude 0
+			x => x.MoveSpeedBase === 0,
+			// sort by min
+			x => x.MoveSpeedBase
+		)
+		if (buffs.length === 0 || buffs[0].MoveSpeedBase === 0) {
+			return baseSpeed
+		}
+		return buffs[0].MoveSpeedBase
+	}
+
+	public get MoveSpeedBonus() {
+		const names = new Set<string>()
+		const arrBuffs = this.Buffs
+		let totalBonus = 0
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (buff.IsBoots || !buff.BonusMoveSpeed) {
+				continue
+			}
+			if (!this.ShouldCheckMaxSpeed(buff)) {
+				continue
+			}
+			if (buff.BonusMoveSpeedStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus += buff.BonusMoveSpeed
+		}
+		return totalBonus + this.MoveSpeedBonusBoots
+	}
+
+	public get MoveSpeedAmplify() {
+		let amp = 1
+		const names = new Set<string>()
+		const arrBuffs = this.Buffs
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (buff.IsBoots || !buff.BonusMoveSpeedAmplifier) {
+				continue
+			}
+			if (buff.BonusMoveSpeedAmplifierStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			amp += buff.BonusMoveSpeedAmplifier
+		}
+		return amp + this.MoveSpeedAmpBoots
+	}
+
+	public get Speed() {
+		const amp = this.MoveSpeedAmplify
+		const isLimit = this.IsMoveSpeedLimit
+
+		const baseSpeed = this.MoveSpeedBase + this.MoveSpeedBonus //+ this.NightBonusMoveSpeed()
+		const calculateSpeed = Math.max(baseSpeed * amp, MoveSpeedData.Min)
+
+		const totalSpeed = isLimit
+			? Math.min(MoveSpeedData.Max, Math.max(MoveSpeedData.Min, calculateSpeed))
+			: Math.max(MoveSpeedData.Min, calculateSpeed)
+
+		return totalSpeed >> 0
+	}
+	// ===================================== Move Speed ===================================== //
 
 	public get LastRealPredictedPositionUpdate(): number {
 		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
@@ -273,9 +450,11 @@ export class Unit extends Entity {
 		}
 		return this.LastRealPredictedPositionUpdate_
 	}
+
 	public set LastRealPredictedPositionUpdate(val: number) {
 		this.LastRealPredictedPositionUpdate_ = val
 	}
+
 	public get LastPredictedPositionUpdate(): number {
 		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
 			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime
@@ -299,23 +478,32 @@ export class Unit extends Entity {
 	public get IsMyHero(): boolean {
 		return false
 	}
-
 	public get GoldBountyAverage(): number {
 		return (this.GoldBountyMin + this.GoldBountyMax) / 2
 	}
-
-	/* ======== modifierstate ======== */
 	public get IsIllusion(): boolean {
 		return this.IsIllusion_
 	}
+	// TODO: by classes
+	public get IsThirst(): boolean {
+		return this.HasBuffByName("modifier_bloodseeker_thirst")
+	}
+	// TODO: by classes
 	public get IsTempestDouble(): boolean {
 		return this.HasBuffByName("modifier_arc_warden_tempest_double")
+	}
+	// TODO: by classes
+	public get IsCharge(): boolean {
+		return this.HasBuffByName("modifier_spirit_breaker_charge_of_darkness")
 	}
 	public get CanBeMainHero(): boolean {
 		return !this.IsIllusion && !this.IsTempestDouble
 	}
 	public get IsRooted(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ROOTED)
+	}
+	public get IsUnslowable(): boolean {
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_UNSLOWABLE)
 	}
 	public get IsDisarmed(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_DISARMED)
@@ -341,11 +529,17 @@ export class Unit extends Entity {
 			this.InvisibilityLevel > 0.5
 		)
 	}
+	public get IsNoTeamMoveTo() {
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_TEAM_MOVE_TO)
+	}
 	public get IsInvulnerable(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE)
 	}
 	public get IsMagicImmune(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE)
+	}
+	public get IsDebuffImmune(): boolean {
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_DEBUFF_IMMUNE)
 	}
 	public get IsDeniable(): boolean {
 		if (this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE)) {
@@ -385,6 +579,7 @@ export class Unit extends Entity {
 	public get IsControllableByAnyPlayer(): boolean {
 		return this.IsControllableByPlayerMask !== 0n
 	}
+	/** @deprecated */
 	public get IsRangeAttacker(): boolean {
 		return this.HasAttackCapability(
 			DOTAUnitAttackCapability.DOTA_UNIT_CAP_RANGED_ATTACK
@@ -518,7 +713,6 @@ export class Unit extends Entity {
 	public get Items(): Item[] {
 		return this.Inventory.Items
 	}
-
 	public get HullRadius(): number {
 		return this.UnitData.HullRadius
 	}
@@ -529,7 +723,6 @@ export class Unit extends Entity {
 		}
 		return projectileCollisionSize
 	}
-
 	public get MovementTurnRate(): number {
 		return this.UnitData.MovementTurnRate
 	}
@@ -557,6 +750,7 @@ export class Unit extends Entity {
 	}
 	public get CastRangeBonus(): number {
 		let castrange = 0
+		// todo buffs
 		const gadgetAura = this.GetBuffByName("modifier_item_spy_gadget_aura")
 		if (gadgetAura !== undefined) {
 			const gadget = gadgetAura.Ability
@@ -624,6 +818,32 @@ export class Unit extends Entity {
 	public get ShouldUnifyOrders(): boolean {
 		return true
 	}
+	protected get MoveSpeedBonusBoots() {
+		const sortBuffs = this.Buffs.toOrderBy(
+			// exclude 0 and boots
+			x => x.IsBoots && x.BonusMoveSpeed === 0,
+			// sort by max
+			x => -x.BonusMoveSpeed
+		)
+		const buff = sortBuffs.find(x => x.IsBoots && x.BonusMoveSpeed !== 0)
+		return buff?.BonusMoveSpeed ?? 0
+	}
+	protected get MoveSpeedAmpBoots() {
+		const sortBuffs = this.Buffs.toOrderBy(
+			// exclude 0 and boots
+			x => x.IsBoots && x.BonusMoveSpeedAmplifier === 0,
+			// sort by max
+			x => -x.BonusMoveSpeedAmplifier
+		)
+		const buff = sortBuffs.find(x => x.IsBoots && x.BonusMoveSpeedAmplifier !== 0)
+		return buff?.BonusMoveSpeedAmplifier ?? 0
+	}
+
+	// TODO
+	public GetAttacksPerSecond(_target?: Unit): number {
+		return 0
+	}
+
 	public TexturePath(small?: boolean, team = this.Team): Nullable<string> {
 		return GetUnitTexture(this.Name, small, team)
 	}
@@ -861,17 +1081,6 @@ export class Unit extends Entity {
 		return false
 	}
 
-	public GetAngle(vec: Vector3): number {
-		const npcPos = this.Position
-		let angle = Math.abs(
-			Math.atan2(npcPos.y - vec.y, npcPos.x - vec.x) - this.RotationRad
-		)
-		if (angle > Math.PI) {
-			angle = Math.abs(Math.PI * 2 - angle)
-		}
-		return angle
-	}
-
 	public IsManaEnough(abil: Ability) {
 		return this.Mana >= abil.ManaCost
 	}
@@ -1034,7 +1243,6 @@ export class Unit extends Entity {
 			}
 		}
 	}
-
 	/* ================================ ORDERS ================================ */
 	public UseSmartAbility(
 		ability: Ability,
@@ -1457,6 +1665,33 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
+	protected ShouldCheckMaxSpeed(modifier: Modifier) {
+		const hasBuffByName = this.IsThirst || this.IsCharge
+		return !(hasBuffByName && modifier.BonusMoveSpeed >= MoveSpeedData.Max)
+	}
+
+	// TODO: refactor
+	protected NightBonusMoveSpeed() {
+		if (!GameRules?.IsNight) {
+			return 0
+		}
+
+		const speed = 30 // fixed value
+		const lastDamageTime = this.LastDamageTime + 5
+		const lastAttackTime = this.LastAttackTime + 5
+		const lastDealtDamageTime = this.LastDealtDamageTime + 5
+
+		const gameRawTime = GameState.RawGameTime
+		if (
+			lastAttackTime > gameRawTime ||
+			(lastDamageTime > gameRawTime && lastDealtDamageTime > gameRawTime)
+		) {
+			return 0
+		}
+
+		return speed
+	}
 }
 export const Units = EntityManager.GetEntitiesByClass(Unit)
 
@@ -1491,6 +1726,13 @@ RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, newValue) => {
 RegisterFieldHandler(Unit, "m_iPlayerID", (unit, newVal) => {
 	unit.PlayerID = ReencodeProperty(newVal, EPropertyType.INT32) as number
 	PlayerCustomData.set(unit.PlayerID)
+})
+RegisterFieldHandler(Unit, "m_nUnitState64", (unit, newVal) => {
+	unit.UnitStateNetworked = ReencodeProperty(newVal, EPropertyType.UINT64) as bigint
+	for (let index = unit.Buffs.length - 1; index > -1; index--) {
+		unit.Buffs[index].OnUnitStateChaged()
+	}
+	EventsSDK.emit("UnitStateChanged", false, unit)
 })
 RegisterFieldHandler(Unit, "m_hOwnerNPC", (unit, newVal) => {
 	unit.OwnerNPC_ = newVal as number

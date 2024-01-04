@@ -6,7 +6,7 @@ export class dark_willow_terrorize extends Ability {
 	public get Speed() {
 		return this.GetSpecialValue("destination_travel_speed")
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("destination_radius", level)
 	}
 }

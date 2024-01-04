@@ -32,12 +32,28 @@ declare interface Array<T> {
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
-	 * @description Sorts an array in ascending order.
+	 * @description This method mutates the array and returns a reference to the same array.
 	 */
 	orderBy(
 		callback: (obj: T) => number | boolean,
 		thenBy?: (obj: T) => number | boolean
 	): T[]
+	/**
+	 * @requires
+	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
+	 * @description This method returns a copy of an array.
+	 */
+	toOrderBy(
+		callback: (obj: T) => number | boolean,
+		thenBy?: (obj: T) => number | boolean
+	): T[]
+	/**
+	 * @requires
+	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
+	 * @description This method mutates the array and returns a reference to the same array.
+	 */
 	orderByDescending(
 		callback: (obj: T) => number | boolean,
 		thenBy?: (obj: T) => number | boolean
@@ -46,7 +62,17 @@ declare interface Array<T> {
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
-	 * @description Similar to ar.orderBy(cb)[0]
+	 * @description This method returns a copy of an array.
+	 */
+	toOrderByDescending(
+		callback: (obj: T) => number | boolean,
+		thenBy?: (obj: T) => number | boolean
+	): T[]
+	/**
+	 * @requires
+	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
+	 * @description This method mutates the array and returns a reference to the same array. Similar to ar.orderBy(cb)[0]
 	 */
 	orderByFirst(callback: (obj: T) => number): Nullable<T>
 	/**

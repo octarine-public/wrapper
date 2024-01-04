@@ -3,7 +3,7 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("magnataur_reverse_polarity")
 export class magnataur_reverse_polarity extends Ability {
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("pull_radius", level)
 	}
 }

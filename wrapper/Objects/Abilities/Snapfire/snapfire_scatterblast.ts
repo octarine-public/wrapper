@@ -9,7 +9,18 @@ export class snapfire_scatterblast extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("blast_speed")
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("blast_width_initial", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage", level)
 	}
 }

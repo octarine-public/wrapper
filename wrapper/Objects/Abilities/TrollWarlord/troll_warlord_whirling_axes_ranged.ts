@@ -12,7 +12,10 @@ export class troll_warlord_whirling_axes_ranged extends Ability {
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue("axe_range", level)
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("axe_width", level)
+	}
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
 	}
 }

@@ -6,7 +6,7 @@ export class zuus_cloud extends Ability {
 	public GetBaseCastRangeForLevel(_level: number): number {
 		return Number.MAX_SAFE_INTEGER
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("cloud_radius", level)
 	}
 }

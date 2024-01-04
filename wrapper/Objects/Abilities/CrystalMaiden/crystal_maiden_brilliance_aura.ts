@@ -3,7 +3,7 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("crystal_maiden_brilliance_aura")
 export class crystal_maiden_brilliance_aura extends Ability {
-	public GetAOERadiusForLevel(_level: number): number {
+	public GetBaseAOERadiusForLevel(_level: number): number {
 		return Number.MAX_SAFE_INTEGER
 	}
 }
