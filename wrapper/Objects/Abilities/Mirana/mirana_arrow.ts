@@ -6,7 +6,7 @@ export class mirana_arrow extends Ability {
 	public get Speed() {
 		return this.GetSpecialValue("arrow_speed")
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("arrow_width", level)
 	}
 }

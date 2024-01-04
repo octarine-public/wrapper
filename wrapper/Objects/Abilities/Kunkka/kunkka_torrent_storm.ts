@@ -6,7 +6,7 @@ export class kunkka_torrent_storm extends Ability {
 	public get Duration(): number {
 		return this.GetSpecialValue("torrent_duration")
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("torrent_max_distance", level)
 	}
 }

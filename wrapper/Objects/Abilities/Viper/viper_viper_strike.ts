@@ -23,4 +23,11 @@ export class viper_viper_strike extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseManaCostForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityManaCost", level)
+	}
 }

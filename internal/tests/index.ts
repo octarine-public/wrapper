@@ -54,16 +54,19 @@
 // // // 	)
 // // // )
 
+// const arrTest: number[] = []
+// const str = ""
+
 // key.OnRelease(() => {
 // 	const start = hrtime()
-// 	arr.toSorted((a, b) => b - a)
-// 	console.log("calc toSorted", hrtime() - start)
+// 	const l = !arrTest.length
+// 	console.log("calc toSorted", hrtime() - start, l)
 // })
 
 // key2.OnRelease(() => {
 // 	const start = hrtime()
-// 	arr2.sort((a, b) => b - a)
-// 	console.log("calc sort", hrtime() - start)
+// 	const l = arrTest.length === 0
+// 	console.log("calc sort", hrtime() - start, l)
 // })
 
 // // // key2.OnRelease(() => {

@@ -38,7 +38,14 @@ export class crystal_maiden_freezing_field extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseManaCostForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityManaCost", level)
 	}
 }

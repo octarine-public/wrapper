@@ -7,7 +7,7 @@ export class giant_wolf_intimidate extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
 }

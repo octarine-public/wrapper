@@ -6,14 +6,11 @@ export class queenofpain_sonic_wave extends Ability {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("final_aoe")
 	}
-	public get Speed(): number {
-		return this.GetSpecialValue("projectile_speed")
-	}
 	/**
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("starting_aoe", level)
 	}
 	/**
@@ -29,5 +26,12 @@ export class queenofpain_sonic_wave extends Ability {
 	 */
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("speed", level)
 	}
 }

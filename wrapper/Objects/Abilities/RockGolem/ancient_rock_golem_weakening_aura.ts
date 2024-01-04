@@ -7,7 +7,7 @@ export class ancient_rock_golem_weakening_aura extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
 }

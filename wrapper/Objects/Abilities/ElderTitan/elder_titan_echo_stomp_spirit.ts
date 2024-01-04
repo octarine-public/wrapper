@@ -14,7 +14,7 @@ export class elder_titan_echo_stomp_spirit extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
 }

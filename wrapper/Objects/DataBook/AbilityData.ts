@@ -310,19 +310,19 @@ export class AbilityData {
 		const val = ar[2]
 		switch (true) {
 			case typeof val === "string":
-				if (val.length !== 0) {
-					talentVal = this.GetSpecialValue(val, level, abilityName)
+				if (!val.length) {
 					break
 				}
+				talentVal = this.GetSpecialValue(val, level, abilityName)
 				break
 			case Array.isArray(val):
-				if (val.length === 0) {
+				if (!val.length) {
 					break
 				}
 				talentVal = val[Math.min(level, val.length) - 1]
 				break
 			default:
-				if (ar[1].length === 0) {
+				if (!ar[1].length) {
 					break
 				}
 				if (

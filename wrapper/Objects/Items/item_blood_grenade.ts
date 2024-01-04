@@ -7,7 +7,14 @@ export class item_blood_grenade extends Item {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("speed", level)
 	}
 }

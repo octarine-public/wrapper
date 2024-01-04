@@ -7,7 +7,7 @@ export class invoker_sun_strike extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("area_of_effect", level)
 	}
 	/**

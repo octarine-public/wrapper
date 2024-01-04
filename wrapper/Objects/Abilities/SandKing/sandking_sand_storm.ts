@@ -3,7 +3,7 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("sandking_sand_storm")
 export class sandking_sand_storm extends Ability {
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("sand_storm_radius", level)
 	}
 }

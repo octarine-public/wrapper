@@ -6,7 +6,7 @@ export class necrolyte_death_pulse extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("area_of_effect", level)
 	}
 }

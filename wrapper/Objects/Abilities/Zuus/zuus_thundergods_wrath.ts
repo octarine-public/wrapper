@@ -7,7 +7,7 @@ export class zuus_thundergods_wrath extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(_level: number): number {
+	public GetBaseAOERadiusForLevel(_level: number): number {
 		return Number.MAX_SAFE_INTEGER
 	}
 	/**

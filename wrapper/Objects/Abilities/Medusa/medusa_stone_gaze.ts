@@ -7,6 +7,13 @@ export class medusa_stone_gaze extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCooldown", level)
 	}
@@ -14,7 +21,7 @@ export class medusa_stone_gaze extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
-		return this.GetSpecialValue("radius", level)
+	public GetBaseManaCostForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityManaCost", level)
 	}
 }

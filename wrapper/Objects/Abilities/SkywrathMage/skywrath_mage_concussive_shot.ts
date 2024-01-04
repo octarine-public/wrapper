@@ -3,9 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("skywrath_mage_concussive_shot")
 export class skywrath_mage_concussive_shot extends Ability {
-	public get Speed(): number {
-		return this.GetSpecialValue("speed")
-	}
 	/**
 	 * @param level
 	 * @return {number}
@@ -24,7 +21,7 @@ export class skywrath_mage_concussive_shot extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("launch_radius", level)
 	}
 	/**
@@ -33,5 +30,12 @@ export class skywrath_mage_concussive_shot extends Ability {
 	 */
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("speed", level)
 	}
 }

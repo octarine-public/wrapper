@@ -9,7 +9,7 @@ export class storm_spirit_electric_vortex extends Ability {
 		}
 		return super.GetCastRangeForLevel(level)
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("radius_scepter", level) : 0
 	}
 }

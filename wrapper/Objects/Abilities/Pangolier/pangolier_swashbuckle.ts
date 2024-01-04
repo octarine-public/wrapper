@@ -17,7 +17,7 @@ export class pangolier_swashbuckle extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("start_radius", level)
 	}
 	/**

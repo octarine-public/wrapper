@@ -7,7 +7,7 @@ export class troll_warlord_whirling_axes_melee extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("max_range", level)
 	}
 	/**

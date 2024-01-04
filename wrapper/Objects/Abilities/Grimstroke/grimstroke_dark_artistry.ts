@@ -13,7 +13,7 @@ export class grimstroke_dark_artistry extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("start_radius", level)
 	}
 	/**

@@ -13,7 +13,7 @@ export class vengefulspirit_wave_of_terror extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("wave_width", level)
 	}
 	/**

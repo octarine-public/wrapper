@@ -7,7 +7,7 @@ export class batrider_flamebreak extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("explosion_radius", level)
 	}
 	/**
@@ -16,5 +16,12 @@ export class batrider_flamebreak extends Ability {
 	 */
 	public GetMaxChargesForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCharges", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("speed", level)
 	}
 }

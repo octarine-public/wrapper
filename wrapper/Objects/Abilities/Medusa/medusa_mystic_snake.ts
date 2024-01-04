@@ -14,6 +14,13 @@ export class medusa_mystic_snake extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
+	public GetBaseManaCostForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityManaCost", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetBaseCastPointForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCastPoint", level)
 	}
@@ -28,7 +35,7 @@ export class medusa_mystic_snake extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
 }

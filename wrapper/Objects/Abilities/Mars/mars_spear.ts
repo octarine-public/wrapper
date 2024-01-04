@@ -10,7 +10,7 @@ export class mars_spear extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("spear_width", level)
 	}
 	/**

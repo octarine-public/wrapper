@@ -12,7 +12,7 @@ export class nevermore_shadowraze3 extends Ability {
 	public GetCastRangeForLevel(level: number): number {
 		return this.GetBaseCastRangeForLevel(level)
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("shadowraze_radius", level)
 	}
 	public GetMaxCooldownForLevel(level: number): number {

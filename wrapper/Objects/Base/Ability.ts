@@ -131,7 +131,10 @@ export class Ability extends Entity {
 		return this.OwnerEntity as Nullable<Unit>
 	}
 	public get AbilityBehavior(): DOTA_ABILITY_BEHAVIOR[] {
-		return this.AbilityData.AbilityBehavior.toMask
+		return this.AbilityBehaviorMask.toMask
+	}
+	public get AbilityBehaviorMask(): DOTA_ABILITY_BEHAVIOR {
+		return this.AbilityData.AbilityBehavior
 	}
 	/**
 	 * @returns AbilityLogicType bitmask
@@ -154,7 +157,11 @@ export class Ability extends Entity {
 		return this.GetSpecialValue("delay")
 	}
 	public get CastPoint(): number {
-		return this.OverrideCastPoint || this.GetBaseCastPointForLevel(this.Level)
+		const overrideValue = this.OverrideCastPoint // default -1 or 0
+		if (overrideValue > 0) {
+			return overrideValue
+		}
+		return this.GetBaseCastPointForLevel(this.Level)
 	}
 	public get MaxChannelTime(): number {
 		return this.GetBaseChannelTimeForLevel(this.Level)
@@ -292,6 +299,9 @@ export class Ability extends Entity {
 	public get StackCount(): number {
 		return 0
 	}
+	public get Speed() {
+		return this.GetBaseSpeedForLevel(this.Level)
+	}
 	public get MaxDuration(): number {
 		return this.GetMaxDurationForLevel(this.Level)
 	}
@@ -304,14 +314,6 @@ export class Ability extends Entity {
 	public get CastRange(): number {
 		return this.GetCastRangeForLevel(this.Level)
 	}
-	/** @deprecated */
-	public get AOERadius(): number {
-		return this.GetAOERadiusForLevel(this.Level)
-	}
-	public get BaseRadius() {
-		return this.GetAOERadiusForLevel(this.Level)
-	}
-
 	public get BonusRadius(): number {
 		if (this.Owner === undefined) {
 			return 0
@@ -327,9 +329,8 @@ export class Ability extends Entity {
 		}
 		return totalBonus
 	}
-
-	public get Radius(): number {
-		const baseRadius = this.BaseRadius
+	public get AOERadius(): number {
+		const baseRadius = this.GetBaseAOERadiusForLevel(this.Level)
 		if (this.Owner === undefined) {
 			return baseRadius
 		}
@@ -341,12 +342,14 @@ export class Ability extends Entity {
 	public get SkillshotRange(): number {
 		return this.CastRange
 	}
+	// TODO Fix me
 	public get SpellAmplification(): number {
 		if (this.Name.startsWith("special_bonus_spell_amplify")) {
 			return this.GetSpecialValue("value") / 100
 		}
 		return 0
 	}
+	// TODO Fix me
 	public get BonusCastRange(): number {
 		if (this.Name.startsWith("special_bonus_cast_range")) {
 			return this.GetSpecialValue("value")
@@ -420,14 +423,7 @@ export class Ability extends Entity {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetBaseCastRangeForLevel(level: number): number {
-		return this.AbilityData.GetCastRange(level)
-	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
-	public GetBaseManaCostForLevel(level: number) {
+	public GetBaseManaCostForLevel(level: number): number {
 		return this.AbilityData.GetManaCost(level)
 	}
 	/**
@@ -441,7 +437,21 @@ export class Ability extends Entity {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(_level: number): number {
+	public GetBaseCastRangeForLevel(level: number): number {
+		return this.AbilityData.GetCastRange(level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(_level: number): number {
+		return 0 // child classes should override
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(_level: number): number {
 		return 0 // child classes should override
 	}
 	/**
@@ -452,6 +462,7 @@ export class Ability extends Entity {
 		return this.AbilityData.GetChannelTime(level)
 	}
 	/**
+	 * TODO Fix me
 	 * @param position Vector3
 	 * @param turnRate boolean
 	 * @returns Time in ms until the cast.
@@ -463,6 +474,7 @@ export class Ability extends Entity {
 			: 0
 	}
 	/**
+	 * TODO Fix me
 	 * @param position Vector3
 	 * @returns Time in ms until the cast.
 	 */
@@ -511,10 +523,11 @@ export class Ability extends Entity {
 	 */
 	public GetSpecialValue(specialName: string, level: number = this.Level): number {
 		const owner = this.Owner
+		const abilName = this.Name
 		const abilityData = this.AbilityData
 		return owner === undefined
-			? abilityData.GetSpecialValue(specialName, level, this.Name)
-			: abilityData.GetSpecialValueWithTalent(owner, specialName, level, this.Name)
+			? abilityData.GetSpecialValue(specialName, level, abilName)
+			: abilityData.GetSpecialValueWithTalent(owner, specialName, level, abilName)
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {
 		const owner = this.Owner

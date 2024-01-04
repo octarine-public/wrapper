@@ -3,9 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("crystal_maiden_crystal_nova")
 export class crystal_maiden_crystal_nova extends Ability {
-	public get AbilityDamage(): number {
-		return this.GetSpecialValue("nova_damage")
-	}
 	/**
 	 * @param level
 	 * @return {number}
@@ -31,7 +28,21 @@ export class crystal_maiden_crystal_nova extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("nova_damage", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseManaCostForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityManaCost", level)
 	}
 }

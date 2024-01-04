@@ -9,7 +9,7 @@ export class item_shivas_guard extends Item {
 	public get AbilityDamage() {
 		return this.GetSpecialValue("blast_damage")
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("blast_radius", level)
 	}
 }

@@ -6,7 +6,7 @@ export class monkey_king_boundless_strike extends Ability {
 	public get SkillshotRange(): number {
 		return this.CastRange + this.AOERadius
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("strike_radius", level)
 	}
 	public GetMaxCooldownForLevel(level: number): number {

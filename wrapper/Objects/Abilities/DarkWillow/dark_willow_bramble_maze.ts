@@ -9,7 +9,7 @@ export class dark_willow_bramble_maze extends Ability {
 			this.GetSpecialValue("latch_creation_delay")
 		)
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("placement_range", level)
 	}
 }
