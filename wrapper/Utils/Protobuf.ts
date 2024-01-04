@@ -591,9 +591,9 @@ export function NumberToColor(num: Nullable<number>): Color {
 		return new Color()
 	}
 	return new Color(
-		(num >> 24) & 0xff,
-		(num >> 16) & 0xff,
+		num & 0xff,
 		(num >> 8) & 0xff,
-		num & 0xff
+		(num >> 16) & 0xff,
+		(num >> 24) & 0xff
 	)
 }
