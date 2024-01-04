@@ -426,23 +426,24 @@ class CRendererSDK {
 		const origSize = this.tex2size.get(textureID)!
 		const halfRound = round / 2
 
-		if (vecSize.x <= 0) {
-			vecSize.x = origSize.x
-		}
-		if (vecSize.y <= 0) {
-			vecSize.y = origSize.y
-		}
-
 		if (path.endsWith(".svg")) {
-			if (round >= 0) {
+			const useRound = round >= 0,
+				useScissors = customScissor !== undefined
+
+			if (useRound || useScissors) {
 				this.BeginClip(false)
-				this.FilledCircle(
-					vecPos.AddScalar(halfRound),
-					vecSize.SubtractScalar(halfRound),
-					Color.White,
-					0,
-					customScissor
-				)
+				if (useRound) {
+					this.FilledCircle(
+						vecPos.AddScalar(halfRound),
+						vecSize.SubtractScalar(halfRound),
+						Color.White,
+						0,
+						customScissor
+					)
+				}
+				if (useScissors) {
+					this.FilledRect(customScissor.pos1, customScissor.pos2)
+				}
 				this.EndClip()
 			}
 
@@ -462,6 +463,7 @@ class CRendererSDK {
 		if (customScissor !== undefined) {
 			this.SetScissor(customScissor)
 		}
+
 		this.Translate(vecPos)
 		this.Rotate(rotationDeg)
 		if (round < 0) {
@@ -495,9 +497,10 @@ class CRendererSDK {
 		let cutX = 0,
 			cutY = 0
 		if (ratio < origRatio) {
-			cutX = (ratio - origRatio) / 2 / ratio
+			cutX = (ratio - origRatio) / ratio
 		} else if (ratio > origRatio) {
-			cutY = (origRatio - ratio) / 2 / origRatio
+			// Y not tested
+			cutY = (origRatio - ratio) / origRatio
 		}
 
 		this.Path(
@@ -509,10 +512,10 @@ class CRendererSDK {
 			LineCap.Square,
 			LineJoin.Round,
 			textureID,
-			-cutX * vecSize.x,
-			-cutY * vecSize.y,
-			vecSize.x * (1 - cutX * 2),
-			vecSize.y * (1 - cutY * 2)
+			vecSize.x * cutX * -0.5,
+			vecSize.y * cutY * -0.5,
+			vecSize.x * (1 - cutX),
+			vecSize.y * (1 - cutY)
 		)
 	}
 	public GetImageSize(path: string): Vector2 {
@@ -571,7 +574,7 @@ class CRendererSDK {
 		color = Color.White,
 		division = 1.2,
 		flags = TextFlags.Center,
-		width = 600,
+		width = 400,
 		fontName = this.DefaultFontName,
 		fixDigits = true,
 		italic = false,

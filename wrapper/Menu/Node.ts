@@ -24,7 +24,7 @@ export class Node extends Base {
 		Node.arrowOffset.x = GUIInfo.ScaleWidth(8)
 		Node.arrowOffset.y = GUIInfo.ScaleHeight(8)
 		Node.arrowTextGap = GUIInfo.ScaleWidth(10)
-		Node.iconRectRounding = GUIInfo.ScaleHeight(12)
+		Node.iconRectRounding = GUIInfo.ScaleHeight(18)
 		Node.iconSize.x = GUIInfo.ScaleWidth(24)
 		Node.iconSize.y = GUIInfo.ScaleHeight(24)
 		Node.iconOffset.x = GUIInfo.ScaleWidth(12)
@@ -50,6 +50,8 @@ export class Node extends Base {
 	private static readonly arrowOffset = new Vector2()
 	private static arrowTextGap = 0
 	private static iconRectRounding = 0
+	private static coef1 = 0.2
+	private static coef2 = 0.3
 	private static readonly iconSize = new Vector2()
 	private static readonly iconOffset = new Vector2()
 	private static readonly textOffsetNode = new Vector2(15, 14)
@@ -277,12 +279,16 @@ export class Node extends Base {
 		const textPos = this.Position.Clone()
 		if (this.IconPath !== "") {
 			textPos.AddForThis(Node.textOffsetWithIcon)
-			RendererSDK.Image(
-				this.IconPath,
-				this.Position.Add(Node.iconOffset),
-				this.IconRound,
-				Node.iconSize
-			)
+
+			for (let i = this.IconRound > 0 ? -2 : 0; i < 1; i++) {
+				RendererSDK.Image(
+					this.IconPath,
+					this.Position.Add(Node.iconOffset),
+					this.IconRound * (1 + Node.coef1 * i),
+					Node.iconSize,
+					Color.White.SetA(255 * (1 + Node.coef2 * i))
+				)
+			}
 		} else {
 			textPos.AddForThis(this.textOffset)
 		}
