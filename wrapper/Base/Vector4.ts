@@ -73,20 +73,7 @@ export class Vector4 {
 	 * @return {boolean}
 	 */
 	public get IsValid(): boolean {
-		return !this.IsNaN && this.IsFinite
-	}
-	/**
-	 * Checks if `x`, `y`, `z`, and `w` properties are NaN.
-	 *
-	 * @return {boolean}
-	 */
-	public get IsNaN(): boolean {
-		return (
-			Number.isNaN(this.x) &&
-			Number.isNaN(this.y) &&
-			Number.isNaN(this.z) &&
-			Number.isNaN(this.w)
-		)
+		return this.IsFinite
 	}
 	/**
 	 * Checks if the vector components are finite numbers.
