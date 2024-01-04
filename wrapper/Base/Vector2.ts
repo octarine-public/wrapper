@@ -57,10 +57,7 @@ export class Vector2 {
 	 * Is this vector valid? (every value must not be infinity/NaN)
 	 */
 	public get IsValid(): boolean {
-		return !this.IsNaN && this.IsFinite
-	}
-	public get IsNaN(): boolean {
-		return Number.isNaN(this.x) && Number.isNaN(this.y)
+		return this.IsFinite
 	}
 	public get IsFinite(): boolean {
 		return Number.isFinite(this.x) && Number.isFinite(this.y)
