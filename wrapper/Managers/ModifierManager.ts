@@ -14,7 +14,7 @@ import { EventsSDK } from "./EventsSDK"
 import { StringTables } from "./StringTables"
 
 const queuedEnts: (Unit | Ability)[] = []
-const queuedCooldown = new Set<Ability>()
+const cooldownChanged = new Set<Ability>()
 
 const activeModifiers = new Map<number, Modifier>()
 const activeModifiersRaw = new Map<number, IModifier>()
@@ -238,18 +238,30 @@ EventsSDK.on("PreEntityCreated", ent => {
 	}
 })
 
-EventsSDK.on("EntityDestroyed", ent => {
-	if (ent instanceof Unit || ent instanceof Ability) {
-		if (ent instanceof Ability) {
-			queuedCooldown.delete(ent)
-		}
-		queuedEnts.remove(ent)
+EventsSDK.on("AbilityCooldownChanged", abil => {
+	if (!cooldownChanged.has(abil) && abil.Cooldown !== 0) {
+		cooldownChanged.add(abil)
 	}
 })
 
-EventsSDK.on("AbilityNetworkedCooldown", abil => {
-	if (!queuedCooldown.has(abil) && abil.Cooldown !== 0) {
-		queuedCooldown.add(abil)
+EventsSDK.on("AbilityLevelChanged", abil => {
+	const owner = abil.Owner
+	if (owner === undefined) {
+		return
+	}
+	activeModifiers.forEach(mod => {
+		if (mod.Ability !== undefined && owner === mod.Ability.Owner) {
+			mod.OnAbilityLevelChanged()
+		}
+	})
+})
+
+EventsSDK.on("EntityDestroyed", ent => {
+	if (ent instanceof Unit || ent instanceof Ability) {
+		if (ent instanceof Ability) {
+			cooldownChanged.delete(ent)
+		}
+		queuedEnts.remove(ent)
 	}
 })
 
@@ -280,14 +292,14 @@ EventsSDK.on("PostDataUpdate", () => {
 		queuedEnts.clear()
 	}
 
-	if (queuedCooldown.size !== 0) {
+	if (cooldownChanged.size !== 0) {
 		activeModifiers.forEach(mod => {
-			if (mod.Ability === undefined || !queuedCooldown.has(mod.Ability)) {
+			if (mod.Ability === undefined || !cooldownChanged.has(mod.Ability)) {
 				return
 			}
 			// see: modifier_item_tranquil_boots
 			if (mod.Ability.Cooldown === 0) {
-				queuedCooldown.delete(mod.Ability)
+				cooldownChanged.delete(mod.Ability)
 			}
 			mod.OnAbilityCooldownChanged()
 		})

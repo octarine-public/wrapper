@@ -1,4 +1,4 @@
-export enum dotaunitorder_t {
+export const enum dotaunitorder_t {
 	DOTA_UNIT_ORDER_NONE = 0,
 	DOTA_UNIT_ORDER_MOVE_TO_POSITION = 1,
 	DOTA_UNIT_ORDER_MOVE_TO_TARGET = 2,

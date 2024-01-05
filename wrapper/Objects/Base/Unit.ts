@@ -355,6 +355,10 @@ export class Unit extends Entity {
 		return this.UnitData.BaseMovementSpeed
 	}
 
+	public get MoveSpeedBase() {
+		return this.CalcualteBaseMoveSpeed()
+	}
+
 	public get MoveSpeedResistance() {
 		return 0
 	}
@@ -368,26 +372,6 @@ export class Unit extends Entity {
 				x => x.MoveSpeedFixed
 			).find(buff => buff.MoveSpeedFixed !== 0)?.MoveSpeedFixed ?? 0
 		)
-	}
-
-	public get MoveSpeedBase() {
-		if (this.MoveSpeedFixed !== 0) {
-			return this.MoveSpeedFixed
-		}
-		let baseSpeed = this.NetworkBaseMoveSpeed
-		if (baseSpeed === 0) {
-			baseSpeed = this.MoveSpeedBaseData
-		}
-		const buffs = this.Buffs.toOrderBy(
-			// exclude 0
-			x => x.MoveSpeedBase === 0,
-			// sort by min
-			x => x.MoveSpeedBase
-		)
-		if (buffs.length === 0 || buffs[0].MoveSpeedBase === 0) {
-			return baseSpeed
-		}
-		return buffs[0].MoveSpeedBase
 	}
 
 	public get MoveSpeedBonus() {
@@ -461,6 +445,7 @@ export class Unit extends Entity {
 		}
 		return this.LastPredictedPositionUpdate_
 	}
+
 	public set LastPredictedPositionUpdate(val: number) {
 		this.LastPredictedPositionUpdate_ = val
 	}
@@ -1691,6 +1676,46 @@ export class Unit extends Entity {
 		}
 
 		return speed
+	}
+
+	protected CalcualteBaseMoveSpeed() {
+		if (this.MoveSpeedFixed !== 0) {
+			return 0
+		}
+		let baseSpeed = this.NetworkBaseMoveSpeed
+		if (baseSpeed === 0) {
+			baseSpeed = this.MoveSpeedBaseData
+		}
+		let totalBonus = 0,
+			totalBonusAmp = 1
+		const arrBuffs = this.Buffs,
+			namesBonus = new Set<string>(),
+			namesAmplifier = new Set<string>(),
+			bonusBaseSpeed = baseSpeed + totalBonus
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			// if not bonus skip
+			if (buff.MoveSpeedBase !== 0) {
+				if (buff.MoveSpeedBaseStack && namesBonus.has(buff.Name)) {
+					continue
+				}
+				namesBonus.add(buff.Name)
+				totalBonus += buff.MoveSpeedBase
+				continue
+			}
+			// if not amplifier skip
+			if (!buff.MoveSpeedBaseAmplifier) {
+				continue
+			}
+			if (buff.MoveSpeedBaseAmplifierStack && namesAmplifier.has(buff.Name)) {
+				continue
+			}
+			namesAmplifier.add(buff.Name)
+			totalBonusAmp += buff.MoveSpeedBaseAmplifier
+		}
+
+		// need check min speed data from base move speed ?
+		return bonusBaseSpeed * totalBonusAmp
 	}
 }
 export const Units = EntityManager.GetEntitiesByClass(Unit)

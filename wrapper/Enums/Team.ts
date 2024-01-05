@@ -1,4 +1,4 @@
-export enum Team {
+export const enum Team {
 	None,
 	Observer,
 	Radiant,

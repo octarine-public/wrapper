@@ -1,4 +1,4 @@
-export enum LaneSelectionFlags {
+export const enum LaneSelectionFlags {
 	None,
 	SAFE_LANE = 1 << 0,
 	OFF_LANE = 1 << 1,

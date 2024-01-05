@@ -1,4 +1,4 @@
-export enum DOTA_SHOP_TYPE {
+export const enum DOTA_SHOP_TYPE {
 	DOTA_SHOP_HOME = 0,
 	DOTA_SHOP_SIDE = 1,
 	DOTA_SHOP_SECRET = 2,

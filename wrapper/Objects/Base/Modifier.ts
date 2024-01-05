@@ -66,6 +66,8 @@ export class Modifier {
 	/** @readonly */
 	public IsHiddenWhenStolen = false
 	/** @readonly */
+	public IsDeniable = false
+	/** @readonly */
 	public VisibleForEnemies = false
 	/** @readonly */
 	public BonusAttackSpeed = 0
@@ -86,7 +88,13 @@ export class Modifier {
 	/** @readonly */
 	public MoveSpeedBase = 0
 	/** @readonly */
+	public MoveSpeedBaseStack = false
+	/** @readonly */
 	public MoveSpeedFixed = 0
+	/** @readonly */
+	public MoveSpeedBaseAmplifier = 0
+	/** @readonly */
+	public MoveSpeedBaseAmplifierStack = false
 
 	// Bonus move speed
 	/** @readonly */
@@ -125,6 +133,9 @@ export class Modifier {
 	public BonusNightVision = 0
 	/** @readonly */
 	public BonusNightVisionStack = false
+
+	// move speed resistance
+	/** @readonly */
 
 	public readonly Index: number
 	public readonly SerialNumber: number
@@ -283,6 +294,10 @@ export class Modifier {
 	}
 
 	public OnUnitStateChaged(): void {
+		this.updateAllSpecialValues()
+	}
+
+	public OnAbilityLevelChanged(): void {
 		this.updateAllSpecialValues()
 	}
 
@@ -478,14 +493,6 @@ export class Modifier {
 		this.MoveSpeedFixed = subtract ? value * -1 : value
 	}
 
-	protected SetBonusAOERadius(specialName?: string, subtract = false) {
-		if (specialName === undefined) {
-			return
-		}
-		const value = this.GetSpecialValue(specialName)
-		this.BonusAOERadius = subtract ? value * -1 : value
-	}
-
 	protected SetBonusMoveSpeed(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -494,12 +501,52 @@ export class Modifier {
 		this.BonusMoveSpeed = subtract ? value * -1 : value
 	}
 
+	protected SetBonusMoveBase(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialSpeedByState(specialName)
+		this.MoveSpeedBase = subtract ? value * -1 : value
+	}
+
+	protected SetBonusMoveBaseAmplifier(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialSpeedByState(specialName)
+		this.MoveSpeedBaseAmplifier = (subtract ? value * -1 : value) / 100
+	}
+
+	protected SetBonusAOERadius(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.BonusAOERadius = subtract ? value * -1 : value
+	}
+
 	protected SetBonusDayVision(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
 		}
 		const value = this.GetSpecialValue(specialName)
 		this.BonusDayVision = subtract ? value * -1 : value
+	}
+
+	/**
+	 * @description Sets the amplifier move speed based on the provided special name.
+	 * @param {string} specialName - The special name to use for calculation.
+	 * @param {boolean} subtract - Optional. Whether to subtract the calculated value.
+	 */
+	protected SetMoveSpeedAmplifier(
+		specialName?: string,
+		subtract: boolean = false
+	): void {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialSpeedByState(specialName)
+		this.BonusMoveSpeedAmplifier = (subtract ? value * -1 : value) / 100
 	}
 
 	protected SetBonusDayVisionAmplifier(specialName?: string, subtract = false) {
@@ -524,22 +571,6 @@ export class Modifier {
 		return state && this.IsDebuff && this.IsEnemy() ? 0 : value
 	}
 
-	/**
-	 * @description Sets the amplifier move speed based on the provided special name.
-	 * @param {string} specialName - The special name to use for calculation.
-	 * @param {boolean} subtract - Optional. Whether to subtract the calculated value.
-	 */
-	protected SetMoveSpeedAmplifier(
-		specialName?: string,
-		subtract: boolean = false
-	): void {
-		if (specialName === undefined) {
-			return
-		}
-		const value = this.GetSpecialSpeedByState(specialName)
-		this.BonusMoveSpeedAmplifier = (subtract ? value * -1 : value) / 100
-	}
-
 	protected byAbilityData(
 		abilName: string,
 		specialName: string,
@@ -558,9 +589,11 @@ export class Modifier {
 		this.SetBonusNightVision()
 
 		// bonus move speed
+		this.SetBonusMoveBase()
 		this.SetFixedMoveSpeed()
 		this.SetBonusMoveSpeed()
 		this.SetMoveSpeedAmplifier()
+		this.SetBonusMoveBaseAmplifier()
 
 		// bonus spells
 		this.SetBonusAOERadius()

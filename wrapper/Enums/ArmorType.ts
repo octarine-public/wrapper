@@ -1,4 +1,4 @@
-export enum ArmorType {
+export const enum ArmorType {
 	Structure,
 	Hero,
 	Basic

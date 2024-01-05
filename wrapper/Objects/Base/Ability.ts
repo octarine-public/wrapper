@@ -22,6 +22,8 @@ import { Unit } from "./Unit"
 export class Ability extends Entity {
 	public readonly AbilityData: AbilityData
 	/** @readonly */
+	public Level = 0
+	/** @readonly */
 	public IsEmpty = false
 	@NetworkedBasicField("m_bInIndefiniteCooldown")
 	public IsInIndefiniteCooldown = false
@@ -41,8 +43,6 @@ export class Ability extends Entity {
 	public ManaCost = 0
 	@NetworkedBasicField("m_flOverrideCastPoint")
 	public OverrideCastPoint = 0
-	@NetworkedBasicField("m_iLevel")
-	public Level = 0
 	@NetworkedBasicField("m_flCooldownLength")
 	public CooldownLength_ = 0
 	public IsInAbilityPhase_ = false
@@ -153,8 +153,8 @@ export class Ability extends Entity {
 		return this.GetSpecialValue("final_aoe")
 	}
 	public get CastPoint(): number {
-		const overrideValue = this.OverrideCastPoint // default -1 or 0
-		if (overrideValue > 0) {
+		const overrideValue = this.OverrideCastPoint // default -1
+		if (overrideValue === -1) {
 			return overrideValue
 		}
 		return this.GetBaseCastPointForLevel(this.Level)
@@ -584,13 +584,18 @@ export class Ability extends Entity {
 	}
 }
 
+RegisterFieldHandler(Ability, "m_iLevel", (abil, newValue) => {
+	abil.Level = newValue as number
+	EventsSDK.emit("AbilityLevelChanged", false, abil)
+})
+
 RegisterFieldHandler(
 	Ability,
 	"m_fAbilityChargeRestoreTimeRemaining",
 	(abil, newValue) => {
 		abil.Cooldown_ = abil.CurrentCharges !== 0 ? 0 : Math.max(newValue as number, 0)
 		abil.CooldownChangeTime = GameState.RawGameTime
-		EventsSDK.emit("AbilityNetworkedCooldown", false, abil)
+		EventsSDK.emit("AbilityCooldownChanged", false, abil)
 	}
 )
 RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, newValue) => {
@@ -601,5 +606,5 @@ RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, newValue) => {
 RegisterFieldHandler(Ability, "m_fCooldown", (abil, newValue) => {
 	abil.Cooldown_ = newValue as number
 	abil.CooldownChangeTime = GameState.RawGameTime
-	EventsSDK.emit("AbilityNetworkedCooldown", false, abil)
+	EventsSDK.emit("AbilityCooldownChanged", false, abil)
 })

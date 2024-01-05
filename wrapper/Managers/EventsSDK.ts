@@ -53,6 +53,29 @@ interface EventsSDK extends EventEmitter {
 		callback: (ent: Entity) => void,
 		priority?: number
 	): EventEmitter
+	on(
+		name: "EntityTeamChanged",
+		listener: (ent: Entity) => void,
+		priority?: number
+	): EventEmitter
+	/**
+	 * @description Equivalently to Entity#IsVisible
+	 */
+	on(
+		name: "EntityVisibleChanged",
+		listener: (entity: Entity) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "FakeUnitCreated",
+		listener: (unit: FakeUnit) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "FakeUnitDestroyed",
+		listener: (unit: FakeUnit) => void,
+		priority?: number
+	): EventEmitter
 	/**
 	 * Emitted every time GameRules.RawGameTime changes, a.k.a. tick,
 	 * right after PostUpdate
@@ -247,6 +270,11 @@ interface EventsSDK extends EventEmitter {
 		priority?: number
 	): EventEmitter
 	on(
+		name: "GameStateChanged",
+		listener: (newState: DOTAGameState) => void,
+		priority?: number
+	): EventEmitter
+	on(
 		name: "LifeStateChanged",
 		listener: (ent: Entity) => void,
 		priority?: number
@@ -266,9 +294,21 @@ interface EventsSDK extends EventEmitter {
 		listener: (ent: Unit) => void,
 		priority?: number
 	): EventEmitter
+	/**
+	 * @description Emitted if the properties of an unit have changed
+	 * (for e.x: SpiritBear#ShouldRespawn, Unit#IsClone, Unit#IsIllusion, Unit#CanUseItems, Unit#CanUseAbilities)
+	 * */
 	on(
-		name: "EntityTeamChanged",
-		listener: (ent: Entity) => void,
+		name: "UnitPropertyChanged",
+		listener: (unit: Unit) => void,
+		priority?: number
+	): EventEmitter
+	/**
+	 * @description Changed UnitStateNetwork
+	 */
+	on(
+		name: "UnitStateChanged",
+		listener: (unit: Unit) => void,
 		priority?: number
 	): EventEmitter
 	on(
@@ -299,6 +339,16 @@ interface EventsSDK extends EventEmitter {
 	on(
 		name: "ModifierRemoved",
 		listener: (mod: Modifier) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "UnitAbilityDataUpdated",
+		listener: () => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "UnitTeamVisibilityChanged",
+		listener: (unit: Unit) => void,
 		priority?: number
 	): EventEmitter
 	on(
@@ -370,11 +420,6 @@ interface EventsSDK extends EventEmitter {
 	): EventEmitter
 	on(name: "LocalTeamChanged", listener: () => void, priority?: number): EventEmitter
 	on(
-		name: "UnitAbilityDataUpdated",
-		listener: () => void,
-		priority?: number
-	): EventEmitter
-	on(
 		name: "HumanizerStateChanged",
 		listener: () => void,
 		priority?: number
@@ -385,17 +430,11 @@ interface EventsSDK extends EventEmitter {
 		priority?: number
 	): EventEmitter
 	/**
-	 * @description Emitted if the properties of an unit have changed
-	 * (for e.x: SpiritBear#ShouldRespawn, Unit#IsClone, Unit#IsIllusion, Unit#CanUseItems, Unit#CanUseAbilities)
-	 * */
+	 * @description Includes PlayerResourceUpdated
+	 */
 	on(
-		name: "UnitPropertyChanged",
-		listener: (unit: Unit) => void,
-		priority?: number
-	): EventEmitter
-	on(
-		name: "UnitStateChanged",
-		listener: (unit: Unit) => void,
+		name: "PlayerCustomDataUpdated",
+		listener: (player: PlayerCustomData) => void,
 		priority?: number
 	): EventEmitter
 	// TODO: add logic in Managers -> Monitors
@@ -410,46 +449,25 @@ interface EventsSDK extends EventEmitter {
 		listener: (unit: Unit) => void,
 		priority?: number
 	): EventEmitter
-	/** Equivalently to Entity#IsVisible */
-	on(
-		name: "EntityVisibleChanged",
-		listener: (entity: Entity) => void,
-		priority?: number
-	): EventEmitter
-	on(
-		name: "UnitTeamVisibilityChanged",
-		listener: (unit: Unit) => void,
-		priority?: number
-	): EventEmitter
 	on(
 		name: "IsInAbilityPhase",
 		listener: (unit: Ability) => void,
 		priority?: number
 	): EventEmitter
+	/**
+	 * @description Includes fog of war
+	 */
 	on(
-		name: "AbilityNetworkedCooldown",
+		name: "AbilityLevelChanged",
+		listener: (abil: Ability) => void,
+		priority?: number
+	): EventEmitter
+	/**
+	 * @description NOTE: Includes only changed by network
+	 */
+	on(
+		name: "AbilityCooldownChanged",
 		listener: (ability: Ability) => void,
-		priority?: number
-	): EventEmitter
-	on(
-		name: "FakeUnitCreated",
-		listener: (unit: FakeUnit) => void,
-		priority?: number
-	): EventEmitter
-	on(
-		name: "FakeUnitDestroyed",
-		listener: (unit: FakeUnit) => void,
-		priority?: number
-	): EventEmitter
-	/** @description Includes PlayerResourceUpdated */
-	on(
-		name: "PlayerCustomDataUpdated",
-		listener: (player: PlayerCustomData) => void,
-		priority?: number
-	): EventEmitter
-	on(
-		name: "GameStateChanged",
-		listener: (newState: DOTAGameState) => void,
 		priority?: number
 	): EventEmitter
 }
