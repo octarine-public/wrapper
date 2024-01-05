@@ -5,7 +5,7 @@ import { Units } from "../../Objects/Base/Unit"
 import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { EventsSDK } from "../EventsSDK"
 
-const Monitor = new (class {
+const Monitor = new (class CUnitAbilitiesChanged {
 	public EntityCreated(entity: Entity) {
 		if (!(entity instanceof Ability)) {
 			return

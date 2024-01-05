@@ -1,17 +1,25 @@
+/** @deprecated */
 export const AegisExpirationTime = 300
 
+/** @deprecated */
 export const BuybackCooldown = 480
 
+/** @deprecated */
 export const CreepSpeed = 325
 
+/** @deprecated */
 export const RoshanMaxRespawnTime = 660
 
+/** @deprecated */
 export const RoshanMinRespawnTime = 480
 
+/** @deprecated */
 export const RuneRespawnTime = 120
 
+/** @deprecated */
 export const ScanActiveTime = 8
 
+/** @deprecated */
 export const ScanRadius = 900
 
 /**
@@ -22,15 +30,50 @@ export const DamageAmplifyPerIntellectPrecent = 0.07
 export const MaxManaPerIntellect = 12
 export const MaxManaRegenerationPerIntellect = 0.05
 
+/** @deprecated */
 export const HealthGainPerStrength = 20
 
+/** @deprecated */
 export const HurricanePikeBonusAttackSpeed = 100
 
+/** @deprecated */
 export const MaxAttackSpeed = 700
 
+/** @deprecated */
 export const MaxMovementSpeed = 550
 
+/** @deprecated */
 export const MinAttackSpeed = 20
+
+export const MoveSpeedData = new (class CMoveSpeedData {
+	/**
+	 * @readonly
+	 */
+	public Max = 550
+	/**
+	 * @readonly
+	 */
+	public Min = 100
+})()
+
+export const AttackSpeedData = new (class CAttackSpeedData {
+	/**
+	 * @readonly
+	 */
+	public Max = 0
+	/**
+	 * @readonly
+	 */
+	public Min = 0
+	/**
+	 * @readonly
+	 */
+	public MinHaste = 0
+	/**
+	 * @readonly
+	 */
+	public MaxHaste = 0
+})()
 
 export const Runes = new (class CDataRune {
 	/**

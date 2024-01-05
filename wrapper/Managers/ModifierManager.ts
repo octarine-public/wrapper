@@ -13,8 +13,44 @@ import {
 import { EventsSDK } from "./EventsSDK"
 import { StringTables } from "./StringTables"
 
+const queuedEnts: (Unit | Ability)[] = []
+const queuedCooldown = new Set<Ability>()
+
 const activeModifiers = new Map<number, Modifier>()
 const activeModifiersRaw = new Map<number, IModifier>()
+
+export const ModifierManager = new (class CModifierManager {
+	public readonly ModifiersUpdate: Modifier[] = []
+
+	public get AllModifiers() {
+		return Array.from(activeModifiers.values())
+	}
+
+	public GetModifierByIndex(index: number): Nullable<Modifier> {
+		return activeModifiers.get(index)
+	}
+
+	public PostDataUpdate() {
+		const buffs = this.ModifiersUpdate
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const mod = buffs[index]
+			if (!mod.IsValid || GameState.RawGameTime > mod.DieTime) {
+				this.ModifiersUpdate.remove(mod)
+				continue
+			}
+			mod.OnPostDataUpdate()
+		}
+	}
+
+	public EmitToPostDataUpdate(mod: Modifier, duration = mod.Duration) {
+		if (duration === 0) {
+			return
+		}
+		if (!this.ModifiersUpdate.includes(mod)) {
+			this.ModifiersUpdate.push(mod)
+		}
+	}
+})()
 
 export class IModifier {
 	constructor(public readonly kv: RecursiveProtobuf) {
@@ -143,7 +179,11 @@ export class IModifier {
 		return this.GetProperty<string>("illusion_label")
 	}
 	public GetProperty<T>(name: string): Nullable<T> {
-		return this.kv.get(name) as any as T
+		const value = this.kv.get(name)
+		if (value === undefined || !this.isValid(value)) {
+			return undefined as Nullable<T>
+		}
+		return this.kv.get(name) as Nullable<T>
 	}
 	public GetVector(name: string): Nullable<Vector4> {
 		const vec = this.GetProperty<Map<string, number>>(name)
@@ -151,6 +191,10 @@ export class IModifier {
 			return undefined
 		}
 		return new Vector4(vec.get("x"), vec.get("y"), vec.get("z"), vec.get("w"))
+	}
+
+	private isValid<T>(value: T) {
+		return value !== 16777215
 	}
 }
 
@@ -183,15 +227,11 @@ function EmitModifierChanged(oldMod: Modifier, mod: IModifier) {
 function EmitModifierRemoved(mod: Nullable<Modifier>) {
 	if (mod !== undefined) {
 		activeModifiers.delete(mod.SerialNumber)
+		ModifierManager.ModifiersUpdate.remove(mod)
 		mod.Remove()
 	}
 }
 
-export const ModifierManager = new (class CModifierManager {
-	/** @todo */
-})()
-
-const queuedEnts: (Unit | Ability)[] = []
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof Unit || ent instanceof Ability) {
 		queuedEnts.push(ent)
@@ -200,37 +240,58 @@ EventsSDK.on("PreEntityCreated", ent => {
 
 EventsSDK.on("EntityDestroyed", ent => {
 	if (ent instanceof Unit || ent instanceof Ability) {
+		if (ent instanceof Ability) {
+			queuedCooldown.delete(ent)
+		}
 		queuedEnts.remove(ent)
 	}
 })
 
+EventsSDK.on("AbilityNetworkedCooldown", abil => {
+	if (!queuedCooldown.has(abil) && abil.Cooldown !== 0) {
+		queuedCooldown.add(abil)
+	}
+})
+
 EventsSDK.on("PostDataUpdate", () => {
-	if (queuedEnts.length === 0) {
-		return
-	}
-	for (let index = 0; index < queuedEnts.length; index++) {
-		const ent = queuedEnts[index]
-		if (ent instanceof Ability) {
-			activeModifiers.forEach(mod => {
-				if (ent.HandleMatches(mod.kv.Ability ?? 0)) {
-					mod.Update()
-				}
-			})
+	if (queuedEnts.length !== 0) {
+		for (let index = 0; index < queuedEnts.length; index++) {
+			const ent = queuedEnts[index]
+			if (ent instanceof Ability) {
+				activeModifiers.forEach(mod => {
+					if (ent.HandleMatches(mod.kv.Ability ?? 0)) {
+						mod.Update()
+					}
+				})
+			}
+			if (ent instanceof Unit) {
+				activeModifiers.forEach(mod => {
+					if (
+						ent.HandleMatches(mod.kv.Parent ?? 0) ||
+						ent.HandleMatches(mod.kv.Caster ?? 0) ||
+						ent.HandleMatches(mod.kv.AuraOwner ?? 0) ||
+						ent.HandleMatches(mod.kv.CustomEntity ?? 0)
+					) {
+						mod.Update()
+					}
+				})
+			}
 		}
-		if (ent instanceof Unit) {
-			activeModifiers.forEach(mod => {
-				if (
-					ent.HandleMatches(mod.kv.Parent ?? 0) ||
-					ent.HandleMatches(mod.kv.Caster ?? 0) ||
-					ent.HandleMatches(mod.kv.AuraOwner ?? 0) ||
-					ent.HandleMatches(mod.kv.CustomEntity ?? 0)
-				) {
-					mod.Update()
-				}
-			})
-		}
+		queuedEnts.clear()
 	}
-	queuedEnts.clear()
+
+	if (queuedCooldown.size !== 0) {
+		activeModifiers.forEach(mod => {
+			if (mod.Ability === undefined || !queuedCooldown.has(mod.Ability)) {
+				return
+			}
+			// see: modifier_item_tranquil_boots
+			if (mod.Ability.Cooldown === 0) {
+				queuedCooldown.delete(mod.Ability)
+			}
+			mod.OnAbilityCooldownChanged()
+		})
+	}
 })
 
 EventsSDK.on("EntityDestroyed", ent => {

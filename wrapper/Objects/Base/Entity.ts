@@ -428,6 +428,18 @@ export class Entity {
 	public InFrontFromAngle(angle: number, distance: number): Vector3 {
 		return this.Position.InFrontFromAngle(this.RotationRad + angle, distance)
 	}
+	public GetAngle(
+		position: Vector3 | Entity,
+		rotationDiff = false,
+		currPos = this.Position
+	): number {
+		let rotation = this.RotationRad
+		if (rotationDiff) {
+			rotation += DegreesToRadian(this.RotationDifference)
+		}
+		const vec = position instanceof Entity ? position.Position : position
+		return currPos.FindRotationAngle(vec, rotation)
+	}
 	public FindRotationAngle(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity) {
 			vec = vec.Position
@@ -586,17 +598,22 @@ export class Entity {
 
 		for (let i = 0; i < this.Animations.length; i++) {
 			const anim = this.Animations[i]
+			if (anim.activities.length !== modifiers.length) {
+				continue
+			}
 			let score = 0,
-				hasMovement = false
+				foundEverything = true
 			for (let index = 0, end = anim.activities.length; index < end; index++) {
 				const activityData = anim.activities[index]
 				if (modifiers.includes(activityData.name)) {
-					hasMovement ||= activityData.name === "ACT_DOTA_RUN"
 					score += activityData.weight
+				} else {
+					foundEverything = false
+					break
 				}
 			}
-			if (!hasMovement && anim.hasMovement && modifiers.includes("ACT_DOTA_RUN")) {
-				score += 1
+			if (!foundEverything) {
+				continue
 			}
 			if (score > highestScore) {
 				highestScore = score
@@ -605,16 +622,14 @@ export class Entity {
 		}
 
 		// TODO: is this used anywhere? if so, is this correct?
-		if (highestScored !== undefined) {
-			for (let i = 0; i < this.Animations.length; i++) {
-				const anim = this.Animations[i]
-				if (
-					anim.activities.some(
-						activityData => activityData.name === "ACT_DOTA_CONSTANT_LAYER"
-					)
-				) {
-					return i
-				}
+		for (let i = 0; i < this.Animations.length; i++) {
+			const anim = this.Animations[i]
+			if (
+				anim.activities.some(
+					activityData => activityData.name === "ACT_DOTA_CONSTANT_LAYER"
+				)
+			) {
+				return i
 			}
 		}
 

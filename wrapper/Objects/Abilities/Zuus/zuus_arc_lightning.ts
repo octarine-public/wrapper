@@ -6,4 +6,11 @@ export class zuus_arc_lightning extends Ability {
 	public get AbilityDamage(): number {
 		return this.GetSpecialValue("arc_damage")
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
+	}
 }

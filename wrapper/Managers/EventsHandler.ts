@@ -693,7 +693,8 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 	) {
 		const submsg = msg.get("create_particle") as RecursiveProtobuf
 		const particleSystemHandle = submsg.get("particle_name_index") as bigint,
-			entID = submsg.get("entity_handle") as number
+			entID = submsg.get("entity_handle") as number,
+			modifiersEntID = submsg.get("entity_handle_for_modifiers") as number
 		const path =
 			particleSystemHandle !== undefined
 				? GetPathByHash(particleSystemHandle)
@@ -707,7 +708,8 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 					path,
 					particleSystemHandle,
 					submsg.get("attach_type") as number,
-					GetPredictionTarget(entID)
+					GetPredictionTarget(entID),
+					GetPredictionTarget(modifiersEntID)
 				)
 			)
 		} else {

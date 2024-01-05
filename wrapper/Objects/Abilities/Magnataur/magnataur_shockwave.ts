@@ -9,7 +9,10 @@ export class magnataur_shockwave extends Ability {
 	public get SkillshotRange(): number {
 		return this.CastRange + this.AOERadius
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("shock_width", level)
+	}
+	public GetBaseCastRangeForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCastRange", level)
 	}
 }

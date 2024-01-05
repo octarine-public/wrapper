@@ -11,4 +11,18 @@ export class pugna_nether_ward extends Ability {
 			order.Position.Distance2D(doubletapTarget) < 32
 		)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseCastRangeForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCastRange", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
+	}
 }

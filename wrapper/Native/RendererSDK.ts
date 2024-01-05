@@ -402,7 +402,9 @@ class CRendererSDK {
 		color = Color.White,
 		rotationDeg = 0, // not currently working? // works, but not for svg's
 		customScissor?: Rectangle,
-		grayscale = false
+		grayscale = false,
+		subtexOffset?: Vector2,
+		subtexSize?: Vector2
 	): void {
 		const vecPos = vecPos_.Clone()
 
@@ -411,7 +413,7 @@ class CRendererSDK {
 			const angle = DegreesToRadian(rotationDeg),
 				s = Math.sin(angle),
 				c = Math.cos(angle)
-			const centerOffset = vecSize.Clone().DivideScalar(2)
+			const centerOffset = vecSize.DivideScalar(2)
 			const adjust = new Vector2(
 				centerOffset.x * c - centerOffset.y * s,
 				centerOffset.x * s + centerOffset.y * c
@@ -491,16 +493,34 @@ class CRendererSDK {
 		}
 		const flags = PathFlags.FILL | PathFlags.IMAGESHADER
 
-		const ratio = vecSize.x / vecSize.y
-		const origRatio = origSize.x / origSize.y
+		let texOffsetX = 0,
+			texOffsetY = 0,
+			texH = 0,
+			texW = 0
 
-		let cutX = 0,
-			cutY = 0
-		if (ratio < origRatio) {
-			cutX = (ratio - origRatio) / ratio
-		} else if (ratio > origRatio) {
-			// Y not tested
-			cutY = (origRatio - ratio) / origRatio
+		if (subtexOffset === undefined || subtexSize === undefined) {
+			const ratio = vecSize.x / vecSize.y
+			const origRatio = origSize.x / origSize.y
+
+			let cutX = 0,
+				cutY = 0
+			if (ratio < origRatio) {
+				cutX = (ratio - origRatio) / ratio
+			} else if (ratio > origRatio) {
+				// Y not tested
+				cutY = (origRatio - ratio) / origRatio
+			}
+
+			// todo simplify properly
+			texOffsetX = vecSize.x * cutX * -0.5
+			texOffsetY = vecSize.y * cutY * -0.5
+			texH = vecSize.x * (1 - cutX)
+			texW = vecSize.y * (1 - cutY)
+		} else {
+			texOffsetX = subtexOffset.x * (vecSize.x / subtexSize.x)
+			texOffsetY = subtexOffset.y * (vecSize.x / subtexSize.y)
+			texH = vecSize.x * (origSize.x / subtexSize.x)
+			texW = vecSize.y * (origSize.y / subtexSize.y)
 		}
 
 		this.Path(
@@ -512,10 +532,10 @@ class CRendererSDK {
 			LineCap.Square,
 			LineJoin.Round,
 			textureID,
-			vecSize.x * cutX * -0.5,
-			vecSize.y * cutY * -0.5,
-			vecSize.x * (1 - cutX),
-			vecSize.y * (1 - cutY)
+			texOffsetX,
+			texOffsetY,
+			texH,
+			texW
 		)
 	}
 	public GetImageSize(path: string): Vector2 {

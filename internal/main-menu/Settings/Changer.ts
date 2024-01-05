@@ -5,7 +5,7 @@ export class InternalChanger {
 	private readonly emoticons: Menu.Toggle
 	private readonly riverPaint: Menu.Dropdown
 
-	private readonly treeModelSize: Menu.Slider
+	private readonly treeModelMenuSize: Menu.Slider
 	private readonly treeModelMenuNames: Menu.Dropdown
 
 	private readonly riverNames = [
@@ -58,26 +58,28 @@ export class InternalChanger {
 		"Aurora"
 	]
 
-	constructor(settings: Menu.Node) {
-		const settingsTree = settings.AddNode("Changer", "menu/icons/changer.svg")
-		settingsTree.SortNodes = false
+	private readonly tree: Menu.Node
 
-		this.emoticons = settingsTree.AddToggle("Emoticons chat", true)
-		this.weather = settingsTree.AddDropdown("Weather", this.weatherNames, 0)
-		this.riverPaint = settingsTree.AddDropdown("River", this.riverNames, 0)
+	constructor(settings: Menu.Node) {
+		this.tree = settings.AddNode("Changer", "menu/icons/changer.svg")
+		this.tree.SortNodes = false
+
+		this.emoticons = this.tree.AddToggle("Emoticons chat", true)
+		this.weather = this.tree.AddDropdown("Weather", this.weatherNames, 0)
+		this.riverPaint = this.tree.AddDropdown("River", this.riverNames, 0)
 
 		/** Node Trees model */
-		this.treeModelMenuNames = settingsTree.AddDropdown("Trees model", this.treeNames)
-		this.treeModelSize = settingsTree.AddSlider("Trees size", 1, 0.3, 5, 1)
+		this.treeModelMenuNames = this.tree.AddDropdown("Trees model", this.treeNames)
+		this.treeModelMenuSize = this.tree.AddSlider("Trees size", 1, 0.3, 5, 1)
 		/** end Node Trees model */
 
-		settingsTree
+		this.tree
 			.AddButton("Reset", "Reset settings")
-			.OnValue(() => this.OnChangeResetSettings())
+			.OnValue(() => this.ChangeResetSettings())
 
 		this.treeModelMenuNames.OnValue(call => {
-			this.treeModelSize.IsHidden = call.SelectedID === 0
-			this.OnChangeTreeModels(call.SelectedID, this.treeModelSize.value)
+			this.treeModelMenuSize.IsHidden = call.SelectedID === 0
+			this.ChangeTreeModels(call.SelectedID, this.treeModelMenuSize.value)
 		})
 
 		this.weather.OnValue(call => ConVarsSDK.Set("cl_weather", call.SelectedID))
@@ -87,9 +89,9 @@ export class InternalChanger {
 			ConVarsSDK.Set("dota_hud_chat_enable_all_emoticons", call.value)
 		)
 
-		this.treeModelSize.OnValue(call => {
-			settingsTree.Update()
-			this.OnChangeTreeModels(this.treeModelMenuNames.SelectedID, call.value)
+		this.treeModelMenuSize.OnValue(call => {
+			this.ChangeTreeModels(this.treeModelMenuNames.SelectedID, call.value)
+			this.tree.Update()
 		})
 	}
 
@@ -97,29 +99,31 @@ export class InternalChanger {
 		ConVarsSDK.Set("cl_weather", this.weather.SelectedID)
 		ConVarsSDK.Set("dota_river_type", this.riverPaint.SelectedID)
 		ConVarsSDK.Set("dota_hud_chat_enable_all_emoticons", this.emoticons.value)
-		this.OnChangeTreeModels(
+		this.ChangeTreeModels(
 			this.treeModelMenuNames.SelectedID,
-			this.treeModelSize.value
+			this.treeModelMenuSize.value
 		)
 	}
 
-	protected OnChangeTreeModels(selectedID: number, scale?: number): void {
+	protected ChangeTreeModels(selectedID: number, scale?: number): void {
 		if (GameState.IsConnected) {
 			SetTreeModel(this.treePaths[selectedID], scale ?? 1)
 		}
+		this.tree.Update()
 	}
 
-	protected OnChangeResetSettings(): void {
+	protected ChangeResetSettings(): void {
 		this.weather.SelectedID = 0
 		this.emoticons.value = true
 		this.riverPaint.SelectedID = 0
-		this.OnChangeResetSettingsTreeModels()
+		this.ChangeResetSettingsTreeModels()
+		this.tree.Update()
 	}
 
-	protected OnChangeResetSettingsTreeModels(): void {
-		this.treeModelSize.value = 1
-		this.treeModelSize.IsHidden = true
+	protected ChangeResetSettingsTreeModels(): void {
+		this.treeModelMenuSize.value = 1
+		this.treeModelMenuSize.IsHidden = true
 		this.treeModelMenuNames.SelectedID = 0
-		this.OnChangeTreeModels(0, 0)
+		this.ChangeTreeModels(0, 0)
 	}
 }

@@ -9,7 +9,7 @@ export class lina_light_strike_array extends Ability {
 	public get AbilityDamage(): number {
 		return this.GetSpecialValue("light_strike_array_damage")
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("light_strike_array_aoe", level)
 	}
 }

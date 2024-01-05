@@ -125,7 +125,8 @@ export class NetworkedParticle {
 		public readonly Path: string,
 		public readonly ParticleSystemHandle: bigint,
 		public readonly Attach: ParticleAttachment,
-		public AttachedTo: Nullable<Unit | FakeUnit>
+		public AttachedTo: Nullable<Unit | FakeUnit>,
+		public ModifiersAttachedTo: Nullable<Unit | FakeUnit>
 	) {
 		this.PathNoEcon = GetOriginalParticlePath(this.Path)
 		NetworkedParticle.Instances.set(this.Index, this)
@@ -152,6 +153,10 @@ EventsSDK.after("EntityCreated", ent => {
 			par.AttachedTo = ent
 			changedAnything = true
 		}
+		if (par.ModifiersAttachedTo?.EntityMatches(ent)) {
+			par.ModifiersAttachedTo = ent
+			changedAnything = true
+		}
 		for (const data of par.ControlPointsEnt.values()) {
 			if (data[0].EntityMatches(ent)) {
 				data[0] = ent
@@ -166,6 +171,9 @@ EventsSDK.after("EntityCreated", ent => {
 EventsSDK.on("EntityDestroyed", ent => {
 	const destroyedParticles: NetworkedParticle[] = []
 	for (const par of NetworkedParticle.Instances.values()) {
+		if (par.ModifiersAttachedTo === ent) {
+			par.ModifiersAttachedTo = undefined
+		}
 		if (par.AttachedTo === ent) {
 			destroyedParticles.push(par)
 		}

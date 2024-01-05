@@ -3,7 +3,18 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("centaur_stampede")
 export class centaur_stampede extends Ability {
-	public GetAOERadiusForLevel(_level: number): number {
-		return Number.MAX_SAFE_INTEGER
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
 	}
 }

@@ -19,7 +19,7 @@ export class storm_spirit_ball_lightning extends Ability {
 
 		return travelCost !== 0 ? Math.ceil(mana / travelCost) * 100 : 0
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("ball_lightning_aoe", level)
 	}
 }

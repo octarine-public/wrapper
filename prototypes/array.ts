@@ -21,11 +21,57 @@ Array.prototype.orderBy = function <T>(
 	})
 }
 
+Array.prototype.toOrderBy = function <T>(
+	callback: (obj: T) => number | boolean,
+	thenBy?: (obj: T) => number | boolean
+): T[] {
+	return this.toSorted((a: T, b: T) => {
+		const resultA = callback(a)
+		const resultB = callback(b)
+		if (resultA !== resultB) {
+			return resultA > resultB ? 1 : -1
+		}
+		if (thenBy !== undefined) {
+			const thenByResultA = thenBy(a)
+			const thenByResultB = thenBy(b)
+			return thenByResultA > thenByResultB
+				? 1
+				: thenByResultA < thenByResultB
+					? -1
+					: 0
+		}
+		return 0
+	})
+}
+
 Array.prototype.orderByDescending = function <T>(
 	callback: (obj: T, thenBy?: T) => number | boolean,
 	thenBy?: (obj: T) => number | boolean
 ): T[] {
 	return this.sort((a, b) => {
+		const resultA = callback(a)
+		const resultB = callback(b)
+		if (resultA !== resultB) {
+			return resultA > resultB ? -1 : 1
+		}
+		if (thenBy !== undefined) {
+			const thenByResultA = thenBy(a)
+			const thenByResultB = thenBy(b)
+			return thenByResultA > thenByResultB
+				? 1
+				: thenByResultA < thenByResultB
+					? -1
+					: 0
+		}
+		return 0
+	})
+}
+
+Array.prototype.toOrderByDescending = function <T>(
+	callback: (obj: T, thenBy?: T) => number | boolean,
+	thenBy?: (obj: T) => number | boolean
+): T[] {
+	return this.toSorted((a, b) => {
 		const resultA = callback(a)
 		const resultB = callback(b)
 		if (resultA !== resultB) {

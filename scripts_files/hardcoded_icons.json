@@ -2,6 +2,8 @@
 	"Visual": "menu/icons/eye.svg",
 	"Settings": "menu/icons/settings.svg",
 	"Main": "menu/icons/home.svg",
+	"Creeps": "menu/icons/creeps.svg",
+	"Dodger": "menu/icons/dodger.svg",
 	"Utility": "menu/icons/tools.svg",
 	"Heroes": "menu/icons/juggernaut.svg",
 	"Exploits": "menu/icons/exploits.svg"

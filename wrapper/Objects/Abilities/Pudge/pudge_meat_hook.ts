@@ -10,7 +10,25 @@ export class pudge_meat_hook extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("hook_speed")
 	}
-	public GetAOERadiusForLevel(level: number): number {
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("hook_width", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
 	}
 }

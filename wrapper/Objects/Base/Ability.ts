@@ -12,7 +12,6 @@ import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
-import { HasMask, MaskToArrayNumber } from "../../Utils/BitsExtensions"
 import { GameState } from "../../Utils/GameState"
 import { toPercentage } from "../../Utils/Math"
 import { AbilityData } from "../DataBook/AbilityData"
@@ -132,7 +131,10 @@ export class Ability extends Entity {
 		return this.OwnerEntity as Nullable<Unit>
 	}
 	public get AbilityBehavior(): DOTA_ABILITY_BEHAVIOR[] {
-		return MaskToArrayNumber(this.AbilityData.AbilityBehavior)
+		return this.AbilityBehaviorMask.toMask
+	}
+	public get AbilityBehaviorMask(): DOTA_ABILITY_BEHAVIOR {
+		return this.AbilityData.AbilityBehavior
 	}
 	/**
 	 * @returns AbilityLogicType bitmask
@@ -141,40 +143,36 @@ export class Ability extends Entity {
 		return AbilityLogicType.None
 	}
 	public get AbilityDamage(): number {
-		return (
-			this.AbilityData.GetAbilityDamage(this.Level) ||
-			this.GetSpecialValue("damage")
-		)
+		return this.GetBaseDamageForLevel(this.Level)
 	}
 	public get AbilityType(): ABILITY_TYPES {
 		return this.AbilityData.AbilityType
 	}
 	public get EndRadius(): number {
+		// TODO: fix me
 		return this.GetSpecialValue("final_aoe")
 	}
-	public get ActivationDelay() {
-		return this.GetSpecialValue("delay")
-	}
 	public get CastPoint(): number {
-		return this.AbilityData.GetCastPoint(this.Level)
+		const overrideValue = this.OverrideCastPoint // default -1 or 0
+		if (overrideValue > 0) {
+			return overrideValue
+		}
+		return this.GetBaseCastPointForLevel(this.Level)
+	}
+	public get ActivationDelay() {
+		return this.GetBaseActivationDelayForLevel(this.Level)
 	}
 	public get MaxChannelTime(): number {
-		return this.AbilityData.GetChannelTime(this.Level)
+		return this.GetBaseChannelTimeForLevel(this.Level)
 	}
 	public get ChannelTime(): number {
 		return Math.max(GameState.RawGameTime - this.ChannelStartTime, 0)
 	}
 	public get MaxCharges(): number {
-		return (
-			this.AbilityData.GetMaxCharges(this.Level) +
-			this.GetSpecialValue("AbilityCharges")
-		)
+		return this.GetMaxChargesForLevel(this.Level)
 	}
 	public get ChargeRestoreTime(): number {
-		return (
-			this.AbilityData.GetChargeRestoreTime(this.Level) +
-			this.GetSpecialValue("AbilityChargeRestoreTime")
-		)
+		return this.GetChargeRestoreTimeForLevel(this.Level)
 	}
 	public get DamageType(): DAMAGE_TYPES {
 		return this.AbilityData.DamageType
@@ -233,13 +231,13 @@ export class Ability extends Entity {
 		return this.AbilityData.AbilityImmunityType
 	}
 	public get TargetFlags(): DOTA_UNIT_TARGET_FLAGS[] {
-		return MaskToArrayNumber(this.AbilityData.TargetFlags)
+		return this.AbilityData.TargetFlags.toMask
 	}
 	public get TargetTeam(): DOTA_UNIT_TARGET_TEAM[] {
-		return MaskToArrayNumber(this.AbilityData.TargetTeam)
+		return this.AbilityData.TargetTeam.toMask
 	}
 	public get TargetType(): DOTA_UNIT_TARGET_TYPE[] {
-		return MaskToArrayNumber(this.AbilityData.TargetType)
+		return this.AbilityData.TargetType.toMask
 	}
 	public get TexturePath(): string {
 		return GetSpellTexture(this.Name)
@@ -300,17 +298,17 @@ export class Ability extends Entity {
 	public get StackCount(): number {
 		return 0
 	}
+	public get Speed() {
+		return this.GetBaseSpeedForLevel(this.Level)
+	}
+	public get HasAffectedByAOEIncrease() {
+		return this.AbilityData.AffectedByAOEIncrease
+	}
 	public get MaxDuration(): number {
-		return (
-			this.GetSpecialValue("duration") ||
-			this.AbilityData.GetMaxDurationForLevel(this.Level)
-		)
+		return this.GetMaxDurationForLevel(this.Level)
 	}
 	public get MaxCooldown(): number {
-		return (
-			this.GetSpecialValue("AbilityCooldown") ||
-			this.AbilityData.GetMaxCooldownForLevel(this.Level)
-		)
+		return this.GetMaxCooldownForLevel(this.Level)
 	}
 	public get BaseCastRange(): number {
 		return this.GetBaseCastRangeForLevel(this.Level)
@@ -318,18 +316,35 @@ export class Ability extends Entity {
 	public get CastRange(): number {
 		return this.GetCastRangeForLevel(this.Level)
 	}
+	public get BonusAOERadius(): number {
+		if (this.Owner === undefined || !this.HasAffectedByAOEIncrease) {
+			return 0
+		}
+		let totalBonus = 0
+		const buffs = this.Owner.Buffs
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const buff = buffs[index]
+			if (!buff.BonusAOERadius) {
+				continue
+			}
+			totalBonus += buff.BonusAOERadius
+		}
+		return totalBonus
+	}
 	public get AOERadius(): number {
-		return this.GetAOERadiusForLevel(this.Level)
+		return this.GetBaseAOERadiusForLevel(this.Level) + this.BonusAOERadius
 	}
 	public get SkillshotRange(): number {
 		return this.CastRange
 	}
+	// TODO Fix me
 	public get SpellAmplification(): number {
 		if (this.Name.startsWith("special_bonus_spell_amplify")) {
 			return this.GetSpecialValue("value") / 100
 		}
 		return 0
 	}
+	// TODO Fix me
 	public get BonusCastRange(): number {
 		if (this.Name.startsWith("special_bonus_cast_range")) {
 			return this.GetSpecialValue("value")
@@ -357,19 +372,99 @@ export class Ability extends Entity {
 	protected get CanBeCastedWhileSilenced() {
 		return false
 	}
-	public GetBaseCastRangeForLevel(level: number): number {
-		return this.AbilityData.GetCastRange(level)
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.AbilityData.GetMaxCooldownForLevel(level)
 	}
-	public GetBaseManaCostForLevel(level: number) {
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetChargeRestoreTimeForLevel(level: number): number {
+		return this.AbilityData.GetChargeRestoreTime(level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetMaxChargesForLevel(level: number): number {
+		return this.AbilityData.GetMaxCharges(level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetMaxDurationForLevel(level: number): number {
+		return this.AbilityData.GetMaxDurationForLevel(level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseCastPointForLevel(level: number): number {
+		return this.AbilityData.GetCastPoint(level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.AbilityData.GetAbilityDamage(level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseManaCostForLevel(level: number): number {
 		return this.AbilityData.GetManaCost(level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetCastRangeForLevel(level: number): number {
 		return this.GetBaseCastRangeForLevel(level) + (this.Owner?.CastRangeBonus ?? 0)
 	}
-	public GetAOERadiusForLevel(level: number): number {
-		return this.GetSpecialValue("radius", level)
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseCastRangeForLevel(level: number): number {
+		return this.AbilityData.GetCastRange(level)
 	}
 	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseActivationDelayForLevel(_level: number): number {
+		return 0 // child classes should override
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(_level: number): number {
+		return 0 // child classes should override
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(_level: number): number {
+		return 0 // child classes should override
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseChannelTimeForLevel(level: number): number {
+		return this.AbilityData.GetChannelTime(level)
+	}
+	/**
+	 * TODO Fix me
 	 * @param position Vector3
 	 * @param turnRate boolean
 	 * @returns Time in ms until the cast.
@@ -381,6 +476,7 @@ export class Ability extends Entity {
 			: 0
 	}
 	/**
+	 * TODO Fix me
 	 * @param position Vector3
 	 * @returns Time in ms until the cast.
 	 */
@@ -421,13 +517,19 @@ export class Ability extends Entity {
 	public PingAbility() {
 		return this.Owner?.PingAbility(this)
 	}
-
-	public GetSpecialValue(specialName: string, level = this.Level): number {
+	/**
+	 * @description Retrieves a special value based on the provided special name and level.
+	 * @param {string} specialName - The name of the special value to retrieve.
+	 * @param {number} level - The level at which to retrieve the special value. Defaults to the level of the current Ability.
+	 * @return {number}
+	 */
+	public GetSpecialValue(specialName: string, level: number = this.Level): number {
 		const owner = this.Owner
-		if (owner === undefined) {
-			return this.AbilityData.GetSpecialValue(specialName, level)
-		}
-		return this.AbilityData.GetSpecialValueWithTalent(owner, specialName, level)
+		const abilName = this.Name
+		const abilityData = this.AbilityData
+		return owner === undefined
+			? abilityData.GetSpecialValue(specialName, level, abilName)
+			: abilityData.GetSpecialValueWithTalent(owner, specialName, level, abilName)
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {
 		const owner = this.Owner
@@ -437,16 +539,16 @@ export class Ability extends Entity {
 		return owner.Mana + bonusMana >= this.ManaCost
 	}
 	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
-		return HasMask(this.AbilityData.AbilityBehavior, flag)
+		return this.AbilityData.AbilityBehavior.hasMask(flag)
 	}
 	public HasTargetFlags(flag: DOTA_UNIT_TARGET_FLAGS): boolean {
-		return HasMask(this.AbilityData.TargetFlags, flag)
+		return this.AbilityData.TargetFlags.hasMask(flag)
 	}
 	public HasTargetTeam(flag: DOTA_UNIT_TARGET_TEAM): boolean {
-		return HasMask(this.AbilityData.TargetTeam, flag)
+		return this.AbilityData.TargetTeam.hasMask(flag)
 	}
 	public HasTargetType(flag: DOTA_UNIT_TARGET_TYPE): boolean {
-		return HasMask(this.AbilityData.TargetType, flag)
+		return this.AbilityData.TargetType.hasMask(flag)
 	}
 	public CanHit(target: Unit): boolean {
 		if (this.Owner === undefined) {
@@ -488,6 +590,7 @@ RegisterFieldHandler(
 	(abil, newValue) => {
 		abil.Cooldown_ = abil.CurrentCharges !== 0 ? 0 : Math.max(newValue as number, 0)
 		abil.CooldownChangeTime = GameState.RawGameTime
+		EventsSDK.emit("AbilityNetworkedCooldown", false, abil)
 	}
 )
 RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, newValue) => {
@@ -498,4 +601,5 @@ RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, newValue) => {
 RegisterFieldHandler(Ability, "m_fCooldown", (abil, newValue) => {
 	abil.Cooldown_ = newValue as number
 	abil.CooldownChangeTime = GameState.RawGameTime
+	EventsSDK.emit("AbilityNetworkedCooldown", false, abil)
 })

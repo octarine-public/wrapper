@@ -21,6 +21,8 @@ export class AbilityData {
 	public static globalStorage: Map<string, AbilityData> = new Map()
 	public static empty = new AbilityData("", new Map())
 
+	private static readonly cacheWithoutSpecialData = new Set<string>()
+
 	public static GetAbilityByName(name: string): Nullable<AbilityData> {
 		return AbilityData.globalStorage.get(name)
 	}
@@ -41,6 +43,10 @@ export class AbilityData {
 			}
 		}
 		return undefined
+	}
+
+	protected static get HasDebug(): boolean {
+		return (globalThis as any)?.DEBUGGER_INSTALLED ?? false
 	}
 
 	public readonly AbilityBehavior: number // DOTA_ABILITY_BEHAVIOR bitmask
@@ -83,6 +89,7 @@ export class AbilityData {
 	public readonly ShouldBeInitiallySuggested: boolean
 	public readonly ItemStockInitial: Nullable<number>
 	public readonly ItemDisassembleRule: DOTA_ITEM_DISASSEMBLE
+	public AffectedByAOEIncrease: boolean = false
 
 	private readonly SpecialValueCache = new Map<
 		string,
@@ -257,56 +264,87 @@ export class AbilityData {
 			: DOTA_ITEM_DISASSEMBLE.DOTA_ITEM_DISASSEMBLE_NONE
 	}
 
-	public GetSpecialValue(name: string, level: number): number {
+	public GetSpecialValue(
+		specialName: string,
+		level: number,
+		abilityName?: string
+	): number {
 		if (level <= 0) {
 			return 0
 		}
-		const ar = this.GetCachedSpecialValue(name)
-		if (ar === undefined) {
+		const ar = this.GetCachedSpecialValue(specialName, abilityName)
+		if (ar === undefined || !ar[0].length) {
 			return 0
 		}
 		return ar[0][Math.min(level, ar[0].length) - 1]
 	}
 
-	public GetSpecialValueWithTalent(owner: Unit, name: string, level: number): number {
+	public GetSpecialValueWithTalent(
+		owner: Unit,
+		specialName: string,
+		level: number,
+		abilityName: string
+	): number {
 		if (level <= 0) {
 			return 0
 		}
 
-		const ar = this.GetCachedSpecialValue(name)
+		const ar = this.GetCachedSpecialValue(specialName, abilityName)
 		if (ar === undefined || !ar[0].length) {
 			return 0
 		}
 
 		let baseVal = ar[0][Math.min(level, ar[0].length) - 1]
 		if (
-			!baseVal &&
-			!(ar[1] === "special_bonus_shard" || ar[1] === "special_bonus_scepter")
+			(ar[1] === "special_bonus_shard" && !owner.HasShard) ||
+			(ar[1] === "special_bonus_scepter" && !owner.HasScepter)
 		) {
 			return baseVal
 		}
 
-		if (name.startsWith("special_bonus_unique_")) {
-			return this.GetSpecialTalent(name, owner)
+		if (specialName.startsWith("special_bonus_unique_")) {
+			return this.GetSpecialTalent(specialName, "value", owner)
 		}
 
-		if (
-			!(ar[1] === "special_bonus_shard" && owner.HasShard) &&
-			!(ar[1] === "special_bonus_scepter" && owner.HasScepter)
-		) {
-			return baseVal
-		}
-
+		let talentVal = 0
 		const val = ar[2]
-		const talentVal =
-			typeof val === "string"
-				? this.GetSpecialValue(val, level)
-				: Array.isArray(val)
-					? val[Math.min(level, val.length) - 1]
-					: val
+		switch (true) {
+			case typeof val === "string":
+				if (!val.length) {
+					break
+				}
+				talentVal = this.GetSpecialValue(val, level, abilityName)
+				break
+			case Array.isArray(val):
+				if (!val.length) {
+					break
+				}
+				talentVal = val[Math.min(level, val.length) - 1]
+				break
+			default:
+				if (!ar[1].length) {
+					break
+				}
+				if (
+					ar[1] === "special_bonus_shard" ||
+					ar[1] === "special_bonus_scepter"
+				) {
+					talentVal = Array.isArray(val)
+						? val[Math.min(level, val.length) - 1]
+						: val
+					break
+				}
+				if (this.hasTalent(ar[1], owner)) {
+					talentVal = val || this.GetSpecialTalent(ar[1], "value", owner)
+				}
+				break
+		}
 
 		switch (ar[3]) {
 			default:
+			case EDOTASpecialBonusOperation.SPECIAL_BONUS_SET:
+				baseVal = talentVal
+				break
 			case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
 				baseVal += talentVal
 				break
@@ -325,49 +363,49 @@ export class AbilityData {
 	}
 
 	public GetCastRange(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.CastRangeCache.length) {
 			return 0
 		}
 		return this.CastRangeCache[Math.min(level, this.CastRangeCache.length) - 1]
 	}
 
 	public GetHealthCost(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.HealthCostCache.length) {
 			return 0
 		}
 		return this.HealthCostCache[Math.min(level, this.HealthCostCache.length) - 1]
 	}
 
 	public GetManaCost(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.ManaCostCache.length) {
 			return 0
 		}
 		return this.ManaCostCache[Math.min(level, this.ManaCostCache.length) - 1]
 	}
 
 	public GetMaxDurationForLevel(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.MaxDurationCache.length) {
 			return 0
 		}
 		return this.MaxDurationCache[Math.min(level, this.MaxDurationCache.length) - 1]
 	}
 
 	public GetMaxCooldownForLevel(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.MaxCooldownCache.length) {
 			return 0
 		}
 		return this.MaxCooldownCache[Math.min(level, this.MaxCooldownCache.length) - 1]
 	}
 
 	public GetChannelTime(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.ChannelTimeCache.length) {
 			return 0
 		}
 		return this.ChannelTimeCache[Math.min(level, this.ChannelTimeCache.length) - 1]
 	}
 
 	public GetAbilityDamage(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.AbilityDamageCache.length) {
 			return 0
 		}
 		return this.AbilityDamageCache[
@@ -376,21 +414,21 @@ export class AbilityData {
 	}
 
 	public GetCastPoint(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.CastPointCache.length) {
 			return 0
 		}
 		return this.CastPointCache[Math.min(level, this.CastPointCache.length) - 1]
 	}
 
 	public GetMaxCharges(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.ChargesCache.length) {
 			return 0
 		}
 		return this.ChargesCache[Math.min(level, this.ChargesCache.length) - 1]
 	}
 
 	public GetChargeRestoreTime(level: number): number {
-		if (level <= 0) {
+		if (level <= 0 || !this.ChargeRestoreTimeCache.length) {
 			return 0
 		}
 		return this.ChargeRestoreTimeCache[
@@ -398,12 +436,17 @@ export class AbilityData {
 		]
 	}
 
-	private GetSpecialTalent(name: string, owner: Unit) {
-		const talent = owner.GetAbilityByName(name)
+	private GetSpecialTalent(abilityName: string, specialName = "value", owner: Unit) {
+		const talent = owner.GetAbilityByName(abilityName)
 		if (talent === undefined || talent.Level === 0) {
 			return 0
 		}
-		return this.GetSpecialValue(name, talent.Level)
+		return talent.GetSpecialValue(specialName, talent.Level)
+	}
+
+	private hasTalent(name: string, owner: Unit) {
+		const talent = owner.GetAbilityByName(name)
+		return talent !== undefined && talent.Level !== 0
 	}
 
 	private parseFloat(str: string): number {
@@ -429,8 +472,13 @@ export class AbilityData {
 					name === "levelkey" ||
 					name === "RequiresScepter" ||
 					name === "RequiresShard" ||
+					name === "ad_linked_abilities" ||
 					typeof value !== "string"
 				) {
+					return
+				}
+				if (name === "affected_by_aoe_increase") {
+					this.AffectedByAOEIncrease = this.parseFloat(value) === 1
 					return
 				}
 				const ar = this.ExtendLevelArray(
@@ -452,8 +500,12 @@ export class AbilityData {
 						] ?? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 				}
 				let linkedSpecialBonusFieldStr = special.get("LinkedSpecialBonusField")
-				if (typeof linkedSpecialBonusFieldStr !== "string") {
-					linkedSpecialBonusFieldStr = "value"
+				if (linkedSpecialBonusFieldStr !== undefined) {
+					if (typeof linkedSpecialBonusFieldStr !== "string") {
+						linkedSpecialBonusFieldStr = "value"
+					}
+				} else {
+					linkedSpecialBonusFieldStr = ""
 				}
 				this.SpecialValueCache.set(name, [
 					ar,
@@ -484,17 +536,24 @@ export class AbilityData {
 				}
 				return
 			}
+
 			let linkedSpecialBonus = "",
 				talentChangeStr = "+0"
 			special.forEach((specialValue, specialName) => {
 				if (
 					specialName === "value" ||
-					specialName === "LinkedSpecialBonus" ||
+					specialName === "CalculateSpellDamageTooltip" ||
+					specialName === "DamageTypeTooltip" ||
 					specialName === "levelkey" ||
+					specialName === "LinkedSpecialBonus" ||
 					specialName === "RequiresScepter" ||
 					specialName === "RequiresShard" ||
 					typeof specialValue !== "string"
 				) {
+					return
+				}
+				if (specialName === "affected_by_aoe_increase") {
+					this.AffectedByAOEIncrease = this.parseFloat(specialValue) === 1
 					return
 				}
 				linkedSpecialBonus = specialName
@@ -509,31 +568,46 @@ export class AbilityData {
 			)
 			let linkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 			let talentChange: number | number[]
-			if (talentChangeStr.startsWith("x")) {
-				linkedSpecialBonusOperation =
-					EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY
-				talentChange = this.parseFloat(talentChangeStr.substring(1))
-			} else if (
-				talentChangeStr.startsWith("+") ||
-				talentChangeStr.startsWith("-")
-			) {
-				const isArray = talentChangeStr.indexOf(" ") !== -1
-				const isPercent =
-					talentChangeStr[talentChangeStr.length - 1].indexOf("%") !== -1
-				linkedSpecialBonusOperation = !isPercent
-					? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-					: talentChangeStr.startsWith("+")
-						? EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD
-						: EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT
-				talentChange = isArray
-					? talentChangeStr
-							.split(" ")
-							.map(str => Math.abs(this.parseFloat(str)))
-					: Math.abs(this.parseFloat(talentChangeStr))
-			} else {
-				linkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-				talentChange = this.parseFloat(talentChangeStr)
+
+			switch (true) {
+				case talentChangeStr.startsWith("x"):
+					linkedSpecialBonusOperation =
+						EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY
+					talentChange = this.parseFloat(talentChangeStr.substring(1))
+					break
+				case talentChangeStr.startsWith("="):
+					linkedSpecialBonusOperation =
+						EDOTASpecialBonusOperation.SPECIAL_BONUS_SET
+					const newValue = this.parseFloat(talentChangeStr.substring(1))
+					talentChange = newValue <= 0 ? Number.MAX_SAFE_INTEGER : newValue
+					break
+				case talentChangeStr.startsWith("+") || talentChangeStr.startsWith("-"):
+					const isArray = talentChangeStr.indexOf(" ") !== -1
+					const isPercent =
+						talentChangeStr[talentChangeStr.length - 1].indexOf("%") !== -1
+					linkedSpecialBonusOperation = !isPercent
+						? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+						: talentChangeStr.startsWith("+")
+							? EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD
+							: EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT
+					// axe_battle_hunger -> special_bonus_unique_axe_6
+					talentChange = isArray
+						? talentChangeStr.split(" ").map(str => this.parseFloat(str))
+						: this.parseFloat(talentChangeStr)
+					break
+				default:
+					linkedSpecialBonusOperation =
+						EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+					talentChange = this.parseFloat(talentChangeStr)
+					break
 			}
+
+			if (!linkedSpecialBonus.length) {
+				const getlinkedSpecialBonus = special.get("LinkedSpecialBonus")
+				linkedSpecialBonus =
+					typeof getlinkedSpecialBonus !== "string" ? "" : getlinkedSpecialBonus
+			}
+
 			this.SpecialValueCache.set(name, [
 				ar,
 				linkedSpecialBonus,
@@ -543,17 +617,12 @@ export class AbilityData {
 		})
 	}
 
-	private GetCachedSpecialValue(name: string) {
-		const ar = this.SpecialValueCache.get(name)
-		if (ar !== undefined) {
-			return ar
+	private GetCachedSpecialValue(specialName: string, abilityName?: string) {
+		const arData = this.SpecialValueCache.get(specialName)
+		if (arData !== undefined) {
+			return arData
 		}
-		return [[0], "", "value", EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD] as [
-			number[],
-			string,
-			string,
-			EDOTASpecialBonusOperation
-		]
+		this.exceptionMessage(specialName, abilityName)
 	}
 
 	private ExtendLevelArray(ar: number[]): number[] {
@@ -565,6 +634,23 @@ export class AbilityData {
 
 	private GetLevelArray(str: Nullable<string>): number[] {
 		return this.ExtendLevelArray(str?.split(" ")?.map(val => parseFloat(val)) ?? [])
+	}
+
+	private exceptionMessage(specialName: string, abilityName?: string) {
+		if (!AbilityData.HasDebug) {
+			return
+		}
+		const abilName = abilityName ?? AbilityData.GetAbilityNameByID(this.ID)
+		const keyName = `${abilName}:${specialName}`
+		if (AbilityData.cacheWithoutSpecialData.has(keyName)) {
+			return
+		}
+		console.error(
+			new Error(
+				`Failed to get special => [${specialName}] from ability => [${abilName}]`
+			).stack
+		)
+		AbilityData.cacheWithoutSpecialData.add(keyName)
 	}
 }
 

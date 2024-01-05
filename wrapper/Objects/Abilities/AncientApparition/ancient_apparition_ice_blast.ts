@@ -3,7 +3,18 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("ancient_apparition_ice_blast")
 export class ancient_apparition_ice_blast extends Ability {
-	public GetAOERadiusForLevel(level: number): number {
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("path_radius", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("speed", level)
 	}
 }

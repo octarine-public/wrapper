@@ -186,7 +186,6 @@ declare interface AnimationActivityData {
 declare interface AnimationData {
 	readonly name: string
 	readonly activities: AnimationActivityData[]
-	readonly hasMovement: boolean
 	readonly frameCount: number
 	readonly fps: number
 }

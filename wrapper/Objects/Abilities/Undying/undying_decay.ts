@@ -6,4 +6,11 @@ export class undying_decay extends Ability {
 	public get AbilityDamage(): number {
 		return this.GetSpecialValue("decay_damage")
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
+	}
 }
