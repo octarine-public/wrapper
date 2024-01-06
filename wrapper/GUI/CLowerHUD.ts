@@ -134,7 +134,7 @@ export class CLowerHUD {
 			ItemRect.x = MainInventoryRow1Container.x + MainInventoryItemMarginHorizontal
 			ItemRect.y = MainInventoryRow1Container.y + MainInventoryItemMarginVertical
 			MainInventoryRow1Container.x +=
-				ItemRect.Width + MainInventoryItemMarginHorizontal
+				ItemRect.Width + MainInventoryItemMarginHorizontal * 2
 			this.MainInventorySlots.push(ItemRect)
 		}
 
@@ -151,7 +151,7 @@ export class CLowerHUD {
 			ItemRect.x = MainInventoryRow2Container.x + MainInventoryItemMarginHorizontal
 			ItemRect.y = MainInventoryRow2Container.y + MainInventoryItemMarginVertical
 			MainInventoryRow2Container.x +=
-				ItemRect.Width + MainInventoryItemMarginHorizontal
+				ItemRect.Width + MainInventoryItemMarginHorizontal * 2
 			this.MainInventorySlots.push(ItemRect)
 		}
 
