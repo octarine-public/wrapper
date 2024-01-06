@@ -501,7 +501,7 @@ export class Modifier {
 		this.BonusMoveSpeed = subtract ? value * -1 : value
 	}
 
-	protected SetBonusMoveBase(specialName?: string, subtract = false) {
+	protected SetBaseMoveSpeed(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
 		}
@@ -509,7 +509,7 @@ export class Modifier {
 		this.MoveSpeedBase = subtract ? value * -1 : value
 	}
 
-	protected SetBonusMoveBaseAmplifier(specialName?: string, subtract = false) {
+	protected SetBaseMoveSpeedAmplifier(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
 		}
@@ -589,11 +589,11 @@ export class Modifier {
 		this.SetBonusNightVision()
 
 		// bonus move speed
-		this.SetBonusMoveBase()
+		this.SetBaseMoveSpeed()
 		this.SetFixedMoveSpeed()
 		this.SetBonusMoveSpeed()
 		this.SetMoveSpeedAmplifier()
-		this.SetBonusMoveBaseAmplifier()
+		this.SetBaseMoveSpeedAmplifier()
 
 		// bonus spells
 		this.SetBonusAOERadius()
