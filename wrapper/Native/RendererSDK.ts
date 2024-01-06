@@ -392,41 +392,60 @@ class CRendererSDK {
 	}
 	/**
 	 * @param path must end with "_c" (without double-quotes), if that's vtexC
+	 * @param round < 0 no rounding, 0 = circle, > 0 = rounded corners
 	 */
 	public Image(
 		path: string,
-		vecPos: Vector2,
+		vecPos_: Vector2,
 		round = -1,
 		vecSize = new Vector2(-1, -1),
 		color = Color.White,
-		rotationDeg = 0, // not currently working?
+		rotationDeg = 0, // not currently working? // works, but not for svg's
 		customScissor?: Rectangle,
 		grayscale = false,
 		subtexOffset?: Vector2,
 		subtexSize?: Vector2
 	): void {
+		const vecPos = vecPos_.Clone()
+
+		if (rotationDeg !== 0) {
+			//rotate around the center instead of top left corner
+			const angle = DegreesToRadian(rotationDeg),
+				s = Math.sin(angle),
+				c = Math.cos(angle)
+			const centerOffset = vecSize.DivideScalar(2)
+			const adjust = new Vector2(
+				centerOffset.x * c - centerOffset.y * s,
+				centerOffset.x * s + centerOffset.y * c
+			)
+			vecPos.SubtractForThis(adjust).AddForThis(centerOffset)
+		}
+
 		const textureID = this.GetTexture(path) // better put it BEFORE new command
 		if (textureID === -1) {
 			return
 		}
 		const origSize = this.tex2size.get(textureID)!
 		const halfRound = round / 2
-		if (vecSize.x <= 0) {
-			vecSize.x = subtexSize?.x ?? origSize.x
-		}
-		if (vecSize.y <= 0) {
-			vecSize.y = subtexSize?.y ?? origSize.y
-		}
+
 		if (path.endsWith(".svg")) {
-			if (round >= 0) {
+			const useRound = round >= 0,
+				useScissors = customScissor !== undefined
+
+			if (useRound || useScissors) {
 				this.BeginClip(false)
-				this.FilledCircle(
-					vecPos.AddScalar(halfRound),
-					vecSize.SubtractScalar(halfRound),
-					Color.White,
-					rotationDeg,
-					customScissor
-				)
+				if (useRound) {
+					this.FilledCircle(
+						vecPos.AddScalar(halfRound),
+						vecSize.SubtractScalar(halfRound),
+						Color.White,
+						0,
+						customScissor
+					)
+				}
+				if (useScissors) {
+					this.FilledRect(customScissor.pos1, customScissor.pos2)
+				}
 				this.EndClip()
 			}
 
@@ -446,24 +465,64 @@ class CRendererSDK {
 		if (customScissor !== undefined) {
 			this.SetScissor(customScissor)
 		}
+
 		this.Translate(vecPos)
 		this.Rotate(rotationDeg)
-		if (round >= 0) {
-			this.AllocateCommandSpace(CommandID.PATH_ADD_ELLIPSE, 4 * 4)
-			this.commandStream.WriteFloat32(halfRound)
-			this.commandStream.WriteFloat32(halfRound)
-			this.commandStream.WriteFloat32(vecSize.x - halfRound)
-			this.commandStream.WriteFloat32(vecSize.y - halfRound)
-		} else {
+		if (round < 0) {
+			//no rounding
 			this.AllocateCommandSpace(CommandID.PATH_ADD_RECT, 4 * 4)
 			this.commandStream.WriteFloat32(0)
 			this.commandStream.WriteFloat32(0)
 			this.commandStream.WriteFloat32(vecSize.x)
 			this.commandStream.WriteFloat32(vecSize.y)
+		} else if (round > 0) {
+			// rounded corners
+			this.AllocateCommandSpace(CommandID.PATH_ADD_ROUND_RECT, 4 * 5)
+			this.commandStream.WriteFloat32(0)
+			this.commandStream.WriteFloat32(0)
+			this.commandStream.WriteFloat32(vecSize.x)
+			this.commandStream.WriteFloat32(vecSize.y)
+			this.commandStream.WriteFloat32(halfRound)
+		} else {
+			// round == 0, force circle
+			this.AllocateCommandSpace(CommandID.PATH_ADD_ELLIPSE, 4 * 4)
+			this.commandStream.WriteFloat32(halfRound)
+			this.commandStream.WriteFloat32(halfRound)
+			this.commandStream.WriteFloat32(vecSize.x - halfRound)
+			this.commandStream.WriteFloat32(vecSize.y - halfRound)
 		}
 		const flags = PathFlags.FILL | PathFlags.IMAGESHADER
-		const sizeX = subtexSize?.x ?? origSize.x,
-			sizey = subtexSize?.y ?? origSize.y
+
+		let texOffsetX = 0,
+			texOffsetY = 0,
+			texH = 0,
+			texW = 0
+
+		if (subtexOffset === undefined || subtexSize === undefined) {
+			const ratio = vecSize.x / vecSize.y
+			const origRatio = origSize.x / origSize.y
+
+			let cutX = 0,
+				cutY = 0
+			if (ratio < origRatio) {
+				cutX = (ratio - origRatio) / ratio
+			} else if (ratio > origRatio) {
+				// Y not tested
+				cutY = (origRatio - ratio) / origRatio
+			}
+
+			// todo simplify properly
+			texOffsetX = vecSize.x * cutX * -0.5
+			texOffsetY = vecSize.y * cutY * -0.5
+			texH = vecSize.x * (1 - cutX)
+			texW = vecSize.y * (1 - cutY)
+		} else {
+			texOffsetX = subtexOffset.x * (vecSize.x / subtexSize.x)
+			texOffsetY = subtexOffset.y * (vecSize.x / subtexSize.y)
+			texH = vecSize.x * (origSize.x / subtexSize.x)
+			texW = vecSize.y * (origSize.y / subtexSize.y)
+		}
+
 		this.Path(
 			1,
 			color,
@@ -473,10 +532,10 @@ class CRendererSDK {
 			LineCap.Square,
 			LineJoin.Round,
 			textureID,
-			(subtexOffset?.x ?? 0) * (vecSize.x / sizeX),
-			(subtexOffset?.y ?? 0) * (vecSize.x / sizey),
-			vecSize.x * (origSize.x / sizeX),
-			vecSize.y * (origSize.y / sizey)
+			texOffsetX,
+			texOffsetY,
+			texH,
+			texW
 		)
 	}
 	public GetImageSize(path: string): Vector2 {
@@ -492,23 +551,23 @@ class CRendererSDK {
 		italic = false,
 		outlined = true
 	): void {
-		if (text === "") {
+		if (text.length === 0) {
 			return
 		}
 
-		const fontID = this.GetFont(fontName, weight, italic)
+		let fontID = this.GetFont(fontName, weight, italic)
 		if (fontID === -1) {
 			return
 		}
-		const vecTranslate = outlined
-			? vecPos.Clone().SubtractScalarX(1).AddScalarY(1)
-			: vecPos
-		this.Translate(vecTranslate)
-		const startPos = this.commandCacheSize
+		if (outlined) {
+			fontID |= 0x8000 // kek
+		}
+
+		this.Translate(vecPos)
 		this.AllocateCommandSpace(CommandID.TEXT, 2 * 2 + 2 * 4)
 		this.commandStream.WriteUint16(fontID)
 		this.commandStream.WriteUint16(Math.round(fontSize + 4))
-		this.commandStream.WriteColor(outlined ? Color.Black : color)
+		this.commandStream.WriteColor(color)
 		const lengthPos = this.commandStream.pos
 		this.commandStream.WriteUint32(0)
 		{
@@ -528,17 +587,6 @@ class CRendererSDK {
 		this.commandStream.RelativeSeek(lengthPos - endPos)
 		this.commandStream.WriteUint32(bytesLen)
 		this.commandStream.RelativeSeek(bytesLen)
-
-		if (outlined) {
-			this.Translate(vecPos)
-			const newPos = this.commandCacheSize,
-				cmdSize = endPos - startPos
-			this.AllocateCommandSpace(CommandID.TEXT, cmdSize - 1)
-			this.commandCache.copyWithin(newPos, startPos, endPos)
-			this.commandStream.RelativeSeek(2 * 2)
-			this.commandStream.WriteColor(color)
-			this.commandStream.RelativeSeek(cmdSize - (this.commandStream.pos - newPos))
-		}
 	}
 	public TextByFlags(
 		text: string,
@@ -546,7 +594,7 @@ class CRendererSDK {
 		color = Color.White,
 		division = 1.2,
 		flags = TextFlags.Center,
-		width = 600,
+		width = 400,
 		fontName = this.DefaultFontName,
 		fixDigits = true,
 		italic = false,
@@ -1114,8 +1162,8 @@ class CRendererSDK {
 			return
 		}
 		this.AllocateCommandSpace(CommandID.TRANSLATE, 2 * 4)
-		this.commandStream.WriteFloat32(Math.round(vecPos.x))
-		this.commandStream.WriteFloat32(Math.round(vecPos.y))
+		this.commandStream.WriteFloat32(vecPos.x)
+		this.commandStream.WriteFloat32(vecPos.y)
 	}
 	private NormalizedAngle(ang: number): number {
 		while (ang < 0) {
