@@ -716,6 +716,7 @@ export { phoenix_sun_ray_stop } from "./Objects/Abilities/Phoenix/phoenix_sun_ra
 export { phoenix_sun_ray_toggle_move } from "./Objects/Abilities/Phoenix/phoenix_sun_ray_toggle_move"
 export { phoenix_supernova } from "./Objects/Abilities/Phoenix/phoenix_supernova"
 export { polar_furbolg_ursa_warrior_thunder_clap } from "./Objects/Abilities/PolarFurbolgUrsaWarrior/polar_furbolg_ursa_warrior_thunder_clap"
+export { primal_beast_onslaught } from "./Objects/Abilities/PrimalBeast/primal_beast_onslaught"
 export { primal_beast_onslaught_release } from "./Objects/Abilities/PrimalBeast/primal_beast_onslaught_release"
 export { primal_beast_pulverize } from "./Objects/Abilities/PrimalBeast/primal_beast_pulverize"
 export { primal_beast_rock_throw } from "./Objects/Abilities/PrimalBeast/primal_beast_rock_throw"

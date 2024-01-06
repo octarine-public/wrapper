@@ -34,7 +34,10 @@ export const ModifierManager = new (class CModifierManager {
 		const buffs = this.ModifiersUpdate
 		for (let index = buffs.length - 1; index > -1; index--) {
 			const mod = buffs[index]
-			if (!mod.IsValid || GameState.RawGameTime > mod.DieTime) {
+			const owner = mod.Parent
+			const isValid = mod.IsValid && owner !== undefined
+			const hasBuff = owner?.HasBuffByName(mod.Name) ?? false
+			if (!isValid || GameState.RawGameTime >= mod.DieTime || !hasBuff) {
 				this.ModifiersUpdate.remove(mod)
 				continue
 			}
@@ -304,6 +307,8 @@ EventsSDK.on("PostDataUpdate", () => {
 			mod.OnAbilityCooldownChanged()
 		})
 	}
+
+	ModifierManager.PostDataUpdate()
 })
 
 EventsSDK.on("EntityDestroyed", ent => {

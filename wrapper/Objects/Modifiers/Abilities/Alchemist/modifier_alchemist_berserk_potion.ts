@@ -5,7 +5,7 @@ import { Modifier } from "../../../Base/Modifier"
 export class modifier_alchemist_berserk_potion extends Modifier {
 	public readonly IsBuff = true
 
-	public SetBonusMoveSpeed(specialName = "move_speed", subtract?: boolean): void {
+	protected SetBonusMoveSpeed(specialName = "move_speed", subtract?: boolean): void {
 		super.SetBonusMoveSpeed(specialName, subtract)
 	}
 }

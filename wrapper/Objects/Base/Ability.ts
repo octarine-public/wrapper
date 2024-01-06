@@ -539,7 +539,7 @@ export class Ability extends Entity {
 		return owner.Mana + bonusMana >= this.ManaCost
 	}
 	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
-		return this.AbilityData.AbilityBehavior.hasMask(flag)
+		return this.AbilityData.HasBehavior(flag)
 	}
 	public HasTargetFlags(flag: DOTA_UNIT_TARGET_FLAGS): boolean {
 		return this.AbilityData.TargetFlags.hasMask(flag)

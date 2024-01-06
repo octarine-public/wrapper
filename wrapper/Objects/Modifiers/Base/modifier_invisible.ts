@@ -4,6 +4,8 @@ import { item_glimmer_cape } from "../../Items/item_glimmer_cape"
 
 @WrapperClassModifier()
 export class modifier_invisible extends Modifier {
+	// ? public readonly IsHidden = true
+
 	protected SetBonusMoveSpeed(_specialName?: string, subtract = false): void {
 		const owner = this.Parent
 		if (owner === undefined) {
