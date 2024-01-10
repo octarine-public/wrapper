@@ -45,8 +45,8 @@ export const ModifierManager = new (class CModifierManager {
 		}
 	}
 
-	public EmitToPostDataUpdate(mod: Modifier, duration = mod.Duration) {
-		if (duration === 0) {
+	public EmitToPostDataUpdate(mod: Modifier) {
+		if (mod.Duration === 0) {
 			return
 		}
 		if (!this.ModifiersUpdate.includes(mod)) {

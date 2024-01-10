@@ -360,14 +360,7 @@ export class Unit extends Entity {
 	}
 
 	public get MoveSpeedFixed() {
-		return (
-			this.Buffs.toOrderBy(
-				// exclude 0
-				x => x.MoveSpeedFixed === 0,
-				// sort by min
-				x => x.MoveSpeedFixed
-			).find(buff => buff.MoveSpeedFixed !== 0)?.MoveSpeedFixed ?? 0
-		)
+		return this.CalculateFixedMoveSpeed()
 	}
 
 	public get MoveSpeedBonus() {
@@ -698,7 +691,6 @@ export class Unit extends Entity {
 		if (this.HasInventory && this.Items.some(item => item.IsChanneling)) {
 			return true
 		}
-
 		return this.Spells.some(spell => spell !== undefined && spell.IsChanneling)
 	}
 	public get IsInAbilityPhase(): boolean {
@@ -765,15 +757,23 @@ export class Unit extends Entity {
 				0 || this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FLYING)
 		)
 	}
+
+	public get IsShield(): boolean {
+		return this.Buffs.some(buff => buff.IsShield)
+	}
+
 	public get IsFlyingVisually(): boolean {
 		return this.Buffs.some(buff => buff.ShouldDoFlyHeightVisual)
 	}
+
 	public get IsGloballyTargetable(): boolean {
 		return false
 	}
+
 	public get ShouldUnifyOrders(): boolean {
 		return true
 	}
+
 	protected get MoveSpeedBonusBoots() {
 		const sortBuffs = this.Buffs.toOrderBy(
 			// exclude 0 and boots
@@ -784,6 +784,7 @@ export class Unit extends Entity {
 		const buff = sortBuffs.find(x => x.IsBoots && x.BonusMoveSpeed !== 0)
 		return buff?.BonusMoveSpeed ?? 0
 	}
+
 	protected get MoveSpeedAmpBoots() {
 		const sortBuffs = this.Buffs.toOrderBy(
 			// exclude 0 and boots
@@ -1645,6 +1646,17 @@ export class Unit extends Entity {
 	protected ShouldCheckMaxSpeed(modifier: Modifier) {
 		const hasBuffByName = this.IsThirst || this.IsCharge
 		return !(hasBuffByName && modifier.BonusMoveSpeed >= MoveSpeedData.Max)
+	}
+
+	protected CalculateFixedMoveSpeed() {
+		return (
+			this.Buffs.toOrderBy(
+				// exclude 0
+				x => x.MoveSpeedFixed === 0,
+				// sort by min
+				x => x.MoveSpeedFixed
+			).find(x => x.MoveSpeedFixed !== 0)?.MoveSpeedFixed ?? 0
+		)
 	}
 
 	protected CalcualteBaseMoveSpeed() {
