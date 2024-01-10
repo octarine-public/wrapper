@@ -396,7 +396,7 @@ class CRendererSDK {
 	 */
 	public Image(
 		path: string,
-		vecPos_: Vector2,
+		vecPos: Vector2,
 		round = -1,
 		vecSize = new Vector2(-1, -1),
 		color = Color.White,
@@ -406,20 +406,20 @@ class CRendererSDK {
 		subtexOffset?: Vector2,
 		subtexSize?: Vector2
 	): void {
-		const vecPos = vecPos_.Clone()
-
-		if (rotationDeg !== 0) {
-			//rotate around the center instead of top left corner
-			const angle = DegreesToRadian(rotationDeg),
-				s = Math.sin(angle),
-				c = Math.cos(angle)
-			const centerOffset = vecSize.DivideScalar(2)
-			const adjust = new Vector2(
-				centerOffset.x * c - centerOffset.y * s,
-				centerOffset.x * s + centerOffset.y * c
-			)
-			vecPos.SubtractForThis(adjust).AddForThis(centerOffset)
-		}
+		// TODO: need add for the script or add new logic
+		// const vecPos = vecPos_.Clone()
+		// if (rotationDeg !== 0) {
+		// 	//rotate around the center instead of top left corner
+		// 	const angle = DegreesToRadian(rotationDeg),
+		// 		s = Math.sin(angle),
+		// 		c = Math.cos(angle)
+		// 	const centerOffset = vecSize.DivideScalar(2)
+		// 	const adjust = new Vector2(
+		// 		centerOffset.x * c - centerOffset.y * s,
+		// 		centerOffset.x * s + centerOffset.y * c
+		// 	)
+		// 	vecPos.SubtractForThis(adjust).AddForThis(centerOffset)
+		// }
 
 		const textureID = this.GetTexture(path) // better put it BEFORE new command
 		if (textureID === -1) {
