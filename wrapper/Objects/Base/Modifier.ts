@@ -1,4 +1,5 @@
 import { Vector4 } from "../../Base/Vector4"
+import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { IModifier } from "../../Managers/ModifierManager"
@@ -20,14 +21,6 @@ import { Unit } from "./Unit"
 const scepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
 export class Modifier {
-	// TODO: rework this after add ModifierManager
-	public static VisibleForEnemies: string[] = [
-		"modifier_bounty_hunter_track",
-		"modifier_slardar_amplify_damage",
-		"modifier_bloodseeker_thirst_vision",
-		"modifier_spirit_breaker_charge_of_darkness_vision"
-	]
-
 	// TODO: rework this after add ModifierManager
 	public static HasTrueSightBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => {
@@ -60,13 +53,20 @@ export class Modifier {
 	/** @readonly */
 	public IsBuff = false
 	/** @readonly */
+	public IsShield = false
+	/** @readonly */
+	public IsGhost = false
+	/** @readonly */
 	public IsDebuff = false
 	/** @readonly */
 	public IsStunDebuff = false
 	/** @readonly */
 	public IsHiddenWhenStolen = false
 	/** @readonly */
-	public VisibleForEnemies = false
+	public IsDeniable = false
+	/** @readonly */
+	public IsVisibleForEnemies = false
+
 	/** @readonly */
 	public BonusAttackSpeed = 0
 	/** @readonly */
@@ -86,7 +86,13 @@ export class Modifier {
 	/** @readonly */
 	public MoveSpeedBase = 0
 	/** @readonly */
+	public MoveSpeedBaseStack = false
+	/** @readonly */
 	public MoveSpeedFixed = 0
+	/** @readonly */
+	public MoveSpeedBaseAmplifier = 0
+	/** @readonly */
+	public MoveSpeedBaseAmplifierStack = false
 
 	// Bonus move speed
 	/** @readonly */
@@ -101,6 +107,10 @@ export class Modifier {
 	public BonusMoveSpeedAmplifier = 0
 	/** @readonly */
 	public BonusMoveSpeedAmplifierStack = false
+	/** @readonly */
+	public StatusResistanceSpeed = 0
+	/** @readonly */
+	public StatusResistanceSpeedStack = false
 
 	// Bonus armor
 	/** @readonly */
@@ -126,6 +136,9 @@ export class Modifier {
 	/** @readonly */
 	public BonusNightVisionStack = false
 
+	// move speed resistance
+	/** @readonly */
+
 	public readonly Index: number
 	public readonly SerialNumber: number
 	public readonly IsAura: boolean
@@ -144,6 +157,14 @@ export class Modifier {
 	public BonusHealth = 0
 	/** @deprecated */
 	public BonusMana = 0
+
+	public NetworkArmor = 0
+	public NetworkBonusMana = 0
+	public NetworkBonusHealth = 0
+	public NetworkAttackSpeed = 0
+	public NetworkChannelTime = 0
+	public NetworkMovementSpeed = 0
+	public NetworkBonusAllStats = 0
 
 	public CreationTime = 0
 	public CustomEntity: Nullable<Unit>
@@ -282,7 +303,15 @@ export class Modifier {
 		return (unit ?? this.Parent)?.IsInvisible ?? false
 	}
 
+	public IsPassiveDisabled(unit?: Unit) {
+		return (unit ?? this.Parent)?.IsPassiveDisabled ?? false
+	}
+
 	public OnUnitStateChaged(): void {
+		this.updateAllSpecialValues()
+	}
+
+	public OnAbilityLevelChanged(): void {
 		this.updateAllSpecialValues()
 	}
 
@@ -309,7 +338,8 @@ export class Modifier {
 			newBonusAllStats = this.kv.BonusAllStats ?? 0,
 			newBonusHealth = this.kv.BonusHealth ?? 0,
 			newBonusMana = this.kv.BonusMana ?? 0,
-			newCustomEntity = EntityManager.EntityByIndex<Unit>(this.kv.CustomEntity)
+			newCustomEntity = EntityManager.EntityByIndex<Unit>(this.kv.CustomEntity),
+			newChannelTime = this.kv.ChannelTime ?? 0
 
 		if (this.Parent !== newParent) {
 			this.Remove()
@@ -347,6 +377,10 @@ export class Modifier {
 			this.Armor = newArmor
 			updated = true
 		}
+		if (this.NetworkArmor !== newArmor) {
+			this.NetworkArmor = newArmor
+			updated = true
+		}
 		if (this.AttackSpeed !== newAttackSpeed) {
 			this.AttackSpeed = newAttackSpeed
 			updated = true
@@ -369,6 +403,10 @@ export class Modifier {
 		}
 		if (this.CustomEntity !== newCustomEntity) {
 			this.CustomEntity = newCustomEntity
+			updated = true
+		}
+		if (this.NetworkChannelTime !== newChannelTime) {
+			this.NetworkChannelTime = newChannelTime
 			updated = true
 		}
 		if (
@@ -407,6 +445,13 @@ export class Modifier {
 			this.IsMagicImmune(unit) ||
 			this.IsDebuffImmune(unit)
 		)
+	}
+
+	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR, abilName?: string): boolean {
+		if (abilName !== undefined) {
+			return AbilityData.GetAbilityByName(abilName)?.HasBehavior(flag) ?? false
+		}
+		return this.Ability?.HasBehavior(flag) ?? false
 	}
 
 	protected AddModifier(): boolean {
@@ -457,10 +502,9 @@ export class Modifier {
 			return 0
 		}
 		const abil = this.Ability
-		const lvlAbil = abil?.Level ?? level
-		if (level === 0 || level < lvlAbil) {
-			level = lvlAbil
-		}
+
+		level = Math.max(abil?.Level ?? level, level)
+
 		if (this.CustomAbilityName !== undefined) {
 			return this.byAbilityData(this.CustomAbilityName, specialName, level)
 		}
@@ -468,6 +512,14 @@ export class Modifier {
 			return 0
 		}
 		return abil.GetSpecialValue(specialName, level)
+	}
+
+	protected SetStatusResistanceSpeed(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.StatusResistanceSpeed = (subtract ? value * -1 : value) / 100
 	}
 
 	protected SetFixedMoveSpeed(specialName?: string, subtract = false) {
@@ -478,14 +530,6 @@ export class Modifier {
 		this.MoveSpeedFixed = subtract ? value * -1 : value
 	}
 
-	protected SetBonusAOERadius(specialName?: string, subtract = false) {
-		if (specialName === undefined) {
-			return
-		}
-		const value = this.GetSpecialValue(specialName)
-		this.BonusAOERadius = subtract ? value * -1 : value
-	}
-
 	protected SetBonusMoveSpeed(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -494,12 +538,52 @@ export class Modifier {
 		this.BonusMoveSpeed = subtract ? value * -1 : value
 	}
 
+	protected SetBaseMoveSpeed(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialSpeedByState(specialName)
+		this.MoveSpeedBase = subtract ? value * -1 : value
+	}
+
+	protected SetBaseMoveSpeedAmplifier(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialSpeedByState(specialName)
+		this.MoveSpeedBaseAmplifier = (subtract ? value * -1 : value) / 100
+	}
+
+	protected SetBonusAOERadius(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.BonusAOERadius = subtract ? value * -1 : value
+	}
+
 	protected SetBonusDayVision(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
 		}
 		const value = this.GetSpecialValue(specialName)
 		this.BonusDayVision = subtract ? value * -1 : value
+	}
+
+	/**
+	 * @description Sets the amplifier move speed based on the provided special name.
+	 * @param {string} specialName - The special name to use for calculation.
+	 * @param {boolean} subtract - Optional. Whether to subtract the calculated value.
+	 */
+	protected SetMoveSpeedAmplifier(
+		specialName?: string,
+		subtract: boolean = false
+	): void {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialSpeedByState(specialName)
+		this.BonusMoveSpeedAmplifier = (subtract ? value * -1 : value) / 100
 	}
 
 	protected SetBonusDayVisionAmplifier(specialName?: string, subtract = false) {
@@ -519,25 +603,15 @@ export class Modifier {
 	}
 
 	protected GetSpecialSpeedByState(specialName: string): number {
-		const state = this.ShouldUnslowable()
-		const value = this.GetSpecialValue(specialName)
-		return state && this.IsDebuff && this.IsEnemy() ? 0 : value
-	}
-
-	/**
-	 * @description Sets the amplifier move speed based on the provided special name.
-	 * @param {string} specialName - The special name to use for calculation.
-	 * @param {boolean} subtract - Optional. Whether to subtract the calculated value.
-	 */
-	protected SetMoveSpeedAmplifier(
-		specialName?: string,
-		subtract: boolean = false
-	): void {
-		if (specialName === undefined) {
-			return
+		const isImmuneSlow = this.ShouldUnslowable()
+		const isPassiveDisabled = this.IsPassiveDisabled()
+		if (
+			(this.IsBuff && isPassiveDisabled && !this.IsEnemy()) ||
+			(this.IsDebuff && isImmuneSlow && this.IsEnemy())
+		) {
+			return 0
 		}
-		const value = this.GetSpecialSpeedByState(specialName)
-		this.BonusMoveSpeedAmplifier = (subtract ? value * -1 : value) / 100
+		return this.GetSpecialValue(specialName)
 	}
 
 	protected byAbilityData(
@@ -558,9 +632,12 @@ export class Modifier {
 		this.SetBonusNightVision()
 
 		// bonus move speed
+		this.SetBaseMoveSpeed()
 		this.SetFixedMoveSpeed()
 		this.SetBonusMoveSpeed()
 		this.SetMoveSpeedAmplifier()
+		this.SetStatusResistanceSpeed()
+		this.SetBaseMoveSpeedAmplifier()
 
 		// bonus spells
 		this.SetBonusAOERadius()

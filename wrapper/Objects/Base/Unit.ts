@@ -355,85 +355,30 @@ export class Unit extends Entity {
 		return this.UnitData.BaseMovementSpeed
 	}
 
-	public get MoveSpeedResistance() {
-		return 0
+	public get MoveSpeedBase() {
+		return this.CalcualteBaseMoveSpeed()
 	}
 
 	public get MoveSpeedFixed() {
-		return (
-			this.Buffs.toOrderBy(
-				// exclude 0
-				x => x.MoveSpeedFixed === 0,
-				// sort by min
-				x => x.MoveSpeedFixed
-			).find(buff => buff.MoveSpeedFixed !== 0)?.MoveSpeedFixed ?? 0
-		)
-	}
-
-	public get MoveSpeedBase() {
-		if (this.MoveSpeedFixed !== 0) {
-			return this.MoveSpeedFixed
-		}
-		let baseSpeed = this.NetworkBaseMoveSpeed
-		if (baseSpeed === 0) {
-			baseSpeed = this.MoveSpeedBaseData
-		}
-		const buffs = this.Buffs.toOrderBy(
-			// exclude 0
-			x => x.MoveSpeedBase === 0,
-			// sort by min
-			x => x.MoveSpeedBase
-		)
-		if (buffs.length === 0 || buffs[0].MoveSpeedBase === 0) {
-			return baseSpeed
-		}
-		return buffs[0].MoveSpeedBase
+		return this.CalculateFixedMoveSpeed()
 	}
 
 	public get MoveSpeedBonus() {
-		const names = new Set<string>()
-		const arrBuffs = this.Buffs
-		let totalBonus = 0
-		for (let index = arrBuffs.length - 1; index > -1; index--) {
-			const buff = arrBuffs[index]
-			if (buff.IsBoots || !buff.BonusMoveSpeed) {
-				continue
-			}
-			if (!this.ShouldCheckMaxSpeed(buff)) {
-				continue
-			}
-			if (buff.BonusMoveSpeedStack && names.has(buff.Name)) {
-				continue
-			}
-			names.add(buff.Name)
-			totalBonus += buff.BonusMoveSpeed
-		}
-		return totalBonus + this.MoveSpeedBonusBoots
+		return this.CalculateBonusMoveSpeed()
 	}
 
-	public get MoveSpeedAmplify() {
-		let amp = 1
-		const names = new Set<string>()
-		const arrBuffs = this.Buffs
-		for (let index = arrBuffs.length - 1; index > -1; index--) {
-			const buff = arrBuffs[index]
-			if (buff.IsBoots || !buff.BonusMoveSpeedAmplifier) {
-				continue
-			}
-			if (buff.BonusMoveSpeedAmplifierStack && names.has(buff.Name)) {
-				continue
-			}
-			names.add(buff.Name)
-			amp += buff.BonusMoveSpeedAmplifier
-		}
-		return amp + this.MoveSpeedAmpBoots
+	public get MoveSpeedResistance() {
+		return this.CalcualteResistanceMoveSpeed()
+	}
+
+	public get MoveSpeedAmplifier() {
+		return this.CalculateMoveSpeedAmplifier()
 	}
 
 	public get Speed() {
-		const amp = this.MoveSpeedAmplify
 		const isLimit = this.IsMoveSpeedLimit
-
-		const baseSpeed = this.MoveSpeedBase + this.MoveSpeedBonus //+ this.NightBonusMoveSpeed()
+		const amp = this.MoveSpeedAmplifier
+		const baseSpeed = this.MoveSpeedBase + this.MoveSpeedBonus
 		const calculateSpeed = Math.max(baseSpeed * amp, MoveSpeedData.Min)
 
 		const totalSpeed = isLimit
@@ -461,6 +406,7 @@ export class Unit extends Entity {
 		}
 		return this.LastPredictedPositionUpdate_
 	}
+
 	public set LastPredictedPositionUpdate(val: number) {
 		this.LastPredictedPositionUpdate_ = val
 	}
@@ -481,6 +427,7 @@ export class Unit extends Entity {
 	public get GoldBountyAverage(): number {
 		return (this.GoldBountyMin + this.GoldBountyMax) / 2
 	}
+
 	public get IsIllusion(): boolean {
 		return this.IsIllusion_
 	}
@@ -523,6 +470,9 @@ export class Unit extends Entity {
 	public get IsHexed(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_HEXED)
 	}
+	public get IsPassiveDisabled(): boolean {
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_PASSIVES_DISABLED)
+	}
 	public get IsInvisible(): boolean {
 		return (
 			this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVISIBLE) ||
@@ -555,7 +505,12 @@ export class Unit extends Entity {
 			)
 		)
 	}
-	//
+	public get HasModifierVisibleForEnemies(): boolean {
+		for (let index = this.Buffs.length - 1; index > -1; index--) {
+			return this.Buffs[index].IsVisibleForEnemies
+		}
+		return false
+	}
 	public get HasNoHealthBar(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_HEALTH_BAR)
 	}
@@ -682,20 +637,14 @@ export class Unit extends Entity {
 	public get UnitState(): modifierstate[] {
 		return this.UnitStateMask.toMask
 	}
-	public get IsEthereal(): boolean {
+	public get IsGhost(): boolean {
 		for (let index = this.Buffs.length - 1; index > -1; index--) {
-			const buff = this.Buffs[index]
-			switch (buff.Name) {
-				case "modifier_ghost_state":
-				case "modifier_item_ethereal_blade_ethereal":
-				case "modifier_pugna_decrepify":
-				case "modifier_necrolyte_sadist_active":
-					return true
-				default:
-					break
-			}
+			return this.Buffs[index].IsGhost
 		}
 		return false
+	}
+	public get IsEthereal(): boolean {
+		return this.IsGhost
 	}
 	public get CanUseAbilitiesInInvisibility(): boolean {
 		for (let index = this.Buffs.length - 1; index > -1; index--) {
@@ -742,7 +691,6 @@ export class Unit extends Entity {
 		if (this.HasInventory && this.Items.some(item => item.IsChanneling)) {
 			return true
 		}
-
 		return this.Spells.some(spell => spell !== undefined && spell.IsChanneling)
 	}
 	public get IsInAbilityPhase(): boolean {
@@ -809,15 +757,23 @@ export class Unit extends Entity {
 				0 || this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FLYING)
 		)
 	}
+
+	public get IsShield(): boolean {
+		return this.Buffs.some(buff => buff.IsShield)
+	}
+
 	public get IsFlyingVisually(): boolean {
 		return this.Buffs.some(buff => buff.ShouldDoFlyHeightVisual)
 	}
+
 	public get IsGloballyTargetable(): boolean {
 		return false
 	}
+
 	public get ShouldUnifyOrders(): boolean {
 		return true
 	}
+
 	protected get MoveSpeedBonusBoots() {
 		const sortBuffs = this.Buffs.toOrderBy(
 			// exclude 0 and boots
@@ -828,6 +784,7 @@ export class Unit extends Entity {
 		const buff = sortBuffs.find(x => x.IsBoots && x.BonusMoveSpeed !== 0)
 		return buff?.BonusMoveSpeed ?? 0
 	}
+
 	protected get MoveSpeedAmpBoots() {
 		const sortBuffs = this.Buffs.toOrderBy(
 			// exclude 0 and boots
@@ -864,11 +821,8 @@ export class Unit extends Entity {
 				// new method
 				// predicted (buffs / cell / etc..) method
 				// Check if the Unit is visible for enemies in the current cell
-				if (this.cellIsVisibleForEnemies_) {
-					return true
-				}
 				// Check if the Unit has any buff that makes it visible for enemies
-				if (this.HasAnyBuffByNames(Modifier.VisibleForEnemies)) {
+				if (this.cellIsVisibleForEnemies_ || this.HasModifierVisibleForEnemies) {
 					return true
 				}
 				// Check if the current game time is less than the time when the Unit
@@ -880,6 +834,7 @@ export class Unit extends Entity {
 			}
 		}
 	}
+
 	// need optimize UpdateVisibleCellsPosition or move to c++
 	// public UpdatePositions(parentTransform?: Matrix3x4) {
 	// 	super.UpdatePositions(parentTransform)
@@ -1243,6 +1198,7 @@ export class Unit extends Entity {
 			}
 		}
 	}
+
 	/* ================================ ORDERS ================================ */
 	public UseSmartAbility(
 		ability: Ability,
@@ -1437,6 +1393,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public DropItem(
 		item: Item,
 		position: Vector3,
@@ -1452,6 +1409,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public GiveItem(
 		item: Item,
 		target: Entity | number,
@@ -1467,6 +1425,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public PickupItem(
 		physicalItem: PhysicalItem | number,
 		queue?: boolean,
@@ -1480,6 +1439,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public PickupRune(rune: Rune | number, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE,
@@ -1489,6 +1449,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public SellItem(item: Item) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM,
@@ -1496,6 +1457,7 @@ export class Unit extends Entity {
 			ability: item
 		})
 	}
+
 	public DisassembleItem(item: Item, queue?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM,
@@ -1504,6 +1466,7 @@ export class Unit extends Entity {
 			queue
 		})
 	}
+
 	public ItemSetCombineLock(
 		item: Item,
 		lock: boolean | number = true,
@@ -1517,6 +1480,7 @@ export class Unit extends Entity {
 			queue
 		})
 	}
+
 	public TakeItemFromNeutralStash(item: Item) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAKE_ITEM_FROM_NEUTRAL_ITEM_STASH,
@@ -1524,6 +1488,7 @@ export class Unit extends Entity {
 			ability: item
 		})
 	}
+
 	public MoveItem(item: Item, slot: DOTAScriptInventorySlot) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM,
@@ -1532,6 +1497,7 @@ export class Unit extends Entity {
 			ability: item
 		})
 	}
+
 	public CastToggleAuto(item: Ability, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO,
@@ -1541,6 +1507,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public OrderStop(queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_STOP,
@@ -1549,6 +1516,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public UnitTaunt(queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAUNT,
@@ -1557,6 +1525,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public EjectItemFromStash(item: Item) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH,
@@ -1564,6 +1533,7 @@ export class Unit extends Entity {
 			ability: item
 		})
 	}
+
 	public CastRune(runeItem: Item | number, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RUNE,
@@ -1573,6 +1543,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public PingAbility(ability: Ability) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PING_ABILITY,
@@ -1580,6 +1551,7 @@ export class Unit extends Entity {
 			ability
 		})
 	}
+
 	public MoveToDirection(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION,
@@ -1589,6 +1561,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public Patrol(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PATROL,
@@ -1598,6 +1571,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public VectorTargetPosition(
 		ability: Ability,
 		direction: Vector3,
@@ -1615,6 +1589,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public CastVectorTargetPosition(
 		ability: Ability,
 		position: Vector3 | Unit,
@@ -1635,6 +1610,7 @@ export class Unit extends Entity {
 		)
 		this.CastPosition(ability, position, queue, showEffects)
 	}
+
 	public ItemLock(item: Item, state = true) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK,
@@ -1652,6 +1628,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public VectorTargetCanceled(
 		position: Vector3,
 		queue?: boolean,
@@ -1671,8 +1648,104 @@ export class Unit extends Entity {
 		return !(hasBuffByName && modifier.BonusMoveSpeed >= MoveSpeedData.Max)
 	}
 
+	protected CalculateFixedMoveSpeed() {
+		return (
+			this.Buffs.toOrderBy(
+				// exclude 0
+				x => x.MoveSpeedFixed === 0,
+				// sort by min
+				x => x.MoveSpeedFixed
+			).find(x => x.MoveSpeedFixed !== 0)?.MoveSpeedFixed ?? 0
+		)
+	}
+
+	protected CalcualteBaseMoveSpeed() {
+		if (this.MoveSpeedFixed !== 0) {
+			return this.MoveSpeedFixed
+		}
+		let baseSpeed = this.NetworkBaseMoveSpeed
+		if (baseSpeed === 0) {
+			baseSpeed = this.MoveSpeedBaseData
+		}
+		let totalBonus = 0,
+			totalBonusAmp = 1
+		const arrBuffs = this.Buffs,
+			namesBonus = new Set<string>(),
+			namesAmplifier = new Set<string>(),
+			bonusBaseSpeed = baseSpeed + totalBonus
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			// if not bonus skip
+			if (buff.MoveSpeedBase !== 0) {
+				if (buff.MoveSpeedBaseStack && namesBonus.has(buff.Name)) {
+					continue
+				}
+				namesBonus.add(buff.Name)
+				totalBonus += buff.MoveSpeedBase
+				continue
+			}
+			// if not amplifier skip
+			if (!buff.MoveSpeedBaseAmplifier) {
+				continue
+			}
+			if (buff.MoveSpeedBaseAmplifierStack && namesAmplifier.has(buff.Name)) {
+				continue
+			}
+			namesAmplifier.add(buff.Name)
+			totalBonusAmp += buff.MoveSpeedBaseAmplifier
+		}
+
+		// need check min speed data from base move speed ?
+		return bonusBaseSpeed * totalBonusAmp
+	}
+
+	protected CalculateBonusMoveSpeed() {
+		let totalBonus = 0
+		const names = new Set<string>()
+		const arrBuffs = this.Buffs
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (buff.IsBoots || !buff.BonusMoveSpeed) {
+				continue
+			}
+			if (!this.ShouldCheckMaxSpeed(buff)) {
+				continue
+			}
+			if (buff.BonusMoveSpeedStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus += buff.BonusMoveSpeed
+		}
+		const nightBonus = 0 // TODO: this.CalcualteNightMoveSpeed()
+		return totalBonus + nightBonus + this.MoveSpeedBonusBoots
+	}
+
+	protected CalculateMoveSpeedAmplifier() {
+		let amp = 1
+		const arrBuffs = this.Buffs,
+			names = new Set<string>()
+		// TODO: modifier_muerta_dead_shot_fear
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (buff.IsBoots || !buff.BonusMoveSpeedAmplifier) {
+				continue
+			}
+			if (buff.BonusMoveSpeedAmplifierStack && names.has(buff.Name)) {
+				continue
+			}
+			let res = buff.BonusMoveSpeedAmplifier
+			if (buff.IsDebuff) {
+				res *= this.CalcualteResistanceMoveSpeed()
+			}
+			names.add(buff.Name)
+			amp += res
+		}
+		return amp + this.MoveSpeedAmpBoots
+	}
+
 	// TODO: refactor
-	protected NightBonusMoveSpeed() {
+	protected CalcualteNightMoveSpeed() {
 		if (!GameRules?.IsNight) {
 			return 0
 		}
@@ -1691,6 +1764,24 @@ export class Unit extends Entity {
 		}
 
 		return speed
+	}
+
+	protected CalcualteResistanceMoveSpeed() {
+		let totalRes = 1
+		const names = new Set<string>(),
+			arrBuffs = this.Buffs
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.StatusResistanceSpeed) {
+				continue
+			}
+			if (buff.StatusResistanceSpeedStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalRes += buff.StatusResistanceSpeed
+		}
+		return totalRes
 	}
 }
 export const Units = EntityManager.GetEntitiesByClass(Unit)

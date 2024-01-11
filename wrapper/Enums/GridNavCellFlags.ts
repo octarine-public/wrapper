@@ -1,5 +1,5 @@
 // https://docs.ensage.io/html/T_Ensage_NavMeshCellFlags.htm
-export enum GridNavCellFlags {
+export const enum GridNavCellFlags {
 	// A unit can walk on this cell
 	Walkable,
 

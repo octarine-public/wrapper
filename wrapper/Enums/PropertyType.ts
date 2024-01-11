@@ -10,7 +10,7 @@ export type PropertyType =
 	| Vector2
 	| Vector3
 	| Vector4
-export enum EPropertyType {
+export const enum EPropertyType {
 	BOOL,
 	INT8,
 	INT16,

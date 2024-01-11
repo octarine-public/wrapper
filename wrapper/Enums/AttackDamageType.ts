@@ -1,4 +1,4 @@
-export enum AttackDamageType {
+export const enum AttackDamageType {
 	Hero,
 	Basic,
 	Pierce,

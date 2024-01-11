@@ -4,6 +4,8 @@ import { item_helm_of_the_dominator } from "../../Items/item_helm_of_the_dominat
 
 @WrapperClassModifier()
 export class modifier_dominated extends Modifier {
+	public readonly IsHidden = true
+
 	protected SetFixedMoveSpeed(_specialName?: string, subtract = false): void {
 		switch (true) {
 			case this.Ability instanceof item_helm_of_the_dominator:

@@ -10,4 +10,11 @@ export class windrunner_gale_force extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("duration", level)
+	}
 }

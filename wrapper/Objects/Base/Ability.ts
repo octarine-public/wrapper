@@ -22,6 +22,8 @@ import { Unit } from "./Unit"
 export class Ability extends Entity {
 	public readonly AbilityData: AbilityData
 	/** @readonly */
+	public Level = 0
+	/** @readonly */
 	public IsEmpty = false
 	@NetworkedBasicField("m_bInIndefiniteCooldown")
 	public IsInIndefiniteCooldown = false
@@ -41,8 +43,6 @@ export class Ability extends Entity {
 	public ManaCost = 0
 	@NetworkedBasicField("m_flOverrideCastPoint")
 	public OverrideCastPoint = 0
-	@NetworkedBasicField("m_iLevel")
-	public Level = 0
 	@NetworkedBasicField("m_flCooldownLength")
 	public CooldownLength_ = 0
 	public IsInAbilityPhase_ = false
@@ -59,12 +59,13 @@ export class Ability extends Entity {
 	public AbilityCurrentCharges = 0
 	@NetworkedBasicField("m_iDirtyButtons")
 	public DirtyButtons = 0
-	@NetworkedBasicField("m_fAbilityChargeRestoreTimeRemaining")
 	public AbilityChargeRestoreTimeRemaining = 0
 
 	/** @ignore */
 	public Cooldown_ = 0
+	public CooldownRestore_ = 0
 	public CooldownChangeTime = 0
+	public CooldownRestoreTime = 0
 
 	/**@deprecated */
 	public readonly ProjectilePath: Nullable<string>
@@ -153,7 +154,7 @@ export class Ability extends Entity {
 		return this.GetSpecialValue("final_aoe")
 	}
 	public get CastPoint(): number {
-		const overrideValue = this.OverrideCastPoint // default -1 or 0
+		const overrideValue = this.OverrideCastPoint // default -1
 		if (overrideValue > 0) {
 			return overrideValue
 		}
@@ -171,7 +172,7 @@ export class Ability extends Entity {
 	public get MaxCharges(): number {
 		return this.GetMaxChargesForLevel(this.Level)
 	}
-	public get ChargeRestoreTime(): number {
+	public get MaxChargeRestoreTime(): number {
 		return this.GetChargeRestoreTimeForLevel(this.Level)
 	}
 	public get DamageType(): DAMAGE_TYPES {
@@ -190,7 +191,7 @@ export class Ability extends Entity {
 		)
 	}
 	public get CooldownLength(): number {
-		const chargeRestoreTime = this.ChargeRestoreTime
+		const chargeRestoreTime = this.MaxChargeRestoreTime
 		if (chargeRestoreTime !== 0) {
 			return chargeRestoreTime
 		} // workaround of bad m_flCooldownLength, TODO: use cooldown reductions
@@ -245,7 +246,16 @@ export class Ability extends Entity {
 	public get IsPassive(): boolean {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
 	}
+	public get CooldownRestore(): number {
+		return Math.max(
+			this.CooldownRestore_ - (GameState.RawGameTime - this.CooldownRestoreTime),
+			0
+		)
+	}
 	public get Cooldown(): number {
+		if (!this.CurrentCharges && this.CooldownRestore > 0) {
+			return this.CooldownRestore
+		}
 		return Math.max(
 			this.Cooldown_ - (GameState.RawGameTime - this.CooldownChangeTime),
 			0
@@ -257,7 +267,9 @@ export class Ability extends Entity {
 	 * @return {number}
 	 */
 	public get CooldownPercent(): number {
-		return toPercentage(this.Cooldown, this.MaxCooldown)
+		return !this.CurrentCharges && this.CooldownRestore > 0
+			? toPercentage(this.CooldownRestore, this.MaxChargeRestoreTime)
+			: toPercentage(this.Cooldown, this.MaxCooldown)
 	}
 	/**
 	 * Calculates the cooldown percentage.
@@ -539,7 +551,7 @@ export class Ability extends Entity {
 		return owner.Mana + bonusMana >= this.ManaCost
 	}
 	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
-		return this.AbilityData.AbilityBehavior.hasMask(flag)
+		return this.AbilityData.HasBehavior(flag)
 	}
 	public HasTargetFlags(flag: DOTA_UNIT_TARGET_FLAGS): boolean {
 		return this.AbilityData.TargetFlags.hasMask(flag)
@@ -584,13 +596,18 @@ export class Ability extends Entity {
 	}
 }
 
+RegisterFieldHandler(Ability, "m_iLevel", (abil, newValue) => {
+	abil.Level = newValue as number
+	EventsSDK.emit("AbilityLevelChanged", false, abil)
+})
+
 RegisterFieldHandler(
 	Ability,
 	"m_fAbilityChargeRestoreTimeRemaining",
 	(abil, newValue) => {
-		abil.Cooldown_ = abil.CurrentCharges !== 0 ? 0 : Math.max(newValue as number, 0)
-		abil.CooldownChangeTime = GameState.RawGameTime
-		EventsSDK.emit("AbilityNetworkedCooldown", false, abil)
+		abil.CooldownRestore_ = newValue as number
+		abil.CooldownRestoreTime = GameState.RawGameTime
+		EventsSDK.emit("AbilityCooldownChanged", false, abil)
 	}
 )
 RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, newValue) => {
@@ -601,5 +618,5 @@ RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, newValue) => {
 RegisterFieldHandler(Ability, "m_fCooldown", (abil, newValue) => {
 	abil.Cooldown_ = newValue as number
 	abil.CooldownChangeTime = GameState.RawGameTime
-	EventsSDK.emit("AbilityNetworkedCooldown", false, abil)
+	EventsSDK.emit("AbilityCooldownChanged", false, abil)
 })
