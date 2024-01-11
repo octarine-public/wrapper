@@ -5,7 +5,7 @@ import { Modifier } from "../../../Base/Modifier"
 export class modifier_alchemist_chemical_rage extends Modifier {
 	public readonly IsBuff = true
 
-	public SetBonusMoveSpeed(specialName = "bonus_movespeed", subtract = false): void {
+	protected SetBonusMoveSpeed(specialName = "bonus_movespeed", subtract = false): void {
 		super.SetBonusMoveSpeed(specialName, subtract)
 	}
 }

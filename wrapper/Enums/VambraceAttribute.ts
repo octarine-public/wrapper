@@ -1,4 +1,4 @@
-export enum VambraceAttribute {
+export const enum VambraceAttribute {
 	STRENGTH = 0,
 	INTELLIGENCE,
 	AGILITY

@@ -119,7 +119,7 @@ Events.on("WndProc", (msg, wParam, _lParam, x, y) => {
 	return true
 })
 
-export enum InputMessage {
+export const enum InputMessage {
 	WM_NULL = 0x0000,
 	WM_CREATE = 0x0001,
 	WM_DESTROY = 0x0002,

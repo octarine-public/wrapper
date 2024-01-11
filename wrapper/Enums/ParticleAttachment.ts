@@ -1,4 +1,4 @@
-export enum ParticleAttachment {
+export const enum ParticleAttachment {
 	PATTACH_INVALID = -1,
 	PATTACH_ABSORIGIN = 0,
 	PATTACH_ABSORIGIN_FOLLOW = 1,

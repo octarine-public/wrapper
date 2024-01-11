@@ -1,4 +1,4 @@
-export enum DOTAUnitAttackCapability {
+export const enum DOTAUnitAttackCapability {
 	DOTA_UNIT_CAP_NO_ATTACK = 0,
 	DOTA_UNIT_CAP_MELEE_ATTACK = 1,
 	DOTA_UNIT_CAP_RANGED_ATTACK = 2,

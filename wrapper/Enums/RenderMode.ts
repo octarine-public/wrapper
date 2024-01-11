@@ -1,4 +1,4 @@
-export enum RenderMode {
+export const enum RenderMode {
 	Normal = 0,
 	TransColor = 1,
 	TransTexture = 2,

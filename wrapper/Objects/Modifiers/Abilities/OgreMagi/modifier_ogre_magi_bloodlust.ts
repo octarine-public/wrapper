@@ -1,0 +1,14 @@
+import { WrapperClassModifier } from "../../../../Decorators"
+import { Modifier } from "../../../Base/Modifier"
+
+@WrapperClassModifier()
+export class modifier_ogre_magi_bloodlust extends Modifier {
+	public readonly IsBuff = true
+
+	protected SetMoveSpeedAmplifier(
+		specialName = "bonus_movement_speed",
+		subtract = false
+	): void {
+		super.SetMoveSpeedAmplifier(specialName, subtract)
+	}
+}

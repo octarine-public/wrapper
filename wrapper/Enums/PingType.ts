@@ -1,4 +1,4 @@
-export enum PingType {
+export const enum PingType {
 	NORMAL = 0,
 	DANGER = 1,
 	HEADING = 2,

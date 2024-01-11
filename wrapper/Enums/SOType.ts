@@ -1,4 +1,4 @@
-export enum SOType {
+export const enum SOType {
 	// EconItem is an economy item.
 	EconItem = 1,
 	// EconGameAccountClient is a economy game account client..

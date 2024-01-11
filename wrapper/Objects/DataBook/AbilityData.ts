@@ -264,6 +264,10 @@ export class AbilityData {
 			: DOTA_ITEM_DISASSEMBLE.DOTA_ITEM_DISASSEMBLE_NONE
 	}
 
+	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
+		return this.AbilityBehavior.hasMask(flag)
+	}
+
 	public GetSpecialValue(
 		specialName: string,
 		level: number,
@@ -334,6 +338,7 @@ export class AbilityData {
 						: val
 					break
 				}
+
 				if (this.hasTalent(ar[1], owner)) {
 					talentVal = val || this.GetSpecialTalent(ar[1], "value", owner)
 				}
@@ -347,6 +352,9 @@ export class AbilityData {
 				break
 			case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
 				baseVal += talentVal
+				break
+			case EDOTASpecialBonusOperation.SPECIAL_BONUS_SUBTRACT:
+				baseVal -= talentVal
 				break
 			case EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY:
 				baseVal *= talentVal
@@ -473,6 +481,7 @@ export class AbilityData {
 					name === "RequiresScepter" ||
 					name === "RequiresShard" ||
 					name === "ad_linked_abilities" ||
+					name === "LinkedSpecialBonusOperation" ||
 					typeof value !== "string"
 				) {
 					return
@@ -548,6 +557,7 @@ export class AbilityData {
 					specialName === "LinkedSpecialBonus" ||
 					specialName === "RequiresScepter" ||
 					specialName === "RequiresShard" ||
+					specialName === "LinkedSpecialBonusOperation" ||
 					typeof specialValue !== "string"
 				) {
 					return
@@ -566,8 +576,9 @@ export class AbilityData {
 			const ar = this.ExtendLevelArray(
 				value.split(" ").map(str => this.parseFloat(str))
 			)
-			let linkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+
 			let talentChange: number | number[]
+			let linkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 
 			switch (true) {
 				case talentChangeStr.startsWith("x"):
@@ -606,6 +617,15 @@ export class AbilityData {
 				const getlinkedSpecialBonus = special.get("LinkedSpecialBonus")
 				linkedSpecialBonus =
 					typeof getlinkedSpecialBonus !== "string" ? "" : getlinkedSpecialBonus
+			}
+
+			const linkedSpecialBonusOperationStr = special.get(
+				"LinkedSpecialBonusOperation"
+			)
+			if (typeof linkedSpecialBonusOperationStr === "string") {
+				linkedSpecialBonusOperation =
+					(EDOTASpecialBonusOperation as any)[linkedSpecialBonusOperationStr] ??
+					EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 			}
 
 			this.SpecialValueCache.set(name, [
