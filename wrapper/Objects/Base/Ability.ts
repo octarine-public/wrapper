@@ -155,7 +155,7 @@ export class Ability extends Entity {
 	}
 	public get CastPoint(): number {
 		const overrideValue = this.OverrideCastPoint // default -1
-		if (overrideValue === -1) {
+		if (overrideValue > 0) {
 			return overrideValue
 		}
 		return this.GetBaseCastPointForLevel(this.Level)
