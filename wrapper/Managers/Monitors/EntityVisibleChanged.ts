@@ -25,8 +25,8 @@ const Monitor = new (class CEntityVisibleChanged {
 
 	public EntityDestroyed(entity: Entity) {
 		if (this.allowEntity(entity)) {
-			this.entities.delete(entity)
 			EventsSDK.emit("EntityVisibleChanged", false, entity)
+			this.entities.delete(entity)
 		}
 	}
 

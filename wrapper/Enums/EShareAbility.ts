@@ -1,4 +1,4 @@
-export enum EShareAbility {
+export const enum EShareAbility {
 	ITEM_FULLY_SHAREABLE = 0,
 	ITEM_PARTIALLY_SHAREABLE = 1,
 	ITEM_NOT_SHAREABLE = 2

@@ -3,7 +3,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_dark_seer_surge extends Modifier {
-	public SetBonusMoveSpeed(specialName = "speed_boost", subtract = false): void {
+	protected SetBonusMoveSpeed(specialName = "speed_boost", subtract = false): void {
 		super.SetBonusMoveSpeed(specialName, subtract)
 	}
 }

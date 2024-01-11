@@ -1,4 +1,4 @@
-export enum DOTA_RUNES {
+export const enum DOTA_RUNES {
 	DOTA_RUNE_INVALID = -1,
 	DOTA_RUNE_DOUBLEDAMAGE = 0,
 	DOTA_RUNE_HASTE = 1,

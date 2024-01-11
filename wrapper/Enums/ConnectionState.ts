@@ -1,4 +1,4 @@
-export enum ConnectionState {
+export const enum ConnectionState {
 	Unknown,
 	NotYetConnected,
 	Connected,

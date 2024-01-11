@@ -18,7 +18,7 @@ export class modifier_axe_battle_hunger extends Modifier {
 			return
 		}
 		if (!this.isEmited) {
-			this.emitToData()
+			this.emitToPostData()
 		}
 		if (owner.GetAngle(caster.Position) <= Math.PI / 2) {
 			this.BonusMoveSpeedAmplifier = 0
@@ -27,8 +27,8 @@ export class modifier_axe_battle_hunger extends Modifier {
 		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
 
-	private emitToData(): void {
-		ModifierManager.EmitToPostDataUpdate(this)
+	private emitToPostData(): void {
 		this.isEmited = true
+		ModifierManager.EmitToPostDataUpdate(this)
 	}
 }

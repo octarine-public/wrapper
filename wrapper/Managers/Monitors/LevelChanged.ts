@@ -81,6 +81,7 @@ const Monitor = new (class {
 		const getSpecialLinked = this.linkedSpecial.get(ability.Name)
 		if (getSpecialLinked !== undefined) {
 			ability.Level++
+			EventsSDK.emit("AbilityLevelChanged", false, ability)
 			this.ChangeComboLevel(ability, getSpecialLinked)
 			return
 		}
@@ -90,6 +91,7 @@ const Monitor = new (class {
 			return
 		}
 		ability.Level++
+		EventsSDK.emit("AbilityLevelChanged", false, ability)
 	}
 
 	protected ChangeComboLevel(abil: Ability, linkedName: string) {
@@ -102,6 +104,7 @@ const Monitor = new (class {
 			return
 		}
 		linked.Level++
+		EventsSDK.emit("AbilityLevelChanged", false, linked)
 		this.linkedNames.add(linkedName)
 		this.ChangeComboLevel(linked, linked.AbilityData.LinkedAbility)
 		this.linkedNames.delete(linkedName)
