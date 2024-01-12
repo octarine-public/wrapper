@@ -1,5 +1,6 @@
 import { MenuLanguageID } from "../Enums/MenuLanguageID"
 import { SOType } from "../Enums/SOType"
+import { GameState } from "../Utils/GameState"
 
 type Listener = (...args: any) => false | any
 export class EventEmitter {
@@ -49,6 +50,7 @@ export class EventEmitter {
 
 		if (listeners !== undefined) {
 			for (let index = 0; index < listeners.length; index++) {
+				const startTime = hrtime()
 				const [listener] = listeners[index]
 				try {
 					if (listener(...args) === false && cancellable) {
@@ -60,10 +62,19 @@ export class EventEmitter {
 						this.listener2line.get(listener)
 					)
 				}
+				const runTime = hrtime() - startTime
+				if (runTime > 5) {
+					SendListenerPerf(
+						this.listener2line.get(listener)!,
+						runTime,
+						GameState.RawGameTime
+					)
+				}
 			}
 		}
 		if (listenersAfter !== undefined) {
 			for (let index = 0; index < listenersAfter.length; index++) {
+				const startTime = hrtime()
 				const [listener] = listenersAfter[index]
 				try {
 					listener(...args)
@@ -71,6 +82,14 @@ export class EventEmitter {
 					console.error(
 						e instanceof Error ? e : new Error(e),
 						this.listener2line.get(listener)
+					)
+				}
+				const runTime = hrtime() - startTime
+				if (runTime > 5) {
+					SendListenerPerf(
+						this.listener2line.get(listener)!,
+						runTime,
+						GameState.RawGameTime
 					)
 				}
 			}
