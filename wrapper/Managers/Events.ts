@@ -63,7 +63,7 @@ export class EventEmitter {
 					)
 				}
 				const runTime = hrtime() - startTime
-				if (runTime > 5) {
+				if (runTime > 3) {
 					SendListenerPerf(
 						this.listener2line.get(listener)!,
 						runTime,
@@ -85,7 +85,7 @@ export class EventEmitter {
 					)
 				}
 				const runTime = hrtime() - startTime
-				if (runTime > 5) {
+				if (runTime > 3) {
 					SendListenerPerf(
 						this.listener2line.get(listener)!,
 						runTime,
