@@ -1,3 +1,4 @@
+import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { ABILITY_TYPES } from "../Enums/ABILITY_TYPES"
 import { DOTA_ABILITY_BEHAVIOR } from "../Enums/DOTA_ABILITY_BEHAVIOR"
@@ -184,6 +185,110 @@ export const GUIInfo = new (class CGUIInfo {
 	}
 	public ScaleHeight(h: number, screenSize = RendererSDK.WindowSize): number {
 		return ScaleHeight(h, screenSize)
+	}
+	public Contains(position: Vector2, unit: Nullable<Unit> = InputManager.SelectedUnit) {
+		return (
+			this.ContainsShop(position) ||
+			this.ContainsTopBar(position) ||
+			this.ContainsMiniMap(position) ||
+			this.ContainsScoreboard(position) ||
+			this.ContainsShopButtons(position) ||
+			this.ContainsLowerHUD(position, unit)
+		)
+	}
+	public ContainsTopBar(panelPosition: Vector2) {
+		const topBar = this.TopBar
+		return this.hasPosition(
+			panelPosition,
+			topBar.TimeOfDay,
+			topBar.DireTeamScore,
+			topBar.RadiantTeamScore,
+			topBar.TimeOfDayTimeUntil,
+			...topBar.DirePlayersHeroImages,
+			...topBar.RadiantPlayersHeroImages
+		)
+	}
+	public ContainsLowerHUD(
+		panelPosition: Vector2,
+		unit: Nullable<Unit> = InputManager.SelectedUnit
+	) {
+		const lowerHUD = this.GetLowerHUDForUnit(unit)
+		if (lowerHUD === undefined) {
+			return false
+		}
+		return this.hasPosition(
+			panelPosition,
+			lowerHUD.XP,
+			lowerHUD.TPSlot,
+			lowerHUD.Portrait,
+			lowerHUD.LeftFlare,
+			lowerHUD.TalentTree,
+			lowerHUD.RightFlare,
+			lowerHUD.NeutralSlot,
+			lowerHUD.StatsContainer,
+			lowerHUD.AbilitiesContainer,
+			lowerHUD.InventoryContainer,
+			lowerHUD.HealthManaContainer,
+			lowerHUD.NeutralAndTPContainer,
+			...lowerHUD.AbilitiesRects
+		)
+	}
+	public ContainsMiniMap(position: Vector2) {
+		return this.hasPosition(
+			position,
+			this.Minimap.Minimap,
+			this.Minimap.MinimapRenderBounds,
+			this.Minimap.Glyph,
+			this.Minimap.Scan
+		)
+	}
+	public ContainsShop(position: Vector2) {
+		if (!InputManager.IsShopOpen) {
+			return false
+		}
+		return this.hasPosition(
+			position,
+			//  Shop
+			this.Shop.Stash,
+			this.Shop.StashGrabAll,
+			//  OpenShopMini
+			this.OpenShopMini.Items,
+			this.OpenShopMini.Header,
+			this.OpenShopMini.GuideFlyout,
+			this.OpenShopMini.ItemCombines,
+			this.OpenShopMini.PinnedItems,
+			//  OpenShopLarge
+			this.OpenShopLarge.Items,
+			this.OpenShopLarge.Header,
+			this.OpenShopLarge.GuideFlyout,
+			this.OpenShopLarge.PinnedItems,
+			this.OpenShopLarge.ItemCombines
+		)
+	}
+	public ContainsShopButtons(position: Vector2) {
+		return this.hasPosition(
+			position,
+			this.Shop.ShopButton,
+			this.Shop.CourierGold,
+			this.Shop.Sticky1Row,
+			this.Shop.Sticky2Rows,
+			this.Shop.Quickbuy1Row,
+			this.Shop.Quickbuy2Rows,
+			this.Shop.ClearQuickBuy1Row,
+			this.Shop.ClearQuickBuy2Rows
+		)
+	}
+	public ContainsScoreboard(position: Vector2) {
+		if (!InputManager.IsScoreboardOpen) {
+			return false
+		}
+		return this.hasPosition(position, this.Scoreboard.Background)
+	}
+	private hasPosition(panelPosition: Vector2, ...positions: Rectangle[]) {
+		return positions.some(position => this.isContainsPanel(panelPosition, position))
+	}
+	private isContainsPanel(panelPosition: Vector2, position: Rectangle) {
+		return position.Contains(panelPosition)
 	}
 })()
 
