@@ -619,21 +619,18 @@ export class Node extends Base {
 		addStateToTree?: boolean[]
 	): IMenuParticlePicker {
 		const node = this.AddNode(name)
-
 		let state: Nullable<Toggle>
 		if (addStateToTree !== undefined && addStateToTree[0]) {
 			state = node.AddToggle("State", addStateToTree[1])
 		}
-
 		if (typeof color === "number") {
 			color = new Color(color, color, color)
 		}
-
 		return {
 			Node: node,
 			State: state,
+			Fill: node.AddToggle("Fill", true, "Inner color"),
 			Color: node.AddColorPicker("Color", color),
-			Width: node.AddSlider("Width", 15, 1, 150),
 			Style: node.AddDropdown("Style", render)
 		}
 	}
