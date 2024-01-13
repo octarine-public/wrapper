@@ -6,14 +6,12 @@ import { Entity } from "../Objects/Base/Entity"
 
 export const enum PARTICLE_RENDER_NAME {
 	NORMAL = "Normal",
-	ROPE = "Rope",
-	ANIMATION = "Animation"
+	ROPE = "Rope"
 }
 
 export enum PARTICLE_RENDER {
 	NORMAL = 0,
-	ROPE,
-	ANIMATION
+	ROPE
 }
 
 function ParticleRangePath(name: string): string {
@@ -37,10 +35,6 @@ export interface IDrawCircleOptions {
 	RenderStyle?: PARTICLE_RENDER
 	Position?: Entity | Vector3
 	Color?: Color
-	/** @deprecated */
-	Width?: number
-	/** @deprecated */
-	Alpha?: number
 	Fill?: boolean
 }
 
@@ -137,7 +131,7 @@ export class ParticlesSDK {
 			[0, options.Position ?? entity],
 			[1, range],
 			[2, options.Color ?? Color.Aqua],
-			[3, Boolean(options.Fill ?? 1)]
+			[3, Number(options.Fill ?? 1)]
 		)
 	}
 
