@@ -37,8 +37,11 @@ export interface IDrawCircleOptions {
 	RenderStyle?: PARTICLE_RENDER
 	Position?: Entity | Vector3
 	Color?: Color
+	/** @deprecated */
 	Width?: number
+	/** @deprecated */
 	Alpha?: number
+	Fill?: boolean
 }
 
 export interface IDrawLineOptions {
@@ -80,8 +83,11 @@ export class ParticlesSDK {
 		entity: Entity,
 		...points: ControlPointParam[]
 	): Particle {
-		if (entity === undefined || path === undefined) {
-			throw "entity or path is undefined"
+		if (path === undefined) {
+			throw "path undefined"
+		}
+		if (entity === undefined) {
+			throw "entity undefined"
 		}
 		let particle = this.AllParticles.get(key)
 		if (
@@ -102,19 +108,27 @@ export class ParticlesSDK {
 	}
 
 	public DrawCircle(
+		key: string | number,
+		entity: Entity,
+		range: number,
+		options: IDrawCircleOptions
+	): Particle
+
+	/** @deprecated use key number or string */
+	public DrawCircle(
+		key: any,
+		entity: Entity,
+		range: number,
+		options: IDrawCircleOptions
+	): Particle
+
+	public DrawCircle(
 		key: any,
 		entity: Entity,
 		range: number = 100,
 		options: IDrawCircleOptions = {}
 	) {
 		this.CheckChangedRange(key, range)
-
-		const color = options.Color ?? Color.Aqua
-		if (options.Alpha !== undefined) {
-			// for support old scripts
-			color.SetA(options.Alpha)
-		}
-
 		return this.AddOrUpdate(
 			key,
 			RangeRenderPath(options.RenderStyle),
@@ -122,8 +136,8 @@ export class ParticlesSDK {
 			entity,
 			[0, options.Position ?? entity],
 			[1, range],
-			[2, color],
-			[3, options.Width ?? 10]
+			[2, options.Color ?? Color.Aqua],
+			[3, Boolean(options.Fill ?? 1)]
 		)
 	}
 
