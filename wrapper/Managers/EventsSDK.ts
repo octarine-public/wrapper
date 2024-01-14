@@ -470,6 +470,11 @@ interface EventsSDK extends EventEmitter {
 		listener: (ability: Ability) => void,
 		priority?: number
 	): EventEmitter
+	on(
+		name: "AbilityHiddenChanged",
+		listener: (ability: Ability) => void,
+		priority?: number
+	): EventEmitter
 }
 
 export const EventsSDK: EventsSDK = new EventEmitter()

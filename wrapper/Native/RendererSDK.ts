@@ -127,14 +127,14 @@ class CRendererSDK {
 		}
 		return screenHeight / this.ProportionalBase
 	}
-	public GetHeightScale(screenSize = RendererSDK.WindowSize): number {
+	public GetHeightScale(screenSize = this.WindowSize): number {
 		const screenHeight = screenSize.y
 		return screenHeight / this.ProportionalBase
 	}
-	public ScaleWidth(w: number, screenSize = RendererSDK.WindowSize): number {
+	public ScaleWidth(w: number, screenSize = this.WindowSize): number {
 		return Math.round(w * this.GetWidthScale(screenSize))
 	}
-	public ScaleHeight(h: number, screenSize = RendererSDK.WindowSize): number {
+	public ScaleHeight(h: number, screenSize = this.WindowSize): number {
 		return Math.round(h * this.GetHeightScale(screenSize))
 	}
 	/**

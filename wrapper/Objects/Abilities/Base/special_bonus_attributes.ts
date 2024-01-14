@@ -6,4 +6,7 @@ export class special_bonus_attributes extends Ability {
 	public get ShouldBeDrawable(): boolean {
 		return false
 	}
+	public get IsAttributes(): boolean {
+		return true
+	}
 }

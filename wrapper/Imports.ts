@@ -1112,6 +1112,7 @@ export { npc_dota_brewmaster_void } from "./Objects/Creeps/npc_dota_brewmaster_v
 export { npc_dota_broodmother_spiderling } from "./Objects/Creeps/npc_dota_broodmother_spiderling"
 export { npc_dota_invoker_forged_spirit } from "./Objects/Creeps/npc_dota_invoker_forged_spirit"
 export { npc_dota_visage_familiar } from "./Objects/Creeps/npc_dota_visage_familiar"
+export { npc_dota_warlock_golem } from "./Objects/Creeps/npc_dota_warlock_golem"
 export { Siege } from "./Objects/Creeps/Siege"
 export { AbilityData } from "./Objects/DataBook/AbilityData"
 export { PlayerCustomData } from "./Objects/DataBook/PlayerCustomData"

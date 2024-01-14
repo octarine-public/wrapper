@@ -1,5 +1,7 @@
+import { Vector2 } from "../../Base/Vector2"
 import { DamageAmplifyPerIntellectPrecent } from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { GUIInfo } from "../../GUI/GUIInfo"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
@@ -85,6 +87,25 @@ export class Hero extends Unit {
 	 */
 	public get IsMyHero(): boolean {
 		return this === LocalPlayer?.Hero
+	}
+	public get HealthBarSize() {
+		return new Vector2(
+			GUIInfo.ScaleHeight(this.IsMyHero ? 107 : 100),
+			GUIInfo.ScaleHeight(this.IsMyHero ? 11 : 10)
+		)
+	}
+	public get HealthBarPositionCorrection() {
+		const position = new Vector2(this.HealthBarSize.x / 2, GUIInfo.ScaleHeight(36))
+		switch (true) {
+			case this.IsMyHero:
+				return position
+					.SetX(this.HealthBarSize.x / 1.98)
+					.SetY(GUIInfo.ScaleHeight(37))
+			case !this.IsEnemy():
+				return position.SetY(GUIInfo.ScaleHeight(32))
+			default:
+				return position.SetY(GUIInfo.ScaleHeight(30))
+		}
 	}
 	public get SpellAmplification(): number {
 		return (
