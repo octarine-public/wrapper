@@ -3,6 +3,7 @@ import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
+import { GameState } from "../../Utils/GameState"
 import { LocalPlayer } from "./Entity"
 import { FakeUnit, GetPredictionTarget } from "./FakeUnit"
 import { Unit } from "./Unit"
@@ -17,10 +18,6 @@ export class Hero extends Unit {
 	public IsReincarnating = false
 	@NetworkedBasicField("m_iRecentDamage")
 	public RecentDamage = 0
-	@NetworkedBasicField("m_flRespawnTime")
-	public RespawnTime = 0
-	@NetworkedBasicField("m_flRespawnTimePenalty")
-	public RespawnTimePenalty = 0
 	@NetworkedBasicField("m_flSpawnedAt")
 	public SpawnedAt = 0
 	@NetworkedBasicField("m_flAgility")
@@ -35,6 +32,19 @@ export class Hero extends Unit {
 	public TotalIntellect = 0
 	@NetworkedBasicField("m_flStrengthTotal")
 	public TotalStrength = 0
+
+	/**
+	 * @readonly
+	 */
+	public RespawnTime = 0
+	/**
+	 * @readonly
+	 */
+	public MaxRespawnDuration = 0
+	/**
+	 * @readonly
+	 */
+	public RespawnTimePenalty = 0
 
 	/** @readonly */
 	public ReplicatingOtherHeroModel: Nullable<Unit | FakeUnit>
@@ -85,10 +95,28 @@ export class Hero extends Unit {
 }
 
 export const Heroes = EntityManager.GetEntitiesByClass(Hero)
-
+/**
+ * @ignore
+ * @internal
+ */
 RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", (ent, newVal) => {
 	const id = newVal as number
 	ent.ReplicatingOtherHeroModel = GetPredictionTarget(id)
+})
+/**
+ * @ignore
+ * @internal
+ */
+RegisterFieldHandler(Hero, "m_flRespawnTime", (ent, newVal) => {
+	ent.RespawnTime = newVal as number
+	ent.MaxRespawnDuration = Math.max(ent.RespawnTime - GameState.RawGameTime, 0)
+})
+/**
+ * @ignore
+ * @internal
+ */
+RegisterFieldHandler(Hero, "m_flRespawnTimePenalty", (ent, newVal) => {
+	ent.RespawnTimePenalty = newVal as number
 })
 
 EventsSDK.on("PreEntityCreated", ent => {
