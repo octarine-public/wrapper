@@ -277,6 +277,14 @@ export class PlayerCustomData {
 		return PlayerResource?.RespawnPositions[this.PlayerID]
 	}
 	/**
+	 * @description The number of seconds it takes for a player to respawn.
+	 * If the player team data is not available, -1 is returned.
+	 * @return {number | -1}
+	 */
+	public get RespawnSeconds(): number | -1 {
+		return this.PlayerTeamData?.RespawnSeconds ?? -1
+	}
+	/**
 	 * @description Returns the reliable gold amount for the player.
 	 * @returns {number}
 	 */
