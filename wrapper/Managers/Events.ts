@@ -1,3 +1,4 @@
+import { ERankType } from "../Enums/ERankType"
 import { MenuLanguageID } from "../Enums/MenuLanguageID"
 import { SOType } from "../Enums/SOType"
 import { GameState } from "../Utils/GameState"
@@ -181,6 +182,18 @@ declare interface Events extends EventEmitter {
 	on(
 		name: "SetLanguage",
 		func: (language: MenuLanguageID) => void,
+		priority?: number
+	): Events
+	on(
+		name: "RankData",
+		func: (
+			rankType: ERankType,
+			rankValue: number,
+			rankData1: number,
+			rankData2: number,
+			rankData3: number,
+			rankData4: number
+		) => void,
 		priority?: number
 	): Events
 }
