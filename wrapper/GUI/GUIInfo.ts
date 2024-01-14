@@ -186,6 +186,13 @@ export const GUIInfo = new (class CGUIInfo {
 	public ScaleHeight(h: number, screenSize = RendererSDK.WindowSize): number {
 		return ScaleHeight(h, screenSize)
 	}
+	public ScaleVector(
+		w: number,
+		h: number,
+		screenSize = RendererSDK.WindowSize
+	): Vector2 {
+		return new Vector2(ScaleWidth(w, screenSize), ScaleHeight(h, screenSize))
+	}
 	public Contains(position: Vector2, unit: Nullable<Unit> = InputManager.SelectedUnit) {
 		return (
 			this.ContainsShop(position) ||
