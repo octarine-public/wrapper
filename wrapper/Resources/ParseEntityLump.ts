@@ -18,7 +18,7 @@ type EntityDataMapValue =
 	| QAngle
 	| Color
 
-class EntityDataMap {
+export class EntityDataMap {
 	private data = new Map<number, EntityDataMapValue>()
 
 	public get(key: string): Nullable<EntityDataMapValue> {
@@ -178,7 +178,10 @@ function ReadTypedValue(stream: ReadableBinaryStream): EntityDataMapValue {
 // 	}
 // }
 
-function ParseEntityKeyValues(entityKeyValues: RecursiveMapValue[]) {
+function ParseEntityKeyValues(
+	lump: EntityDataMap[],
+	entityKeyValues: RecursiveMapValue[]
+) {
 	for (let index = 0, end = entityKeyValues.length; index < end; index++) {
 		const entityKV = entityKeyValues[index]
 		if (!(entityKV instanceof Map)) {
@@ -256,11 +259,11 @@ function ParseEntityKeyValues(entityKeyValues: RecursiveMapValue[]) {
 			throw "Unknown entity KV"
 		}
 
-		EntityDataLump.push(map)
+		lump.push(map)
 	}
 }
 
-function ParseEntityLumpInternal(path: string): void {
+function ParseEntityLumpInternal(path: string, isBase: boolean): void {
 	const kv = parseKV(path + "_c")
 	if (kv.has("m_childLumps")) {
 		const childLumps = kv.get("m_childLumps")
@@ -270,29 +273,38 @@ function ParseEntityLumpInternal(path: string): void {
 		for (let index = 0, end = childLumps.length; index < end; index++) {
 			const childLump = childLumps[index]
 			if (typeof childLump === "string") {
-				ParseEntityLumpInternal(childLump)
+				ParseEntityLumpInternal(childLump, false)
 			}
 		}
 	}
 
 	if (kv.has("m_entityKeyValues")) {
+		let name = (kv.get("m_name") as Nullable<string>) ?? "unknown"
+		if (isBase) {
+			name = "world_layer_base"
+		}
+		let lump = EntityDataLumps.get(name)
+		if (lump === undefined) {
+			lump = []
+			EntityDataLumps.set(name, lump)
+		}
 		const entityKeyValues = kv.get("m_entityKeyValues")
 		if (Array.isArray(entityKeyValues)) {
-			ParseEntityKeyValues(entityKeyValues)
+			ParseEntityKeyValues(lump, entityKeyValues)
 		}
 	}
 }
 
-export let EntityDataLump: EntityDataMap[] = []
+export const EntityDataLumps = new Map<string, EntityDataMap[]>()
 
 export function ParseEntityLump(path: string): void {
 	try {
-		ParseEntityLumpInternal(path)
+		ParseEntityLumpInternal(path, true)
 	} catch (e) {
 		console.error("Error in EntityLump init", e)
 	}
 }
 
 export function ResetEntityLump(): void {
-	EntityDataLump = []
+	EntityDataLumps.clear()
 }

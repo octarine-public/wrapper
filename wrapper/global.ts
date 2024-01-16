@@ -30,7 +30,7 @@ import { PlayerResource as _PlayerResource } from "./Objects/Base/PlayerResource
 import { AbilityData as _AbilityData } from "./Objects/DataBook/AbilityData"
 import { PlayerCustomData as _PlayerCustomData } from "./Objects/DataBook/PlayerCustomData"
 import { SDKClasses } from "./Objects/NativeToSDK"
-import { EntityDataLump as _EntityDataLump } from "./Resources/ParseEntityLump"
+import { EntityDataLumps as _EntityDataLumps } from "./Resources/ParseEntityLump"
 import { GridNav as _GridNav } from "./Resources/ParseGNV"
 import { GameState as _GameState } from "./Utils/GameState"
 
@@ -91,9 +91,9 @@ Object.defineProperty(globalThis, "GridNav", {
 	configurable: false,
 	enumerable: true
 })
-Object.defineProperty(globalThis, "EntityDataLump", {
+Object.defineProperty(globalThis, "EntityDataLumps", {
 	get: () => {
-		return _EntityDataLump
+		return _EntityDataLumps
 	},
 	configurable: false,
 	enumerable: true

@@ -24,8 +24,9 @@ import { Item } from "../Objects/Base/Item"
 import { TempTree } from "../Objects/Base/TempTree"
 import { Tree } from "../Objects/Base/Tree"
 import { Unit, Units } from "../Objects/Base/Unit"
+import { WorldLayers } from "../Objects/Base/WorldLayer"
 import { Shop } from "../Objects/Buildings/Shop"
-import { EntityDataLump } from "../Resources/ParseEntityLump"
+import { EntityDataLumps } from "../Resources/ParseEntityLump"
 import { GameState } from "../Utils/GameState"
 import { ConVarsSDK } from "./ConVarsSDK"
 import { ExecuteOrder } from "./ExecuteOrder"
@@ -35,24 +36,43 @@ import * as WASM from "./WASM"
 
 let worldBounds: Nullable<[Vector2, Vector2]>
 
-EventsSDK.on("MapDataLoaded", () => {
+function ProcessWorldBoundsData(layerName: string): boolean {
+	const worldBoundsData = EntityDataLumps.get(layerName)?.find(
+		data => data.get("classname") === "world_bounds"
+	)
+	if (worldBoundsData === undefined) {
+		return false
+	}
 	try {
-		const worldBoundsData = EntityDataLump.find(
-			data => data.get("classname") === "world_bounds"
-		)
-		if (worldBoundsData !== undefined) {
-			const min = worldBoundsData.get("min"),
-				max = worldBoundsData.get("max")
-			worldBounds =
-				typeof min === "string" && typeof max === "string"
-					? [Vector2.FromString(min), Vector2.FromString(max)]
-					: undefined
-		} else {
-			worldBounds = undefined
-		}
+		const min = worldBoundsData.get("min"),
+			max = worldBoundsData.get("max")
+		worldBounds =
+			typeof min === "string" && typeof max === "string"
+				? [Vector2.FromString(min), Vector2.FromString(max)]
+				: undefined
 	} catch (e) {
 		console.error("Error in worldBoundsData init", e)
+		return false
+	}
+	return true
+}
+
+EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
+	if (!state) {
+		for (const worldLayer of WorldLayers) {
+			if (
+				worldLayer.WorldLayerVisible &&
+				ProcessWorldBoundsData(worldLayer.LayerName)
+			) {
+				return
+			}
+		}
+		if (ProcessWorldBoundsData("world_layer_base")) {
+			return
+		}
 		worldBounds = undefined
+	} else {
+		ProcessWorldBoundsData(layerName)
 	}
 })
 

@@ -1,21 +1,21 @@
 import { Vector2 } from "../Base/Vector2"
-import { Vector3 } from "../Base/Vector3"
-import { GetPositionHeight } from "../Native/WASM"
 
-export function ParseTRMP(stream: ReadableBinaryStream): Vector3[] {
+export function ParseTRMP(
+	stream: ReadableBinaryStream
+): [Map<string, [number, Vector2][]>, number] {
 	{
 		const magic = stream.ReadUint32(false)
 		if (magic !== 0x74726d70) {
 			// trmp
 			console.log(`Invalid TRMP magic: 0x${magic.toString(16)}`)
-			return []
+			return [new Map(), 0]
 		}
 	}
 	{
 		const version = stream.ReadUint32()
 		if (version !== 1) {
 			console.log(`Unknown TRMP version: ${version}`)
-			return []
+			return [new Map(), 0]
 		}
 	}
 	const dataOffset = stream.ReadUint32(),
@@ -23,16 +23,22 @@ export function ParseTRMP(stream: ReadableBinaryStream): Vector3[] {
 		treeCount = stream.ReadUint32()
 	stream.pos = dataOffset
 
+	const lumps = new Map<string, [number, Vector2][]>(),
+		lumpNames: string[] = []
 	for (let i = 0; i < lumpNamesCount; i++) {
-		stream.ReadNullTerminatedUtf8String()
+		let lumpName = stream.ReadNullTerminatedUtf8String()
+		if (lumpName === "") {
+			lumpName = "world_layer_base"
+		}
+		lumpNames.push(lumpName)
+		lumps.set(lumpName, [])
 	}
 
-	const trees: Vector3[] = []
 	for (let i = 0; i < treeCount; i++) {
 		const x = stream.ReadInt32(),
-			y = stream.ReadInt32()
-		stream.RelativeSeek(4) // lump ID
-		trees.push(new Vector3(x, y, GetPositionHeight(new Vector2(x, y))))
+			y = stream.ReadInt32(),
+			lump = lumpNames[stream.ReadInt32()]
+		lumps.get(lump)!.push([i, new Vector2(x, y)])
 	}
-	return trees
+	return [lumps, treeCount]
 }

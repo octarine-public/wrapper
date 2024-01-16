@@ -470,6 +470,11 @@ interface EventsSDK extends EventEmitter {
 		listener: (ability: Ability) => void,
 		priority?: number
 	): EventEmitter
+	on(
+		name: "WorldLayerVisibilityChanged",
+		listener: (layerName: string, state: boolean) => void,
+		priority?: number
+	): EventEmitter
 }
 
 export const EventsSDK: EventsSDK = new EventEmitter()
