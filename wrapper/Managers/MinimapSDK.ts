@@ -9,7 +9,8 @@ import { ConVarsSDK } from "../Native/ConVarsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import { GetPositionHeight } from "../Native/WASM"
 import { Entity, GameRules } from "../Objects/Base/Entity"
-import { EntityDataLump } from "../Resources/ParseEntityLump"
+import { WorldLayers } from "../Objects/Base/WorldLayer"
+import { EntityDataLumps } from "../Resources/ParseEntityLump"
 import { GameState } from "../Utils/GameState"
 import { EventsSDK } from "./EventsSDK"
 
@@ -119,14 +120,20 @@ function ParseMinimapOverview(): void {
 	)
 }
 
-function LoadMinimapBoundsData() {
-	const minimapBoundsData = EntityDataLump.filter(
-		data =>
-			data.get("classname") === "dota_minimap_boundary" &&
-			typeof data.get("origin") === "string"
-	).map(data => Vector3.FromString(data.get("origin") as string))
+function ProcessMinimapBoundsData(layerName: string): boolean {
+	const lump = EntityDataLumps.get(layerName)
+	if (lump === undefined) {
+		return false
+	}
+	const minimapBoundsData = lump
+		.filter(
+			data =>
+				data.get("classname") === "dota_minimap_boundary" &&
+				typeof data.get("origin") === "string"
+		)
+		.map(data => Vector3.FromString(data.get("origin") as string))
 	if (minimapBoundsData.length < 2) {
-		return
+		return false
 	}
 	MinimapSDK.MinimapBounds.Left = minimapBoundsData[0].x
 	MinimapSDK.MinimapBounds.Top = minimapBoundsData[0].y
@@ -139,8 +146,24 @@ function LoadMinimapBoundsData() {
 			overview.pos
 		)
 	}
+	return true
 }
-EventsSDK.on("MapDataLoaded", LoadMinimapBoundsData)
+
+EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
+	if (!state) {
+		for (const worldLayer of WorldLayers) {
+			if (
+				worldLayer.WorldLayerVisible &&
+				ProcessMinimapBoundsData(worldLayer.LayerName)
+			) {
+				return
+			}
+		}
+		ProcessMinimapBoundsData("world_layer_base")
+	} else {
+		ProcessMinimapBoundsData(layerName)
+	}
+})
 
 const minimapIconStorage = new Map<string, MinimapIcon>()
 function LoadIcons(): void {

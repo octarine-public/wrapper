@@ -1,14 +1,16 @@
 import { Color } from "../../Base/Color"
 import { QAngle } from "../../Base/QAngle"
+import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
 import { RenderMode } from "../../Enums/RenderMode"
 import { Team } from "../../Enums/Team"
 import { EntityManager } from "../../Managers/EntityManager"
 import { CreateEntityInternal, DeleteEntity } from "../../Managers/EntityManagerLogic"
+import { Events } from "../../Managers/Events"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../Native/WASM"
-import { EntityDataLump } from "../../Resources/ParseEntityLump"
+import { EntityDataLumps } from "../../Resources/ParseEntityLump"
 import { GridNav } from "../../Resources/ParseGNV"
 import { ParseTRMP } from "../../Resources/ParseTRMP"
 import { FileBinaryStream } from "../../Utils/FileBinaryStream"
@@ -45,83 +47,88 @@ export const Trees = EntityManager.GetEntitiesByClass(Tree)
 
 export let TempTreeIDOffset = 0
 let curLocalID = 0x3000
-function LoadTreeMap(stream: ReadableBinaryStream): void {
+Events.on("NewConnection", () => {
 	TempTreeIDOffset = 0
-	while (curLocalID > 0x3000) {
-		const id = --curLocalID
-		const ent = EntityManager.EntityByIndex(id)
-		if (ent instanceof Tree) {
-			DeleteEntity(id)
-			GridNav?.UpdateTreeState(ent)
-		}
-	}
-	const trees: Tree[] = []
-	const positionTRMP = ParseTRMP(stream)
-	for (let i = 0, end = positionTRMP.length; i < end; i++) {
-		const pos = positionTRMP[i]
-		TempTreeIDOffset++
-		// for some reason there are trees duplicates, but earlier ones override them
-		if (trees.some(tree => tree.Position.Equals(pos))) {
-			continue
-		}
-		let id = curLocalID++
-		while (EntityManager.EntityByIndex(id) !== undefined) {
-			id = curLocalID++
-		}
-		const entity = new Tree(id, 0)
-		entity.Name_ = "ent_dota_tree"
-		entity.ClassName = "C_DOTA_MapTree"
-		pos.SetZ(GetPositionHeight(pos))
-		entity.VisualPosition.CopyFrom(pos)
-		entity.NetworkedPosition.CopyFrom(pos)
-		entity.BinaryID = TempTreeIDOffset - 1
-		entity.Team = Team.Neutral
-		CreateEntityInternal(entity)
-		EventsSDK.emit("PreEntityCreated", false, entity)
-		GridNav?.UpdateTreeState(entity)
-		EventsSDK.emit("EntityCreated", false, entity)
-		trees.push(entity)
-	}
+	curLocalID = 0x3000
+})
 
-	for (let index = EntityDataLump.length - 1; index > -1; index--) {
-		const data = EntityDataLump[index]
-		if (data.get("classname") !== "ent_dota_tree") {
-			return
-		}
-		const originStr = data.get("origin"),
-			anglesStr = data.get("angles"),
-			model = data.get("model")
-		if (
-			typeof originStr !== "string" ||
-			typeof anglesStr !== "string" ||
-			typeof model !== "string"
-		) {
-			return
-		}
-		const pos = Vector3.FromString(originStr)
-		const entity = trees.find(
-			tree => tree.Position.x === pos.x && tree.Position.y === pos.y
-		)
-		if (entity === undefined) {
-			return
-		}
-		const ang = QAngle.FromString(anglesStr)
-		entity.VisualAngles.CopyFrom(ang)
-		entity.NetworkedAngles.CopyFrom(ang)
-		entity.ModelName = model
-		entity.OnModelUpdated()
-	}
-}
-
-EventsSDK.after("ServerInfo", () => {
+let treeMap = new Map<string, [number, Vector2][]>()
+EventsSDK.on("MapDataLoaded", () => {
 	const buf = fopen(`maps/${GameState.MapName}.trm`)
 	if (buf !== undefined) {
 		try {
-			LoadTreeMap(new FileBinaryStream(buf))
+			const [trmp, treeCount] = ParseTRMP(new FileBinaryStream(buf))
+			treeMap = trmp
+			TempTreeIDOffset = treeCount
 		} catch (e) {
 			console.error("Error in TreeMap init", e)
 		} finally {
 			buf.close()
 		}
+	}
+})
+
+EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
+	const layerTrees = treeMap.get(layerName)
+	if (layerTrees === undefined) {
+		return
+	}
+
+	if (!state) {
+		const layerTreesEnts = Trees.filter(tree =>
+			layerTrees.find(layerTree => layerTree[0] === tree.BinaryID)
+		)
+		for (const tree of layerTreesEnts) {
+			DeleteEntity(tree.Index)
+			GridNav?.UpdateTreeState(tree)
+		}
+		return
+	}
+
+	const lump = EntityDataLumps.get(layerName)
+	for (const [binaryID, trmpPos] of layerTrees) {
+		let id = curLocalID++
+		while (EntityManager.EntityByIndex(id) !== undefined) {
+			id = curLocalID++
+		}
+		const entData = lump?.find(data => {
+			if (data.get("classname") !== "ent_dota_tree") {
+				return false
+			}
+			const originStr = data.get("origin")
+			if (typeof originStr !== "string") {
+				return false
+			}
+			const pos = Vector3.FromString(originStr)
+			return pos.x === trmpPos.x && pos.y === trmpPos.y
+		})
+		if (entData === undefined) {
+			continue
+		}
+		const anglesStr = entData.get("angles"),
+			model = entData.get("model")
+		if (typeof anglesStr !== "string" || typeof model !== "string") {
+			continue
+		}
+
+		const entity = new Tree(id, 0)
+		entity.Name_ = "ent_dota_tree"
+		entity.ClassName = "C_DOTA_MapTree"
+		const treePos = new Vector3(trmpPos.x, trmpPos.y, GetPositionHeight(trmpPos))
+		entity.VisualPosition.CopyFrom(treePos)
+		entity.NetworkedPosition.CopyFrom(treePos)
+		entity.BinaryID = binaryID
+		entity.Team = Team.Neutral
+
+		const ang = QAngle.FromString(anglesStr)
+		entity.VisualAngles.CopyFrom(ang)
+		entity.NetworkedAngles.CopyFrom(ang)
+		entity.ModelName = model
+		entity.OnModelUpdated()
+
+		CreateEntityInternal(entity)
+		EventsSDK.emit("PreEntityCreated", false, entity)
+		GridNav?.UpdateTreeState(entity)
+		EventsSDK.emit("EntityCreated", false, entity)
 	}
 })

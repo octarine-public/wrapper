@@ -97,7 +97,7 @@ declare interface WorldUtils {
 	 *          and return value is true if function succeeded
 	 */
 	GetHeightMapData(): boolean
-	
+
 	GetHeightForLocation(x: number, y: number): number
 	IsPointUnderWater(x: number, y: number): boolean
 	GetLocationAverageHeight(x: number, y: number, count: number, distance: number): number
