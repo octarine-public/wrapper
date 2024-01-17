@@ -51,7 +51,8 @@ enum PathFlags {
 	LINE_JOIN_BITS = (1 << LINE_JOIN_OFFSET) | (1 << (LINE_JOIN_OFFSET + 1)),
 	FILL = 1 << 6,
 	STROKE = 1 << 7,
-	STROKE_AND_FILL = FILL | STROKE
+	STROKE_AND_FILL = FILL | STROKE,
+	FILL_AA = 1 << 8
 }
 export enum LineCap {
 	Butt = 1,
@@ -669,14 +670,17 @@ class CRendererSDK {
 	}
 	public BeforeDraw(w: number, h: number) {
 		this.inDraw = true
-		const prevWidth = this.WindowSize.x,
-			prevHeight = this.WindowSize.y
-		this.WindowSize.x = w
-		this.WindowSize.y = h
-		if (this.WindowSize.x !== prevWidth || this.WindowSize.y !== prevHeight) {
+
+		// eslint-disable-next-line prettier/prettier
+		if (this.WindowSize.x !== w ||
+			this.WindowSize.y !== h) {
+			this.WindowSize.x = w
+			this.WindowSize.y = h
+
 			EventsSDK.emit("WindowSizeChanged", false)
 		}
 		if (this.clearTextureCache) {
+			this.clearTextureCache = false
 			this.textureCache.forEach(tex => {
 				if (tex !== -1) {
 					this.FreeTexture(tex)
@@ -684,15 +688,12 @@ class CRendererSDK {
 			})
 			this.textureCache.clear()
 			this.tex2size.clear()
-			this.clearTextureCache = false
 		}
 
-		const queuedFonts = this.queuedFonts
-		for (let index = 0; index < queuedFonts.length; index++) {
-			const [name, path, weight, italic, stack] = queuedFonts[index]
-			this.CreateFont(name, path, weight, italic, stack)
-		}
-		queuedFonts.clear()
+		this.queuedFonts.forEach(font => {
+			this.CreateFont(...font)
+		})
+		this.queuedFonts.clear()
 	}
 	public EmitDraw() {
 		Renderer.ExecuteCommandBuffer(
