@@ -29,7 +29,9 @@ export class InternalChanger {
 		"models/props_tree/frostivus_tree.vmdl",
 		"models/props_tree/newbloom_tree.vmdl",
 		"models/props_tree/mango_tree.vmdl",
-		"models/props_tree/ti7/ggbranch.vmdl"
+		"models/props_tree/ti7/ggbranch.vmdl",
+		"models/props_tree/topiary/topiary001.vmdl",
+		"github.com/octarine-public/wrapper/scripts_files/models/cube.vmdl"
 	]
 
 	private readonly treeNames = [
@@ -42,7 +44,9 @@ export class InternalChanger {
 		"Frostivus",
 		"New Bloom",
 		"Mango",
-		"GG Branch"
+		"GG Branch",
+		"Immortal Gardens",
+		"Cube"
 	]
 
 	private readonly weatherNames = [
