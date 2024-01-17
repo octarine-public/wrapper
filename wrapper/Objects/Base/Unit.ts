@@ -18,9 +18,11 @@ import { GridNavCellFlags } from "../../Enums/GridNavCellFlags"
 import { modifierstate } from "../../Enums/modifierstate"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { Team } from "../../Enums/Team"
+import { GUIInfo } from "../../GUI/GUIInfo"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
+import { RendererSDK } from "../../Native/RendererSDK"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GridNav } from "../../Resources/ParseGNV"
 import { GameState } from "../../Utils/GameState"
@@ -188,6 +190,8 @@ export class Unit extends Entity {
 	 */
 	/** @readonly */
 	public IsRoshan = false
+	/** @readonly */
+	public IsCourier = false
 	/** @readonly */
 	public PlayerID = -1
 	/** @readonly */
@@ -774,6 +778,14 @@ export class Unit extends Entity {
 		return true
 	}
 
+	public get HealthBarSize() {
+		return new Vector2(GUIInfo.ScaleHeight(78), GUIInfo.ScaleHeight(6))
+	}
+
+	public get HealthBarPositionCorrection() {
+		return new Vector2(this.HealthBarSize.x / 2, GUIInfo.ScaleHeight(11))
+	}
+
 	protected get MoveSpeedBonusBoots() {
 		const sortBuffs = this.Buffs.toOrderBy(
 			// exclude 0 and boots
@@ -794,6 +806,24 @@ export class Unit extends Entity {
 		)
 		const buff = sortBuffs.find(x => x.IsBoots && x.BonusMoveSpeedAmplifier !== 0)
 		return buff?.BonusMoveSpeedAmplifier ?? 0
+	}
+
+	public HealthBarPosition(useHpBarOffset = true, override?: Vector3) {
+		// if (RendererSDK.IsInDraw) {
+		// 	throw "HealthBarPosition outside in draw"
+		// }
+		const position = (override ?? this.Position).Clone() // need clone ?
+		if (useHpBarOffset) {
+			position.AddScalarZ(this.HealthBarOffset)
+		}
+		const screenPosition = RendererSDK.WorldToScreen(position)
+		if (screenPosition === undefined) {
+			return undefined
+		}
+		if (this.IsShield) {
+			screenPosition.AddScalarY(5)
+		}
+		return screenPosition.SubtractForThis(this.HealthBarPositionCorrection)
 	}
 
 	// TODO

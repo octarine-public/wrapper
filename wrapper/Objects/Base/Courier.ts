@@ -15,6 +15,15 @@ export class Courier extends Unit {
 	@NetworkedBasicField("m_hCourierStateEntity")
 	public StateHero_ = 0
 
+	/** @ignore */
+	constructor(
+		public readonly Index: number,
+		serial: number
+	) {
+		super(Index, serial)
+		this.IsCourier = true
+	}
+
 	public get StateHero() {
 		return EntityManager.EntityByIndex<Hero>(this.StateHero_)
 	}

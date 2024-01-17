@@ -471,6 +471,11 @@ interface EventsSDK extends EventEmitter {
 		priority?: number
 	): EventEmitter
 	on(
+		name: "AbilityHiddenChanged",
+		listener: (ability: Ability) => void,
+		priority?: number
+	): EventEmitter
+	on(
 		name: "WorldLayerVisibilityChanged",
 		listener: (layerName: string, state: boolean) => void,
 		priority?: number
