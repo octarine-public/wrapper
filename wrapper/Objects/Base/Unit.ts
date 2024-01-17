@@ -1970,10 +1970,6 @@ RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, newVal) => {
 	}
 })
 
-EventsSDK.on("UnitHideHudChanged", (unit, state) => (unit.HideHud = state))
-
-EventsSDK.on("UnitFogVisibleChanged", (unit, state) => (unit.IsFogVisible = state))
-
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof Unit) {
 		ent.CanUseItems = !ent.IsIllusion
