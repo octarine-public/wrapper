@@ -51,6 +51,8 @@ export const Paths = new (class BaseImageData {
 		icon_brackets: `${this.Images}/control_icons/brackets_png.vtex_c`,
 		icon_roshan: `${this.hud}/icon_roshan_psd.vtex_c`,
 		icon_glyph_small: `${this.hud}/icon_glyph_small_psd.vtex_c`,
+		icon_scan_on: `${this.reborn}/icon_scan_on_psd.vtex_c`,
+		icon_glyph_on: `${this.reborn}/icon_glyph_on_psd.vtex_c`,
 		kill_mask: `${this.Images}/status_icons/modifier_kill_effect_psd.vtex_c`,
 		dead_icon: `${this.reborn}/dead_icon_psd.vtex_c`,
 		gold_large: `${this.reborn}/gold_large_png.vtex_c`,
