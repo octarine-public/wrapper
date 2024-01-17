@@ -53,7 +53,6 @@ export class Ability extends Entity {
 	public ChannelStartTime = 0
 	@NetworkedBasicField("m_bToggleState")
 	public IsToggled = false
-	@NetworkedBasicField("m_bHidden")
 	public IsHidden = false
 	@NetworkedBasicField("m_nAbilityCurrentCharges")
 	public AbilityCurrentCharges = 0
@@ -98,6 +97,13 @@ export class Ability extends Entity {
 	 */
 	public get IsUltimate(): boolean {
 		return this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE
+	}
+	/**
+	 * @description Returns true if the ability type is ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES.
+	 * @return {boolean}
+	 */
+	public get IsAttributes(): boolean {
+		return this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES
 	}
 	/**
 	 * @description Determines if the ability can hit a spell immune enemy.
@@ -595,6 +601,11 @@ export class Ability extends Entity {
 		return false
 	}
 }
+
+RegisterFieldHandler(Ability, "m_bHidden", (abil, newValue) => {
+	abil.IsHidden = newValue as boolean
+	EventsSDK.emit("AbilityHiddenChanged", false, abil)
+})
 
 RegisterFieldHandler(Ability, "m_iLevel", (abil, newValue) => {
 	abil.Level = newValue as number

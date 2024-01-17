@@ -1,5 +1,7 @@
+import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
+import { GUIInfo } from "../../GUI/GUIInfo"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { Entity, GameRules } from "../Base/Entity"
 import { FakeUnit } from "../Base/FakeUnit"
@@ -28,6 +30,12 @@ export class Roshan extends Unit {
 
 	public get RingRadius(): number {
 		return 80
+	}
+	public get HealthBarSize() {
+		return new Vector2(GUIInfo.ScaleHeight(225), GUIInfo.ScaleHeight(5))
+	}
+	public get HealthBarPositionCorrection() {
+		return new Vector2(this.HealthBarSize.x / 2, GUIInfo.ScaleHeight(9))
 	}
 }
 

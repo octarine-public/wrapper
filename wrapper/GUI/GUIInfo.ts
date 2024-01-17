@@ -4,7 +4,7 @@ import { ABILITY_TYPES } from "../Enums/ABILITY_TYPES"
 import { DOTA_ABILITY_BEHAVIOR } from "../Enums/DOTA_ABILITY_BEHAVIOR"
 import { DOTAGameState } from "../Enums/DOTAGameState"
 import { EventsSDK } from "../Managers/EventsSDK"
-import { InputManager } from "../Managers/InputManager"
+import { InputManager, VKeys } from "../Managers/InputManager"
 import { ConVarsSDK } from "../Native/ConVarsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import { Ability } from "../Objects/Base/Ability"
@@ -200,7 +200,8 @@ export const GUIInfo = new (class CGUIInfo {
 			this.ContainsMiniMap(position) ||
 			this.ContainsScoreboard(position) ||
 			this.ContainsShopButtons(position) ||
-			this.ContainsLowerHUD(position, unit)
+			this.ContainsLowerHUD(position, unit) ||
+			this.ContainsTimeOfDayTimeUntil(position)
 		)
 	}
 	public ContainsTopBar(panelPosition: Vector2) {
@@ -210,7 +211,6 @@ export const GUIInfo = new (class CGUIInfo {
 			topBar.TimeOfDay,
 			topBar.DireTeamScore,
 			topBar.RadiantTeamScore,
-			topBar.TimeOfDayTimeUntil,
 			...topBar.DirePlayersHeroImages,
 			...topBar.RadiantPlayersHeroImages
 		)
@@ -290,6 +290,13 @@ export const GUIInfo = new (class CGUIInfo {
 			return false
 		}
 		return this.hasPosition(position, this.Scoreboard.Background)
+	}
+	public ContainsTimeOfDayTimeUntil(position: Vector2) {
+		const topBar = this.TopBar
+		return (
+			InputManager.IsKeyDown(VKeys.MENU) &&
+			this.hasPosition(position, topBar.TimeOfDayTimeUntil)
+		)
 	}
 	private hasPosition(panelPosition: Vector2, ...positions: Rectangle[]) {
 		return positions.some(position => this.isContainsPanel(panelPosition, position))

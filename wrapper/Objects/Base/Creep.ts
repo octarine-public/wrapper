@@ -1,5 +1,7 @@
+import { Vector2 } from "../../Base/Vector2"
 import { WrapperClass } from "../../Decorators"
 import { MapArea } from "../../Enums/MapArea"
+import { GUIInfo } from "../../GUI/GUIInfo"
 import { GetMapArea } from "../../Helpers/DotaMap"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
@@ -47,6 +49,12 @@ export class Creep extends Unit {
 	}
 	public get RingRadius(): number {
 		return 60
+	}
+	public get HealthBarSize() {
+		return new Vector2(GUIInfo.ScaleHeight(80), GUIInfo.ScaleHeight(5))
+	}
+	public get HealthBarPositionCorrection() {
+		return new Vector2(this.HealthBarSize.x / 2, GUIInfo.ScaleHeight(11))
 	}
 	public TryAssignLane(): void {
 		if (this.IsNeutral || this.Owner !== undefined || this.Lane !== MapArea.Unknown) {
