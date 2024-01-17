@@ -178,6 +178,17 @@ export class Unit extends Entity {
 	/** includes all buffs */
 	public readonly Buffs: Modifier[] = []
 
+	/**
+	 * @description added for compatibility (icore)
+	 * @deprecated
+	 */
+	public HideHud = false
+	/**
+	 * @description added for compatibility (icore)
+	 * @deprecated
+	 */
+	public IsFogVisible = false
+
 	/** @readonly */
 	public CanUseItems = false
 	/** @readonly */
@@ -1958,6 +1969,10 @@ RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, newVal) => {
 		unit.Spawner = ent
 	}
 })
+
+EventsSDK.on("UnitHideHudChanged", (unit, state) => (unit.HideHud = state))
+
+EventsSDK.on("UnitFogVisibleChanged", (unit, state) => (unit.IsFogVisible = state))
 
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof Unit) {

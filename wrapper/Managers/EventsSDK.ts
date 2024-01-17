@@ -480,6 +480,24 @@ interface EventsSDK extends EventEmitter {
 		listener: (layerName: string, state: boolean) => void,
 		priority?: number
 	): EventEmitter
+	/**
+	 * @deprecated
+	 * @description added for compatibility (icore)
+	 */
+	on(
+		name: "UnitFogVisibleChanged",
+		listener: (unit: Unit, newState: boolean) => void,
+		priority?: number
+	): EventEmitter
+	/**
+	 * @deprecated
+	 * @description added for compatibility (icore)
+	 */
+	on(
+		name: "UnitHideHudChanged",
+		listener: (unit: Unit, newState: boolean) => void,
+		priority?: number
+	): EventEmitter
 }
 
 export const EventsSDK: EventsSDK = new EventEmitter()
