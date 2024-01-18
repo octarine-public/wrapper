@@ -111,7 +111,12 @@ export class InternalChanger {
 
 	protected ChangeTreeModels(selectedID: number, scale?: number): void {
 		if (GameState.IsConnected) {
-			SetTreeModel(this.treePaths[selectedID], scale ?? 1)
+			SetTreeModel(
+				this.treePaths[selectedID],
+				scale ?? 1,
+				selectedID >= 10 ? -128 : 0,
+				selectedID >= 10
+			)
 		}
 		this.tree.Update()
 	}
