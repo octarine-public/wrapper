@@ -264,6 +264,12 @@ export class Unit extends Entity {
 	public readonly LastTPStartPosition = new Vector3().Invalidate()
 	public readonly LastTPEndPosition = new Vector3().Invalidate()
 
+	/**
+	 * @description added for compatibility (icore)
+	 * @deprecated
+	 */
+	public readonly FogVisiblePosition = new Vector3().Invalidate()
+
 	private LastPredictedPositionUpdate_ = 0
 	private LastRealPredictedPositionUpdate_ = 0
 
@@ -823,7 +829,12 @@ export class Unit extends Entity {
 		// if (RendererSDK.IsInDraw) {
 		// 	throw "HealthBarPosition outside in draw"
 		// }
-		const position = (override ?? this.Position).Clone() // need clone ?
+		const position = (
+			override ?? (this.IsFogVisible || this.HideHud)
+				? this.FogVisiblePosition
+				: this.Position
+		).Clone() // need clone ?
+
 		if (useHpBarOffset) {
 			position.AddScalarZ(this.HealthBarOffset)
 		}
