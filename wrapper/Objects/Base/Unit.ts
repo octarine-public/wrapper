@@ -825,16 +825,14 @@ export class Unit extends Entity {
 		return buff?.BonusMoveSpeedAmplifier ?? 0
 	}
 
-	public HealthBarPosition(useHpBarOffset = true, override?: Vector3) {
+	public HealthBarPosition(useHpBarOffset = true, overridePosition?: Vector3) {
 		// if (RendererSDK.IsInDraw) {
 		// 	throw "HealthBarPosition outside in draw"
 		// }
-		const position = (
-			override ?? (this.IsFogVisible || this.HideHud)
-				? this.FogVisiblePosition
-				: this.Position
-		).Clone() // need clone ?
-
+		const position = (overridePosition ?? this.Position).Clone()
+		if ((this.IsFogVisible || this.HideHud) && this.FogVisiblePosition.IsValid) {
+			position.CopyFrom(this.FogVisiblePosition)
+		}
 		if (useHpBarOffset) {
 			position.AddScalarZ(this.HealthBarOffset)
 		}
