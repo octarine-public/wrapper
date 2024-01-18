@@ -1915,6 +1915,7 @@ RegisterFieldHandler(Unit, "m_hAbilities", (unit, newVal) => {
 		if (ent instanceof Ability) {
 			ent.Owner_ = unit.Handle
 			ent.OwnerEntity = unit
+			ent.AbilitySlot = i
 			unit.Spells[i] = ent
 		} else {
 			unit.Spells[i] = undefined
@@ -1935,7 +1936,7 @@ RegisterFieldHandler(Unit, "m_hItems", (unit, newVal) => {
 		unit.TotalItems_[i] = ar[i]
 		const ent = EntityManager.EntityByIndex(ar[i])
 		if (ent instanceof Item) {
-			ent.Slot = i
+			ent.ItemSlot = i
 			ent.Owner_ = unit.Handle
 			ent.OwnerEntity = unit
 			unit.TotalItems[i] = ent

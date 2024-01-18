@@ -8,6 +8,7 @@ import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
 import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
 import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
+import { EAbilitySlot } from "../../Enums/EAbilitySlot"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
@@ -21,10 +22,23 @@ import { Unit } from "./Unit"
 @WrapperClass("CDOTABaseAbility")
 export class Ability extends Entity {
 	public readonly AbilityData: AbilityData
-	/** @readonly */
+	/**
+	 * @readonly
+	 * @description The level of the ability
+	 */
 	public Level = 0
-	/** @readonly */
+	/**
+	 * @readonly
+	 * @description Whether the ability is empty
+	 */
 	public IsEmpty = false
+	/**
+	 * @readonly
+	 * @description The slot the ability is in
+	 * @returns {EAbilitySlot}
+	 */
+	public AbilitySlot = EAbilitySlot.DOTA_SPELL_SLOT_1
+
 	@NetworkedBasicField("m_bInIndefiniteCooldown")
 	public IsInIndefiniteCooldown = false
 	@NetworkedBasicField("m_bActivated")

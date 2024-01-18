@@ -16,7 +16,7 @@ export class Item extends Ability {
 	 * @description The slot the item is in
 	 * @returns {DOTAScriptInventorySlot}
 	 */
-	public Slot = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1
+	public ItemSlot = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1
 	/**
 	 * @readonly
 	 * @description The time at which the item is enabled. Example: the item was moved to backpack and returned
