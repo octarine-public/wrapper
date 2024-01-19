@@ -670,13 +670,11 @@ class CRendererSDK {
 	}
 	public BeforeDraw(w: number, h: number) {
 		this.inDraw = true
-
-		// eslint-disable-next-line prettier/prettier
-		if (this.WindowSize.x !== w ||
-			this.WindowSize.y !== h) {
+		const prevWidth = this.WindowSize.x,
+			prevHeight = this.WindowSize.y
+		if (prevWidth !== w || prevHeight !== h) {
 			this.WindowSize.x = w
 			this.WindowSize.y = h
-
 			EventsSDK.emit("WindowSizeChanged", false)
 		}
 		if (this.clearTextureCache) {
@@ -689,10 +687,10 @@ class CRendererSDK {
 			this.textureCache.clear()
 			this.tex2size.clear()
 		}
-
-		this.queuedFonts.forEach(font => {
-			this.CreateFont(...font)
-		})
+		for (let index = 0, end = this.queuedFonts.length; index < end; index++) {
+			const args = this.queuedFonts[index]
+			this.CreateFont(...args)
+		}
 		this.queuedFonts.clear()
 	}
 	public EmitDraw() {
