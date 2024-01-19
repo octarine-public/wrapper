@@ -6,4 +6,11 @@ export class plus_high_five extends Ability {
 	public get ShouldBeDrawable(): boolean {
 		return false
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("acknowledge_range", level)
+	}
 }
