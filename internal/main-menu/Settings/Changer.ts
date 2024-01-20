@@ -107,7 +107,7 @@ export class InternalChanger {
 		SetTreeModel(
 			this.treeData[selectedID][0],
 			this.treeData[selectedID][1],
-			selectedID >= 10 ? -128 : 0,
+			selectedID >= 11 ? -64 : 0,
 			selectedID >= 10
 		)
 		this.tree.Update()
