@@ -108,7 +108,8 @@ export const Paths = new (class BaseImageData {
 		icon_close_cross_eye_hidden: `${this.WrapperImages}/icons/close-cross-eye-hidden.svg`,
 		chat_arrow_grow: `${this.WrapperImages}/icons/chat_arrow_grow.svg`,
 		chat_arrow_down: `${this.WrapperImages}/icons/chat_arrow_down.svg`,
-		icon_svg_alien: `${this.WrapperImages}/icons/alien.svg`
+		icon_svg_alien: `${this.WrapperImages}/icons/alien.svg`,
+		icon_svg_time_fast: `${this.WrapperImages}/icons/time-fast.svg`
 	}
 })()
 
