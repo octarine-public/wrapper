@@ -1,4 +1,4 @@
-import { ConVarsSDK, GameState, Menu } from "../../../wrapper/Imports"
+import { ConVarsSDK, GameState, ImageData, Menu } from "../../../wrapper/Imports"
 
 export class InternalChanger {
 	private readonly weather: Menu.Dropdown
@@ -32,7 +32,8 @@ export class InternalChanger {
 		["models/props_tree/mango_tree.vmdl", 0.7],
 		["models/props_tree/ti7/ggbranch.vmdl", 1.0],
 		["models/props_tree/topiary/topiary001.vmdl", 1.0],
-		["github.com/octarine-public/wrapper/scripts_files/models/cube.vmdl", 1.0]
+		[ImageData.Paths.Wrapper + "/scripts_files/models/minecraft_cube.vmdl", 1.0],
+		[ImageData.Paths.Wrapper + "/scripts_files/models/cube.vmdl", 1.0]
 	]
 
 	private readonly treeNames = [
@@ -47,6 +48,7 @@ export class InternalChanger {
 		"Mango",
 		"GG Branch",
 		"Immortal Gardens",
+		"Minecraft Cube",
 		"Cube"
 	]
 
