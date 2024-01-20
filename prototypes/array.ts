@@ -176,5 +176,8 @@ Array.prototype.removeCallback = function <T>(
 }
 
 Array.prototype.clear = function (): void {
-	this.splice(0)
+	// length = 0 (GC = immediately)
+	// this.arr = [] (GC = deferred)
+	// this.splice(0, this.length) (GC = deferred?)
+	this.length = 0
 }
