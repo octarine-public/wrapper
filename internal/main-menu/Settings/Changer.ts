@@ -1,4 +1,4 @@
-import { ConVarsSDK, GameState, ImageData, Menu } from "../../../wrapper/Imports"
+import { Color, ConVarsSDK, GameState, ImageData, Menu } from "../../../wrapper/Imports"
 
 export class InternalChanger {
 	private readonly weather: Menu.Dropdown
@@ -17,7 +17,7 @@ export class InternalChanger {
 		"Blood"
 	]
 
-	private readonly treeData: [string, number][] = [
+	private readonly treeData: [string, number, boolean?, Color?][] = [
 		["", 1],
 		["models/props_structures/crystal003_refract.vmdl", 1.0],
 		["models/props_structures/pumpkin001.vmdl", 1.0],
@@ -30,10 +30,19 @@ export class InternalChanger {
 		["models/props_tree/frostivus_tree.vmdl", 1],
 		["models/props_tree/newbloom_tree.vmdl", 0.7],
 		["models/props_tree/mango_tree.vmdl", 0.7],
-		["models/props_tree/ti7/ggbranch.vmdl", 1.0],
-		["models/props_tree/topiary/topiary001.vmdl", 1.0],
-		[ImageData.Paths.Wrapper + "/scripts_files/models/minecraft_cube.vmdl", 1.0],
-		[ImageData.Paths.Wrapper + "/scripts_files/models/cube.vmdl", 1.0]
+		["models/props_tree/ti7/ggbranch.vmdl", 1.0, false, Color.Green],
+		["models/props_tree/topiary/topiary001.vmdl", 1.0, true, Color.Red],
+		[
+			ImageData.Paths.Wrapper + "/scripts_files/models/minecraft_cube.vmdl",
+			1.0,
+			true
+		],
+		[
+			ImageData.Paths.Wrapper + "/scripts_files/models/cube.vmdl",
+			1.0,
+			true,
+			Color.Gray
+		]
 	]
 
 	private readonly treeNames = [
@@ -104,11 +113,13 @@ export class InternalChanger {
 		if (!GameState.IsConnected) {
 			return
 		}
+		const tree = this.treeData[selectedID]
 		SetTreeModel(
-			this.treeData[selectedID][0],
-			this.treeData[selectedID][1],
+			tree[0],
+			tree[1],
 			selectedID >= 11 ? -64 : 0,
-			selectedID >= 10
+			tree[2] ?? false,
+			tree[3]?.toUint32() ?? 0
 		)
 		this.tree.Update()
 	}
