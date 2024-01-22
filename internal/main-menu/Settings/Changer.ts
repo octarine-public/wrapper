@@ -1,10 +1,30 @@
 import { Color, ConVarsSDK, GameState, ImageData, Menu } from "../../../wrapper/Imports"
 
+class TreeModelInfo {
+	constructor(
+		public nameUI: string,
+		public readonly modelPath = "",
+		public readonly maxScale = 1,
+		public readonly canChangeColor = false,
+		public readonly zeroRotation = false,
+		public readonly heightOffset = 0
+	) { }
+}
 export class InternalChanger {
+	private readonly node: Menu.Node
+
 	private readonly weather: Menu.Dropdown
 	private readonly emoticons: Menu.Toggle
 	private readonly riverPaint: Menu.Dropdown
-	private readonly treeModelMenuNames: Menu.Dropdown
+
+	private readonly treeChanger: Menu.Node
+	private readonly treeMenuNames: Menu.Dropdown
+	private readonly treeScale: Menu.Slider
+	private readonly treeColor: Menu.ColorPicker
+
+	private treeIdx = 0
+	private treeScaleVal = 1
+	private treeColorVal = Color.Gray
 
 	private readonly riverNames = [
 		"Default",
@@ -17,48 +37,49 @@ export class InternalChanger {
 		"Blood"
 	]
 
-	private readonly treeData: [string, number, boolean?, Color?][] = [
-		["", 1],
-		["models/props_structures/crystal003_refract.vmdl", 1.0],
-		["models/props_structures/pumpkin001.vmdl", 1.0],
-		["models/props_diretide/pumpkin_head.vmdl", 3.0],
-		["models/props_gameplay/pumpkin_bucket.vmdl", 1.0],
-		[
-			"maps/journey_assets/props/trees/journey_armandpine/journey_armandpine_02_stump.vmdl",
-			3.2
-		],
-		["models/props_tree/frostivus_tree.vmdl", 1],
-		["models/props_tree/newbloom_tree.vmdl", 0.7],
-		["models/props_tree/mango_tree.vmdl", 0.7],
-		["models/props_tree/ti7/ggbranch.vmdl", 1.0, false, Color.Green],
-		["models/props_tree/topiary/topiary001.vmdl", 1.0, true, Color.Red],
-		[
-			ImageData.Paths.Wrapper + "/scripts_files/models/minecraft_cube.vmdl",
-			1.0,
-			true
-		],
-		[
+	private treeData: TreeModelInfo[] = [
+		new TreeModelInfo("Default"),
+		new TreeModelInfo(
+			"Simple Cube",
 			ImageData.Paths.Wrapper + "/scripts_files/models/cube.vmdl",
 			1.0,
 			true,
-			Color.Gray
-		]
-	]
-
-	private readonly treeNames = [
-		"Default",
-		"Crystal",
-		"Pumpkins #1",
-		"Pumpkins #2",
-		"Pumpkin Buckets",
-		"Stumps",
-		"Frostivus",
-		"New Bloom",
-		"Mango",
-		"GG Branch",
-		"Immortal Gardens",
-		"Minecraft Cube",
-		"Cube"
+			true,
+			-64
+		),
+		new TreeModelInfo(
+			"Minecraft Cube",
+			ImageData.Paths.Wrapper + "/scripts_files/models/minecraft_cube.vmdl",
+			1.0,
+			false,
+			true,
+			-64
+		),
+		new TreeModelInfo("Pumpkins#1", "models/props_structures/pumpkin001.vmdl"),
+		new TreeModelInfo("Pumpkins#2", "models/props_diretide/pumpkin_head.vmdl", 3.0),
+		new TreeModelInfo(
+			"Immortal Gardens",
+			"models/props_tree/topiary/topiary001.vmdl",
+			1.0,
+			true,
+			true
+		),
+		new TreeModelInfo("GG Branch", "models/props_tree/ti7/ggbranch.vmdl", 1.0, true),
+		new TreeModelInfo("Pumpkin Buckets", "models/props_gameplay/pumpkin_bucket.vmdl"),
+		new TreeModelInfo(
+			"Crystal",
+			"models/props_structures/crystal003_refract.vmdl",
+			1.0,
+			true
+		),
+		new TreeModelInfo(
+			"Stumps",
+			"maps/journey_assets/props/trees/journey_armandpine/journey_armandpine_02_stump.vmdl",
+			3.2
+		),
+		new TreeModelInfo("Frostivus", "models/props_tree/frostivus_tree.vmdl"),
+		new TreeModelInfo("New Bloom", "models/props_tree/newbloom_tree.vmdl", 0.7),
+		new TreeModelInfo("Mango", "models/props_tree/mango_tree.vmdl", 0.7)
 	]
 
 	private readonly weatherNames = [
@@ -73,26 +94,22 @@ export class InternalChanger {
 		"Ash",
 		"Aurora"
 	]
-
-	private readonly tree: Menu.Node
-
+	public treeScala = 0
 	constructor(settings: Menu.Node) {
-		this.tree = settings.AddNode("Changer", "menu/icons/changer.svg")
-		this.tree.SortNodes = false
+		this.node = settings.AddNode("Changer", "menu/icons/changer.svg")
+		this.node.SortNodes = false
 
-		this.emoticons = this.tree.AddToggle("Emoticons chat", true)
-		this.weather = this.tree.AddDropdown("Weather", this.weatherNames, 0)
-		this.riverPaint = this.tree.AddDropdown("River", this.riverNames, 0)
+		this.treeChanger = this.node.AddNode(
+			"Trees",
+			ImageData.Paths.Icons.icon_svg_tree_alt
+		)
+		this.emoticons = this.node.AddToggle("Emoticons chat", true)
+		this.weather = this.node.AddDropdown("Weather", this.weatherNames, 0)
+		this.riverPaint = this.node.AddDropdown("River", this.riverNames, 0)
 
-		this.treeModelMenuNames = this.tree.AddDropdown("Trees model", this.treeNames)
-
-		this.tree
+		this.node
 			.AddButton("Reset", "Reset settings")
 			.OnValue(() => this.ChangeResetSettings())
-
-		this.treeModelMenuNames.OnValue(call => {
-			this.ChangeTreeModels(call.SelectedID)
-		})
 
 		this.weather.OnValue(call => ConVarsSDK.Set("cl_weather", call.SelectedID))
 		this.riverPaint.OnValue(val => ConVarsSDK.Set("dota_river_type", val.SelectedID))
@@ -100,28 +117,63 @@ export class InternalChanger {
 		this.emoticons.OnValue(call =>
 			ConVarsSDK.Set("dota_hud_chat_enable_all_emoticons", call.value)
 		)
+
+		this.treeChanger.SortNodes = false
+		this.treeMenuNames = this.treeChanger.AddDropdown(
+			"Tree models",
+			this.treeData.map(data => {
+				return data.nameUI
+			})
+		)
+
+		this.treeScale = this.treeChanger.AddSlider("Size", this.treeScaleVal, 0.5, 1, 1)
+		this.treeColor = this.treeChanger.AddColorPicker("Colors", this.treeColorVal)
+
+		this.treeMenuNames.OnValue(c => {
+			this.treeIdx = c.SelectedID
+			this.UpdateTreeChangerNode()
+			this.UpdateTreeModels()
+		})
+
+		this.treeScale.OnValue(c => {
+			this.treeScaleVal = c.value
+			this.UpdateTreeModels()
+		})
+		this.treeColor.OnValue(c => {
+			this.treeColorVal = c.SelectedColor
+			this.UpdateTreeModels()
+		})
+	}
+
+	private UpdateTreeChangerNode(): void {
+		const data = this.treeData[this.treeIdx]
+
+		this.treeColor.IsHidden = !data.canChangeColor
+		this.treeScale.IsHidden = this.treeIdx === 0
+
+		this.treeChanger.Update(true)
 	}
 
 	public GameStarted(): void {
 		ConVarsSDK.Set("cl_weather", this.weather.SelectedID)
 		ConVarsSDK.Set("dota_river_type", this.riverPaint.SelectedID)
 		ConVarsSDK.Set("dota_hud_chat_enable_all_emoticons", this.emoticons.value)
-		this.ChangeTreeModels(this.treeModelMenuNames.SelectedID)
+		this.UpdateTreeModels()
 	}
 
-	protected ChangeTreeModels(selectedID: number): void {
+	protected UpdateTreeModels(): void {
 		if (!GameState.IsConnected) {
 			return
 		}
-		const tree = this.treeData[selectedID]
+		const data = this.treeData[this.treeIdx]
 		SetTreeModel(
-			tree[0],
-			tree[1],
-			selectedID >= 11 ? -64 : 0,
-			tree[2] ?? false,
-			tree[3]?.toUint32() ?? 0
+			data.modelPath,
+			data.maxScale * this.treeScaleVal,
+			data.heightOffset,
+			data.zeroRotation,
+			data.canChangeColor ? this.treeColorVal.toUint32() : 0
 		)
-		this.tree.Update()
+		this.node.Update()
 	}
 
 	protected ChangeResetSettings(): void {
@@ -129,11 +181,16 @@ export class InternalChanger {
 		this.emoticons.value = true
 		this.riverPaint.SelectedID = 0
 		this.ChangeResetSettingsTreeModels()
-		this.tree.Update()
+		this.node.Update()
 	}
 
 	protected ChangeResetSettingsTreeModels(): void {
-		this.treeModelMenuNames.SelectedID = 0
-		this.ChangeTreeModels(0)
+		this.treeMenuNames.SelectedID = 0
+		this.treeScale.value = this.treeScale.defaultValue
+		this.treeColor.SelectedColor.CopyFrom(this.treeColor.defaultColor)
+
+		if (this.treeMenuNames.OnValueChangedCBs[0] !== undefined) {
+			this.treeMenuNames.OnValueChangedCBs[0](this.treeMenuNames)
+		}
 	}
 }
