@@ -270,7 +270,13 @@ declare function setFireEvent(
 ): void
 declare function require(absolutePath: string): any
 declare function hrtime(): number
-declare function SetTreeModel(modelName: string, scale: number, height_offset: number, resetRotation: boolean): void
+declare function SetTreeModel(
+	modelName: string,
+	scale: number,
+	height_offset: number,
+	resetRotation: boolean,
+	colorU32: number
+): void
 declare function EmitStartSoundEvent( // pass location: Vector2 at IOBuffer offset 0
 	soundeventGUID: number,
 	soundeventName: string,
