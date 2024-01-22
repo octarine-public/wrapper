@@ -264,10 +264,7 @@ export class Entity {
 	public IsGameRules = false
 	/** ================================================= */
 
-	constructor(
-		public readonly Index: number,
-		private readonly serial: number
-	) {}
+	constructor(public readonly Index: number, private readonly serial: number) { }
 
 	public get CustomGlowColor(): Nullable<Color> {
 		return this.CustomGlowColor_
@@ -283,11 +280,10 @@ export class Entity {
 		return this.CustomDrawColor_
 	}
 	public set CustomDrawColor(val: Nullable<[Color, RenderMode]>) {
-		if (this.CustomDrawColor_ === undefined && val === undefined) {
-			return
+		if (this.CustomDrawColor_ !== val) {
+			this.CustomDrawColor_ = val
+			lastColoredEnts.set(this, 10) // repeat SetEntityColor for 10 ticks
 		}
-		this.CustomDrawColor_ = val
-		lastColoredEnts.add(this)
 	}
 	public get Name(): string {
 		return this.Name_
@@ -993,24 +989,20 @@ function CustomGlowEnts(): void {
 	})
 }
 
-const lastColoredEnts = new Set<Entity>()
+const lastColoredEnts = new Map<Entity, number>()
 function CustomColorEnts(): void {
-	lastColoredEnts.forEach(ent => {
-		if (!ent.IsValid) {
-			lastColoredEnts.delete(ent)
-			return
+	lastColoredEnts.forEach((repeats, ent) => {
+		if (ent.IsValid) {
+			const [color, mode] = ent.CustomDrawColor ?? [Color.White, RenderMode.Normal]
+			SetEntityColor(ent.CustomNativeID, color.toUint32(), mode)
+
+			lastColoredEnts.set(ent, --repeats)
+			if (repeats > 0 && ent.CustomDrawColor !== undefined) {
+				return
+			}
 		}
-		const customDrawColor = ent.CustomDrawColor
-		let colorU32 = 0,
-			renderMode = RenderMode.Normal
-		if (customDrawColor !== undefined) {
-			colorU32 = customDrawColor[0].toUint32()
-			renderMode = customDrawColor[1]
-		} else {
-			colorU32 = Color.White.toUint32()
-			lastColoredEnts.delete(ent)
-		}
-		SetEntityColor(ent.CustomNativeID, colorU32, renderMode)
+
+		lastColoredEnts.delete(ent)
 	})
 }
 

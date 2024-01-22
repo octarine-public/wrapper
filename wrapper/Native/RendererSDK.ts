@@ -52,7 +52,8 @@ enum PathFlags {
 	FILL = 1 << 6,
 	STROKE = 1 << 7,
 	STROKE_AND_FILL = FILL | STROKE,
-	FILL_AA = 1 << 8
+	FILL_AA_ON = 1 << 8,
+	STROKE_AA_OFF = 1 << 9
 }
 export enum LineCap {
 	Butt = 1,
@@ -469,8 +470,11 @@ class CRendererSDK {
 
 		this.Translate(vecPos)
 		this.Rotate(rotationDeg)
+
+		let flags = PathFlags.IMAGESHADER | PathFlags.FILL | PathFlags.FILL_AA_ON
 		if (round < 0) {
 			//no rounding
+			flags &= ~PathFlags.FILL_AA_ON
 			this.AllocateCommandSpace(CommandID.PATH_ADD_RECT, 4 * 4)
 			this.commandStream.WriteFloat32(0)
 			this.commandStream.WriteFloat32(0)
@@ -492,36 +496,21 @@ class CRendererSDK {
 			this.commandStream.WriteFloat32(vecSize.x - halfRound)
 			this.commandStream.WriteFloat32(vecSize.y - halfRound)
 		}
-		const flags = PathFlags.FILL | PathFlags.IMAGESHADER
 
-		let texOffsetX = 0,
-			texOffsetY = 0,
-			texH = 0,
-			texW = 0
+		let texOffset, texSize
 
 		if (subtexOffset === undefined || subtexSize === undefined) {
 			const ratio = vecSize.x / vecSize.y
 			const origRatio = origSize.x / origSize.y
-
-			let cutX = 0,
-				cutY = 0
-			if (ratio < origRatio) {
-				cutX = (ratio - origRatio) / ratio
-			} else if (ratio > origRatio) {
-				// Y not tested
-				cutY = (origRatio - ratio) / origRatio
-			}
-
-			// todo simplify properly
-			texOffsetX = vecSize.x * cutX * -0.5
-			texOffsetY = vecSize.y * cutY * -0.5
-			texH = vecSize.x * (1 - cutX)
-			texW = vecSize.y * (1 - cutY)
+			const cut = new Vector2(
+				ratio >= origRatio ? 0 : (ratio - origRatio) / ratio,
+				ratio <= origRatio ? 0 : (origRatio - ratio) / origRatio
+			)
+			texOffset = vecSize.Multiply(cut).DivideScalar(-2)
+			texSize = new Vector2(1, 1).Subtract(cut).Multiply(vecSize)
 		} else {
-			texOffsetX = subtexOffset.x * (vecSize.x / subtexSize.x)
-			texOffsetY = subtexOffset.y * (vecSize.x / subtexSize.y)
-			texH = vecSize.x * (origSize.x / subtexSize.x)
-			texW = vecSize.y * (origSize.y / subtexSize.y)
+			texOffset = vecSize.Divide(subtexSize).Multiply(subtexOffset)
+			texSize = origSize.Divide(subtexSize).Multiply(vecSize)
 		}
 
 		this.Path(
@@ -533,10 +522,10 @@ class CRendererSDK {
 			LineCap.Square,
 			LineJoin.Round,
 			textureID,
-			texOffsetX,
-			texOffsetY,
-			texH,
-			texW
+			texOffset.x,
+			texOffset.y,
+			texSize.x,
+			texSize.y
 		)
 	}
 	public GetImageSize(path: string): Vector2 {
@@ -561,7 +550,7 @@ class CRendererSDK {
 			return
 		}
 		if (outlined) {
-			fontID |= 0x8000 // kek
+			fontID |= 0x8000
 		}
 
 		this.Translate(vecPos)
@@ -689,11 +678,12 @@ class CRendererSDK {
 			this.textureCache.clear()
 			this.tex2size.clear()
 		}
-
-		this.queuedFonts.forEach(font => {
-			this.CreateFont(...font)
-		})
-		this.queuedFonts.clear()
+		if (this.queuedFonts.length) {
+			this.queuedFonts.forEach(font => {
+				this.CreateFont(...font)
+			})
+			this.queuedFonts.clear()
+		}
 	}
 	public EmitDraw() {
 		Renderer.ExecuteCommandBuffer(
@@ -987,6 +977,7 @@ class CRendererSDK {
 		this.commandStream.WriteFloat32(0)
 		this.commandStream.WriteFloat32(vecSize.x)
 		this.commandStream.WriteFloat32(vecSize.y)
+		pathFlags |= PathFlags.STROKE_AA_OFF
 		this.Path(width, fillColor, strokeColor, pathFlags, grayscale, cap, join)
 	}
 	private Ellipse(
@@ -1001,14 +992,16 @@ class CRendererSDK {
 		this.commandStream.WriteFloat32(0)
 		this.commandStream.WriteFloat32(vecSize.x)
 		this.commandStream.WriteFloat32(vecSize.y)
+		pathFlags |= PathFlags.FILL_AA_ON
 		this.Path(width, color, color, pathFlags, grayscale)
 	}
 	private FreeTexture(textureID: number): void {
 		Renderer.FreeTexture(textureID)
 	}
 	private GetTexture(path: string): number {
-		if (this.textureCache.has(path)) {
-			return this.textureCache.get(path)!
+		let textureID = this.textureCache.get(path)
+		if (textureID !== undefined) {
+			return textureID
 		}
 
 		let readPath = tryFindFile(path, 2)
@@ -1037,7 +1030,7 @@ class CRendererSDK {
 			}
 		}
 
-		const textureID = readPath !== "" ? Renderer.CreateTexture(readPath) : -1
+		textureID = readPath !== "" ? Renderer.CreateTexture(readPath) : -1
 		if (textureID === -1) {
 			console.error("CreateTexture failed for", path)
 		}
@@ -1135,11 +1128,11 @@ class CRendererSDK {
 			Math.max(Math.min(join, LineJoin.Bevel), LineJoin.Miter) <<
 			PathFlags.LINE_JOIN_OFFSET
 		const hasImage = HasMask(flags, PathFlags.IMAGESHADER)
-		this.AllocateCommandSpace(CommandID.PATH, 3 * 4 + 1 + (hasImage ? 5 * 4 : 0))
+		this.AllocateCommandSpace(CommandID.PATH, 3 * 4 + 2 + (hasImage ? 5 * 4 : 0))
 		this.commandStream.WriteColor(fillColor)
 		this.commandStream.WriteColor(strokeColor)
 		this.commandStream.WriteFloat32(width / 2)
-		this.commandStream.WriteUint8(flags)
+		this.commandStream.WriteUint16(flags)
 		if (hasImage) {
 			this.commandStream.WriteUint32(texID!)
 			this.commandStream.WriteFloat32(-texOffsetX!)
