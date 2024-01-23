@@ -90,17 +90,15 @@ export class Hero extends Unit {
 	}
 	public get HealthBarSize() {
 		return new Vector2(
-			GUIInfo.ScaleHeight(this.IsMyHero ? 107 : 100),
+			GUIInfo.ScaleHeight(this.IsMyHero ? 107 : 99),
 			GUIInfo.ScaleHeight(11)
 		)
 	}
 	public get HealthBarPositionCorrection() {
-		const position = new Vector2(this.HealthBarSize.x / 2, GUIInfo.ScaleHeight(36))
+		const position = new Vector2(this.HealthBarSize.x / 1.98, GUIInfo.ScaleHeight(36))
 		switch (true) {
 			case this.IsMyHero:
-				return position
-					.SetX(this.HealthBarSize.x / 1.98)
-					.SetY(GUIInfo.ScaleHeight(37))
+				return position.SetY(GUIInfo.ScaleHeight(37))
 			case !this.IsEnemy():
 				return position.SetY(GUIInfo.ScaleHeight(32))
 			default:
