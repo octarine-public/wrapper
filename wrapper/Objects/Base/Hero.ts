@@ -91,7 +91,7 @@ export class Hero extends Unit {
 	public get HealthBarSize() {
 		return new Vector2(
 			GUIInfo.ScaleHeight(this.IsMyHero ? 107 : 100),
-			GUIInfo.ScaleHeight(this.IsMyHero ? 11 : 10)
+			GUIInfo.ScaleHeight(11)
 		)
 	}
 	public get HealthBarPositionCorrection() {
