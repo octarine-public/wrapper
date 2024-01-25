@@ -3,11 +3,18 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("monkey_king_wukongs_command")
 export class monkey_king_wukongs_command extends Ability {
-	public GetBaseAOERadiusForLevel(_level: number): number {
-		const talent = this.Owner?.GetAbilityByName("special_bonus_unique_monkey_king_6")
-		if (talent !== undefined && talent.Level !== 0) {
-			return talent.GetSpecialValue("value")
-		}
-		return 780
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("second_radius", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseCastRangeForLevel(level: number): number {
+		return this.GetSpecialValue("cast_range", level)
 	}
 }

@@ -345,23 +345,26 @@ export class Ability extends Entity {
 	public get BaseCastRange(): number {
 		return this.GetBaseCastRangeForLevel(this.Level)
 	}
+	public get BonusCastRange(): number {
+		return this.Owner?.BonusCastRange ?? 0
+	}
+	public get CastRangeAmplifier(): number {
+		return this.Owner?.CastRangeAmplifier ?? 0
+	}
 	public get CastRange(): number {
-		return this.GetCastRangeForLevel(this.Level)
+		const amp = this.CastRangeAmplifier,
+			bonus = this.GetCastRangeForLevel(this.Level)
+		let calculateBonus = (bonus * amp) >> 0
+		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)) {
+			calculateBonus += 50
+		}
+		return calculateBonus
 	}
 	public get BonusAOERadius(): number {
 		if (this.Owner === undefined || !this.HasAffectedByAOEIncrease) {
 			return 0
 		}
-		let totalBonus = 0
-		const buffs = this.Owner.Buffs
-		for (let index = buffs.length - 1; index > -1; index--) {
-			const buff = buffs[index]
-			if (!buff.BonusAOERadius) {
-				continue
-			}
-			totalBonus += buff.BonusAOERadius
-		}
-		return totalBonus
+		return this.Owner.BonusAOERadius
 	}
 	public get AOERadius(): number {
 		return this.GetBaseAOERadiusForLevel(this.Level) + this.BonusAOERadius
@@ -373,13 +376,6 @@ export class Ability extends Entity {
 	public get SpellAmplification(): number {
 		if (this.Name.startsWith("special_bonus_spell_amplify")) {
 			return this.GetSpecialValue("value") / 100
-		}
-		return 0
-	}
-	// TODO Fix me
-	public get BonusCastRange(): number {
-		if (this.Name.startsWith("special_bonus_cast_range")) {
-			return this.GetSpecialValue("value")
 		}
 		return 0
 	}
@@ -458,7 +454,7 @@ export class Ability extends Entity {
 	 * @return {number}
 	 */
 	public GetCastRangeForLevel(level: number): number {
-		return this.GetBaseCastRangeForLevel(level) + (this.Owner?.CastRangeBonus ?? 0)
+		return this.GetBaseCastRangeForLevel(level) + this.BonusCastRange
 	}
 	/**
 	 * @param level

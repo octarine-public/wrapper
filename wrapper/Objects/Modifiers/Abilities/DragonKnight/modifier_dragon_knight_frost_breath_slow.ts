@@ -5,7 +5,6 @@ import { Unit } from "../../../Base/Unit"
 @WrapperClassModifier()
 export class modifier_dragon_knight_frost_breath_slow extends Modifier {
 	public readonly IsDebuff = true
-	public readonly CustomAbilityName = "dragon_knight_elder_dragon_form"
 
 	protected SetMoveSpeedAmplifier(
 		specialName = "frost_bonus_movement_speed",
@@ -24,7 +23,7 @@ export class modifier_dragon_knight_frost_breath_slow extends Modifier {
 		if (this.isBlackDragonForm(this.Caster)) {
 			level += 1
 		}
-		return this.byAbilityData(this.CustomAbilityName, specialName, level)
+		return super.GetSpecialValue(specialName, level)
 	}
 
 	private isBlackDragonForm(unit: Nullable<Unit>) {
