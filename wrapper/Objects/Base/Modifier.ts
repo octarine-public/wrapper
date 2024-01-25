@@ -67,18 +67,35 @@ export class Modifier {
 	/** @readonly */
 	public IsVisibleForEnemies = false
 
+	// Bonus attack speed
 	/** @readonly */
 	public BonusAttackSpeed = 0
+
+	// Bonus attack range
+	/** @readonly */
+	public FixedAttackRange = 0
 	/** @readonly */
 	public BonusAttackRange = 0
 	/** @readonly */
-	public ReductionCastRange = 0
+	public AttackRangeAmplifier = 0
 	/** @readonly */
-	public ReductionAttackRange = 0
+	public BonusAttackRangeStack = false
+	/** @readonly */
+	public AttackRangeAmplifierStack = false
+	/** @readonly */
+	public IsInfinityAttackRange = false
 
-	// bonus ability radius
+	// Bonus cast range
 	/** @readonly */
 	public BonusCastRange = 0
+	/** @readonly */
+	public CastRangeAmplifier = 0
+	/** @readonly */
+	public BonusCastRangeStack = false
+	/** @readonly */
+	public CastRangeAmplifierStack = false
+
+	// Bonus radius
 	/** @readonly */
 	public BonusAOERadius = 0
 
@@ -176,6 +193,9 @@ export class Modifier {
 	public Ability: Nullable<Ability>
 	public Caster: Nullable<Unit>
 	public AuraOwner: Nullable<Unit>
+
+	/** @description parent is range attacker */
+	protected IsRanged = false
 
 	/** @description need maybe only for spent abilities */
 	protected CustomAbilityName: Nullable<string> = undefined
@@ -339,10 +359,14 @@ export class Modifier {
 			newBonusHealth = this.kv.BonusHealth ?? 0,
 			newBonusMana = this.kv.BonusMana ?? 0,
 			newCustomEntity = EntityManager.EntityByIndex<Unit>(this.kv.CustomEntity),
-			newChannelTime = this.kv.ChannelTime ?? 0
+			newChannelTime = this.kv.ChannelTime ?? 0,
+			newIsRanged = newParent?.IsRanged ?? false
 
 		if (this.Parent !== newParent) {
 			this.Remove()
+		}
+		if (this.IsRanged !== newIsRanged) {
+			this.IsRanged = newIsRanged
 		}
 		let updated = false
 		if (this.Caster !== newCaster) {
@@ -602,6 +626,48 @@ export class Modifier {
 		this.BonusNightVision = subtract ? value * -1 : value
 	}
 
+	protected SetFixedAttackRange(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.FixedAttackRange = subtract ? value * -1 : value
+	}
+
+	protected SetBonusAttackRange(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.BonusAttackRange = subtract ? value * -1 : value
+	}
+
+	protected SetAttackRangeAmplifier(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		const state = this.IsDebuff && (this.IsMagicImmune() || this.IsDebuffImmune())
+		this.AttackRangeAmplifier = !state ? (subtract ? value * -1 : value) / 100 : 0
+	}
+
+	protected SetBonusCastRange(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.BonusCastRange = subtract ? value * -1 : value
+	}
+
+	protected SetCastRangeAmplifier(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		const state = this.IsDebuff && (this.IsMagicImmune() || this.IsDebuffImmune())
+		this.CastRangeAmplifier = !state ? (subtract ? value * -1 : value) / 100 : 0
+	}
+
 	protected GetSpecialSpeedByState(specialName: string): number {
 		const isImmuneSlow = this.ShouldUnslowable()
 		const isPassiveDisabled = this.IsPassiveDisabled()
@@ -614,6 +680,7 @@ export class Modifier {
 		return this.GetSpecialValue(specialName)
 	}
 
+	/** @description NOTE: does not include talents */
 	protected byAbilityData(
 		abilName: string,
 		specialName: string,
@@ -627,6 +694,17 @@ export class Modifier {
 	}
 
 	private updateAllSpecialValues() {
+		// bonus cast range
+		this.SetBonusCastRange()
+		this.SetCastRangeAmplifier()
+
+		// bonus spells radius
+		this.SetBonusAOERadius()
+
+		// bonus attack range
+		this.SetBonusAttackRange()
+		this.SetAttackRangeAmplifier()
+
 		// bonus vision
 		this.SetBonusDayVision()
 		this.SetBonusNightVision()
@@ -638,8 +716,5 @@ export class Modifier {
 		this.SetMoveSpeedAmplifier()
 		this.SetStatusResistanceSpeed()
 		this.SetBaseMoveSpeedAmplifier()
-
-		// bonus spells
-		this.SetBonusAOERadius()
 	}
 }

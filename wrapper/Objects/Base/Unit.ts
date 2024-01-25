@@ -23,6 +23,7 @@ import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { RendererSDK } from "../../Native/RendererSDK"
+import * as WASM from "../../Native/WASM"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GridNav } from "../../Resources/ParseGNV"
 import { GameState } from "../../Utils/GameState"
@@ -397,8 +398,8 @@ export class Unit extends Entity {
 	}
 
 	public get Speed() {
-		const isLimit = this.IsMoveSpeedLimit
 		const amp = this.MoveSpeedAmplifier
+		const isLimit = this.IsMoveSpeedLimit
 		const baseSpeed = this.MoveSpeedBase + this.MoveSpeedBonus
 		const calculateSpeed = Math.max(baseSpeed * amp, MoveSpeedData.Min)
 
@@ -573,8 +574,23 @@ export class Unit extends Entity {
 	public get ArmorType(): ArmorType {
 		return this.UnitData.ArmorType
 	}
+	public get IsInfinityAttackRange() {
+		return this.Buffs.some(x => x.IsInfinityAttackRange)
+	}
 	public get BaseAttackRange(): number {
-		return this.UnitData.BaseAttackRange
+		return this.CalcualteBaseAttackRange()
+	}
+	public get BonusAttackRange() {
+		return this.CalcualteBonusAttackRange()
+	}
+	public get AttackRangeAmplifier() {
+		return this.CalcualteAmpAttackRange()
+	}
+	public get InfinityAttackRange() {
+		return this.CalcualteInfinityAttackRange()
+	}
+	public get FixedAttackRange() {
+		return this.CalcualteFixedAttackRange()
 	}
 	public get AttackDamageAverage(): number {
 		return (this.AttackDamageMin + this.AttackDamageMax) / 2
@@ -717,29 +733,18 @@ export class Unit extends Entity {
 	public get IsInAbilityPhase(): boolean {
 		return this.Spells.some(spell => spell !== undefined && spell.IsInAbilityPhase)
 	}
+	public get BonusCastRange(): number {
+		return this.CalcualteBonusCastRange()
+	}
+	/** @deprecated */
 	public get CastRangeBonus(): number {
-		let castrange = 0
-		// todo buffs
-		const gadgetAura = this.GetBuffByName("modifier_item_spy_gadget_aura")
-		if (gadgetAura !== undefined) {
-			const gadget = gadgetAura.Ability
-			if (gadget !== undefined) {
-				castrange += gadget.GetSpecialValue("cast_range")
-			}
-		}
-		for (let i = 0, end = this.Spells.length; i < end; i++) {
-			const spell = this.Spells[i]
-			if (spell !== undefined) {
-				castrange += spell.BonusCastRange
-			}
-		}
-		for (let i = 0, end = this.Items.length; i < end; i++) {
-			const item = this.Items[i]
-			if (item !== undefined) {
-				castrange += item.BonusCastRange
-			}
-		}
-		return castrange
+		return this.BonusCastRange
+	}
+	public get CastRangeAmplifier(): number {
+		return this.CalcualteAmpCastRange()
+	}
+	public get BonusAOERadius(): number {
+		return this.CalcualteBonusAOERadius()
 	}
 	public get SpellAmplification(): number {
 		const itemsSpellAmp = this.Items.reduce(
@@ -844,6 +849,28 @@ export class Unit extends Entity {
 			screenPosition.AddScalarY(5)
 		}
 		return screenPosition.SubtractForThis(this.HealthBarPositionCorrection)
+	}
+
+	/**
+	 * @description Get the attack range of the unit.
+	 * @param {Unit} target - the target unit (optional)
+	 * @param {number} additional - additional range (optional)
+	 * @return {number}
+	 */
+	public GetAttackRange(target?: Unit, additional?: number): number {
+		const addAndHull = this.HullRadius + (target?.HullRadius ?? 0) + (additional ?? 0)
+		if (this.FixedAttackRange !== 0) {
+			return (this.FixedAttackRange + addAndHull) >> 0
+		}
+		if (this.IsInfinityAttackRange) {
+			return (this.InfinityAttackRange + addAndHull) >> 0
+		}
+		const base = this.BaseAttackRange,
+			bonus = this.BonusAttackRange,
+			amp = this.AttackRangeAmplifier
+		const baseRange = base + bonus
+		const totalBonus = Math.max(baseRange * amp, 0)
+		return (totalBonus + addAndHull) >> 0
 	}
 
 	// TODO
@@ -1693,6 +1720,7 @@ export class Unit extends Entity {
 		})
 	}
 
+	/** ================================ Move Speed ======================================= */
 	protected ShouldCheckMaxSpeed(modifier: Modifier) {
 		const hasBuffByName = this.IsThirst || this.IsCharge
 		return !(hasBuffByName && modifier.BonusMoveSpeed >= MoveSpeedData.Max)
@@ -1832,6 +1860,113 @@ export class Unit extends Entity {
 			totalRes += buff.StatusResistanceSpeed
 		}
 		return totalRes
+	}
+
+	/** ================================ Attack Range ======================================= */
+	protected CalcualteBaseAttackRange() {
+		const fixedAttackRange = this.CalcualteFixedAttackRange()
+		if (fixedAttackRange !== 0) {
+			return fixedAttackRange
+		}
+		return this.UnitData.BaseAttackRange
+	}
+
+	protected CalcualteAmpAttackRange() {
+		let totalAmp = 1
+		const names = new Set<string>()
+		const arrBuffs = this.Buffs
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.AttackRangeAmplifier) {
+				continue
+			}
+			if (buff.AttackRangeAmplifierStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalAmp += buff.AttackRangeAmplifier
+		}
+		return totalAmp
+	}
+
+	protected CalcualteBonusAttackRange() {
+		let totalBonus = 0
+		const namesBonus = new Set<string>()
+		const arrBuffs = this.Buffs
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.BonusAttackRange) {
+				continue
+			}
+			if (buff.BonusAttackRangeStack && namesBonus.has(buff.Name)) {
+				continue
+			}
+			namesBonus.add(buff.Name)
+			totalBonus += buff.BonusAttackRange
+		}
+		return totalBonus
+	}
+
+	protected CalcualteFixedAttackRange() {
+		return this.Buffs.find(x => x.FixedAttackRange !== 0)?.FixedAttackRange ?? 0
+	}
+
+	protected CalcualteInfinityAttackRange() {
+		const hMap = WASM.HeightMap
+		if (hMap === undefined) {
+			return Number.MAX_SAFE_INTEGER
+		}
+		return hMap.MapSize.x ** 2 + hMap.MapSize.y ** 2
+	}
+	/** ================================ AOE Radius ======================================= */
+	protected CalcualteBonusAOERadius() {
+		let totalBonus = 0
+		const buffs = this.Buffs
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const buff = buffs[index]
+			if (!buff.BonusAOERadius) {
+				continue
+			}
+			totalBonus += buff.BonusAOERadius
+		}
+		return totalBonus
+	}
+
+	/** ================================ Cast Range ======================================= */
+	protected CalcualteAmpCastRange() {
+		let totalAmp = 1
+		const namesBonus = new Set<string>()
+		const arrBuffs = this.Buffs
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.CastRangeAmplifier) {
+				continue
+			}
+			if (buff.CastRangeAmplifierStack && namesBonus.has(buff.Name)) {
+				continue
+			}
+			namesBonus.add(buff.Name)
+			totalAmp += buff.CastRangeAmplifier
+		}
+		return totalAmp
+	}
+
+	protected CalcualteBonusCastRange() {
+		let totalBonus = 0
+		const namesBonus = new Set<string>()
+		const arrBuffs = this.Buffs
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.BonusCastRange) {
+				continue
+			}
+			if (buff.BonusCastRangeStack && namesBonus.has(buff.Name)) {
+				continue
+			}
+			namesBonus.add(buff.Name)
+			totalBonus += buff.BonusCastRange
+		}
+		return totalBonus
 	}
 }
 export const Units = EntityManager.GetEntitiesByClass(Unit)

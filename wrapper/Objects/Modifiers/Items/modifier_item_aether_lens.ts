@@ -3,11 +3,12 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_aether_lens extends Modifier {
-	protected UnitPropertyChanged(changed?: boolean): boolean {
-		if (!super.UnitPropertyChanged(changed)) {
-			return false
-		}
-		this.BonusCastRange = this.GetSpecialValue("cast_range_bonus")
-		return true
+	public readonly IsHidden = true
+
+	protected SetBonusCastRange(
+		specialName = "cast_range_bonus",
+		subtract = false
+	): void {
+		super.SetBonusCastRange(specialName, subtract)
 	}
 }
