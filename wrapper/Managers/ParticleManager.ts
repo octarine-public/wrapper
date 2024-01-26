@@ -131,7 +131,7 @@ export class ParticlesSDK {
 			[0, options.Position ?? entity],
 			[1, range],
 			[2, options.Color ?? Color.Aqua],
-			[3, Number(options.Fill ?? 1)]
+			[3, Number(options.Fill ?? 0)]
 		)
 	}
 
