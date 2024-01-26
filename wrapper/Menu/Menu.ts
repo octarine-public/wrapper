@@ -54,7 +54,10 @@ class CMenuManager {
 			this.OnMouseLeftUp()
 			const entries = this.entries
 			for (let i = 0, end = entries.length; i < end; i++) {
-				entries[i].OnParentNotVisible()
+				const entry = entries[i]
+				if (entry !== undefined) {
+					entry.OnParentNotVisible()
+				}
 			}
 		}
 		this.IsOpen_ = val
@@ -68,7 +71,7 @@ class CMenuManager {
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
-			if (entry.SaveConfig) {
+			if (entry !== undefined && entry.SaveConfig) {
 				this.config[entry.InternalName] = entry.ConfigValue
 			}
 		}
@@ -85,7 +88,10 @@ class CMenuManager {
 		let remaining = -this.VisibleEntries
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
-			remaining++
+			const entry = entries[i]
+			if (entry !== undefined) {
+				remaining++
+			}
 		}
 		return remaining > 0
 	}
@@ -95,7 +101,7 @@ class CMenuManager {
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
-			if (entry.IsVisible) {
+			if (entry !== undefined && entry.IsVisible) {
 				width = Math.max(width, entry.Size.x)
 			}
 		}
@@ -109,7 +115,7 @@ class CMenuManager {
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
-			if (!entry.IsVisible || skip-- > 0) {
+			if (entry === undefined || !entry.IsVisible || skip-- > 0) {
 				continue
 			}
 			height += entry.Size.y
@@ -195,7 +201,7 @@ class CMenuManager {
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
-			if (!entry.IsVisible || skip-- > 0) {
+			if (entry === undefined || !entry.IsVisible || skip-- > 0) {
 				continue
 			}
 			position.CopyTo(entry.Position)
@@ -227,7 +233,9 @@ class CMenuManager {
 			const entries = this.entries
 			for (let i = 0, end = entries.length; i < end; i++) {
 				const entry = entries[i]
-				entry.Update(true)
+				if (entry !== undefined) {
+					entry.Update(true)
+				}
 			}
 		}
 		this.UpdateScrollbar()
@@ -246,7 +254,7 @@ class CMenuManager {
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const node = entries[i]
-			if (node.IsVisible && !node.OnMouseLeftDown()) {
+			if (node !== undefined && node.IsVisible && !node.OnMouseLeftDown()) {
 				this.activeElement = node
 				return false
 			}
@@ -400,13 +408,13 @@ class CMenuManager {
 			const entries = this.entries
 			for (let i = 0, end = entries.length; i < end; i++) {
 				const entry = entries[i]
-				if (entry.SaveConfig) {
+				if (entry !== undefined && entry.SaveConfig) {
 					entry.ConfigValue = this.config[entry.InternalName]
 				}
 			}
 			for (let i = 0, end = entries.length; i < end; i++) {
 				const entry = entries[i]
-				if (entry.SaveConfig) {
+				if (entry !== undefined && entry.SaveConfig) {
 					entry.OnConfigLoaded()
 				}
 			}
