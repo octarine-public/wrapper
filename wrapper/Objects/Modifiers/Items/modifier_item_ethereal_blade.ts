@@ -6,7 +6,7 @@ export class modifier_item_ethereal_blade extends Modifier {
 	public readonly IsHidden = true
 
 	protected SetBonusCastRange(
-		specialName = "cast_range_bonus",
+		specialName = "bonus_cast_range",
 		subtract = false
 	): void {
 		super.SetBonusCastRange(specialName, subtract)
