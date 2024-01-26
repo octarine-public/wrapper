@@ -151,7 +151,7 @@ export class Node extends Base {
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
-			if (entry.IsVisible) {
+			if (entry !== undefined && entry.IsVisible) {
 				remaining++
 			}
 		}
@@ -162,7 +162,7 @@ export class Node extends Base {
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
-			if (entry.IsVisible) {
+			if (entry !== undefined && entry.IsVisible) {
 				width = Math.max(width, entry.Size.x)
 			}
 		}
@@ -176,7 +176,7 @@ export class Node extends Base {
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
-			if (!entry.IsVisible || skip-- > 0) {
+			if (entry === undefined || !entry.IsVisible || skip-- > 0) {
 				continue
 			}
 			height += entry.Size.y
@@ -199,7 +199,7 @@ export class Node extends Base {
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
-			if (entry.SaveConfig) {
+			if (entry !== undefined && entry.SaveConfig) {
 				entry.OnConfigLoaded()
 			}
 		}
@@ -219,7 +219,9 @@ export class Node extends Base {
 			const entries = this.entries
 			for (let i = 0, end = entries.length; i < end; i++) {
 				const entry = entries[i]
-				entry.Update(true)
+				if (entry !== undefined) {
+					entry.Update(true)
+				}
 			}
 		}
 		this.SortEntries()
@@ -234,6 +236,9 @@ export class Node extends Base {
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
+			if (entry === undefined) {
+				continue
+			}
 			if (entry.QueuedUpdate) {
 				entry.QueuedUpdate = false
 				entry.Update(entry.QueuedUpdateRecursive)
@@ -254,7 +259,7 @@ export class Node extends Base {
 			const entries2 = this.entries
 			for (let i = 0, end = entries2.length; i < end; i++) {
 				const entry = entries2[i]
-				if (!entry.IsVisible || skip-- > 0) {
+				if (entry === undefined || !entry.IsVisible || skip-- > 0) {
 					continue
 				}
 				position.CopyTo(entry.Position)
@@ -312,7 +317,7 @@ export class Node extends Base {
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
-			if (entry.IsVisible) {
+			if (entry !== undefined && entry.IsVisible) {
 				entry.PostRender()
 			}
 		}
@@ -328,7 +333,11 @@ export class Node extends Base {
 		if (ignoreOpen || this.IsOpen) {
 			const entries = this.entries
 			for (let i = 0, end = entries.length; i < end; i++) {
-				entries[i].OnParentNotVisible()
+				const entry = entries[i]
+				if (entry === undefined) {
+					continue
+				}
+				entry.OnParentNotVisible()
 			}
 		}
 	}
@@ -343,6 +352,9 @@ export class Node extends Base {
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
+			if (entry === undefined) {
+				continue
+			}
 			if (entry.IsVisible && !entry.OnPreMouseLeftDown()) {
 				this.activeElement = entry
 				return false
@@ -365,6 +377,9 @@ export class Node extends Base {
 				const entries = this.parent.entries
 				for (let i = 0, end = entries.length; i < end; i++) {
 					const entry = entries[i]
+					if (entry === undefined) {
+						continue
+					}
 					if (entry instanceof Node && entry !== this) {
 						entry.IsOpen = false
 					}
