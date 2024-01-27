@@ -980,6 +980,46 @@ class CRendererSDK {
 		pathFlags |= PathFlags.STROKE_AA_OFF
 		this.Path(width, fillColor, strokeColor, pathFlags, grayscale, cap, join)
 	}
+	public RectRounded(
+		vecPos: Vector2,
+		vecSize: Vector2,
+		roundDiameter: number,
+		fillColor: Color,
+		strokeColor: Color,
+		width: number
+	): void {
+		this.Translate(vecPos)
+
+		const round = roundDiameter > 0
+
+		this.AllocateCommandSpace(
+			round ? CommandID.PATH_ADD_ROUND_RECT : CommandID.PATH_ADD_RECT,
+			4 * 4 + (round ? 4 : 0)
+		)
+		this.commandStream.WriteFloat32(0)
+		this.commandStream.WriteFloat32(0)
+		this.commandStream.WriteFloat32(vecSize.x)
+		this.commandStream.WriteFloat32(vecSize.y)
+		if (round) {
+			this.commandStream.WriteFloat32(
+				Math.min(roundDiameter, vecSize.x - 1, vecSize.y - 1) / 2
+			)
+		}
+
+		let pathFlags = 0
+		if (fillColor.toUint32() !== 0) {
+			pathFlags |= PathFlags.FILL
+		}
+		if (strokeColor.toUint32() !== 0) {
+			pathFlags |= PathFlags.STROKE | PathFlags.STROKE_AA_OFF
+		}
+		if (round) {
+			pathFlags &= ~PathFlags.STROKE_AA_OFF
+			pathFlags |= PathFlags.FILL_AA_ON
+		}
+
+		this.Path(width, fillColor, strokeColor, pathFlags, false)
+	}
 	private Ellipse(
 		vecSize: Vector2,
 		width: number,
