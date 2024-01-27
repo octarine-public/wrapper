@@ -101,6 +101,8 @@ export class Hero extends Unit {
 				return position.SetY(GUIInfo.ScaleHeight(37))
 			case !this.IsEnemy():
 				return position.SetY(GUIInfo.ScaleHeight(32))
+			case this.HasBuffByName("modifier_morphling_replicate_illusion"):
+				return position.SetY(GUIInfo.ScaleHeight(11))
 			default:
 				return position.SetY(GUIInfo.ScaleHeight(30))
 		}
