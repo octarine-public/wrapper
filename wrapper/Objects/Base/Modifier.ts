@@ -489,31 +489,7 @@ export class Modifier {
 		return true
 	}
 
-	protected UnitPropertyChanged(changed?: boolean): boolean {
-		const owner = this.Parent
-		if (owner === undefined) {
-			return false
-		}
-		const state = (changed ??= true)
-		switch (this.Name) {
-			case "modifier_arc_warden_tempest_double":
-				owner.IsClone_ = state
-				owner.CanUseItems = state
-				owner.CanUseAbilities = state
-				EventsSDK.emit("UnitPropertyChanged", false, owner)
-				break
-			case "modifier_vengefulspirit_hybrid_special":
-				owner.IsClone_ = state && owner.IsAlive
-				owner.CanUseAbilities = state && owner.IsAlive
-				EventsSDK.emit("UnitPropertyChanged", false, owner)
-				break
-			case "modifier_muerta_parting_shot_soul_clone":
-				owner.IsClone_ = state
-				owner.CanUseAbilities = state
-				EventsSDK.emit("UnitPropertyChanged", false, owner)
-				break
-		}
-
+	protected UnitPropertyChanged(_changed?: boolean): boolean {
 		this.updateAllSpecialValues()
 		return true
 	}
