@@ -288,7 +288,7 @@ export class ParticlesSDK {
 		}
 		const particleRange = this.AllParticlesRange.get(particle)
 		if (particleRange !== undefined && particleRange !== range) {
-			this.DestroyByKey(key)
+			this.RestartByKey(key)
 			this.AllParticlesRange.set(particle, range)
 			return
 		}
