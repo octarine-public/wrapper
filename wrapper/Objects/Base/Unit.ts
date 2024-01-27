@@ -237,6 +237,11 @@ export class Unit extends Entity {
 	 * @ignore
 	 * @internal
 	 */
+	public IsStrongIllusion_ = false
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	public IsClone_ = false
 	/**
 	 * @ignore
@@ -449,9 +454,11 @@ export class Unit extends Entity {
 	public get GoldBountyAverage(): number {
 		return (this.GoldBountyMin + this.GoldBountyMax) / 2
 	}
-
 	public get IsIllusion(): boolean {
 		return this.IsIllusion_
+	}
+	public get IsStrongIllusion(): boolean {
+		return this.IsStrongIllusion_
 	}
 	// TODO: by classes
 	public get IsThirst(): boolean {

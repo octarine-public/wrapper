@@ -65,7 +65,7 @@ export class Hero extends Unit {
 	 * @returns {boolean}
 	 */
 	public get IsRealHero(): boolean {
-		return !this.IsClone && !this.IsIllusion
+		return !this.IsClone && !this.IsIllusion && !this.IsStrongIllusion
 	}
 	/**
 	 * @description Get the ID of the hero.
