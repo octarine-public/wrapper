@@ -1,4 +1,5 @@
 import { Vector4 } from "../../Base/Vector4"
+import { GetItemTexture, GetSpellTexture } from "../../Data/ImageData"
 import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
@@ -297,6 +298,16 @@ export class Modifier {
 			return new Vector4().Invalidate()
 		}
 		return new Vector4(vec.x, vec.y, vec.z, vec.w)
+	}
+
+	public GetTexturePath(_small?: boolean) {
+		const abil = this.Ability
+		if (abil !== undefined) {
+			return abil.TexturePath
+		}
+		return this.Name.includes("item_")
+			? GetItemTexture(this.Name)
+			: GetSpellTexture(this.Name)
 	}
 
 	public IsEnemy(team = this.Caster?.Team ?? GameState.LocalTeam) {
