@@ -115,10 +115,23 @@ Array.prototype.compare = function <T>(array: T[]): boolean {
 }
 
 Array.prototype.intersect = function <T>(array: T[]): T[] {
-	if (array.length === 0) {
-		return this
-	}
-	return this.filter(a => array.includes(a))
+	const arraySet = new Set<T>(array)
+	return this.reduce((result, element) => {
+		if (arraySet.has(element)) {
+			result.push(element)
+		}
+		return result
+	}, [])
+}
+
+Array.prototype.except = function <T>(array: T[]): T[] {
+	const arraySet = new Set<T>(array)
+	return this.reduce((result, element) => {
+		if (!arraySet.has(element)) {
+			result.push(element)
+		}
+		return result
+	}, [])
 }
 
 // todo: need test & fix performance

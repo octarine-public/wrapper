@@ -121,6 +121,15 @@ declare interface Array<T> {
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
+	 * @description Filters the array to exclude elements that are present in the input array.
+	 * @param {T[]} array - The array to exclude elements from.
+	 * @return {T[]} The filtered array.
+	 */
+	except(array: T[]): T[]
+	/**
+	 * @requires
+	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description returns the elements that are present in both arrays
 	 */
 	intersect(array: T[]): T[]
