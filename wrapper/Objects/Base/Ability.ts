@@ -359,7 +359,7 @@ export class Ability extends Entity {
 			calculateBonus !== 0 &&
 			this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)
 		) {
-			calculateBonus += 50
+			calculateBonus += this.Owner?.HullRadius ?? 0
 		}
 		return calculateBonus
 	}
