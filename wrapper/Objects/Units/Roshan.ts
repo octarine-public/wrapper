@@ -2,9 +2,11 @@ import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
 import { GUIInfo } from "../../GUI/GUIInfo"
+import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { Entity, GameRules } from "../Base/Entity"
 import { FakeUnit } from "../Base/FakeUnit"
+import { RoshanSpawner } from "../Base/RoshanSpawner"
 import { Unit } from "../Base/Unit"
 
 @WrapperClass("CDOTA_Unit_Roshan")
@@ -13,6 +15,8 @@ export class Roshan extends Unit {
 	public static HPRegenCounter = 0
 	public static MaxHP = 0
 	public static Instance: Nullable<Unit | FakeUnit>
+	public static Spawner: Nullable<RoshanSpawner>
+
 	public static get HPRegen() {
 		return 20
 	}
@@ -30,6 +34,11 @@ export class Roshan extends Unit {
 
 	public get RingRadius(): number {
 		return 80
+	}
+	public get Position() {
+		return this.IsVisible || Roshan.Spawner === undefined
+			? super.Position
+			: Roshan.Spawner.RoshanPosition
 	}
 	public get HealthBarSize() {
 		return new Vector2(GUIInfo.ScaleHeight(225), GUIInfo.ScaleHeight(5))
@@ -74,9 +83,18 @@ EventsSDK.on("LifeStateChanged", ent => {
 	}
 })
 
+const roshanSpawners = EntityManager.GetEntitiesByClass(RoshanSpawner)
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent === GameRules && lastMinute === -1) {
 		lastMinute = Math.floor(Math.max(GameRules.GameTime ?? 0, 0) / 60)
+	}
+	if (ent instanceof RoshanSpawner) {
+		const roshan = EntityManager.GetEntitiesByClass(Roshan)[0]
+		const rsSpawner = Roshan.Spawner
+		Roshan.Spawner = rsSpawner === undefined && roshan !== undefined ? ent : undefined
+	}
+	if (ent instanceof RoshanSpawner) {
+		Roshan.Spawner = ent
 	}
 	if (
 		!(ent instanceof Roshan) ||
@@ -89,15 +107,17 @@ EventsSDK.on("PreEntityCreated", ent => {
 		GameRules !== undefined ? Math.floor(Math.max(GameRules.GameTime, 0) / 60) : -1
 	Roshan.HP = ent.HP
 	Roshan.MaxHP = ent.MaxHP
+	Roshan.Spawner = roshanSpawners[0]
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
 	if (Roshan.Instance !== ent) {
 		return
 	}
-	Roshan.Instance = undefined
 	Roshan.HP = 0
 	Roshan.MaxHP = 0
+	Roshan.Spawner = undefined
+	Roshan.Instance = undefined
 })
 
 EventsSDK.on("Tick", dt => {
@@ -123,9 +143,10 @@ EventsSDK.on("Tick", dt => {
 })
 
 EventsSDK.on("GameEnded", () => {
-	Roshan.Instance = undefined
 	Roshan.HP = 0
 	lastMinute = 0
 	Roshan.MaxHP = 0
 	Roshan.HPRegenCounter = 0
+	Roshan.Spawner = undefined
+	Roshan.Instance = undefined
 })

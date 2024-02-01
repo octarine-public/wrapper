@@ -1,8 +1,9 @@
 import { Color } from "../../Base/Color"
 import { Vector3 } from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { ERoshanLocation } from "../../Enums/ERoshanLocation"
 import { RenderMode } from "../../Enums/RenderMode"
-import { Entity } from "./Entity"
+import { Entity, GameRules } from "./Entity"
 
 @WrapperClass("CDOTA_RoshanSpawner")
 export class RoshanSpawner extends Entity {
@@ -16,5 +17,27 @@ export class RoshanSpawner extends Entity {
 	}
 	public set CustomDrawColor(_: Nullable<[Color, RenderMode]>) {
 		// N/A for non-networked entities
+	}
+	public get LocationType() {
+		return !this.AltLocation.IsValid || (GameRules?.IsNight ?? false)
+			? ERoshanLocation.TOP
+			: ERoshanLocation.BOT
+	}
+	public get Position() {
+		switch (this.LocationType) {
+			case ERoshanLocation.TOP:
+				return this.AltLocation
+			default:
+				return super.Position
+		}
+	}
+	public get RoshanPosition() {
+		const position = this.Position.Clone()
+		switch (this.LocationType) {
+			case ERoshanLocation.TOP:
+				return position.SubtractScalarZ(114)
+			default:
+				return position.SubtractScalarZ(50)
+		}
 	}
 }
