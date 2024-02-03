@@ -1282,7 +1282,7 @@ class CRendererSDK {
 					.AddScalarY(box.y - position.y)
 					.RoundForThis()
 			case flag.hasMask(TextFlags.Bottom):
-				position
+				return position
 					.DivideScalarForThis(2)
 					.AddScalarX(box.x)
 					.AddScalarY(box.y + position.y)
