@@ -19,7 +19,7 @@ export class RoshanSpawner extends Entity {
 		// N/A for non-networked entities
 	}
 	public get LocationType() {
-		return !this.AltLocation.IsValid || (GameRules?.IsNight ?? false)
+		return !this.AltLocation.IsValid || (GameRules?.IsNightGameTime ?? false)
 			? ERoshanLocation.TOP
 			: ERoshanLocation.BOT
 	}

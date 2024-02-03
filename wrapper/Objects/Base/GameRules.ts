@@ -107,21 +107,18 @@ export class CGameRules extends Entity {
 				GameState.IsConnected)
 		)
 	}
-	public get IsNight(): boolean {
-		// TODO: m_iNetTimeOfDay?
-
-		if (
-			this.IsNightstalkerNight ||
-			this.IsTemporaryNight ||
-			this.GameState === DOTAGameState.DOTA_GAMERULES_STATE_PRE_GAME
-		) {
+	public get IsNightGameTime(): boolean {
+		if (this.GameState === DOTAGameState.DOTA_GAMERULES_STATE_PRE_GAME) {
 			return true
 		}
-
 		return (
 			this.GameState === DOTAGameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS &&
 			(this.GameTime / 60 / 5) % 2 >= 1
 		)
+	}
+	public get IsNight(): boolean {
+		// TODO: m_iNetTimeOfDay?
+		return this.IsNightGameTime || this.IsNightstalkerNight || this.IsTemporaryNight
 	}
 
 	public get IsBanPhase() {
