@@ -264,7 +264,10 @@ export class Entity {
 	public IsGameRules = false
 	/** ================================================= */
 
-	constructor(public readonly Index: number, private readonly serial: number) { }
+	constructor(
+		public readonly Index: number,
+		private readonly serial: number
+	) {}
 
 	public get CustomGlowColor(): Nullable<Color> {
 		return this.CustomGlowColor_

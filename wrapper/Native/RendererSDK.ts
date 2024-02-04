@@ -597,7 +597,7 @@ class CRendererSDK {
 		const getTextSize = this.GetTextSize(digits, fontName, size, width, italic)
 
 		const textSize = Vector2.FromVector3(getTextSize)
-		const newPosition = this.flagPositionBox(textSize.Clone(), position, flags)
+		const newPosition = this.flagPositionBox(getTextSize, position, flags)
 
 		if (filledRect) {
 			RendererSDK.FilledRect(newPosition, textSize, filledRectColor)
@@ -1239,11 +1239,13 @@ class CRendererSDK {
 		res.y = Math.min(Math.max(res.y, 0), 1)
 		return res.MultiplyForThis(vecSize)
 	}
-	private flagPositionBox(textSize: Vector2, box: Rectangle, flag: TextFlags) {
-		const position = textSize
-			.MultiplyScalarForThis(-1)
-			.AddScalarX(box.Width)
-			.AddScalarY(box.Height)
+	private flagPositionBox(textSize: Vector3, box: Rectangle, flag: TextFlags) {
+		const position = Vector2.FromVector3(
+			textSize
+				.MultiplyScalarForThis(-1)
+				.AddScalarX(box.Width)
+				.AddScalarY(box.Height + textSize.z)
+		)
 		switch (true) {
 			case flag.hasMask(TextFlags.Bottom | TextFlags.Right):
 				return position

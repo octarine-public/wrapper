@@ -2,7 +2,6 @@ import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
 import { GUIInfo } from "../../GUI/GUIInfo"
-import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { Entity, GameRules } from "../Base/Entity"
 import { FakeUnit } from "../Base/FakeUnit"
@@ -12,8 +11,8 @@ import { Unit } from "../Base/Unit"
 @WrapperClass("CDOTA_Unit_Roshan")
 export class Roshan extends Unit {
 	public static HP = 0
-	public static HPRegenCounter = 0
 	public static MaxHP = 0
+	public static HPRegenCounter = 0
 	public static Instance: Nullable<Unit | FakeUnit>
 	public static Spawner: Nullable<RoshanSpawner>
 
@@ -83,15 +82,9 @@ EventsSDK.on("LifeStateChanged", ent => {
 	}
 })
 
-const roshanSpawners = EntityManager.GetEntitiesByClass(RoshanSpawner)
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent === GameRules && lastMinute === -1) {
 		lastMinute = Math.floor(Math.max(GameRules.GameTime ?? 0, 0) / 60)
-	}
-	if (ent instanceof RoshanSpawner) {
-		const roshan = EntityManager.GetEntitiesByClass(Roshan)[0]
-		const rsSpawner = Roshan.Spawner
-		Roshan.Spawner = rsSpawner === undefined && roshan !== undefined ? ent : undefined
 	}
 	if (ent instanceof RoshanSpawner) {
 		Roshan.Spawner = ent
@@ -107,17 +100,17 @@ EventsSDK.on("PreEntityCreated", ent => {
 		GameRules !== undefined ? Math.floor(Math.max(GameRules.GameTime, 0) / 60) : -1
 	Roshan.HP = ent.HP
 	Roshan.MaxHP = ent.MaxHP
-	Roshan.Spawner = roshanSpawners[0]
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (Roshan.Instance !== ent) {
-		return
+	if (Roshan.Instance === ent) {
+		Roshan.HP = 0
+		Roshan.MaxHP = 0
+		Roshan.Instance = undefined
 	}
-	Roshan.HP = 0
-	Roshan.MaxHP = 0
-	Roshan.Spawner = undefined
-	Roshan.Instance = undefined
+	if (ent instanceof RoshanSpawner) {
+		Roshan.Spawner = undefined
+	}
 })
 
 EventsSDK.on("Tick", dt => {
