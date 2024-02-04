@@ -168,8 +168,11 @@ class CMenuManager {
 			Base.SaveConfigASAP = true
 		}
 		if (Base.SaveConfigASAP) {
-			writeConfig(JSON.stringify(this.ConfigValue))
+			const config = this.ConfigValue
+			writeConfig(JSON.stringify(config))
 			Base.SaveConfigASAP = false
+
+			EventsSDK.emit("MenuConfigChanged", false, config)
 		}
 		if (!this.IsOpen) {
 			return

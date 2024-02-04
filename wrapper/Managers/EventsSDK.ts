@@ -480,6 +480,11 @@ interface EventsSDK extends EventEmitter {
 		listener: (layerName: string, state: boolean) => void,
 		priority?: number
 	): EventEmitter
+	on(
+		name: "MenuConfigChanged",
+		listener: (obj: { [key: string]: any }) => void,
+		priority?: number
+	): EventEmitter
 }
 
 export const EventsSDK: EventsSDK = new EventEmitter()
