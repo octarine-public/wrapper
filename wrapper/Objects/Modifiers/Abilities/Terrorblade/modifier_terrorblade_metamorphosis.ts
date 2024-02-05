@@ -8,4 +8,11 @@ export class modifier_terrorblade_metamorphosis extends Modifier {
 	protected SetBonusAttackRange(specialName = "bonus_range", subtract = false): void {
 		super.SetBonusAttackRange(specialName, subtract)
 	}
+
+	protected SetFixedBaseAttackTime(
+		specialName = "base_attack_time",
+		subtract = false
+	): void {
+		super.SetFixedBaseAttackTime(specialName, subtract)
+	}
 }

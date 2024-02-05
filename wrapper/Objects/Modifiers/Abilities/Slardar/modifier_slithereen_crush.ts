@@ -11,4 +11,11 @@ export class modifier_slithereen_crush extends Modifier {
 	): void {
 		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
+
+	protected SetBonusAttackSpeed(
+		specialName = "crush_attack_slow_tooltip",
+		subtract = false
+	): void {
+		super.SetBonusAttackSpeed(specialName, subtract)
+	}
 }

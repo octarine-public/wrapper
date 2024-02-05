@@ -8,4 +8,8 @@ export class modifier_huskar_life_break_slow extends Modifier {
 	protected SetMoveSpeedAmplifier(specialName = "movespeed", subtract = false): void {
 		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
+
+	protected SetBonusAttackSpeed(specialName = "attack_speed", subtract = true): void {
+		super.SetBonusAttackSpeed(specialName, subtract)
+	}
 }

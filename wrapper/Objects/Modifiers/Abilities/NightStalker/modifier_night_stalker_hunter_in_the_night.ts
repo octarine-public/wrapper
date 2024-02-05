@@ -10,7 +10,7 @@ export class modifier_night_stalker_hunter_in_the_night extends Modifier {
 		if (GameRules?.IsNight) {
 			return true
 		}
-		const buffName = "modifier_night_stalker_void_zone"
+		const buffName = "modifier_night_stalker_darkness"
 		return this.Parent?.HasBuffByName(buffName) ?? false
 	}
 
@@ -18,7 +18,15 @@ export class modifier_night_stalker_hunter_in_the_night extends Modifier {
 		specialName = "bonus_movement_speed_pct_night",
 		_subtract = false
 	): void {
-		const value = this.GetSpecialSpeedByState(specialName)
+		const value = this.GetSpecialMoveSpeedByState(specialName)
 		this.BonusMoveSpeedAmplifier = this.isNight ? value / 100 : 0
+	}
+
+	protected SetBonusAttackSpeed(
+		specialName = "bonus_attack_speed_night",
+		_subtract = false
+	): void {
+		const value = this.GetSpecialAttackSpeedByState(specialName)
+		this.BonusAttackSpeed = this.isNight ? value : 0
 	}
 }

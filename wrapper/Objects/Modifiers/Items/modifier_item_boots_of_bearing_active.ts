@@ -9,4 +9,11 @@ export class modifier_item_boots_of_bearing_active extends Modifier {
 	): void {
 		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
+
+	protected SetBonusAttackSpeed(
+		specialName = "bonus_attack_speed_pct",
+		subtract = false
+	): void {
+		super.SetBonusAttackSpeed(specialName, subtract)
+	}
 }

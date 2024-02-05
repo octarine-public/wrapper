@@ -7,8 +7,13 @@ export class modifier_axe_battle_hunger extends Modifier {
 	public readonly IsDebuff = true
 	private isEmited = false
 
-	public OnPostDataUpdate(): void {
-		this.SetMoveSpeedAmplifier("slow")
+	public Update(): void {
+		super.Update()
+		this.addIntervalThink()
+	}
+
+	public OnIntervalThink(): void {
+		this.SetMoveSpeedAmplifier()
 	}
 
 	public SetMoveSpeedAmplifier(specialName = "slow", subtract = false): void {
@@ -17,9 +22,6 @@ export class modifier_axe_battle_hunger extends Modifier {
 		if (owner === undefined || caster === undefined) {
 			return
 		}
-		if (!this.isEmited) {
-			this.emitToPostData()
-		}
 		if (owner.GetAngle(caster.Position) <= Math.PI / 2) {
 			this.BonusMoveSpeedAmplifier = 0
 			return
@@ -27,8 +29,10 @@ export class modifier_axe_battle_hunger extends Modifier {
 		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
 
-	private emitToPostData(): void {
-		this.isEmited = true
-		ModifierManager.EmitToPostDataUpdate(this)
+	private addIntervalThink(): void {
+		if (!this.isEmited) {
+			this.isEmited = true
+			ModifierManager.AddIntervalThinkTemporary(this)
+		}
 	}
 }

@@ -8,4 +8,8 @@ export class modifier_wisp_tether_slow extends Modifier {
 	protected SetStatusResistanceSpeed(specialName = "slow", subtract = true): void {
 		super.SetStatusResistanceSpeed(specialName, subtract)
 	}
+
+	protected SetBonusAttackSpeed(specialName = "slow", subtract = true): void {
+		super.SetBonusAttackSpeed(specialName, subtract)
+	}
 }

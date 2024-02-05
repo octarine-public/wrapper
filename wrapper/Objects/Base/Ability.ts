@@ -41,6 +41,8 @@ export class Ability extends Entity {
 
 	@NetworkedBasicField("m_bInIndefiniteCooldown")
 	public IsInIndefiniteCooldown = false
+	@NetworkedBasicField("m_nMaxLevelOverride")
+	public MaxLevelOverride = -1
 	@NetworkedBasicField("m_bActivated")
 	public IsActivated = false
 	@NetworkedBasicField("m_bAltCastState")
@@ -240,7 +242,9 @@ export class Ability extends Entity {
 		return this.AbilityData.LevelsBetweenUpgrades
 	}
 	public get MaxLevel(): number {
-		return this.AbilityData.MaxLevel
+		return this.MaxLevelOverride !== -1
+			? this.MaxLevelOverride
+			: this.AbilityData.MaxLevel
 	}
 	public get RequiredLevel(): number {
 		return this.AbilityData.RequiredLevel

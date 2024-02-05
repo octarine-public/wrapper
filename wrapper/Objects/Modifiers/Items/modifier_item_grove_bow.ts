@@ -9,4 +9,11 @@ export class modifier_item_grove_bow extends Modifier {
 	): void {
 		super.SetBonusAttackRange(specialName, subtract)
 	}
+
+	protected SetBonusAttackSpeed(
+		specialName = "attack_speed_bonus",
+		subtract = false
+	): void {
+		super.SetBonusAttackSpeed(specialName, subtract)
+	}
 }

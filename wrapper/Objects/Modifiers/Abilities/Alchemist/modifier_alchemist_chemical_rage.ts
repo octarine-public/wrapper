@@ -8,4 +8,11 @@ export class modifier_alchemist_chemical_rage extends Modifier {
 	protected SetBonusMoveSpeed(specialName = "bonus_movespeed", subtract = false): void {
 		super.SetBonusMoveSpeed(specialName, subtract)
 	}
+
+	protected SetFixedBaseAttackTime(
+		specialName = "base_attack_time",
+		subtract = false
+	): void {
+		super.SetFixedBaseAttackTime(specialName, subtract)
+	}
 }

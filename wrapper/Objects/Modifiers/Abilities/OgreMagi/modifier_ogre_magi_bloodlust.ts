@@ -11,4 +11,11 @@ export class modifier_ogre_magi_bloodlust extends Modifier {
 	): void {
 		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
+
+	protected SetBonusAttackSpeed(
+		specialName = this.Caster === this.Parent ? "self_bonus" : "bonus_attack_speed",
+		subtract = false
+	): void {
+		super.SetBonusAttackSpeed(specialName, subtract)
+	}
 }

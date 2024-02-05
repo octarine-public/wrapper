@@ -1,3 +1,4 @@
+import { AttackSpeedData } from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAHUDVisibility } from "../../Enums/DOTAHUDVisibility"
 import { EventsSDK } from "../../Managers/EventsSDK"
@@ -25,9 +26,14 @@ export class DOTABaseGameMode extends Entity {
 
 export let GameMode: Nullable<DOTABaseGameMode>
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent instanceof DOTABaseGameMode) {
-		GameMode = ent
+	if (!(ent instanceof DOTABaseGameMode)) {
+		return
 	}
+	GameMode = ent
+	AttackSpeedData._UpdateMinMax(
+		GameMode.MinimumAttackSpeed,
+		GameMode.MaximumAttackSpeed
+	)
 })
 
 EventsSDK.on("EntityDestroyed", ent => {

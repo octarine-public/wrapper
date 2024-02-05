@@ -11,4 +11,8 @@ export class modifier_item_moon_shard_consumed extends Modifier {
 	): void {
 		super.SetBonusNightVision(specialName, subtract)
 	}
+
+	protected SetBonusAttackSpeed(specialName = "consumed_bonus", subtract = false) {
+		super.SetBonusAttackSpeed(specialName, subtract)
+	}
 }

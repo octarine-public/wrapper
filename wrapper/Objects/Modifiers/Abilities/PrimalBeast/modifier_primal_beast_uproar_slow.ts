@@ -11,7 +11,7 @@ export class modifier_primal_beast_uproar_slow extends Modifier {
 	): void {
 		const maxStacks = this.GetSpecialValue("stack_limit")
 		const stack = Math.min(this.StackCount, maxStacks)
-		const moveStackSlow = this.GetSpecialSpeedByState(specialName)
+		const moveStackSlow = this.GetSpecialMoveSpeedByState(specialName)
 		this.BonusMoveSpeedAmplifier = (moveStackSlow * stack) / -100
 	}
 }

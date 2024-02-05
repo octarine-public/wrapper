@@ -1,7 +1,7 @@
 import { Color } from "../../Base/Color"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
-import { MoveSpeedData } from "../../Data/GameData"
+import { AttackSpeedData, MoveSpeedData } from "../../Data/GameData"
 import { GetUnitTexture } from "../../Data/ImageData"
 import { NetworkedBasicField, ReencodeProperty, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
@@ -365,12 +365,84 @@ export class Unit extends Entity {
 		return PlayerCustomData.get(this.PlayerID)?.Color ?? Color.Red
 	}
 
+	// ===================================== Armor ===================================== //
 	public get Armor() {
 		return 0
 	}
 
-	public get AbsoluteAttack() {
-		return 0
+	// ===================================== Attack Speed ===================================== //
+	public get IsAttackSpeedLimit() {
+		return (
+			this.Buffs.find(buff => !buff.IsAttackSpeedLimit)?.IsAttackSpeedLimit ?? true
+		)
+	}
+	public get BaseAttackTimeData() {
+		return this.UnitData.BaseAttackTime
+	}
+
+	public get BaseAttackSpeedData() {
+		return Math.max(this.UnitData.BaseAttackSpeed, AttackSpeedData.MinBase)
+	}
+
+	public get BaseAttackAnimationPointData() {
+		return this.UnitData.AttackAnimationPoint
+	}
+
+	public get BaseAttackSpeed() {
+		return this.CalculateBaseAttackSpeed()
+	}
+
+	public get BaseAttackSpeedBonus() {
+		return this.CalculateBaseAttackSpeedBonus()
+	}
+
+	public get BaseAttackSpeedAmplifier() {
+		return this.CalculateBaseAttackSpeedAmplifier()
+	}
+
+	public get BaseAttackTime() {
+		return this.CalculateBaseAttackTime()
+	}
+
+	public get BaseAttackAnimationPoint() {
+		return this.CalculateBaseAttackAnimationPoint()
+	}
+
+	public get AttackAnimationPoint() {
+		return this.CalculateAttackAnimationPoint()
+	}
+
+	public get AttackSpeedBonus() {
+		return this.CalculateAttackSpeedBonus()
+	}
+
+	public get AttackSpeedAmplifier() {
+		return this.CalculateAttackSpeedAmplifier()
+	}
+
+	public get AttacksPerSecond() {
+		return 1 / this.AttackRate
+	}
+
+	public get AttackRate() {
+		const isLimit = this.IsAttackSpeedLimit
+		const unlimitedHaste = isLimit
+			? AttackSpeedData.MaxHaste
+			: Number.MAX_SAFE_INTEGER / 100
+		const attackSpeed = Math.min(this.AttackSpeed / 100, unlimitedHaste)
+		return this.BaseAttackTime / Math.max(attackSpeed, AttackSpeedData.MinHaste)
+	}
+
+	public get AttackHasteFactor() {
+		return this.BaseAttackTime / this.AttackRate
+	}
+
+	public get AttackPoint() {
+		return this.AttackAnimationPoint / this.AttackHasteFactor
+	}
+
+	public get AttackBackswing() {
+		return this.AttackRate - this.AttackPoint
 	}
 
 	// ===================================== Move Speed ===================================== //
@@ -412,9 +484,8 @@ export class Unit extends Entity {
 			? Math.min(MoveSpeedData.Max, Math.max(MoveSpeedData.Min, calculateSpeed))
 			: Math.max(MoveSpeedData.Min, calculateSpeed)
 
-		return totalSpeed >> 0
+		return totalSpeed
 	}
-	// ===================================== Move Speed ===================================== //
 
 	public get LastRealPredictedPositionUpdate(): number {
 		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
@@ -622,9 +693,6 @@ export class Unit extends Entity {
 	public get WorkshopName(): string {
 		return this.UnitData.WorkshopName
 	}
-	public get BaseAttackTime() {
-		return this.UnitData.BaseAttackTime
-	}
 	public get InvisibilityLevel(): number {
 		return this.Buffs.reduce(
 			(prev, buff) => Math.max(prev, buff.InvisibilityLevel),
@@ -719,9 +787,6 @@ export class Unit extends Entity {
 	public get MovementTurnRate(): number {
 		return this.UnitData.MovementTurnRate
 	}
-	public get AttackAnimationPoint(): number {
-		return this.UnitData.AttackAnimationPoint
-	}
 	public get AttackProjectileSpeed(): number {
 		return this.UnitData.ProjectileSpeed
 	}
@@ -815,6 +880,23 @@ export class Unit extends Entity {
 		return new Vector2(this.HealthBarSize.x / 2, GUIInfo.ScaleHeight(11))
 	}
 
+	protected get AttackSpeed() {
+		const base = this.BaseAttackSpeed,
+			baseAtk = this.BaseAttackSpeedAmplifier
+
+		const ampAtk = this.AttackSpeedAmplifier,
+			isLimit = this.IsAttackSpeedLimit
+
+		const baseSpeed = base * baseAtk + this.AttackSpeedBonus,
+			calculateSpeed = Math.max(baseSpeed * ampAtk, AttackSpeedData.Min)
+
+		const totalSpeed = isLimit
+			? Math.min(AttackSpeedData.Max, Math.max(AttackSpeedData.Min, calculateSpeed))
+			: Math.max(AttackSpeedData.Min, calculateSpeed)
+
+		return totalSpeed
+	}
+
 	protected get MoveSpeedBonusBoots() {
 		const sortBuffs = this.Buffs.toOrderBy(
 			// exclude 0 and boots
@@ -878,11 +960,6 @@ export class Unit extends Entity {
 		const baseRange = base + bonus
 		const totalBonus = Math.max(baseRange * amp, 0)
 		return (totalBonus + addAndHull) >> 0
-	}
-
-	// TODO
-	public GetAttacksPerSecond(_target?: Unit): number {
-		return 0
 	}
 
 	public TexturePath(small?: boolean, team = this.Team): Nullable<string> {
@@ -1727,6 +1804,124 @@ export class Unit extends Entity {
 		})
 	}
 
+	/** ============================== Turn Rate ======================================= */
+	// TODO
+	/** ================================ Attack Speed ======================================= */
+	protected CalculateBaseAttackTime() {
+		let attackTime =
+			this.Buffs.find(x => x.FixedBaseAttackTime !== 0)?.FixedBaseAttackTime ??
+			this.BaseAttackTimeData
+		const buffs = this.Buffs,
+			names = new Set<string>()
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const buff = buffs[index]
+			if (!buff.BonusBaseAttackTime) {
+				continue
+			}
+			if (!buff.BonusBaseAttackTimeStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			attackTime += buff.BonusBaseAttackTime
+		}
+		return attackTime
+	}
+
+	protected CalculateBaseAttackAnimationPoint() {
+		const attackAnimationPoint = this.Buffs.find(
+			x => x.FixedAttackAnimationPoint !== 0
+		)?.FixedAttackAnimationPoint
+		return attackAnimationPoint ?? this.BaseAttackAnimationPointData
+	}
+
+	protected CalculateAttackAnimationPoint() {
+		let attackAnimationPoint = this.CalculateBaseAttackAnimationPoint()
+		const echoSabre = this.GetAbilityByName("item_echo_sabre")
+		if (echoSabre !== undefined && echoSabre.CanBeCasted() && !this.IsRanged) {
+			attackAnimationPoint *= 2.5
+		}
+		return attackAnimationPoint + AttackSpeedData.SpecialAttackDelay
+	}
+
+	public CalculateBaseAttackSpeed() {
+		return (
+			this.TotalAgility +
+			this.BaseAttackSpeedData +
+			this.CalculateBaseAttackSpeedBonus()
+		)
+	}
+
+	public CalculateBaseAttackSpeedBonus() {
+		let totalBonus = 0
+		const buffs = this.Buffs,
+			names = new Set<string>()
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const buff = buffs[index]
+			if (!buff.BaseBonusAttackSpeed) {
+				continue
+			}
+			if (!buff.BaseBonusAttackSpeedStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus += buff.BaseBonusAttackSpeed
+		}
+		return totalBonus
+	}
+
+	public CalculateBaseAttackSpeedAmplifier() {
+		let amp = 1
+		const buffs = this.Buffs,
+			names = new Set<string>()
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const buff = buffs[index]
+			if (!buff.BaseAttackSpeedAmplifier) {
+				continue
+			}
+			if (!buff.BaseAttackSpeedAmplifierStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			amp += buff.BaseAttackSpeedAmplifier
+		}
+		return amp
+	}
+
+	public CalculateAttackSpeedBonus() {
+		let totalBonus = 0
+		const buffs = this.Buffs,
+			names = new Set<string>()
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const buff = buffs[index]
+			if (!buff.BonusAttackSpeed) {
+				continue
+			}
+			if (buff.BonusAttackSpeedStack && names.has(buff.Name)) {
+				continue
+			}
+			totalBonus += buff.BonusAttackSpeed
+		}
+		return totalBonus
+	}
+
+	public CalculateAttackSpeedAmplifier() {
+		let amp = 1
+		const buffs = this.Buffs,
+			names = new Set<string>()
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const buff = buffs[index]
+			if (!buff.AttackSpeedAmplifier) {
+				continue
+			}
+			if (!buff.AttackSpeedAmplifierStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			amp += buff.AttackSpeedAmplifier
+		}
+		return amp
+	}
+
 	/** ================================ Move Speed ======================================= */
 	protected ShouldCheckMaxSpeed(modifier: Modifier) {
 		const hasBuffByName = this.IsThirst || this.IsCharge
@@ -1762,7 +1957,7 @@ export class Unit extends Entity {
 			const buff = arrBuffs[index]
 			// if not bonus skip
 			if (buff.MoveSpeedBase !== 0) {
-				if (buff.MoveSpeedBaseStack && namesBonus.has(buff.Name)) {
+				if (!buff.MoveSpeedBaseStack && namesBonus.has(buff.Name)) {
 					continue
 				}
 				namesBonus.add(buff.Name)
@@ -1773,7 +1968,7 @@ export class Unit extends Entity {
 			if (!buff.MoveSpeedBaseAmplifier) {
 				continue
 			}
-			if (buff.MoveSpeedBaseAmplifierStack && namesAmplifier.has(buff.Name)) {
+			if (!buff.MoveSpeedBaseAmplifierStack && namesAmplifier.has(buff.Name)) {
 				continue
 			}
 			namesAmplifier.add(buff.Name)
@@ -1786,8 +1981,8 @@ export class Unit extends Entity {
 
 	protected CalculateBonusMoveSpeed() {
 		let totalBonus = 0
-		const names = new Set<string>()
-		const arrBuffs = this.Buffs
+		const names = new Set<string>(),
+			arrBuffs = this.Buffs
 		for (let index = arrBuffs.length - 1; index > -1; index--) {
 			const buff = arrBuffs[index]
 			if (buff.IsBoots || !buff.BonusMoveSpeed) {
@@ -1796,7 +1991,7 @@ export class Unit extends Entity {
 			if (!this.ShouldCheckMaxSpeed(buff)) {
 				continue
 			}
-			if (buff.BonusMoveSpeedStack && names.has(buff.Name)) {
+			if (!buff.BonusMoveSpeedStack && names.has(buff.Name)) {
 				continue
 			}
 			names.add(buff.Name)
@@ -1816,7 +2011,7 @@ export class Unit extends Entity {
 			if (buff.IsBoots || !buff.BonusMoveSpeedAmplifier) {
 				continue
 			}
-			if (buff.BonusMoveSpeedAmplifierStack && names.has(buff.Name)) {
+			if (!buff.BonusMoveSpeedAmplifierStack && names.has(buff.Name)) {
 				continue
 			}
 			let res = buff.BonusMoveSpeedAmplifier
@@ -1852,7 +2047,7 @@ export class Unit extends Entity {
 	}
 
 	protected CalcualteResistanceMoveSpeed() {
-		let totalRes = 1
+		let res = 1
 		const names = new Set<string>(),
 			arrBuffs = this.Buffs
 		for (let index = arrBuffs.length - 1; index > -1; index--) {
@@ -1860,13 +2055,13 @@ export class Unit extends Entity {
 			if (!buff.StatusResistanceSpeed) {
 				continue
 			}
-			if (buff.StatusResistanceSpeedStack && names.has(buff.Name)) {
+			if (!buff.StatusResistanceSpeedStack && names.has(buff.Name)) {
 				continue
 			}
 			names.add(buff.Name)
-			totalRes += buff.StatusResistanceSpeed
+			res += buff.StatusResistanceSpeed
 		}
-		return totalRes
+		return res
 	}
 
 	/** ================================ Attack Range ======================================= */
@@ -1879,7 +2074,7 @@ export class Unit extends Entity {
 	}
 
 	protected CalcualteAmpAttackRange() {
-		let totalAmp = 1
+		let amp = 1
 		const names = new Set<string>()
 		const arrBuffs = this.Buffs
 		for (let index = arrBuffs.length - 1; index > -1; index--) {
@@ -1887,28 +2082,28 @@ export class Unit extends Entity {
 			if (!buff.AttackRangeAmplifier) {
 				continue
 			}
-			if (buff.AttackRangeAmplifierStack && names.has(buff.Name)) {
+			if (!buff.AttackRangeAmplifierStack && names.has(buff.Name)) {
 				continue
 			}
 			names.add(buff.Name)
-			totalAmp += buff.AttackRangeAmplifier
+			amp += buff.AttackRangeAmplifier
 		}
-		return totalAmp
+		return amp
 	}
 
 	protected CalcualteBonusAttackRange() {
 		let totalBonus = 0
-		const namesBonus = new Set<string>()
+		const names = new Set<string>()
 		const arrBuffs = this.Buffs
 		for (let index = arrBuffs.length - 1; index > -1; index--) {
 			const buff = arrBuffs[index]
 			if (!buff.BonusAttackRange) {
 				continue
 			}
-			if (buff.BonusAttackRangeStack && namesBonus.has(buff.Name)) {
+			if (!buff.BonusAttackRangeStack && names.has(buff.Name)) {
 				continue
 			}
-			namesBonus.add(buff.Name)
+			names.add(buff.Name)
 			totalBonus += buff.BonusAttackRange
 		}
 		return totalBonus
@@ -1925,6 +2120,7 @@ export class Unit extends Entity {
 		}
 		return hMap.MapSize.x ** 2 + hMap.MapSize.y ** 2
 	}
+
 	/** ================================ AOE Radius ======================================= */
 	protected CalcualteBonusAOERadius() {
 		let totalBonus = 0
@@ -1941,36 +2137,36 @@ export class Unit extends Entity {
 
 	/** ================================ Cast Range ======================================= */
 	protected CalcualteAmpCastRange() {
-		let totalAmp = 1
-		const namesBonus = new Set<string>()
+		let amp = 1
+		const names = new Set<string>()
 		const arrBuffs = this.Buffs
 		for (let index = arrBuffs.length - 1; index > -1; index--) {
 			const buff = arrBuffs[index]
 			if (!buff.CastRangeAmplifier) {
 				continue
 			}
-			if (buff.CastRangeAmplifierStack && namesBonus.has(buff.Name)) {
+			if (!buff.CastRangeAmplifierStack && names.has(buff.Name)) {
 				continue
 			}
-			namesBonus.add(buff.Name)
-			totalAmp += buff.CastRangeAmplifier
+			names.add(buff.Name)
+			amp += buff.CastRangeAmplifier
 		}
-		return totalAmp
+		return amp
 	}
 
 	protected CalcualteBonusCastRange() {
 		let totalBonus = 0
-		const namesBonus = new Set<string>()
-		const arrBuffs = this.Buffs
+		const names = new Set<string>(),
+			arrBuffs = this.Buffs
 		for (let index = arrBuffs.length - 1; index > -1; index--) {
 			const buff = arrBuffs[index]
 			if (!buff.BonusCastRange) {
 				continue
 			}
-			if (buff.BonusCastRangeStack && namesBonus.has(buff.Name)) {
+			if (!buff.BonusCastRangeStack && names.has(buff.Name)) {
 				continue
 			}
-			namesBonus.add(buff.Name)
+			names.add(buff.Name)
 			totalBonus += buff.BonusCastRange
 		}
 		return totalBonus

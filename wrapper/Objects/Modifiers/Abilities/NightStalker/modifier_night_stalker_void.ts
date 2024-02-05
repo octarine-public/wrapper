@@ -11,4 +11,11 @@ export class modifier_night_stalker_void extends Modifier {
 	): void {
 		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
+
+	protected SetBonusAttackSpeed(
+		specialName = "attackspeed_slow",
+		subtract = false
+	): void {
+		super.SetBonusAttackSpeed(specialName, subtract)
+	}
 }

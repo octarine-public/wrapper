@@ -7,7 +7,7 @@ export class modifier_dark_willow_shadow_realm_buff extends Modifier {
 
 	protected SetBonusAttackRange(
 		specialName = "attack_range_bonus",
-		subtract?: boolean
+		subtract = false
 	): void {
 		super.SetBonusAttackRange(specialName, subtract)
 	}

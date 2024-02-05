@@ -57,22 +57,52 @@ export const MoveSpeedData = new (class CMoveSpeedData {
 })()
 
 export const AttackSpeedData = new (class CAttackSpeedData {
+	private readonly maxHaste = 7
+	private readonly minHaste = 0.10000000149011612
+	private readonly specialAttackDelay = 0
+
 	/**
 	 * @readonly
+	 * @defaultvalue `0` default value may be changed in progress game
 	 */
-	public Max = 0
+	public SpecialAttackDelay = this.specialAttackDelay
 	/**
 	 * @readonly
+	 * @defaultvalue `0.10000000149011612` default value may be changed in progress game
 	 */
-	public Min = 0
+	public MinHaste = this.minHaste
 	/**
 	 * @readonly
+	 * @defaultvalue `7` default value may be changed in progress game
 	 */
-	public MinHaste = 0
+	public MaxHaste = this.maxHaste
+
 	/**
 	 * @readonly
+	 * @defaultvalue `10.000000149011612` default value may be changed in progress game
 	 */
-	public MaxHaste = 0
+	public Min = this.MinHaste * 100
+	/**
+	 * @readonly
+	 * @defaultvalue `700` default value may be changed in progress game
+	 */
+	public Max = this.MaxHaste * 100
+
+	/**
+	 * @readonly
+	 * @defaultvalue `100`
+	 */
+	public MinBase = 100
+
+	public _UpdateMinMax(min: number, max: number, special = 0) {
+		const minVal = Math.max(min, this.minHaste),
+			maxVal = Math.max(max, this.maxHaste)
+		this.Min = minVal * 100
+		this.Max = maxVal * 100
+		this.MinHaste = minVal
+		this.MaxHaste = maxVal
+		this.SpecialAttackDelay = special
+	}
 })()
 
 export const Runes = new (class CDataRune {

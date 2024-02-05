@@ -11,4 +11,11 @@ export class modifier_wisp_overcharge extends Modifier {
 	): void {
 		super.SetStatusResistanceSpeed(specialName, subtract)
 	}
+
+	protected SetBonusAttackSpeed(
+		specialName = "bonus_attack_speed",
+		subtract = false
+	): void {
+		super.SetBonusAttackSpeed(specialName, subtract)
+	}
 }

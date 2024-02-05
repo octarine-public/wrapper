@@ -9,4 +9,11 @@ export class modifier_item_mask_of_madness_berserk extends Modifier {
 	): void {
 		super.SetBonusMoveSpeed(specialName, subtract)
 	}
+
+	protected SetBonusAttackSpeed(
+		specialName = "berserk_bonus_attack_speed",
+		subtract = false
+	): void {
+		super.SetBonusAttackSpeed(specialName, subtract)
+	}
 }

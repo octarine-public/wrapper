@@ -20,7 +20,8 @@ const activeModifiers = new Map<number, Modifier>()
 const activeModifiersRaw = new Map<number, IModifier>()
 
 export const ModifierManager = new (class CModifierManager {
-	public readonly ModifiersUpdate: Modifier[] = []
+	public readonly TemporaryUpdate: Modifier[] = []
+	public readonly PermanentUpdate: Modifier[] = []
 
 	public get AllModifiers() {
 		return Array.from(activeModifiers.values())
@@ -31,26 +32,45 @@ export const ModifierManager = new (class CModifierManager {
 	}
 
 	public PostDataUpdate() {
-		const buffs = this.ModifiersUpdate
-		for (let index = buffs.length - 1; index > -1; index--) {
-			const mod = buffs[index]
+		const temporary = this.TemporaryUpdate
+		for (let index = temporary.length - 1; index > -1; index--) {
+			const mod = temporary[index]
 			const owner = mod.Parent
 			const isValid = mod.IsValid && owner !== undefined
 			const hasBuff = owner?.HasBuffByName(mod.Name) ?? false
 			if (!isValid || GameState.RawGameTime >= mod.DieTime || !hasBuff) {
-				this.ModifiersUpdate.remove(mod)
+				this.TemporaryUpdate.remove(mod)
 				continue
 			}
-			mod.OnPostDataUpdate()
+			mod.OnIntervalThink()
+		}
+
+		const permanent = this.PermanentUpdate
+		for (let index = permanent.length - 1; index > -1; index--) {
+			const mod = permanent[index]
+			const owner = mod.Parent
+			const isValid = mod.IsValid && owner !== undefined
+			const hasBuff = owner?.HasBuffByName(mod.Name) ?? false
+			if (!isValid || !hasBuff) {
+				this.TemporaryUpdate.remove(mod)
+				continue
+			}
+			mod.OnIntervalThink()
 		}
 	}
 
-	public EmitToPostDataUpdate(mod: Modifier) {
+	public AddIntervalThinkTemporary(mod: Modifier) {
 		if (mod.Duration === 0) {
 			return
 		}
-		if (!this.ModifiersUpdate.includes(mod)) {
-			this.ModifiersUpdate.push(mod)
+		if (!this.TemporaryUpdate.includes(mod)) {
+			this.TemporaryUpdate.push(mod)
+		}
+	}
+
+	public AddIntervalThink(mod: Modifier) {
+		if (!this.PermanentUpdate.includes(mod)) {
+			this.PermanentUpdate.push(mod)
 		}
 	}
 })()
@@ -230,7 +250,8 @@ function EmitModifierChanged(oldMod: Modifier, mod: IModifier) {
 function EmitModifierRemoved(mod: Nullable<Modifier>) {
 	if (mod !== undefined) {
 		activeModifiers.delete(mod.SerialNumber)
-		ModifierManager.ModifiersUpdate.remove(mod)
+		ModifierManager.TemporaryUpdate.remove(mod)
+		ModifierManager.PermanentUpdate.remove(mod)
 		mod.Remove()
 	}
 }

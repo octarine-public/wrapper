@@ -13,6 +13,13 @@ export class modifier_dragon_knight_frost_breath_slow extends Modifier {
 		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
 
+	protected SetBonusAttackSpeed(
+		specialName = "frost_bonus_attack_speed",
+		subtract = false
+	): void {
+		super.SetBonusAttackSpeed(specialName, subtract)
+	}
+
 	protected GetSpecialValue(
 		specialName: string,
 		level: number = this.AbilityLevel

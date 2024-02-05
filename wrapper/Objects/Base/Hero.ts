@@ -59,6 +59,9 @@ export class Hero extends Unit {
 		super(Index, serial)
 		this.IsHero = true
 	}
+	public get BaseAttackSpeedData() {
+		return this.UnitData.BaseAttackSpeed
+	}
 	/**
 	 * Returns whether the hero is a real hero.
 	 * @description A hero is considered real if it is not a clone or an illusion.

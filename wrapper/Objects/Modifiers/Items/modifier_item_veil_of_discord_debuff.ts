@@ -6,7 +6,7 @@ import { item_shivas_guard } from "../../Items/item_shivas_guard"
 export class modifier_item_veil_of_discord_debuff extends Modifier {
 	public readonly IsDebuff = true
 
-	protected SetMoveSpeedAmplifier(_specialName?: string, _subtract?: boolean): void {
+	protected SetMoveSpeedAmplifier(_specialName?: string, _subtract = false): void {
 		switch (true) {
 			case this.Ability instanceof item_shivas_guard:
 				super.SetMoveSpeedAmplifier("blast_movement_speed")

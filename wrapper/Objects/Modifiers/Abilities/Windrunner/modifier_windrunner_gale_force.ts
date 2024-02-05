@@ -37,7 +37,7 @@ export class modifier_windrunner_gale_force extends Modifier {
 	// 	return 0
 	// }
 
-	// private emitToPostData(): void {
+	// private addIntervalThink(): void {
 	// 	if (this.isEmited) {
 	// 		return
 	// 	}

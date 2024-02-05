@@ -11,7 +11,7 @@ export class modifier_bristleback_warpath extends Modifier {
 	): void {
 		const maxStacks = this.GetSpecialValue("max_stacks")
 		const stack = Math.min(this.StackCount, maxStacks)
-		const perStack = this.GetSpecialSpeedByState(specialName)
+		const perStack = this.GetSpecialMoveSpeedByState(specialName)
 		this.BonusMoveSpeedAmplifier = (perStack * stack) / 100
 	}
 }

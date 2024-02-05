@@ -10,7 +10,7 @@ export class modifier_item_dustofappearance extends Modifier {
 		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
 
-	protected GetSpecialSpeedByState(specialName: string): number {
+	protected GetSpecialMoveSpeedByState(specialName: string): number {
 		const specialValue = this.GetSpecialValue(specialName)
 		return !this.ShouldUnslowable() && this.IsInvisible() ? specialValue : 0
 	}

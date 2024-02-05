@@ -8,26 +8,37 @@ export class modifier_item_diffusal_blade_slow extends Modifier {
 
 	private isEmited = false
 
-	public OnPostDataUpdate(): void {
+	public Remove(): boolean {
+		if (!super.Remove()) {
+			return false
+		}
+		this.BonusMoveSpeedAmplifier = 0
+		return true
+	}
+
+	public Update(): void {
+		super.Update()
+		this.addIntervalThink()
+	}
+
+	public OnIntervalThink(): void {
 		this.SetMoveSpeedAmplifier()
 	}
 
-	protected SetMoveSpeedAmplifier(_specialName?: string, _subtract?: boolean): void {
-		if (!this.isEmited) {
-			this.emitToPostData()
-		}
+	protected SetMoveSpeedAmplifier(_specialName?: string, _subtract = false): void {
 		if (this.ShouldUnslowable()) {
 			this.BonusMoveSpeedAmplifier = 0
 			return
 		}
 		const elapsed = this.ElapsedTime
-
 		// TODO
 		this.BonusMoveSpeedAmplifier = -Math.max(1 - (elapsed / 0.8) * 0.2, 0.2)
 	}
 
-	private emitToPostData(): void {
-		this.isEmited = true
-		ModifierManager.EmitToPostDataUpdate(this)
+	private addIntervalThink(): void {
+		if (!this.isEmited) {
+			this.isEmited = true
+			ModifierManager.AddIntervalThinkTemporary(this)
+		}
 	}
 }
