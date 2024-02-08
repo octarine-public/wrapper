@@ -498,18 +498,22 @@ export class Ability extends Entity {
 	public GetBaseChannelTimeForLevel(level: number): number {
 		return this.AbilityData.GetChannelTime(level)
 	}
+
+	public GetCastDelay(unit?: Unit | Vector3, rotationDiff?: boolean) {
+		return 0
+	}
 	/**
 	 * TODO Fix me
 	 * @param position Vector3
 	 * @param turnRate boolean
 	 * @returns Time in ms until the cast.
 	 */
-	public GetCastDelay(position: Vector3, turnRate: boolean = true): number {
-		return this?.Owner
-			? (this.CastPoint + (turnRate ? this.Owner.TurnTime(position) : 0)) * 1000 +
-					GameState.Ping / 2
-			: 0
-	}
+	// public GetCastDelay(position: Vector3, turnRate: boolean = true): number {
+	// 	return this?.Owner
+	// 		? (this.CastPoint + (turnRate ? this.Owner.TurnTime(position) : 0)) * 1000 +
+	// 				GameState.Ping / 2
+	// 		: 0
+	// }
 	/**
 	 * TODO Fix me
 	 * @param position Vector3

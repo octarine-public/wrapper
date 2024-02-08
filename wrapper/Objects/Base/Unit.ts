@@ -784,12 +784,6 @@ export class Unit extends Entity {
 		}
 		return projectileCollisionSize
 	}
-	public get MovementTurnRate(): number {
-		return this.UnitData.MovementTurnRate
-	}
-	public get AttackProjectileSpeed(): number {
-		return this.UnitData.ProjectileSpeed
-	}
 	public get PrimaryAtribute(): Attributes {
 		return this.UnitData.AttributePrimary
 	}
@@ -882,13 +876,13 @@ export class Unit extends Entity {
 
 	protected get AttackSpeed() {
 		const base = this.BaseAttackSpeed,
-			baseAtk = this.BaseAttackSpeedAmplifier
+			baseAs = this.BaseAttackSpeedAmplifier
 
-		const ampAtk = this.AttackSpeedAmplifier,
+		const ampAs = this.AttackSpeedAmplifier,
 			isLimit = this.IsAttackSpeedLimit
 
-		const baseSpeed = base * baseAtk + this.AttackSpeedBonus,
-			calculateSpeed = Math.max(baseSpeed * ampAtk, AttackSpeedData.Min)
+		const baseSpeed = base * baseAs + this.AttackSpeedBonus,
+			calculateSpeed = Math.max(baseSpeed * ampAs, AttackSpeedData.Min)
 
 		const totalSpeed = isLimit
 			? Math.min(AttackSpeedData.Max, Math.max(AttackSpeedData.Min, calculateSpeed))
@@ -1137,44 +1131,31 @@ export class Unit extends Entity {
 	public GetRotationTime(vec: Vector3): number {
 		const turnRad = Math.PI - 0.25
 		const ang = this.FindRotationAngle(vec)
-		return ang <= turnRad ? (30 * ang) / this.MovementTurnRate : 0
+		return ang <= turnRad ? (30 * ang) / this.BaseMovementTurnRateData : 0
 	}
 
 	public TurnRate(currentTurnRate = true): number {
-		let turnRate = this.MovementTurnRate || 0.5
-
-		if (currentTurnRate) {
-			const buff = this.GetBuffByName("modifier_batrider_sticky_napalm")
-			if (buff !== undefined && buff.Ability !== undefined) {
-				turnRate *=
-					1 +
-					buff.Ability.GetSpecialValue("turn_rate_pct", buff.AbilityLevel) / 100
-			}
-		}
-
-		const legs = this.GetItemByName("item_spider_legs")
-		if (legs !== undefined) {
-			turnRate *= 1 + legs.GetSpecialValue("turn_rate") / 100
+		let turnRate = this.BaseMovementTurnRateData || 0.5
+		if (!currentTurnRate) {
+			return turnRate
 		}
 
 		return turnRate
 	}
 
-	public TurnTime(angle: number | Vector3) {
+	public TurnTime(angle: number, currentTurnRate = true) {
+		return Math.max(angle / (30 * this.TurnRate(currentTurnRate)), 0)
+	}
+
+	public GetTurnTime(
+		angle: number | Vector3,
+		currentTurnRate = true,
+		rotationDiff = false
+	) {
 		if (angle instanceof Vector3) {
-			angle = this.FindRotationAngle(angle)
+			angle = this.GetAngle(angle, rotationDiff)
 		}
-
-		const name = this.Name
-		if (name === "npc_dota_hero_wisp" || name === "npc_dota_hero_pangolier") {
-			return 0
-		}
-
-		if (angle <= 0.2) {
-			return 0
-		}
-
-		return angle / (30 * this.TurnRate())
+		return this.TurnTime(angle, currentTurnRate)
 	}
 
 	// TODO: rewrite this
@@ -1805,8 +1786,18 @@ export class Unit extends Entity {
 	}
 
 	/** ============================== Turn Rate ======================================= */
-	// TODO
+	public get BaseMovementTurnRateData(): number {
+		return this.UnitData.MovementTurnRate
+	}
+
+	public get MovementTurnRate(): number {
+		return this.CalcualteBonusTurnRate()
+	}
+
 	/** ================================ Attack Speed ======================================= */
+	public get AttackProjectileSpeed(): number {
+		return this.UnitData.ProjectileSpeed
+	}
 	protected CalculateBaseAttackTime() {
 		let attackTime =
 			this.Buffs.find(x => x.FixedBaseAttackTime !== 0)?.FixedBaseAttackTime ??
@@ -2168,6 +2159,25 @@ export class Unit extends Entity {
 			}
 			names.add(buff.Name)
 			totalBonus += buff.BonusCastRange
+		}
+		return totalBonus
+	}
+
+	/** ================================ Turn Rate ======================================= */
+	protected CalcualteBonusTurnRate() {
+		let totalBonus = 0
+		const names = new Set<string>(),
+			arrBuffs = this.Buffs
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.BonusTurnRate) {
+				continue
+			}
+			if (!buff.BonusTurnRateStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus += buff.BonusTurnRate
 		}
 		return totalBonus
 	}

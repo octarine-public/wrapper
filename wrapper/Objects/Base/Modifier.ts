@@ -179,6 +179,12 @@ export class Modifier {
 	/** @readonly */
 	public BonusNightVisionStack = false
 
+	// bonus turn rate
+	/** @readonly */
+	public BonusTurnRate = 0
+	/** @readonly */
+	public BonusTurnRateStack = false
+
 	// move speed resistance
 	/** @readonly */
 
@@ -781,6 +787,8 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.BonusAOERadius = subtract ? value * -1 : value
 	}
+
+	/** ======================= Turn rate ======================= */
 
 	/** @description NOTE: does not include talents (recommended use only items) */
 	protected byAbilityData(
