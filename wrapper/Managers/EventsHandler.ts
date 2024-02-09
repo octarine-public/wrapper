@@ -87,6 +87,8 @@ message CNETMsg_Tick {
 	optional uint32 host_loss = 7;
 	optional uint32 host_unfiltered_frametime = 8;
 	optional uint32 hltv_replay_flags = 9;
+	optional uint32 expected_long_tick = 10;
+	optional string expected_long_tick_reason = 11;
 }
 
 message CSVCMsg_GameSessionConfiguration {
@@ -274,6 +276,7 @@ enum DOTA_CHAT_MESSAGE {
 	CHAT_MESSAGE_HERO_KILL_WITH_PENGUIN = 116;
 	CHAT_MESSAGE_MINIBOSS_KILL = 117;
 	CHAT_MESSAGE_PLAYER_IN_GAME_BAN_TEXT = 118;
+	CHAT_MESSAGE_BANNER_PLANTED = 119;
 }
 
 message CUserMsg_ParticleManager {
@@ -288,6 +291,8 @@ message CUserMsg_ParticleManager {
 		optional bool apply_voice_ban_rules = 5;
 		optional int32 team_behavior = 6;
 		optional string control_point_configuration = 7;
+		optional bool cluster = 8;
+		optional float endcap_time = 9;
 	}
 
 	message DestroyParticle {

@@ -216,7 +216,7 @@ message CDOTAUserMsg_DestroyLinearProjectile {
 }
 
 message CDOTAUserMsg_DodgeTrackingProjectiles {
-	required int32 entindex = 1;
+	required int32 entindex = 1 [default = -1];
 	optional bool attacks_only = 2;
 }
 

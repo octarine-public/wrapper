@@ -229,18 +229,22 @@ message CMsgLobbyPlayerPlusSubscriptionData {
 
 	repeated .CMsgLobbyPlayerPlusSubscriptionData.HeroBadge hero_badges = 1;
 }
+message CExtraMsgBlock {
+	optional uint32 msg_type = 1;
+	optional bytes contents = 2;
+	optional uint64 msg_key = 3;
+	optional bool is_compressed = 4;
+}
+message CMsgEventActionData {
+	optional uint32 action_id = 1;
+	optional uint32 action_score = 2;
+}
+message CMsgPeriodicResourceData {
+	optional uint32 periodic_resource_id = 1;
+	optional uint32 remaining = 2;
+	optional uint32 max = 3;
+}
 message CMsgLobbyEventPoints {
-	message PeriodicResourceData {
-		optional uint32 periodic_resource_id = 1;
-		optional uint32 remaining = 2;
-		optional uint32 max = 3;
-	}
-
-	message NetworkedEventAction {
-		optional uint32 action_id = 1;
-		optional uint32 times_granted = 2;
-	}
-
 	message AccountPoints {
 		optional uint32 account_id = 1;
 		optional uint32 normal_points = 2;
@@ -248,12 +252,13 @@ message CMsgLobbyEventPoints {
 		optional bool owned = 4;
 		optional uint64 active_effects_mask = 12;
 		optional uint32 wager_streak = 23;
-		repeated .CMsgLobbyEventPoints.NetworkedEventAction event_game_custom_actions = 25;
+		repeated .CMsgEventActionData event_game_custom_actions = 25;
 		optional uint32 tip_amount_index = 26;
 		optional uint32 active_event_season_id = 27;
 		optional uint32 teleport_fx_level = 28;
-		repeated .CMsgLobbyEventPoints.NetworkedEventAction networked_event_actions = 30;
-		repeated .CMsgLobbyEventPoints.PeriodicResourceData periodic_resources = 31;
+		repeated .CMsgEventActionData networked_event_actions = 30;
+		repeated .CMsgPeriodicResourceData periodic_resources = 31;
+		repeated .CExtraMsgBlock extra_event_messages = 32;
 	}
 
 	optional uint32 event_id = 1;
@@ -336,6 +341,8 @@ enum EEvent {
 	EVENT_ID_TEAM_2023_TOUR3 = 43;
 	EVENT_ID_INTERNATIONAL_2023 = 45;
 	EVENT_ID_10TH_ANNIVERSARY = 46;
+	EVENT_ID_CROWNFALL = 47;
+	EVENT_ID_FROSTIVUS_2023 = 48;
 }
 message CLobbyGuildChallenge {
 	optional uint32 guild_id = 1;
@@ -668,7 +675,6 @@ message CSODOTALobby {
 	optional uint32 league_node_id = 110;
 	optional uint32 match_duration = 111;
 	optional uint32 league_phase = 113;
-	optional bool record_detailed_stats = 114;
 	optional bool experimental_gameplay_enabled = 116;
 	repeated .CLobbyGuildChallenge guild_challenges = 117;
 	repeated .CLobbyGuildDetails guild_details = 118;
