@@ -285,7 +285,7 @@ export class Entity {
 	public set CustomDrawColor(val: Nullable<[Color, RenderMode]>) {
 		if (this.CustomDrawColor_ !== val) {
 			this.CustomDrawColor_ = val
-			lastColoredEnts.set(this, 10) // repeat SetEntityColor for 10 ticks
+			lastColoredEnts.set(this, GameState.CurrentServerTick)
 		}
 	}
 	public get Name(): string {
@@ -994,13 +994,20 @@ function CustomGlowEnts(): void {
 
 const lastColoredEnts = new Map<Entity, number>()
 function CustomColorEnts(): void {
-	lastColoredEnts.forEach((repeats, ent) => {
-		if (ent.IsValid) {
-			const [color, mode] = ent.CustomDrawColor ?? [Color.White, RenderMode.Normal]
-			SetEntityColor(ent.CustomNativeID, color.toUint32(), mode)
+	lastColoredEnts.forEach((bornTick, ent) => {
+		const ticks = GameState.CurrentServerTick - bornTick
 
-			lastColoredEnts.set(ent, --repeats)
-			if (repeats > 0 && ent.CustomDrawColor !== undefined) {
+		if (ent.IsValid && ticks >= 0) {
+			// update every power of 2
+			if (ticks.bitCount() === 1) {
+				const [color, mode] = ent.CustomDrawColor ?? [
+					Color.White,
+					RenderMode.Normal
+				]
+				SetEntityColor(ent.CustomNativeID, color.toUint32(), mode)
+			}
+
+			if (ent.CustomDrawColor !== undefined) {
 				return
 			}
 		}
