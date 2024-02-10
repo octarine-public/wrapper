@@ -220,6 +220,7 @@ message ProtoFlattenedSerializerField_t {
 	optional int32 send_node_sym = 9;
 	optional int32 var_encoder_sym = 10;
 	repeated .ProtoFlattenedSerializerField_t.polymorphic_field_t polymorphic_types = 11;
+	optional int32 var_serializer_sym = 12;
 }
 
 message ProtoFlattenedSerializer_t {

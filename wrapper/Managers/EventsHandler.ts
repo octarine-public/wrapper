@@ -1,5 +1,6 @@
 import { Color } from "../Base/Color"
 import { NetworkedParticle } from "../Base/NetworkedParticle"
+import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { DOTAGameState } from "../Enums/DOTAGameState"
@@ -87,6 +88,8 @@ message CNETMsg_Tick {
 	optional uint32 host_loss = 7;
 	optional uint32 host_unfiltered_frametime = 8;
 	optional uint32 hltv_replay_flags = 9;
+	optional uint32 expected_long_tick = 10;
+	optional string expected_long_tick_reason = 11;
 }
 
 message CSVCMsg_GameSessionConfiguration {
@@ -274,6 +277,7 @@ enum DOTA_CHAT_MESSAGE {
 	CHAT_MESSAGE_HERO_KILL_WITH_PENGUIN = 116;
 	CHAT_MESSAGE_MINIBOSS_KILL = 117;
 	CHAT_MESSAGE_PLAYER_IN_GAME_BAN_TEXT = 118;
+	CHAT_MESSAGE_BANNER_PLANTED = 119;
 }
 
 message CUserMsg_ParticleManager {
@@ -288,6 +292,8 @@ message CUserMsg_ParticleManager {
 		optional bool apply_voice_ban_rules = 5;
 		optional int32 team_behavior = 6;
 		optional string control_point_configuration = 7;
+		optional bool cluster = 8;
+		optional float endcap_time = 9;
 	}
 
 	message DestroyParticle {
@@ -1369,11 +1375,103 @@ EventsSDK.on("ServerInfo", info => {
 	EventsSDK.emit("UnitAbilityDataUpdated", false)
 })
 
+class DrawListener {
+	public static Null(): DrawListener {
+		const cb = () => {
+			//
+		}
+		return new DrawListener(0, 0, cb, 0)
+	}
+	constructor(
+		public id: number,
+		public period: number,
+		public callback: () => void,
+		public last = 0
+	) {
+		//
+	}
+	public Trigger() {
+		this.last = 0
+	}
+}
+
+class CEventDrawSDK {
+	private lastOnDraw = 0
+	private drawCallsPerSecond = 0
+	private onDrawListeners = new Array<DrawListener>()
+
+	public readonly RATE_RARE = -60 // 1 hz
+	public readonly RATE_VSYNC_4 = -4 // 1/4
+	public readonly RATE_VSYNC_3 = -3 // 1/3
+	public readonly RATE_VSYNC_2 = -2 // 1/2
+	public readonly RATE_VSYNC = -1
+	public readonly RATE_EVERY_FRAME = 0
+
+	public OnDrawCached(updateRate: number, callback: () => void): DrawListener {
+		if (updateRate === this.RATE_EVERY_FRAME) {
+			EventsSDK.on("Draw", callback)
+			return DrawListener.Null()
+		}
+		if (updateRate < 0) {
+			// todo get screen refresh rate
+			const refreshRate = 60
+			updateRate = refreshRate / -updateRate
+		}
+
+		this.drawCallsPerSecond += updateRate
+		const listener = new DrawListener(
+			this.onDrawListeners.length,
+			1000 / updateRate,
+			callback
+		)
+		this.onDrawListeners.push(listener)
+		return listener
+	}
+
+	public _internalEmit() {
+		const count = this.onDrawListeners.length
+		if (count === 0) {
+			return
+		}
+		const now = hrtime()
+		const frameTime = now - this.lastOnDraw
+		this.lastOnDraw = now
+
+		let maxUpdates = frameTime / (1000 / this.drawCallsPerSecond)
+		let updated = 0
+
+		this.onDrawListeners.orderBy(l => l.last + l.period)
+
+		for (let i = 0; i < count; i++) {
+			const l = this.onDrawListeners[i]
+			const toWait = l.last - now + l.period
+
+			if (toWait > 0) {
+				break
+			} else if (toWait < -l.period) {
+				//we are too late, force update
+				maxUpdates++
+			}
+			if (updated < maxUpdates) {
+				updated++
+				l.last = now
+
+				RendererSDK.CmdListAction(l.id, true)
+				l.callback()
+				RendererSDK.CmdListAction(l.id, false)
+			}
+		}
+		RendererSDK.CmdListSubmitGroup(count)
+	}
+}
+
+export const EventDrawSDK = new CEventDrawSDK()
+
 let isDedicated = false
 const text =
 	"Currently, the cheat does not work correctly in the local lobby, to configure and test, create a lobby on Valve servers."
 
-EventsSDK.on("Draw", () => {
+EventDrawSDK.OnDrawCached(EventDrawSDK.RATE_RARE, () => {
 	if (isDedicated || GameState.UIState !== DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME) {
 		return
 	}
@@ -1467,6 +1565,8 @@ Events.on("Draw", (visualData, w, h, x, y) => {
 	}
 	GameState.IsInDraw = true
 	EventsSDK.emit("PreDraw")
+	EventDrawSDK._internalEmit()
 	EventsSDK.emit("Draw")
+
 	GameState.IsInDraw = false
 })
