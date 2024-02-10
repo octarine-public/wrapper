@@ -10,6 +10,12 @@ Number.prototype.hasBit = function (bit: number): boolean {
 Number.prototype.hasMask = function (mask: number): boolean {
 	return ((this as number) & mask) === mask
 }
+Number.prototype.bitCount = function (): number {
+	let n = this as number
+	n = n - ((n >> 1) & 0x55555555)
+	n = (n & 0x33333333) + ((n >> 2) & 0x33333333)
+	return (((n + (n >> 4)) & 0xf0f0f0f) * 0x1010101) >> 24
+}
 
 Object.defineProperty(Number.prototype, "toInt16", {
 	get() {
