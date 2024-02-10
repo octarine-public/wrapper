@@ -23,6 +23,8 @@ declare interface BigInt {
 declare interface Number {
 	hasBit(bit: number): boolean
 	hasMask(mask: number): boolean
+	/** popcnt */
+	bitCount(): number
 	toMask: number[]
 	toInt16: number
 }
