@@ -12,7 +12,6 @@ import { Entity, GameRules } from "../Objects/Base/Entity"
 import { WorldLayers } from "../Objects/Base/WorldLayer"
 import { EntityDataLumps } from "../Resources/ParseEntityLump"
 import { GameState } from "../Utils/GameState"
-import { EventDrawSDK } from "./EventsHandler"
 import { EventsSDK } from "./EventsSDK"
 
 class MinimapIcon {
@@ -201,7 +200,7 @@ function LoadIcons(): void {
 }
 EventsSDK.after("ServerInfo", LoadIcons)
 
-EventDrawSDK.OnDrawCached(EventDrawSDK.RATE_VSYNC_3, () => {
+EventsSDK.on("Draw", () => {
 	if (
 		!GameRules?.IsInGame ||
 		GameState.UIState !== DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME

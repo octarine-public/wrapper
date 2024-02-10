@@ -35,10 +35,6 @@ enum CommandID {
 	PATH_QUAD_TO,
 	PATHCLOSE,
 
-	CMD_LIST_BEGIN,
-	CMD_LIST_END,
-	CMD_LIST_SUBMIT,
-
 	// DRAW
 	TEXT,
 	SVG,
@@ -1183,23 +1179,6 @@ class CRendererSDK {
 			this.commandStream.WriteFloat32(-texOffsetY!)
 			this.commandStream.WriteFloat32(texW!)
 			this.commandStream.WriteFloat32(texH!)
-		}
-	}
-	public CmdListAction(id: number, begin: boolean) {
-		this.AllocateCommandSpace(
-			begin //
-				? CommandID.CMD_LIST_BEGIN
-				: CommandID.CMD_LIST_END,
-			2
-		)
-		this.commandStream.WriteUint16(id)
-	}
-	public CmdListSubmitGroup(count: number) {
-		this.commandCacheSize += (1 + 2) * count
-		this.ResizeCommandCache()
-		for (let i = 0; i < count; i++) {
-			this.commandStream.WriteUint8(CommandID.CMD_LIST_SUBMIT)
-			this.commandStream.WriteUint16(i)
 		}
 	}
 	private Rotate(ang: number): void {
