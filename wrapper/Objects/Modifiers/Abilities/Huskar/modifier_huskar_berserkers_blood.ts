@@ -5,6 +5,8 @@ import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
 export class modifier_huskar_berserkers_blood extends Modifier {
+	public readonly IsBuff = true
+
 	private isEmited = false
 
 	public Remove(): boolean {
@@ -30,11 +32,11 @@ export class modifier_huskar_berserkers_blood extends Modifier {
 			this.BonusAttackSpeed = 0
 			return
 		}
-		const maxAttackSpeed = this.GetSpecialValue("maximum_attack_speed")
-		this.BonusAttackSpeed = this.caluclate(owner) * maxAttackSpeed
+		const maxAttackSpeed = this.GetSpecialAttackSpeedByState("maximum_attack_speed")
+		this.BonusAttackSpeed = Math.max(this.calculateByHP(owner) * maxAttackSpeed, 0)
 	}
 
-	private caluclate(owner: Unit) {
+	private calculateByHP(owner: Unit) {
 		const exponent = 1.88
 		const maxThreshold = this.GetSpecialValue("hp_threshold_max") / 100
 		const hpThreshold = owner.HP / owner.MaxHP - maxThreshold

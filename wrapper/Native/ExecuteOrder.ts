@@ -8,6 +8,7 @@ import { TempTree } from "../Objects/Base/TempTree"
 import { Tree } from "../Objects/Base/Tree"
 import { Unit } from "../Objects/Base/Unit"
 import { GridNav } from "../Resources/ParseGNV"
+import { GameState } from "../Utils/GameState"
 import * as WASM from "./WASM"
 
 function WillInterruptOrderQueue(order: ExecuteOrder): boolean {
@@ -114,6 +115,10 @@ export class ExecuteOrder {
 	public static PrefireOrders = true
 	public static IsStandalone = false
 	public static unsafeMode = false
+	protected static readonly localMapList: Set<string> = new Set([
+		"hero_demo_main",
+		"hero_demo_frostivus"
+	])
 	private static DisableHumanizer_ = false
 	private readonly flags: number
 
@@ -259,7 +264,7 @@ export class ExecuteOrder {
 		PrepareUnitOrders(this.toNative())
 	}
 	public ExecuteQueued(): void {
-		if (ExecuteOrder.unsafeMode) {
+		if (ExecuteOrder.unsafeMode || ExecuteOrder.localMapList.has(GameState.MapName)) {
 			this.Execute()
 			return
 		}

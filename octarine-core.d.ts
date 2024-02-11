@@ -227,7 +227,7 @@ declare class ModelData {
 	 * 
 	 * @returns mat: Matrix3x4 to IOBuffer offset 0
 	 */
-	public getAttachmentMatrix(
+	public getAttachmentMatrix?(
 		animationID: number,
 		attachmentID: number,
 		time: number,
