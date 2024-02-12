@@ -1,6 +1,6 @@
 import { WrapperClassModifier } from "../../../Decorators"
-import { GameState } from "../../../Imports"
 import { ModifierManager } from "../../../Managers/ModifierManager"
+import { GameState } from "../../../Utils/GameState"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()

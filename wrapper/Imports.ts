@@ -987,6 +987,8 @@ export { vengefulspirit_magic_missile } from "./Objects/Abilities/VengefulSpirit
 export { vengefulspirit_nether_swap } from "./Objects/Abilities/VengefulSpirit/vengefulspirit_nether_swap"
 export { vengefulspirit_wave_of_terror } from "./Objects/Abilities/VengefulSpirit/vengefulspirit_wave_of_terror"
 export { venomancer_area_poison } from "./Objects/Abilities/Venomancer/venomancer_area_poison"
+export { venomancer_latent_poison } from "./Objects/Abilities/Venomancer/venomancer_latent_poison"
+export { venomancer_noxious_plague } from "./Objects/Abilities/Venomancer/venomancer_noxious_plague"
 export { venomancer_plague_ward } from "./Objects/Abilities/Venomancer/venomancer_plague_ward"
 export { venomancer_poison_nova } from "./Objects/Abilities/Venomancer/venomancer_poison_nova"
 export { venomancer_poison_sting } from "./Objects/Abilities/Venomancer/venomancer_poison_sting"

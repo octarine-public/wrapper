@@ -3,7 +3,11 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("skeleton_king_hellfire_blast")
 export class skeleton_king_hellfire_blast extends Ability {
-	public get Speed(): number {
-		return this.GetSpecialValue("blast_speed")
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("blast_speed", level)
 	}
 }

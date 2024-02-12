@@ -10,6 +10,9 @@ export class invoker_tornado extends Ability {
 	@NetworkedBasicField("m_nExortLevel")
 	public ExortLevel = 0
 
+	public get AbilityDamage(): number {
+		return this.GetBaseDamageForLevel(this.Level + this.WexLevel)
+	}
 	/**
 	 * @param level
 	 * @return {number}

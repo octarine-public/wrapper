@@ -6,8 +6,12 @@ export class grimstroke_dark_artistry extends Ability {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("end_radius")
 	}
-	public get Speed(): number {
-		return this.GetSpecialValue("projectile_speed")
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage", level)
 	}
 	/**
 	 * @param level
@@ -27,7 +31,7 @@ export class grimstroke_dark_artistry extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetBaseDamageForLevel(level: number): number {
-		return this.GetSpecialValue("damage", level)
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("projectile_speed", level)
 	}
 }

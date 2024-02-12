@@ -10,6 +10,9 @@ export class invoker_chaos_meteor extends Ability {
 	@NetworkedBasicField("m_nExortLevel")
 	public ExortLevel = 0
 
+	public get Speed() {
+		return this.GetBaseSpeedForLevel(this.Level + this.WexLevel)
+	}
 	/**
 	 * @param level
 	 * @return {number}

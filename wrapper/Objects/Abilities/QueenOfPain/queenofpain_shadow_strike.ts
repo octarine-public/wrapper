@@ -3,14 +3,25 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("queenofpain_shadow_strike")
 export class queenofpain_shadow_strike extends Ability {
-	public get Speed(): number {
-		return this.GetSpecialValue("projectile_speed")
-	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetBaseAOERadiusForLevel(level: number): number {
-		const talent = this.Owner?.GetAbilityByName("special_bonus_unique_queen_of_pain")
-		if (talent !== undefined && talent.Level !== 0) {
-			return talent.GetSpecialValue("value", level)
-		}
-		return 0
+		return this.GetSpecialValue("aoe_radius", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("strike_damage", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("projectile_speed", level)
 	}
 }

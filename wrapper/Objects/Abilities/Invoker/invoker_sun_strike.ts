@@ -10,6 +10,9 @@ export class invoker_sun_strike extends Ability {
 	@NetworkedBasicField("m_nExortLevel")
 	public ExortLevel = 0
 
+	public get AbilityDamage() {
+		return this.GetBaseDamageForLevel(this.Level + this.ExortLevel)
+	}
 	/**
 	 * @param level
 	 * @return {number}

@@ -23,7 +23,7 @@ import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { RendererSDK } from "../../Native/RendererSDK"
-import * as WASM from "../../Native/WASM"
+import { HeightMap } from "../../Native/WASM"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GridNav } from "../../Resources/ParseGNV"
 import { GameState } from "../../Utils/GameState"
@@ -289,64 +289,28 @@ export class Unit extends Entity {
 		return this.NetworkBaseMoveSpeed
 	}
 
-	public get NightVision() {
-		let totalBonus = this.NetworkedNightVision
-		const arrBuffs = this.Buffs
-		const names = new Set<string>()
-		for (let index = arrBuffs.length - 1; index > -1; index--) {
-			const buff = arrBuffs[index]
-			if (!buff.BonusNightVision) {
-				continue
-			}
-			if (buff.BonusNightVisionStack && names.has(buff.Name)) {
-				continue
-			}
-			names.add(buff.Name)
-			totalBonus += buff.BonusNightVision
-		}
-		return totalBonus
+	public get DayVisionAmplify() {
+		return this.CalcualteAmpDayVision()
 	}
 
-	public get DayVisionAmplify() {
-		let totalBonus = 1
-		const arrBuffs = this.Buffs
-		const names = new Set<string>()
-		for (let index = arrBuffs.length - 1; index > -1; index--) {
-			const buff = arrBuffs[index]
-			if (!buff.BonusDayVisionAmplifier) {
-				continue
-			}
-			if (buff.BonusDayVisionAmplifierStack && names.has(buff.Name)) {
-				continue
-			}
-			names.add(buff.Name)
-			totalBonus += buff.BonusDayVisionAmplifier
-		}
-		return totalBonus
+	public get BonusDayVision() {
+		return this.CalcualteBonusDayVision()
+	}
+
+	public get BonusNightVision() {
+		return this.CalcualteBonusNightVision()
 	}
 
 	public get DayVisionBonus() {
-		let totalBonus = this.NetworkedDayVision
-		const arrBuffs = this.Buffs
-		const names = new Set<string>()
-		for (let index = arrBuffs.length - 1; index > -1; index--) {
-			const buff = arrBuffs[index]
-			if (!buff.BonusDayVision) {
-				continue
-			}
-			if (buff.BonusDayVisionStack && names.has(buff.Name)) {
-				continue
-			}
-			names.add(buff.Name)
-			totalBonus += buff.BonusDayVision
-		}
-		return totalBonus
+		return this.NetworkedDayVision + this.BonusDayVision
+	}
+
+	public get NightVision() {
+		return this.NetworkedNightVision + this.BonusNightVision
 	}
 
 	public get DayVision() {
-		const amp = this.DayVisionAmplify
-		const bonus = this.DayVisionBonus
-		return bonus * amp
+		return this.DayVisionBonus * this.DayVisionAmplify
 	}
 
 	/**
@@ -371,6 +335,10 @@ export class Unit extends Entity {
 	}
 
 	// ===================================== Attack Speed ===================================== //
+	public get AttackProjectileSpeed(): number {
+		return this.UnitData.ProjectileSpeed
+	}
+
 	public get IsAttackSpeedLimit() {
 		return (
 			this.Buffs.find(buff => !buff.IsAttackSpeedLimit)?.IsAttackSpeedLimit ?? true
@@ -485,6 +453,38 @@ export class Unit extends Entity {
 			: Math.max(MoveSpeedData.Min, calculateSpeed)
 
 		return totalSpeed
+	}
+
+	/** ============================== Turn Rate ======================================= */
+	public get BaseMovementTurnRateData(): number {
+		return this.UnitData.MovementTurnRate
+	}
+
+	public get BaseTurnRate() {
+		return this.CalcualteBaseTurnRate()
+	}
+
+	public get TurnRateAmplifier() {
+		return this.CalcualteAmpTurnRate()
+	}
+
+	public get BonusMovementTurnRate(): number {
+		return this.CalcualteBonusTurnRate()
+	}
+
+	public get FixedMovementTurnRate(): number {
+		return this.CalcualteFixedTurnRate()
+	}
+
+	public get MovementTurnRate(): number {
+		const fixedTurnRate = this.FixedMovementTurnRate
+		if (fixedTurnRate !== 0) {
+			return fixedTurnRate
+		}
+		const amp = this.TurnRateAmplifier,
+			bonusTurnRate = this.BonusMovementTurnRate,
+			baseTurnRate = this.BaseTurnRate
+		return Math.max(baseTurnRate + bonusTurnRate * amp, 0)
 	}
 
 	public get LastRealPredictedPositionUpdate(): number {
@@ -1128,25 +1128,7 @@ export class Unit extends Entity {
 		return super.IsInRange(ent, range)
 	}
 
-	public GetRotationTime(vec: Vector3): number {
-		const turnRad = Math.PI - 0.25
-		const ang = this.FindRotationAngle(vec)
-		return ang <= turnRad ? (30 * ang) / this.BaseMovementTurnRateData : 0
-	}
-
-	public TurnRate(currentTurnRate = true): number {
-		let turnRate = this.BaseMovementTurnRateData || 0.5
-		if (!currentTurnRate) {
-			return turnRate
-		}
-
-		return turnRate
-	}
-
-	public TurnTime(angle: number, currentTurnRate = true) {
-		return Math.max(angle / (30 * this.TurnRate(currentTurnRate)), 0)
-	}
-
+	/** ================================ Turn Time ======================================= */
 	public GetTurnTime(
 		angle: number | Vector3,
 		currentTurnRate = true,
@@ -1156,6 +1138,20 @@ export class Unit extends Entity {
 			angle = this.GetAngle(angle, rotationDiff)
 		}
 		return this.TurnTime(angle, currentTurnRate)
+	}
+
+	public GetRotationTime(vec: Vector3, currentTurnRate = true): number {
+		const turnRad = Math.PI - 0.25
+		const ang = this.FindRotationAngle(vec)
+		return ang <= turnRad ? (30 * ang) / this.TurnRate(currentTurnRate) : 0
+	}
+
+	public TurnRate(currentTurnRate = true): number {
+		return currentTurnRate ? this.MovementTurnRate : this.BaseTurnRate || 0.5
+	}
+
+	public TurnTime(angle: number, currentTurnRate = true) {
+		return Math.max(angle / (30 * this.TurnRate(currentTurnRate)), 0)
 	}
 
 	// TODO: rewrite this
@@ -1394,6 +1390,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public MoveToTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET,
@@ -1403,6 +1400,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public AttackMove(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE,
@@ -1412,6 +1410,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public AttackTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET,
@@ -1421,6 +1420,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public CastPosition(
 		ability: Ability,
 		position: Vector3,
@@ -1436,6 +1436,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public PurchaseItem(itemID: number, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM,
@@ -1445,6 +1446,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public CastTarget(
 		ability: Ability,
 		target: Entity | number,
@@ -1460,6 +1462,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public CastTargetTree(
 		ability: Ability,
 		tree: Tree | TempTree | number,
@@ -1475,6 +1478,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public CastNoTarget(ability: Ability, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
@@ -1484,6 +1488,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public CastToggle(ability: Ability, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE,
@@ -1493,6 +1498,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public CastAltToggle(ability: Ability, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_ALT,
@@ -1502,6 +1508,7 @@ export class Unit extends Entity {
 			showEffects
 		})
 	}
+
 	public HoldPosition(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION,
@@ -1761,6 +1768,7 @@ export class Unit extends Entity {
 			target: state === false ? 0 : undefined
 		})
 	}
+
 	public OrderContinue(item: Item, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE,
@@ -1785,19 +1793,8 @@ export class Unit extends Entity {
 		})
 	}
 
-	/** ============================== Turn Rate ======================================= */
-	public get BaseMovementTurnRateData(): number {
-		return this.UnitData.MovementTurnRate
-	}
-
-	public get MovementTurnRate(): number {
-		return this.CalcualteBonusTurnRate()
-	}
-
 	/** ================================ Attack Speed ======================================= */
-	public get AttackProjectileSpeed(): number {
-		return this.UnitData.ProjectileSpeed
-	}
+
 	protected CalculateBaseAttackTime() {
 		let attackTime =
 			this.Buffs.find(x => x.FixedBaseAttackTime !== 0)?.FixedBaseAttackTime ??
@@ -2066,8 +2063,8 @@ export class Unit extends Entity {
 
 	protected CalcualteAmpAttackRange() {
 		let amp = 1
-		const names = new Set<string>()
-		const arrBuffs = this.Buffs
+		const names = new Set<string>(),
+			arrBuffs = this.Buffs
 		for (let index = arrBuffs.length - 1; index > -1; index--) {
 			const buff = arrBuffs[index]
 			if (!buff.AttackRangeAmplifier) {
@@ -2105,11 +2102,10 @@ export class Unit extends Entity {
 	}
 
 	protected CalcualteInfinityAttackRange() {
-		const hMap = WASM.HeightMap
-		if (hMap === undefined) {
+		if (HeightMap === undefined) {
 			return Number.MAX_SAFE_INTEGER
 		}
-		return hMap.MapSize.x ** 2 + hMap.MapSize.y ** 2
+		return HeightMap.MapSize.x ** 2 + HeightMap.MapSize.y ** 2
 	}
 
 	/** ================================ AOE Radius ======================================= */
@@ -2164,6 +2160,21 @@ export class Unit extends Entity {
 	}
 
 	/** ================================ Turn Rate ======================================= */
+	protected CalcualteFixedTurnRate() {
+		return this.Buffs.find(x => x.FixedTurnRate !== 0)?.FixedTurnRate ?? 0
+	}
+
+	protected CalcualteFixedBaseTurnRate() {
+		return this.Buffs.find(x => x.FixedBaseTurnRate !== 0)?.FixedBaseTurnRate ?? 0
+	}
+
+	protected CalcualteBaseTurnRate() {
+		const turnRate = this.CalcualteFixedBaseTurnRate()
+		if (turnRate !== 0) {
+			return turnRate
+		}
+		return this.UnitData.MovementTurnRate
+	}
 	protected CalcualteBonusTurnRate() {
 		let totalBonus = 0
 		const names = new Set<string>(),
@@ -2178,6 +2189,80 @@ export class Unit extends Entity {
 			}
 			names.add(buff.Name)
 			totalBonus += buff.BonusTurnRate
+		}
+		return totalBonus
+	}
+
+	protected CalcualteAmpTurnRate() {
+		let amp = 1
+		const names = new Set<string>(),
+			arrBuffs = this.Buffs
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.BonusTurnRateAmplifier) {
+				continue
+			}
+			if (!buff.BonusTurnRateAmplifierStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			amp += buff.BonusTurnRateAmplifier
+		}
+		return amp
+	}
+
+	/** ================================ Night Vision ======================================= */
+	protected CalcualteBonusNightVision() {
+		let totalBonus = 0
+		const arrBuffs = this.Buffs,
+			names = new Set<string>()
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.BonusNightVision) {
+				continue
+			}
+			if (buff.BonusNightVisionStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus += buff.BonusNightVision
+		}
+		return totalBonus
+	}
+
+	/** ================================ Day Vision ======================================= */
+	protected CalcualteBonusDayVision() {
+		let totalBonus = 0
+		const arrBuffs = this.Buffs,
+			names = new Set<string>()
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.BonusDayVision) {
+				continue
+			}
+			if (buff.BonusDayVisionStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus += buff.BonusDayVision
+		}
+		return totalBonus
+	}
+
+	protected CalcualteAmpDayVision() {
+		let totalBonus = 1
+		const arrBuffs = this.Buffs
+		const names = new Set<string>()
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.BonusDayVisionAmplifier) {
+				continue
+			}
+			if (buff.BonusDayVisionAmplifierStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus += buff.BonusDayVisionAmplifier
 		}
 		return totalBonus
 	}
