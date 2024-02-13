@@ -1,7 +1,7 @@
 import { AttackSpeedData } from "../../Data/GameData"
 import { WrapperClass } from "../../Decorators"
-import { ConVarsSDK } from "../../Imports"
 import { EventsSDK } from "../../Managers/EventsSDK"
+import { ConVarsSDK } from "../../Native/ConVarsSDK"
 import { Entity } from "./Entity"
 
 @WrapperClass("CWorld")
