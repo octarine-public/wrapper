@@ -9,4 +9,8 @@ export class modifier_mars_bulwark_active extends Modifier {
 	): void {
 		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
+
+	protected SetFixedTurnRate(_specialName?: string, _subtract = false): void {
+		this.FixedTurnRate = -1
+	}
 }

@@ -1,10 +1,14 @@
 import { WrapperClass } from "../../../Decorators"
+import { DegreesToRadian } from "../../../Utils/Math"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("pangolier_gyroshell")
 export class pangolier_gyroshell extends Ability {
-	public get Speed(): number {
-		return this.GetSpecialValue("forward_move_speed")
+	public get TurnRate() {
+		return DegreesToRadian(this.GetSpecialValue("turn_rate"))
+	}
+	public get HitRadius() {
+		return this.GetSpecialValue("hit_radius")
 	}
 	/**
 	 * @param level
@@ -12,5 +16,12 @@ export class pangolier_gyroshell extends Ability {
 	 */
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("forward_move_speed", level)
 	}
 }

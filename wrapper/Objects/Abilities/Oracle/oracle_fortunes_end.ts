@@ -14,6 +14,13 @@ export class oracle_fortunes_end extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("bolt_speed", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}

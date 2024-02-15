@@ -9,6 +9,7 @@ import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
 import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EAbilitySlot } from "../../Enums/EAbilitySlot"
+import { Flow } from "../../Enums/Flow"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
@@ -91,7 +92,12 @@ export class Ability extends Entity {
 		this.Name_ = name
 		this.AbilityData = AbilityData.globalStorage.get(name) ?? AbilityData.empty
 	}
-
+	public get InputLag() {
+		return GetLatency(Flow.IN) + GetLatency(Flow.OUT)
+	}
+	public get CastDelay() {
+		return this.CastPoint + this.InputLag
+	}
 	/**
 	 * @description Determines if the Ability should be drawable
 	 * @return {boolean}
@@ -269,6 +275,16 @@ export class Ability extends Entity {
 	}
 	public get IsPassive(): boolean {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
+	}
+	public get NoTarget(): boolean {
+		return this.HasBehavior(
+			DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_IGNORE_BACKSWING
+		)
+	}
+	public get IgnoreBackSwing(): boolean {
+		return this.HasBehavior(
+			DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_IGNORE_BACKSWING
+		)
 	}
 	public get CooldownRestore(): number {
 		return Math.max(
@@ -498,38 +514,58 @@ export class Ability extends Entity {
 	public GetBaseChannelTimeForLevel(level: number): number {
 		return this.AbilityData.GetChannelTime(level)
 	}
-
-	public GetCastDelay(unit?: Unit | Vector3, rotationDiff?: boolean) {
-		return 0
-	}
 	/**
-	 * TODO Fix me
-	 * @param position Vector3
-	 * @param turnRate boolean
-	 * @returns Time in ms until the cast.
+	 * @description Returns the cast delay of the ability. Time in seconds until the cast.
+	 * @param {Unit | Vector3} unit - The unit or vector3 to calculate cast delay for
+	 * @param {boolean} currentTurnRate - Flag to indicate if current turn rate is considered
+	 * @param {boolean} rotationDiff - Flag to indicate if rotation difference is considered
+	 * @return {number}
 	 */
-	// public GetCastDelay(position: Vector3, turnRate: boolean = true): number {
-	// 	return this?.Owner
-	// 		? (this.CastPoint + (turnRate ? this.Owner.TurnTime(position) : 0)) * 1000 +
-	// 				GameState.Ping / 2
-	// 		: 0
-	// }
-	/**
-	 * TODO Fix me
-	 * @param position Vector3
-	 * @returns Time in ms until the cast.
-	 */
-	public GetHitTime(position: Vector3): number {
-		if (this.Owner === undefined) {
+	public GetCastDelay(
+		unit?: Unit | Vector3,
+		currentTurnRate: boolean = true,
+		rotationDiff: boolean = false
+	): number {
+		const owner = this.Owner
+		if (owner === undefined) {
 			return 0
 		}
-
-		if (this.Speed === Number.MAX_SAFE_INTEGER || this.Speed === 0) {
-			return this.GetCastDelay(position) + this.ActivationDelay * 1000
+		const delay = this.CastDelay + (!this.CastPoint ? 2 / 30 : 0)
+		if (unit === undefined) {
+			return delay
 		}
-
-		const time = this.Owner.Distance2D(position) / this.Speed
-		return this.GetCastDelay(position) + (time + this.ActivationDelay) * 1000
+		if (this.NoTarget || (!(unit instanceof Vector3) && owner === unit)) {
+			return delay
+		}
+		if (!(unit instanceof Vector3)) {
+			unit = unit.Position
+		}
+		return owner.GetTurnTime(unit, currentTurnRate, rotationDiff) + delay
+	}
+	/**
+	 * @description Returns the cast delay of the ability. Time in seconds until the cast.
+	 * @param {Unit | Vector3} unit - The unit or position to calculate hit time for
+	 * @param {boolean} currentTurnRate -  Flag to indicate if current turn rate is considered
+	 * @param {boolean} rotationDiff - Flag to indicate if rotation difference is considered
+	 * @return {number}
+	 */
+	public GetHitTime(
+		unit: Unit | Vector3,
+		currentTurnRate: boolean = true,
+		rotationDiff: boolean = false
+	): number {
+		const owner = this.Owner
+		if (owner === undefined) {
+			return 0
+		}
+		const activationDelay = this.ActivationDelay
+		if (!(unit instanceof Vector3) && owner === unit) {
+			return this.CastDelay + activationDelay
+		}
+		const speed = this.Speed
+		const castDelay = this.GetCastDelay(unit, currentTurnRate, rotationDiff)
+		const delay = castDelay + activationDelay
+		return speed > 0 ? owner.Distance2D(unit) / speed + delay : delay
 	}
 
 	public UseAbility(

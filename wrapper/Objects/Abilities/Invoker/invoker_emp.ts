@@ -10,6 +10,9 @@ export class invoker_emp extends Ability {
 	@NetworkedBasicField("m_nExortLevel")
 	public ExortLevel = 0
 
+	public get AbilityDamage() {
+		return this.GetBaseDamageForLevel(this.Level + this.WexLevel)
+	}
 	/**
 	 * @param level
 	 * @return {number}

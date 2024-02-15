@@ -179,14 +179,23 @@ export class Modifier {
 	/** @readonly */
 	public BonusNightVisionStack = false
 
-	// bonus turn rate
+	// Turn rate
+	/** @readonly */
+	public FixedTurnRate = 0
+	/** @readonly */
+	public FixedBaseTurnRate = 0
 	/** @readonly */
 	public BonusTurnRate = 0
 	/** @readonly */
 	public BonusTurnRateStack = false
+	/** @readonly */
+	public BonusTurnRateAmplifier = 0
+	/** @readonly */
+	public BonusTurnRateAmplifierStack = false
 
 	// move speed resistance
 	/** @readonly */
+	// TODO?
 
 	public readonly Index: number
 	public readonly SerialNumber: number
@@ -779,7 +788,7 @@ export class Modifier {
 		this.CastRangeAmplifier = !state ? (subtract ? value * -1 : value) / 100 : 0
 	}
 
-	/** ======================= Bonus AOE Radius ======================= */
+	/** ======================= AOE Radius ======================= */
 	protected SetBonusAOERadius(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -789,6 +798,38 @@ export class Modifier {
 	}
 
 	/** ======================= Turn rate ======================= */
+	protected SetFixedTurnRate(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.FixedTurnRate = subtract ? value * -1 : value
+	}
+	protected SetFixedBaseTurnRate(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.FixedBaseTurnRate = subtract ? value * -1 : value
+	}
+
+	protected SetBonusTurnRate(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		const state = this.IsDebuff && (this.IsMagicImmune() || this.IsDebuffImmune())
+		this.BonusTurnRate = !state ? (subtract ? value * -1 : value) : 0
+	}
+
+	protected SetTurnRateAmplifier(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		const state = this.IsDebuff && (this.IsMagicImmune() || this.IsDebuffImmune())
+		this.BonusTurnRate = !state ? (subtract ? value * -1 : value) / 100 : 0
+	}
 
 	/** @description NOTE: does not include talents (recommended use only items) */
 	protected byAbilityData(
@@ -807,6 +848,12 @@ export class Modifier {
 		// bonus cast range
 		this.SetBonusCastRange()
 		this.SetCastRangeAmplifier()
+
+		// bonus turn rate
+		this.SetBonusTurnRate()
+		this.SetFixedTurnRate()
+		this.SetFixedBaseTurnRate()
+		this.SetTurnRateAmplifier()
 
 		// bonus spells radius
 		this.SetBonusAOERadius()

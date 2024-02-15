@@ -7,6 +7,13 @@ export class troll_warlord_whirling_axes_melee extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("max_range", level)
 	}
@@ -21,7 +28,7 @@ export class troll_warlord_whirling_axes_melee extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
-	public GetBaseDamageForLevel(level: number): number {
-		return this.GetSpecialValue("damage", level)
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("axe_movement_speed", level)
 	}
 }

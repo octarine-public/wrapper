@@ -13,6 +13,13 @@ export class dazzle_poison_touch extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
+	public GetBaseCastRangeForLevel(level: number): number {
+		return this.GetSpecialValue("end_distance", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("start_radius", level)
 	}
@@ -22,5 +29,12 @@ export class dazzle_poison_touch extends Ability {
 	 */
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("projectile_speed", level)
 	}
 }

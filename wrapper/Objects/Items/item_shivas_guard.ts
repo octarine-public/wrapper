@@ -3,13 +3,25 @@ import { Item } from "../Base/Item"
 
 @WrapperClass("item_shivas_guard")
 export class item_shivas_guard extends Item {
-	public get Speed() {
-		return this.GetSpecialValue("blast_speed")
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("blast_damage", level)
 	}
-	public get AbilityDamage() {
-		return this.GetSpecialValue("blast_damage")
-	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("blast_radius", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("blast_speed", level)
 	}
 }

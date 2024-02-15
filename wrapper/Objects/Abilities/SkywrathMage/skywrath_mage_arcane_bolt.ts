@@ -4,12 +4,8 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("skywrath_mage_arcane_bolt")
 export class skywrath_mage_arcane_bolt extends Ability {
-	public get Speed(): number {
-		return this.GetSpecialValue("bolt_speed")
-	}
-
 	public get AbilityDamage(): number {
-		let damage = this.GetSpecialValue("bolt_damage")
+		let damage = super.AbilityDamage
 		if (this.Owner !== undefined) {
 			damage += this.Owner.TotalIntellect * this.GetSpecialValue("int_multiplier")
 		}
@@ -23,5 +19,19 @@ export class skywrath_mage_arcane_bolt extends Ability {
 		}
 
 		return SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("bolt_damage", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("bolt_speed", level)
 	}
 }

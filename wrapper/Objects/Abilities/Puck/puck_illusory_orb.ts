@@ -3,9 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("puck_illusory_orb")
 export class puck_illusory_orb extends Ability {
-	public get Speed(): number {
-		return this.GetSpecialValue("orb_speed")
-	}
 	/**
 	 * @param level
 	 * @return {number}
@@ -26,6 +23,13 @@ export class puck_illusory_orb extends Ability {
 	 */
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCooldown", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("orb_speed", level)
 	}
 	/**
 	 * @param level

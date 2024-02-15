@@ -13,6 +13,9 @@ export class invoker_deafening_blast extends Ability {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("radius_end")
 	}
+	public get AbilityDamage() {
+		return this.GetBaseDamageForLevel(this.Level + this.ExortLevel)
+	}
 	/**
 	 * @param level
 	 * @return {number}

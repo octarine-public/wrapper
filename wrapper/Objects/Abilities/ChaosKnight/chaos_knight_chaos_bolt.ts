@@ -15,4 +15,11 @@ export class chaos_knight_chaos_bolt extends Ability {
 				: 0)
 		)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("chaos_bolt_speed", level)
+	}
 }

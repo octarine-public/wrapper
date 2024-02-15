@@ -3,15 +3,31 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("marci_companion_run")
 export class marci_companion_run extends Ability {
-	public get Speed(): number {
-		return this.GetSpecialValue("move_speed")
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("impact_damage", level)
 	}
-	public get AbilityDamage(): number {
-		return this.GetSpecialValue("impact_damage")
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("move_speed", level)
 	}
-	public get AOERadius(): number {
-		return this.GetSpecialValue("landing_radius")
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("landing_radius", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCooldown", level)
 	}

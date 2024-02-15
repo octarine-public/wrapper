@@ -10,6 +10,20 @@ export class lina_dragon_slave extends Ability {
 	 * @param level
 	 * @return {number}
 	 */
+	public GetMaxCooldownForLevel(level: number): number {
+		return this.GetSpecialValue("AbilityCooldown", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("dragon_slave_damage", level)
+	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue("dragon_slave_distance", level)
 	}
@@ -33,12 +47,5 @@ export class lina_dragon_slave extends Ability {
 	 */
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("dragon_slave_width_initial", level)
-	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
 	}
 }
