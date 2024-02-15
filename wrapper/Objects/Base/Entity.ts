@@ -1015,6 +1015,11 @@ function CustomColorEnts(): void {
 		lastColoredEnts.delete(ent)
 	})
 }
+EventsSDK.on("EntityVisibleChanged", ent => {
+	if (lastColoredEnts.has(ent)) {
+		lastColoredEnts.set(ent, GameState.CurrentServerTick)
+	}
+})
 
 EventsSDK.after("PostDataUpdate", () => {
 	CustomColorEnts()
