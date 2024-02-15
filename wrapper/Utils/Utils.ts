@@ -13,7 +13,7 @@ export function parseEnumString(
 		if (regexRes === null) {
 			return res
 		}
-		const parsedName = (enumObject[regexRes[1]] as number | undefined) ?? 0
+		const parsedName = (enumObject[regexRes[1]] as Nullable<number>) ?? 0
 		switch (lastTok) {
 			case "&":
 				res &= parsedName

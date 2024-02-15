@@ -6,7 +6,7 @@ import { Unit } from "../../Objects/Base/Unit"
 import { GameState } from "../../Utils/GameState"
 import { EventsSDK } from "../EventsSDK"
 
-const Monitor = new (class {
+const Monitor = new (class CUnitVBEModifierChanged {
 	private readonly eventSleeper = new GameSleeper()
 	private readonly ignoreBuffs = [
 		"modifier_monkey_king_bounce_leap",

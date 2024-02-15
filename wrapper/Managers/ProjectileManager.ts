@@ -42,11 +42,13 @@ function TrackingProjectileCreated(projectile: TrackingProjectile) {
 	ProjectileManager.AllTrackingProjectilesMap.set(projectile.ID, projectile)
 }
 
-function DestroyTrackingProjectile(proj: TrackingProjectile) {
-	EventsSDK.emit("TrackingProjectileDestroyed", false, proj)
-	ProjectileManager.AllTrackingProjectiles.remove(proj)
-	ProjectileManager.AllTrackingProjectilesMap.delete(proj.ID)
-	proj.IsValid = false
+function DestroyTrackingProjectile(proj: Nullable<TrackingProjectile>) {
+	if (proj !== undefined) {
+		EventsSDK.emit("TrackingProjectileDestroyed", false, proj)
+		ProjectileManager.AllTrackingProjectiles.remove(proj)
+		ProjectileManager.AllTrackingProjectilesMap.delete(proj.ID)
+		proj.IsValid = false
+	}
 }
 
 EventsSDK.on("EntityCreated", ent => {
@@ -347,12 +349,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				"CDOTAUserMsg_TE_Projectile"
 			)
 			const particleSystemHandle = msg.get("particle_system_handle") as bigint
-			const abilMsg = msg.get("ability")
-			const ability =
-				abilMsg !== 16777215
-					? EntityManager.EntityByIndex(msg.get("ability") as number)
-					: undefined
-
+			const ability = EntityManager.EntityByIndex(msg.get("ability") as number)
 			const projectile = new TrackingProjectile(
 				msg.get("handle") as number,
 				GetPredictionTarget(msg.get("source") as number),
@@ -375,7 +372,6 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				msg.get("original_move_speed") as number,
 				ability
 			)
-
 			TrackingProjectileCreated(projectile)
 			break
 		}
@@ -424,10 +420,8 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				projectile.Position.CopyFrom(
 					CMsgVectorToVector3(msg.get("source_loc") as RecursiveProtobuf)
 				)
-
 				TrackingProjectileCreated(projectile)
 			}
-
 			projectile.Update(
 				target,
 				moveSpeed,
@@ -450,9 +444,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 			const projectile = ProjectileManager.AllTrackingProjectilesMap.get(
 				msg.get("handle") as number
 			)
-			if (projectile !== undefined) {
-				DestroyTrackingProjectile(projectile)
-			}
+			DestroyTrackingProjectile(projectile)
 			break
 		}
 	}

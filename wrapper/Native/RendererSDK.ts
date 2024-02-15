@@ -16,7 +16,7 @@ import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { ConVarsSDK } from "./ConVarsSDK"
 import * as WASM from "./WASM"
 
-enum CommandID {
+const enum CommandID {
 	BEGINCLIP = 0,
 	ENDCLIP,
 
@@ -41,7 +41,7 @@ enum CommandID {
 	PATH
 }
 
-enum PathFlags {
+const enum PathFlags {
 	LINECAP_OFFSET = 2,
 	LINE_JOIN_OFFSET = 4,
 
@@ -55,12 +55,12 @@ enum PathFlags {
 	FILL_AA_ON = 1 << 8,
 	STROKE_AA_OFF = 1 << 9
 }
-export enum LineCap {
+export const enum LineCap {
 	Butt = 1,
 	Round = 2,
 	Square = 3
 }
-export enum LineJoin {
+export const enum LineJoin {
 	Miter = 1,
 	Round = 2,
 	Bevel = 3

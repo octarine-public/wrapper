@@ -534,10 +534,10 @@ export class Ability extends Entity {
 		if (unit === undefined) {
 			return delay
 		}
-		if (this.NoTarget || (!(unit instanceof Vector3) && owner === unit)) {
+		if (this.NoTarget || (unit instanceof Entity && owner === unit)) {
 			return delay
 		}
-		if (!(unit instanceof Vector3)) {
+		if (unit instanceof Entity) {
 			unit = unit.Position
 		}
 		return owner.GetTurnTime(unit, currentTurnRate, rotationDiff) + delay
@@ -559,7 +559,7 @@ export class Ability extends Entity {
 			return 0
 		}
 		const activationDelay = this.ActivationDelay
-		if (!(unit instanceof Vector3) && owner === unit) {
+		if (unit instanceof Entity && owner === unit) {
 			return this.CastDelay + activationDelay
 		}
 		const speed = this.Speed

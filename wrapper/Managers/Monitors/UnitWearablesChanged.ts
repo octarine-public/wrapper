@@ -3,7 +3,7 @@ import { Units } from "../../Objects/Base/Unit"
 import { Wearable } from "../../Objects/Base/Wearable"
 import { EventsSDK } from "../EventsSDK"
 
-const Monitor = new (class {
+const Monitor = new (class CUnitWearablesChanged {
 	public PreEntityCreated(entity: Entity) {
 		if (!(entity instanceof Wearable)) {
 			return

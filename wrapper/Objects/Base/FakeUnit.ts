@@ -115,7 +115,9 @@ EventsSDK.on("EntityCreated", ent => {
 	if (fakeUnit === undefined) {
 		return
 	}
-	fakeUnitsMap.delete(ent.Index)
+	if (fakeUnitsMap.delete(ent.Index)) {
+		fakeUnit.PlayerCustomData = undefined
+	}
 	FakeUnits.remove(fakeUnit)
 	EventsSDK.emit("FakeUnitDestroyed", false, fakeUnit)
 	if (!(ent instanceof Unit)) {

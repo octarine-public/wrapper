@@ -5,7 +5,7 @@ import { PlayerPawn } from "../../Objects/Base/PlayerPawn"
 import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { EventsSDK } from "../EventsSDK"
 
-const Monitor = new (class CPlayer {
+const Monitor = new (class CPlayerChanged {
 	public EntityChanged(entity: Entity) {
 		if (!(entity instanceof Hero || entity instanceof PlayerPawn)) {
 			return
