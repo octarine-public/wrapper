@@ -28,6 +28,7 @@ EventsSDK.after("Draw", () => {
 	GetPanel(panel)
 	const panelOffset = GUIInfo.ScaleHeight(20),
 		panelHeight = panel.Height
+
 	if (NotificationsSDK.debug) {
 		for (let i = 0; i < NotificationsSDK.limit; i++) {
 			RendererSDK.OutlinedRect(panel.pos1, panel.Size, 3, Color.White)
@@ -35,9 +36,11 @@ EventsSDK.after("Draw", () => {
 		}
 		GetPanel(panel) // because we've just been modifying existing one
 	}
-	Notifications.forEach(notification => {
+
+	for (let index = Notifications.length - 1; index > -1; index--) {
+		const notification = Notifications[index]
 		notification.Draw(panel)
 		notification.PlaySound()
 		panel.AddY(panelHeight + panelOffset)
-	})
+	}
 })

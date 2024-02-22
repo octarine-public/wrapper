@@ -119,7 +119,7 @@ export class ExecuteOrder {
 		"hero_demo_main",
 		"hero_demo_frostivus"
 	])
-	private static DisableHumanizer_ = false
+	private static DisableHumanizer_ = true
 	private readonly flags: number
 
 	/**
@@ -148,6 +148,11 @@ export class ExecuteOrder {
 		return this.DisableHumanizer_ || this.unsafeMode
 	}
 	public static set DisableHumanizer(newVal: boolean) {
+		if (!newVal) {
+			// uncomment after fix humanizer and
+			// set DisableHumanizer_ to false by default
+			return
+		}
 		if (this.DisableHumanizer_ === newVal) {
 			return
 		}

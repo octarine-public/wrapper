@@ -58,21 +58,21 @@ function ProcessWorldBoundsData(layerName: string): boolean {
 }
 
 EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
-	if (!state) {
-		for (const worldLayer of WorldLayers) {
-			if (
-				worldLayer.WorldLayerVisible &&
-				ProcessWorldBoundsData(worldLayer.LayerName)
-			) {
-				return
-			}
-		}
-		if (ProcessWorldBoundsData("world_layer_base")) {
+	if (state) {
+		ProcessWorldBoundsData(layerName)
+		return
+	}
+	for (let index = WorldLayers.length - 1; index > -1; index--) {
+		const worldLayer = WorldLayers[index]
+		if (
+			worldLayer.WorldLayerVisible &&
+			ProcessWorldBoundsData(worldLayer.LayerName)
+		) {
 			return
 		}
+	}
+	if (!ProcessWorldBoundsData("world_layer_base")) {
 		worldBounds = undefined
-	} else {
-		ProcessWorldBoundsData(layerName)
 	}
 })
 

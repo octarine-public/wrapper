@@ -1,6 +1,7 @@
 import { Vector3 } from "../../../Base/Vector3"
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
+import { Entity } from "../../Base/Entity"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("slark_dark_pact")
@@ -39,7 +40,7 @@ export class slark_dark_pact extends Ability {
 		currentTurnRate: boolean = true,
 		rotationDiff: boolean = false
 	): number {
-		if (!(unit instanceof Vector3) && this.Owner === unit) {
+		if (unit instanceof Entity && this.Owner === unit) {
 			return this.CastDelay
 		}
 		return super.GetHitTime(unit, currentTurnRate, rotationDiff)

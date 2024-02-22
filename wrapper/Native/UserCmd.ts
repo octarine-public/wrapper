@@ -5,13 +5,18 @@ import { Entity } from "../Objects/Base/Entity"
 
 export class UserCmd {
 	private static LatestUserCmdView = new DataView(LatestUserCmd.buffer)
+
+	public readonly MousePosition = new Vector2()
+	public readonly CameraPosition = new Vector2()
+	public readonly VectorUnderCursor = new Vector3()
+	public readonly ViewAngles = new QAngle(60, 90, 0)
+
 	public ComandNumber = 0
 	public TickCount = 0
 	public ForwardMove = 0
 	public SideMove = 0
 	public UpMove = 0
-	public readonly MousePosition = new Vector2()
-	public readonly CameraPosition = new Vector2()
+
 	public ClickBehaviors = 0
 	public ScoreboardOpened = false
 	public ShopMask = 0
@@ -19,8 +24,7 @@ export class UserCmd {
 	public SpectatorStatsSortMethod = 0
 	public Buttons = 0n
 	public Impulse = 0
-	public readonly VectorUnderCursor = new Vector3()
-	public readonly ViewAngles = new QAngle(60, 90, 0)
+
 	public WeaponSelect: Nullable<Entity>
 	public WeaponSubType: Nullable<Entity>
 	public Pawn: Nullable<Entity>

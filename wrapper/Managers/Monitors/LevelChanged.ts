@@ -20,7 +20,7 @@ interface IAbilityLevelUp {
 	server_tick: number
 }
 
-const Monitor = new (class {
+const Monitor = new (class CLevelChanged {
 	/** temp for ChangeComboLevel */
 	private readonly linkedNames = new Set<string>()
 	private readonly linkedSpecial = new Map([

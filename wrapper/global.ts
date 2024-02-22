@@ -30,6 +30,7 @@ import { PlayerResource as _PlayerResource } from "./Objects/Base/PlayerResource
 import { AbilityData as _AbilityData } from "./Objects/DataBook/AbilityData"
 import { PlayerCustomData as _PlayerCustomData } from "./Objects/DataBook/PlayerCustomData"
 import { SDKClasses } from "./Objects/NativeToSDK"
+import { PathfinderSDK as _PathfinderSDK } from "./Pathfinder/Pathfinder"
 import { EntityDataLumps as _EntityDataLumps } from "./Resources/ParseEntityLump"
 import { GridNav as _GridNav } from "./Resources/ParseGNV"
 import { GameState as _GameState } from "./Utils/GameState"
@@ -48,6 +49,7 @@ globalThis.NetworkedParticle = _NetworkedParticle
 globalThis.FakeUnits = _FakeUnits
 globalThis.SoundSDK = _SoundSDK
 globalThis.ModifierManager = _ModifierManager
+globalThis.PathfinderSDK = _PathfinderSDK
 
 Object.defineProperty(globalThis, "LocalPlayer", {
 	get: () => {

@@ -4,7 +4,7 @@ import { Vector3 } from "../Base/Vector3"
 import { Vector4 } from "../Base/Vector4"
 import { ViewBinaryStream } from "./ViewBinaryStream"
 
-export enum ProtoType {
+export const enum ProtoType {
 	// 0 is reserved for errors.
 	// Order is weird for historical reasons.
 	TYPE_DOUBLE = 1,
@@ -45,7 +45,7 @@ export type ProtobufFieldType =
 	| RecursiveProtobuf
 	| Uint8Array
 export type RecursiveProtobuf = Map<string, ProtobufFieldType[] | ProtobufFieldType>
-export enum ProtoFieldType {
+export const enum ProtoFieldType {
 	OPTIONAL,
 	REPEATED,
 	PACKED,
