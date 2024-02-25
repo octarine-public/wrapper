@@ -1324,6 +1324,7 @@ function ProcessUserCmd(force = false): void {
 	latestUsercmd.SpectatorStatsCategoryID = 0
 	latestUsercmd.SpectatorStatsSortMethod = 0
 	latestUsercmd.Pawn = LocalPlayer?.Pawn
+	latestUsercmd.TickCount = GameState.CurrentServerTick
 	if (ExecuteOrder.IsStandalone) {
 		if (!initializedMousePosition) {
 			latestUsercmd.MousePosition.x = 0.1 + Math.random() / 2
