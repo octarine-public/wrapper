@@ -354,3 +354,5 @@ declare function GetEconItemName(id: number): string
 declare function GetEconItemHealthBarOffset(id: number): Nullable<number>
 
 declare function SendListenerPerf(line: string, took: number, gameSecond: number): void
+
+declare function RequestUnitsProperties(buf: Uint16Array): void
