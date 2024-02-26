@@ -109,6 +109,8 @@ export class Unit extends Entity {
 	public ArcanaLevel = 0
 	@NetworkedBasicField("m_bStolenScepter")
 	public HasStolenScepter = false
+	@NetworkedBasicField("m_bVisibleinPVS")
+	public VisibleinPVS = false
 	@NetworkedBasicField("m_bHasUpgradeableAbilities")
 	public HasUpgradeableAbilities = false
 	@NetworkedBasicField("m_bCanBeDominated")
@@ -811,6 +813,16 @@ export class Unit extends Entity {
 	}
 	public get BonusAOERadius(): number {
 		return this.CalcualteBonusAOERadius()
+	}
+	public get BaseStatusResistance() {
+		// maybe valve add new future status resistance
+		return 0
+	}
+	public get StatusResistance() {
+		return this.CalculateStatusResist()
+	}
+	public get StatusResistanceAmplifier() {
+		return this.CalculateStatusResistAmplifier()
 	}
 	public get SpellAmplification(): number {
 		const itemsSpellAmp = this.Items.reduce(
@@ -2251,8 +2263,8 @@ export class Unit extends Entity {
 
 	protected CalcualteAmpDayVision() {
 		let totalBonus = 1
-		const arrBuffs = this.Buffs
-		const names = new Set<string>()
+		const arrBuffs = this.Buffs,
+			names = new Set<string>()
 		for (let index = arrBuffs.length - 1; index > -1; index--) {
 			const buff = arrBuffs[index]
 			if (!buff.BonusDayVisionAmplifier) {
@@ -2263,6 +2275,34 @@ export class Unit extends Entity {
 			}
 			names.add(buff.Name)
 			totalBonus += buff.BonusDayVisionAmplifier
+		}
+		return totalBonus
+	}
+
+	/** ================================ Status Resist ======================================= */
+
+	protected CalculateStatusResist() {
+		// maybe valve add new future status resistance
+		// https://dota2.fandom.com/wiki/Status_Resistance
+		const base = this.BaseStatusResistance,
+			amp = this.StatusResistanceAmplifier
+		return 1 - (1 - base) * amp
+	}
+
+	protected CalculateStatusResistAmplifier() {
+		let totalBonus = 1
+		const arrBuffs = this.Buffs,
+			names = new Set<string>()
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.StatusResistanceAmplifier) {
+				continue
+			}
+			if (buff.StatusResistanceAmplifierStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus *= 1 - buff.StatusResistanceAmplifier
 		}
 		return totalBonus
 	}

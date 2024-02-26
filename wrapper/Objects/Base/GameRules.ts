@@ -53,6 +53,8 @@ export class CGameRules extends Entity {
 	public IsNightstalkerNight = false
 	@NetworkedBasicField("m_bIsTemporaryNight")
 	public IsTemporaryNight = false
+	@NetworkedBasicField("m_bIsTemporaryDay")
+	public IsTemporaryDay = false
 	@NetworkedBasicField("m_nAllDraftPhase")
 	public AllDraftPhase = 0
 	@NetworkedBasicField("m_nLoadedPlayers")
@@ -117,8 +119,10 @@ export class CGameRules extends Entity {
 		)
 	}
 	public get IsNight(): boolean {
-		// TODO: m_iNetTimeOfDay?
-		return this.IsNightGameTime || this.IsNightstalkerNight || this.IsTemporaryNight
+		return (
+			!this.IsTemporaryDay &&
+			(this.IsNightGameTime || this.IsNightstalkerNight || this.IsTemporaryNight)
+		)
 	}
 
 	public get IsBanPhase() {

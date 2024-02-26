@@ -197,6 +197,15 @@ export class Modifier {
 	/** @readonly */
 	// TODO?
 
+	// Status resistance
+	/** @readonly */
+	public StatusResistanceAmplifier = 0
+	/** @readonly */
+	public StatusResistanceAmplifierStack = false
+
+	/** @readonly */
+	public ShouldDoFlyHeightVisual = false
+
 	public readonly Index: number
 	public readonly SerialNumber: number
 	public readonly IsAura: boolean
@@ -297,16 +306,6 @@ export class Modifier {
 			default:
 				return 0
 		}
-	}
-
-	// TODO: rework this after add ModifierManager
-	public get ShouldDoFlyHeightVisual(): boolean {
-		return (
-			this.Name === "modifier_winter_wyvern_arctic_burn_flight" ||
-			this.Name === "modifier_courier_flying" ||
-			this.Name === "modifier_night_stalker_darkness" ||
-			this.Name === "modifier_monkey_king_bounce_perch"
-		)
 	}
 
 	public get DieTime(): number {
@@ -831,6 +830,15 @@ export class Modifier {
 		this.BonusTurnRate = !state ? (subtract ? value * -1 : value) / 100 : 0
 	}
 
+	/** ======================= Status Resistance ======================= */
+	protected SetStatusResistanceAmplifier(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.StatusResistanceAmplifier = (subtract ? value * -1 : value) / 100
+	}
+
 	/** @description NOTE: does not include talents (recommended use only items) */
 	protected byAbilityData(
 		abilName: string,
@@ -865,6 +873,9 @@ export class Modifier {
 		// bonus vision
 		this.SetBonusDayVision()
 		this.SetBonusNightVision()
+
+		// status resistance
+		this.SetStatusResistanceAmplifier()
 
 		// bonus move speed
 		this.SetBaseMoveSpeed()

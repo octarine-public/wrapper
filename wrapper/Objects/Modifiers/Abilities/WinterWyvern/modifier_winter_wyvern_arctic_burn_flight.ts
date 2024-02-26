@@ -3,9 +3,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_winter_wyvern_arctic_burn_flight extends Modifier {
-	public get ShouldDoFlyHeightVisual(): boolean {
-		return true
-	}
+	public readonly ShouldDoFlyHeightVisual = true
 
 	public SetBonusNightVision(
 		specialName = "night_vision_bonus",

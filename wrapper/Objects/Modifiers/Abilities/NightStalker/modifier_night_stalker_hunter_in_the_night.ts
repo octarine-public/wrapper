@@ -1,17 +1,22 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { ModifierManager } from "../../../../Managers/ModifierManager"
 import { GameRules } from "../../../Base/Entity"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_night_stalker_hunter_in_the_night extends Modifier {
 	public readonly IsBuff = true
+	private isEmited = false
 
-	private get isNight(): boolean {
-		if (GameRules?.IsNight) {
-			return true
-		}
-		const buffName = "modifier_night_stalker_darkness"
-		return this.Parent?.HasBuffByName(buffName) ?? false
+	public Update(): void {
+		super.Update()
+		this.addIntervalThink()
+	}
+
+	public OnIntervalThink(): void {
+		this.SetBonusAttackSpeed()
+		this.SetMoveSpeedAmplifier()
+		this.SetStatusResistanceAmplifier()
 	}
 
 	protected SetMoveSpeedAmplifier(
@@ -19,7 +24,7 @@ export class modifier_night_stalker_hunter_in_the_night extends Modifier {
 		_subtract = false
 	): void {
 		const value = this.GetSpecialMoveSpeedByState(specialName)
-		this.BonusMoveSpeedAmplifier = this.isNight ? value / 100 : 0
+		this.BonusMoveSpeedAmplifier = GameRules?.IsNight ? value / 100 : 0
 	}
 
 	protected SetBonusAttackSpeed(
@@ -27,6 +32,23 @@ export class modifier_night_stalker_hunter_in_the_night extends Modifier {
 		_subtract = false
 	): void {
 		const value = this.GetSpecialAttackSpeedByState(specialName)
-		this.BonusAttackSpeed = this.isNight ? value : 0
+		this.BonusAttackSpeed = GameRules?.IsNight ? value : 0
+	}
+
+	protected SetStatusResistanceAmplifier(
+		specialName = "bonus_status_resist_night",
+		_subtract = false
+	) {
+		const isDisabled = this.IsPassiveDisabled()
+		const value = this.GetSpecialValue(specialName)
+		const state = GameRules?.IsNight && !isDisabled
+		this.StatusResistanceAmplifier = state ? value / 100 : 0
+	}
+
+	private addIntervalThink(): void {
+		if (!this.isEmited) {
+			this.isEmited = true
+			ModifierManager.AddIntervalThink(this)
+		}
 	}
 }

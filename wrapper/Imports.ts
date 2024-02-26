@@ -211,6 +211,7 @@ export { brewmaster_earth_hurl_boulder } from "./Objects/Abilities/Brewmaster/br
 export { brewmaster_earth_pulverize } from "./Objects/Abilities/Brewmaster/brewmaster_earth_pulverize"
 export { brewmaster_earth_spell_immunity } from "./Objects/Abilities/Brewmaster/brewmaster_earth_spell_immunity"
 export { brewmaster_fire_permanent_immolation } from "./Objects/Abilities/Brewmaster/brewmaster_fire_permanent_immolation"
+export { brewmaster_fire_phase } from "./Objects/Abilities/Brewmaster/brewmaster_fire_phase"
 export { brewmaster_primal_companion } from "./Objects/Abilities/Brewmaster/brewmaster_primal_companion"
 export { brewmaster_primal_split } from "./Objects/Abilities/Brewmaster/brewmaster_primal_split"
 export { brewmaster_primal_split_cancel } from "./Objects/Abilities/Brewmaster/brewmaster_primal_split_cancel"

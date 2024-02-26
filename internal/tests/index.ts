@@ -3,9 +3,16 @@
 // class Test {
 // 	public Primary = -1
 // 	public Secondary = -1
+
+// 	public Stack = false
+
 // 	constructor(index: number, index2: number) {
 // 		this.Primary = index
 // 		this.Secondary = index2
+// 	}
+
+// 	public get Name() {
+// 		return `Primary: ${this.Primary} Secondary: ${this.Secondary}`
 // 	}
 // }
 
@@ -20,30 +27,87 @@
 
 // const arr = [...new Array(100_000).keys()]
 // const arr2 = [...new Array(100_000).keys()]
+// const arr3 = [...new Array(100_000).keys()]
 
-// const arr: Test[] = [...new Array(10_000)].fill(new Test(0, 0))
-// const arr2: Test[] = [...new Array(10_000)].fill(new Test2(2, 3))
-// const arr3: Test[] = [...new Array(30)].fill(new Test(0, 0))
-// const arr4: Test[] = [...new Array(30)].fill(new Test2(2, 3))
+// const arr: Test[] = []
+// const arr2: Test[] = []
+// const arr3: Test[] = []
+
+// for (let i = 0, end = 10_000; i < end; i++) {
+// 	arr.push(new Test(i, i))
+// 	arr2.push(new Test(i, i))
+// 	arr3.push(new Test(i, i))
+// }
 
 // const menu = Menu.AddEntry("Test")
 // menu.SortNodes = false
 
-// const key = menu.AddKeybind("Test except")
-// const key2 = menu.AddKeybind("Test filter")
+// const key = menu.AddKeybind("Test by array")
+// const key2 = menu.AddKeybind("Test callback array")
+// const key3 = menu.AddKeybind("Test reduce array")
 // // const key3 = menu.AddKeybind("Test pop")
 
-// key.OnRelease(() => {
+// key.OnRelease(call => {
 // 	const start = hrtime()
-// 	const newArr = arr.except(arr2)
-// 	console.log(key.InternalName, hrtime() - start, newArr)
+// 	let total = 0
+// 	const names = new Set<string>()
+// 	for (let index = arr.length - 1; index > -1; index--) {
+// 		const modifier = arr[index]
+// 		if (!modifier.Primary) {
+// 			continue
+// 		}
+// 		if (modifier.Stack && names.has(modifier.Name)) {
+// 			continue
+// 		}
+// 		total += modifier.Primary
+// 	}
+// 	console.log(call.InternalName, hrtime() - start, total)
 // })
 
-// key2.OnRelease(() => {
+// // slow
+// function calculateByСallback(
+// 	names: Set<string>,
+// 	skipped: (buff: Test) => boolean,
+// 	value: (buff: Test) => number,
+// 	isAmp = false
+// ) {
+// 	let totalBonus = isAmp ? 1 : 0
+// 	for (let index = arr2.length - 1; index > -1; index--) {
+// 		const buff = arr2[index]
+// 		if (skipped(buff)) {
+// 			continue
+// 		}
+// 		names.add(buff.Name)
+// 		totalBonus += value(buff)
+// 	}
+// 	return totalBonus
+// }
+
+// key2.OnRelease(call => {
 // 	const start = hrtime()
-// 	const arrSet = new Set(arr4)
-// 	const newArr = arr3.filter(x => !arrSet.has(x))
-// 	console.log(key2.InternalName, hrtime() - start, newArr)
+// 	const names = new Set<string>()
+// 	const newVal = calculateByСallback(
+// 		names,
+// 		modifier => !modifier.Primary || (modifier.Stack && names.has(modifier.Name)),
+// 		modifier => modifier.Primary
+// 	)
+// 	console.log(call.InternalName, hrtime() - start, newVal)
+// })
+
+// key3.OnRelease(call => {
+// 	const start = hrtime()
+// 	const names = new Set<string>()
+// 	const newVal = arr3.reduce((val, el) => {
+// 		if (!el.Primary) {
+// 			return val
+// 		}
+// 		if (el.Stack && names.has(el.Name)) {
+// 			return val
+// 		}
+// 		names.add(el.Name)
+// 		return val + el.Primary
+// 	}, 0)
+// 	console.log(call.InternalName, hrtime() - start, newVal)
 // })
 
 // key3.OnRelease(() => {

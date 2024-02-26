@@ -4,4 +4,11 @@ import { Modifier } from "../../../Base/Modifier"
 @WrapperClassModifier()
 export class modifier_tinker_defense_matrix extends Modifier {
 	public readonly IsShield = true
+
+	protected SetStatusResistanceAmplifier(
+		specialName = "status_resistance",
+		subtract = false
+	) {
+		super.SetStatusResistanceAmplifier(specialName, subtract)
+	}
 }

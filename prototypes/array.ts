@@ -116,7 +116,7 @@ Array.prototype.compare = function <T>(array: T[]): boolean {
 
 Array.prototype.intersect = function <T>(array: T[]): T[] {
 	const arraySet = new Set<T>(array)
-	return this.reduce((result, element) => {
+	return this.reduce<T[]>((result, element) => {
 		if (arraySet.has(element)) {
 			result.push(element)
 		}
@@ -126,7 +126,7 @@ Array.prototype.intersect = function <T>(array: T[]): T[] {
 
 Array.prototype.except = function <T>(array: T[]): T[] {
 	const arraySet = new Set<T>(array)
-	return this.reduce((result, element) => {
+	return this.reduce<T[]>((result, element) => {
 		if (!arraySet.has(element)) {
 			result.push(element)
 		}

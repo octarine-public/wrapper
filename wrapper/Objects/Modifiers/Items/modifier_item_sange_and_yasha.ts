@@ -18,4 +18,11 @@ export class modifier_item_sange_and_yasha extends Modifier {
 	): void {
 		super.SetBonusAttackSpeed(specialName, subtract)
 	}
+
+	protected SetStatusResistanceAmplifier(
+		specialName = "status_resistance",
+		subtract = false
+	) {
+		super.SetStatusResistanceAmplifier(specialName, subtract)
+	}
 }

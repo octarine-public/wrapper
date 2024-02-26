@@ -7,8 +7,11 @@ import { Modifier } from "../../../Base/Modifier"
 @WrapperClassModifier()
 export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 	public readonly IsHidden = true
-
 	private isEmited = false
+
+	private get brawlActive() {
+		return (this.Ability as Nullable<brewmaster_drunken_brawler>)?.BrawlActive
+	}
 
 	public Update(): void {
 		super.Update()
@@ -17,6 +20,7 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 
 	public OnIntervalThink(): void {
 		this.SetBonusAttackSpeed()
+		this.SetStatusResistanceAmplifier()
 	}
 
 	public Remove(): boolean {
@@ -24,24 +28,43 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 			return false
 		}
 		this.BonusAttackSpeed = 0
+		this.StatusResistanceAmplifier = 0
 		return true
 	}
 
 	protected SetBonusAttackSpeed(specialName = "attack_speed", subtract = false): void {
-		const brawlActive = (this.Ability as Nullable<brewmaster_drunken_brawler>)
-			?.BrawlActive
-
+		const brawlActive = this.brawlActive
 		if (brawlActive === undefined) {
 			this.BonusAttackSpeed = 0
 			return
 		}
-
 		switch (brawlActive) {
 			case BrawlActive.FIRE_FIGHTER:
 				super.SetBonusAttackSpeed(specialName, subtract)
 				break
 			default:
 				this.BonusAttackSpeed = 0
+				break
+		}
+	}
+
+	protected SetStatusResistanceAmplifier(
+		specialName = "bonus_status_resist",
+		_subtract = false
+	): void {
+		const brawlActive = this.brawlActive
+		if (brawlActive === undefined) {
+			this.StatusResistanceAmplifier = 0
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		const hasBrewUp = this.Parent?.HasBuffByName("modifier_brewmaster_brew_up")
+		switch (brawlActive) {
+			case BrawlActive.VOID_FIGHTER:
+				this.StatusResistanceAmplifier = (hasBrewUp ? value * 2 : value) / 100
+				break
+			default:
+				this.StatusResistanceAmplifier = 0
 				break
 		}
 	}
