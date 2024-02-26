@@ -262,3 +262,14 @@ export function SmoothStep(amount: number): number {
 	}
 	return amount * amount * (3 - 2 * amount)
 }
+/**
+ * Clamps a value between a minimum and maximum value.
+ *
+ * @param {number} value - the value to clamp
+ * @param {number} min - the minimum value
+ * @param {number} max - the maximum value
+ * @return {number} the clamped value
+ */
+export function Clamp(value: number, min: number, max: number): number {
+	return Math.min(Math.max(value, min), max)
+}

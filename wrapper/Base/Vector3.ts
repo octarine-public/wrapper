@@ -1,4 +1,4 @@
-import { RadianToDegrees } from "../Utils/Math"
+import { RadianToDegrees, SmoothStep } from "../Utils/Math"
 import { Vector2 } from "./Vector2"
 
 export class Vector3 {
@@ -256,6 +256,41 @@ export class Vector3 {
 		this.z = Math.floor(this.y * pow) / pow
 
 		return this
+	}
+	/**
+	 * Linearly interpolates between this vector and a
+	 * target vector by a given scalar amount.
+	 *
+	 * @param {Vector3} target - The target vector to interpolate towards.
+	 * @param {number} amount - The interpolation factor between 0 and 1.
+	 * @return {Vector3}
+	 */
+	public Lerp(target: Vector3, amount: number): Vector3 {
+		return this.Add(target.Subtract(this).MultiplyScalar(amount))
+	}
+	/**
+	 * Interpolates between the current vector and the
+	 * provided vector by a given scalar amount.
+	 *
+	 * @param {Vector3} vec - The vector to interpolate towards.
+	 * @param {number} amount - The ratio of interpolation.
+	 * @return {Vector3}
+	 */
+	public LerpForThis(vec: Vector3, amount: number): Vector3 {
+		return this.AddForThis(vec.Subtract(this).MultiplyScalar(amount))
+	}
+	/**
+	 * Interpolates between the vector and the target
+	 * vector using a smoothstep easing function.
+	 *
+	 * @param {Vector3} vec - The target vector for
+	 *                        interpolation.
+	 * @param {number} amount - The interpolation
+	 *                          factor between 0 and 1.
+	 * @return {Vector3}
+	 */
+	public SmoothStep(vec: Vector3, amount: number): Vector3 {
+		return this.Lerp(vec, SmoothStep(amount))
 	}
 	/**
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
