@@ -168,14 +168,14 @@ export class ExecuteOrder {
 		ExecuteOrder.fromObject(order).ExecuteQueued()
 	}
 	public static Buyback(queue?: boolean, showEffects?: boolean): void {
-		return ExecuteOrder.PrepareOrder({
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK,
 			queue,
 			showEffects
 		})
 	}
 	public static Glyph(queue?: boolean, showEffects?: boolean): void {
-		return ExecuteOrder.PrepareOrder({
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH,
 			queue,
 			showEffects
@@ -186,7 +186,7 @@ export class ExecuteOrder {
 		queue?: boolean,
 		showEffects?: boolean
 	): void {
-		return ExecuteOrder.PrepareOrder({
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RIVER_PAINT,
 			position,
 			queue,
@@ -198,7 +198,7 @@ export class ExecuteOrder {
 		queue?: boolean,
 		showEffects?: boolean
 	): void {
-		return ExecuteOrder.PrepareOrder({
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT,
 			target: itemID,
 			queue,
@@ -206,7 +206,7 @@ export class ExecuteOrder {
 		})
 	}
 	public static Scan(position: Vector3, queue?: boolean, showEffects?: boolean): void {
-		return ExecuteOrder.PrepareOrder({
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR,
 			position,
 			queue,
@@ -281,10 +281,10 @@ export class ExecuteOrder {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM: {
 				this.Execute()
 				return
-
+			}
 			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET:
 				if (ExecuteOrder.DisableHumanizer) {
 					this.Execute()

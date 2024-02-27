@@ -343,56 +343,56 @@ export class Unit extends Entity {
 		return this.UnitData.ProjectileSpeed
 	}
 
-	public get IsAttackSpeedLimit() {
+	public get IsAttackSpeedLimit(): boolean {
 		return (
 			this.Buffs.find(buff => !buff.IsAttackSpeedLimit)?.IsAttackSpeedLimit ?? true
 		)
 	}
-	public get BaseAttackTimeData() {
+	public get BaseAttackTimeData(): number {
 		return this.UnitData.BaseAttackTime
 	}
 
-	public get BaseAttackSpeedData() {
+	public get BaseAttackSpeedData(): number {
 		return Math.max(this.UnitData.BaseAttackSpeed, AttackSpeedData.MinBase)
 	}
 
-	public get BaseAttackAnimationPointData() {
+	public get BaseAttackAnimationPointData(): number {
 		return this.UnitData.AttackAnimationPoint
 	}
 
-	public get BaseAttackSpeed() {
+	public get BaseAttackSpeed(): number {
 		return this.CalculateBaseAttackSpeed()
 	}
 
-	public get BaseAttackSpeedBonus() {
+	public get BaseAttackSpeedBonus(): number {
 		return this.CalculateBaseAttackSpeedBonus()
 	}
 
-	public get BaseAttackSpeedAmplifier() {
+	public get BaseAttackSpeedAmplifier(): number {
 		return this.CalculateBaseAttackSpeedAmplifier()
 	}
 
-	public get BaseAttackTime() {
+	public get BaseAttackTime(): number {
 		return this.CalculateBaseAttackTime()
 	}
 
-	public get BaseAttackAnimationPoint() {
+	public get BaseAttackAnimationPoint(): number {
 		return this.CalculateBaseAttackAnimationPoint()
 	}
 
-	public get AttackAnimationPoint() {
+	public get AttackAnimationPoint(): number {
 		return this.CalculateAttackAnimationPoint()
 	}
 
-	public get AttackSpeedBonus() {
+	public get AttackSpeedBonus(): number {
 		return this.CalculateAttackSpeedBonus()
 	}
 
-	public get AttackSpeedAmplifier() {
+	public get AttackSpeedAmplifier(): number {
 		return this.CalculateAttackSpeedAmplifier()
 	}
 
-	public get AttacksPerSecond() {
+	public get AttacksPerSecond(): number {
 		return 1 / this.AttackRate
 	}
 
@@ -405,48 +405,48 @@ export class Unit extends Entity {
 		return this.BaseAttackTime / Math.max(attackSpeed, AttackSpeedData.MinHaste)
 	}
 
-	public get AttackHasteFactor() {
+	public get AttackHasteFactor(): number {
 		return this.BaseAttackTime / this.AttackRate
 	}
 
-	public get AttackPoint() {
+	public get AttackPoint(): number {
 		return this.AttackAnimationPoint / this.AttackHasteFactor
 	}
 
-	public get AttackBackswing() {
+	public get AttackBackswing(): number {
 		return this.AttackRate - this.AttackPoint
 	}
 
 	// ===================================== Move Speed ===================================== //
-	public get IsMoveSpeedLimit() {
+	public get IsMoveSpeedLimit(): boolean {
 		return this.Buffs.find(buff => !buff.IsMoveSpeedLimit)?.IsMoveSpeedLimit ?? true
 	}
 
-	public get MoveSpeedBaseData() {
+	public get MoveSpeedBaseData(): number {
 		return this.UnitData.BaseMovementSpeed
 	}
 
-	public get MoveSpeedBase() {
+	public get MoveSpeedBase(): number {
 		return this.CalcualteBaseMoveSpeed()
 	}
 
-	public get MoveSpeedFixed() {
+	public get MoveSpeedFixed(): number {
 		return this.CalculateFixedMoveSpeed()
 	}
 
-	public get MoveSpeedBonus() {
+	public get MoveSpeedBonus(): number {
 		return this.CalculateBonusMoveSpeed()
 	}
 
-	public get MoveSpeedResistance() {
+	public get MoveSpeedResistance(): number {
 		return this.CalcualteResistanceMoveSpeed()
 	}
 
-	public get MoveSpeedAmplifier() {
+	public get MoveSpeedAmplifier(): number {
 		return this.CalculateMoveSpeedAmplifier()
 	}
 
-	public get Speed() {
+	public get Speed(): number {
 		// TODO: use for modifiers
 		// const amp = this.MoveSpeedAmplifier
 		// const isLimit = this.IsMoveSpeedLimit
@@ -463,11 +463,11 @@ export class Unit extends Entity {
 		return this.UnitData.MovementTurnRate
 	}
 
-	public get BaseTurnRate() {
+	public get BaseTurnRate(): number {
 		return this.CalcualteBaseTurnRate()
 	}
 
-	public get TurnRateAmplifier() {
+	public get TurnRateAmplifier(): number {
 		return this.CalcualteAmpTurnRate()
 	}
 
@@ -582,7 +582,7 @@ export class Unit extends Entity {
 			this.InvisibilityLevel > 0.5
 		)
 	}
-	public get IsNoTeamMoveTo() {
+	public get IsNoTeamMoveTo(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_TEAM_MOVE_TO)
 	}
 	public get IsInvulnerable(): boolean {
@@ -661,16 +661,16 @@ export class Unit extends Entity {
 	public get BaseAttackRange(): number {
 		return this.CalcualteBaseAttackRange()
 	}
-	public get BonusAttackRange() {
+	public get BonusAttackRange(): number {
 		return this.CalcualteBonusAttackRange()
 	}
-	public get AttackRangeAmplifier() {
+	public get AttackRangeAmplifier(): number {
 		return this.CalcualteAmpAttackRange()
 	}
-	public get InfinityAttackRange() {
+	public get InfinityAttackRange(): number {
 		return this.CalcualteInfinityAttackRange()
 	}
-	public get FixedAttackRange() {
+	public get FixedAttackRange(): number {
 		return this.CalcualteFixedAttackRange()
 	}
 	public get AttackDamageAverage(): number {
@@ -815,14 +815,14 @@ export class Unit extends Entity {
 	public get BonusAOERadius(): number {
 		return this.CalcualteBonusAOERadius()
 	}
-	public get BaseStatusResistance() {
+	public get BaseStatusResistance(): number {
 		// maybe valve add new future status resistance
 		return 0
 	}
-	public get StatusResistance() {
+	public get StatusResistance(): number {
 		return this.CalculateStatusResist()
 	}
-	public get StatusResistanceAmplifier() {
+	public get StatusResistanceAmplifier(): number {
 		return this.CalculateStatusResistAmplifier()
 	}
 	public get SpellAmplification(): number {
@@ -879,15 +879,15 @@ export class Unit extends Entity {
 		return true
 	}
 
-	public get HealthBarSize() {
+	public get HealthBarSize(): Vector2 {
 		return new Vector2(GUIInfo.ScaleHeight(78), GUIInfo.ScaleHeight(6))
 	}
 
-	public get HealthBarPositionCorrection() {
+	public get HealthBarPositionCorrection(): Vector2 {
 		return new Vector2(this.HealthBarSize.x / 2, GUIInfo.ScaleHeight(11))
 	}
 
-	protected get AttackSpeed() {
+	protected get AttackSpeed(): number {
 		const base = this.BaseAttackSpeed,
 			baseAs = this.BaseAttackSpeedAmplifier
 
@@ -904,7 +904,7 @@ export class Unit extends Entity {
 		return totalSpeed
 	}
 
-	protected get MoveSpeedBonusBoots() {
+	protected get MoveSpeedBonusBoots(): number {
 		const sortBuffs = this.Buffs.toOrderBy(
 			// exclude 0 and boots
 			x => x.IsBoots && x.BonusMoveSpeed === 0,
@@ -915,7 +915,7 @@ export class Unit extends Entity {
 		return buff?.BonusMoveSpeed ?? 0
 	}
 
-	protected get MoveSpeedAmpBoots() {
+	protected get MoveSpeedAmpBoots(): number {
 		const sortBuffs = this.Buffs.toOrderBy(
 			// exclude 0 and boots
 			x => x.IsBoots && x.BonusMoveSpeedAmplifier === 0,
@@ -926,7 +926,10 @@ export class Unit extends Entity {
 		return buff?.BonusMoveSpeedAmplifier ?? 0
 	}
 
-	public HealthBarPosition(useHpBarOffset = true, overridePosition?: Vector3) {
+	public HealthBarPosition(
+		useHpBarOffset = true,
+		overridePosition?: Vector3
+	): Nullable<Vector2> {
 		// if (RendererSDK.IsInDraw) {
 		// 	throw "HealthBarPosition outside in draw"
 		// }
@@ -1017,7 +1020,7 @@ export class Unit extends Entity {
 	public VelocityWaypoint(time: number, movespeed: number): Vector3 {
 		return this.InFront(movespeed * time)
 	}
-	public GetItemByName(name: string | RegExp, includeBackpack = false) {
+	public GetItemByName(name: string | RegExp, includeBackpack = false): Nullable<Item> {
 		return this.Inventory.GetItemByName(name, includeBackpack)
 	}
 	public GetItemByClass<T extends Item>(
@@ -1071,7 +1074,7 @@ export class Unit extends Entity {
 		healthBarOffset: number,
 		totalArmor: number,
 		totalMoveSpeed: number
-	) {
+	): void {
 		this.HealthBarOffset_ = healthBarOffset
 		this.ArmorTotal = totalArmor
 		this.MoveSpeedTotal = totalMoveSpeed
@@ -1152,7 +1155,7 @@ export class Unit extends Entity {
 		angle: number | Vector3,
 		currentTurnRate = true,
 		rotationDiff = false
-	) {
+	): number {
 		if (angle instanceof Vector3) {
 			angle = this.GetAngle(angle, rotationDiff)
 		}
@@ -1169,7 +1172,7 @@ export class Unit extends Entity {
 		return currentTurnRate ? this.MovementTurnRate : this.BaseTurnRate || 0.5
 	}
 
-	public TurnTime(angle: number, currentTurnRate = true) {
+	public TurnTime(angle: number, currentTurnRate = true): number {
 		return Math.max(angle / (30 * this.TurnRate(currentTurnRate)), 0)
 	}
 
@@ -1193,7 +1196,7 @@ export class Unit extends Entity {
 		return false
 	}
 
-	public IsManaEnough(abil: Ability) {
+	public IsManaEnough(abil: Ability): boolean {
 		return this.Mana >= abil.ManaCost
 	}
 
@@ -1319,7 +1322,7 @@ export class Unit extends Entity {
 		return testPoint
 	}
 
-	public ChangeFieldsByEvents() {
+	public ChangeFieldsByEvents(): void {
 		const buffs = this.Buffs
 
 		{
@@ -1364,13 +1367,14 @@ export class Unit extends Entity {
 		checkToggled = false,
 		queue?: boolean,
 		showEffects?: boolean
-	) {
+	): void {
 		if (
 			checkAutoCast &&
 			ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_AUTOCAST) &&
 			!ability.IsAutoCastEnabled
 		) {
-			return this.CastToggleAuto(ability, queue, showEffects)
+			this.CastToggleAuto(ability, queue, showEffects)
+			return
 		}
 
 		if (
@@ -1378,30 +1382,32 @@ export class Unit extends Entity {
 			ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) &&
 			!ability.IsToggled
 		) {
-			return this.CastToggle(ability, queue, showEffects)
+			this.CastToggle(ability, queue, showEffects)
+			return
 		}
 
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
-			return this.CastNoTarget(ability, queue, showEffects)
+			this.CastNoTarget(ability, queue, showEffects)
+			return
 		}
 
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)) {
 			if (target instanceof Entity) {
 				target = target.Position
 			}
-
-			return this.CastPosition(ability, target as Vector3, queue, showEffects)
+			this.CastPosition(ability, target as Vector3, queue, showEffects)
+			return
 		}
 
 		if (
 			ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)
 		) {
-			return this.CastTarget(ability, target as Entity, showEffects)
+			this.CastTarget(ability, target as Entity, showEffects)
 		}
 	}
 
-	public MoveTo(position: Vector3, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public MoveTo(position: Vector3, queue?: boolean, showEffects?: boolean): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION,
 			issuers: [this],
 			position,
@@ -1410,8 +1416,12 @@ export class Unit extends Entity {
 		})
 	}
 
-	public MoveToTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public MoveToTarget(
+		target: Entity | number,
+		queue?: boolean,
+		showEffects?: boolean
+	): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET,
 			issuers: [this],
 			target,
@@ -1420,8 +1430,8 @@ export class Unit extends Entity {
 		})
 	}
 
-	public AttackMove(position: Vector3, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public AttackMove(position: Vector3, queue?: boolean, showEffects?: boolean): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE,
 			issuers: [this],
 			position,
@@ -1430,8 +1440,12 @@ export class Unit extends Entity {
 		})
 	}
 
-	public AttackTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public AttackTarget(
+		target: Entity | number,
+		queue?: boolean,
+		showEffects?: boolean
+	): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET,
 			issuers: [this],
 			target,
@@ -1445,8 +1459,8 @@ export class Unit extends Entity {
 		position: Vector3,
 		queue?: boolean,
 		showEffects?: boolean
-	) {
-		return ExecuteOrder.PrepareOrder({
+	): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION,
 			issuers: [this],
 			ability,
@@ -1456,8 +1470,8 @@ export class Unit extends Entity {
 		})
 	}
 
-	public PurchaseItem(itemID: number, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public PurchaseItem(itemID: number, queue?: boolean, showEffects?: boolean): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM,
 			issuers: [this],
 			ability: itemID,
@@ -1471,8 +1485,8 @@ export class Unit extends Entity {
 		target: Entity | number,
 		queue?: boolean,
 		showEffects?: boolean
-	) {
-		return ExecuteOrder.PrepareOrder({
+	): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET,
 			issuers: [this],
 			target,
@@ -1487,8 +1501,8 @@ export class Unit extends Entity {
 		tree: Tree | TempTree | number,
 		queue?: boolean,
 		showEffects?: boolean
-	) {
-		return ExecuteOrder.PrepareOrder({
+	): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE,
 			issuers: [this],
 			target: tree,
@@ -1498,8 +1512,8 @@ export class Unit extends Entity {
 		})
 	}
 
-	public CastNoTarget(ability: Ability, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public CastNoTarget(ability: Ability, queue?: boolean, showEffects?: boolean): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
 			issuers: [this],
 			ability,
@@ -1508,8 +1522,8 @@ export class Unit extends Entity {
 		})
 	}
 
-	public CastToggle(ability: Ability, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public CastToggle(ability: Ability, queue?: boolean, showEffects?: boolean): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE,
 			issuers: [this],
 			ability,
@@ -1518,8 +1532,8 @@ export class Unit extends Entity {
 		})
 	}
 
-	public CastAltToggle(ability: Ability, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public CastAltToggle(ability: Ability, queue?: boolean, showEffects?: boolean): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_ALT,
 			issuers: [this],
 			ability,
@@ -1528,8 +1542,8 @@ export class Unit extends Entity {
 		})
 	}
 
-	public HoldPosition(position: Vector3, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public HoldPosition(position: Vector3, queue?: boolean, showEffects?: boolean): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION,
 			issuers: [this],
 			position,
@@ -1538,8 +1552,8 @@ export class Unit extends Entity {
 		})
 	}
 
-	public TrainAbility(ability: Ability) {
-		return ExecuteOrder.PrepareOrder({
+	public TrainAbility(ability: Ability): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
 			issuers: [this],
 			ability
@@ -1551,8 +1565,8 @@ export class Unit extends Entity {
 		queue?: boolean,
 		showEffects?: boolean,
 		slot?: DOTAScriptInventorySlot
-	) {
-		return ExecuteOrder.PrepareOrder({
+	): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM_AT_FOUNTAIN,
 			issuers: [this],
 			target: slot,
@@ -1567,8 +1581,8 @@ export class Unit extends Entity {
 		position: Vector3,
 		queue?: boolean,
 		showEffects?: boolean
-	) {
-		return ExecuteOrder.PrepareOrder({
+	): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM,
 			issuers: [this],
 			ability: item,
@@ -1583,8 +1597,8 @@ export class Unit extends Entity {
 		target: Entity | number,
 		queue?: boolean,
 		showEffects?: boolean
-	) {
-		return ExecuteOrder.PrepareOrder({
+	): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GIVE_ITEM,
 			issuers: [this],
 			target,
@@ -1598,8 +1612,8 @@ export class Unit extends Entity {
 		physicalItem: PhysicalItem | number,
 		queue?: boolean,
 		showEffects?: boolean
-	) {
-		return ExecuteOrder.PrepareOrder({
+	): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM,
 			issuers: [this],
 			target: physicalItem,
@@ -1608,8 +1622,8 @@ export class Unit extends Entity {
 		})
 	}
 
-	public PickupRune(rune: Rune | number, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public PickupRune(rune: Rune | number, queue?: boolean, showEffects?: boolean): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE,
 			issuers: [this],
 			target: rune,
@@ -1618,16 +1632,16 @@ export class Unit extends Entity {
 		})
 	}
 
-	public SellItem(item: Item) {
-		return ExecuteOrder.PrepareOrder({
+	public SellItem(item: Item): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM,
 			issuers: [this],
 			ability: item
 		})
 	}
 
-	public DisassembleItem(item: Item, queue?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public DisassembleItem(item: Item, queue?: boolean): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM,
 			issuers: [this],
 			ability: item,
@@ -1639,8 +1653,8 @@ export class Unit extends Entity {
 		item: Item,
 		lock: boolean | number = true,
 		queue?: boolean
-	) {
-		return ExecuteOrder.PrepareOrder({
+	): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK,
 			issuers: [this],
 			ability: item,
@@ -1649,16 +1663,16 @@ export class Unit extends Entity {
 		})
 	}
 
-	public TakeItemFromNeutralStash(item: Item) {
-		return ExecuteOrder.PrepareOrder({
+	public TakeItemFromNeutralStash(item: Item): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAKE_ITEM_FROM_NEUTRAL_ITEM_STASH,
 			issuers: [this],
 			ability: item
 		})
 	}
 
-	public MoveItem(item: Item, slot: DOTAScriptInventorySlot) {
-		return ExecuteOrder.PrepareOrder({
+	public MoveItem(item: Item, slot: DOTAScriptInventorySlot): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM,
 			issuers: [this],
 			target: slot,
@@ -1666,8 +1680,8 @@ export class Unit extends Entity {
 		})
 	}
 
-	public CastToggleAuto(item: Ability, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public CastToggleAuto(item: Ability, queue?: boolean, showEffects?: boolean): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO,
 			issuers: [this],
 			ability: item,
@@ -1676,8 +1690,8 @@ export class Unit extends Entity {
 		})
 	}
 
-	public OrderStop(queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public OrderStop(queue?: boolean, showEffects?: boolean): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_STOP,
 			issuers: [this],
 			queue,
@@ -1685,8 +1699,8 @@ export class Unit extends Entity {
 		})
 	}
 
-	public UnitTaunt(queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public UnitTaunt(queue?: boolean, showEffects?: boolean): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAUNT,
 			issuers: [this],
 			queue,
@@ -1694,16 +1708,20 @@ export class Unit extends Entity {
 		})
 	}
 
-	public EjectItemFromStash(item: Item) {
-		return ExecuteOrder.PrepareOrder({
+	public EjectItemFromStash(item: Item): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH,
 			issuers: [this],
 			ability: item
 		})
 	}
 
-	public CastRune(runeItem: Item | number, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public CastRune(
+		runeItem: Item | number,
+		queue?: boolean,
+		showEffects?: boolean
+	): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RUNE,
 			issuers: [this],
 			target: runeItem,
@@ -1712,16 +1730,20 @@ export class Unit extends Entity {
 		})
 	}
 
-	public PingAbility(ability: Ability) {
-		return ExecuteOrder.PrepareOrder({
+	public PingAbility(ability: Ability): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PING_ABILITY,
 			issuers: [this],
 			ability
 		})
 	}
 
-	public MoveToDirection(position: Vector3, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public MoveToDirection(
+		position: Vector3,
+		queue?: boolean,
+		showEffects?: boolean
+	): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION,
 			issuers: [this],
 			position,
@@ -1730,8 +1752,8 @@ export class Unit extends Entity {
 		})
 	}
 
-	public Patrol(position: Vector3, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public Patrol(position: Vector3, queue?: boolean, showEffects?: boolean): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PATROL,
 			issuers: [this],
 			position,
@@ -1746,8 +1768,8 @@ export class Unit extends Entity {
 		target?: Nullable<Entity | number>,
 		queue?: boolean,
 		showEffects?: boolean
-	) {
-		return ExecuteOrder.PrepareOrder({
+	): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION,
 			issuers: [this],
 			ability,
@@ -1768,7 +1790,6 @@ export class Unit extends Entity {
 		if (position instanceof Unit) {
 			position = position.Position
 		}
-
 		this.VectorTargetPosition(
 			ability,
 			direction,
@@ -1779,8 +1800,8 @@ export class Unit extends Entity {
 		this.CastPosition(ability, position, queue, showEffects)
 	}
 
-	public ItemLock(item: Item, state = true) {
-		return ExecuteOrder.PrepareOrder({
+	public ItemLock(item: Item, state = true): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK,
 			issuers: [this],
 			ability: item,
@@ -1788,8 +1809,8 @@ export class Unit extends Entity {
 		})
 	}
 
-	public OrderContinue(item: Item, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({
+	public OrderContinue(item: Item, queue?: boolean, showEffects?: boolean): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE,
 			issuers: [this],
 			ability: item,
@@ -1802,8 +1823,8 @@ export class Unit extends Entity {
 		position: Vector3,
 		queue?: boolean,
 		showEffects?: boolean
-	) {
-		return ExecuteOrder.PrepareOrder({
+	): void {
+		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_CANCELED,
 			issuers: [this],
 			position,

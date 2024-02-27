@@ -10,4 +10,13 @@ export class sniper_assassinate extends Ability {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("projectile_speed", level)
 	}
+	/**
+	 * @param level
+	 * @return {number}
+	 */
+	public GetBaseCastPointForLevel(level: number): number {
+		return this.Owner?.HasScepter
+			? this.GetSpecialValue("scepter_cast_point", level)
+			: this.AbilityData.GetCastPoint(level)
+	}
 }

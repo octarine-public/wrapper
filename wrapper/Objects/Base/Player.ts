@@ -154,7 +154,7 @@ export class Player extends Entity {
 	 * @return {void} This function does not return a value.
 	 */
 	public Buyback(queue?: boolean, showEffects?: boolean): void {
-		return ExecuteOrder.Buyback(queue, showEffects)
+		ExecuteOrder.Buyback(queue, showEffects)
 	}
 	/**
 	 * @description Executes a glyph action (call ExecuteOrder.PrepareOrder({...})).
@@ -163,7 +163,7 @@ export class Player extends Entity {
 	 * @return {void}
 	 */
 	public Glyph(queue?: boolean, showEffects?: boolean): void {
-		return ExecuteOrder.Glyph(queue, showEffects)
+		ExecuteOrder.Glyph(queue, showEffects)
 	}
 
 	public CastRiverPaint(
@@ -171,7 +171,7 @@ export class Player extends Entity {
 		queue?: boolean,
 		showEffects?: boolean
 	): void {
-		return ExecuteOrder.CastRiverPaint(position, queue, showEffects)
+		ExecuteOrder.CastRiverPaint(position, queue, showEffects)
 	}
 
 	public PreGameAdjustItemAssigment(
@@ -179,7 +179,7 @@ export class Player extends Entity {
 		queue?: boolean,
 		showEffects?: boolean
 	): void {
-		return ExecuteOrder.PreGameAdjustItemAssigment(itemID, queue, showEffects)
+		ExecuteOrder.PreGameAdjustItemAssigment(itemID, queue, showEffects)
 	}
 	/**
 	 * Scans the specified position.
@@ -190,7 +190,7 @@ export class Player extends Entity {
 	 * @return {void}
 	 */
 	public Scan(position: Vector3, queue?: boolean, showEffects?: boolean): void {
-		return ExecuteOrder.Scan(position, queue, showEffects)
+		ExecuteOrder.Scan(position, queue, showEffects)
 	}
 	/**
 	 * @ignore
