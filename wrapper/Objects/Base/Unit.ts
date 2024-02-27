@@ -166,6 +166,8 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_nHealthBarOffsetOverride")
 	public HealthBarOffsetOverride = 0
 	public HealthBarOffset_: Nullable<number>
+	public MoveSpeedTotal = 0
+	public ArmorTotal = 0
 
 	public readonly Spells_ = new Array<number>(MAX_SPELLS).fill(0)
 	public readonly Spells = new Array<Nullable<Ability>>(MAX_SPELLS).fill(undefined)
@@ -1066,8 +1068,14 @@ export class Unit extends Entity {
 	/**
 	 * @deprecated
 	 */
-	public ForwardNativeProperties(healthBarOffset: number) {
+	public ForwardNativeProperties(
+		healthBarOffset: number,
+		totalArmor: number,
+		totalMoveSpeed: number
+	) {
 		this.HealthBarOffset_ = healthBarOffset
+		this.ArmorTotal = totalArmor
+		this.MoveSpeedTotal = totalMoveSpeed
 	}
 
 	/**
