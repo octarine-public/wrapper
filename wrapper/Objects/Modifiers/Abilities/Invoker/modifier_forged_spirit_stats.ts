@@ -20,15 +20,14 @@ export class modifier_forged_spirit_stats extends Modifier {
 		super.SetBonusAttackSpeed(specialName, subtract)
 	}
 
-	protected GetSpecialValue(specialName: string, _level: number): number {
+	protected GetSpecialValue(specialName: string, level = this.AbilityLevel): number {
 		const ability = this.Ability
 		if (!this.shouldBeValidSpell(ability)) {
 			return 0
 		}
-		let level = 0
 		switch (specialName) {
 			case "spirit_attack_range":
-				level = Math.max(ability.QuasLevel + this.AbilityLevel, this.AbilityLevel)
+				level = Math.max(ability.QuasLevel + level, level)
 				break
 			case "spirit_attack_speed":
 				level = Math.max(this.AbilityLevel, ability.Level)

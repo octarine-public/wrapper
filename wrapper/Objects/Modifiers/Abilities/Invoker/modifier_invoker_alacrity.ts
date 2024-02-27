@@ -15,12 +15,12 @@ export class modifier_invoker_alacrity extends Modifier {
 		super.SetBonusAttackSpeed(specialName, subtract)
 	}
 
-	protected GetSpecialValue(specialName: string, _level: number): number {
+	protected GetSpecialValue(specialName: string, level = this.AbilityLevel): number {
 		const ability = this.Ability
 		if (!this.shouldBeValidSpell(ability)) {
 			return 0
 		}
-		const level = Math.max(ability.WexLevel + this.AbilityLevel, this.AbilityLevel)
+		level = Math.max(ability.WexLevel + level, level)
 		return super.GetSpecialValue(specialName, level)
 	}
 

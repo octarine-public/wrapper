@@ -22,12 +22,12 @@ export class modifier_item_wraith_band extends Modifier {
 		super.SetBonusAttackSpeed(specialName, subtract)
 	}
 
-	protected GetSpecialValue(specialName: string, level: number): number {
+	protected GetSpecialValue(specialName: string, level = this.AbilityLevel): number {
 		const time = GameState.RawGameTime / 60
-		if (time >= super.GetSpecialValue("clock_time", level)) {
-			return super.GetSpecialValue(specialName, level + 1)
-		}
-		return super.GetSpecialValue(specialName, level)
+		const clockTime = super.GetSpecialValue("clock_time", level)
+		return time >= clockTime
+			? super.GetSpecialValue(specialName, level + 1)
+			: super.GetSpecialValue(specialName, level)
 	}
 
 	private addIntervalThink(): void {
