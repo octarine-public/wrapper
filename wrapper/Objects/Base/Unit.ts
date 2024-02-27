@@ -335,7 +335,7 @@ export class Unit extends Entity {
 
 	// ===================================== Armor ===================================== //
 	public get Armor() {
-		return 0
+		return this.ArmorTotal
 	}
 
 	// ===================================== Attack Speed ===================================== //
@@ -447,16 +447,15 @@ export class Unit extends Entity {
 	}
 
 	public get Speed() {
-		const amp = this.MoveSpeedAmplifier
-		const isLimit = this.IsMoveSpeedLimit
-		const baseSpeed = this.MoveSpeedBase + this.MoveSpeedBonus
-		const calculateSpeed = Math.max(baseSpeed * amp, MoveSpeedData.Min)
-
-		const totalSpeed = isLimit
-			? Math.min(MoveSpeedData.Max, Math.max(MoveSpeedData.Min, calculateSpeed))
-			: Math.max(MoveSpeedData.Min, calculateSpeed)
-
-		return totalSpeed
+		// TODO: use for modifiers
+		// const amp = this.MoveSpeedAmplifier
+		// const isLimit = this.IsMoveSpeedLimit
+		// const baseSpeed = this.MoveSpeedBase + this.MoveSpeedBonus
+		// const calculateSpeed = Math.max(baseSpeed * amp, MoveSpeedData.Min)
+		// const totalSpeed = isLimit
+		// 	? Math.min(MoveSpeedData.Max, Math.max(MoveSpeedData.Min, calculateSpeed))
+		// 	: Math.max(MoveSpeedData.Min, calculateSpeed)
+		return this.MoveSpeedTotal
 	}
 
 	/** ============================== Turn Rate ======================================= */
@@ -2288,7 +2287,6 @@ export class Unit extends Entity {
 	}
 
 	/** ================================ Status Resist ======================================= */
-
 	protected CalculateStatusResist() {
 		// maybe valve add new future status resistance
 		// https://dota2.fandom.com/wiki/Status_Resistance
@@ -2315,8 +2313,8 @@ export class Unit extends Entity {
 		return totalBonus
 	}
 }
-export const Units = EntityManager.GetEntitiesByClass(Unit)
 
+export const Units = EntityManager.GetEntitiesByClass(Unit)
 function UnitNameChanged(unit: Unit) {
 	unit.UnitData = UnitData.globalStorage.get(unit.Name) ?? UnitData.empty
 }
@@ -2366,12 +2364,6 @@ RegisterFieldHandler(Unit, "m_nPlayerOwnerID", (unit, newVal) => {
 RegisterFieldHandler(Unit, "m_bIsIllusion", (unit, newVal) => {
 	unit.IsIllusion_ = newVal as boolean
 	EventsSDK.emit("UnitPropertyChanged", false, unit)
-})
-EventsSDK.on("LocalTeamChanged", () => {
-	for (let index = Units.length - 1; index > -1; index--) {
-		const unit = Units[index]
-		unit.IsVisibleForEnemies_ = Unit.IsVisibleForEnemies(unit)
-	}
 })
 RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", (unit, newVal) => {
 	unit.IsControllableByPlayerMask = newVal as bigint
@@ -2458,6 +2450,13 @@ RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, newVal) => {
 	const ent = EntityManager.EntityByIndex(unit.Spawner_)
 	if (ent instanceof NeutralSpawner) {
 		unit.Spawner = ent
+	}
+})
+
+EventsSDK.on("LocalTeamChanged", () => {
+	for (let index = Units.length - 1; index > -1; index--) {
+		const unit = Units[index]
+		unit.IsVisibleForEnemies_ = Unit.IsVisibleForEnemies(unit)
 	}
 })
 
