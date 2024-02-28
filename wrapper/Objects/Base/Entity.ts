@@ -1024,7 +1024,7 @@ let unitsForUpdateSize = 0
 const unitsForUpdate = new Uint16Array(0x4000) // for sure
 
 function requestUnitUpdate(ent: Entity) {
-	if (ent.IsVisible) {
+	if (ent.IsVisible && ent.Index < 0x4000) {
 		unitsForUpdate[unitsForUpdateSize++] = ent.Index
 	}
 }
