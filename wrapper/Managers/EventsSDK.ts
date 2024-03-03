@@ -437,13 +437,11 @@ interface EventsSDK extends EventEmitter {
 		listener: (player: PlayerCustomData) => void,
 		priority?: number
 	): EventEmitter
-	// TODO: add logic in Managers -> Monitors
 	on(
 		name: "AttackStarted",
 		callback: (unit: Unit, castpoint: number, names: string[]) => void,
 		priority?: number
 	): EventEmitter
-	// TODO: add logic in Managers -> Monitors
 	on(
 		name: "AttackEnded",
 		listener: (unit: Unit) => void,

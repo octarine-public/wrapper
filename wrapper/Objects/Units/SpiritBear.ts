@@ -21,6 +21,23 @@ export class SpiritBear extends Unit {
 		super(Index, serial)
 		this.IsSpiritBear = true
 	}
+	public CanMove(
+		checkChanneling: boolean = true,
+		checkAbilityPhase: boolean = true
+	): boolean {
+		return this.ShouldRespawn && super.CanMove(checkChanneling, checkAbilityPhase)
+	}
+	public CanAttack(
+		target?: Unit,
+		checkChanneling: boolean = true,
+		checkAbilityPhase: boolean = true,
+		additionalRange?: number
+	): boolean {
+		return (
+			this.ShouldRespawn &&
+			super.CanAttack(target, checkChanneling, checkAbilityPhase, additionalRange)
+		)
+	}
 	public get HealthBarSize() {
 		return !this.IsEnemy()
 			? new Vector2(GUIInfo.ScaleHeight(100), GUIInfo.ScaleHeight(6))

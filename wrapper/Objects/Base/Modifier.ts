@@ -23,6 +23,10 @@ import { Unit } from "./Unit"
 const scepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
 export class Modifier {
+	public static AttackThroughImmunity: string[] = [
+		"modifier_item_revenants_brooch_active",
+		"modifier_muerta_pierce_the_veil_buff"
+	]
 	// TODO: rework this after add ModifierManager
 	public static HasTrueSightBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => {

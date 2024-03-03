@@ -168,6 +168,7 @@ export class Unit extends Entity {
 	public HealthBarOffset_: Nullable<number>
 	public MoveSpeedTotal = 0
 	public ArmorTotal = 0
+	public IsAttacking = false
 
 	public readonly Spells_ = new Array<number>(MAX_SPELLS).fill(0)
 	public readonly Spells = new Array<Nullable<Ability>>(MAX_SPELLS).fill(undefined)
@@ -236,37 +237,42 @@ export class Unit extends Entity {
 	 * @ignore
 	 * @internal
 	 */
-	public IsIllusion_ = false
+	public TargetIndex_: number = -1
 	/**
 	 * @ignore
 	 * @internal
 	 */
-	public IsStrongIllusion_ = false
+	public IsIllusion_: boolean = false
 	/**
 	 * @ignore
 	 * @internal
 	 */
-	public IsClone_ = false
+	public IsStrongIllusion_: boolean = false
 	/**
 	 * @ignore
 	 * @internal
 	 */
-	public OwnerNPC_ = 0
+	public IsClone_: boolean = false
 	/**
 	 * @ignore
 	 * @internal
 	 */
-	public Spawner_ = 0
+	public OwnerNPC_: number = 0
 	/**
 	 * @ignore
 	 * @internal
 	 */
-	public IsVisibleForEnemies_ = false
+	public Spawner_: number = 0
 	/**
 	 * @ignore
 	 * @internal
 	 */
-	public cellIsVisibleForEnemies_ = false // TODO: calculate grid nav from enemies
+	public IsVisibleForEnemies_: boolean = false
+	/**
+	 * @ignore
+	 * @internal
+	 */
+	public cellIsVisibleForEnemies_: boolean = false // TODO: calculate grid nav from enemies
 
 	public readonly PredictedPosition = new Vector3().Invalidate()
 	public readonly TPStartPosition = new Vector3().Invalidate()
@@ -285,12 +291,8 @@ export class Unit extends Entity {
 
 	// private cellPositions: Vector2[] = []
 
-	/**
-	 * @deprecated
-	 * @description only support for icore (remove after delete icore)
-	 */
-	public get BaseMoveSpeed() {
-		return this.NetworkBaseMoveSpeed
+	public get Target() {
+		return EntityManager.EntityByIndex<Unit>(this.TargetIndex_)
 	}
 
 	public get DayVisionAmplify() {
@@ -539,6 +541,10 @@ export class Unit extends Entity {
 		return this.HasBuffByName("modifier_bloodseeker_thirst")
 	}
 	// TODO: by classes
+	public get FountainInvulnerability(): boolean {
+		return this.HasBuffByName("modifier_fountain_invulnerability")
+	}
+	// TODO: by classes
 	public get IsTempestDouble(): boolean {
 		return this.HasBuffByName("modifier_arc_warden_tempest_double")
 	}
@@ -551,6 +557,11 @@ export class Unit extends Entity {
 	}
 	public get IsRooted(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ROOTED)
+	}
+	public get IgnoreMoveAndAttackOrders(): boolean {
+		return this.IsUnitStateFlagSet(
+			modifierstate.MODIFIER_STATE_IGNORING_MOVE_AND_ATTACK_ORDERS
+		)
 	}
 	public get IsUnslowable(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_UNSLOWABLE)
@@ -587,6 +598,9 @@ export class Unit extends Entity {
 	}
 	public get IsInvulnerable(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE)
+	}
+	public get IsUntargetable() {
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_UNTARGETABLE)
 	}
 	public get IsMagicImmune(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE)
@@ -924,6 +938,75 @@ export class Unit extends Entity {
 		)
 		const buff = sortBuffs.find(x => x.IsBoots && x.BonusMoveSpeedAmplifier !== 0)
 		return buff?.BonusMoveSpeedAmplifier ?? 0
+	}
+
+	public CanMove(
+		checkChanneling: boolean = true,
+		checkAbilityPhase: boolean = true
+	): boolean {
+		if (this.IsRooted || this.IsStunned || !this.IsSpawned) {
+			return false
+		}
+		if (this.IsInvulnerable && !this.FountainInvulnerability) {
+			return false
+		}
+		if (checkChanneling && this.IsChanneling) {
+			return false
+		}
+		if (checkAbilityPhase && this.IsInAbilityPhase) {
+			return false
+		}
+		if (this.IgnoreMoveAndAttackOrders) {
+			return false
+		}
+		return this.HasMoveCapability()
+	}
+
+	public CanAttack(
+		target?: Unit,
+		checkChanneling: boolean = true,
+		checkAbilityPhase: boolean = true,
+		additionalRange?: number
+	): boolean {
+		if (checkChanneling && this.IsChanneling) {
+			return false
+		}
+		if (checkAbilityPhase && this.IsInAbilityPhase) {
+			return false
+		}
+		const canAttack =
+			this.IsAlive &&
+			this.IsSpawned &&
+			!this.IsStunned &&
+			!this.IsDisarmed &&
+			!this.IgnoreMoveAndAttackOrders &&
+			(!this.IsInvulnerable || this.FountainInvulnerability) &&
+			!this.HasAttackCapability(DOTAUnitAttackCapability.DOTA_UNIT_CAP_NO_ATTACK)
+
+		if (target === undefined) {
+			return canAttack
+		}
+		if (this.Distance2D(target) > this.GetAttackRange(target, additionalRange)) {
+			return false
+		}
+		if (!target.IsAlive || !target.IsVisible || target.IsInvulnerable) {
+			return false
+		}
+		const isAttackImmune = this.CanAttackImmune(target)
+		if (target.IsUntargetable || isAttackImmune) {
+			return false
+		}
+		if (!this.IsEnemy(target) && !target.IsDeniable) {
+			return false
+		}
+		return canAttack
+	}
+
+	public CanAttackImmune(target: Unit): boolean {
+		return (
+			!target.IsAttackImmune ||
+			(target.IsEthereal && this.HasAnyBuffByNames(Modifier.AttackThroughImmunity))
+		)
 	}
 
 	public HealthBarPosition(
@@ -1269,22 +1352,6 @@ export class Unit extends Entity {
 		)
 	}
 
-	public CanAttack(target: Unit): boolean {
-		return (
-			this.IsAlive &&
-			this.IsVisible &&
-			this.IsSpawned &&
-			!this.IsEthereal &&
-			target.IsAlive &&
-			!target.IsInvulnerable &&
-			target.IsVisible &&
-			target.IsSpawned &&
-			!target.IsAttackImmune &&
-			!this.IsEthereal &&
-			(this.IsEnemy(target) || target.IsDeniable)
-		)
-	}
-
 	public ExtendUntilWall(
 		start: Vector3,
 		direction: Vector3,
@@ -1412,7 +1479,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			position,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1426,7 +1494,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			target,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1436,7 +1505,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			position,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1450,7 +1520,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			target,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1466,7 +1537,8 @@ export class Unit extends Entity {
 			ability,
 			position,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1476,7 +1548,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			ability: itemID,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1492,7 +1565,8 @@ export class Unit extends Entity {
 			target,
 			ability,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1508,7 +1582,8 @@ export class Unit extends Entity {
 			target: tree,
 			ability,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1518,7 +1593,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			ability,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1528,7 +1604,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			ability,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1538,7 +1615,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			ability,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1548,7 +1626,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			position,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1556,7 +1635,8 @@ export class Unit extends Entity {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
 			issuers: [this],
-			ability
+			ability,
+			isPlayerInput: false
 		})
 	}
 
@@ -1572,7 +1652,8 @@ export class Unit extends Entity {
 			target: slot,
 			ability: item,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1588,7 +1669,8 @@ export class Unit extends Entity {
 			ability: item,
 			position,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1604,7 +1686,8 @@ export class Unit extends Entity {
 			target,
 			ability: item,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1618,7 +1701,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			target: physicalItem,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1628,7 +1712,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			target: rune,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1636,7 +1721,8 @@ export class Unit extends Entity {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM,
 			issuers: [this],
-			ability: item
+			ability: item,
+			isPlayerInput: false
 		})
 	}
 
@@ -1645,7 +1731,8 @@ export class Unit extends Entity {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM,
 			issuers: [this],
 			ability: item,
-			queue
+			queue,
+			isPlayerInput: false
 		})
 	}
 
@@ -1659,7 +1746,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			ability: item,
 			target: (lock as number) + 0,
-			queue
+			queue,
+			isPlayerInput: false
 		})
 	}
 
@@ -1667,7 +1755,8 @@ export class Unit extends Entity {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAKE_ITEM_FROM_NEUTRAL_ITEM_STASH,
 			issuers: [this],
-			ability: item
+			ability: item,
+			isPlayerInput: false
 		})
 	}
 
@@ -1676,7 +1765,8 @@ export class Unit extends Entity {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM,
 			issuers: [this],
 			target: slot,
-			ability: item
+			ability: item,
+			isPlayerInput: false
 		})
 	}
 
@@ -1686,7 +1776,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			ability: item,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1695,7 +1786,8 @@ export class Unit extends Entity {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_STOP,
 			issuers: [this],
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1704,7 +1796,8 @@ export class Unit extends Entity {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAUNT,
 			issuers: [this],
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1712,7 +1805,8 @@ export class Unit extends Entity {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH,
 			issuers: [this],
-			ability: item
+			ability: item,
+			isPlayerInput: false
 		})
 	}
 
@@ -1726,7 +1820,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			target: runeItem,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1734,7 +1829,8 @@ export class Unit extends Entity {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PING_ABILITY,
 			issuers: [this],
-			ability
+			ability,
+			isPlayerInput: false
 		})
 	}
 
@@ -1748,7 +1844,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			position,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1758,7 +1855,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			position,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1776,7 +1874,8 @@ export class Unit extends Entity {
 			target,
 			position: direction,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1805,7 +1904,8 @@ export class Unit extends Entity {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK,
 			issuers: [this],
 			ability: item,
-			target: state === false ? 0 : undefined
+			target: state === false ? 0 : undefined,
+			isPlayerInput: false
 		})
 	}
 
@@ -1815,7 +1915,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			ability: item,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
@@ -1829,7 +1930,8 @@ export class Unit extends Entity {
 			issuers: [this],
 			position,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 

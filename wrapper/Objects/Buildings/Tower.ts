@@ -1,23 +1,32 @@
 import { Vector2 } from "../../Base/Vector2"
-import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { WrapperClass } from "../../Decorators"
 import { GUIInfo } from "../../GUI/GUIInfo"
 import { EntityManager } from "../../Managers/EntityManager"
 import { Building } from "../Base/Building"
 import { Unit } from "../Base/Unit"
+import { RegisterFieldHandler } from "../NativeToSDK"
 
 @WrapperClass("CDOTA_BaseNPC_Tower")
 export class Tower extends Building {
-	/** @ignore */
-	@NetworkedBasicField("m_hTowerAttackTarget")
-	public TowerAttackTarget_ = 0
-
-	/** @ignore */
+	/**
+	 * @ignore
+	 * @internal
+	 */
+	public TowerAttackTarget_: number = 16777215 // default by networked field
+	/**
+	 * @ignore
+	 * @internal
+	 */
 	constructor(
 		public readonly Index: number,
 		serial: number
 	) {
 		super(Index, serial)
 		this.IsTower = true
+	}
+
+	public get Target() {
+		return this.TowerAttackTarget
 	}
 
 	public get TowerAttackTarget() {
@@ -36,3 +45,8 @@ export class Tower extends Building {
 		return new Vector2(this.HealthBarSize.x / 2, GUIInfo.ScaleHeight(63))
 	}
 }
+
+RegisterFieldHandler(Tower, "m_hTowerAttackTarget", (unit, newVal) => {
+	unit.IsAttacking = newVal !== 16777215
+	unit.TowerAttackTarget_ = newVal as number
+})

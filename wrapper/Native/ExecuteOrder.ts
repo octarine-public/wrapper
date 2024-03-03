@@ -158,6 +158,7 @@ export class ExecuteOrder {
 
 	public static PrepareOrder(order: {
 		orderType: dotaunitorder_t
+		isPlayerInput: boolean
 		target?: Entity | number
 		position?: Vector3
 		ability?: Ability | number
@@ -171,14 +172,16 @@ export class ExecuteOrder {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 	public static Glyph(queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 	public static CastRiverPaint(
@@ -190,7 +193,8 @@ export class ExecuteOrder {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RIVER_PAINT,
 			position,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 	public static PreGameAdjustItemAssigment(
@@ -202,7 +206,8 @@ export class ExecuteOrder {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT,
 			target: itemID,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 	public static Scan(position: Vector3, queue?: boolean, showEffects?: boolean): void {
@@ -210,12 +215,14 @@ export class ExecuteOrder {
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR,
 			position,
 			queue,
-			showEffects
+			showEffects,
+			isPlayerInput: false
 		})
 	}
 
 	public static fromObject(order: {
 		orderType: dotaunitorder_t
+		isPlayerInput: boolean
 		target?: Entity | number
 		position?: Vector3
 		ability?: Ability | number
@@ -223,15 +230,20 @@ export class ExecuteOrder {
 		queue?: boolean
 		showEffects?: boolean
 	}): ExecuteOrder {
-		return new ExecuteOrder(
+		const executeOrder = new ExecuteOrder(
 			order.orderType,
 			order.target,
 			order.position,
 			order.ability,
 			order.issuers ?? [],
 			order.queue,
-			order.showEffects
+			order.showEffects,
+			order.isPlayerInput
 		)
+		if (!executeOrder.IsPlayerInput) {
+			EventsSDK.emit("PrepareUnitOrders", false, executeOrder)
+		}
+		return executeOrder
 	}
 
 	/**
