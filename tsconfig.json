@@ -19,7 +19,8 @@
 	},
 	"include": [
 		"./**/*.ts",
-		"../../**/*.d.ts"
+		// don't include .d.ts files from some submodules / libraries
+		"../**/*.d.ts" 
 	],
 	"exclude": [
 		"node_modules/**/*",
