@@ -968,6 +968,9 @@ export class Unit extends Entity {
 		checkAbilityPhase: boolean = true,
 		additionalRange?: number
 	): boolean {
+		if (this === target) {
+			return false
+		}
 		if (checkChanneling && this.IsChanneling) {
 			return false
 		}
@@ -992,17 +995,14 @@ export class Unit extends Entity {
 		if (!target.IsAlive || !target.IsVisible || target.IsInvulnerable) {
 			return false
 		}
-		const isAttackImmune = this.CanAttackImmune(target)
-		if (target.IsUntargetable || isAttackImmune) {
-			return false
-		}
-		if (!this.IsEnemy(target) && !target.IsDeniable) {
+		const canHitAttackImmune = this.CanHitAttackImmune(target)
+		if (target.IsUntargetable || !canHitAttackImmune) {
 			return false
 		}
 		return canAttack
 	}
 
-	public CanAttackImmune(target: Unit): boolean {
+	public CanHitAttackImmune(target: Unit): boolean {
 		return (
 			!target.IsAttackImmune ||
 			(target.IsEthereal && this.HasAnyBuffByNames(Modifier.AttackThroughImmunity))
