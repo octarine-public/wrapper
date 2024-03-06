@@ -12,15 +12,15 @@ import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils
 import { Unit } from "../Base/Unit"
 import { UnitData } from "./UnitData"
 
-function LoadAbilityFile(path: string): RecursiveMap {
-	const res = parseKV(path).get("DOTAAbilities")
+const storageIds: Map<number, string> = new Map()
+function LoadFile(path: string, name: string = "DOTAAbilities"): RecursiveMap {
+	const res = parseKV(path).get(name)
 	return res instanceof Map ? res : new Map()
 }
 
 export class AbilityData {
-	public static globalStorage: Map<string, AbilityData> = new Map()
 	public static empty = new AbilityData("", new Map())
-
+	public static globalStorage: Map<string, AbilityData> = new Map()
 	private static readonly cacheWithoutSpecialData = new Set<string>()
 
 	public static GetAbilityByName(name: string): Nullable<AbilityData> {
@@ -28,18 +28,22 @@ export class AbilityData {
 	}
 
 	public static GetAbilityNameByID(id: number): Nullable<string> {
-		for (const [name, data] of AbilityData.globalStorage) {
-			if (data.ID === id) {
-				return name
-			}
-		}
-		return undefined
+		return storageIds.get(id)
 	}
 
 	public static GetItemRecipeName(name: string): Nullable<string> {
 		for (const [recipeName, data] of AbilityData.globalStorage) {
 			if (data.ItemResult === name) {
 				return recipeName
+			}
+		}
+		return undefined
+	}
+
+	protected static GetAbilityIDByName(name: string): Nullable<number> {
+		for (const [abilID, abilName] of storageIds) {
+			if (abilName === name) {
+				return abilID
 			}
 		}
 		return undefined
@@ -176,8 +180,9 @@ export class AbilityData {
 		this.IsGrantedByScepter = kv.has("IsGrantedByScepter")
 			? parseInt(kv.get("IsGrantedByScepter") as string) !== 0
 			: false
-		this.ID = kv.has("ID") ? parseInt(kv.get("ID") as string) : 0
-
+		this.ID = kv.has("ID")
+			? parseInt(kv.get("ID") as string)
+			: AbilityData.GetAbilityIDByName(name) ?? -1
 		this.EffectName = (kv.get("Effect") as string) ?? ""
 		this.Cost = kv.has("ItemCost") ? parseInt(kv.get("ItemCost") as string) : 0
 		this.Purchasable = kv.has("ItemPurchasable")
@@ -742,17 +747,45 @@ function FixAbilityInheritance(
 	return map
 }
 
+function LoadAbilityIdsFromKV(
+	mapIdsData: Map<string, RecursiveMapValue>,
+	keyName: string
+) {
+	const getData = mapIdsData.get(keyName)
+	if (getData === undefined || !(getData instanceof Map)) {
+		console.error(`Failed to load ${keyName}`)
+		return
+	}
+	const getLocked = getData.get("Locked") as Map<string, string>
+	if (getLocked === undefined || !(getLocked instanceof Map)) {
+		console.error("Failed to load Locked")
+		return
+	}
+	getLocked.forEach((abilID, abilName) => storageIds.set(parseFloat(abilID), abilName))
+}
+
+function LoadAbilityIds(mapIdsData: Map<string, RecursiveMapValue>) {
+	LoadAbilityIdsFromKV(mapIdsData, "UnitAbilities")
+	LoadAbilityIdsFromKV(mapIdsData, "ItemAbilities")
+}
+
 export function ReloadGlobalAbilityStorage() {
+	storageIds.clear()
 	AbilityData.globalStorage.clear()
 	try {
+		LoadAbilityIds(
+			createMapFromMergedIterators<string, RecursiveMapValue>(
+				LoadFile("scripts/npc/npc_ability_ids.txt", "DOTAAbilityIDs").entries()
+			)
+		)
 		const abilsMap = createMapFromMergedIterators<string, RecursiveMapValue>(
 			...Array.from(UnitData.globalStorage.keys())
 				.filter(name => name.includes("npc_dota_hero_"))
-				.map(name => LoadAbilityFile(`scripts/npc/heroes/${name}.txt`).entries()),
-			LoadAbilityFile("scripts/npc/npc_abilities.txt").entries(),
-			LoadAbilityFile("scripts/npc/npc_abilities_custom.txt").entries(),
-			LoadAbilityFile("scripts/npc/items.txt").entries(),
-			LoadAbilityFile("scripts/npc/npc_items_custom.txt").entries()
+				.map(name => LoadFile(`scripts/npc/heroes/${name}.txt`).entries()),
+			LoadFile("scripts/npc/npc_abilities.txt").entries(),
+			LoadFile("scripts/npc/npc_abilities_custom.txt").entries(),
+			LoadFile("scripts/npc/items.txt").entries(),
+			LoadFile("scripts/npc/npc_items_custom.txt").entries()
 		)
 		const fixedCache: RecursiveMap = new Map()
 		abilsMap.forEach((map, abilName) => {
