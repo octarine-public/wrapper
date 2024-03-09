@@ -11,7 +11,7 @@ export function IsRiver(pos: Vector3 | Vector2): boolean {
 }
 export function GetPathCornerNearestTeam(corner: CreepPathCorner): Team {
 	return (
-		Buildings.orderByFirst(building => corner.Distance2D(building))?.Team ?? Team.None
+		Buildings.toOrderBy(building => corner.Distance2D(building))[0]?.Team ?? Team.None
 	)
 }
 
@@ -87,7 +87,7 @@ export function GetCreepCurrentTarget(
 		corner =>
 			corner.Team === team &&
 			(lane === MapArea.Unknown || corner.Spawner?.Lane === lane)
-	).orderByFirst(corner => corner.Distance2D(position))
+	).orderBy(corner => corner.Distance2D(position))[0]
 
 	if (nearestCorner === undefined || nearestCorner.Referencing.size === 0) {
 		return nearestCorner?.Target

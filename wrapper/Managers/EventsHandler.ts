@@ -1271,9 +1271,10 @@ EventsSDK.on("ServerTick", tick => {
 			30 // TODO: is there a better way?
 
 		if (prevTime === 0) {
-			EntityManager.AllEntities.forEach(
-				ent => (ent.FakeCreateTime_ = GameState.RawGameTime)
-			)
+			const entities = EntityManager.AllEntities
+			for (let index = entities.length - 1; index > -1; index--) {
+				entities[index].FakeCreateTime_ = GameState.RawGameTime
+			}
 		}
 		if (LocalPlayer !== undefined) {
 			SetLatestTickDelta(prevTime !== 0 ? GameState.RawGameTime - prevTime : 1 / 30)

@@ -1,4 +1,5 @@
 import { Color } from "../../Base/Color"
+import { Vector3 } from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
 import { MapArea } from "../../Enums/MapArea"
 import { RenderMode } from "../../Enums/RenderMode"
@@ -8,6 +9,7 @@ import { Entity } from "./Entity"
 
 @WrapperClass("LaneCreepSpawner")
 export class LaneCreepSpawner extends Entity {
+	public OriginPosition = new Vector3().Invalidate()
 	public Target: Nullable<CreepPathCorner>
 	public Lane = MapArea.Middle
 	public SelfTargetName = ""

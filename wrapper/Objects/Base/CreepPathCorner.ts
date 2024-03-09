@@ -10,12 +10,14 @@ import { CreateEntityInternal, DeleteEntity } from "../../Managers/EntityManager
 import { Events } from "../../Managers/Events"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../Native/WASM"
-import { EntityDataLumps } from "../../Resources/ParseEntityLump"
+import { EntityDataLumps, EntityDataMap } from "../../Resources/ParseEntityLump"
 import { Entity } from "./Entity"
 import { LaneCreepSpawner, LaneCreepSpawners } from "./LaneCreepSpawner"
+import { World } from "./World"
 
 @WrapperClass("CreepPathCorner")
 export class CreepPathCorner extends Entity {
+	public OriginPosition = new Vector3().Invalidate()
 	public Spawner: Nullable<LaneCreepSpawner>
 	public Referencing = new Set<CreepPathCorner>()
 	public Target: Nullable<CreepPathCorner>
@@ -39,58 +41,97 @@ Events.on("NewConnection", () => {
 	curLocalID = 0x3000
 })
 
+function FixCreepPathCorner(entity: CreepPathCorner): void {
+	let team = Team.Neutral,
+		lane = MapArea.Unknown
+	const selfName = entity.SelfTargetName
+	switch (true) {
+		case selfName.includes("lane_top_pathcorner_goodguys"):
+			team = Team.Radiant
+			lane = MapArea.Top
+			break
+		case selfName.includes("lane_top_pathcorner_badguys"):
+			team = Team.Dire
+			lane = MapArea.Top
+			break
+		case selfName.includes("lane_bot_pathcorner_goodguys"):
+			team = Team.Radiant
+			lane = MapArea.Bottom
+			break
+		case selfName.includes("lane_bot_pathcorner_badguys"):
+			team = Team.Dire
+			lane = MapArea.Bottom
+			break
+		case selfName.includes("lane_mid_pathcorner_goodguys"):
+			team = Team.Radiant
+			lane = MapArea.Middle
+			break
+		case selfName.includes("lane_mid_pathcorner_badguys"):
+			team = Team.Dire
+			lane = MapArea.Middle
+			break
+	}
+	const spawner = LaneCreepSpawners.find(x => x.Team === team && x.Lane === lane)
+	if (spawner !== undefined) {
+		entity.Team = spawner.Team
+		entity.Spawner = spawner
+	}
+}
+
+function DeleteSpawnersAndCorners(lump: EntityDataMap[]): void {
+	const lumpSpawnerNames = lump
+		.filter(data => {
+			const classname = data.get("classname")
+			return (
+				typeof classname === "string" &&
+				classname.startsWith("npc_dota_spawner_") &&
+				typeof data.get("targetname") === "string"
+			)
+		})
+		.map(data => data.get("targetname") as string)
+	const lumpSpawners = LaneCreepSpawners.filter(ent =>
+		lumpSpawnerNames.includes(ent.SelfTargetName)
+	)
+	for (const ent of lumpSpawners) {
+		DeleteEntity(ent.Index)
+	}
+	const lumpCornerNames = lump
+		.filter(
+			data =>
+				data.get("classname") === "path_corner" &&
+				typeof data.get("targetname") === "string"
+		)
+		.map(data => data.get("targetname") as string)
+	const lumpCorners = CreepPathCorners.filter(ent =>
+		lumpCornerNames.includes(ent.SelfTargetName)
+	)
+	for (const ent of lumpCorners) {
+		DeleteEntity(ent.Index)
+	}
+	for (const ent of CreepPathCorners) {
+		if (ent.Target !== undefined && lumpCorners.includes(ent.Target)) {
+			ent.Target = undefined
+		}
+		for (const ent2 of lumpCorners) {
+			if (ent.Referencing.has(ent2)) {
+				ent.Referencing.delete(ent2)
+			}
+		}
+	}
+	for (const ent of LaneCreepSpawners) {
+		if (ent.Target !== undefined && lumpCorners.includes(ent.Target)) {
+			ent.Target = undefined
+		}
+	}
+}
+
 function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): void {
 	const lump = EntityDataLumps.get(layerName)
 	if (lump === undefined) {
 		return
 	}
-
 	if (!state) {
-		const lumpSpawnerNames = lump
-			.filter(data => {
-				const classname = data.get("classname")
-				return (
-					typeof classname === "string" &&
-					classname.startsWith("npc_dota_spawner_") &&
-					typeof data.get("targetname") === "string"
-				)
-			})
-			.map(data => data.get("targetname") as string)
-		const lumpSpawners = LaneCreepSpawners.filter(ent =>
-			lumpSpawnerNames.includes(ent.SelfTargetName)
-		)
-		for (const ent of lumpSpawners) {
-			DeleteEntity(ent.Index)
-		}
-
-		const lumpCornerNames = lump
-			.filter(
-				data =>
-					data.get("classname") === "path_corner" &&
-					typeof data.get("targetname") === "string"
-			)
-			.map(data => data.get("targetname") as string)
-		const lumpCorners = CreepPathCorners.filter(ent =>
-			lumpCornerNames.includes(ent.SelfTargetName)
-		)
-		for (const ent of lumpCorners) {
-			DeleteEntity(ent.Index)
-		}
-		for (const ent of CreepPathCorners) {
-			if (ent.Target !== undefined && lumpCorners.includes(ent.Target)) {
-				ent.Target = undefined
-			}
-			for (const ent2 of lumpCorners) {
-				if (ent.Referencing.has(ent2)) {
-					ent.Referencing.delete(ent2)
-				}
-			}
-		}
-		for (const ent of LaneCreepSpawners) {
-			if (ent.Target !== undefined && lumpCorners.includes(ent.Target)) {
-				ent.Target = undefined
-			}
-		}
+		DeleteSpawnersAndCorners(lump)
 		return
 	}
 
@@ -124,6 +165,7 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 			default:
 				continue
 		}
+
 		const originStr = data.get("origin"),
 			anglesStr = data.get("angles"),
 			npcfirstwaypoint =
@@ -165,6 +207,8 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 		const pos = Vector3.FromString(originStr),
 			ang = QAngle.FromString(anglesStr)
 		pos.SetZ(GetPositionHeight(pos))
+		// Hack "GetPositionHeight(pos)"
+		entity.OriginPosition.CopyFrom(pos)
 		entity.VisualPosition.CopyFrom(pos)
 		entity.NetworkedPosition.CopyFrom(pos)
 		entity.VisualAngles.CopyFrom(ang)
@@ -198,11 +242,14 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 		entity.SelfTargetName = targetname
 		entity.Name_ = "path_corner"
 		entity.Team = Team.Neutral
+		FixCreepPathCorner(entity)
 		CreateEntityInternal(entity)
 		EventsSDK.emit("PreEntityCreated", false, entity)
 		const pos = Vector3.FromString(originStr),
 			ang = QAngle.FromString(anglesStr)
 		pos.SetZ(GetPositionHeight(pos))
+		// Hack "GetPositionHeight(pos)"
+		entity.OriginPosition.CopyFrom(pos)
 		entity.VisualPosition.CopyFrom(pos)
 		entity.NetworkedPosition.CopyFrom(pos)
 		entity.VisualAngles.CopyFrom(ang)
@@ -213,6 +260,8 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 				entity.Spawner = spawner
 			}
 		}
+		// TargetName -> target
+		// SelfTargetName -> targetname
 		for (const prev of CreepPathCorners) {
 			if (
 				prev.TargetName !== undefined &&
@@ -220,11 +269,13 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 			) {
 				prev.Target = entity
 				entity.Spawner = prev.Spawner
+				entity.Team = prev.Spawner?.Team ?? Team.Neutral
 				entity.Referencing.add(prev)
 			}
 			if (prev.SelfTargetName === entity.TargetName) {
 				entity.Target = prev
 				prev.Spawner = entity.Spawner
+				prev.Team = entity.Spawner?.Team ?? Team.Neutral
 				prev.Referencing.add(entity)
 			}
 		}
@@ -237,5 +288,23 @@ EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
 		LoadCreepSpawnersAndPathCorners(layerName, state)
 	} catch (e) {
 		console.error("Error in LoadCreepSpawnersAndPathCorners", e)
+	}
+})
+
+// Hack because of GetPositionHeight equals -16384 at CreepPathCorners or LaneCreepSpawners
+// ¯\_(ツ)_/¯
+function UpdatePositionHeight(entities: CreepPathCorner[] | LaneCreepSpawner[]): void {
+	for (let index = entities.length - 1; index > -1; index--) {
+		const entity = entities[index]
+		const height = GetPositionHeight(entity.OriginPosition)
+		entity.VisualPosition.SetZ(height)
+		entity.NetworkedPosition.SetZ(height)
+	}
+}
+
+EventsSDK.on("PreEntityCreated", ent => {
+	if (ent instanceof World) {
+		UpdatePositionHeight(CreepPathCorners)
+		UpdatePositionHeight(LaneCreepSpawners)
 	}
 })
