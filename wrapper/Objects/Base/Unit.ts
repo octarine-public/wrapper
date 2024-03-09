@@ -537,6 +537,10 @@ export class Unit extends Entity {
 		return this.IsStrongIllusion_
 	}
 	// TODO: by classes
+	public get CanReincarnate() {
+		return this.HasBuffByName("modifier_item_aegis")
+	}
+	// TODO: by classes
 	public get IsThirst(): boolean {
 		return this.HasBuffByName("modifier_bloodseeker_thirst")
 	}
