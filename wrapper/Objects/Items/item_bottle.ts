@@ -9,6 +9,9 @@ export class item_bottle extends Item {
 	public StoredRune = DOTA_RUNES.DOTA_RUNE_INVALID
 	public LastRuneTypeChangeTime = GameState.RawGameTime
 
+	public get IsInvisibility() {
+		return this.StoredRune === DOTA_RUNES.DOTA_RUNE_INVISIBILITY
+	}
 	public get StoredRuneTime(): number {
 		return GameState.RawGameTime - this.LastRuneTypeChangeTime
 	}

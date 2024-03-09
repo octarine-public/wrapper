@@ -2,7 +2,6 @@ import { Vector3 } from "../../Base/Vector3"
 import { GetSpellTexture } from "../../Data/ImageData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { ABILITY_TYPES } from "../../Enums/ABILITY_TYPES"
-import { AbilityLogicType } from "../../Enums/AbilityLogicType"
 import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
 import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
 import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
@@ -98,6 +97,9 @@ export class Ability extends Entity {
 	public get CastDelay() {
 		return this.CastPoint + this.InputLag
 	}
+	public get IsInvisibility(): boolean {
+		return false
+	}
 	/**
 	 * @description Determines if the Ability should be drawable
 	 * @return {boolean}
@@ -164,12 +166,6 @@ export class Ability extends Entity {
 	}
 	public get AbilityBehaviorMask(): DOTA_ABILITY_BEHAVIOR {
 		return this.AbilityData.AbilityBehavior
-	}
-	/**
-	 * @returns AbilityLogicType bitmask
-	 */
-	public get AbilityLogicType(): AbilityLogicType {
-		return AbilityLogicType.None
 	}
 	public get AbilityDamage(): number {
 		return this.GetBaseDamageForLevel(this.Level)
