@@ -8,6 +8,7 @@ import "./global"
 
 export { AABB } from "./Base/AABB"
 export { Color } from "./Base/Color"
+export { Quaternion } from "./Base/Quaternion"
 export { DataTeamPlayer } from "./Base/DataTeamPlayer"
 export { NetworkedParticle } from "./Base/NetworkedParticle"
 export { NeutralSpawnBox } from "./Base/NeutralSpawnBox"
