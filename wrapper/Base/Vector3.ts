@@ -384,12 +384,9 @@ export class Vector3 {
 	public ScaleTo(scalar: number): Vector3 {
 		const length = this.Length
 		if (length === 0) {
-			this.toZero()
-		} else {
-			this.MultiplyScalarForThis(scalar / length)
+			return this.toZero()
 		}
-
-		return this
+		return this.MultiplyScalarForThis(scalar / length)
 	}
 	/**
 	 * Divides both vector axis by the given scalar value
@@ -397,12 +394,9 @@ export class Vector3 {
 	public DivideTo(scalar: number): Vector3 {
 		const length = this.Length
 		if (length === 0) {
-			this.toZero()
-		} else {
-			this.DivideScalar(scalar / length)
+			return this.toZero()
 		}
-
-		return this
+		return this.DivideScalarForThis(scalar / length)
 	}
 	/**
 	 * Restricts a vector between a min and max value.
@@ -715,10 +709,14 @@ export class Vector3 {
 	public Distance2D(vec: Vector3 | Vector2): number {
 		return Math.sqrt(this.DistanceSqr2D(vec))
 	}
-
 	/**
+	 * @description A function that returns a perpendicular vector.
 	 *
-	 * @param {number} offset Axis Offset (0 = X, 1 = Y)
+	 * @param {boolean} isX - determines if the vector is perpendicular to the x-axis (default is true)
+	 * @return {Vector3}
+	 * @example
+	 * const vec = new Vector3(1, 2, 3).Perpendicular();
+	 * console.log(vec); // Vector3(-2, 1, 3)
 	 */
 	public Perpendicular(isX = true): Vector3 {
 		return isX
@@ -802,14 +800,14 @@ export class Vector3 {
 		const theta = Math.abs((this.Polar - vec.Polar + 360) % 360)
 		return Math.min(theta, 360 - theta)
 	}
-	/**
-	 * Angle between two fronts
-	 *
-	 * @param vec The another vector
-	 */
+
 	public AngleBetweenFaces(front: Vector3): number {
-		const dotProduct = this.x * front.x + this.y * front.y
-		return Math.atan2(Math.sqrt(1 - dotProduct * dotProduct), dotProduct)
+		// http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+		const length = this.Length * front.Length
+		if (length === 0) {
+			return 0
+		}
+		return Math.acos(this.Dot(front) / length)
 	}
 	public GetDirectionTo(target: Vector3): Vector3 {
 		return target.Subtract(this).Normalize()
