@@ -665,8 +665,13 @@ export class Vector2 {
 	 *
 	 * @param vec The another vector
 	 */
-	public AngleBetweenFronts(front: Vector2): number {
-		return Math.acos(this.x * front.x + this.y * front.y)
+	public AngleBetweenFaces(front: Vector2): number {
+		// http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+		const length = this.Length * front.Length
+		if (length === 0) {
+			return 0
+		}
+		return Math.acos(this.Dot(front) / length)
 	}
 	public GetDirectionTo(target: Vector2): Vector2 {
 		return target.Subtract(this).Normalize()
