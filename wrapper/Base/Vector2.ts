@@ -292,12 +292,9 @@ export class Vector2 {
 	public ScaleTo(scalar: number): Vector2 {
 		const length = this.Length
 		if (length === 0) {
-			this.toZero()
-		} else {
-			this.MultiplyScalar(scalar / length)
+			return this.toZero()
 		}
-
-		return this
+		return this.MultiplyScalarForThis(scalar / length)
 	}
 	/**
 	 * Divides both vector axis by the given scalar value
@@ -305,12 +302,9 @@ export class Vector2 {
 	public DivideTo(scalar: number): Vector2 {
 		const length = this.Length
 		if (length === 0) {
-			this.toZero()
-		} else {
-			this.DivideScalar(scalar / length)
+			return this.toZero()
 		}
-
-		return this
+		return this.DivideScalarForThis(scalar / length)
 	}
 	/**
 	 * Restricts a vector between a min and max value.
