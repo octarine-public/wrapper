@@ -532,6 +532,7 @@ export class Modifier {
 		}
 		this.Parent.Buffs.remove(this)
 		this.UnitPropertyChanged(false)
+		this.IsValid = false
 		EventsSDK.emit("ModifierRemoved", false, this)
 		this.Parent.ChangeFieldsByEvents()
 		return true
