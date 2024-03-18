@@ -1,31 +1,59 @@
 import { GetPositionHeight } from "../Native/WASM"
 import { EntityPropertiesNode } from "./EntityProperties"
+import { QAngle } from "./QAngle"
 import { Vector2 } from "./Vector2"
 import { Vector3 } from "./Vector3"
 
+const cacheTimingData = new Map<string, Map<string, string | Map<string, string>>>()
+
+const loadFile = (): Map<string, Map<string, string>> => {
+	const res = parseKV("scripts/creep_pull_timings.txt").get("CREEP_PULL_TIMINGS")
+	return res instanceof Map ? res : new Map()
+}
+
+function UpdateTimingData(): void {
+	loadFile().forEach((map, name) => cacheTimingData.set(name, map))
+}
+
 export class NeutralSpawnBox {
-	constructor(public readonly properties: EntityPropertiesNode) {}
+	public readonly Angles = new QAngle()
+	public readonly StackEnd: number = -1
+	public readonly StackStart: number = -1
+
+	constructor(public readonly properties: EntityPropertiesNode) {
+		UpdateTimingData()
+		this.SetAngleEvil()
+		this.SetAngleGood()
+		this.StackEnd = parseFloat(this.ParseStackData("stack_end"))
+		this.StackStart = parseFloat(this.ParseStackData("stack_start"))
+	}
 
 	public get MinBounds(): Vector3 {
 		return this.properties.get("m_vMinBounds") as Vector3
 	}
+
 	public get MaxBounds(): Vector3 {
 		return this.properties.get("m_vMaxBounds") as Vector3
 	}
+
 	public get Center(): Vector3 {
 		const vec = this.MinBounds.Add(this.MaxBounds).DivideScalarForThis(2)
 		vec.SetZ(GetPositionHeight(vec))
 		return vec
 	}
+
 	public get SpawnBoxOrigin(): Vector3 {
 		return this.properties.get("vSpawnBoxOrigin") as Vector3
 	}
+
 	public get CampType(): number {
 		return this.properties.get("nCampType") as number
 	}
+
 	public get CampName(): string {
 		return this.properties.get("strCampName") as string
 	}
+
 	public Includes(vec: Vector3): boolean {
 		const min = this.MinBounds
 		const max = this.MaxBounds
@@ -44,6 +72,7 @@ export class NeutralSpawnBox {
 			vec.z <= maxZ
 		)
 	}
+
 	public Includes2D(vec: Vector2): boolean {
 		const min = this.MinBounds
 		const max = this.MaxBounds
@@ -60,6 +89,112 @@ export class NeutralSpawnBox {
 			MaxBounds: this.MaxBounds,
 			SpawnBoxOrigin: this.SpawnBoxOrigin,
 			CampName: this.CampName
+		}
+	}
+
+	protected ParseStackData(stackName: string) {
+		const stack = cacheTimingData.get(this.CampName)?.get(stackName)
+		if (stack === undefined || stack instanceof Map) {
+			console.error("Error parsing stack data")
+			return "-1"
+		}
+		return stack
+	}
+
+	protected SetAngleEvil() {
+		switch (this.CampName) {
+			case "neutralcamp_evil_1":
+				this.Angles.SetY(240)
+				break
+			case "neutralcamp_evil_2":
+				this.Angles.SetY(439)
+				break
+			case "neutralcamp_evil_3":
+				this.Angles.SetY(410)
+				break
+			case "neutralcamp_evil_4":
+				this.Angles.SetY(225)
+				break
+			case "neutralcamp_evil_5":
+				this.Angles.SetY(300)
+				break
+			case "neutralcamp_evil_6":
+				this.Angles.SetY(-80)
+				break
+			case "neutralcamp_evil_7":
+				this.Angles.SetY(-110)
+				break
+			case "neutralcamp_evil_8":
+				this.Angles.SetY(180)
+				break
+			case "neutralcamp_evil_9":
+				this.Angles.SetY(116)
+				break
+			case "neutralcamp_evil_10":
+				this.Angles.SetY(355)
+				break
+			case "neutralcamp_evil_11":
+				this.Angles.SetY(193)
+				break
+			case "neutralcamp_evil_12":
+				this.Angles.SetY(183)
+				break
+			case "neutralcamp_evil_13":
+				this.Angles.SetY(-60)
+				break
+			case "neutralcamp_evil_14":
+				this.Angles.SetY(-105)
+				break
+			case "neutralcamp_evil_15":
+				this.Angles.SetY(-180)
+				break
+		}
+	}
+
+	protected SetAngleGood() {
+		switch (this.CampName) {
+			case "neutralcamp_good_1":
+				this.Angles.SetY(109)
+				break
+			case "neutralcamp_good_2":
+				this.Angles.SetY(-180)
+				break
+			case "neutralcamp_good_3":
+				this.Angles.SetY(260)
+				break
+			case "neutralcamp_good_4":
+				this.Angles.SetY(139)
+				break
+			case "neutralcamp_good_5":
+				this.Angles.SetY(250)
+				break
+			case "neutralcamp_good_7":
+				this.Angles.SetY(267)
+				break
+			case "neutralcamp_good_8":
+				this.Angles.SetY(325)
+				break
+			case "neutralcamp_good_9":
+				this.Angles.SetY(361)
+				break
+			case "neutralcamp_good_10":
+				this.Angles.SetY(537)
+				break
+			case "neutralcamp_good_11":
+				this.Angles.SetY(173)
+				break
+			case "neutralcamp_good_12":
+				this.Angles.SetY(5)
+				break
+			case "neutralcamp_good_13":
+				this.Angles.SetY(90)
+				break
+			case "neutralcamp_good_14":
+				this.Angles.SetY(-10)
+				break
+			case "neutralcamp_good_15":
+				this.Angles.SetY(-60)
+				break
 		}
 	}
 }

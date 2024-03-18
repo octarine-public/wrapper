@@ -4,6 +4,7 @@ import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTACustomHeroPickRulesPhase } from "../../Enums/DOTACustomHeroPickRulesPhase"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
 import { DOTAGameState } from "../../Enums/DOTAGameState"
+import { DOTAHeroPickState } from "../../Enums/DOTAHeroPickState"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { Team } from "../../Enums/Team"
 import { EventsSDK } from "../../Managers/EventsSDK"
@@ -59,11 +60,7 @@ export class CGameRules extends Entity {
 	public AllDraftPhase = 0
 	@NetworkedBasicField("m_nLoadedPlayers")
 	public LoadedPlayers = 0
-	/**
-	 * @readonly
-	 * @description Only is supported immortal draft
-	 * */
-	@NetworkedBasicField("m_nPlayerDraftActiveTeam")
+	@NetworkedBasicField("m_nPlayerDraftActiveTeam") // Only is supported immortal draft
 	public PlayerDraftActiveTeam = Team.None
 	@NetworkedBasicField("m_bAllDraftRadiantFirst")
 	public AllDraftRadiantFirst = false
@@ -71,8 +68,8 @@ export class CGameRules extends Entity {
 	public MatchID = 0n
 	public NeutralSpawnBoxes: NeutralSpawnBox[] = []
 	public StockInfo: StockInfo[] = []
+	public HeroPickState = DOTAHeroPickState.DOTA_HEROPICK_STATE_NONE
 
-	/** @ignore */
 	constructor(
 		public readonly Index: number,
 		serial: number
@@ -140,6 +137,10 @@ export class CGameRules extends Entity {
 		}
 	}
 }
+
+RegisterFieldHandler(CGameRules, "m_nHeroPickState", (game, newVal) => {
+	game.HeroPickState = Number(newVal)
+})
 
 RegisterFieldHandler(CGameRules, "m_NeutralSpawnBoxes", (game, newVal) => {
 	game.NeutralSpawnBoxes = (newVal as EntityPropertiesNode[]).map(

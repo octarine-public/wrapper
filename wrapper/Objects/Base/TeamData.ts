@@ -35,6 +35,8 @@ export class TeamData extends Entity {
 	public SuggestedLaneJungle: boolean[] = []
 	@NetworkedBasicField("m_vecNeutralItemsConsumed")
 	public NeutralItemsConsumed: number[] = []
+	@NetworkedBasicField("m_vecKnownClearCamps")
+	public KnownClearCamps: number[] = []
 
 	public toJSON() {
 		return {
