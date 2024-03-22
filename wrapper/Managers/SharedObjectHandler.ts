@@ -104,6 +104,7 @@ message CSODOTAPartyMember {
 	optional bool has_hp_resource = 15;
 	optional bool joined_from_partyfinder = 12;
 	optional bool is_steam_china = 16;
+	repeated uint32 banned_hero_ids = 17;
 }
 enum DOTABotDifficulty {
 	BOT_DIFFICULTY_PASSIVE = 0;
@@ -220,6 +221,8 @@ message CSODOTAParty {
 	optional uint32 bot_script_index_mask = 73;
 	optional bool restricted_from_ranked = 74;
 	optional uint32 restricted_from_ranked_account_id = 75;
+	optional uint32 rank_spread_likert_scale = 76;
+	optional uint32 behavior_score_likert_scale = 77;
 }
 message CMsgLobbyPlayerPlusSubscriptionData {
 	message HeroBadge {
@@ -492,6 +495,7 @@ message CSODOTALobbyMember {
 	optional bool is_steam_china = 54;
 	optional uint32 live_spectator_account_id = 55;
 	optional uint32 comms_reports_available = 56;
+	repeated uint32 banned_hero_ids = 57;
 }
 message CLobbyTeamDetails {
 	optional string team_name = 1;
@@ -558,6 +562,12 @@ message CMsgLobbyCoachFriendRequest {
 	optional uint32 coach_account_id = 1;
 	optional uint32 player_account_id = 2;
 	optional .ELobbyMemberCoachRequestState request_state = 3 [default = k_eLobbyMemberCoachRequestState_None];
+}
+message CDOTALobbyMatchQualityData {
+	optional uint32 overall_quality = 1;
+	optional uint32 team_balance = 2;
+	optional uint32 match_skill_range = 3;
+	optional uint32 match_behavior = 4;
 }
 message CSODOTALobby {
 	message CExtraMsg {
@@ -686,6 +696,7 @@ message CSODOTALobby {
 	optional uint32 lobby_creation_time = 128;
 	optional string event_game_definition = 129;
 	repeated .CSODOTALobby.CExtraMsg extra_startup_messages = 130;
+	optional .CDOTALobbyMatchQualityData match_quality_data = 131;
 }
 message CSODOTAPlayerChallenge {
 	optional uint32 account_id = 1 [(key_field) = true];
