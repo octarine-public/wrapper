@@ -52,149 +52,86 @@ export class Modifier {
 		return buffs.some(buff => buff.Name === "modifier_item_aghanims_shard")
 	}
 
-	/** @readonly */
 	public IsValid = true
-	/** @readonly */
 	public IsHidden = false
-	/** @readonly */
 	public IsBuff = false
-	/** @readonly */
 	public IsShield = false
-	/** @readonly */
 	public IsGhost = false
-	/** @readonly */
 	public IsDebuff = false
-	/** @readonly */
 	public IsStunDebuff = false
-	/** @readonly */
 	public IsHiddenWhenStolen = false
-	/** @readonly */
 	public IsDeniable = false
-	/** @readonly */
 	public IsVisibleForEnemies = false
 
 	// Attack speed
-	/** @readonly */
 	public IsAttackSpeedLimit = true
-	/** @readonly */
 	public FixedBaseAttackTime = 0
-	/** @readonly */
 	public BonusBaseAttackTime = 0
-	/** @readonly */
 	public BonusBaseAttackTimeStack = false
-	/** @readonly */
 	public FixedAttackAnimationPoint = 0
-	/** @readonly */
 	public BonusAttackSpeed = 0
-	/** @readonly */
 	public BaseBonusAttackSpeed = 0
-	/** @readonly */
 	public BaseBonusAttackSpeedStack = false
-	/** @readonly */
 	public BaseAttackSpeedAmplifier = 0
-	/** @readonly */
 	public BaseAttackSpeedAmplifierStack = false
-	/** @readonly */
 	public BonusAttackSpeedStack = false
-	/** @readonly */
 	public AttackSpeedAmplifier = 0
-	/** @readonly */
 	public AttackSpeedAmplifierStack = false
 
 	// Bonus attack range
-	/** @readonly */
 	public FixedAttackRange = 0
-	/** @readonly */
 	public BonusAttackRange = 0
-	/** @readonly */
 	public AttackRangeAmplifier = 0
-	/** @readonly */
 	public BonusAttackRangeStack = false
-	/** @readonly */
 	public AttackRangeAmplifierStack = false
-	/** @readonly */
 	public IsInfinityAttackRange = false
 
 	// Bonus cast range
-	/** @readonly */
 	public BonusCastRange = 0
-	/** @readonly */
 	public CastRangeAmplifier = 0
-	/** @readonly */
 	public BonusCastRangeStack = false
-	/** @readonly */
 	public CastRangeAmplifierStack = false
 
 	// Bonus radius
-	/** @readonly */
 	public BonusAOERadius = 0
 
 	// Base move speed
-	/** @readonly */
 	public MoveSpeedBase = 0
-	/** @readonly */
 	public MoveSpeedBaseStack = false
-	/** @readonly */
 	public MoveSpeedFixed = 0
-	/** @readonly */
 	public MoveSpeedBaseAmplifier = 0
-	/** @readonly */
 	public MoveSpeedBaseAmplifierStack = false
 
 	// Bonus move speed
-	/** @readonly */
 	public IsBoots = false
-	/** @readonly */
 	public IsMoveSpeedLimit = true
-	/** @readonly */
 	public BonusMoveSpeed = 0
-	/** @readonly */
 	public BonusMoveSpeedStack = false
-	/** @readonly */
 	public BonusMoveSpeedAmplifier = 0
-	/** @readonly */
 	public BonusMoveSpeedAmplifierStack = false
-	/** @readonly */
 	public StatusResistanceSpeed = 0
-	/** @readonly */
 	public StatusResistanceSpeedStack = false
 
 	// Bonus armor
-	/** @readonly */
 	public BonusArmor = 0
-	/** @readonly */
 	public BonusArmorStack = false
-	/** @readonly */
 	public BonusArmorAmplifier = 0
-	/** @readonly */
 	public BonusArmorAmplifierStack = false
 
 	// bonus vision
-	/** @readonly */
 	public BonusDayVision = 0
-	/** @readonly */
 	public BonusDayVisionStack = false
-	/** @readonly */
 	public BonusDayVisionAmplifier = 0
-	/** @readonly */
 	public BonusDayVisionAmplifierStack = false
-	/** @readonly */
 	public BonusNightVision = 0
-	/** @readonly */
 	public BonusNightVisionStack = false
 
 	// Turn rate
-	/** @readonly */
 	public FixedTurnRate = 0
-	/** @readonly */
 	public FixedBaseTurnRate = 0
-	/** @readonly */
 	public BonusTurnRate = 0
-	/** @readonly */
 	public BonusTurnRateStack = false
-	/** @readonly */
 	public BonusTurnRateAmplifier = 0
-	/** @readonly */
 	public BonusTurnRateAmplifierStack = false
 
 	// move speed resistance
@@ -202,12 +139,9 @@ export class Modifier {
 	// TODO?
 
 	// Status resistance
-	/** @readonly */
 	public StatusResistanceAmplifier = 0
-	/** @readonly */
 	public StatusResistanceAmplifierStack = false
 
-	/** @readonly */
 	public ShouldDoFlyHeightVisual = false
 
 	public readonly Index: number

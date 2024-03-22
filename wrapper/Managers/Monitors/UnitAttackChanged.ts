@@ -155,16 +155,18 @@ const Monitor = new (class CUnitAttackChanged {
 
 	private setTarget(issuers: Unit[], entity: Nullable<number | Entity>) {
 		const index = (entity instanceof Entity ? entity.Index : entity) ?? -1
-		for (const source of issuers) {
+		for (let i = issuers.length - 1; i > -1; i--) {
+			const source = issuers[i]
 			source.TargetIndex_ = index
 			source.IsAttacking = true
 		}
 	}
 
 	private dropTarget(issuers: Unit[]) {
-		for (const issuer of issuers) {
-			issuer.IsAttacking = false
-			issuer.TargetIndex_ = -1
+		for (let i = issuers.length - 1; i > -1; i--) {
+			const source = issuers[i]
+			source.TargetIndex_ = -1
+			source.IsAttacking = false
 		}
 	}
 

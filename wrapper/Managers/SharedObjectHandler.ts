@@ -70,6 +70,7 @@ message CSODOTAGameAccountClient {
 	repeated .CSODOTAGameAccountClient.RoleHandicap role_handicaps = 115;
 	optional uint32 event_mode_recent_time = 120;
 	optional uint32 mmr_recalibration_time = 121;
+	repeated uint32 banned_hero_ids = 123;
 }
 enum ETourneyQueueDeadlineState {
 	k_ETourneyQueueDeadlineState_Normal = 0;

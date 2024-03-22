@@ -150,19 +150,20 @@ function ProcessMinimapBoundsData(layerName: string): boolean {
 }
 
 EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
-	if (!state) {
-		for (const worldLayer of WorldLayers) {
-			if (
-				worldLayer.WorldLayerVisible &&
-				ProcessMinimapBoundsData(worldLayer.LayerName)
-			) {
-				return
-			}
-		}
-		ProcessMinimapBoundsData("world_layer_base")
-	} else {
+	if (state) {
 		ProcessMinimapBoundsData(layerName)
+		return
 	}
+	for (let index = WorldLayers.length - 1; index > -1; index--) {
+		const worldLayer = WorldLayers[index]
+		if (
+			worldLayer.WorldLayerVisible &&
+			ProcessMinimapBoundsData(worldLayer.LayerName)
+		) {
+			return
+		}
+	}
+	ProcessMinimapBoundsData("world_layer_base")
 })
 
 const minimapIconStorage = new Map<string, MinimapIcon>()

@@ -29,7 +29,8 @@ EventsSDK.after("MapDataLoaded", () => {
 })
 
 EventsSDK.on("PostDataUpdate", () => {
-	for (const worldLayer of WorldLayers) {
+	for (let index = WorldLayers.length - 1; index > -1; index--) {
+		const worldLayer = WorldLayers[index]
 		if (worldLayer.WorldLayerVisible === visibleLayers.has(worldLayer.LayerName)) {
 			continue
 		}

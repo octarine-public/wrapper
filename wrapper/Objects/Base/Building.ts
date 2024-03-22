@@ -6,27 +6,14 @@ import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Building")
 export class Building extends Unit {
-	/** @readonly */
-	public IsFiller = false
-	/** @readonly */
-	public IsWatcher = false
-	/** @readonly */
-	public IsBarrack = false
-	/**
-	 * The owner player ID of the hero statue.
-	 * @readonly
-	 * @description Represents the owner player ID of the hero statue.
-	 */
 	@NetworkedBasicField("m_iHeroStatueOwnerPlayerID")
 	public HeroStatueOwnerPlayerID: number = -1
-
-	/**
-	 * The status of the hero statue.
-	 * @readonly
-	 * @description Represents the status of the hero statue.
-	 */
 	@NetworkedBasicField("m_bHeroStatue")
 	public IsHeroStatue: boolean = false
+
+	public IsFiller = false
+	public IsWatcher = false
+	public IsBarrack = false
 
 	/** @ignore */
 	constructor(
@@ -43,6 +30,7 @@ export class Building extends Unit {
 }
 
 export const Buildings = EntityManager.GetEntitiesByClass(Building)
+
 RegisterFieldHandler(Building, "m_angInitialAngles", (ent, newVal) => {
 	ent.NetworkedAngles_.CopyFrom(newVal as QAngle)
 	ent.UpdatePositions()

@@ -75,194 +75,59 @@ EventsSDK.on("ServerInfo", () => modelDataCache.clear())
 
 @WrapperClass("CBaseEntity")
 export class Entity {
-	/**
-	 * @readonly
-	 * @description Whether the entity is valid.
-	 * @return {boolean}
-	 */
-	public IsValid = true
-	/**
-	 * @ignore
-	 * @internal
-	 */
-	public Name_ = ""
-	/**
-	 * @ignore
-	 * @internal
-	 */
 	@NetworkedBasicField("m_flCreateTime")
 	public CreateTime_ = 0
-	/**
-	 * @ignore
-	 * @internal
-	 */
-	public FakeCreateTime_ = GameState.RawGameTime
-	public Team = Team.None
-	public LifeState = LifeState.LIFE_DEAD
 	@NetworkedBasicField("m_iHealth")
 	public HP = 0
 	@NetworkedBasicField("m_iMaxHealth")
 	public MaxHP = 0
-	public ClassName = ""
-	public BecameDormantTime = 0
-	public ModelName = ""
-	public ModelScale = 1
 	@NetworkedBasicField("m_flPlaybackRate")
 	public PlaybackRate = 1
-	public Agility = 0
-	public Intellect = 0
-	public Strength = 0
-	/**
-	 * @readonly
-	 * @description The total agility of the entity.
-	 * @return {number}
-	 */
-	public TotalAgility = 0
-	/**
-	 * @readonly
-	 * @description The total intelligence of the entity.
-	 * @return {number}
-	 */
-	public TotalIntellect = 0
-	/**
-	 * @readonly
-	 * @description The total strength of the entity.
-	 * @return {number}
-	 */
-	public TotalStrength = 0
-	/**
-	 * @readonly
-	 * @description The hierarchy attach name of the entity.
-	 * @return {number}
-	 */
-	public HierarchyAttachName = 0
-	/**
-	 * @readonly
-	 * @description The children of the entity.
-	 * @return {Array<Entity>}
-	 */
-	public Children: Entity[] = []
-	/**
-	 * @ignore
-	 * @internal
-	 */
 	@NetworkedBasicField("CBodyComponent")
 	public CBodyComponent_: Nullable<EntityPropertiesNode> = undefined
-	/**
-	 * @readonly
-	 * @description Determines if the entity is visible.
-	 * @return {boolean}
-	 */
+
+	public IsValid = true
+	public ClassName = ""
+	public ModelName = ""
+	public Children: Entity[] = []
 	public IsVisible = true
-	/**
-	 * @readonly
-	 * @return {number}
-	 */
+	public IsShop = false
+	public IsGameRules = false
 	public DeltaZ = 0
-	/**
-	 * @readonly
-	 * @description The angle between the entity's forward vector and the local player's view direction.
-	 * @return {number}
-	 */
-	public RotationDifference = 0
-	/**
-	 * @readonly
-	 * @description The animation time of the entity.
-	 * @return {number}
-	 */
 	public AnimationTime = 0
-	/**
-	 * @ignore
-	 * @internal
-	 */
-	public FieldHandlers_: Nullable<Map<number, FieldHandler>>
-	/**
-	 * @ignore
-	 * @internal
-	 */
-	public Properties_ = new EntityPropertiesNode()
-	/**
-	 * @description The visual position of the entity.
-	 * @return {Vector3}
-	 */
+	public ModelScale = 1
+	public BecameDormantTime = 0
+	public RotationDifference = 0
+	public HierarchyAttachName = 0
+	public Attachments: string[] = []
+	public ModelData: Nullable<ModelData>
+	public Animations: AnimationData[] = []
+	public Team = Team.None
+	public LifeState = LifeState.LIFE_DEAD
+	public FakeCreateTime_ = GameState.RawGameTime
+
 	public readonly VisualPosition = new Vector3()
-	/**
-	 * @description The networked position of the entity.
-	 * @return {Vector3}
-	 */
 	public readonly NetworkedPosition = new Vector3()
-	/**
-	 * @ignore
-	 * @internal
-	 */
 	public readonly NetworkedPosition_ = new Vector3()
-	/**
-	 * @description The visual angles of the entity.
-	 * @return {QAngle}
-	 */
 	public readonly VisualAngles = new QAngle()
-	/**
-	 * @description The networked angles of the entity.
-	 * @return {QAngle}
-	 */
 	public readonly NetworkedAngles = new QAngle()
-	/**
-	 * @ignore
-	 * @internal
-	 */
 	public readonly NetworkedAngles_ = new QAngle()
 	public readonly BoundingBox = new AABB(this.VisualPosition)
 	public readonly SpawnPosition = new Vector3()
-	public ModelData: Nullable<ModelData>
-	public Animations: AnimationData[] = []
-	public Attachments: string[] = []
-	public AttachmentsHashMap: Nullable<Map<number, number>>
-	/**
-	 * @ignore
-	 * @internal
-	 */
-	private CustomGlowColor_: Nullable<Color>
-	/**
-	 * @ignore
-	 * @internal
-	 */
-	private CustomDrawColor_: Nullable<[Color, RenderMode]>
-	/**
-	 * @ignore
-	 * @internal
-	 */
+
+	public Name_ = ""
 	public Owner_ = 0
 	public OwnerEntity: Nullable<Entity> = undefined
-	/**
-	 * @ignore
-	 * @internal
-	 */
 	public Parent_ = 0
 	public ParentEntity: Nullable<Entity> = undefined
-	/**
-	 * @ignore
-	 * @internal
-	 */
+
+	public AttachmentsHashMap: Nullable<Map<number, number>>
+	public FieldHandlers_: Nullable<Map<number, FieldHandler>>
+	public Properties_ = new EntityPropertiesNode()
+
 	private RingRadius_ = 30
-	/**
-	 * Demarcate recursions.
-	 * Recommended: use instanceof for get unique property
-	 */
-	/**
-	 * @readonly
-	 * @default `Base Entity is false`
-	 * @description Determines if the entity is a shop.
-	 * @return {boolean}
-	 */
-	public IsShop = false
-	/**
-	 * @readonly
-	 * @default `Base Entity is false`
-	 * @description Determines if the entity is a game rules.
-	 * @return {boolean}
-	 */
-	public IsGameRules = false
-	/** ================================================= */
+	private CustomGlowColor_: Nullable<Color>
+	private CustomDrawColor_: Nullable<[Color, RenderMode]>
 
 	constructor(
 		public readonly Index: number,
@@ -309,11 +174,9 @@ export class Entity {
 	public get Position(): Vector3 {
 		return this.RealPosition
 	}
-
 	public get RealPosition(): Vector3 {
 		return GameState.IsInDraw ? this.VisualPosition : this.NetworkedPosition
 	}
-
 	public get Angles(): QAngle {
 		return GameState.IsInDraw ? this.VisualAngles : this.NetworkedAngles
 	}
@@ -328,19 +191,9 @@ export class Entity {
 	public get CreateTime() {
 		return this.CreateTime_ !== 0 ? this.CreateTime_ : this.FakeCreateTime_
 	}
-	/**
-	 * The percentage of HP remaining.
-	 * @description Calculates the percentage of HP remaining.
-	 * @returns {number}
-	 */
 	public get HPPercent(): number {
 		return toPercentage(this.HP, this.MaxHP)
 	}
-	/**
-	 * The HP percentage as a decimal value.
-	 * @description Returns the HP percentage as a decimal value.
-	 * @return {number}
-	 */
 	public get HPPercentDecimal(): number {
 		return this.HPPercent / 100
 	}
@@ -349,9 +202,6 @@ export class Entity {
 			this.LifeState === LifeState.LIFE_ALIVE ||
 			this.LifeState === LifeState.LIFE_RESPAWNING
 		)
-	}
-	public get Forward(): Vector3 {
-		return Vector3.FromAngle(this.RotationRad)
 	}
 	public get RotationRad(): number {
 		return DegreesToRadian(this.Rotation)
@@ -382,7 +232,11 @@ export class Entity {
 	public get Handle(): number {
 		return (this.serial << EntityManager.INDEX_BITS) | this.Index
 	}
-
+	public get Forward(): Vector3 {
+		return Vector3.FromAngle(this.RotationRad)
+	}
+	// public Forward(rotationDiff = false, angle = 0): Vector3 {
+	// }
 	public SerialMatches(serial: number): boolean {
 		return serial === 0 || this.serial === 0 || serial === this.serial
 	}
@@ -445,14 +299,11 @@ export class Entity {
 		}
 		return this.Position.FindRotationAngle(vec, this.RotationRad)
 	}
-	/**
-	 * That's a bit faster than just checking this.Distance(ent) < range,
-	 * since square root is omitted, and square of number is easier to calculate
-	 * than square root
-	 */
+
 	public IsInRange(ent: Vector3 | Vector2 | Entity, range: number): boolean {
 		return this.DistanceSqr2D(ent) < range ** 2
 	}
+
 	public Closest(ents: Entity[]): Entity {
 		const thisPos = this.Position
 		let entity: Nullable<Entity>
@@ -467,10 +318,7 @@ export class Entity {
 		}
 		return entity as Entity
 	}
-	/**
-	 * @example
-	 * unit.ClosestGroup(groups, group => Vector3.GetCenterType(creeps, creep => creep.InFront(200)))
-	 */
+
 	public ClosestGroup(
 		groups: Entity[][],
 		callback: (entity: Entity[]) => Vector3
@@ -492,9 +340,7 @@ export class Entity {
 		}
 		return [entities, vec]
 	}
-	/**
-	 * @param ent optional, defaults to LocalPlayer
-	 */
+
 	public IsEnemy(ent?: Entity): boolean {
 		const team = ent?.Team ?? GameState.LocalTeam
 		return this.Team !== team
@@ -635,9 +481,7 @@ export class Entity {
 		return highestScored
 	}
 
-	/**
-	 * @returns attachment position mid-animation
-	 */
+	// attachment position mid-animation
 	public GetAttachmentPosition(
 		name: string,
 		activity = GameActivity.ACT_DOTA_IDLE,
@@ -726,11 +570,18 @@ export class Entity {
 		return this.Name
 	}
 
-	/**
-	 * The transformation matrix.
-	 * @description Returns a transformation matrix based on the networked angles, position, and model scale.
-	 * @returns {Matrix3x4}
-	 */
+	public SetPosition(newPosition: Vector3) {
+		this.VisualPosition.CopyFrom(newPosition)
+		this.NetworkedPosition.CopyFrom(newPosition)
+		this.NetworkedPosition_.CopyFrom(newPosition)
+	}
+
+	public SetAngles(newAngle: QAngle) {
+		this.VisualAngles.CopyFrom(newAngle)
+		this.NetworkedAngles.CopyFrom(newAngle)
+		this.NetworkedAngles_.CopyFrom(newAngle)
+	}
+
 	private GetTransform(): Matrix3x4 {
 		return Matrix3x4.AngleMatrix(
 			this.NetworkedAngles,
@@ -740,20 +591,12 @@ export class Entity {
 	}
 }
 
-/**
- * @ignore
- * @internal
- */
 function QuantitizedVecCoordToCoord(
 	cell: Nullable<number>,
 	inside: Nullable<number>
 ): number {
 	return ((cell ?? 0) - 128) * 128 + (inside ?? 0)
 }
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_iTeamNum", (ent, newVal) => {
 	const oldTeam = ent.Team
 	ent.Team = newVal as Team
@@ -761,10 +604,6 @@ RegisterFieldHandler(Entity, "m_iTeamNum", (ent, newVal) => {
 		EventsSDK.emit("EntityTeamChanged", false, ent)
 	}
 })
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_lifeState", (ent, newVal) => {
 	const oldState = ent.LifeState
 	ent.LifeState = newVal as LifeState
@@ -772,42 +611,22 @@ RegisterFieldHandler(Entity, "m_lifeState", (ent, newVal) => {
 		EventsSDK.emit("LifeStateChanged", false, ent)
 	}
 })
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_hModel", (ent, newVal) => {
 	ent.ModelName = GetPathByHash(newVal as bigint) ?? ""
 	ent.OnModelUpdated()
 })
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_angRotation", (ent, newVal) => {
 	const angRotation = newVal as QAngle
 	ent.NetworkedAngles_.CopyFrom(angRotation)
 	ent.UpdatePositions()
 })
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, newVal) => {
 	ent.Name_ = StringTables.GetString("EntityNames", newVal as number) ?? ent.Name_
 })
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, newVal) => {
 	ent.Owner_ = newVal as number
 	ent.OwnerEntity = EntityManager.EntityByIndex(ent.Owner_)
 })
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_hParent", (ent, newVal) => {
 	ent.Parent_ = Number(newVal as bigint)
 	const parentEnt = EntityManager.EntityByIndex(ent.Parent_),
@@ -821,18 +640,10 @@ RegisterFieldHandler(Entity, "m_hParent", (ent, newVal) => {
 		ent.UpdatePositions()
 	}
 })
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_hierarchyAttachName", (ent, newVal) => {
 	ent.HierarchyAttachName = Number(newVal as bigint) >>> 0
 	ent.UpdatePositions()
 })
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_cellX", (ent, newVal) => {
 	ent.NetworkedPosition_.x = QuantitizedVecCoordToCoord(
 		newVal as number,
@@ -840,10 +651,6 @@ RegisterFieldHandler(Entity, "m_cellX", (ent, newVal) => {
 	)
 	ent.UpdatePositions()
 })
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_vecX", (ent, newVal) => {
 	ent.NetworkedPosition_.x = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellX") as Nullable<number>,
@@ -851,10 +658,6 @@ RegisterFieldHandler(Entity, "m_vecX", (ent, newVal) => {
 	)
 	ent.UpdatePositions()
 })
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_cellY", (ent, newVal) => {
 	ent.NetworkedPosition_.y = QuantitizedVecCoordToCoord(
 		newVal as number,
@@ -862,10 +665,6 @@ RegisterFieldHandler(Entity, "m_cellY", (ent, newVal) => {
 	)
 	ent.UpdatePositions()
 })
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_vecY", (ent, newVal) => {
 	ent.NetworkedPosition_.y = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellY") as Nullable<number>,
@@ -873,10 +672,6 @@ RegisterFieldHandler(Entity, "m_vecY", (ent, newVal) => {
 	)
 	ent.UpdatePositions()
 })
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_cellZ", (ent, newVal) => {
 	ent.NetworkedPosition_.z = QuantitizedVecCoordToCoord(
 		newVal as number,
@@ -884,10 +679,6 @@ RegisterFieldHandler(Entity, "m_cellZ", (ent, newVal) => {
 	)
 	ent.UpdatePositions()
 })
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_vecZ", (ent, newVal) => {
 	ent.NetworkedPosition_.z = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellZ") as Nullable<number>,
@@ -895,10 +686,6 @@ RegisterFieldHandler(Entity, "m_vecZ", (ent, newVal) => {
 	)
 	ent.UpdatePositions()
 })
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Entity, "m_flScale", (ent, newVal) => {
 	ent.ModelScale = newVal as number
 	ent.UpdatePositions()

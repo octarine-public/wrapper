@@ -80,6 +80,9 @@ export class UnitData {
 		}
 		return data.HeroID
 	}
+	public static GetUnitDataByName(name: string): Nullable<UnitData> {
+		return UnitData.globalStorage.get(name)
+	}
 	public static GetHeroNameByID(id: number): string {
 		for (const [name, data] of UnitData.globalStorage) {
 			if (data.HeroID === id) {

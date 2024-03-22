@@ -11,165 +11,64 @@ import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_Item")
 export class Item extends Ability {
-	/**
-	 * @readonly
-	 * @description The slot the item is in
-	 * @returns {DOTAScriptInventorySlot}
-	 */
-	public ItemSlot = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1
-	/**
-	 * @readonly
-	 * @description The time at which the item is enabled. Example: the item was moved to backpack and returned
-	 */
 	@NetworkedBasicField("m_flEnableTime")
 	public EnableTime = 0
-	/**
-	 * @readonly
-	 * @description The sharability of the item
-	 * @returns {EShareAbility}
-	 */
 	@NetworkedBasicField("m_iSharability")
 	public Shareability = EShareAbility.ITEM_NOT_SHAREABLE
-	/**
-	 * @readonly
-	 * @description Indicates whether the item can be dropped
-	 */
 	@NetworkedBasicField("m_bDroppable")
 	public IsDroppable = true
-	/**
-	 * @readonly
-	 * @description The time at which the item was assembled.
-	 */
 	@NetworkedBasicField("m_flAssembledTime")
 	public AssembledTime = 0
-	/**
-	 * @readonly
-	 * @description Indicates whether the item can be used out of the inventory.
-	 */
 	@NetworkedBasicField("m_bCanBeUsedOutOfInventory")
 	public CanBeUsedOutOfInventory = false
-	/**
-	 * @readonly
-	 * @description The initial number of charges for the item.
-	 */
 	@NetworkedBasicField("m_iInitialCharges")
 	public InitialCharges = 0
-	/**
-	 * @readonly
-	 * @description Indicates whether the item can be alerted.
-	 */
 	@NetworkedBasicField("m_bAlertable")
 	public IsAlertable = true
-	/**
-	 * @readonly
-	 * @description Indicates whether the item is cast on pickup.
-	 */
 	@NetworkedBasicField("m_bCastOnPickup")
 	public IsCastedOnPickup = false
-	/**
-	 * @readonly
-	 * @description Indicates whether the item is combinable.
-	 */
 	@NetworkedBasicField("m_bCombinable")
 	public IsCombinable = true
-	/**
-	 * @readonly
-	 * @description Indicates whether the item is locked and cannot be combined.
-	 */
 	@NetworkedBasicField("m_bCombineLocked")
 	public IsCombineLocked: boolean = false
-	/**
-	 * @readonly
-	 * @description Indicates whether the item can be disassembled.
-	 */
 	@NetworkedBasicField("m_bDisassemblable")
 	public IsDisassemblable: boolean = false
-	/**
-	 * @readonly
-	 * @description Check if the item is killable.
-	 */
 	@NetworkedBasicField("m_bKillable")
 	public IsKillable = false
-	/**
-	 * @readonly
-	 * @description Indicates whether the item is permanent.
-	 */
 	@NetworkedBasicField("m_bPermanent")
 	public IsPermanent: boolean = false
-	/**
-	 * @readonly
-	 * @description Returns whether the item is purchasable.
-	 */
 	@NetworkedBasicField("m_bPurchasable")
 	public IsPurchasable: boolean = true
-	/**
-	 * @readonly
-	 * @description Returns whether the item was purchased while player dead.
-	 */
 	@NetworkedBasicField("m_bPurchasedWhileDead")
 	public IsPurchasedWhileDead: boolean = false
-	/**
-	 * @readonly
-	 * @description Returns whether the item is a recipe
-	 */
 	@NetworkedBasicField("m_bRecipe")
 	public IsRecipe: boolean = false
-	/**
-	 * @readonly
-	 * @description True if the item requires charges, false otherwise.
-	 */
 	@NetworkedBasicField("m_bRequiresCharges")
 	public RequiresCharges: boolean = false
-	/**
-	 * @readonly
-	 * @description Returns whether the item is sellable.
-	 */
 	@NetworkedBasicField("m_bSellable")
 	public IsSellable: boolean = true
-	/**
-	 * @readonly
-	 * @description Returns whether the item is stackable.
-	 */
 	@NetworkedBasicField("m_bStackable")
 	public IsStackable: boolean = false
-	/**
-	 * @readonly
-	 * @description Returns the player owner ID of the item.
-	 */
 	public PlayerOwnerID: number = -1
 	/**
-	 * @readonly
 	 * @description Returns the player owner ID of the item.
 	 * @deprecated Use Item#PlayerOwnerID
 	 */
 	public PurchaserID: number = -1
-	/**
-	 * @readonly
-	 * @description {number} Returns the purchase time of the item.
-	 */
 	@NetworkedBasicField("m_flPurchaseTime")
 	public PurchaseTime: number = 0
-	/**
-	 * @readonly
-	 * @returns {number} Returns the secondary charges of the item.
-	 */
 	@NetworkedBasicField("m_iSecondaryCharges")
 	public SecondaryCharges: number = 0
-	/**
-	 * @readonly
-	 * @description Indicates whether the item is a neutral drop.
-	 */
 	@NetworkedBasicField("m_bIsNeutralDrop")
 	public IsNeutralDrop: boolean = false
-	/**
-	 * @readonly
-	 * @description Returns the current charges of the item.
-	 */
 	@NetworkedBasicField("m_iCurrentCharges")
 	public ItemCurrentCharges: number = 0
 
 	/**
-	 * @readonly
+	 * @description The slot the item is in
+	 */
+	public ItemSlot = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1
+	/**
 	 * @description The purchaser of the item.
 	 */
 	public Purchaser: Nullable<Unit>
@@ -177,7 +76,6 @@ export class Item extends Ability {
 	public get TexturePath(): string {
 		return GetItemTexture(this.Name)
 	}
-
 	public get Cooldown() {
 		let cooldown = super.Cooldown
 		if (this.IsItem && this.EnableTime > GameState.RawGameTime) {
@@ -185,7 +83,6 @@ export class Item extends Ability {
 		}
 		return cooldown
 	}
-
 	public get IsReady(): boolean {
 		const unit = this.Owner
 		return (
@@ -194,11 +91,6 @@ export class Item extends Ability {
 			(unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsMuted))
 		)
 	}
-
-	/**
-	 * @description Determines whether the item can be used.
-	 * @return {boolean}
-	 */
 	public get CanBeUsable(): boolean {
 		if (!this.IsValid || this.IsMuted) {
 			return false
@@ -212,11 +104,6 @@ export class Item extends Ability {
 		}
 		return owner.Inventory.HasAnyItemInventory
 	}
-	/**
-	 * The remaining time in seconds.
-	 * @description Returns the remaining time for a sale.
-	 * @returns {number}
-	 */
 	public get SaleRemainingTime(): number {
 		// Maximum duration of the sale in seconds
 		const maxSaleDuration = 10
@@ -226,18 +113,10 @@ export class Item extends Ability {
 		// Return the remaining time if it is positive, otherwise return 0
 		return Math.ceil(Math.max(remainingTime, 0))
 	}
-	/**
-	 * @description Check if the Item is muted.
-	 * @returns {boolean}
-	 */
 	public get IsMuted(): boolean {
 		// Check if the enable time is set and if it is greater than the current game time
 		return this.EnableTime !== 0 && this.EnableTime > GameState.RawGameTime
 	}
-	/**
-	 * @description Returns the cost of the item.
-	 * @returns {number}
-	 */
 	public get Cost(): number {
 		return this.AbilityData.Cost
 	}
@@ -286,7 +165,6 @@ export class Item extends Ability {
 	public ItemUnlock() {
 		return this.Owner?.ItemLock(this, false)
 	}
-
 	// public CanBeCasted(bonusMana: number = 0): boolean {
 	// 	if (!this.CanBeUsable || !this.IsReady) {
 	// 		return false
@@ -294,7 +172,6 @@ export class Item extends Ability {
 	// 	// TODO: Add other checks
 	// 	return this.IsManaEnough(bonusMana)
 	// }
-
 	public CanBeCasted(bonusMana: number = 0): boolean {
 		if (!this.IsValid || this.IsMuted) {
 			return false
@@ -317,10 +194,7 @@ export class Item extends Ability {
 		)
 	}
 }
-/**
- * @ignore
- * @internal
- */
+
 RegisterFieldHandler(Item, "m_iPlayerOwnerID", (item, newVal) => {
 	item.PlayerOwnerID = ReencodeProperty(newVal, EPropertyType.INT32) as number
 	item.PurchaserID = item.PlayerOwnerID

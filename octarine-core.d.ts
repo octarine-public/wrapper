@@ -356,3 +356,8 @@ declare function GetEconItemHealthBarOffset(id: number): Nullable<number>
 declare function SendListenerPerf(line: string, took: number, gameSecond: number): void
 
 declare function RequestUnitsProperties(buf: Uint16Array): void
+
+/**
+ * @description Pass boolean to clear banned heroes
+ */
+declare function ToggleBanHeroes(bannedHeroIds: number[] | false): void

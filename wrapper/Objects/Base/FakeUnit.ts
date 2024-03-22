@@ -28,6 +28,11 @@ export class FakeUnit {
 		private serial: number
 	) {}
 
+	public get BaseAttackRange(): number {
+		return this.Name.includes("npc_dota_")
+			? UnitData.GetUnitDataByName(this.Name)?.BaseAttackRange ?? 0
+			: 0
+	}
 	public get LastRealPredictedPositionUpdate(): number {
 		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
 			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime

@@ -66,21 +66,7 @@ export class Unit extends Entity {
 		return false
 	}
 
-	public IsVisibleForTeamMask = 0
-	public UnitData = UnitData.empty
-	public readonly Inventory = new Inventory(this)
-	public IsTrueSightedForEnemies = false
-	public HasScepterModifier = false
-	public HasShardModifier = false
-
-	public UnitName_ = ""
-	public IsControllableByPlayerMask = 0n
-	public NetworkActivity = GameActivity.ACT_DOTA_IDLE
-	public NetworkActivityStartTime = 0
-	public NetworkSequenceIndex = 0
-	public HPRegenCounter = 0
 	/**
-	 * @readonly
 	 * @description The target angle of the unit, NOTE: need test only local hero?
 	 */
 	@NetworkedBasicField("m_nTargetAngle")
@@ -140,7 +126,6 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_bIsWaitingToSpawn")
 	public IsWaitingToSpawn = false
 	public PredictedIsWaitingToSpawn = true
-	/** @readonly */
 	@NetworkedBasicField("m_iCurrentLevel")
 	public Level = 0
 	@NetworkedBasicField("m_flMagicalResistanceValue")
@@ -166,23 +151,22 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_nHealthBarOffsetOverride")
 	public HealthBarOffsetOverride = 0
 	public HealthBarOffset_: Nullable<number>
-	public MoveSpeedTotal = 0
-	public ArmorTotal = 0
-	public IsAttacking = false
 
-	public readonly Spells_ = new Array<number>(MAX_SPELLS).fill(0)
-	public readonly Spells = new Array<Nullable<Ability>>(MAX_SPELLS).fill(undefined)
-	public readonly TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
-	public readonly TotalItems = new Array<Nullable<Item>>(MAX_ITEMS).fill(undefined)
-	public MyWearables: Wearable[] = []
-	public MyWearables_: number[] = []
+	public Agility = 0
+	public Intellect = 0
+	public Strength = 0
+	public TotalAgility = 0
+	public TotalIntellect = 0
+	public TotalStrength = 0
+	public ArmorTotal = 0
+	public MoveSpeedTotal = 0
+
+	public Spawner_: number = 0
+	public Spawner: Nullable<NeutralSpawner>
 	public LastActivity = 0 as GameActivity
 	public LastActivitySequenceVariant = 0
 	public LastActivityEndTime = 0
 	public LastActivityAnimationPoint = 0
-	public Spawner: Nullable<NeutralSpawner>
-	/** includes all buffs */
-	public readonly Buffs: Modifier[] = []
 
 	/**
 	 * @description added for compatibility (icore)
@@ -194,85 +178,61 @@ export class Unit extends Entity {
 	 * @deprecated
 	 */
 	public IsFogVisible = false
-
-	/** @readonly */
+	public IsAttacking = false
 	public CanUseItems = false
-	/** @readonly */
 	public CanUseAbilities = false
-	/** @readonly */
 	public IsVisibleForEnemiesLastTime = 0
-	/**
-	 * Demarcate recursions.
-	 * Recommended: use instanceof for get unique property
-	 */
-	/** @readonly */
+
 	public IsRoshan = false
-	/** @readonly */
 	public IsCourier = false
-	/** @readonly */
-	public PlayerID = -1
-	/** @readonly */
-	public OwnerPlayerID = -1
-	/** @readonly */
 	public IsHero = false
-	/** @readonly */
 	public IsSpiritBear = false
-	/** @readonly */
 	public IsCreep = false
-	/** @readonly */
 	public IsTower = false
-	/** @readonly */
-	public IsBuilding = false
-	/** @readonly */
 	public IsOutpost = false
+	public IsBuilding = false
+
+	public IsVisibleForTeamMask = 0
+	public UnitData = UnitData.empty
+	public IsTrueSightedForEnemies = false
+	public HasScepterModifier = false
+	public HasShardModifier = false
+
+	public UnitName_ = ""
+	public PlayerID = -1
+	public OwnerPlayerID = -1
+	public HPRegenCounter = 0
+	public NetworkSequenceIndex = 0
+	public NetworkActivityStartTime = 0
+	public IsControllableByPlayerMask = 0n
+	public NetworkActivity = GameActivity.ACT_DOTA_IDLE
+
+	public MyWearables_: number[] = []
+	public MyWearables: Wearable[] = []
 
 	/**
-	 * @readonly
 	 * @description The owner of the Unit. (example: Spirit Bear)
 	 */
+	public OwnerNPC_: number = 0
 	public OwnerNPC: Nullable<Unit> = undefined
 
 	public TPStartTime = -1
-	/**
-	 * @ignore
-	 * @internal
-	 */
+
 	public TargetIndex_: number = -1
-	/**
-	 * @ignore
-	 * @internal
-	 */
 	public IsIllusion_: boolean = false
-	/**
-	 * @ignore
-	 * @internal
-	 */
+
 	public IsStrongIllusion_: boolean = false
-	/**
-	 * @ignore
-	 * @internal
-	 */
 	public IsClone_: boolean = false
-	/**
-	 * @ignore
-	 * @internal
-	 */
-	public OwnerNPC_: number = 0
-	/**
-	 * @ignore
-	 * @internal
-	 */
-	public Spawner_: number = 0
-	/**
-	 * @ignore
-	 * @internal
-	 */
+
 	public IsVisibleForEnemies_: boolean = false
-	/**
-	 * @ignore
-	 * @internal
-	 */
 	public cellIsVisibleForEnemies_: boolean = false // TODO: calculate grid nav from enemies
+
+	public readonly Buffs: Modifier[] = []
+	public readonly Inventory = new Inventory(this)
+	public readonly Spells_ = new Array<number>(MAX_SPELLS).fill(0)
+	public readonly Spells = new Array<Nullable<Ability>>(MAX_SPELLS).fill(undefined)
+	public readonly TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
+	public readonly TotalItems = new Array<Nullable<Item>>(MAX_ITEMS).fill(undefined)
 
 	public readonly PredictedPosition = new Vector3().Invalidate()
 	public readonly TPStartPosition = new Vector3().Invalidate()
@@ -867,7 +827,6 @@ export class Unit extends Entity {
 		if (this.IsVisible || (this.PredictedIsWaitingToSpawn && this.IsWaitingToSpawn)) {
 			return this.RealPosition
 		}
-
 		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
 			return this.TPStartPosition
 		}
@@ -1389,8 +1348,21 @@ export class Unit extends Entity {
 			testPoint.AddForThis(stepVec)
 			distance -= step
 		}
-
 		return testPoint
+	}
+
+	public GetPredictionPosition(
+		delay = 0,
+		useUntilWall = true,
+		forceMovement = false
+	): Vector3 {
+		if (!forceMovement && (!this.IsMoving || delay <= 0)) {
+			return this.Position
+		}
+		if (!useUntilWall) {
+			return this.VelocityWaypoint(delay, this.Speed)
+		}
+		return this.ExtendUntilWall(this.Position, this.Forward, delay * this.Speed)
 	}
 
 	public ChangeFieldsByEvents(): void {

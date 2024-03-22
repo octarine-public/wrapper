@@ -92,8 +92,8 @@ function DeleteSpawnersAndCorners(lump: EntityDataMap[]): void {
 	const lumpSpawners = LaneCreepSpawners.filter(ent =>
 		lumpSpawnerNames.includes(ent.SelfTargetName)
 	)
-	for (const ent of lumpSpawners) {
-		DeleteEntity(ent.Index)
+	for (let index = lumpSpawners.length - 1; index > -1; index--) {
+		DeleteEntity(lumpSpawners[index].Index)
 	}
 	const lumpCornerNames = lump
 		.filter(
@@ -105,14 +105,15 @@ function DeleteSpawnersAndCorners(lump: EntityDataMap[]): void {
 	const lumpCorners = CreepPathCorners.filter(ent =>
 		lumpCornerNames.includes(ent.SelfTargetName)
 	)
-	for (const ent of lumpCorners) {
-		DeleteEntity(ent.Index)
+	for (let index = lumpCorners.length - 1; index > -1; index--) {
+		DeleteEntity(lumpCorners[index].Index)
 	}
 	for (const ent of CreepPathCorners) {
 		if (ent.Target !== undefined && lumpCorners.includes(ent.Target)) {
 			ent.Target = undefined
 		}
-		for (const ent2 of lumpCorners) {
+		for (let index = lumpCorners.length - 1; index > -1; index--) {
+			const ent2 = lumpCorners[index]
 			if (ent.Referencing.has(ent2)) {
 				ent.Referencing.delete(ent2)
 			}
@@ -135,7 +136,8 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 		return
 	}
 
-	for (const data of lump) {
+	for (let index = 0, end = lump.length; index < end; index++) {
+		const data = lump[index]
 		let team: Nullable<Team>, lane: Nullable<MapArea>
 		switch (data.get("classname")) {
 			case "npc_dota_spawner_good_bot":
@@ -216,7 +218,8 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 		EventsSDK.emit("EntityCreated", false, entity)
 	}
 
-	for (const data of lump) {
+	for (let index = 0, end = lump.length; index < end; index++) {
+		const data = lump[index]
 		if (data.get("classname") !== "path_corner") {
 			continue
 		}
@@ -254,7 +257,8 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 		entity.NetworkedPosition.CopyFrom(pos)
 		entity.VisualAngles.CopyFrom(ang)
 		entity.NetworkedAngles.CopyFrom(ang)
-		for (const spawner of LaneCreepSpawners) {
+		for (let j = LaneCreepSpawners.length - 1; j > -1; j--) {
+			const spawner = LaneCreepSpawners[j]
 			if (spawner.TargetName === entity.SelfTargetName) {
 				spawner.Target = entity
 				entity.Spawner = spawner
@@ -262,7 +266,8 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 		}
 		// TargetName -> target
 		// SelfTargetName -> targetname
-		for (const prev of CreepPathCorners) {
+		for (let j = CreepPathCorners.length - 1; j > -1; j--) {
+			const prev = CreepPathCorners[j]
 			if (
 				prev.TargetName !== undefined &&
 				entity.SelfTargetName === prev.TargetName

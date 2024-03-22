@@ -110,24 +110,19 @@ export class Inventory {
 		return this.Owner.TotalItems[slot]
 	}
 	public GetItemSlot(item: Item): Nullable<DOTAScriptInventorySlot> {
-		if (!this.Owner.IsValid) {
-			return
-		}
-		for (let index = 0, end = MAX_ITEMS; index < end; index++) {
-			if (this.GetItem(index) === item) {
-				return index
-			}
-		}
+		return this.Owner.IsValid ? item.ItemSlot : undefined
 	}
 	public GetItems(
 		start: DOTAScriptInventorySlot,
 		end: DOTAScriptInventorySlot
 	): Item[] {
+		const items: Item[] = []
+		if (!this.Owner.IsValid) {
+			return items
+		}
 		start = Math.min(start, MAX_ITEMS)
 		end = Math.min(end, MAX_ITEMS)
-
-		const items: Item[] = []
-		if (this.Owner.IsValid && start <= end) {
+		if (start <= end) {
 			for (let i = start; i <= end; i++) {
 				const item = this.GetItem(i)
 				if (item !== undefined) {
@@ -135,7 +130,6 @@ export class Inventory {
 				}
 			}
 		}
-
 		return items
 	}
 	public GetFreeSlots(
@@ -216,7 +210,7 @@ export class Inventory {
 			return 0
 		}
 		return this.TotalItems.reduce((counter, item) => {
-			if (item !== undefined && item.PurchaserID === player.PlayerID) {
+			if (item !== undefined && item.PlayerOwnerID === player.PlayerID) {
 				counter++
 			}
 			return counter

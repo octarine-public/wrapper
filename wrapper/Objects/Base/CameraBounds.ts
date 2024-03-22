@@ -6,9 +6,9 @@ import { Entity } from "./Entity"
 @WrapperClass("CDOTACameraBounds")
 export class CCameraBounds extends Entity {
 	@NetworkedBasicField("m_vecBoundsMin")
-	public BoundsMin = new Vector3()
+	public readonly BoundsMin = new Vector3()
 	@NetworkedBasicField("m_vecBoundsMax")
-	public BoundsMax = new Vector3()
+	public readonly BoundsMax = new Vector3()
 }
 
 export let CameraBounds: Nullable<CCameraBounds>
