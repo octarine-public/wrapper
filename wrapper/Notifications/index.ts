@@ -3,6 +3,7 @@ import { Notification } from "./AbstractNotification"
 import { Notifications, Queue } from "./Data"
 
 export { Notification } from "./AbstractNotification"
+export { EnableDisableUpdated } from "./Prepared/EnableDisableUpdated"
 export { ResetSettingsUpdated } from "./Prepared/ResetSettingsUpdated"
 
 export const NotificationsSDK = new (class CNotificationsSDK {

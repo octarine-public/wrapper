@@ -111,6 +111,7 @@ export { LineCap, LineJoin, RendererSDK } from "./Native/RendererSDK"
 export { SoundSDK } from "./Native/SoundSDK"
 export { GetPositionHeight } from "./Native/WASM"
 export {
+	EnableDisableUpdated,
 	Notification,
 	NotificationsSDK,
 	ResetSettingsUpdated
