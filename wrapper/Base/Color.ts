@@ -1,39 +1,25 @@
 export class Color {
-	/**
-	 * @description Player color | Index arr (TeamSlot)
-	 * @type {Array<Color>}
-	 */
-	public static readonly PlayerColorDire: Color[] = [
-		new Color(0xfe, 0x86, 0xc2),
-		new Color(0xa1, 0xb4, 0x47),
-		new Color(0x65, 0xd9, 0xf7),
-		new Color(0x0, 0x83, 0x21),
-		new Color(0xa4, 0x69, 0x0)
-	]
-	/**
-	 * @description Player color | Index arr (TeamSlot)
-	 * @type {Array<Color>}
-	 */
-	public static readonly PlayerColorRadiant: Color[] = [
-		new Color(0x33, 0x75, 0xff),
-		new Color(0x66, 0xff, 0xbf),
-		new Color(0xbf, 0x0, 0xbf),
-		new Color(0xf3, 0xf0, 0xb),
-		new Color(0xff, 0x6b, 0x0)
-	]
-	/**
-	 * Create new Color with r, g, b, a
-	 *
-	 * @example
-	 * let color = new Color(1, 2, 3)
-	 */
-	constructor(
-		public r = 0,
-		public g = 0,
-		public b = 0,
-		public a = 255
-	) {}
+	// Player color | Index arr (TeamSlot)
+	public static get PlayerColorDire(): Color[] {
+		return [
+			new Color(0xfe, 0x86, 0xc2),
+			new Color(0xa1, 0xb4, 0x47),
+			new Color(0x65, 0xd9, 0xf7),
+			new Color(0x0, 0x83, 0x21),
+			new Color(0xa4, 0x69, 0x0)
+		]
+	}
 
+	// Player color | Index arr (TeamSlot)
+	public static get PlayerColorRadiant(): Color[] {
+		return [
+			new Color(0x33, 0x75, 0xff),
+			new Color(0x66, 0xff, 0xbf),
+			new Color(0xbf, 0x0, 0xbf),
+			new Color(0xf3, 0xf0, 0xb),
+			new Color(0xff, 0x6b, 0x0)
+		]
+	}
 	public static get Black() {
 		return new Color(0, 0, 0)
 	}
@@ -73,7 +59,6 @@ export class Color {
 	public static get White() {
 		return new Color(255, 255, 255)
 	}
-
 	// reverse toUint32
 	public static fromUint32(num: number): Color {
 		const color = new Color()
@@ -86,6 +71,18 @@ export class Color {
 		color.a = num & 0xff
 		return color
 	}
+	/**
+	 * Create new Color with r, g, b, a
+	 *
+	 * @example
+	 * let color = new Color(1, 2, 3)
+	 */
+	constructor(
+		public r = 0,
+		public g = 0,
+		public b = 0,
+		public a = 255
+	) {}
 
 	/**
 	 * Set Color by numbers

@@ -361,7 +361,6 @@ function ComputeTargetPosVector3(
 	const yellowZoneReached = yellowZoneOutAt < currentTime - yellowZoneMaxDuration,
 		greenZoneReached = greenZoneOutAt < currentTime - greenZoneMaxDuration
 	const currentPos = latestUsercmd.MousePosition
-
 	const w2s = RendererSDK.WorldToScreenCustom(pos, cameraVec)
 	if (
 		w2s === undefined ||
@@ -925,7 +924,7 @@ function MoveCamera(
 				ent.RootOwner === LocalPlayer &&
 				(ent.IsAlive || ent === LocalPlayer?.Hero) &&
 				!ent.IsEnemy()
-		).orderByFirst(ent => ent.DistanceSqr2D(targetPos))
+		).orderBy(ent => ent.DistanceSqr2D(targetPos))[0]
 
 		if (nearest !== undefined) {
 			const nearestDist = targetPos.Distance2D(nearest.VisualPosition)
@@ -965,38 +964,39 @@ function MoveCamera(
 	return [MoveCameraByScreen(cameraVec, targetPos, currentTime), false]
 }
 
-function getParams() {
+function getParams(): [number, number][] {
+	const paramsCount = 5 + Math.round(Math.random() * 3) // [5,8]
 	const res: [number, number][] = []
-	const num = 5 + Math.round(Math.random() * 3) // [5,8]
-	for (let i = 0; i < num; i++) {
-		res.push([
-			1 / (0.5 + Math.random()), // amplitude rcp [1/1.5,1/0.5]
-			Math.random() * Math.PI * 2 - Math.PI // offset [-180deg,180deg]
-		])
+	for (let i = 0; i < paramsCount; i++) {
+		const amplitudeRcp = 1 / (0.5 + Math.random()) // [1/1.5, 1/0.5]
+		const offset = Math.random() * Math.PI * 2 - Math.PI // offset [-180deg,180deg]
+		res.push([amplitudeRcp, offset])
 	}
 	return res
 }
+
+function applySinParams(params: [number, number][], currentTime: number): number {
+	return (
+		params.reduce(
+			(prev, [amplitude, offset]) =>
+				prev + Math.cos(currentTime * amplitude + offset) ** 2,
+			0.5
+		) / params.length
+	)
+}
+
 let paramsX = getParams(),
 	paramsY = getParams()
 function ApplyParams(vec: Vector2, currentTime: number): void {
-	vec.MultiplyScalarX(
-		paramsX.reduce(
-			(prev, cur) => prev + Math.cos(currentTime * cur[0] + cur[1]) ** 2,
-			0.5
-		) / paramsX.length
-	).MultiplyScalarY(
-		paramsY.reduce(
-			(prev, cur) => prev + Math.sin(currentTime * cur[0] + cur[1]) ** 2,
-			0.5
-		) / paramsY.length
-	)
+	const xFactor = applySinParams(paramsX, currentTime)
+	const yFactor = applySinParams(paramsY, currentTime)
+	vec.MultiplyScalarX(xFactor).MultiplyScalarY(yFactor)
 }
 function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 	if (ExecuteOrder.DisableHumanizer) {
 		return
 	}
 	latestUsercmd.ShopMask = 15
-
 	let order = ProcessOrderQueue(currentTime)
 	latestUsercmd.CameraPosition.x = latestCameraX
 	latestUsercmd.CameraPosition.y = latestCameraY
@@ -1084,13 +1084,13 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 	let cursorAtTarget = false
 	if (targetPos.IsValid) {
 		// move cursor
-		const dist = latestUsercmd.MousePosition.Distance(targetPos)
+		const dist = latestUsercmd.MousePosition.Distance(targetPos),
+			cursorSpeed = ExecuteOrder.cursorSpeed, // 6
+			minAccel = ExecuteOrder.cursorSpeedMinAccel, // 1
+			maxAccel = ExecuteOrder.cursorSpeedMaxAccel // 2
 		const extend =
-			ExecuteOrder.cursorSpeedMinAccel +
-			Math.min(Math.sqrt(dist), 1) *
-				(ExecuteOrder.cursorSpeedMaxAccel - ExecuteOrder.cursorSpeedMinAccel) *
-				ExecuteOrder.cursorSpeed *
-				dt
+			minAccel +
+			Math.min(Math.sqrt(dist), 1) * (maxAccel - minAccel) * cursorSpeed * dt
 		const dir = latestUsercmd.MousePosition.GetDirectionTo(
 			targetPos
 		).MultiplyScalarForThis(Math.min(extend, dist))
@@ -1280,14 +1280,16 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 	latestCameraY = latestUsercmd.CameraPosition.y = cameraVec.y
 
 	latestCursor.CopyFrom(latestUsercmd.MousePosition)
+
 	latestUsercmd.MousePosition.MultiplyForThis(RendererSDK.WindowSize)
 		.RoundForThis()
 		.DivideForThis(RendererSDK.WindowSize)
-	latestUsercmd.VectorUnderCursor.CopyFrom(
-		debugCursor.CopyFrom(
-			RendererSDK.ScreenToWorldFar([latestCursor], cameraVec, defaultCameraDist)[0]
-		)
-	)
+	const screenToWorldPosition = RendererSDK.ScreenToWorldFar(
+		[latestCursor],
+		cameraVec,
+		defaultCameraDist
+	)[0]
+	latestUsercmd.VectorUnderCursor.CopyFrom(debugCursor.CopyFrom(screenToWorldPosition))
 	const units = Units.filter(ent => ent.IsVisible && ent.IsSpawned)
 	const intersectedUnitsMask = EntityHitBoxesIntersect(
 		units,
@@ -1300,11 +1302,11 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 		lastOrderTarget instanceof Unit &&
 		intersectedUnits.includes(lastOrderTarget)
 			? lastOrderTarget
-			: intersectedUnits.orderByFirst(ent =>
+			: intersectedUnits.orderBy(ent =>
 					latestUsercmd.VectorUnderCursor.DistanceSqr(ent.VisualPosition)
-				)
+				)[0]
 
-	// console.log(latestUsercmd.WeaponSelect, latestUsercmd.WeaponSubType)
+	// console.log(latestUsercmd.MousePosition, latestUsercmd.VectorUnderCursor)
 	latestUsercmd.Write()
 	WriteUserCmd()
 }
@@ -1321,9 +1323,9 @@ function ProcessUserCmd(force = false): void {
 	if (RendererSDK.WindowSize.IsZero()) {
 		return
 	}
+	latestUsercmd.Pawn = LocalPlayer?.Pawn
 	latestUsercmd.SpectatorStatsCategoryID = 0
 	latestUsercmd.SpectatorStatsSortMethod = 0
-	latestUsercmd.Pawn = LocalPlayer?.Pawn
 	latestUsercmd.TickCount = GameState.CurrentServerTick
 	if (ExecuteOrder.IsStandalone) {
 		if (!initializedMousePosition) {
@@ -1342,9 +1344,9 @@ function ProcessUserCmd(force = false): void {
 	const numSelected = GetSelectedEntities()
 	InputManager.SelectedEntities.clear()
 	for (let i = 0; i < numSelected; i++) {
-		const ent = EntityManager.EntityByIndex(IOBufferView.getUint32(i * 4, true))
+		const ent = EntityManager.EntityByIndex<Unit>(IOBufferView.getUint32(i * 4, true))
 		if (ent !== undefined) {
-			InputManager.SelectedEntities.push(ent as Unit)
+			InputManager.SelectedEntities.push(ent)
 		}
 	}
 	if (InputManager.SelectedEntities.length === 0) {
@@ -1495,7 +1497,7 @@ function deserializeOrder(): ExecuteOrder {
 		target_ = EntityManager.EntityByIndex(target_) ?? target_
 	}
 	if (orderType !== dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM) {
-		ability_ = (EntityManager.EntityByIndex(ability_) as Ability) ?? ability_
+		ability_ = EntityManager.EntityByIndex<Ability>(ability_) ?? ability_
 	}
 	switch (orderType) {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET:

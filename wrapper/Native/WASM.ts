@@ -35,13 +35,10 @@ export let HeightMap: Nullable<CHeightMap>
 
 export function GetEyeVector(cameraAngles: QAngle): Vector3 {
 	// TODO: should we use Math.cos(DegreesToRadian(cameraAngles.y))?
-	return new Vector3(
-		0,
-		Math.cos(
-			DegreesToRadian(cameraAngles.x) - Math.cos(DegreesToRadian(cameraAngles.y))
-		),
-		-Math.sin(DegreesToRadian(cameraAngles.x))
-	)
+	const pitch = DegreesToRadian(cameraAngles.x)
+	const yaw = DegreesToRadian(cameraAngles.y)
+	// Math.cos(pitch - Math.cos(yaw)) // correctly?
+	return new Vector3(0, Math.cos(pitch - Math.cos(yaw)), -Math.sin(pitch))
 }
 
 let cameraOffset = 0,
@@ -69,7 +66,7 @@ export function GetCameraPosition(
 		cameraOffsetUpdated = t
 	}
 	return Vector3.FromVector2(cameraPosition).SetZ(
-		cameraOffset - eyeVector.z * cameraDistance + 50
+		cameraOffset - eyeVector.z * cameraDistance
 	)
 }
 

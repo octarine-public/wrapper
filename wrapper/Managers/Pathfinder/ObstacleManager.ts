@@ -1,13 +1,13 @@
-import { Vector2 } from "../Base/Vector2"
-import { Vector3 } from "../Base/Vector3"
-import { EObstacleType } from "../Enums/EObstacleType"
-import { GridNavCellFlags } from "../Enums/GridNavCellFlags"
-import { GridNav } from "../Resources/ParseGNV"
-import { DegreesToRadian } from "../Utils/Math"
+import { Vector2 } from "../../Base/Vector2"
+import { Vector3 } from "../../Base/Vector3"
+import { EObstacleType } from "../../Enums/EObstacleType"
+import { GridNavCellFlags } from "../../Enums/GridNavCellFlags"
+import { GridNav } from "../../Resources/ParseGNV"
+import { DegreesToRadian } from "../../Utils/Math"
 
 type MapObstacle = Map<number, [EObstacleType, Vector3, Vector3, number]>
 
-export class DetourObstacles {
+export class ObstacleManager {
 	public readonly Obstacles: MapObstacle = new Map()
 
 	private obstacleId = 1
@@ -24,25 +24,6 @@ export class DetourObstacles {
 		const type = end !== undefined ? EObstacleType.Line : EObstacleType.Circle
 		this.Obstacles.set(obstacleId, [obstacleType ?? type, position, endPos, radius])
 		return obstacleId
-	}
-
-	/** @deprecated */
-	public CalculateObstacles(
-		position: Vector3,
-		rotationRad: number,
-		speed: number,
-		turnRate: number,
-		hullRadius: number,
-		flying: boolean
-	) {
-		return this.GetBestPosition(
-			position,
-			rotationRad,
-			speed,
-			turnRate,
-			hullRadius,
-			flying
-		)
 	}
 
 	public GetBestPosition(
@@ -138,15 +119,13 @@ export class DetourObstacles {
 		if (flying) {
 			return false
 		}
-
 		if (
-			!flags.hasBit(GridNavCellFlags.Walkable) ||
 			flags.hasBit(GridNavCellFlags.Tree) ||
+			!flags.hasBit(GridNavCellFlags.Walkable) ||
 			flags.hasBit(GridNavCellFlags.MovementBlocker)
 		) {
 			return true
 		}
-
 		return false
 	}
 

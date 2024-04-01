@@ -30,7 +30,7 @@ import { PlayerResource as _PlayerResource } from "./Objects/Base/PlayerResource
 import { AbilityData as _AbilityData } from "./Objects/DataBook/AbilityData"
 import { PlayerCustomData as _PlayerCustomData } from "./Objects/DataBook/PlayerCustomData"
 import { SDKClasses } from "./Objects/NativeToSDK"
-import { PathfinderSDK as _PathfinderSDK } from "./Pathfinder/Pathfinder"
+import { PathfinderSDK as _PathfinderSDK } from "./Managers/PathfinderSDK"
 import { EntityDataLumps as _EntityDataLumps } from "./Resources/ParseEntityLump"
 import { GridNav as _GridNav } from "./Resources/ParseGNV"
 import { GameState as _GameState } from "./Utils/GameState"
