@@ -20,17 +20,11 @@ export class skywrath_mage_arcane_bolt extends Ability {
 
 		return SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("bolt_damage", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("bolt_speed", level)
 	}

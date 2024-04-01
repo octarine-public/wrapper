@@ -11,6 +11,7 @@ import { EAbilitySlot } from "../../Enums/EAbilitySlot"
 import { Flow } from "../../Enums/Flow"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { EventsSDK } from "../../Managers/EventsSDK"
+import { Prediction } from "../../Managers/Prediction/Prediction"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GameState } from "../../Utils/GameState"
@@ -76,16 +77,15 @@ export class Ability extends Entity {
 	public DirtyButtons = 0
 	public AbilityChargeRestoreTimeRemaining = 0
 
-	/** @ignore */
 	public Cooldown_ = 0
-	public CooldownRestore_ = 0
 	public CooldownChangeTime = 0
+	public CooldownRestore_ = 0
 	public CooldownRestoreTime = 0
 
+	public Prediction: Nullable<Prediction>
 	/**@deprecated */
 	public readonly ProjectilePath: Nullable<string>
 
-	/** @ignore */
 	constructor(index: number, serial: number, name: string) {
 		super(index, serial)
 		this.Name_ = name
@@ -100,10 +100,6 @@ export class Ability extends Entity {
 	public get IsInvisibility(): boolean {
 		return false
 	}
-	/**
-	 * @description Determines if the Ability should be drawable
-	 * @return {boolean}
-	 */
 	public get ShouldBeDrawable(): boolean {
 		if (this.IsEmpty || this.MaxLevel === 0) {
 			return false
@@ -115,34 +111,18 @@ export class Ability extends Entity {
 			DOTA_UNIT_TARGET_FLAGS.DOTA_UNIT_TARGET_FLAG_INVULNERABLE
 		)
 	}
-	/**
-	 * @description A boolean indicating whether the ability is an ultimate ability
-	 * @return {boolean}
-	 */
 	public get IsUltimate(): boolean {
 		return this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE
 	}
-	/**
-	 * @description Returns true if the ability type is ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES.
-	 * @return {boolean}
-	 */
 	public get IsAttributes(): boolean {
 		return this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES
 	}
-	/**
-	 * @description Determines if the ability can hit a spell immune enemy.
-	 * @returns {boolean}
-	 */
 	public get CanHitSpellImmuneEnemy(): boolean {
 		return (
 			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES ||
 			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
 		)
 	}
-	/**
-	 * @description Check if the ability can hit a spell immune ally.
-	 * @returns {boolean}
-	 */
 	public get CanHitSpellImmuneAlly(): boolean {
 		return (
 			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE ||
@@ -150,11 +130,6 @@ export class Ability extends Entity {
 			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
 		)
 	}
-	/**
-	 * Check if the ability is usable.
-	 * @description Check if the ability is not hidden and is activated
-	 * @returns {boolean}
-	 */
 	public get CanBeUsable(): boolean {
 		return this.IsValid && !this.IsHidden && this.IsActivated
 	}
@@ -297,52 +272,26 @@ export class Ability extends Entity {
 			0
 		)
 	}
-	/**
-	 * The cooldown percentage.
-	 * @description Returns the cooldown percentage based on the current cooldown and maximum cooldown.
-	 * @return {number}
-	 */
 	public get CooldownPercent(): number {
 		return !this.CurrentCharges && this.CooldownRestore > 0
 			? toPercentage(this.CooldownRestore, this.MaxChargeRestoreTime)
 			: toPercentage(this.Cooldown, this.MaxCooldown)
 	}
-	/**
-	 * Calculates the cooldown percentage.
-	 * @description The cooldown percentage as a decimal value.
-	 * @return {number}
-	 */
 	public get CooldownPercentDecimal(): number {
 		return this.CooldownPercent / 100
 	}
-	/**
-	 * @description The remaining cooldown duration for the CooldownDuration property.
-	 * @return {number}
-	 */
 	public get CooldownDuration(): number {
 		return Math.max(
 			this.MaxDuration - (GameState.RawGameTime - this.CastStartTime),
 			0
 		)
 	}
-	/**
-	 * @description The cooldown duration as a percentage.
-	 * @return {number}
-	 */
 	public get CooldownDurationPercent(): number {
 		return toPercentage(this.CooldownDuration, this.MaxDuration)
 	}
-	/**
-	 * @description The cooldown duration as a decimal value.
-	 * @return {number}
-	 */
 	public get CooldownDurationPercentDecimal(): number {
 		return this.CooldownDurationPercent / 100
 	}
-	/**
-	 * @description example: Axe Culling blade, Legion commander Duel and others
-	 * @return {number}
-	 */
 	public get StackCount(): number {
 		return 0
 	}
@@ -419,104 +368,45 @@ export class Ability extends Entity {
 	protected get CanBeCastedWhileSilenced() {
 		return false
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.AbilityData.GetMaxCooldownForLevel(level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetChargeRestoreTimeForLevel(level: number): number {
 		return this.AbilityData.GetChargeRestoreTime(level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetMaxChargesForLevel(level: number): number {
 		return this.AbilityData.GetMaxCharges(level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetMaxDurationForLevel(level: number): number {
 		return this.AbilityData.GetMaxDurationForLevel(level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseCastPointForLevel(level: number): number {
 		return this.AbilityData.GetCastPoint(level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseDamageForLevel(level: number): number {
 		return this.AbilityData.GetAbilityDamage(level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseManaCostForLevel(level: number): number {
 		return this.AbilityData.GetManaCost(level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetCastRangeForLevel(level: number): number {
 		return this.GetBaseCastRangeForLevel(level) + this.BonusCastRange
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.AbilityData.GetCastRange(level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseActivationDelayForLevel(_level: number): number {
 		return 0 // child classes should override
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseSpeedForLevel(_level: number): number {
 		return 0 // child classes should override
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseAOERadiusForLevel(_level: number): number {
 		return 0 // child classes should override
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseChannelTimeForLevel(level: number): number {
 		return this.AbilityData.GetChannelTime(level)
 	}
-	/**
-	 * @description Returns the cast delay of the ability. Time in seconds until the cast.
-	 * @param {Unit | Vector3} unit - The unit or vector3 to calculate cast delay for
-	 * @param {boolean} currentTurnRate - Flag to indicate if current turn rate is considered
-	 * @param {boolean} rotationDiff - Flag to indicate if rotation difference is considered
-	 * @return {number}
-	 */
 	public GetCastDelay(
 		unit?: Unit | Vector3,
 		currentTurnRate: boolean = true,
@@ -538,13 +428,6 @@ export class Ability extends Entity {
 		}
 		return owner.GetTurnTime(unit, currentTurnRate, rotationDiff) + delay
 	}
-	/**
-	 * @description Returns the cast delay of the ability. Time in seconds until the cast.
-	 * @param {Unit | Vector3} unit - The unit or position to calculate hit time for
-	 * @param {boolean} currentTurnRate -  Flag to indicate if current turn rate is considered
-	 * @param {boolean} rotationDiff - Flag to indicate if rotation difference is considered
-	 * @return {number}
-	 */
 	public GetHitTime(
 		unit: Unit | Vector3,
 		currentTurnRate: boolean = true,
@@ -588,12 +471,6 @@ export class Ability extends Entity {
 	public PingAbility() {
 		return this.Owner?.PingAbility(this)
 	}
-	/**
-	 * @description Retrieves a special value based on the provided special name and level.
-	 * @param {string} specialName - The name of the special value to retrieve.
-	 * @param {number} level - The level at which to retrieve the special value. Defaults to the level of the current Ability.
-	 * @return {number}
-	 */
 	public GetSpecialValue(specialName: string, level: number = this.Level): number {
 		const owner = this.Owner
 		const abilName = this.Name
@@ -625,7 +502,6 @@ export class Ability extends Entity {
 		if (this.Owner === undefined) {
 			return false
 		}
-
 		let range = 0
 		if (
 			!this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET) &&

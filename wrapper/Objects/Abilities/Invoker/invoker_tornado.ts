@@ -13,31 +13,19 @@ export class invoker_tornado extends Ability {
 	public get AbilityDamage(): number {
 		return this.GetBaseDamageForLevel(this.Level + this.WexLevel)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("area_of_effect", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCooldown", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("wex_damage", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("travel_speed", level)
 	}

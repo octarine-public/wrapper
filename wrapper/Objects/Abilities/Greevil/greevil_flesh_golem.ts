@@ -3,10 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("greevil_flesh_golem")
 export class greevil_flesh_golem extends Ability {
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

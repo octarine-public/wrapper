@@ -3,10 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("omniknight_purification")
 export class omniknight_purification extends Ability {
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

@@ -3,10 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("huskar_life_break")
 export class huskar_life_break extends Ability {
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseCastRangeForLevel(level: number): number {
 		return (
 			super.GetBaseCastRangeForLevel(level) +
@@ -15,10 +11,7 @@ export class huskar_life_break extends Ability {
 				: 0)
 		)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("charge_speed", level)
 	}

@@ -6,10 +6,7 @@ export class death_prophet_exorcism extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("spirit_speed")
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

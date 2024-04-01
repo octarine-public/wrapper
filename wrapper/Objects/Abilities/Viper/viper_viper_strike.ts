@@ -9,31 +9,19 @@ export class viper_viper_strike extends Ability {
 	public get MaxChargeRestoreTime(): number {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("charge_restore_time") : 0
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCooldown", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseManaCostForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityManaCost", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("projectile_speed", level)
 	}

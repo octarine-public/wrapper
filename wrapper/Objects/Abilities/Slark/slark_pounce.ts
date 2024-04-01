@@ -20,24 +20,15 @@ export class slark_pounce extends Ability {
 	public get Range() {
 		return this.CastRange + this.AOERadius
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("pounce_speed", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("pounce_radius", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue(
 			!this.Owner?.HasScepter ? "pounce_distance" : "pounce_distance_scepter",

@@ -15,14 +15,10 @@
 		"eslint-plugin-unused-imports": "^3.0.0",
 		"madge": "^6.1.0",
 		"prettier": "^3.2.4",
-		"typedoc": "^0.25.7",
-		"typedoc-gitlab-wiki-theme": "^1.1.1",
-		"typedoc-plugin-markdown": "^3.17.1",
 		"typescript": "^5.3.3"
 	},
 	"scripts": {
 		"check-types": "npx tsc",
-		"typedoc ": "npx typedoc",
 		"check-types-watch": "npx tsc --watch",
 		"check-circular": "npx madge --circular scripts/",
 		"upgrade-pack": "yarn upgrade-interactive --latest",

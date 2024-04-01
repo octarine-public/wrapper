@@ -3,10 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("tidehunter_anchor_smash")
 export class tidehunter_anchor_smash extends Ability {
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

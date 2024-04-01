@@ -9,17 +9,9 @@ export class ancient_apparition_cold_feet extends Ability {
 			? super.AbilityBehaviorMask
 			: DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_AOE
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("area_of_effect", level)
 	}

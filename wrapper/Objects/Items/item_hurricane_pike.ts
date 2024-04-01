@@ -8,10 +8,7 @@ export class item_hurricane_pike extends Item {
 	public get Range() {
 		return this.GetSpecialValue("push_length")
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(_level: number): number {
 		// https://dota2.fandom.com/ru/wiki/Hurricane_Pike
 		return 1200

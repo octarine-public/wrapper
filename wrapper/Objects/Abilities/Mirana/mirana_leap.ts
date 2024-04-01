@@ -5,10 +5,6 @@ import { Unit } from "../../Base/Unit"
 
 @WrapperClass("mirana_leap")
 export class mirana_leap extends Ability {
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("leap_speed", level)
 	}

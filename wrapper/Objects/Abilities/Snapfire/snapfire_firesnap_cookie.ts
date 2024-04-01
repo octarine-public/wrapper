@@ -5,24 +5,14 @@ import { Unit } from "../../Base/Unit"
 
 @WrapperClass("snapfire_firesnap_cookie")
 export class snapfire_firesnap_cookie extends Ability {
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public get CookieSpeed(): number {
 		return this.GetSpecialValue("projectile_speed")
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("impact_radius", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCooldown", level)
 	}

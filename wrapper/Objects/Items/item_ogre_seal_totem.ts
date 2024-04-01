@@ -14,24 +14,15 @@ export class item_ogre_seal_totem extends Item {
 	public get Range() {
 		return this.CastRange
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("leap_speed", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue("leap_distance", level)
 	}

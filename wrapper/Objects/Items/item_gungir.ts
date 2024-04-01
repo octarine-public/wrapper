@@ -12,25 +12,15 @@ export class item_gungir extends Item {
 	 */
 	public CurrectionSpeed_ = 1900
 
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("chain_radius", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(_level: number): number {
 		// https://dota2.fandom.com/wiki/Rod_of_Atos
 		return this.CurrectionSpeed_
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("active_damage", level)
 	}

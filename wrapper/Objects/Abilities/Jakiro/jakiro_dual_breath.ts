@@ -6,24 +6,15 @@ export class jakiro_dual_breath extends Ability {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("end_radius")
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCastRange", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("start_radius", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)
 	}

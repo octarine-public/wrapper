@@ -23,17 +23,11 @@ export class monkey_king_tree_dance extends Ability {
 	public get SpringSpeed(): number {
 		return this.GetSpecialValue("spring_leap_speed")
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue("ground_jump_distance", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("leap_speed", level)
 	}

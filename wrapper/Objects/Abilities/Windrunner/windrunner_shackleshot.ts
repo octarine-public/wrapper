@@ -9,10 +9,6 @@ export class windrunner_shackleshot extends Ability {
 	public get ShackleDistance() {
 		return this.GetSpecialValue("shackle_distance")
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("arrow_speed", level)
 	}

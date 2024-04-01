@@ -8,10 +8,7 @@ export class item_force_staff extends Item {
 	public get Range() {
 		return this.GetSpecialValue("push_length")
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(_level: number): number {
 		// https://dota2.fandom.com/wiki/Force_Staff
 		return 1200

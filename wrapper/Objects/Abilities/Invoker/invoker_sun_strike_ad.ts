@@ -10,17 +10,10 @@ export class invoker_sun_strike_ad extends Ability {
 	@NetworkedBasicField("m_nExortLevel")
 	public ExortLevel = 0
 
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseActivationDelayForLevel(level: number): number {
 		return this.GetSpecialValue("delay", level)
 	}

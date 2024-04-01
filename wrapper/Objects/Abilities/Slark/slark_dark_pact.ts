@@ -6,24 +6,14 @@ import { Unit } from "../../Base/Unit"
 
 @WrapperClass("slark_dark_pact")
 export class slark_dark_pact extends Ability {
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseActivationDelayForLevel(level: number): number {
 		return this.GetSpecialValue("delay", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("total_damage", level)
 	}

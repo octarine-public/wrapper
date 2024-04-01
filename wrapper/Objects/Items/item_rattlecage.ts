@@ -3,10 +3,6 @@ import { Item } from "../Base/Item"
 
 @WrapperClass("item_rattlecage")
 export class item_rattlecage extends Item {
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

@@ -13,24 +13,15 @@ export class invoker_sun_strike extends Ability {
 	public get AbilityDamage() {
 		return this.GetBaseDamageForLevel(this.Level + this.ExortLevel)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("area_of_effect", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseActivationDelayForLevel(level: number): number {
 		return this.GetSpecialValue("delay", level)
 	}

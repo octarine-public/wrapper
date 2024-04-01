@@ -17,17 +17,11 @@ export class storm_spirit_ball_lightning extends Ability {
 
 		return travelCost !== 0 ? Math.ceil(mana / travelCost) * 100 : 0
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("ball_lightning_aoe", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("ball_lightning_move_speed", level)
 	}

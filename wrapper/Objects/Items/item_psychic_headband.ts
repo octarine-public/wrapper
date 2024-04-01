@@ -8,10 +8,7 @@ export class item_psychic_headband extends Item {
 	public get Range() {
 		return this.GetSpecialValue("push_length")
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(_level: number): number {
 		// https://dota2.fandom.com/wiki/Psychic_Headband
 		return 1333.33

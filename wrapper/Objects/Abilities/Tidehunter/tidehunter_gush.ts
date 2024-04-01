@@ -13,24 +13,15 @@ export class tidehunter_gush extends Ability {
 			? super.Speed
 			: this.GetSpecialValue("speed_scepter")
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseAOERadiusForLevel(_level: number): number {
 		return 0
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("gush_damage", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("projectile_speed", level)
 	}

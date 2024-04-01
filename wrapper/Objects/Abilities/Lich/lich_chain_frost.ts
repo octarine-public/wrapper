@@ -6,17 +6,11 @@ export class lich_chain_frost extends Ability {
 	public get InitialSpeed() {
 		return this.GetSpecialValue("initial_projectile_speed")
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("projectile_speed", level)
 	}

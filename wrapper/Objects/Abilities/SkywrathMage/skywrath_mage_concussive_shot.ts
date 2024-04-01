@@ -3,10 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("skywrath_mage_concussive_shot")
 export class skywrath_mage_concussive_shot extends Ability {
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetCastRangeForLevel(level: number): number {
 		const owner = this.Owner
 		if (owner === undefined) {
@@ -17,24 +13,15 @@ export class skywrath_mage_concussive_shot extends Ability {
 			? Number.MAX_SAFE_INTEGER
 			: super.GetCastRangeForLevel(level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("launch_radius", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)
 	}

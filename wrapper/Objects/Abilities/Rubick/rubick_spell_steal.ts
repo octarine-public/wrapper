@@ -3,10 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("rubick_spell_steal")
 export class rubick_spell_steal extends Ability {
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("projectile_speed", level)
 	}

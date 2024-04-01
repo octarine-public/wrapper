@@ -5,17 +5,9 @@ import { Item } from "../Base/Item"
 
 @WrapperClass("item_rod_of_atos")
 export class item_rod_of_atos extends Item {
-	/**
-	 * @ingnore
-	 * @internal
-	 * @description current speed by server via tracking projectile
-	 */
+	// The current speed by server via tracking projectile
 	public CurrectionSpeed_ = 1900
 
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseSpeedForLevel(_level: number): number {
 		// https://dota2.fandom.com/wiki/Rod_of_Atos
 		return this.CurrectionSpeed_

@@ -3,10 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("chaos_knight_chaos_bolt")
 export class chaos_knight_chaos_bolt extends Ability {
-	/**
-	 * @param level
-	 * @return {number}
-	 */
 	public GetBaseCastRangeForLevel(level: number): number {
 		return (
 			super.GetBaseCastRangeForLevel(level) +
@@ -15,10 +11,7 @@ export class chaos_knight_chaos_bolt extends Ability {
 				: 0)
 		)
 	}
-	/**
-	 * @param level
-	 * @return {number}
-	 */
+
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("chaos_bolt_speed", level)
 	}
