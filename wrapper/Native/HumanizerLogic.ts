@@ -975,23 +975,28 @@ function getParams(): [number, number][] {
 	return res
 }
 
-function applySinParams(params: [number, number][], currentTime: number): number {
-	return (
-		params.reduce(
-			(prev, [amplitude, offset]) =>
-				prev + Math.cos(currentTime * amplitude + offset) ** 2,
-			0.5
-		) / params.length
+function applyParams(
+	params: [number, number][],
+	currentTime: number,
+	trigFunc: (x: number) => number
+): number {
+	const sum = params.reduce(
+		(prev, [amplitude, offset]) =>
+			prev + trigFunc(currentTime * amplitude + offset) ** 2,
+		0.5
 	)
+	return sum / params.length
 }
 
 let paramsX = getParams(),
 	paramsY = getParams()
+
 function ApplyParams(vec: Vector2, currentTime: number): void {
-	const xFactor = applySinParams(paramsX, currentTime)
-	const yFactor = applySinParams(paramsY, currentTime)
+	const xFactor = applyParams(paramsX, currentTime, Math.cos)
+	const yFactor = applyParams(paramsY, currentTime, Math.sin)
 	vec.MultiplyScalarX(xFactor).MultiplyScalarY(yFactor)
 }
+
 function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 	if (ExecuteOrder.DisableHumanizer) {
 		return
