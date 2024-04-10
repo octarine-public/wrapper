@@ -25,6 +25,8 @@ declare interface Number {
 	hasMask(mask: number): boolean
 	/** popcnt */
 	bitCount(): number
+	// default by 3
+	toNumberFixed(fractionDigits?: number): number
 	toMask: number[]
 	toInt16: number
 }

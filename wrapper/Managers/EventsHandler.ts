@@ -65,7 +65,9 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_SET_NAMED_VALUE_CONTEXT = 26,
 	GAME_PARTICLE_MANAGER_EVENT_UPDATE_TRANSFORM = 27,
 	GAME_PARTICLE_MANAGER_EVENT_FREEZE_TRANSITION_OVERRIDE = 28,
-	GAME_PARTICLE_MANAGER_EVENT_FREEZE_INVOLVING = 29
+	GAME_PARTICLE_MANAGER_EVENT_FREEZE_INVOLVING = 29,
+	GAME_PARTICLE_MANAGER_EVENT_ADD_MODELLIST_OVERRIDE_ELEMENT = 30,
+	GAME_PARTICLE_MANAGER_EVENT_CLEAR_MODELLIST_OVERRIDE = 31
 }
 enum EDotaEntityMessages {
 	DOTA_UNIT_SPEECH = 0,
@@ -163,6 +165,8 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_UPDATE_TRANSFORM = 27;
 	GAME_PARTICLE_MANAGER_EVENT_FREEZE_TRANSITION_OVERRIDE = 28;
 	GAME_PARTICLE_MANAGER_EVENT_FREEZE_INVOLVING = 29;
+	GAME_PARTICLE_MANAGER_EVENT_ADD_MODELLIST_OVERRIDE_ELEMENT = 30;
+	GAME_PARTICLE_MANAGER_EVENT_CLEAR_MODELLIST_OVERRIDE = 31;
 }
 
 enum DOTA_CHAT_MESSAGE {
@@ -434,6 +438,16 @@ message CUserMsg_ParticleManager {
 		optional uint32 entity_handle = 3 [default = 16777215];
 	}
 
+	message AddModellistOverrideElement {
+		optional string model_name = 1;
+		optional float spawn_probability = 2;
+		optional uint32 groupid = 3;
+	}
+
+	message ClearModellistOverride {
+		optional uint32 groupid = 1;
+	}
+
 	message SetParticleNamedValueContext {
 		message FloatContextValue {
 			optional uint32 value_name_hash = 1;
@@ -493,6 +507,8 @@ message CUserMsg_ParticleManager {
 	optional .CUserMsg_ParticleManager.UpdateParticleTransform update_particle_transform = 30;
 	optional .CUserMsg_ParticleManager.ParticleFreezeTransitionOverride particle_freeze_transition_override = 31;
 	optional .CUserMsg_ParticleManager.FreezeParticleInvolving freeze_particle_involving = 32;
+	optional .CUserMsg_ParticleManager.AddModellistOverrideElement add_modellist_override_element = 33;
+	optional .CUserMsg_ParticleManager.ClearModellistOverride clear_modellist_override = 34;
 }
 
 enum EDotaEntityMessages {
@@ -974,6 +990,14 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_FREEZE_INVOLVING: {
 			// const submsg = msg.get("freeze_particle_involving") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_ADD_MODELLIST_OVERRIDE_ELEMENT: {
+			// const submsg = msg.get("") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CLEAR_MODELLIST_OVERRIDE: {
+			// const submsg = msg.get("") as RecursiveProtobuf
 			break
 		}
 		default:

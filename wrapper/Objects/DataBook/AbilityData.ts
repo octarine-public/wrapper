@@ -69,6 +69,7 @@ export class AbilityData {
 	public readonly ID: number
 	public readonly EffectName: string
 	public readonly Cost: number
+	public readonly IsInnate: boolean
 	public readonly Purchasable: boolean
 	public readonly DamageType: DAMAGE_TYPES
 	// public readonly DispellableType: SPELL_DISPELLABLE_TYPES
@@ -145,6 +146,10 @@ export class AbilityData {
 		this.ShouldBeSuggested = kv.has("ShouldBeSuggested")
 			? parseInt(kv.get("ShouldBeSuggested") as string)
 			: -1
+
+		this.IsInnate = kv.has("Innate")
+			? parseInt(kv.get("Innate") as string) === 1
+			: false
 
 		this.ItemIsNeutralDrop = kv.has("ItemIsNeutralDrop")
 			? parseInt(kv.get("ItemIsNeutralDrop") as string) === 1
@@ -228,7 +233,6 @@ export class AbilityData {
 		this.ChargesCache = this.GetLevelArray(
 			kv.get("AbilityCharges") as Nullable<string>
 		)
-
 		this.ChargeRestoreTimeCache = this.GetLevelArray(
 			kv.get("AbilityChargeRestoreTime") as Nullable<string>
 		)
@@ -238,7 +242,6 @@ export class AbilityData {
 		this.MaxDurationCache = this.GetLevelArray(
 			kv.get("AbilityDuration") as Nullable<string>
 		)
-
 		this.SecretShop = kv.has("SecretShop")
 			? parseInt(kv.get("SecretShop") as string) !== 0
 			: false
@@ -297,12 +300,10 @@ export class AbilityData {
 		if (level <= 0) {
 			return 0
 		}
-
 		const ar = this.GetCachedSpecialValue(specialName, abilityName)
 		if (ar === undefined || !ar[0].length) {
 			return 0
 		}
-
 		let baseVal = ar[0][Math.min(level, ar[0].length) - 1]
 		if (
 			(ar[1] === "special_bonus_shard" && !owner.HasShard) ||
@@ -310,11 +311,9 @@ export class AbilityData {
 		) {
 			return baseVal
 		}
-
 		if (specialName.startsWith("special_bonus_unique_")) {
 			return this.GetSpecialTalent(specialName, "value", owner)
 		}
-
 		let talentVal = 0
 		const val = ar[2]
 		switch (true) {
@@ -343,13 +342,11 @@ export class AbilityData {
 						: val
 					break
 				}
-
 				if (this.hasTalent(ar[1], owner)) {
 					talentVal = val || this.GetSpecialTalent(ar[1], "value", owner)
 				}
 				break
 		}
-
 		switch (ar[3]) {
 			default:
 			case EDOTASpecialBonusOperation.SPECIAL_BONUS_SET:
@@ -362,7 +359,7 @@ export class AbilityData {
 				baseVal -= talentVal
 				break
 			case EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY:
-				baseVal *= talentVal
+				baseVal *= !(talentVal > 0) ? 1 : talentVal
 				break
 			case EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD:
 				baseVal *= 1 + talentVal / 100
@@ -371,7 +368,6 @@ export class AbilityData {
 				baseVal *= 1 - talentVal / 100
 				break
 		}
-
 		return baseVal
 	}
 

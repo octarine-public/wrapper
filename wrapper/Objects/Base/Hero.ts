@@ -31,7 +31,7 @@ export class Hero extends Unit {
 	@NetworkedBasicField("m_flAgilityTotal")
 	public TotalAgility = 0
 	@NetworkedBasicField("m_flIntellectTotal")
-	public TotalIntellect = 0
+	public BaseTotalIntellect = 0
 	@NetworkedBasicField("m_flStrengthTotal")
 	public TotalStrength = 0
 

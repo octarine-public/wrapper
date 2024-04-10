@@ -3,12 +3,13 @@ import { DAMAGE_TYPES } from "../../../../Enums/DAMAGE_TYPES"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_pangolier_shield_crash_buff extends Modifier {
+export class modifier_shredder_reactive_armor_bomb extends Modifier {
 	public readonly IsShield = true
-	public readonly AbsorbDamageAfterReduction = true
 	public readonly AbsorbDamageType = DAMAGE_TYPES.DAMAGE_TYPE_ALL
 
-	protected SetAbsorbDamage(_specialName?: string, _subtract = false) {
-		this.AbsorbDamage = Math.max(this.NetworkArmor, 0)
+	protected SetAbsorbDamage(specialName = "max_shield", _subtract = false) {
+		const blockAfter = this.NetworkArmor,
+			specialValue = this.GetSpecialValue(specialName)
+		this.AbsorbDamage = Math.max(specialValue - blockAfter, 0)
 	}
 }

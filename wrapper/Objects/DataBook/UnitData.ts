@@ -263,7 +263,6 @@ export class UnitData {
 		this.MagicalResistance = kv.has("MagicalResistance")
 			? parseFloat(kv.get("MagicalResistance") as string)
 			: 0
-
 		if (kv.has("AttackSpeedActivityModifiers")) {
 			const m = kv.get("AttackSpeedActivityModifiers")
 			if (m instanceof Map) {

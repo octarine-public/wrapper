@@ -4,7 +4,7 @@ import { ModifierManager } from "../../../Managers/ModifierManager"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_item_dandelion_amulet extends Modifier {
+export class modifier_item_infused_raindrop extends Modifier {
 	public readonly AbsorbDamageAfterReduction = true
 	public readonly AbsorbDamageType = DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL
 
@@ -25,10 +25,6 @@ export class modifier_item_dandelion_amulet extends Modifier {
 
 	public OnIntervalThink(): void {
 		this.SetAbsorbDamage()
-	}
-
-	protected SetBonusMoveSpeed(specialName = "move_speed", subtract = false): void {
-		super.SetBonusMoveSpeed(specialName, subtract)
 	}
 
 	protected SetAbsorbDamage(specialName = "magic_damage_block", _subtract = false) {

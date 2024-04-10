@@ -447,6 +447,10 @@ export class Ability extends Entity {
 		return speed > 0 ? owner.Distance2D(unit) / speed + delay : delay
 	}
 
+	public GetDamage(_target: Unit, _manaCost?: number) {
+		/** @TODO */
+	}
+
 	public UseAbility(
 		target?: Vector3 | Entity,
 		checkAutoCast: boolean = false,
@@ -472,9 +476,9 @@ export class Ability extends Entity {
 		return this.Owner?.PingAbility(this)
 	}
 	public GetSpecialValue(specialName: string, level: number = this.Level): number {
-		const owner = this.Owner
-		const abilName = this.Name
-		const abilityData = this.AbilityData
+		const owner = this.Owner,
+			abilName = this.Name,
+			abilityData = this.AbilityData
 		return owner === undefined
 			? abilityData.GetSpecialValue(specialName, level, abilName)
 			: abilityData.GetSpecialValueWithTalent(owner, specialName, level, abilName)

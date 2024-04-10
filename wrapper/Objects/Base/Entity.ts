@@ -79,6 +79,7 @@ export class Entity {
 	public CreateTime_ = 0
 	@NetworkedBasicField("m_iHealth")
 	public HP = 0
+	public HPPrediction = 0
 	@NetworkedBasicField("m_iMaxHealth")
 	public MaxHP = 0
 	@NetworkedBasicField("m_flPlaybackRate")

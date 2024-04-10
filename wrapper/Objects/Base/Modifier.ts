@@ -1,5 +1,7 @@
 import { Vector4 } from "../../Base/Vector4"
 import { GetItemTexture, GetSpellTexture } from "../../Data/ImageData"
+import { DAMAGE_AMPLIFY } from "../../Enums/DAMAGE_AMPLIFY"
+import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
 import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
 import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
 import { EntityManager } from "../../Managers/EntityManager"
@@ -62,6 +64,18 @@ export class Modifier {
 	public IsHiddenWhenStolen = false
 	public IsDeniable = false
 	public IsVisibleForEnemies = false
+
+	// Damage
+	public DamageType = DAMAGE_TYPES.DAMAGE_TYPE_NONE
+	public AmplifyDamage = DAMAGE_AMPLIFY.DAMAGE_AMPLIFY_NONE
+	// Damage reduction
+	public DamageReduction = 0
+	// Damage amplification
+	public DamageAmplifier = 0
+	// Damage absorption
+	public AbsorbDamage = 0
+	public AbsorbDamageAfterReduction = false
+	public AbsorbDamageType = DAMAGE_TYPES.DAMAGE_TYPE_NONE
 
 	// Attack speed
 	public IsAttackSpeedLimit = true
@@ -165,6 +179,7 @@ export class Modifier {
 
 	public NetworkArmor = 0
 	public NetworkDamage = 0
+	public NetworkFadeTime = 0
 	public NetworkBonusMana = 0
 	public NetworkBonusHealth = 0
 	public NetworkAttackSpeed = 0
@@ -364,7 +379,8 @@ export class Modifier {
 			newCustomEntity = EntityManager.EntityByIndex<Unit>(this.kv.CustomEntity),
 			newChannelTime = this.kv.ChannelTime ?? 0,
 			newDamage = this.kv.Damage ?? 0,
-			newIsRanged = newParent?.IsRanged ?? false
+			newIsRanged = newParent?.IsRanged ?? false,
+			newFadeTime = this.kv.FadeTime ?? 0
 
 		if (this.Parent !== newParent) {
 			this.Remove()
@@ -375,6 +391,10 @@ export class Modifier {
 		let updated = false
 		if (this.Caster !== newCaster) {
 			this.Caster = newCaster
+			updated = true
+		}
+		if (this.NetworkFadeTime !== newFadeTime) {
+			this.NetworkFadeTime = newFadeTime
 			updated = true
 		}
 		if (this.Ability !== newAbility) {
@@ -514,7 +534,6 @@ export class Modifier {
 		const abil = this.Ability
 
 		level = Math.max(abil?.Level ?? level, level)
-
 		if (this.CustomAbilityName !== undefined) {
 			return this.byAbilityData(this.CustomAbilityName, specialName, level)
 		}
@@ -522,6 +541,22 @@ export class Modifier {
 			return 0
 		}
 		return abil.GetSpecialValue(specialName, level)
+	}
+	/** ======================= Damage Reduction ======================= */
+	protected SetAbsorbDamage(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.AbsorbDamage = subtract ? value * -1 : value
+	}
+	/** ======================= Damage Reduction ======================= */
+	protected SetDamageReduction(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.DamageReduction = subtract ? value * -1 : value
 	}
 
 	/** ======================= Attack Speed ======================= */
@@ -792,6 +827,10 @@ export class Modifier {
 	}
 
 	private updateAllSpecialValues() {
+		// damage
+		this.SetAbsorbDamage()
+		this.SetDamageReduction()
+
 		// bonus cast range
 		this.SetBonusCastRange()
 		this.SetCastRangeAmplifier()

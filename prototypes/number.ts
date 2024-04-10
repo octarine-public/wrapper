@@ -10,6 +10,11 @@ Number.prototype.hasBit = function (bit: number): boolean {
 Number.prototype.hasMask = function (mask: number): boolean {
 	return ((this as number) & mask) === mask
 }
+
+Number.prototype.toNumberFixed = function (fractionDigits = 3): number {
+	return parseFloat((this as number).toFixed(fractionDigits))
+}
+
 Number.prototype.bitCount = function (): number {
 	let n = this as number
 	n = n - ((n >> 1) & 0x55555555)

@@ -453,6 +453,7 @@ enum DOTALeaverStatus_t {
 	DOTA_LEAVER_NEVER_CONNECTED_TOO_LONG = 6;
 	DOTA_LEAVER_FAILED_TO_READY_UP = 7;
 	DOTA_LEAVER_DECLINED = 8;
+	DOTA_LEAVER_DECLINED_REQUEUE = 9;
 }
 message CSODOTALobbyMember {
 	optional fixed64 id = 1 [(key_field) = true];

@@ -7,6 +7,7 @@ import { NetworkedBasicField, ReencodeProperty, WrapperClass } from "../../Decor
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { Attributes } from "../../Enums/Attributes"
+import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
 import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
 import { DOTA_SHOP_TYPE } from "../../Enums/DOTA_SHOP_TYPE"
 import { DOTAScriptInventorySlot } from "../../Enums/DOTAScriptInventorySlot"
@@ -65,7 +66,6 @@ export class Unit extends Entity {
 		}
 		return false
 	}
-
 	/**
 	 * @description The target angle of the unit, NOTE: need test only local hero?
 	 */
@@ -91,8 +91,6 @@ export class Unit extends Entity {
 	public NetworkedDayVision = 0
 	@NetworkedBasicField("m_flDeathTime")
 	public DeathTime = 0
-	@NetworkedBasicField("m_nArcanaLevel")
-	public ArcanaLevel = 0
 	@NetworkedBasicField("m_bStolenScepter")
 	public HasStolenScepter = false
 	@NetworkedBasicField("m_bVisibleinPVS")
@@ -128,8 +126,6 @@ export class Unit extends Entity {
 	public PredictedIsWaitingToSpawn = true
 	@NetworkedBasicField("m_iCurrentLevel")
 	public Level = 0
-	@NetworkedBasicField("m_flMagicalResistanceValue")
-	public BaseMagicDamageResist = 0
 	@NetworkedBasicField("m_flMana")
 	public Mana = 0
 	@NetworkedBasicField("m_flMaxMana")
@@ -156,7 +152,7 @@ export class Unit extends Entity {
 	public Intellect = 0
 	public Strength = 0
 	public TotalAgility = 0
-	public TotalIntellect = 0
+	public BaseTotalIntellect = 0
 	public TotalStrength = 0
 	public ArmorTotal = 0
 	public MoveSpeedTotal = 0
@@ -251,60 +247,46 @@ export class Unit extends Entity {
 
 	// private cellPositions: Vector2[] = []
 
+	public get TotalIntellect() {
+		return !this.HasBuffByName("modifier_ogre_magi_dumb_luck")
+			? this.BaseTotalIntellect
+			: 0
+	}
 	public get Target() {
 		return EntityManager.EntityByIndex<Unit>(this.TargetIndex_)
 	}
-
 	public get DayVisionAmplify() {
 		return this.CalcualteAmpDayVision()
 	}
-
 	public get BonusDayVision() {
 		return this.CalcualteBonusDayVision()
 	}
-
 	public get BonusNightVision() {
 		return this.CalcualteBonusNightVision()
 	}
-
 	public get DayVisionBonus() {
 		return this.NetworkedDayVision + this.BonusDayVision
 	}
-
 	public get NightVision() {
 		return this.NetworkedNightVision + this.BonusNightVision
 	}
-
 	public get DayVision() {
 		return this.DayVisionBonus * this.DayVisionAmplify
 	}
-
-	/**
-	 * The vision value
-	 * @description Returns the vision value based on the current game state.
-	 * @return {number}
-	 */
 	public get Vision(): number {
 		return GameRules?.IsNight ? this.NightVision : this.DayVision
 	}
-	/**
-	 * @description The color assigned to the player.
-	 * @return {Color}
-	 */
 	public get Color(): Color {
 		return PlayerCustomData.get(this.PlayerID)?.Color ?? Color.Red
 	}
-
 	// ===================================== Armor ===================================== //
 	public get Armor() {
 		return this.ArmorTotal
 	}
-
 	// ===================================== Attack Speed ===================================== //
 	public get AttackProjectileSpeed(): number {
 		return this.UnitData.ProjectileSpeed
 	}
-
 	public get IsAttackSpeedLimit(): boolean {
 		return (
 			this.Buffs.find(buff => !buff.IsAttackSpeedLimit)?.IsAttackSpeedLimit ?? true
@@ -313,51 +295,39 @@ export class Unit extends Entity {
 	public get BaseAttackTimeData(): number {
 		return this.UnitData.BaseAttackTime
 	}
-
 	public get BaseAttackSpeedData(): number {
 		return Math.max(this.UnitData.BaseAttackSpeed, AttackSpeedData.MinBase)
 	}
-
 	public get BaseAttackAnimationPointData(): number {
 		return this.UnitData.AttackAnimationPoint
 	}
-
 	public get BaseAttackSpeed(): number {
 		return this.CalculateBaseAttackSpeed()
 	}
-
 	public get BaseAttackSpeedBonus(): number {
 		return this.CalculateBaseAttackSpeedBonus()
 	}
-
 	public get BaseAttackSpeedAmplifier(): number {
 		return this.CalculateBaseAttackSpeedAmplifier()
 	}
-
 	public get BaseAttackTime(): number {
 		return this.CalculateBaseAttackTime()
 	}
-
 	public get BaseAttackAnimationPoint(): number {
 		return this.CalculateBaseAttackAnimationPoint()
 	}
-
 	public get AttackAnimationPoint(): number {
 		return this.CalculateAttackAnimationPoint()
 	}
-
 	public get AttackSpeedBonus(): number {
 		return this.CalculateAttackSpeedBonus()
 	}
-
 	public get AttackSpeedAmplifier(): number {
 		return this.CalculateAttackSpeedAmplifier()
 	}
-
 	public get AttacksPerSecond(): number {
 		return 1 / this.AttackRate
 	}
-
 	public get AttackRate() {
 		const isLimit = this.IsAttackSpeedLimit
 		const unlimitedHaste = isLimit
@@ -366,48 +336,37 @@ export class Unit extends Entity {
 		const attackSpeed = Math.min(this.AttackSpeed / 100, unlimitedHaste)
 		return this.BaseAttackTime / Math.max(attackSpeed, AttackSpeedData.MinHaste)
 	}
-
 	public get AttackHasteFactor(): number {
 		return this.BaseAttackTime / this.AttackRate
 	}
-
 	public get AttackPoint(): number {
 		return this.AttackAnimationPoint / this.AttackHasteFactor
 	}
-
 	public get AttackBackswing(): number {
 		return this.AttackRate - this.AttackPoint
 	}
-
 	// ===================================== Move Speed ===================================== //
 	public get IsMoveSpeedLimit(): boolean {
 		return this.Buffs.find(buff => !buff.IsMoveSpeedLimit)?.IsMoveSpeedLimit ?? true
 	}
-
 	public get MoveSpeedBaseData(): number {
 		return this.UnitData.BaseMovementSpeed
 	}
-
 	public get MoveSpeedBase(): number {
 		return this.CalcualteBaseMoveSpeed()
 	}
-
 	public get MoveSpeedFixed(): number {
 		return this.CalculateFixedMoveSpeed()
 	}
-
 	public get MoveSpeedBonus(): number {
 		return this.CalculateBonusMoveSpeed()
 	}
-
 	public get MoveSpeedResistance(): number {
 		return this.CalcualteResistanceMoveSpeed()
 	}
-
 	public get MoveSpeedAmplifier(): number {
 		return this.CalculateMoveSpeedAmplifier()
 	}
-
 	public get Speed(): number {
 		// TODO: use for modifiers
 		// const amp = this.MoveSpeedAmplifier
@@ -419,7 +378,6 @@ export class Unit extends Entity {
 		// 	: Math.max(MoveSpeedData.Min, calculateSpeed)
 		return this.MoveSpeedTotal
 	}
-
 	/** ============================== Turn Rate ======================================= */
 	public get BaseMovementTurnRateData(): number {
 		return this.UnitData.MovementTurnRate
@@ -595,19 +553,15 @@ export class Unit extends Entity {
 	public get HasNoHealthBar(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_HEALTH_BAR)
 	}
-	//
 	public get HasNoCollision(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_UNIT_COLLISION)
 	}
-	//
 	public get IsBlind(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_BLIND)
 	}
-	//
 	public get IsTrueSightImmune(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_TRUESIGHT_IMMUNE)
 	}
-	/* ======== base ======== */
 	public get IsInFadeTime(): boolean {
 		const level = this.InvisibilityLevel
 		return level > 0 && level <= 0.5
@@ -654,9 +608,6 @@ export class Unit extends Entity {
 	public get AttackDamageAverage(): number {
 		return (this.AttackDamageMin + this.AttackDamageMax) / 2
 	}
-	public get HasArcana(): boolean {
-		return this.ArcanaLevel > 0
-	}
 	public get HasInventory(): boolean {
 		return this.UnitData.HasInventory
 	}
@@ -680,9 +631,6 @@ export class Unit extends Entity {
 			0
 		)
 	}
-	/**
-	 * IsControllable by LocalPlayer
-	 */
 	public get IsControllable(): boolean {
 		return (
 			LocalPlayer !== undefined && this.IsControllableByPlayer(LocalPlayer.PlayerID)
@@ -701,19 +649,9 @@ export class Unit extends Entity {
 	public get IsSpawned(): boolean {
 		return !this.IsWaitingToSpawn
 	}
-	/**
-	 * The percentage of MP remaining.
-	 * @description Calculates the percentage of MP remaining.
-	 * @returns {number}
-	 */
 	public get ManaPercent(): number {
 		return toPercentage(this.Mana, this.MaxMana)
 	}
-	/**
-	 * The decimal representation of the mana percentage.
-	 * @description Calculates the decimal representation of the mana percentage
-	 * @return {number}
-	 */
 	public get ManaPercentDecimal(): number {
 		return this.ManaPercent / 100
 	}
@@ -794,8 +732,16 @@ export class Unit extends Entity {
 		return this.CalcualteBonusAOERadius()
 	}
 	public get BaseStatusResistance(): number {
-		// maybe valve add new future status resistance
+		// maybe valve add new future status resist
 		return 0
+	}
+	public get MagicalDamageResist(): number {
+		const baseMagicResist = this.UnitData.MagicalResistance
+		return baseMagicResist + this.TotalIntellect * 0.1
+	}
+	public get PhysicalDamageResist(): number {
+		const armor = this.Armor
+		return (0.06 * armor) / (1 + 0.06 * Math.abs(armor))
 	}
 	public get StatusResistance(): number {
 		return this.CalculateStatusResist()
@@ -822,7 +768,6 @@ export class Unit extends Entity {
 	public get RealPosition(): Vector3 {
 		return GameState.IsInDraw ? this.VisualPosition : this.NetworkedPosition
 	}
-
 	public get Position(): Vector3 {
 		if (this.IsVisible || (this.PredictedIsWaitingToSpawn && this.IsWaitingToSpawn)) {
 			return this.RealPosition
@@ -839,31 +784,24 @@ export class Unit extends Entity {
 				0 || this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FLYING)
 		)
 	}
-
 	public get IsShield(): boolean {
 		return this.Buffs.some(buff => buff.IsShield)
 	}
-
 	public get IsFlyingVisually(): boolean {
 		return this.Buffs.some(buff => buff.ShouldDoFlyHeightVisual)
 	}
-
 	public get IsGloballyTargetable(): boolean {
 		return false
 	}
-
 	public get ShouldUnifyOrders(): boolean {
 		return true
 	}
-
 	public get HealthBarSize(): Vector2 {
 		return new Vector2(GUIInfo.ScaleHeight(78), GUIInfo.ScaleHeight(6))
 	}
-
 	public get HealthBarPositionCorrection(): Vector2 {
 		return new Vector2(this.HealthBarSize.x / 2, GUIInfo.ScaleHeight(11))
 	}
-
 	protected get AttackSpeed(): number {
 		const base = this.BaseAttackSpeed,
 			baseAs = this.BaseAttackSpeedAmplifier
@@ -880,7 +818,6 @@ export class Unit extends Entity {
 
 		return totalSpeed
 	}
-
 	protected get MoveSpeedBonusBoots(): number {
 		const sortBuffs = this.Buffs.toOrderBy(
 			// exclude 0 and boots
@@ -891,7 +828,6 @@ export class Unit extends Entity {
 		const buff = sortBuffs.find(x => x.IsBoots && x.BonusMoveSpeed !== 0)
 		return buff?.BonusMoveSpeed ?? 0
 	}
-
 	protected get MoveSpeedAmpBoots(): number {
 		const sortBuffs = this.Buffs.toOrderBy(
 			// exclude 0 and boots
@@ -902,7 +838,6 @@ export class Unit extends Entity {
 		const buff = sortBuffs.find(x => x.IsBoots && x.BonusMoveSpeedAmplifier !== 0)
 		return buff?.BonusMoveSpeedAmplifier ?? 0
 	}
-
 	public CanMove(
 		checkChanneling: boolean = true,
 		checkAbilityPhase: boolean = true
@@ -924,7 +859,6 @@ export class Unit extends Entity {
 		}
 		return this.HasMoveCapability()
 	}
-
 	public CanAttack(
 		target?: Unit,
 		checkChanneling: boolean = true,
@@ -964,14 +898,12 @@ export class Unit extends Entity {
 		}
 		return canAttack
 	}
-
 	public CanHitAttackImmune(target: Unit): boolean {
 		return (
 			!target.IsAttackImmune ||
 			(target.IsEthereal && this.HasAnyBuffByNames(Modifier.AttackThroughImmunity))
 		)
 	}
-
 	public HealthBarPosition(
 		useHpBarOffset = true,
 		overridePosition?: Vector3
@@ -995,13 +927,6 @@ export class Unit extends Entity {
 		}
 		return screenPosition.SubtractForThis(this.HealthBarPositionCorrection)
 	}
-
-	/**
-	 * @description Get the attack range of the unit.
-	 * @param {Unit} target - the target unit (optional)
-	 * @param {number} additional - additional range (optional)
-	 * @return {number}
-	 */
 	public GetAttackRange(target?: Unit, additional?: number): number {
 		const addAndHull = this.HullRadius + (target?.HullRadius ?? 0) + (additional ?? 0)
 		if (this.FixedAttackRange !== 0) {
@@ -1017,18 +942,9 @@ export class Unit extends Entity {
 		const totalBonus = Math.max(baseRange * amp, 0)
 		return (totalBonus + addAndHull) >> 0
 	}
-
 	public TexturePath(small?: boolean, team = this.Team): Nullable<string> {
 		return GetUnitTexture(this.Name, small, team)
 	}
-	/**
-	 * @description  Check if the unit is visible for enemies.
-	 * @param seconds - The duration in seconds for which the unit should be visible.
-	 * @param method - The method of checking visibility.
-	 *     - 0: Old method (default).
-	 *     - 1: Predicted method (buffs / cell / etc..).
-	 * @returns {boolean}
-	 */
 	public IsVisibleForEnemies(seconds: number = 2, method: number = 0): boolean {
 		switch (method) {
 			default:
@@ -1050,6 +966,41 @@ export class Unit extends Entity {
 				return false
 			}
 		}
+	}
+	public GetDamageAmplification(
+		_source: Unit,
+		_damageType: DAMAGE_TYPES,
+		_spellAmplify: boolean,
+		_isStolen = false,
+		_raw?: number
+	): number {
+		// if (this.IsEthereal && damageType === DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL) {
+		// 	return 0
+		// }
+
+		// let amp = 1
+		// let outAmp = 1
+
+		// const sourceBuffs = source.Buffs
+		// for (let index = sourceBuffs.length - 1; index > -1; index--) {
+		// 	const modifier = sourceBuffs[index]
+		// 	if (!modifier.DamageType.hasMask(damageType)) {
+		// 		continue
+		// 	}
+		// 	if (modifier.AmplifyDamage.hasMask(DAMAGE_AMPLIFY.DAMAGE_AMPLIFY_OUTGOING)) {
+		// 		outAmp *= 1 //+ x.AmplifierValue(source, this, mod, spellAmplify, raw, x.AmplifierDamageType)
+		// 	}
+		// }
+
+		// switch (damageType) {
+		// 	case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL:
+		// 		amp *= 1 - this.PhysicalDamageResist
+		// 		break
+		// 	case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
+		// 		amp *= 1 - this.MagicalDamageResist / 100
+		// 		break
+		// }
+		return 0
 	}
 
 	// need optimize UpdateVisibleCellsPosition or move to c++
@@ -1912,7 +1863,6 @@ export class Unit extends Entity {
 	}
 
 	/** ================================ Attack Speed ======================================= */
-
 	protected CalculateBaseAttackTime() {
 		let attackTime =
 			this.Buffs.find(x => x.FixedBaseAttackTime !== 0)?.FixedBaseAttackTime ??
@@ -2549,124 +2499,5 @@ RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, newVal) => {
 	const ent = EntityManager.EntityByIndex(unit.Spawner_)
 	if (ent instanceof NeutralSpawner) {
 		unit.Spawner = ent
-	}
-})
-
-EventsSDK.on("LocalTeamChanged", () => {
-	for (let index = Units.length - 1; index > -1; index--) {
-		const unit = Units[index]
-		unit.IsVisibleForEnemies_ = Unit.IsVisibleForEnemies(unit)
-	}
-})
-
-EventsSDK.on("PreEntityCreated", ent => {
-	if (ent instanceof Unit) {
-		ent.CanUseItems = !ent.IsIllusion
-		ent.CanUseAbilities = !ent.IsIllusion
-		ent.PredictedPosition.CopyFrom(ent.NetworkedPosition)
-		ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
-		ent.LastPredictedPositionUpdate = GameState.RawGameTime
-	}
-	if (ent instanceof NeutralSpawner) {
-		for (let index = Units.length - 1; index > -1; index--) {
-			const unit = Units[index]
-			if (ent.HandleMatches(unit.Spawner_)) {
-				unit.Spawner = ent
-			}
-		}
-	}
-
-	const owner = ent.Owner
-	if (!(owner instanceof Unit)) {
-		return
-	}
-	if (ent instanceof Item) {
-		for (let i = 0, end = owner.TotalItems_.length; i < end; i++) {
-			if (ent.HandleMatches(owner.TotalItems_[i])) {
-				owner.TotalItems[i] = ent
-				EventsSDK.emit("UnitItemsChanged", false, owner)
-				break
-			}
-		}
-	} else if (ent instanceof Ability) {
-		for (let i = 0, end = owner.Spells_.length; i < end; i++) {
-			if (ent.HandleMatches(owner.Spells_[i])) {
-				owner.Spells[i] = ent
-				EventsSDK.emit("UnitAbilitiesChanged", false, owner)
-				break
-			}
-		}
-	} else if (ent instanceof Wearable) {
-		for (let i = 0, end = owner.MyWearables_.length; i < end; i++) {
-			if (ent.HandleMatches(owner.MyWearables_[i])) {
-				owner.MyWearables.push(ent)
-				EventsSDK.emit("UnitWearablesChanged", false, owner)
-				break
-			}
-		}
-	}
-})
-
-EventsSDK.on("EntityDestroyed", ent => {
-	const owner = ent.Owner
-	if (!(owner instanceof Unit)) {
-		return
-	}
-	if (ent instanceof Item) {
-		for (let i = 0, end = owner.TotalItems.length; i < end; i++) {
-			if (ent === owner.TotalItems[i]) {
-				owner.TotalItems[i] = undefined
-				EventsSDK.emit("UnitItemsChanged", false, owner)
-				break
-			}
-		}
-	} else if (ent instanceof Ability) {
-		for (let i = 0, end = owner.Spells.length; i < end; i++) {
-			if (ent === owner.Spells[i]) {
-				owner.Spells[i] = undefined
-				EventsSDK.emit("UnitAbilitiesChanged", false, owner)
-				break
-			}
-		}
-	} else if (ent instanceof Wearable) {
-		if (owner.MyWearables.remove(ent)) {
-			EventsSDK.emit("UnitWearablesChanged", false, owner)
-		}
-	}
-})
-
-EventsSDK.on(
-	"UnitAnimation",
-	(unit, sequenceVariant, playbackRate, castpoint, _type, activity) => {
-		unit.LastActivity = activity
-		unit.LastActivitySequenceVariant = sequenceVariant
-		unit.LastActivityEndTime = GameState.RawGameTime + castpoint
-		unit.LastActivityAnimationPoint = playbackRate * castpoint
-	}
-)
-
-EventsSDK.on("Tick", dt => {
-	for (let index = Units.length - 1; index > -1; index--) {
-		const unit = Units[index]
-		unit.HPRegenCounter += unit.HPRegen * Math.min(dt, 0.1)
-		const regenAmountFloor = Math.floor(unit.HPRegenCounter)
-		unit.HPRegenCounter -= regenAmountFloor
-		if (!unit.IsVisible) {
-			unit.HP = Math.max(Math.min(unit.MaxHP, unit.HP + regenAmountFloor), 0)
-			unit.Mana = Math.max(
-				Math.min(unit.MaxMana, unit.Mana + unit.ManaRegen * Math.min(dt, 0.1)),
-				0
-			)
-		}
-		if (!unit.IsWaitingToSpawn) {
-			unit.PredictedIsWaitingToSpawn = false
-		}
-		if (unit.IsVisible) {
-			unit.PredictedPosition.CopyFrom(unit.NetworkedPosition)
-			unit.LastRealPredictedPositionUpdate = GameState.RawGameTime
-			unit.LastPredictedPositionUpdate = GameState.RawGameTime
-		}
-		unit.AnimationTime += dt * unit.PlaybackRate
-		// TODO: interpolate DeltaZ from OnModifierUpdated?
 	}
 })
