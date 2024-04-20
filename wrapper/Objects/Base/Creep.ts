@@ -16,7 +16,6 @@ export class Creep extends Unit {
 	public Lane = MapArea.Unknown
 	public PredictedIsWaitingToSpawn = true
 
-	/** @ignore */
 	constructor(
 		public readonly Index: number,
 		serial: number
@@ -93,7 +92,7 @@ EventsSDK.on("Tick", dt => {
 		return
 	}
 	const moduleGameTime = GameRules.GameTime % 30
-	const waveTime = Number(Math.abs(moduleGameTime).toFixed(1))
+	const waveTime = Math.floor(Math.abs(moduleGameTime).toNumberFixed(1))
 
 	for (let index = Creeps.length - 1; index > -1; index--) {
 		const creep = Creeps[index]

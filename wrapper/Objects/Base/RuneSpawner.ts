@@ -29,12 +29,6 @@ export class RuneSpawner extends Entity {
 		// Get the last spawn time and next spawn time
 		return [0, 0] // [lastSpawnTime, nextSpawnTime]
 	}
-	/**
-	 * Get the appearance time of a rune.
-	 * @description The appearance time in the specified format.
-	 * @param timeType - The type of time to return ("seconds" or "minutes"). Default is "minutes".
-	 * @returns {number}
-	 */
 	public MaxDuration(timeType: "seconds" | "minutes" = "minutes"): number {
 		// Get the last spawn time and next spawn time
 		const [lastSpawnTime, nextSpawnTime] = this.SpawnsTime

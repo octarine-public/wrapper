@@ -70,10 +70,6 @@ export class Rune extends Entity {
 	}
 }
 
-/**
- * @ignore
- * @internal
- */
 RegisterFieldHandler(Rune, "m_iRuneType", (rune, newVal) => {
 	rune.Type = newVal as DOTA_RUNES
 	rune.SetRuneName()

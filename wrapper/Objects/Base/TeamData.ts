@@ -75,4 +75,4 @@ RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, newValue) => {
 	}
 })
 
-Events.on("NewConnection", () => (Tree.TreeActiveMask = []))
+Events.on("NewConnection", () => Tree.TreeActiveMask.clear())
