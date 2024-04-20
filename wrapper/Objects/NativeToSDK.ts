@@ -286,6 +286,7 @@ declare class ${name} {
 			})
 			FieldHandlers.forEach((map, construct) => {
 				const map2 = CachedFieldHandlers.get(construct)!
+				map2.clear()
 				map.forEach((fieldHandler, fieldName) => {
 					const id = EntitiesSymbols.indexOf(fieldName)
 					if (id === -1) {

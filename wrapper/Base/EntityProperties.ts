@@ -1,3 +1,4 @@
+import { Events } from "../Managers/Events"
 import { EntitiesSymbols } from "../Objects/NativeToSDK"
 import { Vector2 } from "./Vector2"
 import { Vector3 } from "./Vector3"
@@ -40,6 +41,9 @@ function ConvertToStringedMap(prop: EntityPropertyType): StringEntityPropertyTyp
 export class EntityPropertiesNode {
 	private static entitiesSymbolsCached = new Map<string, number>()
 	public map = new Map<number, EntityPropertyType>()
+	public static ResetEntitySymbolCache(): void {
+		EntityPropertiesNode.entitiesSymbolsCached.clear()
+	}
 	public get(name: string): Nullable<EntityPropertyType> {
 		let cachedID = EntityPropertiesNode.entitiesSymbolsCached.get(name)
 		if (cachedID === undefined) {
@@ -62,3 +66,9 @@ export class EntityPropertiesNode {
 		return ConvertToStringedMap(this) as Map<string, StringEntityPropertyType>
 	}
 }
+
+Events.on("ServerMessage", (msgID, _buf) => {
+	if (msgID === 41) {
+		EntityPropertiesNode.ResetEntitySymbolCache()
+	}
+})

@@ -83,7 +83,6 @@ export function ReencodeProperty(
 	} else {
 		throw `Tried to cast ${typeof prop} ${prop?.constructor?.name} to string`
 	}
-
 	switch (newType) {
 		case EPropertyType.INT8:
 		case EPropertyType.INT16:

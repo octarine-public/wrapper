@@ -95,7 +95,15 @@ export class NeutralSpawnBox {
 	protected ParseStackData(stackName: string) {
 		const stack = cacheTimingData.get(this.CampName)?.get(stackName)
 		if (stack === undefined || stack instanceof Map) {
-			console.error("Error parsing stack data")
+			console.error(
+				"Error parsing stack data",
+				"stack",
+				stack,
+				"CampName",
+				this.CampName,
+				"stackName",
+				stackName
+			)
 			return "-1"
 		}
 		return stack

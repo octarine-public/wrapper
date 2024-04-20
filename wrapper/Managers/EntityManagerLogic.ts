@@ -196,6 +196,10 @@ function ParseEntityUpdate(
 		)
 		entWasCreated = true
 	}
+	let entityDump = "Parsing entity "
+	if (debugParsing) {
+		entityDump += entID + " with class " + entClass + ":\n"
+	}
 	if (ent !== undefined) {
 		ent.IsVisible = true
 		if (entWasCreated) {
@@ -211,7 +215,9 @@ function ParseEntityUpdate(
 		if (pathSize === 0) {
 			break
 		}
-
+		if (debugParsing) {
+			entityDump += "\t"
+		}
 		let propNode: EntityPropertyType = entNode
 		for (let i = 0; i < pathSize; i++) {
 			let id = stream.ReadUint16()
@@ -231,6 +237,9 @@ function ParseEntityUpdate(
 			}
 
 			if (mustBeArray) {
+				if (debugParsing) {
+					entityDump += "[" + id + "]"
+				}
 				const ar = propNode as EntityPropertyType[]
 				if (i !== pathSize - 1) {
 					if (ar[id] === undefined) {
@@ -241,8 +250,14 @@ function ParseEntityUpdate(
 					propNode = ar[id]
 				} else {
 					ar[id] = ParseProperty(stream)
+					if (debugParsing) {
+						entityDump += ": " + ar[id]
+					}
 				}
 			} else {
+				if (debugParsing) {
+					entityDump += "." + EntitiesSymbols[id]
+				}
 				const map = propNode as EntityPropertiesNode
 				let res: EntityPropertyType
 				if (i !== pathSize - 1) {
@@ -255,6 +270,9 @@ function ParseEntityUpdate(
 				} else {
 					const prop = (res = ParseProperty(stream))
 					map.set(id, prop)
+					if (debugParsing) {
+						entityDump += ": " + prop
+					}
 				}
 				if (ent !== undefined && entHandlers !== undefined) {
 					const changedPathID = changedPaths.indexOf(id)
@@ -269,9 +287,26 @@ function ParseEntityUpdate(
 				}
 			}
 		}
+		if (debugParsing) {
+			entityDump += "\n"
+		}
+	}
+	if (debugParsing) {
+		console.log(GameState.CurrentServerTick, entityDump)
 	}
 	for (let i = 0, end = changedPaths.length; i < end; i++) {
-		entHandlers!.get(changedPaths[i])!(ent!, changedPathsResults[i])
+		try {
+			entHandlers!.get(changedPaths[i])!(ent!, changedPathsResults[i])
+		} catch (e) {
+			console.error(
+				"Entity field handler failed",
+				EntitiesSymbols[changedPaths[i]],
+				ent!.ClassName,
+				ent!.constructor.name,
+				entID,
+				e
+			)
+		}
 	}
 	if (ent !== undefined && entWasCreated) {
 		ent.IsValid = true

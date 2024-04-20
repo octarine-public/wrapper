@@ -219,7 +219,7 @@ export class Player extends Entity {
  * @internal
  */
 RegisterFieldHandler(Player, "m_quickBuyItems", (player, newVal) => {
-	player.QuickBuyItems = (newVal as bigint[]).map(val => Number(val >> 1n))
+	player.QuickBuyItems = (newVal as bigint[]).map(val => Number(val) >> 1)
 })
 /**
  * @ignore
