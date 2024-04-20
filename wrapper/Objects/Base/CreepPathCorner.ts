@@ -13,7 +13,6 @@ import { GetPositionHeight } from "../../Native/WASM"
 import { EntityDataLumps, EntityDataMap } from "../../Resources/ParseEntityLump"
 import { Entity } from "./Entity"
 import { LaneCreepSpawner, LaneCreepSpawners } from "./LaneCreepSpawner"
-import { World } from "./World"
 
 @WrapperClass("CreepPathCorner")
 export class CreepPathCorner extends Entity {
@@ -296,20 +295,16 @@ EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
 	}
 })
 
-// Hack because of GetPositionHeight equals -16384 at CreepPathCorners or LaneCreepSpawners
-// ¯\_(ツ)_/¯
 function UpdatePositionHeight(entities: CreepPathCorner[] | LaneCreepSpawner[]): void {
 	for (let index = entities.length - 1; index > -1; index--) {
 		const entity = entities[index]
-		const height = GetPositionHeight(entity.OriginPosition)
-		entity.VisualPosition.SetZ(height)
-		entity.NetworkedPosition.SetZ(height)
+		entity.NetworkedPosition.SetZ(GetPositionHeight(entity.NetworkedPosition))
+		entity.VisualPosition.SetZ(entity.NetworkedPosition.z)
+		entity.OriginPosition.SetZ(entity.NetworkedPosition.z)
 	}
 }
 
-EventsSDK.on("PreEntityCreated", ent => {
-	if (ent instanceof World) {
-		UpdatePositionHeight(CreepPathCorners)
-		UpdatePositionHeight(LaneCreepSpawners)
-	}
+EventsSDK.on("WorldLayersVisibilityChanged", () => {
+	UpdatePositionHeight(CreepPathCorners)
+	UpdatePositionHeight(LaneCreepSpawners)
 })

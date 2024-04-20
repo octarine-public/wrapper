@@ -134,3 +134,11 @@ EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
 		EventsSDK.emit("EntityCreated", false, entity)
 	}
 })
+
+EventsSDK.on("WorldLayersVisibilityChanged", () => {
+	for (let index = Trees.length - 1; index > -1; index--) {
+		const ent = Trees[index]
+		ent.NetworkedPosition.SetZ(GetPositionHeight(ent.NetworkedPosition))
+		ent.VisualPosition.SetZ(ent.NetworkedPosition.z)
+	}
+})

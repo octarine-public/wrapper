@@ -479,6 +479,11 @@ interface EventsSDK extends EventEmitter {
 		priority?: number
 	): EventEmitter
 	on(
+		name: "WorldLayersVisibilityChanged",
+		listener: () => void,
+		priority?: number
+	): EventEmitter
+	on(
 		name: "MenuConfigChanged",
 		listener: (obj: { [key: string]: any }) => void,
 		priority?: number

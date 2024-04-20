@@ -26,9 +26,11 @@ Events.on("NewConnection", () => {
 EventsSDK.after("MapDataLoaded", () => {
 	visibleLayers.add("world_layer_base")
 	EventsSDK.emit("WorldLayerVisibilityChanged", false, "world_layer_base", true)
+	EventsSDK.emit("WorldLayersVisibilityChanged", false)
 })
 
 EventsSDK.on("PostDataUpdate", () => {
+	let changed = false
 	for (let index = WorldLayers.length - 1; index > -1; index--) {
 		const worldLayer = WorldLayers[index]
 		if (worldLayer.WorldLayerVisible === visibleLayers.has(worldLayer.LayerName)) {
@@ -45,11 +47,15 @@ EventsSDK.on("PostDataUpdate", () => {
 			worldLayer.LayerName,
 			worldLayer.WorldLayerVisible
 		)
+		changed = true
+	}
+	if (changed) {
+		EventsSDK.emit("WorldLayersVisibilityChanged", false)
 	}
 })
 EventsSDK.on("EntityDestroyed", ent => {
 	if (ent instanceof WorldLayer) {
-		if (ent.WorldLayerVisible === visibleLayers.has(ent.LayerName)) {
+		if (!visibleLayers.has(ent.LayerName)) {
 			return
 		}
 		visibleLayers.delete(ent.LayerName)
