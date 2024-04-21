@@ -8,15 +8,8 @@ import { RegisterFieldHandler } from "../NativeToSDK"
 
 @WrapperClass("CDOTA_BaseNPC_Tower")
 export class Tower extends Building {
-	/**
-	 * @ignore
-	 * @internal
-	 */
 	public TowerAttackTarget_: number = 16777215 // default by networked field
-	/**
-	 * @ignore
-	 * @internal
-	 */
+
 	constructor(
 		public readonly Index: number,
 		serial: number

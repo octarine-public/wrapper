@@ -91,9 +91,8 @@ EventsSDK.on("Tick", dt => {
 	if (localTeam !== Team.Dire && localTeam !== Team.Radiant) {
 		return
 	}
-	const moduleGameTime = GameRules.GameTime % 30
-	const waveTime = Math.floor(Math.abs(moduleGameTime).toNumberFixed(1))
 
+	const waveTime = Math.abs(GameRules.GameTime % 30)
 	for (let index = Creeps.length - 1; index > -1; index--) {
 		const creep = Creeps[index]
 		if (creep.IsNeutral || creep.Owner !== undefined) {
@@ -110,7 +109,7 @@ EventsSDK.on("Tick", dt => {
 			continue
 		}
 
-		if (waveTime <= 0) {
+		if (waveTime <= dt) {
 			creep.PredictedIsWaitingToSpawn = false
 		} else if (!creep.IsSpawned && creep.PredictedIsWaitingToSpawn) {
 			continue
