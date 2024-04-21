@@ -6,6 +6,7 @@ import { Unit, Units } from "../../Objects/Base/Unit"
 import { Wearable } from "../../Objects/Base/Wearable"
 import { GameState } from "../../Utils/GameState"
 import { EventsSDK } from "../EventsSDK"
+import { Prediction } from "../Prediction/Prediction"
 
 const Monitor = new (class CPreUnitChanged {
 	public Tick(dt: number) {
@@ -41,12 +42,12 @@ const Monitor = new (class CPreUnitChanged {
 
 	public PreEntityCreated(entity: Entity) {
 		switch (true) {
-			case entity instanceof Item:
-				this.itemChanged(entity)
-				break
-			case entity instanceof Ability:
-				this.spellChanged(entity)
-				break
+			// case entity instanceof Item: // owner undefined set in EntityCreated
+			// 	this.itemChanged(entity)
+			// 	break
+			// case entity instanceof Ability: // owner undefined set in EntityCreated
+			// 	this.spellChanged(entity)
+			// 	break
 			case entity instanceof Unit:
 				this.unitChanged(entity)
 				break
@@ -55,6 +56,17 @@ const Monitor = new (class CPreUnitChanged {
 				break
 			case entity instanceof NeutralSpawner:
 				this.unitSpawnerChanged(entity)
+				break
+		}
+	}
+
+	public EntityCreated(entity: Entity) {
+		switch (true) {
+			case entity instanceof Item:
+				this.itemChanged(entity)
+				break
+			case entity instanceof Ability:
+				this.spellChanged(entity)
 				break
 		}
 	}
@@ -104,29 +116,27 @@ const Monitor = new (class CPreUnitChanged {
 		if (entity.IsItem) {
 			return
 		}
-		const owner = entity.Owner
-		if (!(owner instanceof Unit)) {
-			return
-		}
-		for (let i = 0, end = owner.Spells_.length; i < end; i++) {
-			if (entity.HandleMatches(owner.Spells_[i])) {
-				owner.Spells[i] = entity
-				EventsSDK.emit("UnitAbilitiesChanged", false, owner)
-				break
+		for (let index = Units.length - 1; index > -1; index--) {
+			const unit = Units[index]
+			for (let i = 0, end = unit.Spells_.length; i < end; i++) {
+				if (entity.HandleMatches(unit.Spells_[i])) {
+					this.setNewProperty(entity, unit, i)
+					EventsSDK.emit("UnitAbilitiesChanged", false, unit)
+					break
+				}
 			}
 		}
 	}
 
 	private itemChanged(entity: Item) {
-		const owner = entity.Owner
-		if (!(owner instanceof Unit)) {
-			return
-		}
-		for (let i = 0, end = owner.TotalItems_.length; i < end; i++) {
-			if (entity.HandleMatches(owner.TotalItems_[i])) {
-				owner.TotalItems[i] = entity
-				EventsSDK.emit("UnitItemsChanged", false, owner)
-				break
+		for (let index = Units.length - 1; index > -1; index--) {
+			const unit = Units[index]
+			for (let i = 0, end = unit.TotalItems_.length; i < end; i++) {
+				if (entity.HandleMatches(unit.TotalItems_[i])) {
+					this.setNewProperty(entity, unit, i)
+					EventsSDK.emit("UnitItemsChanged", false, unit)
+					break
+				}
 			}
 		}
 	}
@@ -223,15 +233,32 @@ const Monitor = new (class CPreUnitChanged {
 			}
 		}
 	}
+
+	// hack workaround owner abilities
+	private setNewProperty(entity: Item | Ability, unit: Unit, arrIndex: number) {
+		entity.Owner_ = unit.Handle
+		entity.OwnerEntity = unit
+		entity.Prediction = new Prediction() as any // TODO
+		if (!(entity instanceof Item)) {
+			unit.Spells[arrIndex] = entity
+			entity.AbilitySlot = arrIndex
+			return
+		}
+		entity.ItemSlot = arrIndex
+		unit.TotalItems[arrIndex] = entity
+	}
 })()
 
 EventsSDK.on("Tick", dt => Monitor.Tick(dt))
+
+EventsSDK.on("LocalTeamChanged", () => Monitor.LocalTeamChanged())
 
 EventsSDK.on("EntityDestroyed", ent => Monitor.EntityDestroyed(ent))
 
 EventsSDK.on("PreEntityCreated", ent => Monitor.PreEntityCreated(ent))
 
-EventsSDK.on("LocalTeamChanged", () => Monitor.LocalTeamChanged())
+// workaround owner abilities
+EventsSDK.on("EntityCreated", ent => Monitor.EntityCreated(ent), Number.MIN_SAFE_INTEGER)
 
 EventsSDK.on(
 	"UnitAnimation",

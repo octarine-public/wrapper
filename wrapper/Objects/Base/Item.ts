@@ -1,13 +1,11 @@
 import { GetItemTexture } from "../../Data/ImageData"
-import { NetworkedBasicField, ReencodeProperty, WrapperClass } from "../../Decorators"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAScriptInventorySlot } from "../../Enums/DOTAScriptInventorySlot"
 import { EShareAbility } from "../../Enums/EShareAbility"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { GameState } from "../../Utils/GameState"
-import { RegisterFieldHandler } from "../NativeToSDK"
 import { Ability } from "./Ability"
-import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_Item")
 export class Item extends Ability {
@@ -49,12 +47,8 @@ export class Item extends Ability {
 	public IsSellable: boolean = true
 	@NetworkedBasicField("m_bStackable")
 	public IsStackable: boolean = false
+	@NetworkedBasicField("m_iPlayerOwnerID", EPropertyType.INT32)
 	public PlayerOwnerID: number = -1
-	/**
-	 * @description Returns the player owner ID of the item.
-	 * @deprecated Use Item#PlayerOwnerID
-	 */
-	public PurchaserID: number = -1
 	@NetworkedBasicField("m_flPurchaseTime")
 	public PurchaseTime: number = 0
 	@NetworkedBasicField("m_iSecondaryCharges")
@@ -63,16 +57,11 @@ export class Item extends Ability {
 	public IsNeutralDrop: boolean = false
 	@NetworkedBasicField("m_iCurrentCharges")
 	public ItemCurrentCharges: number = 0
-
-	/**
-	 * @description The slot the item is in
-	 */
 	public ItemSlot = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1
-	/**
-	 * @description The purchaser of the item.
-	 */
-	public Purchaser: Nullable<Unit>
 
+	public get Purchaser() {
+		return PlayerCustomData.get(this.PlayerOwnerID)?.Hero
+	}
 	public get TexturePath(): string {
 		return GetItemTexture(this.Name)
 	}
@@ -194,9 +183,3 @@ export class Item extends Ability {
 		)
 	}
 }
-
-RegisterFieldHandler(Item, "m_iPlayerOwnerID", (item, newVal) => {
-	item.PlayerOwnerID = ReencodeProperty(newVal, EPropertyType.INT32) as number
-	item.PurchaserID = item.PlayerOwnerID
-	item.Purchaser = PlayerCustomData.get(item.PlayerOwnerID)?.Hero
-})

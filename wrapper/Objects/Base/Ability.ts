@@ -11,7 +11,7 @@ import { EAbilitySlot } from "../../Enums/EAbilitySlot"
 import { Flow } from "../../Enums/Flow"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { EventsSDK } from "../../Managers/EventsSDK"
-import { Prediction } from "../../Managers/Prediction/Prediction"
+import { IPrediction } from "../../Managers/Prediction/IPrediction"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GameState } from "../../Utils/GameState"
@@ -23,23 +23,6 @@ import { Unit } from "./Unit"
 @WrapperClass("CDOTABaseAbility")
 export class Ability extends Entity {
 	public readonly AbilityData: AbilityData
-	/**
-	 * @readonly
-	 * @description The level of the ability
-	 */
-	public Level = 0
-	/**
-	 * @readonly
-	 * @description Whether the ability is empty
-	 */
-	public IsEmpty = false
-	/**
-	 * @readonly
-	 * @description The slot the ability is in
-	 * @returns {EAbilitySlot}
-	 */
-	public AbilitySlot = EAbilitySlot.DOTA_SPELL_SLOT_1
-
 	@NetworkedBasicField("m_bInIndefiniteCooldown")
 	public IsInIndefiniteCooldown = false
 	@NetworkedBasicField("m_nMaxLevelOverride")
@@ -75,14 +58,20 @@ export class Ability extends Entity {
 	public AbilityCurrentCharges = 0
 	@NetworkedBasicField("m_iDirtyButtons")
 	public DirtyButtons = 0
+
+	public Level = 0
+	public IsEmpty = false
+	public IsSpellAmplify = true
 	public AbilityChargeRestoreTimeRemaining = 0
+	public AbilitySlot = EAbilitySlot.DOTA_SPELL_SLOT_1
 
 	public Cooldown_ = 0
 	public CooldownChangeTime = 0
 	public CooldownRestore_ = 0
 	public CooldownRestoreTime = 0
 
-	public Prediction: Nullable<Prediction>
+	public Prediction: Nullable<IPrediction>
+
 	/**@deprecated */
 	public readonly ProjectilePath: Nullable<string>
 
@@ -447,8 +436,25 @@ export class Ability extends Entity {
 		return speed > 0 ? owner.Distance2D(unit) / speed + delay : delay
 	}
 
-	public GetDamage(_target: Unit, _manaCost?: number) {
-		/** @TODO */
+	public GetRawDamage(target: Unit, _health?: number) {
+		return !this.IsDebuffImmune(target) ? this.AbilityDamage : 0
+	}
+
+	public GetDamage(target: Unit, _manaCost?: number) {
+		const owner = this.Owner
+		if (owner === undefined) {
+			return 0
+		}
+		const rawDamage = this.GetRawDamage(target, target.HP),
+			amplification = target.GetDamageAmplification(
+				owner,
+				this.DamageType,
+				this.IsSpellAmplify,
+				this.IsStolen,
+				rawDamage
+			)
+		// TODO: damage block, ex. rune shield etc
+		return rawDamage * amplification
 	}
 
 	public UseAbility(
@@ -532,6 +538,13 @@ export class Ability extends Entity {
 	}
 	public IsDoubleTap(_order: ExecuteOrder): boolean {
 		return false
+	}
+
+	protected IsDebuffImmune(target?: Unit): boolean {
+		return (
+			(target?.IsDebuffImmune ?? false) &&
+			this.DamageType === DAMAGE_TYPES.DAMAGE_TYPE_PURE
+		)
 	}
 }
 

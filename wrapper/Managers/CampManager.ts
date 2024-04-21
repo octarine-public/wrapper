@@ -183,14 +183,14 @@ export class NeutralSpawnerBox {
 		if (entity instanceof Creep) {
 			this.Creeps.remove(entity)
 		}
+		if (entity instanceof Unit) {
+			this.Attackers.remove(entity)
+		}
 		if (entity instanceof NeutralSpawner) {
 			this.Creeps.clear()
 			this.Attackers.clear()
 			this.Sleeper.FullReset()
 			NeutralSpawners.remove(this)
-		}
-		if (entity instanceof Unit) {
-			this.Attackers.remove(entity)
 		}
 	}
 
@@ -421,13 +421,13 @@ EventsSDK.on(
 )
 
 EventsSDK.on(
-	"EntityDestroyed",
-	ent => Monitor.EntityDestroyed(ent),
+	"LifeStateChanged",
+	entity => Monitor.LifeStateChanged(entity),
 	Number.MIN_SAFE_INTEGER
 )
 
 EventsSDK.on(
-	"LifeStateChanged",
-	entity => Monitor.LifeStateChanged(entity),
+	"EntityDestroyed",
+	ent => Monitor.EntityDestroyed(ent),
 	Number.MIN_SAFE_INTEGER
 )

@@ -20,7 +20,7 @@ const Monitor = new (class CUnitAttackChanged {
 	]
 
 	private readonly attackSleeper = new GameSleeper()
-	private readonly targetIndices = new Map<Unit, number>()
+	private readonly heroGainAggroTargetIndex = new Map<Unit, number>()
 
 	public GameEnded() {
 		this.attackSleeper.FullReset()
@@ -29,14 +29,14 @@ const Monitor = new (class CUnitAttackChanged {
 	public LifeStateChanged(entity: Entity) {
 		if (entity instanceof Unit) {
 			this.attackStopped(entity)
-			this.targetIndices.delete(entity)
+			this.heroGainAggroTargetIndex.delete(entity)
 		}
 	}
 
 	public EntityDestroyed(entity: Entity) {
 		if (entity instanceof Unit) {
 			this.attackStopped(entity)
-			this.targetIndices.delete(entity)
+			this.heroGainAggroTargetIndex.delete(entity)
 		}
 	}
 
@@ -74,7 +74,7 @@ const Monitor = new (class CUnitAttackChanged {
 		source: Unit,
 		seqVar?: number,
 		activity?: GameActivity,
-		castPoint = 0
+		attackPoint = 0
 	) {
 		if (
 			seqVar === undefined ||
@@ -86,18 +86,21 @@ const Monitor = new (class CUnitAttackChanged {
 		}
 		const animationID = source.GetAnimationID(activity, seqVar)
 		if (animationID === undefined) {
-			this.attackStopped(source)
-			this.handlerErrorMessage("Failed to get animation ID")
+			this.handlerErrorMessage("animation ID", source, activity, seqVar)
+			this.attackStopped(source, true)
 			return
 		}
 		const animation = source.Animations[animationID]
 		if (animation === undefined) {
-			this.attackStopped(source)
-			this.handlerErrorMessage("Failed to get animation data")
+			this.handlerErrorMessage("animation AnimationsData", source, activity, seqVar)
+			this.attackStopped(source, true)
 			return
 		}
-		const animationNames = animation.activities.map(activityData => activityData.name)
-		this.attackStarted(source, castPoint, animationNames)
+		this.attackStarted(
+			source,
+			attackPoint,
+			animation.activities.map(activityData => activityData.name)
+		)
 	}
 
 	public GameEvent(name: string, obj: any) {
@@ -109,47 +112,43 @@ const Monitor = new (class CUnitAttackChanged {
 			return
 		}
 		if (attacker.IsValid && !attacker.IsAttacking) {
-			this.targetIndices.set(attacker, obj.entindex_hero)
+			this.heroGainAggroTargetIndex.set(attacker, obj.entindex_hero)
 		}
 	}
 
-	private attackStarted(source: Unit, castPoint: number, animationNames: string[]) {
+	private attackStarted(source: Unit, attackPoint: number, animationNames: string[]) {
 		if (!source.IsAlive) {
 			return
 		}
-
 		if (!source.IsControllable && !source.IsTower) {
 			source.TargetIndex_ = this.findTarget(source)
 		}
-
 		if (source instanceof Tower) {
 			source.TargetIndex_ = source.TowerAttackTarget_
+		} else {
+			source.IsAttacking = true
 		}
-
-		source.IsAttacking = true
-
 		if (source.IsControllable && source.TargetIndex_ === -1) {
 			source.TargetIndex_ = this.findTarget(source)
 		}
-
 		if (this.attackSleeper.Sleeping(source.Index)) {
 			EventsSDK.emit("AttackEnded", false, source)
 			this.attackSleeper.ResetKey(source.Index)
 		}
-
-		const delay = Math.ceil(castPoint * 30) / 30
+		// TODO: use source.AtackRate?
+		const delay = Math.ceil(attackPoint * 30) / 30
 		this.attackSleeper.Sleep(delay * 1000, source.Index)
-		EventsSDK.emit("AttackStarted", false, source, castPoint, animationNames)
+		EventsSDK.emit("AttackStarted", false, source, attackPoint, animationNames)
 	}
 
-	private attackStopped(source: Unit) {
-		if (!this.attackSleeper.Sleeping(source.Index)) {
+	private attackStopped(source: Unit, stoppedByError = false) {
+		if (!this.attackSleeper.Sleeping(source.Index) && !stoppedByError) {
 			return
 		}
 		source.TargetIndex_ = -1
 		source.IsAttacking = false
-		this.targetIndices.delete(source)
 		this.attackSleeper.ResetKey(source.Index)
+		this.heroGainAggroTargetIndex.delete(source)
 		EventsSDK.emit("AttackEnded", false, source)
 	}
 
@@ -171,11 +170,10 @@ const Monitor = new (class CUnitAttackChanged {
 	}
 
 	private findTarget(source: Unit) {
-		const targetIndex = this.targetIndices.get(source)
+		const targetIndex = this.heroGainAggroTargetIndex.get(source)
 		if (targetIndex !== undefined) {
 			return targetIndex
 		}
-
 		const newUnits = Units.filter(
 			x =>
 				x.IsAlive &&
@@ -187,10 +185,28 @@ const Monitor = new (class CUnitAttackChanged {
 		return newUnits.find(x => source.GetAngle(x) < 0.35)?.Index ?? -1
 	}
 
-	private handlerErrorMessage(...args: any[]) {
-		if (this.HasDebug) {
-			console.error(...args)
+	private handlerErrorMessage(
+		name: string,
+		source: Unit,
+		activity: GameActivity,
+		seqVar: number
+	) {
+		if (!this.HasDebug) {
+			return
 		}
+		console.error(
+			`Failed to get ${name}\n`,
+			`ClassName: ${source.ClassName}\n`,
+			`IsAlive: ${source.IsAlive}\n`,
+			`Activity: ${activity}\n`,
+			`SequenceVariant: ${seqVar}\n`,
+			`ModelName: ${source.ModelName}\n`,
+			`PlaybackRate: ${source.PlaybackRate}\n`,
+			`AnimationTime: ${source.AnimationTime}\n`,
+			`NetworkSequenceIndex: ${source.NetworkSequenceIndex}\n`,
+			`TargetIndex: ${source.TargetIndex_}\n`,
+			`TargetName: ${source.Target?.Name}\n`
+		)
 	}
 })()
 
@@ -208,8 +224,8 @@ EventsSDK.on(
 
 EventsSDK.on(
 	"UnitAnimation",
-	(source, seqVar, _playbackrate, castPoint, _type, activity, _lagCompensationTime) =>
-		Monitor.UnitAnimation(source, seqVar, activity, castPoint),
+	(source, seqVar, _playbackrate, attackPoint, _type, activity, _lagCompensationTime) =>
+		Monitor.UnitAnimation(source, seqVar, activity, attackPoint),
 	Number.MIN_SAFE_INTEGER
 )
 

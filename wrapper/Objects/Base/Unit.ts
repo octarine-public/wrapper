@@ -66,11 +66,6 @@ export class Unit extends Entity {
 		}
 		return false
 	}
-	/**
-	 * @description The target angle of the unit, NOTE: need test only local hero?
-	 */
-	@NetworkedBasicField("m_nTargetAngle")
-	public TargetAngle = 0
 	@NetworkedBasicField("m_flHealthThinkRegen")
 	public HPRegen = 0
 	@NetworkedBasicField("m_flManaThinkRegen")
@@ -147,7 +142,7 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_nHealthBarOffsetOverride")
 	public HealthBarOffsetOverride = 0
 	public HealthBarOffset_: Nullable<number>
-
+	public Parity = 0
 	public Agility = 0
 	public Intellect = 0
 	public Strength = 0
@@ -1001,6 +996,14 @@ export class Unit extends Entity {
 		// 		break
 		// }
 		return 0
+	}
+
+	// TODO: damage
+	public GetDamageBlockers(): Modifier[] {
+		// for (let index = this.Buffs.length - 1; index > -1; index--) {
+		// 	const buff = this.Buffs[index]
+		// }
+		return []
 	}
 
 	// need optimize UpdateVisibleCellsPosition or move to c++
@@ -2500,4 +2503,8 @@ RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, newVal) => {
 	if (ent instanceof NeutralSpawner) {
 		unit.Spawner = ent
 	}
+})
+RegisterFieldHandler(Unit, "m_iParity", (unit, newVal) => {
+	EventsSDK.emit("UnitParityChanged", false, unit.Parity, newVal as number)
+	unit.Parity = newVal as number
 })

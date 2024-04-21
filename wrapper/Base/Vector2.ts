@@ -718,6 +718,10 @@ export class Vector2 {
 		return this.MultiplyScalar(Math.PI).DivideScalar(180)
 	}
 
+	public Lerp(target: Vector2, amount: number): Vector2 {
+		return this.Add(target.Subtract(this).MultiplyScalar(amount))
+	}
+
 	/**
 	 * @return [x, y, z]
 	 */

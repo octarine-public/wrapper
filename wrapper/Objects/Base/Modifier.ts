@@ -542,7 +542,7 @@ export class Modifier {
 		}
 		return abil.GetSpecialValue(specialName, level)
 	}
-	/** ======================= Damage Reduction ======================= */
+	/** ======================= Absorb Damage ======================= */
 	protected SetAbsorbDamage(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return

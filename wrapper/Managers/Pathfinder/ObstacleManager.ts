@@ -119,14 +119,11 @@ export class ObstacleManager {
 		if (flying) {
 			return false
 		}
-		if (
+		return (
 			flags.hasBit(GridNavCellFlags.Tree) ||
 			!flags.hasBit(GridNavCellFlags.Walkable) ||
 			flags.hasBit(GridNavCellFlags.MovementBlocker)
-		) {
-			return true
-		}
-		return false
+		)
 	}
 
 	private isLine(

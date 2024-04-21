@@ -103,6 +103,7 @@ export {
 	PARTICLE_RENDER_NAME,
 	ParticlesSDK
 } from "./Managers/ParticleManager"
+export { PathfinderSDK } from "./Managers/PathfinderSDK"
 export { ProjectileManager } from "./Managers/ProjectileManager"
 export * as Menu from "./Menu/index"
 export { ConVarsSDK } from "./Native/ConVarsSDK"
@@ -1595,13 +1596,13 @@ export { npc_dota_techies_minefield_sign } from "./Objects/Units/npc_dota_techie
 export { npc_dota_templar_assassin_psionic_trap } from "./Objects/Units/npc_dota_templar_assassin_psionic_trap"
 export { npc_dota_treant_eyes } from "./Objects/Units/npc_dota_treant_eyes"
 export { npc_dota_unit_roshans_banner } from "./Objects/Units/npc_dota_unit_roshans_banner"
+export { npc_dota_unit_tidehunter_anchor } from "./Objects/Units/npc_dota_unit_tidehunter_anchor"
 export { npc_dota_unit_undying_tombstone } from "./Objects/Units/npc_dota_unit_undying_tombstone"
 export { npc_dota_venomancer_plagueward } from "./Objects/Units/npc_dota_venomancer_plagueward"
 export { npc_dota_wisp_spirit } from "./Objects/Units/npc_dota_wisp_spirit"
 export { npc_dota_zeus_cloud } from "./Objects/Units/npc_dota_zeus_cloud"
 export { Roshan } from "./Objects/Units/Roshan"
 export { SpiritBear } from "./Objects/Units/SpiritBear"
-export { PathfinderSDK } from "./Managers/PathfinderSDK"
 export { EntityDataLumps } from "./Resources/ParseEntityLump"
 export { GridNav } from "./Resources/ParseGNV"
 export * as ParseUtils from "./Resources/ParseUtils"

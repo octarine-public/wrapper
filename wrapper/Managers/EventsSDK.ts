@@ -352,6 +352,11 @@ interface EventsSDK extends EventEmitter {
 		priority?: number
 	): EventEmitter
 	on(
+		name: "UnitParityChanged",
+		listener: (oldValue: number, newValue: number) => void,
+		priority?: number
+	): EventEmitter
+	on(
 		name: "ServerTick",
 		listener: (
 			tick: number,
