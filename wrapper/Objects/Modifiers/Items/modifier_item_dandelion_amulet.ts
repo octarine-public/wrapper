@@ -31,7 +31,7 @@ export class modifier_item_dandelion_amulet extends Modifier {
 		super.SetBonusMoveSpeed(specialName, subtract)
 	}
 
-	protected SetAbsorbDamage(specialName = "magic_damage_block", _subtract = false) {
+	protected SetAbsorbDamage(specialName = "magic_block", _subtract = false) {
 		const abil = this.Ability
 		if (abil === undefined || !abil.CanBeCasted()) {
 			this.AbsorbDamage = 0
