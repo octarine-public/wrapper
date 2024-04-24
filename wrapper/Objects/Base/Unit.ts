@@ -183,6 +183,8 @@ export class Unit extends Entity {
 
 	public AttackTimeAtLastTick = 0
 	public AttackTimeLostToLastTick = 0
+	public LastPredictedPositionUpdate = 0
+	public LastRealPredictedPositionUpdate = 0
 
 	/**
 	 * @description added for compatibility (icore)
@@ -229,8 +231,6 @@ export class Unit extends Entity {
 	public OwnerNPC_: number = 0
 	public OwnerNPC: Nullable<Unit> = undefined
 
-	public TPStartTime = -1
-
 	public TargetIndex_: number = -1
 	public IsIllusion_: boolean = false
 
@@ -246,23 +246,13 @@ export class Unit extends Entity {
 	public readonly Spells = new Array<Nullable<Ability>>(MAX_SPELLS).fill(undefined)
 	public readonly TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
 	public readonly TotalItems = new Array<Nullable<Item>>(MAX_ITEMS).fill(undefined)
-
 	public readonly PredictedPosition = new Vector3().Invalidate()
-	public readonly TPStartPosition = new Vector3().Invalidate()
-	public readonly TPEndPosition = new Vector3().Invalidate()
-	public readonly LastTPStartPosition = new Vector3().Invalidate()
-	public readonly LastTPEndPosition = new Vector3().Invalidate()
 
 	/**
 	 * @description added for compatibility (icore)
 	 * @deprecated
 	 */
 	public readonly FogVisiblePosition = new Vector3().Invalidate()
-
-	private LastPredictedPositionUpdate_ = 0
-	private LastRealPredictedPositionUpdate_ = 0
-
-	// private cellPositions: Vector2[] = []
 
 	public get TotalIntellect() {
 		return !this.HasBuffByName("modifier_ogre_magi_dumb_luck")
@@ -455,28 +445,6 @@ export class Unit extends Entity {
 			bonusTurnRate = this.BonusMovementTurnRate,
 			baseTurnRate = this.BaseTurnRate
 		return Math.max(baseTurnRate + bonusTurnRate * amp, 0)
-	}
-
-	public get LastRealPredictedPositionUpdate(): number {
-		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
-			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime
-		}
-		return this.LastRealPredictedPositionUpdate_
-	}
-
-	public set LastRealPredictedPositionUpdate(val: number) {
-		this.LastRealPredictedPositionUpdate_ = val
-	}
-
-	public get LastPredictedPositionUpdate(): number {
-		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
-			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime
-		}
-		return this.LastPredictedPositionUpdate_
-	}
-
-	public set LastPredictedPositionUpdate(val: number) {
-		this.LastPredictedPositionUpdate_ = val
 	}
 	/**
 	 * Returns a boolean value indicating if the Unit is a clone.
@@ -820,9 +788,6 @@ export class Unit extends Entity {
 		if (this.IsVisible || (this.PredictedIsWaitingToSpawn && this.IsWaitingToSpawn)) {
 			return this.RealPosition
 		}
-		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
-			return this.TPStartPosition
-		}
 		return this.PredictedPosition
 	}
 	public get HasFlyingVision(): boolean {
@@ -1108,18 +1073,6 @@ export class Unit extends Entity {
 		// }
 		return []
 	}
-
-	// need optimize UpdateVisibleCellsPosition or move to c++
-	// public UpdatePositions(parentTransform?: Matrix3x4) {
-	// 	super.UpdatePositions(parentTransform)
-	// 	GridNav?.UpdateVisibleCellsPosition(
-	// 		this.Position,
-	// 		this.Vision,
-	// 		this.IsFlyingVisually || this.HasFlyingVision,
-	// 		this.cellPositions
-	// 	)
-	// }
-
 	public VelocityWaypoint(time: number, movespeed: number): Vector3 {
 		return this.InFront(movespeed * time)
 	}
@@ -2630,6 +2583,12 @@ function UnitNameChanged(unit: Unit) {
 	unit.UnitData = UnitData.globalStorage.get(unit.Name) ?? UnitData.empty
 }
 
+function UpdateModifiersByUnitState(unit: Unit) {
+	for (let index = unit.Buffs.length - 1; index > -1; index--) {
+		unit.Buffs[index].OnUnitStateChaged()
+	}
+}
+
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, newVal) => {
 	const oldName = unit.Name
 	const newValue = newVal as number
@@ -2662,9 +2621,7 @@ RegisterFieldHandler(Unit, "m_nUnitState64", (unit, newVal) => {
 	const oldValue = unit.UnitStateNetworked
 	if (oldValue !== newVal) {
 		unit.UnitStateNetworked = ReencodeProperty(newVal, EPropertyType.UINT64) as bigint
-		for (let index = unit.Buffs.length - 1; index > -1; index--) {
-			unit.Buffs[index].OnUnitStateChaged()
-		}
+		UpdateModifiersByUnitState(unit)
 		EventsSDK.emit("UnitStateChanged", false, unit)
 	}
 })
@@ -2741,7 +2698,10 @@ RegisterFieldHandler(Unit, "m_hMyWearables", (unit, newVal) => {
 	).filter(ent => ent !== undefined) as Wearable[]
 })
 RegisterFieldHandler(Unit, "m_anglediff", (unit, newVal) => {
-	unit.RotationDifference = newVal as number
+	const oldValue = unit.RotationDifference
+	if (oldValue !== newVal) {
+		unit.RotationDifference = newVal as number
+	}
 })
 RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, newVal) => {
 	unit.Spawner_ = newVal as number

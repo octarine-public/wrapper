@@ -1,4 +1,5 @@
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
+import { EventPriority } from "../../Enums/EventPriority"
 import { GameActivity } from "../../Enums/GameActivity"
 import { GameSleeper } from "../../Helpers/Sleeper"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
@@ -210,40 +211,40 @@ const Monitor = new (class CUnitAttackChanged {
 EventsSDK.on(
 	"PrepareUnitOrders",
 	order => Monitor.PrepareUnitOrders(order),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
 EventsSDK.on(
 	"UnitAnimationEnd",
 	(unit, _) => Monitor.UnitAnimation(unit),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
 EventsSDK.on(
 	"UnitAnimation",
 	(source, seqVar, _playbackrate, attackPoint, _type, activity, _lagCompensationTime) =>
 		Monitor.UnitAnimation(source, seqVar, activity, attackPoint),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
 EventsSDK.on(
 	"NetworkActivityChanged",
 	unit => Monitor.NetworkActivityChanged(unit),
-	Number.MIN_SAFE_INTEGER
-)
-
-EventsSDK.on(
-	"GameEvent",
-	(name, obj) => Monitor.GameEvent(name, obj),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
 EventsSDK.on(
 	"LifeStateChanged",
 	entity => Monitor.LifeStateChanged(entity),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
-EventsSDK.on("GameEnded", () => Monitor.GameEnded(), Number.MIN_SAFE_INTEGER)
-
 EventsSDK.on("EntityDestroyed", entity => Monitor.EntityDestroyed(entity))
+
+EventsSDK.on("GameEnded", () => Monitor.GameEnded(), EventPriority.IMMEDIATE)
+
+EventsSDK.on(
+	"GameEvent",
+	(name, obj) => Monitor.GameEvent(name, obj),
+	EventPriority.IMMEDIATE
+)

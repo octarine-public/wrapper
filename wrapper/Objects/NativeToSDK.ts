@@ -23,34 +23,6 @@ export function RegisterClassModifier(name: string, constructor: Constructor<Mod
 	ModifierSDKClass.set(name, constructor)
 }
 
-function RegisterClassInternal(constructor: Constructor<Entity>) {
-	const prototype = constructor.prototype
-	if (!ClassToEntities.has(constructor)) {
-		const ar: Entity[][] = [[]]
-		ClassToEntities.set(constructor, ar[0])
-		for (let i = 0, end = SDKClasses.length; i < end; i++) {
-			const [constr, entitiesAr] = SDKClasses[i]
-			if (prototype instanceof constr) {
-				ar.push(entitiesAr)
-			}
-		}
-		ClassToEntitiesAr.set(constructor, ar)
-	}
-	if (!CachedFieldHandlers.has(constructor)) {
-		CachedFieldHandlers.set(constructor, new Map())
-	}
-	SDKClasses.push([constructor, ClassToEntities.get(constructor)!])
-	const map = new Map<string, FieldHandler>()
-
-	FieldHandlers.forEach((classFieldHandlers, constr) => {
-		if (prototype instanceof constr) {
-			classFieldHandlers.forEach((v, k) => map.set(k, v))
-		}
-	})
-
-	FieldHandlers.set(constructor, map)
-}
-
 export function RegisterClass(name: string, constructor: Constructor<Entity>) {
 	constructors.set(name, constructor)
 	if (!FieldHandlers.has(constructor)) {
@@ -58,12 +30,6 @@ export function RegisterClass(name: string, constructor: Constructor<Entity>) {
 	}
 }
 
-function GenerateChainedFieldHandler(old: FieldHandler, new_: FieldHandler) {
-	return (ent: Entity, newVal: EntityPropertyType) => {
-		old(ent, newVal)
-		new_(ent, newVal)
-	}
-}
 export function RegisterFieldHandler<T extends Entity>(
 	constructor: Constructor<T>,
 	fieldName: string,
@@ -90,30 +56,6 @@ export function RegisterFieldHandler<T extends Entity>(
 		return
 	}
 	map2.set(id, handler_)
-}
-
-function FixClassNameForMap<T>(
-	constructorName: string,
-	map: Map<string, T>
-): Nullable<string> {
-	if (map.has(constructorName)) {
-		return constructorName
-	}
-
-	if (constructorName[0] === "C" && constructorName[1] !== "_") {
-		constructorName = `C_${constructorName.substring(1)}`
-		if (map.has(constructorName)) {
-			return constructorName
-		}
-	}
-	if (constructorName[0] === "C" && constructorName[1] === "_") {
-		constructorName = `C${constructorName.substring(2)}`
-		if (map.has(constructorName)) {
-			return constructorName
-		}
-	}
-
-	return undefined
 }
 
 export function GetConstructorByName(
@@ -152,6 +94,65 @@ export function GetConstructorByName(
 	console.error(
 		`Can't find wrapper declared inherited classes for classname ${className}, [${inherited}]`
 	)
+	return undefined
+}
+
+function GenerateChainedFieldHandler(old: FieldHandler, new_: FieldHandler) {
+	return (ent: Entity, newVal: EntityPropertyType) => {
+		old(ent, newVal)
+		new_(ent, newVal)
+	}
+}
+
+function RegisterClassInternal(constructor: Constructor<Entity>) {
+	const prototype = constructor.prototype
+	if (!ClassToEntities.has(constructor)) {
+		const ar: Entity[][] = [[]]
+		ClassToEntities.set(constructor, ar[0])
+		for (let i = 0, end = SDKClasses.length; i < end; i++) {
+			const [constr, entitiesAr] = SDKClasses[i]
+			if (prototype instanceof constr) {
+				ar.push(entitiesAr)
+			}
+		}
+		ClassToEntitiesAr.set(constructor, ar)
+	}
+	if (!CachedFieldHandlers.has(constructor)) {
+		CachedFieldHandlers.set(constructor, new Map())
+	}
+	SDKClasses.push([constructor, ClassToEntities.get(constructor)!])
+	const map = new Map<string, FieldHandler>()
+
+	FieldHandlers.forEach((classFieldHandlers, constr) => {
+		if (prototype instanceof constr) {
+			classFieldHandlers.forEach((v, k) => map.set(k, v))
+		}
+	})
+
+	FieldHandlers.set(constructor, map)
+}
+
+function FixClassNameForMap<T>(
+	constructorName: string,
+	map: Map<string, T>
+): Nullable<string> {
+	if (map.has(constructorName)) {
+		return constructorName
+	}
+
+	if (constructorName[0] === "C" && constructorName[1] !== "_") {
+		constructorName = `C_${constructorName.substring(1)}`
+		if (map.has(constructorName)) {
+			return constructorName
+		}
+	}
+	if (constructorName[0] === "C" && constructorName[1] === "_") {
+		constructorName = `C${constructorName.substring(2)}`
+		if (map.has(constructorName)) {
+			return constructorName
+		}
+	}
+
 	return undefined
 }
 

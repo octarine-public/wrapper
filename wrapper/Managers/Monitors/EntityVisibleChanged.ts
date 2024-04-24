@@ -1,3 +1,4 @@
+import { EventPriority } from "../../Enums/EventPriority"
 import { Entity } from "../../Objects/Base/Entity"
 import { PhysicalItem } from "../../Objects/Base/PhysicalItem"
 import { Rune } from "../../Objects/Base/Rune"
@@ -39,16 +40,16 @@ const Monitor = new (class CEntityVisibleChanged {
 	}
 })()
 
-EventsSDK.on("PreDataUpdate", () => Monitor.PreDataUpdate(), Number.MIN_SAFE_INTEGER)
+EventsSDK.on("PreDataUpdate", () => Monitor.PreDataUpdate())
 
 EventsSDK.on(
 	"PreEntityCreated",
 	entity => Monitor.PreEntityCreated(entity),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
 EventsSDK.on(
 	"EntityDestroyed",
 	entity => Monitor.EntityDestroyed(entity),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )

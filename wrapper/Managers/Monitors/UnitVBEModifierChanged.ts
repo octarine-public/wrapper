@@ -1,4 +1,5 @@
 import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
+import { EventPriority } from "../../Enums/EventPriority"
 import { GameSleeper } from "../../Helpers/Sleeper"
 import { Item } from "../../Objects/Base/Item"
 import { Modifier } from "../../Objects/Base/Modifier"
@@ -77,13 +78,13 @@ const Monitor = new (class CUnitVBEModifierChanged {
 EventsSDK.on(
 	"UnitItemsChanged",
 	unit => Monitor.UnitItemsChanged(unit),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
 EventsSDK.on(
 	"ModifierChangedVBE",
 	mod => Monitor.ModifierChangedVBE(mod),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
-EventsSDK.on("GameEnded", () => Monitor.GameEnded(), Number.MIN_SAFE_INTEGER)
+EventsSDK.on("GameEnded", () => Monitor.GameEnded(), EventPriority.IMMEDIATE)

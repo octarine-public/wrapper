@@ -1,3 +1,4 @@
+import { EventPriority } from "../../Enums/EventPriority"
 import { FakeUnit } from "../../Objects/Base/FakeUnit"
 import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { EventsSDK } from "../EventsSDK"
@@ -21,5 +22,5 @@ const Monitor = new (class CMonitorFakeUnit {
 EventsSDK.on(
 	"FakeUnitCreated",
 	entity => Monitor.FakeUnitChanged(entity),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )

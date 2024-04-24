@@ -1,7 +1,6 @@
 import { Vector3 } from "../../Base/Vector3"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
-import { GameState } from "../../Utils/GameState"
 import { PlayerCustomData } from "../DataBook/PlayerCustomData"
 import { UnitData } from "../DataBook/UnitData"
 import { Entity } from "./Entity"
@@ -10,18 +9,13 @@ import { Unit } from "./Unit"
 
 export class FakeUnit {
 	public readonly PredictedPosition = new Vector3().Invalidate()
-	public readonly TPStartPosition = new Vector3().Invalidate()
-	public readonly TPEndPosition = new Vector3().Invalidate()
-	public readonly LastTPStartPosition = new Vector3().Invalidate()
-	public readonly LastTPEndPosition = new Vector3().Invalidate()
 	public Name = ""
 	public Level = 0
-	public TPStartTime = -1
 	// NOTE: PlayerCustomData set in -> Managers -> Monitors -> FakeUnitChanged
 	/** @readonly */
 	public PlayerCustomData: Nullable<PlayerCustomData>
-	private LastRealPredictedPositionUpdate_ = 0
-	private LastPredictedPositionUpdate_ = 0
+	public LastPredictedPositionUpdate = 0
+	public LastRealPredictedPositionUpdate = 0
 
 	constructor(
 		public readonly Index: number,
@@ -32,24 +26,6 @@ export class FakeUnit {
 		return this.Name.includes("npc_dota_")
 			? UnitData.GetUnitDataByName(this.Name)?.BaseAttackRange ?? 0
 			: 0
-	}
-	public get LastRealPredictedPositionUpdate(): number {
-		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
-			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime
-		}
-		return this.LastRealPredictedPositionUpdate_
-	}
-	public set LastRealPredictedPositionUpdate(val: number) {
-		this.LastRealPredictedPositionUpdate_ = val
-	}
-	public get LastPredictedPositionUpdate(): number {
-		if (this.TPStartTime !== -1 && this.TPStartPosition.IsValid) {
-			this.LastRealPredictedPositionUpdate_ = GameState.RawGameTime
-		}
-		return this.LastPredictedPositionUpdate_
-	}
-	public set LastPredictedPositionUpdate(val: number) {
-		this.LastPredictedPositionUpdate_ = val
 	}
 	public SerialMatches(serial: number): boolean {
 		return serial === 0 || this.serial === 0 || serial === this.serial
@@ -125,15 +101,8 @@ EventsSDK.on("EntityCreated", ent => {
 	}
 	FakeUnits.remove(fakeUnit)
 	EventsSDK.emit("FakeUnitDestroyed", false, fakeUnit)
-	if (!(ent instanceof Unit)) {
-		return
-	}
-	ent.TPStartTime = fakeUnit.TPStartTime
-	ent.TPStartPosition.CopyFrom(fakeUnit.TPStartPosition)
-	ent.TPEndPosition.CopyFrom(fakeUnit.TPEndPosition)
-	ent.LastTPStartPosition.CopyFrom(fakeUnit.LastTPStartPosition)
-	ent.LastTPEndPosition.CopyFrom(fakeUnit.LastTPEndPosition)
 })
+
 EventsSDK.on("GameEnded", () => {
 	fakeUnitsMap.clear()
 	FakeUnits.clear()

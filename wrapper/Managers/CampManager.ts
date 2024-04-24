@@ -2,6 +2,7 @@ import { Color } from "../Base/Color"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { DOTAGameState } from "../Enums/DOTAGameState"
+import { EventPriority } from "../Enums/EventPriority"
 import { NeutralSpawnerType } from "../Enums/NeutralSpawnerType"
 import { Team } from "../Enums/Team"
 import { GameSleeper } from "../Helpers/Sleeper"
@@ -412,22 +413,22 @@ EventsSDK.on("Draw", () => Monitor.Draw())
 
 EventsSDK.on("PostDataUpdate", () => Monitor.PostDataUpdate())
 
-EventsSDK.on("EntityCreated", ent => Monitor.EntityCreated(ent), Number.MIN_SAFE_INTEGER)
+EventsSDK.on("EntityCreated", ent => Monitor.EntityCreated(ent), EventPriority.IMMEDIATE)
 
 EventsSDK.on(
 	"AttackStarted",
 	unit => Monitor.AttackStarted(unit),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
 EventsSDK.on(
 	"LifeStateChanged",
 	entity => Monitor.LifeStateChanged(entity),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
 EventsSDK.on(
 	"EntityDestroyed",
 	ent => Monitor.EntityDestroyed(ent),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )

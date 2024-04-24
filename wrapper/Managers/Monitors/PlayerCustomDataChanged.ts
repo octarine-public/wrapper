@@ -1,3 +1,4 @@
+import { EventPriority } from "../../Enums/EventPriority"
 import { Entity } from "../../Objects/Base/Entity"
 import { Hero } from "../../Objects/Base/Hero"
 import { Item } from "../../Objects/Base/Item"
@@ -179,23 +180,23 @@ EventsSDK.on("EntityDestroyed", entity => Monitor.EntityDestroyed(entity))
 EventsSDK.on(
 	"UnitItemsChanged",
 	entity => Monitor.UnitItemsChanged(entity),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
 EventsSDK.on(
 	"PreEntityCreated",
 	entity => Monitor.PreEntityCreated(entity),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
 EventsSDK.on(
 	"PlayerCustomDataUpdated",
 	player => Monitor.PlayerCustomDataUpdated(player),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
 EventsSDK.on(
 	"GameEvent",
 	(name, obj) => Monitor.GameEvent(name, obj),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )

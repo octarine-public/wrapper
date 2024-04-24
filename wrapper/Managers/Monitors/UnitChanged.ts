@@ -1,4 +1,5 @@
 import { EAbilitySlot } from "../../Enums/EAbilitySlot"
+import { EventPriority } from "../../Enums/EventPriority"
 import { GameActivity } from "../../Enums/GameActivity"
 import { Ability } from "../../Objects/Base/Ability"
 import { Entity } from "../../Objects/Base/Entity"
@@ -155,9 +156,10 @@ const Monitor = new (class CPreUnitChanged {
 			case entity instanceof NeutralSpawner:
 				this.unitSpawnerDestroyed(entity)
 				break
-			case entity instanceof Unit:
+			case entity instanceof Unit: {
 				this.spawnerUnitDestroyed(entity)
 				break
+			}
 		}
 	}
 
@@ -418,7 +420,7 @@ EventsSDK.on("EntityDestroyed", ent => Monitor.EntityDestroyed(ent))
 EventsSDK.on("PreEntityCreated", ent => Monitor.PreEntityCreated(ent))
 
 // workaround owner abilities
-EventsSDK.on("EntityCreated", ent => Monitor.EntityCreated(ent), Number.MIN_SAFE_INTEGER)
+EventsSDK.on("EntityCreated", ent => Monitor.EntityCreated(ent), EventPriority.IMMEDIATE)
 
 EventsSDK.on(
 	"UnitAnimation",
@@ -447,7 +449,7 @@ EventsSDK.on("UnitAnimationEnd", unit => Monitor.UnitAnimationEnd(unit))
 EventsSDK.on(
 	"UnitItemsChanged",
 	unit => Monitor.UnitItemsChanged(unit),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
 EventsSDK.on(

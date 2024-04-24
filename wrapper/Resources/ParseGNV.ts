@@ -2,7 +2,6 @@ import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { GridNavCellFlags } from "../Enums/GridNavCellFlags"
-import { GetPositionHeight } from "../Native/WASM"
 import { Tree } from "../Objects/Base/Tree"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 
@@ -51,92 +50,6 @@ class CGridNav {
 		this.SetCellFlag(gridPos.x - 1, gridPos.y - 1, GridNavCellFlags.Tree, isAlive)
 	}
 
-	// NOTE: need optimize UpdateVisibleCellsPosition or move to c++
-	public UpdateVisibleCellsPosition(
-		position: Vector3,
-		visionRange: number,
-		flying = false,
-		outVisionCells: Vector2[]
-	) {
-		// Constants for calculations
-		const heightFogScale = 128
-		const edgeSize = this.EdgeSize // Usually 64
-
-		// World height based on position and fog scale
-		const worldHeight = Math.round(GetPositionHeight(position) / heightFogScale)
-
-		// Start position on grid
-		const gridStart = this.GetGridPosForPos(position)
-		const startGridX = gridStart.x
-		const startGridY = gridStart.y
-
-		// Calculate number of rays for vision perimeter
-		const perim = 2 * Math.PI
-		const numRays = Math.ceil(perim * (visionRange / edgeSize))
-		const angleStep = perim / numRays
-
-		// Create a Map to store vision cells
-		const visionCellMap = new Map<string, Vector2>()
-
-		// Cast rays in all directions from position
-		for (let i = 0; i < numRays; i++) {
-			const angle = i * angleStep
-			// const delta = Vector3.FromPolarCoordinates(
-			// 	visionRange,
-			// 	i * angleStep
-			// ).AddForThis(position)
-
-			const deltaX = Math.cos(angle) * visionRange
-			const deltaY = Math.sin(angle) * visionRange
-
-			const endX = position.x + deltaX
-			const endY = position.y + deltaY
-
-			// Calculate end position and corresponding grid position
-			const endPosition = new Vector2(endX, endY)
-			const gridEnd = this.GetGridPosForPos(endPosition)
-
-			// Check each cell along the line for visibility
-			this.Line(startGridX, startGridY, gridEnd.x, gridEnd.y, (x1, y1) => {
-				// Check if this cell is already in vision
-				const cellKey = `${x1}:${y1}`
-				if (visionCellMap.has(cellKey)) {
-					return true
-				}
-
-				// Calculate the world position from grid position
-				const linePos = new Vector2(x1, y1)
-
-				if (!flying) {
-					const gridLinePos = linePos.Clone().MultiplyScalarForThis(edgeSize)
-
-					// Get cell flags and calculate line world height
-					const flags = this.GetCellFlagsForPos(gridLinePos)
-
-					const lineWorldHeight = Math.floor(
-						GetPositionHeight(
-							gridLinePos.AddForThis(this.Offset.DivideScalar(2))
-						) / heightFogScale
-					)
-
-					// Height check and tree existence check
-					const checkHeight = lineWorldHeight > worldHeight - 1
-					const hasTree = flags.hasBit(GridNavCellFlags.Tree)
-					// Determine if the cell is visible
-					if ((hasTree && checkHeight) || lineWorldHeight > worldHeight) {
-						return false
-					}
-				}
-
-				visionCellMap.set(cellKey, linePos)
-				return true
-			})
-		}
-
-		// eslint-disable-next-line unused-imports/no-unused-vars
-		outVisionCells = Array.from(visionCellMap.values())
-	}
-
 	private SetCellFlag(
 		gridPosX: number,
 		gridPosY: number,
@@ -159,33 +72,6 @@ class CGridNav {
 	private GetCellIndexForPos(pos: Vector3 | Vector2): number {
 		const gridPos = this.GetGridPosForPos(pos)
 		return this.GetCellIndexForGridPos(gridPos.x, gridPos.y)
-	}
-
-	// NOTE: need optimize UpdateVisibleCellsPosition or move to c++
-	private Line(
-		startX: number,
-		startY: number,
-		endX: number,
-		endY: number,
-		callback: (x: number, y: number) => boolean
-	) {
-		const dx = endX - startX
-		const dy = endY - startY
-		const steps = Math.max(Math.abs(dx), Math.abs(dy))
-		const xIncrement = dx / steps
-		const yIncrement = dy / steps
-
-		let x = startX
-		let y = startY
-
-		for (let i = 0; i <= steps; i++) {
-			if (!callback(Math.floor(x), Math.floor(y))) {
-				break
-			}
-
-			x += xIncrement
-			y += yIncrement
-		}
 	}
 }
 export let GridNav: Nullable<CGridNav>

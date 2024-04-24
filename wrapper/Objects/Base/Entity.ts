@@ -649,16 +649,16 @@ export class Entity {
 		return this.Name
 	}
 
-	public SetPosition(newPosition: Vector3) {
-		this.VisualPosition.CopyFrom(newPosition)
-		this.NetworkedPosition.CopyFrom(newPosition)
-		this.NetworkedPosition_.CopyFrom(newPosition)
+	public SetPosition(position: Vector3) {
+		this.VisualPosition.CopyFrom(position)
+		this.NetworkedPosition.CopyFrom(position)
+		this.NetworkedPosition_.CopyFrom(position)
 	}
 
-	public SetAngles(newAngle: QAngle) {
-		this.VisualAngles.CopyFrom(newAngle)
-		this.NetworkedAngles.CopyFrom(newAngle)
-		this.NetworkedAngles_.CopyFrom(newAngle)
+	public SetAngles(qAngle: QAngle) {
+		this.VisualAngles.CopyFrom(qAngle)
+		this.NetworkedAngles.CopyFrom(qAngle)
+		this.NetworkedAngles_.CopyFrom(qAngle)
 	}
 
 	private GetTransform(): Matrix3x4 {

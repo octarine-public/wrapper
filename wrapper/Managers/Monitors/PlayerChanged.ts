@@ -1,3 +1,4 @@
+import { EventPriority } from "../../Enums/EventPriority"
 import { Entity } from "../../Objects/Base/Entity"
 import { Hero, Heroes } from "../../Objects/Base/Hero"
 import { Players } from "../../Objects/Base/Player"
@@ -38,13 +39,13 @@ const Monitor = new (class CPlayerChanged {
 EventsSDK.on(
 	"PreEntityCreated",
 	entity => Monitor.EntityChanged(entity),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
 EventsSDK.on(
 	"UnitPropertyChanged",
 	() => Monitor.UnitPropertyChanged(),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
 
 EventsSDK.on("EntityDestroyed", entity => Monitor.EntityChanged(entity))

@@ -158,9 +158,9 @@ export class PlayerCustomData {
 	 */
 	public get IsSpectator(): boolean {
 		return (
+			this.Team === Team.None ||
 			this.Team === Team.Observer ||
 			this.Team === Team.Neutral ||
-			this.Team === Team.None ||
 			this.Team === Team.Shop
 		)
 	}

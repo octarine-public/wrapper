@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { EventPriority } from "../../Enums/EventPriority"
 import { Ability } from "../../Objects/Base/Ability"
 import { FakeUnits } from "../../Objects/Base/FakeUnit"
 import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
@@ -111,10 +112,10 @@ const Monitor = new (class CLevelChanged {
 	}
 })()
 
+EventsSDK.on("GameEnded", () => Monitor.GameEnded(), EventPriority.IMMEDIATE)
+
 EventsSDK.on(
 	"GameEvent",
 	(name, obj) => Monitor.GameEvent(name, obj),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )
-
-EventsSDK.on("GameEnded", () => Monitor.GameEnded(), Number.MIN_SAFE_INTEGER)

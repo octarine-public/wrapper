@@ -104,7 +104,7 @@ export {
 	PARTICLE_RENDER_NAME,
 	ParticlesSDK
 } from "./Managers/ParticleManager"
-export { PathfinderSDK } from "./Managers/PathfinderSDK"
+export { PathfinderSDK } from "./Managers/Pathfinder/PathfinderSDK"
 export { ProjectileManager } from "./Managers/ProjectileManager"
 export * as Menu from "./Menu/index"
 export { ConVarsSDK } from "./Native/ConVarsSDK"
