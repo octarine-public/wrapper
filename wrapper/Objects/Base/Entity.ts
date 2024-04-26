@@ -67,7 +67,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 })
 
 const activity2name = new Map<GameActivity, string>(
-	Object.entries(GameActivity).map(([k, v]) => [v as GameActivity, k])
+	Object.entries(GameActivity).map(([k, v]) => [v as GameActivity, k.toLowerCase()])
 )
 const modelDataCache = new Map<string, [AnimationData[], Map<number, number>, string[]]>()
 EventsSDK.on("ServerInfo", () => modelDataCache.clear())
@@ -423,7 +423,7 @@ export class Entity {
 			for (let j = 0; j < this.Animations.length; j++) {
 				if (
 					this.Animations[j].activities.some(
-						activityData => activityData.name === activityName
+						activityData => activityData.name.toLowerCase() === activityName
 					) &&
 					i++ === sequenceNum
 				) {
@@ -451,7 +451,7 @@ export class Entity {
 				foundEverything = true
 			for (let index = 0, end = anim.activities.length; index < end; index++) {
 				const activityData = anim.activities[index]
-				if (modifiers.includes(activityData.name)) {
+				if (modifiers.includes(activityData.name.toLowerCase())) {
 					score += activityData.weight
 				} else {
 					foundEverything = false
@@ -467,15 +467,17 @@ export class Entity {
 			}
 		}
 
-		// TODO: is this used anywhere? if so, is this correct?
-		for (let i = 0; i < this.Animations.length; i++) {
-			const anim = this.Animations[i]
-			if (
-				anim.activities.some(
-					activityData => activityData.name === "ACT_DOTA_CONSTANT_LAYER"
-				)
-			) {
-				return i
+		if (highestScored === undefined) {
+			// TODO: is this used anywhere? if so, is this correct?
+			for (let i = 0; i < this.Animations.length; i++) {
+				const anim = this.Animations[i]
+				if (
+					anim.activities.some(
+						activityData => activityData.name.toUpperCase() === "ACT_DOTA_CONSTANT_LAYER"
+					)
+				) {
+					return i
+				}
 			}
 		}
 

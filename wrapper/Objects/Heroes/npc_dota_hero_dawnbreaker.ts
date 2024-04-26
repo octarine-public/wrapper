@@ -17,13 +17,13 @@ export class npc_dota_hero_dawnbreaker extends Hero {
 		if (cooldown >= 0) {
 			switch (this.AttackState) {
 				case 0:
-					ar.push("ATTACKCOMBO_A")
+					ar.push("attackcombo_a")
 					break
 				case 1:
-					ar.push("ATTACKCOMBO_B")
+					ar.push("attackcombo_b")
 					break
 				case 2:
-					ar.push("ATTACKCOMBO_C")
+					ar.push("attackcombo_c")
 					break
 				default:
 					break
