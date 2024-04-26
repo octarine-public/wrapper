@@ -349,9 +349,6 @@ export class AbilityData {
 		}
 		switch (ar[3]) {
 			default:
-			case EDOTASpecialBonusOperation.SPECIAL_BONUS_SET:
-				baseVal = talentVal
-				break
 			case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
 				baseVal += talentVal
 				break
@@ -366,6 +363,9 @@ export class AbilityData {
 				break
 			case EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT:
 				baseVal *= 1 - talentVal / 100
+				break
+			case EDOTASpecialBonusOperation.SPECIAL_BONUS_SET:
+				baseVal = !(talentVal > 0) ? baseVal : talentVal
 				break
 		}
 		return baseVal
