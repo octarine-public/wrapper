@@ -356,7 +356,9 @@ export class AbilityData {
 				baseVal -= talentVal
 				break
 			case EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY:
-				baseVal *= !(talentVal > 0) ? 1 : talentVal
+				if (talentVal > 0) {
+					baseVal *= talentVal
+				}
 				break
 			case EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD:
 				baseVal *= 1 + talentVal / 100
@@ -365,7 +367,9 @@ export class AbilityData {
 				baseVal *= 1 - talentVal / 100
 				break
 			case EDOTASpecialBonusOperation.SPECIAL_BONUS_SET:
-				baseVal = !(talentVal > 0) ? baseVal : talentVal
+				if (talentVal > 0) {
+					baseVal = talentVal
+				}
 				break
 		}
 		return baseVal
