@@ -127,6 +127,12 @@ export class Modifier {
 	public StatusResistanceSpeedStack = false
 
 	// Bonus armor
+	public BaseFixedArmor = 0
+	public BaseBonusArmor = 0
+	public BaseBonusArmorStack = false
+	public BaseBonusArmorAmplifier = 0
+	public BaseBonusArmorAmplifierStack = false
+
 	public BonusArmor = 0
 	public BonusArmorStack = false
 	public BonusArmorAmplifier = 0
@@ -320,10 +326,6 @@ export class Modifier {
 		return (unit ?? this.Parent)?.IsMagicImmune ?? false
 	}
 
-	public IsUnslowable(unit?: Unit): boolean {
-		return (unit ?? this.Parent)?.IsUnslowable ?? false
-	}
-
 	public IsDebuffImmune(unit?: Unit) {
 		const owner = unit ?? this.Parent
 		const caster = this.Ability?.Owner
@@ -333,6 +335,9 @@ export class Modifier {
 		return (unit ?? this.Parent)?.IsDebuffImmune ?? false
 	}
 
+	public IsUnslowable(unit?: Unit): boolean {
+		return (unit ?? this.Parent)?.IsUnslowable ?? false
+	}
 	public IsInvulnerable(unit?: Unit) {
 		return (unit ?? this.Parent)?.IsInvulnerable ?? false
 	}
@@ -345,6 +350,8 @@ export class Modifier {
 		return (unit ?? this.Parent)?.IsPassiveDisabled ?? false
 	}
 
+	// TODO: update unit state changes by caster if is buff aura
+	// example: modifier_enraged_wildkin_toughness_aura_bonus
 	public OnUnitStateChaged(): void {
 		this.updateAllSpecialValues()
 	}
@@ -354,6 +361,14 @@ export class Modifier {
 	}
 
 	public OnAbilityCooldownChanged(): void {
+		// implement in child classes
+	}
+
+	public OnShardChanged(): void {
+		// implement in child classes
+	}
+
+	public OnScepterChanged(): void {
 		// implement in child classes
 	}
 
@@ -421,6 +436,7 @@ export class Modifier {
 			this.StackCount = newStackCount
 			updated = true
 		}
+
 		if (this.CreationTime !== newCreationTime) {
 			this.CreationTime = newCreationTime
 			updated = true
@@ -558,7 +574,53 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.DamageReduction = subtract ? value * -1 : value
 	}
-
+	/** ======================= Armor ======================= */
+	protected SetBaseFixedArmor(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.BaseFixedArmor = subtract ? value * -1 : value
+	}
+	protected SetBaseBonusArmor(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialArmorByState(specialName)
+		this.BaseBonusArmor = subtract ? value * -1 : value
+	}
+	protected SetBaseBonusArmorAmplifier(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialArmorByState(specialName)
+		this.BaseBonusArmorAmplifier = (subtract ? value * -1 : value) / 100
+	}
+	protected SetBonusArmor(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialArmorByState(specialName)
+		this.BonusArmor = subtract ? value * -1 : value
+	}
+	protected SetBonusArmorAmplifier(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialArmorByState(specialName)
+		this.BonusArmorAmplifier = (subtract ? value * -1 : value) / 100
+	}
+	protected GetSpecialArmorByState(specialName: string): number {
+		const isImmune = this.IsMagicImmune() || this.IsDebuffImmune()
+		const isPassiveDisabled = this.IsPassiveDisabled()
+		if (
+			(this.IsDebuff && isImmune && this.IsEnemy()) ||
+			(this.IsBuff && isPassiveDisabled && !this.IsEnemy())
+		) {
+			return 0
+		}
+		return this.GetSpecialValue(specialName)
+	}
 	/** ======================= Attack Speed ======================= */
 	protected SetBonusBaseAttackTime(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
@@ -827,6 +889,13 @@ export class Modifier {
 	}
 
 	private updateAllSpecialValues() {
+		// armor
+		this.SetBaseFixedArmor()
+		this.SetBaseBonusArmor()
+		this.SetBaseBonusArmorAmplifier()
+		this.SetBonusArmor()
+		this.SetBonusArmorAmplifier()
+
 		// damage
 		this.SetAbsorbDamage()
 		this.SetDamageReduction()

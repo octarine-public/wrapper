@@ -9,4 +9,8 @@ export class modifier_tiny_grow extends Modifier {
 	): void {
 		super.SetAttackSpeedAmplifier(specialName, subtract)
 	}
+
+	protected SetBonusArmor(specialName = "bonus_armor", subtract = false) {
+		super.SetBonusArmor(specialName, subtract)
+	}
 }

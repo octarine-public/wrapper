@@ -8,4 +8,8 @@ export class modifier_pangolier_luckyshot_disarm extends Modifier {
 	public SetBonusAttackSpeed(specialName = "attack_slow", subtract = true): void {
 		super.SetBonusAttackSpeed(specialName, subtract)
 	}
+
+	protected SetBonusArmor(specialName = "armor", subtract = true): void {
+		super.SetBonusArmor(specialName, subtract)
+	}
 }

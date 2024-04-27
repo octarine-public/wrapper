@@ -1,7 +1,7 @@
 import { Color } from "../../Base/Color"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
-import { AttackSpeedData, MoveSpeedData } from "../../Data/GameData"
+import { ArmorPerAgility, AttackSpeedData, MoveSpeedData } from "../../Data/GameData"
 import { GetUnitTexture } from "../../Data/ImageData"
 import { NetworkedBasicField, ReencodeProperty, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
@@ -73,7 +73,7 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_bIsAncient")
 	public IsAncient = false
 	@NetworkedBasicField("m_flPhysicalArmorValue")
-	public BaseArmor = 0
+	public NetworkedBaseArmor = 0
 	@NetworkedBasicField("m_iCurShop", EPropertyType.UINT32)
 	public CurrentShop = DOTA_SHOP_TYPE.DOTA_SHOP_NONE
 	@NetworkedBasicField("m_iBKBChargesUsed")
@@ -149,7 +149,6 @@ export class Unit extends Entity {
 	public TotalAgility = 0
 	public BaseTotalIntellect = 0
 	public TotalStrength = 0
-	public ArmorTotal = 0
 	public MoveSpeedTotal = 0
 
 	public Spawner_: number = 0
@@ -275,8 +274,35 @@ export class Unit extends Entity {
 		return PlayerCustomData.get(this.PlayerID)?.Color ?? Color.Red
 	}
 	// ===================================== Armor ===================================== //
+
+	public get BaseArmor(): number {
+		return !this.BaseFixedArmor ? this.NetworkedBaseArmor : this.BaseFixedArmor
+	}
+
+	public get BaseFixedArmor(): number {
+		return this.CalculateBaseFixedArmor()
+	}
+
+	public get BaseBonusArmor(): number {
+		return this.CalculateBaseArmorBonus()
+	}
+
+	public get BaseBonusArmorAmplifier(): number {
+		return this.CalculateBaseArmorBonusAmplifier()
+	}
+
+	public get BonusArmor(): number {
+		return this.CalculateArmorBonus()
+	}
+
 	public get Armor() {
-		return this.ArmorTotal
+		const perAgil = this.TotalAgility * ArmorPerAgility,
+			base = this.BaseArmor + perAgil
+		const ampBase = this.BaseBonusArmorAmplifier,
+			totalBase = base * ampBase + this.BaseBonusArmor
+		// we can get amplified bonus armor
+		// Unit#BonusArmorAmplifier
+		return totalBase + this.BonusArmor
 	}
 	// ===================================== Attack Speed ===================================== //
 	public get AttackProjectileSpeed(): number {
@@ -1072,11 +1098,9 @@ export class Unit extends Entity {
 	 */
 	public ForwardNativeProperties(
 		healthBarOffset: number,
-		totalArmor: number,
 		totalMoveSpeed: number
 	): void {
 		this.HealthBarOffset_ = healthBarOffset
-		this.ArmorTotal = totalArmor
 		this.MoveSpeedTotal = totalMoveSpeed
 	}
 
@@ -1865,6 +1889,67 @@ export class Unit extends Entity {
 		})
 	}
 
+	/** ================================ Armor ======================================= */
+	public CalculateBaseFixedArmor() {
+		let totalFixed = 0
+		const buffs = this.Buffs
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const buff = buffs[index]
+			if (!buff.BaseFixedArmor) {
+				continue
+			}
+			totalFixed += buff.BaseFixedArmor
+		}
+		return totalFixed
+	}
+	public CalculateBaseArmorBonus() {
+		let totalBonus = 0
+		const buffs = this.Buffs,
+			names = new Set<string>()
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const buff = buffs[index]
+			if (!buff.BaseBonusArmor) {
+				continue
+			}
+			if (buff.BaseBonusArmorStack && names.has(buff.Name)) {
+				continue
+			}
+			totalBonus += buff.BaseBonusArmor
+		}
+		return totalBonus
+	}
+	public CalculateBaseArmorBonusAmplifier() {
+		let amp = 1
+		const buffs = this.Buffs,
+			names = new Set<string>()
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const buff = buffs[index]
+			if (!buff.BaseBonusArmorAmplifier) {
+				continue
+			}
+			if (buff.BaseBonusArmorAmplifierStack && names.has(buff.Name)) {
+				continue
+			}
+			amp += buff.BaseBonusArmorAmplifier
+		}
+		return amp
+	}
+	public CalculateArmorBonus() {
+		let totalBonus = 0
+		const buffs = this.Buffs,
+			names = new Set<string>()
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const buff = buffs[index]
+			if (!buff.BonusArmor) {
+				continue
+			}
+			if (buff.BonusArmorStack && names.has(buff.Name)) {
+				continue
+			}
+			totalBonus += buff.BonusArmor
+		}
+		return totalBonus
+	}
 	/** ================================ Attack Speed ======================================= */
 	protected CalculateBaseAttackTime() {
 		let attackTime =
@@ -2246,6 +2331,7 @@ export class Unit extends Entity {
 		}
 		return this.UnitData.MovementTurnRate
 	}
+
 	protected CalcualteBonusTurnRate() {
 		let totalBonus = 0
 		const names = new Set<string>(),

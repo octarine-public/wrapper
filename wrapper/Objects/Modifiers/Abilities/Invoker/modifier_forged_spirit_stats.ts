@@ -6,6 +6,10 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_forged_spirit_stats extends Modifier {
+	protected SetBaseFixedArmor(specialName = "spirit_armor", subtract = false): void {
+		super.SetBaseFixedArmor(specialName, subtract)
+	}
+
 	protected SetBonusAttackRange(
 		specialName = "spirit_attack_range",
 		subtract = false
@@ -26,13 +30,14 @@ export class modifier_forged_spirit_stats extends Modifier {
 			return 0
 		}
 		switch (specialName) {
+			case "spirit_armor":
+				level = Math.max(ability.ExortLevel + level, level)
+				break
 			case "spirit_attack_range":
 				level = Math.max(ability.QuasLevel + level, level)
 				break
 			case "spirit_attack_speed":
 				level = Math.max(this.AbilityLevel, ability.Level)
-				break
-			default:
 				break
 		}
 		return super.GetSpecialValue(specialName, level)

@@ -13,6 +13,17 @@ export class modifier_night_stalker_hunter_in_the_night extends Modifier {
 		this.addIntervalThink()
 	}
 
+	public Remove(): boolean {
+		if (!super.Remove()) {
+			return false
+		}
+		this.BonusAttackSpeed = 0
+		this.BonusMoveSpeedAmplifier = 0
+		this.StatusResistanceAmplifier = 0
+		this.isEmited = false
+		return true
+	}
+
 	public OnIntervalThink(): void {
 		this.SetBonusAttackSpeed()
 		this.SetMoveSpeedAmplifier()

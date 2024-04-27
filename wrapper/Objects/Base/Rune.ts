@@ -24,10 +24,6 @@ export class Rune extends Entity {
 		return this.fullName_
 	}
 
-	/**
-	 * @ignore
-	 * @internal
-	 */
 	public SetRuneName() {
 		switch (this.Type) {
 			case DOTA_RUNES.DOTA_RUNE_DOUBLEDAMAGE:

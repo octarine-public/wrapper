@@ -24,6 +24,7 @@ export class modifier_viper_viper_strike_slow extends Modifier {
 		}
 		this.BonusAttackSpeed = 0
 		this.BonusMoveSpeedAmplifier = 0
+		this.isEmited = false
 		return true
 	}
 

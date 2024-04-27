@@ -280,6 +280,22 @@ EventsSDK.on("AbilityLevelChanged", abil => {
 	})
 })
 
+EventsSDK.on("HasShardChanged", unit => {
+	activeModifiers.forEach(mod => {
+		if (mod.Ability !== undefined && unit === mod.Ability.Owner) {
+			mod.OnShardChanged()
+		}
+	})
+})
+
+EventsSDK.on("HasScepterChanged", unit => {
+	activeModifiers.forEach(mod => {
+		if (mod.Ability !== undefined && unit === mod.Ability.Owner) {
+			mod.OnScepterChanged()
+		}
+	})
+})
+
 EventsSDK.on("EntityDestroyed", ent => {
 	if (ent instanceof Unit || ent instanceof Ability) {
 		if (ent instanceof Ability) {

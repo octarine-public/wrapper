@@ -8,4 +8,8 @@ export class modifier_item_rattlecage_slow extends Modifier {
 	protected SetMoveSpeedAmplifier(specialName = "slow", subtract = true): void {
 		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
+
+	protected SetBonusAttackSpeed(specialName = "slow", subtract = true) {
+		super.SetBonusAttackSpeed(specialName, subtract)
+	}
 }

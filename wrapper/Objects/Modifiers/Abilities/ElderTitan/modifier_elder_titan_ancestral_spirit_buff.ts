@@ -8,4 +8,8 @@ export class modifier_elder_titan_ancestral_spirit_buff extends Modifier {
 	protected SetMoveSpeedAmplifier(_specialName?: string, _subtract = false): void {
 		this.BonusMoveSpeedAmplifier = this.NetworkChannelTime / 100
 	}
+
+	protected SetBonusArmor(_specialName?: string, _subtract = false) {
+		this.BonusArmor = this.NetworkArmor
+	}
 }

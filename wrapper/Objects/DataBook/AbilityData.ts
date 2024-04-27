@@ -94,7 +94,9 @@ export class AbilityData {
 	public readonly ShouldBeInitiallySuggested: boolean
 	public readonly ItemStockInitial: Nullable<number>
 	public readonly ItemDisassembleRule: DOTA_ITEM_DISASSEMBLE
-	public AffectedByAOEIncrease: boolean = false
+	public readonly RequiresShard = new Set<string>()
+	public readonly RequiresScepter = new Set<string>()
+	public readonly AffectedByAOEIncrease = new Set<string>()
 
 	private readonly SpecialValueCache = new Map<
 		string,
@@ -300,8 +302,18 @@ export class AbilityData {
 		if (level <= 0) {
 			return 0
 		}
+		if (specialName.startsWith("special_bonus_unique_")) {
+			return this.GetSpecialTalent(specialName, "value", owner)
+		}
 		const ar = this.GetCachedSpecialValue(specialName, abilityName)
 		if (ar === undefined || !ar[0].length) {
+			return 0
+		}
+		if (
+			!ar[1].length &&
+			((this.RequiresShard.has(specialName) && !owner.HasShard) ||
+				(this.RequiresScepter.has(specialName) && !owner.HasScepter))
+		) {
 			return 0
 		}
 		let baseVal = ar[0][Math.min(level, ar[0].length) - 1]
@@ -311,17 +323,20 @@ export class AbilityData {
 		) {
 			return baseVal
 		}
-		if (specialName.startsWith("special_bonus_unique_")) {
-			return this.GetSpecialTalent(specialName, "value", owner)
-		}
 		let talentVal = 0
 		const val = ar[2]
 		switch (true) {
 			case typeof val === "string":
-				if (!val.length) {
+				if (val.length !== 0) {
+					talentVal = this.GetSpecialValue(val, level, abilityName)
 					break
 				}
-				talentVal = this.GetSpecialValue(val, level, abilityName)
+				if (ar[1].includes("special_bonus_unique_")) {
+					// ex. templar_assassin_meld -> bonus_armor
+					// troll_warlord_berserkers_rage -> bonus_armor
+					talentVal = this.GetSpecialTalent(ar[1], "value", owner)
+					break
+				}
 				break
 			case Array.isArray(val):
 				if (!val.length) {
@@ -483,16 +498,28 @@ export class AbilityData {
 					name === "var_type" ||
 					name === "LinkedSpecialBonus" ||
 					name === "levelkey" ||
-					name === "RequiresScepter" ||
-					name === "RequiresShard" ||
 					name === "ad_linked_abilities" ||
 					name === "LinkedSpecialBonusOperation" ||
 					typeof value !== "string"
 				) {
 					return
 				}
+				if (name === "RequiresShard") {
+					const iterator = special.keys()
+					iterator.next()
+					this.RequiresShard.add(iterator.next().value)
+					return
+				}
+				if (name === "RequiresScepter") {
+					const iterator = special.keys()
+					iterator.next()
+					this.RequiresScepter.add(iterator.next().value)
+					return
+				}
 				if (name === "affected_by_aoe_increase") {
-					this.AffectedByAOEIncrease = this.parseFloat(value) === 1
+					const iterator = special.keys()
+					iterator.next()
+					this.AffectedByAOEIncrease.add(iterator.next().value)
 					return
 				}
 				const ar = this.ExtendLevelArray(
@@ -560,15 +587,21 @@ export class AbilityData {
 					specialName === "DamageTypeTooltip" ||
 					specialName === "levelkey" ||
 					specialName === "LinkedSpecialBonus" ||
-					specialName === "RequiresScepter" ||
-					specialName === "RequiresShard" ||
 					specialName === "LinkedSpecialBonusOperation" ||
 					typeof specialValue !== "string"
 				) {
 					return
 				}
+				if (specialName === "RequiresShard") {
+					this.RequiresShard.add(name)
+					return
+				}
+				if (specialName === "RequiresScepter") {
+					this.RequiresScepter.add(name)
+					return
+				}
 				if (specialName === "affected_by_aoe_increase") {
-					this.AffectedByAOEIncrease = this.parseFloat(specialValue) === 1
+					this.AffectedByAOEIncrease.add(name)
 					return
 				}
 				linkedSpecialBonus = specialName

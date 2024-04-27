@@ -13,6 +13,7 @@ export class modifier_item_diffusal_blade_slow extends Modifier {
 			return false
 		}
 		this.BonusMoveSpeedAmplifier = 0
+		this.isEmited = false
 		return true
 	}
 

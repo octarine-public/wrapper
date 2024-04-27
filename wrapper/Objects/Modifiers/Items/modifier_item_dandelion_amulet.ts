@@ -15,6 +15,7 @@ export class modifier_item_dandelion_amulet extends Modifier {
 			return false
 		}
 		this.AbsorbDamage = 0
+		this.isEmited = false
 		return true
 	}
 

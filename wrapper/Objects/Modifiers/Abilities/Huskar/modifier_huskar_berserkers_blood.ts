@@ -14,6 +14,7 @@ export class modifier_huskar_berserkers_blood extends Modifier {
 			return false
 		}
 		this.BonusAttackSpeed = 0
+		this.isEmited = false
 		return true
 	}
 

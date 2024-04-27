@@ -11,4 +11,8 @@ export class modifier_item_overwhelming_blink_debuff extends Modifier {
 	): void {
 		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
+
+	protected SetBonusAttackSpeed(specialName = "attack_slow", subtract = true) {
+		super.SetBonusAttackSpeed(specialName, subtract)
+	}
 }

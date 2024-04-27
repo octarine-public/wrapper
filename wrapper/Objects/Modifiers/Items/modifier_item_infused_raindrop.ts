@@ -15,6 +15,7 @@ export class modifier_item_infused_raindrop extends Modifier {
 			return false
 		}
 		this.AbsorbDamage = 0
+		this.isEmited = false
 		return true
 	}
 

@@ -12,8 +12,23 @@ export class modifier_axe_battle_hunger extends Modifier {
 		this.addIntervalThink()
 	}
 
+	public Remove(): boolean {
+		if (!super.Remove()) {
+			return false
+		}
+		this.BonusMoveSpeedAmplifier = 0
+		this.isEmited = false
+		return true
+	}
+
 	public OnIntervalThink(): void {
 		this.SetMoveSpeedAmplifier()
+	}
+
+	protected SetBonusArmor(specialName = "scepter_armor_change", subtract = true): void {
+		if (this.IsEnemy()) {
+			super.SetBonusArmor(specialName, subtract)
+		}
 	}
 
 	public SetMoveSpeedAmplifier(specialName = "slow", subtract = false): void {

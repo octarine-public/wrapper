@@ -322,7 +322,7 @@ export function SetLatestTickDelta(delta: number): void {
 
 function ParseEntityPacket(stream: ReadableBinaryStream): void {
 	EventsSDK.emit("PreDataUpdate", false)
-	const nativeChanges: [number, number, number, number][] = []
+	const nativeChanges: [number, number, number][] = []
 	while (!stream.Empty()) {
 		const entID = stream.ReadUint16()
 		if (entID === 0) {
@@ -331,7 +331,6 @@ function ParseEntityPacket(stream: ReadableBinaryStream): void {
 		nativeChanges.push([
 			entID,
 			stream.ReadInt32(), // m_iHealthBarOffset
-			stream.ReadFloat32(), // m_flTotalArmor
 			stream.ReadFloat32() // m_flTotalMoveSpeed
 		])
 	}
@@ -360,10 +359,10 @@ function ParseEntityPacket(stream: ReadableBinaryStream): void {
 		}
 	}
 	for (let index = 0, end = nativeChanges.length; index < end; index++) {
-		const [entID, healthBarOffset, totalArmor, totalMoveSpeed] = nativeChanges[index]
+		const [entID, healthBarOffset, totalMoveSpeed] = nativeChanges[index]
 		const ent = EntityManager.EntityByIndex(entID)
 		if (ent !== undefined) {
-			ent.ForwardNativeProperties(healthBarOffset, totalArmor, totalMoveSpeed)
+			ent.ForwardNativeProperties(healthBarOffset, totalMoveSpeed)
 		}
 	}
 	EventsSDK.emit("MidDataUpdate", false)

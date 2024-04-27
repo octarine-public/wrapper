@@ -9,4 +9,13 @@ export class modifier_item_vindicators_axe extends Modifier {
 	): void {
 		super.SetBonusAttackSpeed(specialName, subtract)
 	}
+
+	protected SetBonusArmor(specialName = "bonus_armor", _subtract = false): void {
+		const owner = this.Parent
+		if (owner === undefined) {
+			this.BonusArmor = 0
+			return
+		}
+		this.BonusArmor = owner.IsStunned ? this.GetSpecialValue(specialName) : 0
+	}
 }

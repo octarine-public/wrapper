@@ -13,4 +13,13 @@ export class modifier_item_skadi_slow extends Modifier {
 		const specialName = `cold_slow${owner.IsRanged ? "_ranged" : "_melee"}`
 		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
+
+	protected SetAttackSpeedAmplifier(_specialName?: string, subtract = false) {
+		const owner = this.Parent
+		if (owner === undefined) {
+			return
+		}
+		const specialName = `cold_attack_slow${owner.IsRanged ? "_ranged" : "_melee"}`
+		super.SetAttackSpeedAmplifier(specialName, subtract)
+	}
 }

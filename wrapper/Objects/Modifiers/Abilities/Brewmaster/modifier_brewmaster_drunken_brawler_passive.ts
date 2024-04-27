@@ -19,6 +19,7 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 	}
 
 	public OnIntervalThink(): void {
+		this.SetBonusArmor()
 		this.SetBonusAttackSpeed()
 		this.SetStatusResistanceAmplifier()
 	}
@@ -27,9 +28,27 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 		if (!super.Remove()) {
 			return false
 		}
+		this.BonusArmor = 0
 		this.BonusAttackSpeed = 0
 		this.StatusResistanceAmplifier = 0
+		this.isEmited = false
 		return true
+	}
+
+	protected SetBonusArmor(specialName = "armor", subtract = false): void {
+		const brawlActive = this.brawlActive
+		if (brawlActive === undefined) {
+			this.BonusArmor = 0
+			return
+		}
+		switch (brawlActive) {
+			case BrawlActive.EARTH_FIGHTER:
+				super.SetBonusArmor(specialName, subtract)
+				break
+			default:
+				this.BonusArmor = 0
+				break
+		}
 	}
 
 	protected SetBonusAttackSpeed(specialName = "attack_speed", subtract = false): void {

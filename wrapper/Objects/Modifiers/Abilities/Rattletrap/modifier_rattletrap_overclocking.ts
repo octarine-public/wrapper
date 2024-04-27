@@ -20,6 +20,7 @@ export class modifier_rattletrap_overclocking extends Modifier {
 			return false
 		}
 		this.BonusAttackSpeed = 0
+		this.isEmited = false
 		return true
 	}
 

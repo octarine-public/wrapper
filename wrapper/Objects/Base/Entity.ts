@@ -473,7 +473,8 @@ export class Entity {
 				const anim = this.Animations[i]
 				if (
 					anim.activities.some(
-						activityData => activityData.name.toUpperCase() === "ACT_DOTA_CONSTANT_LAYER"
+						activityData =>
+							activityData.name.toUpperCase() === "ACT_DOTA_CONSTANT_LAYER"
 					)
 				) {
 					return i
@@ -513,11 +514,7 @@ export class Entity {
 	}
 
 	/** @deprecated */
-	public ForwardNativeProperties(
-		_healthBarOffset: number,
-		_totalArmor: number,
-		_totalMoveSpeed: number
-	) {
+	public ForwardNativeProperties(_healthBarOffset: number, _totalMoveSpeed: number) {
 		// To be implemented in child classes
 	}
 

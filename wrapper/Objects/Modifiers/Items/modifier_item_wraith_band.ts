@@ -14,6 +14,15 @@ export class modifier_item_wraith_band extends Modifier {
 		this.addIntervalThink()
 	}
 
+	public Remove(): boolean {
+		if (!super.Remove()) {
+			return false
+		}
+		this.BonusAttackSpeed = 0
+		this.isEmited = false
+		return true
+	}
+
 	public OnIntervalThink(): void {
 		this.SetBonusAttackSpeed()
 	}
