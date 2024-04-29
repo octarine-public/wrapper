@@ -8,4 +8,8 @@ export class modifier_tidehunter_gush extends Modifier {
 	public SetMoveSpeedAmplifier(specialName = "movement_speed", subtract = false): void {
 		super.SetMoveSpeedAmplifier(specialName, subtract)
 	}
+
+	protected SetBonusArmor(specialName = "negative_armor", subtract = true): void {
+		super.SetBonusArmor(specialName, subtract)
+	}
 }
