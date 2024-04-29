@@ -1,3 +1,5 @@
+import "../../../prototypes/array"
+
 import { ABILITY_TYPES } from "../../Enums/ABILITY_TYPES"
 import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
 import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
@@ -19,9 +21,15 @@ function LoadFile(path: string, name: string = "DOTAAbilities"): RecursiveMap {
 }
 
 export class AbilityData {
-	public static empty = new AbilityData("", new Map())
-	public static globalStorage: Map<string, AbilityData> = new Map()
+	public static readonly empty = new AbilityData("", new Map())
+	public static readonly globalStorage: Map<string, AbilityData> = new Map()
 	private static readonly cacheWithoutSpecialData = new Set<string>()
+
+	public static DisposeAllData() {
+		storageIds.clear()
+		this.globalStorage.clear()
+		this.cacheWithoutSpecialData.clear()
+	}
 
 	public static GetAbilityByName(name: string): Nullable<AbilityData> {
 		return AbilityData.globalStorage.get(name)
@@ -113,6 +121,7 @@ export class AbilityData {
 	private readonly HealthCostCache: number[]
 
 	constructor(name: string, kv: RecursiveMap) {
+		this.DisposeAllData()
 		this.AbilityType = kv.has("AbilityType")
 			? (ABILITY_TYPES as any)[(kv.get("AbilityType") as string).substring(5)]
 			: ABILITY_TYPES.ABILITY_TYPE_BASIC
@@ -272,6 +281,14 @@ export class AbilityData {
 					kv.get("ItemDisassembleRule") as string
 				)
 			: DOTA_ITEM_DISASSEMBLE.DOTA_ITEM_DISASSEMBLE_NONE
+	}
+
+	public DisposeAllData() {
+		this.RequiresShard.clear()
+		this.RequiresScepter.clear()
+		this.ItemRequirements.clear()
+		this.SpecialValueCache.clear()
+		this.AffectedByAOEIncrease.clear()
 	}
 
 	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
@@ -507,19 +524,28 @@ export class AbilityData {
 				if (name === "RequiresShard") {
 					const iterator = special.keys()
 					iterator.next()
-					this.RequiresShard.add(iterator.next().value)
+					const shardVal = iterator.next().value
+					if (!this.RequiresShard.has(shardVal)) {
+						this.RequiresShard.add(shardVal)
+					}
 					return
 				}
 				if (name === "RequiresScepter") {
 					const iterator = special.keys()
 					iterator.next()
-					this.RequiresScepter.add(iterator.next().value)
+					const scepterVal = iterator.next().value
+					if (!this.RequiresScepter.has(scepterVal)) {
+						this.RequiresScepter.add(scepterVal)
+					}
 					return
 				}
 				if (name === "affected_by_aoe_increase") {
 					const iterator = special.keys()
 					iterator.next()
-					this.AffectedByAOEIncrease.add(iterator.next().value)
+					const increaseVal = iterator.next().value
+					if (!this.AffectedByAOEIncrease.has(increaseVal)) {
+						this.AffectedByAOEIncrease.add(increaseVal)
+					}
 					return
 				}
 				const ar = this.ExtendLevelArray(
@@ -593,15 +619,21 @@ export class AbilityData {
 					return
 				}
 				if (specialName === "RequiresShard") {
-					this.RequiresShard.add(name)
+					if (!this.RequiresShard.has(name)) {
+						this.RequiresShard.add(name)
+					}
 					return
 				}
 				if (specialName === "RequiresScepter") {
-					this.RequiresScepter.add(name)
+					if (!this.RequiresScepter.has(name)) {
+						this.RequiresScepter.add(name)
+					}
 					return
 				}
 				if (specialName === "affected_by_aoe_increase") {
-					this.AffectedByAOEIncrease.add(name)
+					if (!this.AffectedByAOEIncrease.has(name)) {
+						this.AffectedByAOEIncrease.add(name)
+					}
 					return
 				}
 				linkedSpecialBonus = specialName
@@ -803,8 +835,7 @@ function LoadAbilityIds(mapIdsData: Map<string, RecursiveMapValue>) {
 }
 
 export function ReloadGlobalAbilityStorage() {
-	storageIds.clear()
-	AbilityData.globalStorage.clear()
+	AbilityData.DisposeAllData()
 	try {
 		LoadAbilityIds(
 			createMapFromMergedIterators<string, RecursiveMapValue>(
