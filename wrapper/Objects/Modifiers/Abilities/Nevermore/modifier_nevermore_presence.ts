@@ -3,7 +3,7 @@ import { ModifierManager } from "../../../../Managers/ModifierManager"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_lone_druid_spirit_link extends Modifier {
+export class modifier_nevermore_presence extends Modifier {
 	private isEmited = false
 
 	public Update(): void {
@@ -24,22 +24,21 @@ export class modifier_lone_druid_spirit_link extends Modifier {
 		this.SetBonusArmor()
 	}
 
-	protected SetBonusAttackSpeed(
-		specialName = "bonus_attack_speed",
-		subtract = false
-	): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
-	}
-
-	protected SetBonusArmor(specialName = "armor_sharing", _subtract = false): void {
+	protected SetBonusArmor(specialName = "presence_armor_reduction", _subtract = false) {
 		const caster = this.Caster
-		if (caster === undefined || caster === this.Parent) {
-			this.BonusArmor = 0
+		const reduction = this.GetSpecialValue(specialName)
+		if (caster === undefined) {
+			this.BonusArmor = reduction
 			return
 		}
-		const armor = Math.max(caster.Armor, 0) // share only positive?
-		const value = this.GetSpecialValue(specialName) / 100
-		this.BonusArmor = armor * value
+		const aura = caster.GetBuffByName("modifier_nevermore_presence_aura")
+		if (aura === undefined) {
+			this.BonusArmor = reduction
+			return
+		}
+		const perStack = this.GetSpecialValue("bonus_armor_per_stack")
+		const incPerStack = perStack * Math.max(aura.StackCount, 0) * -1
+		this.BonusArmor = incPerStack + reduction
 	}
 
 	private addIntervalThink(): void {
