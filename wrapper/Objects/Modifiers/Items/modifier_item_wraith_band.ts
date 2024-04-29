@@ -5,6 +5,7 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_wraith_band extends Modifier {
+	public readonly BonusArmorStack = true
 	public readonly BonusAttackSpeedStack = true
 
 	private isEmited = false
@@ -24,7 +25,12 @@ export class modifier_item_wraith_band extends Modifier {
 	}
 
 	public OnIntervalThink(): void {
+		this.SetBonusArmor()
 		this.SetBonusAttackSpeed()
+	}
+
+	protected SetBonusArmor(specialName = "bonus_armor", subtract = false) {
+		super.SetBonusArmor(specialName, subtract)
 	}
 
 	protected SetBonusAttackSpeed(specialName = "bonus_attack_speed", subtract = false) {
