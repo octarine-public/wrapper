@@ -81,7 +81,7 @@ export class Ability extends Entity {
 		this.AbilityData = AbilityData.globalStorage.get(name) ?? AbilityData.empty
 	}
 	public get InputLag() {
-		return GetLatency(Flow.IN) + GetLatency(Flow.OUT)
+		return GameState.LatestTickDelta + (GetLatency(Flow.IN) * 1000) / 2000
 	}
 	public get CastDelay() {
 		return this.CastPoint + this.InputLag
@@ -406,7 +406,7 @@ export class Ability extends Entity {
 		if (owner === undefined) {
 			return 0
 		}
-		const delay = this.CastDelay + (!this.CastPoint ? 2 / 30 : 0)
+		const delay = this.CastDelay
 		if (unit === undefined) {
 			return delay
 		}
