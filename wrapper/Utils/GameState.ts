@@ -19,11 +19,23 @@ export const GameState = new (class CGameState {
 	public RawGameTime = 0
 	public LocalTeam = Team.Observer
 
+	/** @deprecated */
 	public get Ping() {
 		return (GetLatency(Flow.IN) + GetLatency(Flow.OUT)) * 1000
 	}
+	/** @deprecated */
 	public get AvgPing() {
 		return (GetAvgLatency(Flow.IN) + GetAvgLatency(Flow.OUT)) * 1000
+	}
+	public get InputLag() {
+		const latency = this.GetLatency(Flow.OUT) / 2,
+			tickDelta = this.LatestTickDelta
+		return Math.max(Math.ceil(latency / tickDelta), 1) * tickDelta
+	}
+	public get IOLag() {
+		const latency = this.GetLatency(Flow.OUT),
+			tickDelta = this.LatestTickDelta
+		return Math.max(Math.ceil(latency / tickDelta), 1) * tickDelta
 	}
 	public get IsConnected(): boolean {
 		return this.MapName !== "<empty>"

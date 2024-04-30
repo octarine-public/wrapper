@@ -8,7 +8,6 @@ import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
 import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EAbilitySlot } from "../../Enums/EAbilitySlot"
-import { Flow } from "../../Enums/Flow"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { IPrediction } from "../../Managers/Prediction/IPrediction"
@@ -80,11 +79,8 @@ export class Ability extends Entity {
 		this.Name_ = name
 		this.AbilityData = AbilityData.globalStorage.get(name) ?? AbilityData.empty
 	}
-	public get InputLag() {
-		return GameState.LatestTickDelta + (GetLatency(Flow.IN) * 1000) / 2000
-	}
 	public get CastDelay() {
-		return this.CastPoint + this.InputLag
+		return this.CastPoint + GameState.InputLag
 	}
 	public get IsInvisibility(): boolean {
 		return false
