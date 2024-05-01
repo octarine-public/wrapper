@@ -72,7 +72,6 @@ export class Base {
 	public QueuedUpdateRecursive = false
 	public NeedsRootUpdate = true
 	public SaveConfig = true
-	public readonly OnValueChangedCBs: ((caller: Base) => any)[] = []
 
 	public readonly Position = new Vector2()
 	public readonly Size = new Vector2()
@@ -85,6 +84,7 @@ export class Base {
 	protected readonly nameSize = new Vector3()
 
 	protected readonly executeOnAdd: boolean = true
+	protected readonly OnValueChangedCBs: ((caller: Base) => any)[] = []
 
 	constructor(
 		public parent: IMenu,
@@ -261,7 +261,7 @@ export class Base {
 			false
 		)
 	}
-	protected TriggerOnValueChangedCBs(): void {
+	public TriggerOnValueChangedCBs(): void {
 		for (let i = this.OnValueChangedCBs.length - 1; i > -1; i--) {
 			this.OnValueChangedCBs[i](this)
 		}

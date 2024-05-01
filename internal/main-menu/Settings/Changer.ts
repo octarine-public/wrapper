@@ -8,7 +8,7 @@ class TreeModelInfo {
 		public readonly canChangeColor = false,
 		public readonly zeroRotation = false,
 		public readonly heightOffset = 0
-	) { }
+	) {}
 }
 export class InternalChanger {
 	private readonly node: Menu.Node
@@ -188,9 +188,6 @@ export class InternalChanger {
 		this.treeMenuNames.SelectedID = 0
 		this.treeScale.value = this.treeScale.defaultValue
 		this.treeColor.SelectedColor.CopyFrom(this.treeColor.defaultColor)
-
-		if (this.treeMenuNames.OnValueChangedCBs[0] !== undefined) {
-			this.treeMenuNames.OnValueChangedCBs[0](this.treeMenuNames)
-		}
+		this.treeMenuNames.TriggerOnValueChangedCBs()
 	}
 }
