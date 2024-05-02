@@ -3,7 +3,6 @@ import {
 	ConVarsSDK,
 	DOTAGameUIState,
 	ExecuteOrder,
-	GameRules,
 	GameState,
 	GUIInfo,
 	Input,
@@ -80,10 +79,7 @@ export class InternalCamera {
 	}
 
 	public onMouseWheel(up: boolean): boolean {
-		if (!this.mouseState.value || !GameRules?.IsInGame) {
-			return true
-		}
-		if (ExecuteOrder.DisableHumanizer) {
+		if (!this.mouseState.value || ExecuteOrder.DisableHumanizer) {
 			return true
 		}
 		if (GameState.UIState !== DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME) {
