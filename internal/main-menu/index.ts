@@ -24,4 +24,8 @@ EventsSDK.on("SharedObjectChanged", (id, _, obj) => {
 	InternalHome.SharedObjectChanged(id, obj)
 })
 
+EventsSDK.on("HumanizerStateChanged", () => {
+	InternalSettings.HumanizerStateChanged()
+})
+
 InputEventSDK.on("MouseWheel", up => InternalSettings.MouseWheel(up))

@@ -1,12 +1,16 @@
 import {
+	Color,
 	ConVarsSDK,
 	DOTAGameUIState,
 	ExecuteOrder,
 	GameRules,
 	GameState,
+	GUIInfo,
 	Input,
 	Menu,
+	RendererSDK,
 	Team,
+	TickSleeper,
 	Vector2,
 	VKeys
 } from "../../../wrapper/Imports"
@@ -21,11 +25,14 @@ export class InternalCamera {
 
 	private readonly distance: Menu.Slider
 	private readonly angles: {
-		node: Menu.Node
-		X: Menu.Slider
-		Y: Menu.Slider
-		Vector: Vector2
+		readonly node: Menu.Node
+		readonly X: Menu.Slider
+		readonly Y: Menu.Slider
+		readonly Vector: Vector2
 	}
+
+	private readonly sleepTime = 2 * 1000
+	private readonly sleeper = new TickSleeper()
 
 	constructor(settings: Menu.Node) {
 		const treeMenu = settings.AddNode("Camera", "menu/icons/camera.svg")
@@ -51,9 +58,11 @@ export class InternalCamera {
 	}
 
 	public Draw(): void {
-		const cameraHacks = !ExecuteOrder.DisableHumanizer
+		const disableHumanizer = ExecuteOrder.DisableHumanizer
 
-		if (cameraHacks) {
+		this.drawCameraDistance()
+
+		if (!disableHumanizer) {
 			this.angles.Vector.toIOBuffer()
 
 			if (this.inverseDire.value && GameState.LocalTeam === Team.Dire) {
@@ -66,47 +75,75 @@ export class InternalCamera {
 
 		IOBuffer[2] = 0
 		Camera.Angles = true
-		Camera.Distance = cameraHacks ? this.distance.value : -1
-		ConVarsSDK.Set("r_farz", cameraHacks ? this.distance.value * 10 : -1)
+		Camera.Distance = !disableHumanizer ? this.distance.value : -1
+		ConVarsSDK.Set("r_farz", !disableHumanizer ? this.distance.value * 10 : -1)
 	}
 
 	public onMouseWheel(up: boolean): boolean {
 		if (!this.mouseState.value || !GameRules?.IsInGame) {
 			return true
 		}
-
+		if (ExecuteOrder.DisableHumanizer) {
+			return true
+		}
 		if (GameState.UIState !== DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME) {
 			return true
 		}
-
 		if (this.ctrlState.value && !Input.IsKeyDown(VKeys.CONTROL)) {
 			return true
 		}
-
 		let camDist = this.distance.value
-
 		if (up) {
 			camDist -= this.step.value
 		} else {
 			camDist += this.step.value
 		}
-
 		this.distance.value = Math.min(
 			Math.max(camDist, this.distance.min),
 			this.distance.max
 		)
-
 		Menu.Base.SaveConfigASAP = true
+		this.sleeper.Sleep(this.sleepTime)
 		return false
 	}
 
+	public HumanizerStateChanged() {
+		this.sleeper.Sleep(this.sleepTime)
+	}
+
 	protected OnResetCameraSettings() {
-		this.step.value = 50
-		this.distance.value = 1200
-		this.angles.X.value = 60
-		this.angles.Y.value = 0
-		this.mouseState.value = false
-		this.inverseDire.value = false
-		this.ctrlState.value = false
+		this.sleeper.Sleep(this.sleepTime)
+		this.step.value = this.step.defaultValue
+		this.distance.value = this.distance.defaultValue
+		this.angles.X.value = this.angles.X.defaultValue
+		this.angles.Y.value = this.angles.Y.defaultValue
+		this.mouseState.value = this.mouseState.defaultValue
+		this.inverseDire.value = this.inverseDire.defaultValue
+		this.ctrlState.value = this.ctrlState.defaultValue
+	}
+
+	private drawCameraDistance() {
+		if (!this.sleeper.Sleeping) {
+			return
+		}
+
+		const remaining = this.sleeper.RemainingSleepTime
+		const color = Color.White.SetA(Math.min(remaining / 1000, 1) * 255)
+		const dist = Math.max(Camera.Distance, this.distance.min)
+		const text = `${Menu.Localization.Localize("Camera distance")}: ${dist}`
+
+		const size = GUIInfo.ScaleHeight(48)
+		const wSize = RendererSDK.WindowSize.Clone()
+		const windowSize = wSize.DivideScalar(2)
+		const textSize = RendererSDK.GetTextSize(
+			text,
+			RendererSDK.DefaultFontName,
+			size,
+			600
+		)
+		const position = windowSize.SubtractScalarY(wSize.y / 2 - textSize.y / 2)
+		position.SubtractScalarX(textSize.x / 2)
+		position.AddScalarY(GUIInfo.ScaleHeight(175))
+		RendererSDK.Text(text, position, color, RendererSDK.DefaultFontName, size, 600)
 	}
 }

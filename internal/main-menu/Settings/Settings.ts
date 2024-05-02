@@ -57,6 +57,10 @@ export const InternalSettings = new (class {
 		this.InternalNotifications.ScriptsUpdated()
 	}
 
+	public HumanizerStateChanged() {
+		this.InternalCamera.HumanizerStateChanged()
+	}
+
 	protected onLangugeChanged(call: Menu.Dropdown) {
 		if (Menu.MenuManager.emptyConfig) {
 			return
