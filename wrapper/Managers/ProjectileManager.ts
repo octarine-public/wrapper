@@ -36,7 +36,7 @@ EventsSDK.on("GameEnded", () => {
 
 function TrackingProjectileCreated(projectile: TrackingProjectile) {
 	// TODO
-	// projectile.Position.Extend(projectile.TargetLoc, (GameState.CurrentServerTick - projectile.LaunchTick) / 30 * projectile.Speed).CopyTo(projectile.Position)
+	// projectile.Position.Extend(projectile.TargetLoc, (GameState.CurrentGameTick - projectile.LaunchTick) / 30 * projectile.Speed).CopyTo(projectile.Position)
 	EventsSDK.emit("TrackingProjectileCreated", false, projectile)
 	ProjectileManager.AllTrackingProjectiles.push(projectile)
 	ProjectileManager.AllTrackingProjectilesMap.set(projectile.ID, projectile)
@@ -167,7 +167,7 @@ EventsSDK.on("PostDataUpdate", () => {
 				}
 				proj.Position.Extend(
 					proj.TargetLoc,
-					(GameState.CurrentServerTick - proj.LaunchTick) * dt * proj.Speed
+					(GameState.CurrentGameTick - proj.LaunchTick) * dt * proj.Speed
 				).CopyTo(proj.Position)
 			} else {
 				continue

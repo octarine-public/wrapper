@@ -9,7 +9,7 @@ import { GUIInfo } from "../GUI/GUIInfo"
 import { Localization } from "../Menu/Localization"
 import { RendererSDK } from "../Native/RendererSDK"
 import * as WASM from "../Native/WASM"
-import { Entity, GameRules, LocalPlayer } from "../Objects/Base/Entity"
+import { Entity, GameRules, LocalPlayer, UpdateGameTime } from "../Objects/Base/Entity"
 import { FakeUnit, GetPredictionTarget } from "../Objects/Base/FakeUnit"
 import { PlayerResource } from "../Objects/Base/PlayerResource"
 import { Unit } from "../Objects/Base/Unit"
@@ -29,7 +29,6 @@ import {
 import { createMapFromMergedIterators } from "../Utils/Utils"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { EntityManager } from "./EntityManager"
-import { SetLatestTickDelta } from "./EntityManagerLogic"
 import { Events } from "./Events"
 import { EventsSDK } from "./EventsSDK"
 import { InputManager } from "./InputManager"
@@ -1281,29 +1280,7 @@ Events.on("InputCaptured", isCaptured => {
 EventsSDK.on("InputCaptured", isCaptured => (GameState.IsInputCaptured = isCaptured))
 EventsSDK.on("ServerTick", tick => {
 	GameState.CurrentServerTick = tick
-	if (GameRules !== undefined) {
-		// TODO: verify correctness
-		const timeTick = GameRules.IsPaused ? GameRules.PauseStartTick : tick
-		const prevTime = GameState.RawGameTime
-
-		const totalPausedTicks = GameRules.TotalPausedTicks
-		GameState.RawGameTime = GameRules.RawGameTime =
-			(timeTick -
-				(!Array.isArray(totalPausedTicks)
-					? totalPausedTicks
-					: Math.max(...totalPausedTicks))) /
-			30 // TODO: is there a better way?
-
-		if (prevTime === 0) {
-			const entities = EntityManager.AllEntities
-			for (let index = entities.length - 1; index > -1; index--) {
-				entities[index].FakeCreateTime_ = GameState.RawGameTime
-			}
-		}
-		if (LocalPlayer !== undefined) {
-			SetLatestTickDelta(prevTime !== 0 ? GameState.RawGameTime - prevTime : 1 / 30)
-		}
-	}
+	UpdateGameTime()
 })
 Events.on("UIStateChanged", newState => (GameState.UIState = newState))
 

@@ -236,8 +236,8 @@ function EmitModifierCreated(modKV: IModifier) {
 			? StringTables.GetString("ModifierNames", modKV.ModifierClass as number)
 			: luaName
 
-	const instance = ModifierSDKClass.get(Name)
-	const mod = instance === undefined ? new Modifier(modKV) : new instance(modKV)
+	const instance = ModifierSDKClass.get(Name) ?? Modifier
+	const mod = new instance(modKV)
 	activeModifiers.set(mod.SerialNumber, mod)
 	mod.Update()
 }

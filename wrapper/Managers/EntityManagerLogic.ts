@@ -3,7 +3,7 @@ import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { Vector4 } from "../Base/Vector4"
 import { EPropertyType, PropertyType } from "../Enums/PropertyType"
-import { Entity } from "../Objects/Base/Entity"
+import { Entity, SetLatestTickDelta, latestTickDelta } from "../Objects/Base/Entity"
 import {
 	CachedFieldHandlers,
 	ClassToEntitiesAr,
@@ -315,11 +315,6 @@ function ParseEntityUpdate(
 	}
 }
 
-let latestTickDelta = 0
-export function SetLatestTickDelta(delta: number): void {
-	latestTickDelta = delta
-}
-
 function ParseEntityPacket(stream: ReadableBinaryStream): void {
 	EventsSDK.emit("PreDataUpdate", false)
 	const nativeChanges: [number, number, number][] = []
@@ -374,7 +369,7 @@ function ParseEntityPacket(stream: ReadableBinaryStream): void {
 	if (latestTickDelta !== 0) {
 		GameState.LatestTickDelta = latestTickDelta
 		EventsSDK.emit("Tick", false, latestTickDelta)
-		latestTickDelta = 0
+		SetLatestTickDelta(0)
 	}
 }
 

@@ -54,8 +54,6 @@ export class UserCmd {
 		UserCmd.LatestUserCmdView.setFloat32(69, this.VectorUnderCursor.x, true)
 		UserCmd.LatestUserCmdView.setFloat32(73, this.VectorUnderCursor.y, true)
 		UserCmd.LatestUserCmdView.setFloat32(77, this.VectorUnderCursor.z, true)
-		if (UserCmd.LatestUserCmdView.byteLength > 81) {
-			UserCmd.LatestUserCmdView.setUint32(81, this.Pawn?.Handle ?? -1, true)
-		}
+		UserCmd.LatestUserCmdView.setUint32(81, this.Pawn?.Handle ?? -1, true)
 	}
 }
