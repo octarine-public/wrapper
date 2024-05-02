@@ -8,8 +8,8 @@ import {
 	Input,
 	Menu,
 	RendererSDK,
+	Sleeper,
 	Team,
-	TickSleeper,
 	Vector2,
 	VKeys
 } from "../../../wrapper/Imports"
@@ -31,7 +31,7 @@ export class InternalCamera {
 	}
 
 	private readonly sleepTime = 2 * 1000
-	private readonly sleeper = new TickSleeper()
+	private readonly sleeper = new Sleeper()
 
 	constructor(settings: Menu.Node) {
 		const treeMenu = settings.AddNode("Camera", "menu/icons/camera.svg")
@@ -99,16 +99,15 @@ export class InternalCamera {
 			this.distance.max
 		)
 		Menu.Base.SaveConfigASAP = true
-		this.sleeper.Sleep(this.sleepTime)
+		this.sleeper.Sleep(this.sleepTime, "Camera")
 		return false
 	}
 
 	public HumanizerStateChanged() {
-		this.sleeper.Sleep(this.sleepTime)
+		this.sleeper.Sleep(this.sleepTime, "Camera")
 	}
 
 	protected OnResetCameraSettings() {
-		this.sleeper.Sleep(this.sleepTime)
 		this.step.value = this.step.defaultValue
 		this.distance.value = this.distance.defaultValue
 		this.angles.X.value = this.angles.X.defaultValue
@@ -116,6 +115,7 @@ export class InternalCamera {
 		this.mouseState.value = this.mouseState.defaultValue
 		this.inverseDire.value = this.inverseDire.defaultValue
 		this.ctrlState.value = this.ctrlState.defaultValue
+		this.sleeper.Sleep(this.sleepTime, "Camera")
 	}
 
 	private drawCameraDistance() {
@@ -123,7 +123,7 @@ export class InternalCamera {
 			return
 		}
 
-		const remaining = this.sleeper.RemainingSleepTime
+		const remaining = this.sleeper.RemainingSleepTime("Camera")
 		const color = Color.White.SetA(Math.min(remaining / 1000, 1) * 255)
 		const dist = Math.max(Camera.Distance, this.distance.min)
 		const text = `${Menu.Localization.Localize("Camera distance")}: ${dist}`
