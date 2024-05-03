@@ -29,9 +29,12 @@ export const GameState = new (class CGameState {
 		return (GetAvgLatency(Flow.IN) + GetAvgLatency(Flow.OUT)) * 1000
 	}
 	public get InputLag() {
-		const latency = this.GetLatency(Flow.OUT) / 2,
+		const latency = this.GetLatency(Flow.OUT),
 			tickDelta = this.LatestTickDelta
-		return Math.max(Math.ceil(latency / tickDelta), 1) * tickDelta
+		if (latency < 0.001 && GameState.MapName.startsWith("hero_demo")) {
+			return tickDelta
+		}
+		return Math.max(Math.ceil(latency / tickDelta), 1) * tickDelta + tickDelta
 	}
 	public get IOLag() {
 		const latency = this.GetLatency(Flow.OUT),
