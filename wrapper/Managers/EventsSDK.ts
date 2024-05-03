@@ -453,8 +453,8 @@ interface EventsSDK extends EventEmitter {
 		priority?: number
 	): EventEmitter
 	on(
-		name: "IsInAbilityPhase",
-		listener: (unit: Ability) => void,
+		name: "AbilityPhaseChanged",
+		listener: (ability: Ability) => void,
 		priority?: number
 	): EventEmitter
 	/**

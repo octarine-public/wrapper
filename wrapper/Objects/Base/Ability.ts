@@ -567,7 +567,7 @@ RegisterFieldHandler(
 RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, newValue) => {
 	abil.IsInAbilityPhase_ = newValue as boolean
 	abil.IsInAbilityPhaseChangeTime = GameState.RawGameTime
-	EventsSDK.emit("IsInAbilityPhase", false, abil)
+	EventsSDK.emit("AbilityPhaseChanged", false, abil)
 })
 RegisterFieldHandler(Ability, "m_fCooldown", (abil, newValue) => {
 	abil.Cooldown_ = newValue as number
