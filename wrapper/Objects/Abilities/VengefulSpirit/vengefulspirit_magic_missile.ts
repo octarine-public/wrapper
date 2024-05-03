@@ -1,7 +1,7 @@
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
-@WrapperClass("vengefulspirit_magic_missile")
+@WrapperClass("CDOTA_Ability_VengefulSpirit_Magic_Missile")
 export class vengefulspirit_magic_missile extends Ability {
 	public get ProjectileAttachment(): string {
 		return "attach_attack2"
