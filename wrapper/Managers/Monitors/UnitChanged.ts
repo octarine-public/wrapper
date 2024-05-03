@@ -40,6 +40,10 @@ const Monitor = new (class CPreUnitChanged {
 		}
 	}
 
+	public UnitItemsChanged(unit: Unit) {
+		unit.ChangeFieldsByEvents()
+	}
+
 	public PreEntityCreated(entity: Entity) {
 		switch (true) {
 			// case entity instanceof Item: // owner undefined set in EntityCreated
@@ -271,4 +275,10 @@ EventsSDK.on(
 		activity,
 		_lagCompensationTime
 	) => Monitor.UnitAnimation(unit, sequenceVariant, playbackRate, castpoint, activity)
+)
+
+EventsSDK.on(
+	"UnitItemsChanged",
+	unit => Monitor.UnitItemsChanged(unit),
+	Number.MIN_SAFE_INTEGER
 )

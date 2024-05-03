@@ -1360,9 +1360,11 @@ export class Unit extends Entity {
 		{
 			// HasScepter
 			const lastHasScepter = this.HasScepter
-			const hasScepter = Modifier.HasScepterBuff(buffs)
+			const hasScepter =
+				Modifier.HasScepterBuff(buffs) ||
+				this.HasItemInInventory("item_ultimate_scepter")
 
-			if (hasScepter !== lastHasScepter) {
+			if ((hasScepter || this.HasStolenScepter) !== lastHasScepter) {
 				this.HasScepterModifier = hasScepter
 				EventsSDK.emit("HasScepterChanged", false, this)
 			}
