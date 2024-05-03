@@ -66,11 +66,9 @@ export class Item extends Ability {
 		return GetItemTexture(this.Name)
 	}
 	public get Cooldown() {
-		let cooldown = super.Cooldown
-		if (this.IsItem && this.EnableTime > GameState.RawGameTime) {
-			cooldown = Math.max(cooldown, this.EnableTime - GameState.RawGameTime)
-		}
-		return cooldown
+		return this.EnableTime > GameState.RawGameTime
+			? Math.max(super.Cooldown, this.EnableTime - GameState.RawGameTime)
+			: super.Cooldown
 	}
 	public get IsReady(): boolean {
 		const unit = this.Owner
