@@ -3,6 +3,9 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("winter_wyvern_splinter_blast")
 export class winter_wyvern_splinter_blast extends Ability {
+	public get ProjectileAttachment(): string {
+		return "attach_attack1"
+	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}

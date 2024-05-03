@@ -6,7 +6,6 @@ export class bristleback_hairball extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
-
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("projectile_speed", level)
 	}

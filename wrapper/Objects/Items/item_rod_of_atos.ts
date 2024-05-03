@@ -7,7 +7,9 @@ import { Item } from "../Base/Item"
 export class item_rod_of_atos extends Item {
 	// The current speed by server via tracking projectile
 	public CurrectionSpeed_ = 1900
-
+	public get ProjectileAttachment(): string {
+		return "attach_attack1"
+	}
 	public GetBaseSpeedForLevel(_level: number): number {
 		// https://dota2.fandom.com/wiki/Rod_of_Atos
 		return this.CurrectionSpeed_

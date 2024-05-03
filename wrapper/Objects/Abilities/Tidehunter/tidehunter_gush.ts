@@ -8,6 +8,9 @@ export class tidehunter_gush extends Ability {
 			? super.AOERadius
 			: this.GetSpecialValue("scepter_radius")
 	}
+	public get ProjectileAttachment(): string {
+		return "attach_attack2"
+	}
 	public get Speed(): number {
 		return !this.Owner?.HasScepter
 			? super.Speed

@@ -5,6 +5,9 @@ import { Unit } from "../../Base/Unit"
 
 @WrapperClass("snapfire_firesnap_cookie")
 export class snapfire_firesnap_cookie extends Ability {
+	public get ProjectileAttachment(): string {
+		return "attach_attack2"
+	}
 	public get CookieSpeed(): number {
 		return this.GetSpecialValue("projectile_speed")
 	}
@@ -16,13 +19,6 @@ export class snapfire_firesnap_cookie extends Ability {
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.GetSpecialValue("AbilityCooldown", level)
 	}
-	/**
-	 * @description Returns the cast delay of the ability. Time in seconds until the cast.
-	 * @param {Unit | Vector3} unit - The unit or position to calculate hit time for
-	 * @param {boolean} currentTurnRate -  Flag to indicate if current turn rate is considered
-	 * @param {boolean} rotationDiff - Flag to indicate if rotation difference is considered
-	 * @return {number}
-	 */
 	public GetCastDelay(
 		unit?: Unit | Vector3,
 		currentTurnRate: boolean = true,

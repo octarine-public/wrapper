@@ -3,6 +3,9 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("chaos_knight_chaos_bolt")
 export class chaos_knight_chaos_bolt extends Ability {
+	public get ProjectileAttachment(): string {
+		return "attach_attack1"
+	}
 	public GetBaseCastRangeForLevel(level: number): number {
 		return (
 			super.GetBaseCastRangeForLevel(level) +
@@ -11,7 +14,6 @@ export class chaos_knight_chaos_bolt extends Ability {
 				: 0)
 		)
 	}
-
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("chaos_bolt_speed", level)
 	}

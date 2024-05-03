@@ -1,3 +1,4 @@
+import { QAngle } from "../../Base/QAngle"
 import { Vector3 } from "../../Base/Vector3"
 import { GetSpellTexture } from "../../Data/ImageData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
@@ -78,6 +79,9 @@ export class Ability extends Entity {
 		super(index, serial)
 		this.Name_ = name
 		this.AbilityData = AbilityData.globalStorage.get(name) ?? AbilityData.empty
+	}
+	public get ProjectileAttachment(): string {
+		return "attach_hitloc"
 	}
 	public get CastDelay() {
 		return this.CastPoint + GameState.InputLag
@@ -354,6 +358,29 @@ export class Ability extends Entity {
 	protected get CanBeCastedWhileSilenced() {
 		return false
 	}
+	public GetProjectileStartingPosition(
+		pos: Vector3,
+		ang: QAngle,
+		scale?: number
+	): Vector3 {
+		const owner = this.Owner
+		if (owner === undefined) {
+			return pos
+		}
+		scale ??= owner.ModelScale
+		const playbackRate = 1 / Math.sqrt(scale)
+		const castAnim = this.AbilityData.CastAnimation
+		return owner.GetAttachmentPosition(
+			this.ProjectileAttachment,
+			castAnim,
+			owner.GetAnimationID(castAnim, -1, true),
+			playbackRate * this.CastPoint,
+			pos,
+			ang,
+			scale
+		)
+	}
+
 	public GetMaxCooldownForLevel(level: number): number {
 		return this.AbilityData.GetMaxCooldownForLevel(level)
 	}

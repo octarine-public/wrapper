@@ -14,7 +14,9 @@ export class meepo_divided_we_stand extends Ability {
 	public PrimeDividedWeStand_ = 0
 	@NetworkedBasicField("m_entNextDividedWeStand")
 	public NextDividedWeStand_ = 0
-
+	public get ProjectileAttachment(): string {
+		return "attach_attack2"
+	}
 	public get PrimeDividedWeStand() {
 		return EntityManager.EntityByIndex<meepo_divided_we_stand>(
 			this.PrimeDividedWeStand_
