@@ -30,6 +30,7 @@ import { EntityDataLumps } from "../Resources/ParseEntityLump"
 import { GameState } from "../Utils/GameState"
 import { ConVarsSDK } from "./ConVarsSDK"
 import { ExecuteOrder } from "./ExecuteOrder"
+import { SetProcessUserCmd } from "./HumanizerGlue"
 import { RendererSDK } from "./RendererSDK"
 import { UserCmd } from "./UserCmd"
 import * as WASM from "./WASM"
@@ -1391,6 +1392,7 @@ function ProcessUserCmd(force = false): void {
 		}
 	}
 }
+SetProcessUserCmd(() => ProcessUserCmd(true))
 EventsSDK.on("Draw", ProcessUserCmd)
 Events.on("RequestUserCmd", () => {
 	if (!ExecuteOrder.DisableHumanizer) {
@@ -1567,7 +1569,6 @@ Events.on("PrepareUnitOrders", () => {
 	}
 	if (!ExecuteOrder.DisableHumanizer) {
 		order.ExecuteQueued()
-		ProcessUserCmd(true)
 		return false
 	}
 	return true

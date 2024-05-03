@@ -9,6 +9,7 @@ import { Tree } from "../Objects/Base/Tree"
 import { Unit } from "../Objects/Base/Unit"
 import { GridNav } from "../Resources/ParseGNV"
 import { GameState } from "../Utils/GameState"
+import { ProcessUserCmd } from "./HumanizerGlue"
 import * as WASM from "./WASM"
 
 function WillInterruptOrderQueue(order: ExecuteOrder): boolean {
@@ -373,6 +374,7 @@ export class ExecuteOrder {
 			}
 		}
 		ExecuteOrder.orderQueue.push([this, hrtime(), false, false])
+		ProcessUserCmd()
 	}
 
 	protected CanBeClickHeightMapPosition() {
