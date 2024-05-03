@@ -73,6 +73,7 @@ export function UpdateGameTime() {
 				? totalPausedTicks
 				: Math.max(...totalPausedTicks))
 		GameState.RawGameTime = GameState.CurrentGameTick / tickRate
+		GameRules.RawGameTime = GameState.RawGameTime
 
 		if (prevTime === 0) {
 			const entities = EntityManager.AllEntities
