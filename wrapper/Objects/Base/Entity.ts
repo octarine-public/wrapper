@@ -535,11 +535,11 @@ export class Entity {
 		scale = this.ModelScale
 	): Vector3 {
 		if (this.ModelData === undefined) {
-			return this.Position
+			return pos
 		}
 		const attachmentID = this.Attachments.indexOf(name)
 		if (attachmentID === -1) {
-			return this.Position
+			return pos
 		}
 		const animationID = this.GetAnimationID(activity, sequenceNum) ?? -1
 		if (animationID !== -1 && time === Infinity) {
