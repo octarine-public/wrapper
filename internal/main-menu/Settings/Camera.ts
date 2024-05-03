@@ -38,6 +38,12 @@ export class InternalCamera {
 		const treeMenu = settings.AddNode("Camera", "menu/icons/camera.svg")
 
 		this.distance = treeMenu.AddSlider("Camera Distance", 1200, 1200, 3500)
+		this.infoState = treeMenu.AddToggle(
+			"Draw camera distance",
+			true,
+			"Draw info camera distance\non mouse wheel"
+		)
+
 		this.angles = treeMenu.AddVector2(
 			"Camera Angles",
 			new Vector2(60, 0),
@@ -50,11 +56,6 @@ export class InternalCamera {
 
 		this.mouseState = treeMenuMouse.AddToggle("State", true)
 		this.ctrlState = treeMenuMouse.AddToggle("Change if Ctrl is down", true)
-		this.infoState = treeMenuMouse.AddToggle(
-			"Draw camera distance",
-			true,
-			"Draw info camera distance\non mouse wheel"
-		)
 		this.step = treeMenuMouse.AddSlider("Camera Step", 50, 10, 1000)
 
 		treeMenu
