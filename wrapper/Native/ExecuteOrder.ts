@@ -356,6 +356,21 @@ export class ExecuteOrder {
 			) {
 				continue
 			}
+
+			switch (this.OrderType as dotaunitorder_t) {
+				case dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_STOP:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_ALT:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET:
+					this.Execute()
+					return
+				default:
+					break
+			}
 		}
 		ExecuteOrder.orderQueue.push([this, hrtime(), false, false])
 	}
