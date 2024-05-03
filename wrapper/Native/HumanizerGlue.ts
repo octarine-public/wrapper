@@ -1,10 +1,10 @@
-let ProcessUserCmd_: Nullable<() => void>
+let processUserCmd_: Nullable<() => void>
 export function SetProcessUserCmd(f: () => void) {
-	ProcessUserCmd_ = f
+	processUserCmd_ = f
 }
 
 export function ProcessUserCmd() {
-	if (ProcessUserCmd_ !== undefined) {
-		ProcessUserCmd_()
+	if (processUserCmd_ !== undefined) {
+		processUserCmd_()
 	}
 }
