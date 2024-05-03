@@ -19,6 +19,7 @@ export class InternalCamera {
 	private readonly step: Menu.Slider
 	private readonly inverseDire: Menu.Toggle
 
+	private readonly infoState: Menu.Toggle
 	private readonly mouseState: Menu.Toggle
 	private readonly ctrlState: Menu.Toggle
 
@@ -49,6 +50,11 @@ export class InternalCamera {
 
 		this.mouseState = treeMenuMouse.AddToggle("State", true)
 		this.ctrlState = treeMenuMouse.AddToggle("Change if Ctrl is down", true)
+		this.infoState = treeMenuMouse.AddToggle(
+			"Draw camera distance",
+			true,
+			"Draw info camera distance\non mouse wheel"
+		)
 		this.step = treeMenuMouse.AddSlider("Camera Step", 50, 10, 1000)
 
 		treeMenu
@@ -99,12 +105,12 @@ export class InternalCamera {
 			this.distance.max
 		)
 		Menu.Base.SaveConfigASAP = true
-		this.sleeper.Sleep(this.sleepTime, "Camera")
+		this.sleepDrawInfoCameraDistance()
 		return false
 	}
 
 	public HumanizerStateChanged() {
-		this.sleeper.Sleep(this.sleepTime, "Camera")
+		this.sleepDrawInfoCameraDistance()
 	}
 
 	protected OnResetCameraSettings() {
@@ -115,11 +121,11 @@ export class InternalCamera {
 		this.mouseState.value = this.mouseState.defaultValue
 		this.inverseDire.value = this.inverseDire.defaultValue
 		this.ctrlState.value = this.ctrlState.defaultValue
-		this.sleeper.Sleep(this.sleepTime, "Camera")
+		this.sleepDrawInfoCameraDistance()
 	}
 
 	private drawCameraDistance() {
-		if (!this.sleeper.Sleeping) {
+		if (!this.sleeper.Sleeping("Camera")) {
 			return
 		}
 
@@ -141,5 +147,11 @@ export class InternalCamera {
 		position.SubtractScalarX(textSize.x / 2)
 		position.AddScalarY(GUIInfo.ScaleHeight(175))
 		RendererSDK.Text(text, position, color, RendererSDK.DefaultFontName, size, 600)
+	}
+
+	private sleepDrawInfoCameraDistance() {
+		if (this.infoState.value) {
+			this.sleeper.Sleep(this.sleepTime, "Camera")
+		}
 	}
 }
