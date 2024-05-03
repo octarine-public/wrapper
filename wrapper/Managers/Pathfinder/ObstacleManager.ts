@@ -2,6 +2,7 @@ import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
 import { EObstacleType } from "../../Enums/EObstacleType"
 import { GridNavCellFlags } from "../../Enums/GridNavCellFlags"
+import { GetPositionHeight } from "../../Native/WASM"
 import { GridNav } from "../../Resources/ParseGNV"
 import { DegreesToRadian } from "../../Utils/Math"
 
@@ -78,7 +79,8 @@ export class ObstacleManager {
 		if (bestPosition === undefined) {
 			return this.invalid
 		}
-		return Vector3.FromVector2(bestPosition)
+		const bestPosition2D = Vector3.FromVector2(bestPosition)
+		return bestPosition2D.SetZ(GetPositionHeight(bestPosition))
 	}
 
 	public DeleteObstacle(obstacleId: number) {
