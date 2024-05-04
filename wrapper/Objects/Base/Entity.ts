@@ -61,34 +61,31 @@ export function SetLatestTickDelta(delta: number): void {
 
 export function UpdateGameTime() {
 	const tickRate = 30 // TODO: is there a better way?
-	if (GameRules !== undefined) {
-		// TODO: verify correctness
-		const timeTick = GameRules.IsPaused ? GameRules.PauseStartTick : GameState.CurrentServerTick
-		const prevTime = GameState.RawGameTime
+	if (GameRules === undefined)
+		return
+	// TODO: verify correctness
+	const timeTick = GameRules.IsPaused ? GameRules.PauseStartTick : GameState.CurrentServerTick
+	const prevTime = GameState.RawGameTime
 
-		const totalPausedTicks = GameRules.TotalPausedTicks
-		GameState.CurrentGameTick =
-			timeTick -
-			(!Array.isArray(totalPausedTicks)
-				? totalPausedTicks
-				: Math.max(...totalPausedTicks))
-		GameState.RawGameTime = GameState.CurrentGameTick / tickRate
-		GameRules.RawGameTime = GameState.RawGameTime
+	const totalPausedTicks = GameRules.TotalPausedTicks
+	GameState.CurrentGameTick =
+		timeTick -
+		(!Array.isArray(totalPausedTicks)
+			? totalPausedTicks
+			: Math.max(...totalPausedTicks))
+	GameState.RawGameTime = GameState.CurrentGameTick / tickRate
+	GameRules.RawGameTime = GameState.RawGameTime
 
-		if (prevTime === 0) {
-			const entities = EntityManager.AllEntities
-			for (let index = entities.length - 1; index > -1; index--) {
-				entities[index].FakeCreateTime_ = GameState.RawGameTime
-			}
+	if (prevTime === 0) {
+		const entities = EntityManager.AllEntities
+		for (let index = entities.length - 1; index > -1; index--) {
+			entities[index].FakeCreateTime_ = GameState.RawGameTime
 		}
-		if (LocalPlayer !== undefined) {
-			SetLatestTickDelta(
-				prevTime !== 0 ? GameState.RawGameTime - prevTime : 1 / tickRate
-			)
-		}
-	} else {
-		GameState.CurrentGameTick = GameState.CurrentServerTick
-		GameState.RawGameTime = GameState.CurrentServerTick / tickRate
+	}
+	if (LocalPlayer !== undefined) {
+		SetLatestTickDelta(
+			prevTime !== 0 ? GameState.RawGameTime - prevTime : 1 / tickRate
+		)
 	}
 }
 
