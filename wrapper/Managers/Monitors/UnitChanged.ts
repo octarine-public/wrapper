@@ -1,3 +1,4 @@
+import { GetTurnData, UpdateFacing } from "../../Data/TurnData"
 import { EAbilitySlot } from "../../Enums/EAbilitySlot"
 import { EventPriority } from "../../Enums/EventPriority"
 import { GameActivity } from "../../Enums/GameActivity"
@@ -8,6 +9,7 @@ import { NeutralSpawner, NeutralSpawners } from "../../Objects/Base/NeutralSpawn
 import { Unit, Units } from "../../Objects/Base/Unit"
 import { Wearable } from "../../Objects/Base/Wearable"
 import { GameState } from "../../Utils/GameState"
+import { AngleDiff } from "../../Utils/Math"
 import { EventsSDK } from "../EventsSDK"
 import { Prediction } from "../Prediction/Prediction"
 
@@ -102,6 +104,46 @@ const Monitor = new (class CPreUnitChanged {
 					}
 				}
 			}
+			let prevPos = unit.PositionHistoryIndex - 1
+			if (prevPos < 0) {
+				prevPos += unit.PreviousNetworkedAngles_.length
+			}
+			if (
+				prevPos === -1 ||
+				unit.PreviousNetworkedAngles_[prevPos] !== unit.NetworkedAngles_.y ||
+				unit.PreviousRotationDifference !== unit.RotationDifference
+			) {
+				const turnData = GetTurnData(unit.TurnRate())
+				let rotDiff = unit.RotationDifference
+				if (prevPos !== -1) {
+					rotDiff += AngleDiff(
+						unit.NetworkedAngles_.y,
+						unit.PreviousNetworkedAngles_[prevPos]
+					)
+					if (rotDiff <= -180) {
+						rotDiff += 360
+					} else if (rotDiff >= 180) {
+						rotDiff -= 360
+					}
+				}
+				unit.YawVelocity = UpdateFacing(
+					turnData,
+					unit.YawVelocity,
+					rotDiff,
+					dt
+				)[1]
+
+				unit.PreviousRotationDifference = unit.RotationDifference
+			} else if (unit.RotationDifference === 0) {
+				unit.YawVelocity = 0
+			}
+			if (unit.PreviousNetworkedAngles_.length === 120) {
+				unit.PreviousNetworkedAngles_[unit.PositionHistoryIndex] =
+					unit.NetworkedAngles_.y
+			} else {
+				unit.PreviousNetworkedAngles_.push(unit.NetworkedAngles_.y)
+			}
+			unit.PositionHistoryIndex = (unit.PositionHistoryIndex + 1) % 120
 			// TODO: interpolate DeltaZ from OnModifierUpdated?
 		}
 	}

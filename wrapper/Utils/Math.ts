@@ -278,3 +278,15 @@ export function SmoothStep(amount: number): number {
 export function Clamp(value: number, min: number, max: number): number {
 	return Math.min(Math.max(value, min), max)
 }
+
+export function AngleDiff(destAngle: number, srcAngle: number): number {
+	const result = (destAngle - srcAngle) % 360
+	if (destAngle <= srcAngle) {
+		if (result <= -180) {
+			return result + 360
+		}
+	} else if (result >= 180) {
+		return result - 360
+	}
+	return result
+}

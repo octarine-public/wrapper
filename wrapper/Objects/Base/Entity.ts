@@ -145,6 +145,7 @@ export class Entity {
 	public ModelScale: number = 1
 	public BecameDormantTime: number = 0
 	public RotationDifference: number = 0
+	public PreviousRotationDifference: number = 0
 	public HierarchyAttachName: number = 0
 	public Attachments: string[] = []
 	public ModelData: Nullable<ModelData>
@@ -159,6 +160,8 @@ export class Entity {
 	public readonly VisualAngles = new QAngle()
 	public readonly NetworkedAngles = new QAngle()
 	public readonly NetworkedAngles_ = new QAngle()
+	public readonly PreviousNetworkedAngles_: number[] = []
+	public PositionHistoryIndex: number = 0
 	public readonly BoundingBox = new AABB(this.VisualPosition)
 	public readonly SpawnPosition = new Vector3()
 

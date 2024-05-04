@@ -4,6 +4,12 @@ import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
 import { ArmorPerAgility, AttackSpeedData, MoveSpeedData } from "../../Data/GameData"
 import { GetUnitTexture } from "../../Data/ImageData"
+import {
+	GetAngleToFacePath,
+	GetCastAngle,
+	GetTurnData,
+	UpdateFacing
+} from "../../Data/TurnData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
@@ -199,6 +205,8 @@ export class Unit extends Entity {
 	public AttackTimeLostToLastTick: number = 0
 	public LastPredictedPositionUpdate: number = 0
 	public LastRealPredictedPositionUpdate: number = 0
+
+	public YawVelocity = 0
 
 	/**
 	 * @description added for compatibility (icore)
@@ -1240,6 +1248,34 @@ export class Unit extends Entity {
 	}
 	public TurnTime(angle: number, currentTurnRate = true): number {
 		return Math.max(angle / (30 * this.TurnRate(currentTurnRate)), 0)
+	}
+	public TurnTimeNew(
+		target: Vector3,
+		movement: boolean,
+		directionalMovement = false,
+		currentTurnRate = true
+	): number {
+		const turnData = GetTurnData(this.TurnRate(currentTurnRate))
+		let angDiff = Math.radianToDegrees(this.GetAngle(target, false))
+		const targetAng = directionalMovement
+			? 0
+			: movement
+				? GetAngleToFacePath(turnData, angDiff)
+				: GetCastAngle(turnData, angDiff, this.Position.DistanceSqr2D(target))
+		let time = 0,
+			yawVelocity = this.YawVelocity
+		while (angDiff > targetAng) {
+			const [change, yawVelocityNew] = UpdateFacing(
+				turnData,
+				yawVelocity,
+				angDiff,
+				GameState.TickInterval
+			)
+			angDiff -= change
+			yawVelocity = yawVelocityNew
+			time += GameState.TickInterval
+		}
+		return time
 	}
 	public IsInside(vec: Vector3, radius: number): boolean {
 		const position = this.Position
