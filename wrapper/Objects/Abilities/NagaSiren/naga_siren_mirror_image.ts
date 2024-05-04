@@ -3,7 +3,7 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("naga_siren_mirror_image")
 export class naga_siren_mirror_image extends Ability {
-	public get ActivationDelay(): number {
+	public get AppearanceDelay(): number {
 		return this.GetSpecialValue("invuln_duration")
 	}
 }
