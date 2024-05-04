@@ -170,6 +170,8 @@ export class Unit extends Entity {
 	public AttackTimeAtLastTick = 0
 	public AttackTimeLostToLastTick = 0
 
+	public YawVelocity = 0
+
 	/**
 	 * @description added for compatibility (icore)
 	 * @deprecated
