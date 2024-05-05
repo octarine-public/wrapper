@@ -412,7 +412,7 @@ export class PlayerCustomData {
 	 * @return {DataTeamPlayer | undefined}
 	 */
 	public get DataTeamPlayer(): Nullable<DataTeamPlayer> {
-		const arr = Array.from(PlayerCustomData.TeamData)
+		const arr = PlayerCustomData.TeamData
 		if (arr.length > 1) {
 			return arr.find(x => x.Team === this.Team)?.DataTeam[this.TeamSlot]
 		}

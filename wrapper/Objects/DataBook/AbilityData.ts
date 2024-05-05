@@ -843,7 +843,7 @@ export function ReloadGlobalAbilityStorage() {
 			)
 		)
 		const abilsMap = createMapFromMergedIterators<string, RecursiveMapValue>(
-			...Array.from(UnitData.globalStorage.keys())
+			...[...UnitData.globalStorage.keys()]
 				.filter(name => name.includes("npc_dota_hero_"))
 				.map(name => LoadFile(`scripts/npc/heroes/${name}.txt`).entries()),
 			LoadFile("scripts/npc/npc_abilities.txt").entries(),

@@ -24,7 +24,7 @@ export const ModifierManager = new (class CModifierManager {
 	public readonly PermanentUpdate: Modifier[] = []
 
 	public get AllModifiers() {
-		return Array.from(activeModifiers.values())
+		return [...activeModifiers.values()]
 	}
 
 	public GetModifierByIndex(index: number): Nullable<Modifier> {

@@ -101,7 +101,7 @@ export class DynamicImageSelector extends Base {
 	}
 
 	public get ConfigValue() {
-		return Array.from(this.enabledValues.entries())
+		return [...this.enabledValues.entries()]
 	}
 
 	public set ConfigValue(value) {
@@ -135,7 +135,7 @@ export class DynamicImageSelector extends Base {
 		})
 
 		this.values = [
-			...Array.from([...this.enabledValues.keys()])
+			...[...this.enabledValues.keys()]
 				.filter(name => this.IsVisibleImage(name))
 				.orderBy(x => this.GetPriority(x))
 		]
@@ -151,7 +151,7 @@ export class DynamicImageSelector extends Base {
 		}
 
 		this.values = [
-			...Array.from([...this.enabledValues.keys()])
+			...[...this.enabledValues.keys()]
 				.filter(name => this.IsVisibleImage(name))
 				.orderBy(x => this.GetPriority(x))
 		]

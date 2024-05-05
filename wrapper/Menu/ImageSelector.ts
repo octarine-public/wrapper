@@ -75,7 +75,7 @@ export class ImageSelector extends Base {
 	}
 
 	public get ConfigValue() {
-		return Array.from(this.enabledValues.entries())
+		return [...this.enabledValues.entries()]
 	}
 	public set ConfigValue(value) {
 		if (

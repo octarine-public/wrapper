@@ -212,9 +212,8 @@ EventsSDK.on("Draw", () => {
 		ConVarsSDK.GetFloat("dota_minimap_hero_size", 600)
 	)
 
-	Array.from(minimapIconsActive.values())
-		.orderBy(icon => icon.priority)
-		.forEach(icon => icon.Draw())
+	const minimapIcons = [...minimapIconsActive.values()].orderBy(icon => icon.priority)
+	minimapIcons.forEach(icon => icon.Draw())
 
 	const iconsKeysToBeRemoved: any[] = []
 	minimapIconsActive.forEach((icon, key) => {
