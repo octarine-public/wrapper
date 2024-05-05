@@ -2594,9 +2594,7 @@ RegisterFieldHandler(Unit, "m_hMyWearables", (unit, newVal) => {
 	).filter(ent => ent !== undefined) as Wearable[]
 })
 RegisterFieldHandler(Unit, "m_anglediff", (unit, newVal) => {
-	unit.NetworkedAngles.SubtractScalarY(unit.RotationDifference)
 	unit.RotationDifference = newVal as number
-	unit.NetworkedAngles.AddScalarY(unit.RotationDifference)
 })
 RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, newVal) => {
 	unit.Spawner_ = newVal as number
