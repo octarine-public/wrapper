@@ -4,6 +4,7 @@ import { Vector3 } from "../Base/Vector3"
 import { GridNavCellFlags } from "../Enums/GridNavCellFlags"
 import { GetPositionHeight } from "../Native/WASM"
 import { Tree } from "../Objects/Base/Tree"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 
 class CGridNav {
 	public readonly Max: Vector2
@@ -189,7 +190,7 @@ class CGridNav {
 }
 export let GridNav: Nullable<CGridNav>
 
-export function ParseGNV(stream: ReadableBinaryStream): void {
+export function ParseGNV(stream: ViewBinaryStream): void {
 	try {
 		{
 			const magic = stream.ReadUint32()

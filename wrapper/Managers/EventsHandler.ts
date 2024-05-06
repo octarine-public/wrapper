@@ -17,7 +17,6 @@ import { AbilityData, ReloadGlobalAbilityStorage } from "../Objects/DataBook/Abi
 import { ReloadGlobalUnitStorage, UnitData } from "../Objects/DataBook/UnitData"
 import { ParseEntityLump, ResetEntityLump } from "../Resources/ParseEntityLump"
 import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
-import { FileBinaryStream } from "../Utils/FileBinaryStream"
 import { GameState } from "../Utils/GameState"
 import {
 	CMsgQuaternionToVector4,
@@ -1292,13 +1291,9 @@ function TryLoadMapFiles(): void {
 		WASM.ResetVHCG()
 	}
 	{
-		const buf = fopen(`maps/${mapName}.gnv`)
+		const buf = fread(`maps/${mapName}.gnv`, true)
 		if (buf !== undefined) {
-			try {
-				ParseGNV(new FileBinaryStream(buf))
-			} finally {
-				buf.close()
-			}
+			ParseGNV(new ViewBinaryStream(new DataView(buf)))
 		} else {
 			ResetGNV()
 		}

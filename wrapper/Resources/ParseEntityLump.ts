@@ -88,7 +88,7 @@ const enum EntityFieldType {
 	HRenderTexture = 0x37
 }
 
-function ReadTypedValue(stream: ReadableBinaryStream): EntityDataMapValue {
+function ReadTypedValue(stream: ViewBinaryStream): EntityDataMapValue {
 	const type: EntityFieldType = stream.ReadUint32()
 	switch (type) {
 		case EntityFieldType.Float:

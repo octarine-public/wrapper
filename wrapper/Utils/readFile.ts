@@ -40,11 +40,11 @@ export function tryFindFile(path: string, callstackDepth = 0): Nullable<string> 
 	return undefined
 }
 
-export function readFile(path: string, callstackDepth = 0): Nullable<FileStream> {
+export function readFile(path: string, callstackDepth = 0): Nullable<string> {
 	const realPath = tryFindFile(path, 1 + callstackDepth)
 	if (realPath === undefined) {
 		return undefined
 	}
 
-	return fopen(realPath)
+	return fread(realPath, false)
 }

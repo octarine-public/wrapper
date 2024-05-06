@@ -3,7 +3,7 @@ import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { Vector4 } from "../Base/Vector4"
 import { EPropertyType, PropertyType } from "../Enums/PropertyType"
-import { Entity, SetLatestTickDelta, latestTickDelta } from "../Objects/Base/Entity"
+import { Entity, latestTickDelta, SetLatestTickDelta } from "../Objects/Base/Entity"
 import {
 	CachedFieldHandlers,
 	ClassToEntitiesAr,
@@ -107,7 +107,7 @@ const convertUint8 = new Uint8Array(convertBuf),
 	convertInt32 = new Int32Array(convertBuf),
 	convertInt64 = new BigInt64Array(convertBuf),
 	convertUint64 = new BigUint64Array(convertBuf)
-function ParseProperty(stream: ReadableBinaryStream): PropertyType {
+function ParseProperty(stream: ViewBinaryStream): PropertyType {
 	const varType: EPropertyType = stream.ReadUint8()
 	switch (varType) {
 		case EPropertyType.INT8:
@@ -162,7 +162,7 @@ function ParseProperty(stream: ReadableBinaryStream): PropertyType {
 const debugParsing = false
 function DumpStreamPosition(
 	entClass: string,
-	stream: ReadableBinaryStream,
+	stream: ViewBinaryStream,
 	pathSizeWalked: number
 ): string {
 	stream.RelativeSeek((pathSizeWalked + 1) * -2) // uint16 = 2 bytes
@@ -177,7 +177,7 @@ function DumpStreamPosition(
 }
 
 function ParseEntityUpdate(
-	stream: ReadableBinaryStream,
+	stream: ViewBinaryStream,
 	entID: number,
 	createdEntities: Entity[],
 	isCreate = false
@@ -315,7 +315,7 @@ function ParseEntityUpdate(
 	}
 }
 
-function ParseEntityPacket(stream: ReadableBinaryStream): void {
+function ParseEntityPacket(stream: ViewBinaryStream): void {
 	EventsSDK.emit("PreDataUpdate", false)
 	const nativeChanges: [number, number, number][] = []
 	while (!stream.Empty()) {

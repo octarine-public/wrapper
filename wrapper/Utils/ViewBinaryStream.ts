@@ -1,43 +1,10 @@
 import { Color } from "../Base/Color"
 
-export class ViewBinaryStream implements ReadableBinaryStream {
-	private readonly isUtf16: boolean
-	private readonly isUtf16BE: boolean
+export class ViewBinaryStream {
 	constructor(
 		private readonly view: DataView,
-		public pos = 0,
-		detectEncoding = false
-	) {
-		this.isUtf16 = false
-		this.isUtf16BE = false
-		if (!detectEncoding) {
-			return
-		}
-		if (this.Remaining >= 2) {
-			const ch1 = this.ReadUint8(),
-				ch2 = this.ReadUint8()
-			if (ch1 === 0xff && ch2 === 0xfe) {
-				this.isUtf16 = true
-				return
-			}
-			if (ch1 === 0xfe && ch2 === 0xff) {
-				this.isUtf16 = true
-				this.isUtf16BE = true
-				return
-			}
-			this.RelativeSeek(-2)
-		}
-		if (this.Remaining >= 3) {
-			const ch1 = this.ReadUint8(),
-				ch2 = this.ReadUint8(),
-				ch3 = this.ReadUint8()
-			if (ch1 === 0xef && ch2 === 0xbb && ch3 === 0xbf) {
-				this.isUtf16 = false
-				return
-			}
-			this.RelativeSeek(-3)
-		}
-	}
+		public pos = 0
+	) {}
 	public get Remaining(): number {
 		return Math.max(this.view.byteLength - this.pos, 0)
 	}
@@ -244,19 +211,6 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 									nPart
 		)
 	}
-	public ReadUtf16Char(): string {
-		return String.fromCharCode(this.ReadUint16(!this.isUtf16BE))
-	}
-	public ReadChar(): string {
-		return this.isUtf16 ? this.ReadUtf16Char() : this.ReadUtf8Char()
-	}
-	public SeekLine(): void {
-		while (!this.Empty()) {
-			if (this.ReadChar() === "\n") {
-				break
-			}
-		}
-	}
 	public ReadUtf8String(size: number): string {
 		let out = ""
 		while (size > 0) {
@@ -322,11 +276,10 @@ export class ViewBinaryStream implements ReadableBinaryStream {
 	public Empty(): boolean {
 		return this.pos >= this.view.byteLength
 	}
-	public CreateNestedStream(size: number, detectEncoding = false): ViewBinaryStream {
+	public CreateNestedStream(size: number): ViewBinaryStream {
 		const res = new ViewBinaryStream(
 			new DataView(this.view.buffer, this.view.byteOffset + this.pos, size),
-			0,
-			detectEncoding
+			0
 		)
 		this.pos += size
 		return res

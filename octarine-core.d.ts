@@ -75,7 +75,7 @@ declare interface Particles {
 
 // must be called only in onDraw!
 declare interface Renderer {
-	CreateFont(buf: Uint8Array): number
+	CreateFont(path: string): number
 	/**
 	 * @returns size: Vector2 to IOBuffer at offset 0
 	 */
@@ -169,13 +169,6 @@ declare interface Camera {
 	Position: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
-declare class FileStream {
-	public read(offset: number, buf: Uint8Array): number
-	public close(): void
-
-	public readonly byteLength: number
-}
-
 declare interface AnimationActivityData {
 	readonly name: string
 	readonly activity: number
@@ -237,7 +230,6 @@ declare class ModelData {
 /// GLOBAL FUNCTIONS
 
 declare function SendToConsole(command: string): void
-declare function fopen(path: string): Nullable<FileStream>
 declare function fexists(path: string): boolean
 declare function requestPlayerData(
 	playerID: number,
@@ -325,19 +317,8 @@ declare function parseKV(
 	data: Uint8Array,
 	block?: string | number
 ): RecursiveMap
-declare function parseKV(
-	stream: FileStream,
-	block: string | number,
-	offset: number,
-	size: number
-): RecursiveMap
 
 declare function parseKVBlock(data: Uint8Array): RecursiveMap
-declare function parseKVBlock(
-	stream: FileStream,
-	offset: number,
-	size: number
-): RecursiveMap
 declare function parseKVBlock(path: string): RecursiveMap
 
 declare function MurmurHash2(str: string, seed: number): number
@@ -361,3 +342,7 @@ declare function RequestUnitsProperties(buf: Uint16Array): void
  * @description Pass boolean to clear banned heroes
  */
 declare function ToggleBanHeroes(bannedHeroIds: number[] | false): void
+
+declare function fread(path: string, binary: boolean): Nullable<ArrayBuffer | string>
+declare function fread(path: string, binary: true): Nullable<ArrayBuffer>
+declare function fread(path: string, binary: false): Nullable<string>

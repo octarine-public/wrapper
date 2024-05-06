@@ -1,4 +1,3 @@
-import { FileBinaryStream } from "./FileBinaryStream"
 import { readFile } from "./readFile"
 
 export function parseEnumString(
@@ -70,13 +69,10 @@ export function readJSON(path: string): any {
 	if (buf === undefined) {
 		throw `Failed to read JSON file at path ${path}`
 	}
-	const stream = new FileBinaryStream(buf)
 	try {
-		return JSON.parse(stream.ReadUtf8String(stream.Remaining))
+		return JSON.parse(buf)
 	} catch {
 		throw `invalid JSON at path ${path}`
-	} finally {
-		buf.close()
 	}
 }
 

@@ -13,8 +13,8 @@ import { GetPositionHeight } from "../../Native/WASM"
 import { EntityDataLumps } from "../../Resources/ParseEntityLump"
 import { GridNav } from "../../Resources/ParseGNV"
 import { ParseTRMP } from "../../Resources/ParseTRMP"
-import { FileBinaryStream } from "../../Utils/FileBinaryStream"
 import { GameState } from "../../Utils/GameState"
+import { ViewBinaryStream } from "../../Utils/ViewBinaryStream"
 import { Entity } from "./Entity"
 
 @WrapperClass("CDOTA_MapTree")
@@ -54,16 +54,14 @@ Events.on("NewConnection", () => {
 
 let treeMap = new Map<string, [number, Vector2][]>()
 EventsSDK.on("MapDataLoaded", () => {
-	const buf = fopen(`maps/${GameState.MapName}.trm`)
+	const buf = fread(`maps/${GameState.MapName}.trm`, true)
 	if (buf !== undefined) {
 		try {
-			const [trmp, treeCount] = ParseTRMP(new FileBinaryStream(buf))
+			const [trmp, treeCount] = ParseTRMP(new ViewBinaryStream(new DataView(buf)))
 			treeMap = trmp
 			TempTreeIDOffset = treeCount
 		} catch (e) {
 			console.error("Error in TreeMap init", e)
-		} finally {
-			buf.close()
 		}
 	}
 })

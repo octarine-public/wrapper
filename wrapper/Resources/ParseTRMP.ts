@@ -1,7 +1,8 @@
 import { Vector2 } from "../Base/Vector2"
+import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 
 export function ParseTRMP(
-	stream: ReadableBinaryStream
+	stream: ViewBinaryStream
 ): [Map<string, [number, Vector2][]>, number] {
 	{
 		const magic = stream.ReadUint32(false)

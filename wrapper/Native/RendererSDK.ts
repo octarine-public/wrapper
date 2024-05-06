@@ -9,7 +9,6 @@ import { InputManager } from "../Managers/InputManager"
 import { ParseMaterial } from "../Resources/ParseMaterial"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
 import { HasMask } from "../Utils/BitsExtensions"
-import { fread } from "../Utils/fread"
 import { DegreesToRadian } from "../Utils/Math"
 import { tryFindFile } from "../Utils/readFile"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
@@ -936,13 +935,7 @@ class CRendererSDK {
 			return
 		}
 
-		const data = fread(realPath)
-		if (data === undefined) {
-			console.error(`Reading font "${name}" with path "${path}" failed`, stack)
-			return
-		}
-
-		const fontID = Renderer.CreateFont(data)
+		const fontID = Renderer.CreateFont(realPath)
 		if (fontID === -1) {
 			console.error(`Loading font "${name}" with path "${path}" failed`, stack)
 			return
