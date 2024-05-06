@@ -1,4 +1,4 @@
-import { ExecuteOrder, Menu, MenuLanguageID } from "../../../wrapper/Imports"
+import { Entity, ExecuteOrder, Menu, MenuLanguageID } from "../../../wrapper/Imports"
 import { InternalCamera } from "./Camera"
 import { InternalChanger } from "./Changer"
 import { InternalNotifications } from "./Notifications"
@@ -51,6 +51,10 @@ export const InternalSettings = new (class {
 
 	public GameStarted() {
 		this.InternalChanger.GameStarted()
+	}
+
+	public EntityCreated(entity: Entity) {
+		this.InternalCamera.EntityCreated(entity)
 	}
 
 	public ScriptsUpdated() {

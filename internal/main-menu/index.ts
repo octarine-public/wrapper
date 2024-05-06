@@ -11,6 +11,10 @@ EventsSDK.on("GameStarted", () => {
 	InternalSettings.GameStarted()
 })
 
+EventsSDK.on("EntityCreated", entity => {
+	InternalSettings.EntityCreated(entity)
+})
+
 Events.on("SetLanguage", language => {
 	InternalHome.SetLanguage(language)
 })

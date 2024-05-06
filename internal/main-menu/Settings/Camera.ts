@@ -2,10 +2,12 @@ import {
 	Color,
 	ConVarsSDK,
 	DOTAGameUIState,
+	Entity,
 	ExecuteOrder,
 	GameState,
 	GUIInfo,
 	Input,
+	LocalPlayer,
 	Menu,
 	RendererSDK,
 	Sleeper,
@@ -112,6 +114,12 @@ export class InternalCamera {
 
 	public HumanizerStateChanged() {
 		this.sleepDrawInfoCameraDistance()
+	}
+
+	public EntityCreated(entity: Entity) {
+		if (entity === LocalPlayer?.Hero) {
+			this.sleepDrawInfoCameraDistance()
+		}
 	}
 
 	protected OnResetCameraSettings() {

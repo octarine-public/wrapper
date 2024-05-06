@@ -61,10 +61,13 @@ export function SetLatestTickDelta(delta: number): void {
 
 export function UpdateGameTime() {
 	const tickRate = 30 // TODO: is there a better way?
-	if (GameRules === undefined)
+	if (GameRules === undefined) {
 		return
+	}
 	// TODO: verify correctness
-	const timeTick = GameRules.IsPaused ? GameRules.PauseStartTick : GameState.CurrentServerTick
+	const timeTick = GameRules.IsPaused
+		? GameRules.PauseStartTick
+		: GameState.CurrentServerTick
 	const prevTime = GameState.RawGameTime
 
 	const totalPausedTicks = GameRules.TotalPausedTicks
