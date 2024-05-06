@@ -933,7 +933,11 @@ export class Unit extends Entity {
 		// 	throw "HealthBarPosition outside in draw"
 		// }
 		const position = (overridePosition ?? this.Position).Clone()
-		if ((this.IsFogVisible || this.HideHud) && this.FogVisiblePosition.IsValid) {
+		if (
+			(this.IsFogVisible || this.HideHud) &&
+			this.FogVisiblePosition.IsValid &&
+			!this.IsVisible
+		) {
 			position.CopyFrom(this.FogVisiblePosition)
 		}
 		if (useHpBarOffset) {
