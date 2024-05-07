@@ -106,15 +106,13 @@ export class ObstacleManager {
 	}
 
 	private hasObstacle(targetPosition: Vector2, hullRadius: number): boolean {
-		let isSome = false
-		this.Obstacles.forEach(([obstacleType, startPos, endPos, obstacleRadius]) => {
+		return [...this.Obstacles.values()].some(obstacle => {
+			const [obstacleType, startPos, endPos, obstacleRadius] = obstacle
 			const radius = obstacleRadius + hullRadius
-			isSome =
-				obstacleType === EObstacleType.Circle
-					? this.isCircle(targetPosition, startPos, radius)
-					: this.isLine(targetPosition, startPos, endPos, radius)
+			return obstacleType === EObstacleType.Circle
+				? this.isCircle(targetPosition, startPos, radius)
+				: this.isLine(targetPosition, startPos, endPos, radius)
 		})
-		return isSome
 	}
 
 	private shouldBreak(flying: boolean, flags: number): boolean {
