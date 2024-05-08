@@ -6,7 +6,7 @@ export class tidehunter_gush extends Ability {
 	public get AOERadius(): number {
 		return !this.Owner?.HasScepter
 			? super.AOERadius
-			: this.GetSpecialValue("scepter_radius")
+			: this.GetSpecialValue("aoe_scepter")
 	}
 	public get ProjectileAttachment(): string {
 		return "attach_attack2"
