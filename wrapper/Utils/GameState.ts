@@ -3,9 +3,9 @@ import { Flow } from "../Enums/Flow"
 import { Team } from "../Enums/Team"
 
 export const GameState = new (class CGameState {
-	public LatestTickDelta = -1
-	public CurrentServerTick = -1
-	public CurrentGameTick = -1
+	public LatestTickDelta = 1 / 30
+	public CurrentServerTick = 0
+	public CurrentGameTick = 0
 	public IsInputCaptured = false
 	public UIState = DOTAGameUIState.DOTA_GAME_UI_STATE_DASHBOARD
 	public MapName = "<empty>"

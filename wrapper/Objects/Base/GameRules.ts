@@ -22,9 +22,9 @@ export class CGameRules extends Entity {
 	@NetworkedBasicField("m_nRuneCycle")
 	public RuneCycle = 0
 	@NetworkedBasicField("m_nTotalPausedTicks")
-	public TotalPausedTicks: number | number[] = -1
+	public TotalPausedTicks: number | number[] = 0
 	@NetworkedBasicField("m_nPauseStartTick")
-	public PauseStartTick = -1
+	public PauseStartTick = 0
 	@NetworkedBasicField("m_nExpectedPlayers")
 	public ExpectedPlayers = 0
 	@NetworkedBasicField("m_iGameMode")
