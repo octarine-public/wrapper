@@ -475,6 +475,15 @@ export class Unit extends Entity {
 	public get IsStrongIllusion(): boolean {
 		return this.IsStrongIllusion_
 	}
+	public get IsHiddenIllusion(): boolean {
+		if (!this.IsIllusion) {
+			return false
+		}
+		return (
+			this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_OUT_OF_GAME) &&
+			this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_COMMAND_RESTRICTED)
+		)
+	}
 	// TODO: by classes
 	public get CanReincarnate() {
 		return this.HasBuffByName("modifier_item_aegis")
