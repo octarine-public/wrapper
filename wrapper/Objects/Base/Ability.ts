@@ -573,8 +573,11 @@ export class Ability extends Entity {
 }
 
 RegisterFieldHandler(Ability, "m_bHidden", (abil, newValue) => {
-	abil.IsHidden = newValue as boolean
-	EventsSDK.emit("AbilityHiddenChanged", false, abil)
+	const oldValue = abil.IsHidden
+	if (oldValue !== newValue) {
+		abil.IsHidden = newValue as boolean
+		EventsSDK.emit("AbilityHiddenChanged", false, abil)
+	}
 })
 
 RegisterFieldHandler(Ability, "m_iLevel", (abil, newValue) => {
@@ -586,18 +589,27 @@ RegisterFieldHandler(
 	Ability,
 	"m_fAbilityChargeRestoreTimeRemaining",
 	(abil, newValue) => {
-		abil.CooldownRestore_ = newValue as number
-		abil.CooldownRestoreTime = GameState.RawGameTime
-		EventsSDK.emit("AbilityCooldownChanged", false, abil)
+		const oldValue = abil.CooldownRestore_
+		if (oldValue !== newValue) {
+			abil.CooldownRestore_ = newValue as number
+			abil.CooldownRestoreTime = GameState.RawGameTime
+			EventsSDK.emit("AbilityCooldownChanged", false, abil)
+		}
 	}
 )
 RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, newValue) => {
-	abil.IsInAbilityPhase_ = newValue as boolean
-	abil.IsInAbilityPhaseChangeTime = GameState.RawGameTime
-	EventsSDK.emit("AbilityPhaseChanged", false, abil)
+	const oldValue = abil.IsInAbilityPhase_
+	if (oldValue !== newValue) {
+		abil.IsInAbilityPhase_ = newValue as boolean
+		abil.IsInAbilityPhaseChangeTime = GameState.RawGameTime
+		EventsSDK.emit("AbilityPhaseChanged", false, abil)
+	}
 })
 RegisterFieldHandler(Ability, "m_fCooldown", (abil, newValue) => {
-	abil.Cooldown_ = newValue as number
-	abil.CooldownChangeTime = GameState.RawGameTime
-	EventsSDK.emit("AbilityCooldownChanged", false, abil)
+	const oldValue = abil.Cooldown_
+	if (oldValue !== newValue) {
+		abil.Cooldown_ = newValue as number
+		abil.CooldownChangeTime = GameState.RawGameTime
+		EventsSDK.emit("AbilityCooldownChanged", false, abil)
+	}
 })
