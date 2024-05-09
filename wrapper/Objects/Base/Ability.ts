@@ -49,7 +49,6 @@ export class Ability extends Entity {
 	public IsInAbilityPhaseChangeTime = 0
 	@NetworkedBasicField("m_flCastStartTime")
 	public CastStartTime = 0
-	@NetworkedBasicField("m_flChannelStartTime")
 	public ChannelStartTime = 0
 	@NetworkedBasicField("m_bToggleState")
 	public IsToggled = false
@@ -572,19 +571,6 @@ export class Ability extends Entity {
 	}
 }
 
-RegisterFieldHandler(Ability, "m_bHidden", (abil, newValue) => {
-	const oldValue = abil.IsHidden
-	if (oldValue !== newValue) {
-		abil.IsHidden = newValue as boolean
-		EventsSDK.emit("AbilityHiddenChanged", false, abil)
-	}
-})
-
-RegisterFieldHandler(Ability, "m_iLevel", (abil, newValue) => {
-	abil.Level = newValue as number
-	EventsSDK.emit("AbilityLevelChanged", false, abil)
-})
-
 RegisterFieldHandler(
 	Ability,
 	"m_fAbilityChargeRestoreTimeRemaining",
@@ -597,12 +583,33 @@ RegisterFieldHandler(
 		}
 	}
 )
+RegisterFieldHandler(Ability, "m_bHidden", (abil, newValue) => {
+	const oldValue = abil.IsHidden
+	if (oldValue !== newValue) {
+		abil.IsHidden = newValue as boolean
+		EventsSDK.emit("AbilityHiddenChanged", false, abil)
+	}
+})
+RegisterFieldHandler(Ability, "m_iLevel", (abil, newValue) => {
+	const oldValue = abil.Level
+	if (oldValue !== newValue) {
+		abil.Level = newValue as number
+		EventsSDK.emit("AbilityLevelChanged", false, abil)
+	}
+})
 RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, newValue) => {
 	const oldValue = abil.IsInAbilityPhase_
 	if (oldValue !== newValue) {
 		abil.IsInAbilityPhase_ = newValue as boolean
 		abil.IsInAbilityPhaseChangeTime = GameState.RawGameTime
 		EventsSDK.emit("AbilityPhaseChanged", false, abil)
+	}
+})
+RegisterFieldHandler(Ability, "m_flChannelStartTime", (abil, newValue) => {
+	const oldValue = abil.ChannelStartTime
+	if (oldValue !== newValue) {
+		abil.ChannelStartTime = newValue as number
+		EventsSDK.emit("AbilityChannelingChanged", false, abil)
 	}
 })
 RegisterFieldHandler(Ability, "m_fCooldown", (abil, newValue) => {

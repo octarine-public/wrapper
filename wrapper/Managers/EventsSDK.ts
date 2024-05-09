@@ -457,6 +457,11 @@ interface EventsSDK extends EventEmitter {
 		listener: (ability: Ability) => void,
 		priority?: number
 	): EventEmitter
+	on(
+		name: "AbilityChannelingChanged",
+		listener: (ability: Ability) => void,
+		priority?: number
+	): EventEmitter
 	/**
 	 * @description Includes fog of war
 	 */
