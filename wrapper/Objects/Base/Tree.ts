@@ -22,6 +22,14 @@ export class Tree extends Entity {
 	public static TreeActiveMask: bigint[] = []
 	public BinaryID = 0
 
+	constructor(
+		public readonly Index: number,
+		serial: number
+	) {
+		super(Index, serial)
+		this.IsTree = true
+	}
+
 	public get IsAlive() {
 		const bitPos = this.BinaryID
 		const pos = (bitPos / 64) | 0,

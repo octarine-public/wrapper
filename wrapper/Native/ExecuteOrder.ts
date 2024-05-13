@@ -251,17 +251,16 @@ export class ExecuteOrder {
 	 * pass Position: Vector3 at IOBuffer offset 0
 	 */
 	public toNative() {
-		const target = this.Target,
-			ability = this.Ability_
-
+		let target = this.Target
+		if (target instanceof Entity) {
+			target = this.IsEntityTree(target) ? target.BinaryID : target.Index
+		} else {
+			target = target ?? 0
+		}
+		const ability = this.Ability_
 		return {
 			OrderType: this.OrderType,
-			Target:
-				target instanceof Entity
-					? target instanceof Tree || target instanceof TempTree
-						? target.BinaryID
-						: target.Index
-					: target,
+			Target: target,
 			Ability: ability instanceof Ability ? ability.Index : ability,
 			Issuers: this.Issuers.map(ent => ent.Index),
 			Queue: this.Queue,
@@ -395,5 +394,9 @@ export class ExecuteOrder {
 		}
 
 		return true
+	}
+
+	private IsEntityTree(entity: Entity): entity is Tree | TempTree {
+		return entity.IsTree
 	}
 }

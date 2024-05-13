@@ -15,6 +15,7 @@ export class TempTree extends Entity {
 		this.BinaryID = TempTreeIDOffset + index
 		this.ModelName = "models/props_tree/tree_oak_00.vmdl"
 		this.OnModelUpdated()
+		this.IsTree = true
 	}
 
 	public get IsAlive() {

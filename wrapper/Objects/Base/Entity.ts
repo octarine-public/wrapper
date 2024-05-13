@@ -134,6 +134,7 @@ export class Entity {
 	public IsVisible = true
 	public IsShop = false
 	public IsGameRules = false
+	public IsTree = false
 	public DeltaZ = 0
 	public AnimationTime = 0
 	public ModelScale = 1
