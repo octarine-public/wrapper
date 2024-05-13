@@ -548,10 +548,16 @@ export class Modifier {
 			return 0
 		}
 		const abil = this.Ability
-
 		level = Math.max(abil?.Level ?? level, level)
+
 		if (this.CustomAbilityName !== undefined) {
-			return this.byAbilityData(this.CustomAbilityName, specialName, level)
+			return this.byAbilityData(
+				this.CustomAbilityName,
+				specialName,
+				// some abilities don't have levels ex: (modifier_item_moon_shard_consumed)
+				// valve updated set AbilityLevel to 0
+				Math.max(level, 1)
+			)
 		}
 		if (abil === undefined || level === 0) {
 			return 0
