@@ -122,7 +122,7 @@ export const GUIInfo = new (class CGUIInfo {
 			abils !== undefined
 				? abils.filter(
 						abil =>
-							!abil.AbilityBehavior.includes(
+							!abil.HasBehavior(
 								DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_HIDDEN
 							)
 					).length
