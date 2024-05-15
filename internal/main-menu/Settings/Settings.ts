@@ -46,7 +46,7 @@ export const InternalSettings = new (class {
 	}
 
 	public MouseWheel(up: boolean) {
-		return this.InternalCamera.onMouseWheel(up)
+		return this.InternalCamera.MouseWheel(up)
 	}
 
 	public GameStarted() {

@@ -1387,6 +1387,9 @@ EventsSDK.on("Draw", () => {
 	) {
 		return
 	}
+	if (GameState.MapName === "<empty>") {
+		return
+	}
 	const size = GUIInfo.ScaleHeight(24)
 	const wSize = RendererSDK.WindowSize.Clone()
 	const windowSize = wSize.DivideScalar(2)
