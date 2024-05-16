@@ -1,7 +1,7 @@
 import { ParticleAttachment } from "../Enums/ParticleAttachment"
 import { EventsSDK } from "../Managers/EventsSDK"
+import { Entity } from "../Objects/Base/Entity"
 import { FakeUnit } from "../Objects/Base/FakeUnit"
-import { Unit } from "../Objects/Base/Unit"
 import { GetMapNumberProperty, GetMapStringProperty } from "../Resources/ParseUtils"
 import { GameState } from "../Utils/GameState"
 import { QAngle } from "./QAngle"
@@ -109,7 +109,7 @@ export class NetworkedParticle {
 	public readonly ControlPointsOffset = new Map<number, [Vector3, QAngle]>()
 	public readonly ControlPointsEnt = new Map<
 		number,
-		[Unit | FakeUnit, ParticleAttachment, number, boolean]
+		[Entity | FakeUnit, ParticleAttachment, number, boolean]
 	>()
 	public readonly TextureAttributes = new Map<string, string>()
 	public readonly EndTime: number
@@ -124,8 +124,8 @@ export class NetworkedParticle {
 		public readonly Path: string,
 		public readonly ParticleSystemHandle: bigint,
 		public readonly Attach: ParticleAttachment,
-		public AttachedTo: Nullable<Unit | FakeUnit>,
-		public ModifiersAttachedTo: Nullable<Unit | FakeUnit>
+		public AttachedTo: Nullable<Entity | FakeUnit>,
+		public ModifiersAttachedTo: Nullable<Entity | FakeUnit>
 	) {
 		this.PathNoEcon = GetOriginalParticlePath(this.Path)
 		NetworkedParticle.Instances.set(this.Index, this)

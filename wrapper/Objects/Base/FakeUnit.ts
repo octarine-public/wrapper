@@ -88,12 +88,9 @@ export const FakeUnits: FakeUnit[] = []
 
 export function GetPredictionTarget(
 	handle: Nullable<Entity | number>
-): Nullable<Unit | FakeUnit> {
-	if (handle === undefined) {
-		return undefined
-	}
-	if (handle instanceof Entity) {
-		return handle instanceof Unit ? handle : undefined
+): Nullable<Entity | FakeUnit> {
+	if (typeof handle !== "number") {
+		return handle
 	}
 	const index = handle & EntityManager.INDEX_MASK
 	const serial = (handle >> EntityManager.INDEX_BITS) & EntityManager.SERIAL_MASK
@@ -102,7 +99,7 @@ export function GetPredictionTarget(
 	}
 	const ent = EntityManager.EntityByIndex(handle)
 	if (ent !== undefined) {
-		return ent instanceof Unit ? ent : undefined
+		return ent
 	}
 	let fakeUnit = fakeUnitsMap.get(index)
 	if (fakeUnit === undefined) {

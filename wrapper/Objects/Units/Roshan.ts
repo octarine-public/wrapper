@@ -70,6 +70,9 @@ EventsSDK.on("ParticleCreated", par => {
 	if (par.PathNoEcon !== "particles/neutral_fx/roshan_spawn.vpcf") {
 		return
 	}
+	if (!(par.AttachedTo instanceof FakeUnit || par.AttachedTo instanceof Unit)) {
+		return
+	}
 	Roshan.Instance = par.AttachedTo
 	lastMinute = GetLastMinute()
 	Roshan.HP = 6000 + GetHPChangedByMinute(lastMinute)

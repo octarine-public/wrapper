@@ -677,7 +677,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 	const par = NetworkedParticle.Instances.get(index)
 	const msgType = msg.get("type") as PARTICLE_MESSAGE
 	let changedEntPos = false
-	let changedEnt: Nullable<FakeUnit | Unit>
+	let changedEnt: Nullable<FakeUnit | Entity>
 	switch (msgType) {
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENTITY_POSITION: {
 			const submsg = msg.get("update_entity_position") as RecursiveProtobuf
@@ -686,7 +686,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 				),
 				entID = submsg.get("entity_handle") as number
 			const ent = GetPredictionTarget(entID)
-			if (ent !== undefined) {
+			if (ent instanceof Unit || ent instanceof FakeUnit) {
 				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				ent.LastPredictedPositionUpdate = GameState.RawGameTime
 				ent.PredictedPosition.CopyFrom(position)
@@ -702,7 +702,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 					submsg.get("fallback_position") as RecursiveProtobuf
 				)
 			const ent = GetPredictionTarget(entID)
-			if (ent !== undefined) {
+			if (ent instanceof Unit || ent instanceof FakeUnit) {
 				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				ent.LastPredictedPositionUpdate = GameState.RawGameTime
 				ent.PredictedPosition.CopyFrom(position)
@@ -750,7 +750,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 
 	if (par === undefined) {
 		if (changedEnt !== undefined) {
-			EventsSDK.emit("ParticleUnitPositionUpdated", false, changedEnt, undefined)
+			EventsSDK.emit("ParticleEntityPositionUpdated", false, changedEnt, undefined)
 		}
 		return
 	}
@@ -821,7 +821,10 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 				)
 			par.ControlPointsFallback.set(cp, position)
 			const cpEnt = par.ControlPointsEnt.get(cp)
-			if (cpEnt !== undefined) {
+			if (
+				cpEnt !== undefined &&
+				(cpEnt[0] instanceof Unit || cpEnt[0] instanceof FakeUnit)
+			) {
 				cpEnt[0].LastRealPredictedPositionUpdate = GameState.RawGameTime
 				cpEnt[0].LastPredictedPositionUpdate = GameState.RawGameTime
 				cpEnt[0].PredictedPosition.CopyFrom(position)
@@ -1024,7 +1027,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 	}
 	EventsSDK.emit("ParticleUpdated", false, par)
 	if (changedEntPos) {
-		EventsSDK.emit("ParticleUnitPositionUpdated", false, changedEnt, par)
+		EventsSDK.emit("ParticleEntityPositionUpdated", false, changedEnt, par)
 	}
 }
 

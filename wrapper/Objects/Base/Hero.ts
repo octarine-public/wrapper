@@ -111,7 +111,9 @@ export const Heroes = EntityManager.GetEntitiesByClass(Hero)
 
 RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", (ent, newVal) => {
 	const id = newVal as number
-	ent.ReplicatingOtherHeroModel = GetPredictionTarget(id)
+	const other = GetPredictionTarget(id)
+	ent.ReplicatingOtherHeroModel =
+		other instanceof Unit || other instanceof FakeUnit ? other : undefined
 })
 
 RegisterFieldHandler(Hero, "m_flRespawnTime", (ent, newVal) => {

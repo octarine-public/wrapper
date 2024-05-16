@@ -3,7 +3,6 @@ import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
 import { Entity } from "./Entity"
 import { FakeUnit } from "./FakeUnit"
-import { Unit } from "./Unit"
 
 export class Projectile {
 	public IsValid = true
@@ -13,7 +12,7 @@ export class Projectile {
 		public readonly ID: number,
 		public ParticlePath: string,
 		public ParticleSystemHandle: bigint,
-		public Source: Nullable<Unit | FakeUnit>,
+		public Source: Nullable<Entity | FakeUnit>,
 		public readonly ColorGemColor: Color,
 		public Speed: number
 	) {
@@ -32,7 +31,7 @@ export class LinearProjectile extends Projectile {
 
 	constructor(
 		projID: number,
-		ent: Nullable<Unit | FakeUnit>,
+		ent: Nullable<Entity | FakeUnit>,
 		path: string,
 		particleSystemHandle: bigint,
 		public readonly MaxSpeed: number,
@@ -64,8 +63,8 @@ export class TrackingProjectile extends Projectile {
 
 	constructor(
 		projID: number,
-		source: Nullable<Unit | FakeUnit>,
-		public Target: Nullable<Unit | FakeUnit>,
+		source: Nullable<Entity | FakeUnit>,
+		public Target: Nullable<Entity | FakeUnit>,
 		speed: number,
 		public readonly SourceAttachment: string,
 		path: string,
@@ -100,7 +99,7 @@ export class TrackingProjectile extends Projectile {
 	}
 
 	public Update(
-		targetEntity: Nullable<Unit | FakeUnit>,
+		targetEntity: Nullable<Entity | FakeUnit>,
 		speed: number,
 		path: string,
 		particleSystemHandle: bigint,

@@ -129,8 +129,8 @@ interface EventsSDK extends EventEmitter {
 		priority?: number
 	): EventEmitter
 	on(
-		name: "ParticleUnitPositionUpdated",
-		callback: (unit: FakeUnit | Unit, particle: Nullable<NetworkedParticle>) => void,
+		name: "ParticleEntityPositionUpdated",
+		callback: (ent: FakeUnit | Entity, particle: Nullable<NetworkedParticle>) => void,
 		priority?: number
 	): EventEmitter
 	on(
@@ -184,7 +184,7 @@ interface EventsSDK extends EventEmitter {
 	): EventEmitter
 	on(
 		name: "TrackingProjectilesDodged",
-		callback: (ent: Unit | FakeUnit, attacks_only: boolean) => void,
+		callback: (ent: Entity | FakeUnit, attacks_only: boolean) => void,
 		priority?: number
 	): EventEmitter
 	on(
@@ -389,7 +389,7 @@ interface EventsSDK extends EventEmitter {
 		name: "StartSound",
 		listener: (
 			name: string,
-			source_ent: Nullable<Unit | FakeUnit>,
+			source_ent: Nullable<Entity | FakeUnit>,
 			position: Vector3,
 			seed: number,
 			start_time: number

@@ -541,6 +541,9 @@ const Monitor = new (class PlayerDataCustomChanged {
 			owner.PlayerCustomData.ReliableGold += reliableGold
 			return
 		}
+		if (!(owner instanceof Unit)) {
+			return
+		}
 		if (owner === undefined || owner.IsIllusion || owner.IsClone) {
 			return
 		}
@@ -578,6 +581,9 @@ const Monitor = new (class PlayerDataCustomChanged {
 				abilData.GetSpecialValue("bonus_gold", 1, name),
 				abilData.GetMaxCooldownForLevel(1)
 			)
+			return
+		}
+		if (!(ent instanceof Unit)) {
 			return
 		}
 		if (ent === undefined || ent.IsIllusion || ent.IsClone) {
@@ -706,6 +712,9 @@ const Monitor = new (class PlayerDataCustomChanged {
 			caster[0].PlayerCustomData.UnreliableGold += !this.IsTurbo
 				? this.fakeGoldHandOfMidas
 				: this.fakeGoldHandOfMidas * 2
+			return
+		}
+		if (!(caster[0] instanceof Unit)) {
 			return
 		}
 		const playerData = PlayerCustomData.get(caster[0].PlayerID)
