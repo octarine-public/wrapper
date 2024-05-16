@@ -145,16 +145,6 @@ interface EventsSDK extends EventEmitter {
 		priority?: number
 	): EventEmitter
 	on(
-		name: "BloodImpact",
-		callback: (
-			target: Nullable<Unit | FakeUnit>,
-			scale: number,
-			xnormal: number,
-			ynormal: number
-		) => void,
-		priority?: number
-	): EventEmitter
-	on(
 		name: "PrepareUnitOrders",
 		callback: (order: ExecuteOrder) => false | any,
 		priority?: number

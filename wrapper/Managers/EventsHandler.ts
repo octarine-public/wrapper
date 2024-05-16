@@ -612,13 +612,6 @@ message CDOTAUserMsg_ChatEvent {
 	optional uint32 value3 = 10;
 }
 
-message CDOTAUserMsg_TE_DotaBloodImpact {
-	optional uint32 entity = 1 [default = 16777215];
-	optional float scale = 2;
-	optional float xnormal = 3;
-	optional float ynormal = 4;
-}
-
 message CDOTAUserMsg_TE_UnitAnimation {
 	optional uint32 entity = 1 [default = 16777215];
 	optional int32 sequence_variant = 2;
@@ -1177,25 +1170,6 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				msg.get("playerid_6") as number,
 				msg.get("value2") as number,
 				msg.get("value3") as number
-			)
-			break
-		}
-		case 520: {
-			const msg = ParseProtobufNamed(
-				new Uint8Array(buf_),
-				"CDOTAUserMsg_TE_DotaBloodImpact"
-			)
-			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
-			if (ent === undefined) {
-				break
-			}
-			EventsSDK.emit(
-				"BloodImpact",
-				false,
-				ent,
-				msg.get("scale") as number,
-				msg.get("xnormal") as number,
-				msg.get("ynormal") as number
 			)
 			break
 		}
