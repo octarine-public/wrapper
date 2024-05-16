@@ -259,7 +259,7 @@ export class Entity {
 		return 0
 	}
 	public get CollisionRadius(): number {
-		return 20 // TODO: native crutch broke, we need to completely rewrite that in TS
+		return 0
 	}
 	public get ProjectileCollisionSize(): number {
 		return this.CollisionRadius
