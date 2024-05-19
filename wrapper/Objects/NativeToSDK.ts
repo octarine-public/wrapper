@@ -168,20 +168,22 @@ function FixType(symbols: string[], field: any): string {
 			)
 		}
 	}
+	const dec = `// low: ${field.low_value ?? 0} high: ${field.high_value ?? 1} flags: ${field.encode_flags ?? 0} bits: ${field.bit_count ?? 0}`
 	let type = symbols[field.var_type_sym]
 	// types
 	type = type.replace(/\<\s/g, "<")
 	type = type.replace(/\s\>/g, ">")
-	type = type.replace(/CNetworkedQuantizedFloat/g, "float")
+	type = type.replace(/CNetworkedQuantizedFloat/g, `float ${dec}`)
 	type = type.replace(/GameTime_t/g, "float")
 	type = type.replace(/CUtlVector\<(.*)\>/g, "$1[]")
 	type = type.replace(/CNetworkUtlVectorBase\<(.*)\>/g, "$1[]")
 	type = type.replace(/CHandle\<(.*)\>/g, "CEntityIndex<$1>")
 	type = type.replace(/CStrongHandle\<(.*)\>/g, "CStrongHandle<$1>")
-	type = type.replace(/Vector2D/g, "Vector2")
-	type = type.replace(/Vector4D|Quaternion/g, "Vector4")
-	type = type.replace(/Vector$/g, "Vector3")
-	type = type.replace(/Vector([^\d])/g, "Vector3$1")
+	type = type.replace(/Vector2D/g, `Vector2 ${dec}`)
+	type = type.replace(/Vector4D|Quaternion/g, `Vector4 ${dec}`)
+	type = type.replace(/Vector$/g, `Vector3 ${dec}`)
+	type = type.replace(/QAngle/g, `QAngle ${dec}`)
+	type = type.replace(/Vector([^\d])/g, `Vector3$1 ${dec}`)
 
 	// fix arrays
 	type = type.replace(/\[\d+\]/g, "[]")
@@ -199,6 +201,13 @@ function FixType(symbols: string[], field: any): string {
 
 	// omit pointers
 	type = type.replace(/\*/g, "")
+
+	{
+		const varEncoderSym = field.var_encoder_sym
+		if (varEncoderSym !== undefined) {
+			type += `/* encoder: ${symbols[varEncoderSym]} */`
+		}
+	}
 
 	return type
 }
