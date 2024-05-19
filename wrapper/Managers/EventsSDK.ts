@@ -244,6 +244,11 @@ interface EventsSDK extends EventEmitter {
 		priority?: number
 	): EventEmitter
 	on(
+		name: "UnitRemoveAllGestures",
+		listener: (npc: Nullable<Unit | FakeUnit>) => void,
+		priority?: number
+	): EventEmitter
+	on(
 		name: "UnitFadeGesture",
 		listener: (npc: Nullable<Unit | FakeUnit>, activity: number) => void,
 		priority?: number

@@ -1178,6 +1178,9 @@ Events.on("ServerMessage", (msgID, buf_) => {
 						)
 						break
 					}
+					case EDotaEntityMessages.DOTA_UNIT_REMOVE_ALL_GESTURES:
+						EventsSDK.emit("UnitRemoveAllGestures", false, ent)
+						break
 					case EDotaEntityMessages.DOTA_UNIT_FADE_GESTURE: {
 						const submsg = msg.get("fade_gesture") as RecursiveProtobuf
 						EventsSDK.emit(
