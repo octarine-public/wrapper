@@ -87,12 +87,6 @@ interface EventsSDK extends EventEmitter {
 	 */
 	on(name: "PreDataUpdate", callback: () => void, priority?: number): EventEmitter
 	/**
-	 * Emitted before all EntityCreateds, but after all PreEntityCreateds were emitted
-	 * and entity properties were changed
-	 * Gets called when game is paused, and might be called faster than actual server ticks.
-	 */
-	on(name: "MidDataUpdate", callback: () => void, priority?: number): EventEmitter
-	/**
 	 * Emitted after every server entity update.
 	 * Gets called when game is paused, and might be called faster than actual server ticks.
 	 */

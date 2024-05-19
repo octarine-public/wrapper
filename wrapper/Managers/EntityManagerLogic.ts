@@ -360,7 +360,6 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 			ent.ForwardNativeProperties(healthBarOffset, totalMoveSpeed)
 		}
 	}
-	EventsSDK.emit("MidDataUpdate", false)
 	for (let index = 0, end = createdEntities.length; index < end; index++) {
 		const ent = createdEntities[index]
 		EventsSDK.emit("EntityCreated", false, ent)
