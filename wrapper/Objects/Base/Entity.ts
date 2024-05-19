@@ -774,7 +774,7 @@ EventsSDK.on("GameEvent", (name, obj) => {
 	switch (name) {
 		case "entity_hurt": {
 			const ent = EntityManager.EntityByIndex(obj.entindex_killed)
-			if (ent !== undefined && ent.IsAlive) {
+			if (ent !== undefined && !ent.IsVisible && ent.IsAlive) {
 				ent.HP = Math.max(Math.round(ent.HP - obj.damage), 1)
 			}
 			break

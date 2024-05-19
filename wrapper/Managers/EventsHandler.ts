@@ -656,6 +656,23 @@ message CMsgSosSetLibraryStackFields {
 }
 `)
 
+const cbQueue: (() => void)[] = []
+function QueueEvent(cb: () => void): void {
+	cbQueue.push(cb)
+}
+
+Events.on("NewConnection", () => cbQueue.clear())
+EventsSDK.on(
+	"PostDataUpdate",
+	() => {
+		for (const cb of cbQueue) {
+			cb()
+		}
+		cbQueue.clear()
+	},
+	-Infinity
+)
+
 function HandleParticleMsg(msg: RecursiveProtobuf): void {
 	const index = msg.get("index") as number
 	const par = NetworkedParticle.Instances.get(index)
@@ -1046,165 +1063,198 @@ Events.on("ServerMessage", (msgID, buf_) => {
 			EventsSDK.emit("RemoveAllStringTables", false)
 			break
 		case 145:
-			HandleParticleMsg(
-				ParseProtobufNamed(new Uint8Array(buf_), "CUserMsg_ParticleManager")
-			)
+			QueueEvent(() => {
+				HandleParticleMsg(
+					ParseProtobufNamed(new Uint8Array(buf_), "CUserMsg_ParticleManager")
+				)
+			})
 			break
 		case 208: {
-			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CMsgSosStartSoundEvent")
-			const hash = msg.get("soundevent_hash") as number
-			const soundName = LookupSoundNameByHash(hash)
-			if (soundName === undefined) {
-				// console.log(`Unknown soundname hash: ${hash}`)
-				break
-			}
-			const handle = (msg.get("source_entity_index") as number) ?? 0,
-				seed = (msg.get("seed") as number) ?? 0,
-				startTime = (msg.get("start_time") as number) ?? -1,
-				packedParams = msg.get("packed_params") as Nullable<Uint8Array>
-
-			const ent = GetPredictionTarget(handle),
-				position = new Vector3()
-
-			if (packedParams !== undefined && packedParams.byteLength >= 19) {
-				const stream = new ViewBinaryStream(
-					new DataView(
-						packedParams.buffer,
-						packedParams.byteOffset,
-						packedParams.byteLength
-					)
+			QueueEvent(() => {
+				const msg = ParseProtobufNamed(
+					new Uint8Array(buf_),
+					"CMsgSosStartSoundEvent"
 				)
-				stream.RelativeSeek(7)
-				position.x = stream.ReadFloat32()
-				position.y = stream.ReadFloat32()
-				position.z = stream.ReadFloat32()
-			}
-			EventsSDK.emit("StartSound", false, soundName, ent, position, seed, startTime)
+				const hash = msg.get("soundevent_hash") as number
+				const soundName = LookupSoundNameByHash(hash)
+				if (soundName === undefined) {
+					// console.log(`Unknown soundname hash: ${hash}`)
+					return
+				}
+				const handle = (msg.get("source_entity_index") as number) ?? 0,
+					seed = (msg.get("seed") as number) ?? 0,
+					startTime = (msg.get("start_time") as number) ?? -1,
+					packedParams = msg.get("packed_params") as Nullable<Uint8Array>
+
+				const ent = GetPredictionTarget(handle),
+					position = new Vector3()
+
+				if (packedParams !== undefined && packedParams.byteLength >= 19) {
+					const stream = new ViewBinaryStream(
+						new DataView(
+							packedParams.buffer,
+							packedParams.byteOffset,
+							packedParams.byteLength
+						)
+					)
+					stream.RelativeSeek(7)
+					position.x = stream.ReadFloat32()
+					position.y = stream.ReadFloat32()
+					position.z = stream.ReadFloat32()
+				}
+				EventsSDK.emit(
+					"StartSound",
+					false,
+					soundName,
+					ent,
+					position,
+					seed,
+					startTime
+				)
+			})
 			break
 		}
 		case 488: {
-			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_UnitEvent")
-			const handle = msg.get("entity_index") as number
-			const ent = GetPredictionTarget(handle)
-			if (ent instanceof Entity && !(ent instanceof Unit)) {
-				break
-			}
-			switch (msg.get("msg_type") as EDotaEntityMessages) {
-				case EDotaEntityMessages.DOTA_UNIT_SPEECH: {
-					const submsg = msg.get("speech") as RecursiveProtobuf,
-						predelay = submsg.get("predelay") as RecursiveProtobuf
-					EventsSDK.emit(
-						"UnitSpeech",
-						false,
-						ent,
-						submsg.get("speech_concept") as number,
-						submsg.get("response") as string,
-						submsg.get("recipient_type") as number,
-						submsg.get("muteable") as boolean,
-						(predelay?.get("start") as number) ?? 0,
-						(predelay?.get("range") as number) ?? 0,
-						submsg.get("flags") as number
-					)
-					break
+			QueueEvent(() => {
+				const msg = ParseProtobufNamed(
+					new Uint8Array(buf_),
+					"CDOTAUserMsg_UnitEvent"
+				)
+				const handle = msg.get("entity_index") as number
+				const ent = GetPredictionTarget(handle)
+				if (ent instanceof Entity && !(ent instanceof Unit)) {
+					return
 				}
-				case EDotaEntityMessages.DOTA_UNIT_SPEECH_MUTE: {
-					const submsg = msg.get("speech_mute") as RecursiveProtobuf
-					EventsSDK.emit(
-						"UnitSpeechMute",
-						false,
-						ent,
-						(submsg?.get("delay") as number) ?? 0
-					)
-					break
+				switch (msg.get("msg_type") as EDotaEntityMessages) {
+					case EDotaEntityMessages.DOTA_UNIT_SPEECH: {
+						const submsg = msg.get("speech") as RecursiveProtobuf,
+							predelay = submsg.get("predelay") as RecursiveProtobuf
+						EventsSDK.emit(
+							"UnitSpeech",
+							false,
+							ent,
+							submsg.get("speech_concept") as number,
+							submsg.get("response") as string,
+							submsg.get("recipient_type") as number,
+							submsg.get("muteable") as boolean,
+							(predelay?.get("start") as number) ?? 0,
+							(predelay?.get("range") as number) ?? 0,
+							submsg.get("flags") as number
+						)
+						break
+					}
+					case EDotaEntityMessages.DOTA_UNIT_SPEECH_MUTE: {
+						const submsg = msg.get("speech_mute") as RecursiveProtobuf
+						EventsSDK.emit(
+							"UnitSpeechMute",
+							false,
+							ent,
+							(submsg?.get("delay") as number) ?? 0
+						)
+						break
+					}
+					case EDotaEntityMessages.DOTA_UNIT_ADD_GESTURE: {
+						const submsg = msg.get("add_gesture") as RecursiveProtobuf
+						EventsSDK.emit(
+							"UnitAddGesture",
+							false,
+							ent,
+							submsg.get("activity") as number,
+							submsg.get("slot") as number,
+							submsg.get("fade_in") as number,
+							submsg.get("fade_out") as number,
+							submsg.get("playback_rate") as number,
+							submsg.get("sequence_variant") as number
+						)
+						break
+					}
+					case EDotaEntityMessages.DOTA_UNIT_REMOVE_GESTURE: {
+						const submsg = msg.get("remove_gesture") as RecursiveProtobuf
+						EventsSDK.emit(
+							"UnitRemoveGesture",
+							false,
+							ent,
+							submsg.get("activity") as number
+						)
+						break
+					}
+					case EDotaEntityMessages.DOTA_UNIT_FADE_GESTURE: {
+						const submsg = msg.get("fade_gesture") as RecursiveProtobuf
+						EventsSDK.emit(
+							"UnitFadeGesture",
+							false,
+							ent,
+							submsg.get("activity") as number
+						)
+						break
+					}
 				}
-				case EDotaEntityMessages.DOTA_UNIT_ADD_GESTURE: {
-					const submsg = msg.get("add_gesture") as RecursiveProtobuf
-					EventsSDK.emit(
-						"UnitAddGesture",
-						false,
-						ent,
-						submsg.get("activity") as number,
-						submsg.get("slot") as number,
-						submsg.get("fade_in") as number,
-						submsg.get("fade_out") as number,
-						submsg.get("playback_rate") as number,
-						submsg.get("sequence_variant") as number
-					)
-					break
-				}
-				case EDotaEntityMessages.DOTA_UNIT_REMOVE_GESTURE: {
-					const submsg = msg.get("remove_gesture") as RecursiveProtobuf
-					EventsSDK.emit(
-						"UnitRemoveGesture",
-						false,
-						ent,
-						submsg.get("activity") as number
-					)
-					break
-				}
-				case EDotaEntityMessages.DOTA_UNIT_FADE_GESTURE: {
-					const submsg = msg.get("fade_gesture") as RecursiveProtobuf
-					EventsSDK.emit(
-						"UnitFadeGesture",
-						false,
-						ent,
-						submsg.get("activity") as number
-					)
-					break
-				}
-			}
+			})
 			break
 		}
 		case 466: {
-			const msg = ParseProtobufNamed(new Uint8Array(buf_), "CDOTAUserMsg_ChatEvent")
-			EventsSDK.emit(
-				"ChatEvent",
-				false,
-				msg.get("type") as DOTA_CHAT_MESSAGE,
-				msg.get("value") as number,
-				msg.get("playerid_1") as number,
-				msg.get("playerid_2") as number,
-				msg.get("playerid_3") as number,
-				msg.get("playerid_4") as number,
-				msg.get("playerid_5") as number,
-				msg.get("playerid_6") as number,
-				msg.get("value2") as number,
-				msg.get("value3") as number
-			)
+			QueueEvent(() => {
+				const msg = ParseProtobufNamed(
+					new Uint8Array(buf_),
+					"CDOTAUserMsg_ChatEvent"
+				)
+				EventsSDK.emit(
+					"ChatEvent",
+					false,
+					msg.get("type") as DOTA_CHAT_MESSAGE,
+					msg.get("value") as number,
+					msg.get("playerid_1") as number,
+					msg.get("playerid_2") as number,
+					msg.get("playerid_3") as number,
+					msg.get("playerid_4") as number,
+					msg.get("playerid_5") as number,
+					msg.get("playerid_6") as number,
+					msg.get("value2") as number,
+					msg.get("value3") as number
+				)
+			})
 			break
 		}
 		case 521: {
-			const msg = ParseProtobufNamed(
-				new Uint8Array(buf_),
-				"CDOTAUserMsg_TE_UnitAnimation"
-			)
-			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
-			if (!(ent instanceof Unit)) {
-				break
-			}
-			EventsSDK.emit(
-				"UnitAnimation",
-				false,
-				ent,
-				msg.get("sequence_variant") as number,
-				msg.get("playbackrate") as number,
-				msg.get("castpoint") as number,
-				msg.get("type") as number,
-				msg.get("activity") as number,
-				msg.get("lag_compensation_time") as number
-			)
+			QueueEvent(() => {
+				const msg = ParseProtobufNamed(
+					new Uint8Array(buf_),
+					"CDOTAUserMsg_TE_UnitAnimation"
+				)
+				const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
+				if (!(ent instanceof Unit)) {
+					return
+				}
+				EventsSDK.emit(
+					"UnitAnimation",
+					false,
+					ent,
+					msg.get("sequence_variant") as number,
+					msg.get("playbackrate") as number,
+					msg.get("castpoint") as number,
+					msg.get("type") as number,
+					msg.get("activity") as number,
+					msg.get("lag_compensation_time") as number
+				)
+			})
 			break
 		}
 		case 522: {
-			const msg = ParseProtobufNamed(
-				new Uint8Array(buf_),
-				"CDOTAUserMsg_TE_UnitAnimationEnd"
-			)
-			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
-			if (!(ent instanceof Unit)) {
-				break
-			}
-			EventsSDK.emit("UnitAnimationEnd", false, ent, msg.get("snap") as boolean)
+			QueueEvent(() => {
+				const msg = ParseProtobufNamed(
+					new Uint8Array(buf_),
+					"CDOTAUserMsg_TE_UnitAnimationEnd"
+				)
+				const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
+				if (ent instanceof Unit) {
+					EventsSDK.emit(
+						"UnitAnimationEnd",
+						false,
+						ent,
+						msg.get("snap") as boolean
+					)
+				}
+			})
 			break
 		}
 		default:
@@ -1238,7 +1288,9 @@ Events.on("MatchmakingStatsUpdated", data => {
 	)
 })
 
-Events.on("GameEvent", (name, obj) => EventsSDK.emit("GameEvent", false, name, obj))
+Events.on("GameEvent", (name, obj) =>
+	QueueEvent(() => EventsSDK.emit("GameEvent", false, name, obj))
+)
 
 let inputCaptureDepth = 0
 Events.on("InputCaptured", isCaptured => {
