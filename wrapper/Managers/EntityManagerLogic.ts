@@ -364,7 +364,7 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 		const ent = createdEntities[index]
 		EventsSDK.emit("EntityCreated", false, ent)
 	}
-	EventsSDK.emit("PostDataUpdate", false)
+	EventsSDK.emit("PostDataUpdate", false, latestTickDelta)
 	if (latestTickDelta !== 0) {
 		GameState.LatestTickDelta = latestTickDelta
 		EventsSDK.emit("Tick", false, latestTickDelta)

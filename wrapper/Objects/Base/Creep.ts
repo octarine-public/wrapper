@@ -83,8 +83,8 @@ EventsSDK.on("PreEntityCreated", ent => {
 	}
 })
 
-EventsSDK.on("Tick", dt => {
-	if (GameRules === undefined) {
+EventsSDK.on("PostDataUpdate", dt => {
+	if (GameRules === undefined || dt === 0) {
 		return
 	}
 	const localTeam = GameState.LocalTeam

@@ -79,6 +79,7 @@ interface EventsSDK extends EventEmitter {
 	/**
 	 * Emitted every time GameRules.RawGameTime changes, a.k.a. tick,
 	 * right after PostUpdate
+	 * @deprecated
 	 */
 	on(name: "Tick", callback: (dt: number) => void, priority?: number): EventEmitter
 	/**
@@ -90,7 +91,11 @@ interface EventsSDK extends EventEmitter {
 	 * Emitted after every server entity update.
 	 * Gets called when game is paused, and might be called faster than actual server ticks.
 	 */
-	on(name: "PostDataUpdate", callback: () => void, priority?: number): EventEmitter
+	on(
+		name: "PostDataUpdate",
+		callback: (dt: number) => void,
+		priority?: number
+	): EventEmitter
 	on(
 		name: "ControllableByPlayerMaskChanged",
 		callback: (npc: Unit) => void,

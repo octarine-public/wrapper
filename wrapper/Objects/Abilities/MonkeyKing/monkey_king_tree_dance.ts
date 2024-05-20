@@ -109,7 +109,7 @@ EventsSDK.on("ParticleDestroyed", par => {
 })
 
 const abils = EntityManager.GetEntitiesByClass(monkey_king_tree_dance)
-EventsSDK.on("Tick", dt => {
+EventsSDK.on("PostDataUpdate", dt => {
 	for (let i = abils.length - 1; i > -1; i--) {
 		const abil = abils[i]
 		const owner = abil.Owner

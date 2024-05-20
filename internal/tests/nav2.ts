@@ -63,7 +63,7 @@
 // 		}
 // 	}
 
-// 	public Tick() {
+// 	public PostDataUpdate() {
 // 		if (GridNav === undefined || LocalPlayer?.Hero === undefined) {
 // 			return
 // 		}
@@ -190,7 +190,7 @@
 
 // EventsSDK.on("Draw", () => NavEntityMeshVision.Draw())
 
-// EventsSDK.on("Tick", () => NavEntityMeshVision.Tick())
+// EventsSDK.on("PostDataUpdate", () => NavEntityMeshVision.PostDataUpdate())
 
 // EventsSDK.on("EntityCreated", ent => {
 // 	if (!(ent instanceof Unit) || !ent.IsHero) {

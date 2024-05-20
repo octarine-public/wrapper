@@ -6,7 +6,7 @@ import { Events } from "../Events"
 import { EventsSDK } from "../EventsSDK"
 
 const Monitor = new (class CNetworkedParticleChanged {
-	public Tick() {
+	public PostDataUpdate() {
 		const destroyedParticles: NetworkedParticle[] = []
 		for (const par of NetworkedParticle.Instances.values()) {
 			if (
@@ -90,7 +90,7 @@ const Monitor = new (class CNetworkedParticleChanged {
 	}
 })()
 
-EventsSDK.on("Tick", () => Monitor.Tick())
+EventsSDK.on("PostDataUpdate", () => Monitor.PostDataUpdate())
 
 Events.on("NewConnection", () => Monitor.NewConnection())
 

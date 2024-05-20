@@ -9,7 +9,10 @@ import { EventsSDK } from "../EventsSDK"
 import { Prediction } from "../Prediction/Prediction"
 
 const Monitor = new (class CPreUnitChanged {
-	public Tick(dt: number) {
+	public PostDataUpdate(dt: number) {
+		if (dt === 0) {
+			return
+		}
 		for (let index = Units.length - 1; index > -1; index--) {
 			const unit = Units[index]
 			// see: https://dota2.fandom.com/wiki/Health_Regeneration
@@ -253,7 +256,7 @@ const Monitor = new (class CPreUnitChanged {
 	}
 })()
 
-EventsSDK.on("Tick", dt => Monitor.Tick(dt))
+EventsSDK.on("PostDataUpdate", dt => Monitor.PostDataUpdate(dt))
 
 EventsSDK.on("LocalTeamChanged", () => Monitor.LocalTeamChanged())
 

@@ -24,8 +24,8 @@
 
 // const positions = new Map<Hero, Vector3>()
 // const heroes = EntityManager.GetEntitiesByClass(Hero)
-// EventsSDK.on("Tick", dt => {
-// 	if (GridNav === undefined) {
+// EventsSDK.on("PostDataUpdate", dt => {
+// 	if (GridNav === undefined || dt === 0) {
 // 		return
 // 	}
 

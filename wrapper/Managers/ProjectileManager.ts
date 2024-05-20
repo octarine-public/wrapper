@@ -96,7 +96,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 	}
 })
 
-EventsSDK.on("Tick", () => {
+EventsSDK.on("PostDataUpdate", () => {
 	const curTime = GameState.RawGameTime
 	const expiredLinearProjectiles: LinearProjectile[] = []
 	const arrLinear = ProjectileManager.AllLinearProjectiles

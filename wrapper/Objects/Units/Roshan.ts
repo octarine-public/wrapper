@@ -113,8 +113,8 @@ EventsSDK.on("EntityDestroyed", ent => {
 	}
 })
 
-EventsSDK.on("Tick", dt => {
-	if (Roshan.HP === 0) {
+EventsSDK.on("PostDataUpdate", dt => {
+	if (Roshan.HP === 0 || dt === 0) {
 		return
 	}
 
