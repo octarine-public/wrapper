@@ -1,5 +1,4 @@
 import { Vector3 } from "../Base/Vector3"
-import { GameActivity } from "../Enums/GameActivity"
 import { GetPositionHeight } from "../Native/WASM"
 import { Entity } from "../Objects/Base/Entity"
 import { GetPredictionTarget } from "../Objects/Base/FakeUnit"
@@ -116,18 +115,7 @@ EventsSDK.on("PostDataUpdate", dt => {
 			if (!(proj.Source instanceof Entity)) {
 				continue
 			}
-			const attachmentPos =
-				proj.SourceAttachment !== ""
-					? proj.Source.GetAttachmentPosition(
-							proj.SourceAttachment,
-							proj.Source.LastActivity,
-							proj.Source.LastActivitySequenceVariant,
-							proj.Source.LastActivity !== (0 as GameActivity)
-								? proj.Source.LastActivityAnimationPoint
-								: Infinity
-						)
-					: proj.Source.Position
-			proj.Position.CopyFrom(attachmentPos)
+			proj.Source.GetAttachmentPosition(proj.SourceAttachment).CopyTo(proj.Position)
 			proj.Position.Extend(
 				proj.TargetLoc,
 				(GameState.CurrentGameTick - proj.LaunchTick) * dt * proj.Speed

@@ -1,7 +1,6 @@
 import { Color } from "../../Base/Color"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
-import { GameActivity } from "../../Enums/GameActivity"
 import { Entity } from "./Entity"
 import { FakeUnit } from "./FakeUnit"
 import { Unit } from "./Unit"
@@ -84,19 +83,7 @@ export class TrackingProjectile extends Projectile {
 		super(projID, path, particleSystemHandle, source, colorgemcolor, speed)
 
 		if (source instanceof Entity) {
-			if (this.SourceAttachment !== "") {
-				const attachmentPos = source.GetAttachmentPosition(
-					this.SourceAttachment,
-					source.LastActivity,
-					source.LastActivitySequenceVariant,
-					source.LastActivity !== (0 as GameActivity)
-						? source.LastActivityAnimationPoint
-						: Infinity
-				)
-				attachmentPos.CopyTo(this.Position)
-			} else {
-				source.Position.CopyTo(this.Position)
-			}
+			source.GetAttachmentPosition(this.SourceAttachment).CopyTo(this.Position)
 		} else {
 			this.Position.Invalidate()
 		}

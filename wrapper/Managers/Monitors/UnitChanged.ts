@@ -38,7 +38,25 @@ const Monitor = new (class CPreUnitChanged {
 				unit.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				unit.LastPredictedPositionUpdate = GameState.RawGameTime
 			}
-			unit.AnimationTime += dt * unit.PlaybackRate
+			if (
+				unit.NetworkActivity === unit.NetworkActivityPrev &&
+				unit.NetworkSequenceIndex === unit.NetworkSequenceIndexPrev &&
+				unit.SequenceParity === unit.SequenceParityPrev
+			) {
+				unit.AnimationTime += dt * unit.PlaybackRate
+			} else {
+				unit.NetworkActivityStartTime = GameState.RawGameTime
+				unit.AnimationTime = 0
+				if (
+					unit.NetworkActivity !== unit.NetworkActivityPrev ||
+					unit.NetworkSequenceIndex !== unit.NetworkSequenceIndexPrev
+				) {
+					EventsSDK.emit("NetworkActivityChanged", false, unit)
+				}
+				unit.NetworkActivityPrev = unit.NetworkActivity
+				unit.NetworkSequenceIndexPrev = unit.NetworkSequenceIndex
+				unit.SequenceParityPrev = unit.SequenceParity
+			}
 			// TODO: interpolate DeltaZ from OnModifierUpdated?
 		}
 	}

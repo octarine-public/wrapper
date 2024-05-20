@@ -192,10 +192,17 @@ export class Unit extends Entity {
 	public PlayerID = -1
 	public OwnerPlayerID = -1
 	public HPRegenCounter = 0
-	public NetworkSequenceIndex = 0
-	public NetworkActivityStartTime = 0
 	public IsControllableByPlayerMask = 0n
-	public NetworkActivity = GameActivity.ACT_DOTA_IDLE
+	@NetworkedBasicField("m_NetworkActivity")
+	public NetworkActivity = 0 as GameActivity
+	public NetworkActivityPrev = 0 as GameActivity
+	public NetworkActivityStartTime = 0
+	@NetworkedBasicField("m_NetworkSequenceIndex")
+	public NetworkSequenceIndex = 0
+	public NetworkSequenceIndexPrev = 0
+	@NetworkedBasicField("m_nResetEventsParity")
+	public SequenceParity = 0
+	public SequenceParityPrev = 0
 
 	public MyWearables_: number[] = []
 	public MyWearables: Wearable[] = []
@@ -1290,7 +1297,7 @@ export class Unit extends Entity {
 		name: string,
 		activity = this.NetworkActivity,
 		sequenceNum = this.NetworkSequenceIndex,
-		time = Infinity,
+		time = this.AnimationTime,
 		pos = this.Position,
 		ang = this.Angles,
 		scale = this.ModelScale
@@ -2522,23 +2529,6 @@ RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", (unit, newVal) => {
 	unit.IsControllableByPlayerMask = newVal as bigint
 	if (unit.IsValid) {
 		EventsSDK.emit("ControllableByPlayerMaskChanged", false, unit)
-	}
-})
-RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, newVal) => {
-	unit.NetworkActivity = newVal as number
-	unit.NetworkActivityStartTime = GameState.RawGameTime
-	unit.AnimationTime = 0
-	if (unit.IsValid) {
-		EventsSDK.emit("NetworkActivityChanged", false, unit)
-	}
-})
-RegisterFieldHandler(Unit, "m_nResetEventsParity", unit => {
-	unit.AnimationTime = 0
-})
-RegisterFieldHandler(Unit, "m_NetworkSequenceIndex", (unit, newVal) => {
-	unit.NetworkSequenceIndex = newVal as number
-	if (unit.IsValid) {
-		EventsSDK.emit("NetworkActivityChanged", false, unit)
 	}
 })
 RegisterFieldHandler(Unit, "m_hAbilities", (unit, newVal) => {
