@@ -142,11 +142,11 @@ export class Ability extends Entity {
 		return this.GetSpecialValue("final_aoe")
 	}
 	public get CastPoint(): number {
-		const overrideValue = this.OverrideCastPoint // default -1
-		if (overrideValue > 0) {
-			return overrideValue
+		let castPoint = this.OverrideCastPoint // default -1
+		if (castPoint < 0) {
+			castPoint = this.GetBaseCastPointForLevel(this.Level)
 		}
-		return this.GetBaseCastPointForLevel(this.Level)
+		return Math.ceil(castPoint / GameState.TickInterval) * GameState.TickInterval
 	}
 	public get ActivationDelay() {
 		return this.GetBaseActivationDelayForLevel(this.Level)
