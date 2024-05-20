@@ -25,6 +25,7 @@ import {
 	ParseProtobufNamed,
 	RecursiveProtobuf
 } from "../Utils/Protobuf"
+import { QuantizePlaybackRate } from "../Utils/QuantizeUtils"
 import { createMapFromMergedIterators } from "../Utils/Utils"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { EntityManager } from "./EntityManager"
@@ -1217,7 +1218,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 					false,
 					ent,
 					msg.get("sequence_variant") as number,
-					msg.get("playbackrate") as number,
+					QuantizePlaybackRate(msg.get("playbackrate") as number),
 					msg.get("castpoint") as number,
 					msg.get("type") as number,
 					msg.get("activity") as number,

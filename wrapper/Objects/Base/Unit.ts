@@ -155,8 +155,12 @@ export class Unit extends Entity {
 	public Spawner: Nullable<NeutralSpawner>
 	public LastActivity = 0 as GameActivity
 	public LastActivitySequenceVariant = 0
-	public LastActivityEndTime = 0
-	public LastActivityAnimationPoint = 0
+	public LastAnimationStartTime = 0
+	public LastAnimationEndTime = 0
+	public LastAnimationCastPoint = 0
+	public LastAnimationPlaybackRate = 0
+	public LastAnimationIsAttack = false
+	public IsInAnimation = false
 
 	/**
 	 * @description added for compatibility (icore)
@@ -1291,6 +1295,14 @@ export class Unit extends Entity {
 		findBestMatch = true
 	): Nullable<number> {
 		return super.GetAnimationID(activity, sequenceNum, findBestMatch)
+	}
+
+	public GetAnimation(
+		activity = this.NetworkActivity,
+		sequenceNum = this.NetworkSequenceIndex,
+		findBestMatch = true
+	): Nullable<AnimationData> {
+		return super.GetAnimation(activity, sequenceNum, findBestMatch)
 	}
 
 	public GetAttachmentPosition(

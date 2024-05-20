@@ -534,6 +534,15 @@ export class Entity {
 		return highestScored
 	}
 
+	public GetAnimation(
+		activity = GameActivity.ACT_DOTA_IDLE,
+		sequenceNum = -1,
+		findBestMatch = true
+	): Nullable<AnimationData> {
+		const animID = this.GetAnimationID(activity, sequenceNum, findBestMatch)
+		return animID !== undefined ? this.Animations[animID] : undefined
+	}
+
 	// attachment position mid-animation
 	public GetAttachmentPosition(
 		name: string,

@@ -85,13 +85,7 @@ const Monitor = new (class CUnitAttackChanged {
 			this.attackStopped(source)
 			return
 		}
-		const animationID = source.GetAnimationID(activity, seqVar)
-		if (animationID === undefined) {
-			this.handlerErrorMessage("animation ID", source, activity, seqVar)
-			this.attackStopped(source, true)
-			return
-		}
-		const animation = source.Animations[animationID]
+		const animation = source.GetAnimation(activity, seqVar)
 		if (animation === undefined) {
 			this.handlerErrorMessage("animation AnimationsData", source, activity, seqVar)
 			this.attackStopped(source, true)

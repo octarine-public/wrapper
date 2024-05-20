@@ -76,7 +76,10 @@ EventsSDK.on("ParticleUpdated", par => {
 	abil.IsJumpingToTree =
 		ent.LastActivity === abil.AbilityData.CastAnimation &&
 		Math.abs(
-			GameState.RawGameTime - ent.LastActivityEndTime - GameState.TickInterval
+			GameState.RawGameTime -
+				ent.LastAnimationStartTime -
+				ent.LastAnimationCastPoint -
+				GameState.TickInterval
 		) <
 			GameState.TickInterval * 1.1
 	abil.TargetTree = undefined
