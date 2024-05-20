@@ -1,13 +1,13 @@
 import { Color } from "../../Base/Color"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
+import { GameActivity } from "../../Enums/GameActivity"
 import { Entity } from "./Entity"
 import { FakeUnit } from "./FakeUnit"
 import { Unit } from "./Unit"
 
 export class Projectile {
 	public IsValid = true
-	public LastUpdate = 0
 	public ParticlePathNoEcon = ""
 
 	constructor(
@@ -76,15 +76,27 @@ export class TrackingProjectile extends Projectile {
 		private expireTime: number,
 		public readonly MaxImpactTime: number | undefined,
 		public LaunchTick: number,
-		public readonly TargetLoc = new Vector3(),
+		public readonly TargetLoc = new Vector3().Invalidate(),
 		colorgemcolor: Color,
 		public readonly OriginalMoveSpeed: number,
 		public readonly Ability?: Nullable<Entity>
 	) {
 		super(projID, path, particleSystemHandle, source, colorgemcolor, speed)
 
-		if (this.Source instanceof Entity) {
-			this.Source.Position.CopyTo(this.Position)
+		if (source instanceof Entity) {
+			if (this.SourceAttachment !== "") {
+				const attachmentPos = source.GetAttachmentPosition(
+					this.SourceAttachment,
+					source.LastActivity,
+					source.LastActivitySequenceVariant,
+					source.LastActivity !== (0 as GameActivity)
+						? source.LastActivityAnimationPoint
+						: Infinity
+				)
+				attachmentPos.CopyTo(this.Position)
+			} else {
+				source.Position.CopyTo(this.Position)
+			}
 		} else {
 			this.Position.Invalidate()
 		}
@@ -121,15 +133,5 @@ export class TrackingProjectile extends Projectile {
 		this.expireTime = expireTime
 		this.LaunchTick = launchTick
 		targetLoc.CopyTo(this.TargetLoc)
-	}
-	public UpdateTargetLoc(): void {
-		if (this.IsDodged) {
-			return
-		}
-
-		const target = this.Target
-		if (target instanceof Entity) {
-			this.TargetLoc.CopyFrom(target.GetAttachmentPosition("attach_hitloc"))
-		}
 	}
 }

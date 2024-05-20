@@ -1,4 +1,5 @@
 import "./Managers/EventsHandler"
+import "./Managers/EventsQueue"
 import "./Managers/ModifierManager"
 import "./Managers/SharedObjectHandler"
 import "./Native/HumanizerLogic"

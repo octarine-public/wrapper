@@ -29,6 +29,7 @@ import { createMapFromMergedIterators } from "../Utils/Utils"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { EntityManager } from "./EntityManager"
 import { Events } from "./Events"
+import { QueueEvent } from "./EventsQueue"
 import { EventsSDK } from "./EventsSDK"
 import { InputManager } from "./InputManager"
 import { StringTables } from "./StringTables"
@@ -655,23 +656,6 @@ message CMsgSosSetLibraryStackFields {
 	optional bytes packed_fields = 5;
 }
 `)
-
-const cbQueue: (() => void)[] = []
-function QueueEvent(cb: () => void): void {
-	cbQueue.push(cb)
-}
-
-Events.on("NewConnection", () => cbQueue.clear())
-EventsSDK.on(
-	"PostDataUpdate",
-	() => {
-		for (const cb of cbQueue) {
-			cb()
-		}
-		cbQueue.clear()
-	},
-	-Infinity
-)
 
 function HandleParticleMsg(msg: RecursiveProtobuf): void {
 	const index = msg.get("index") as number

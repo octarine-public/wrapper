@@ -16,6 +16,7 @@ import {
 } from "../Utils/Protobuf"
 import { EntityManager } from "./EntityManager"
 import { Events } from "./Events"
+import { QueueEvent } from "./EventsQueue"
 import { EventsSDK } from "./EventsSDK"
 
 export const ProjectileManager = new (class CProjectileManager {
@@ -42,22 +43,18 @@ function TrackingProjectileCreated(projectile: TrackingProjectile) {
 	ProjectileManager.AllTrackingProjectilesMap.set(projectile.ID, projectile)
 }
 
-function DestroyTrackingProjectile(proj: Nullable<TrackingProjectile>) {
-	if (proj !== undefined) {
-		EventsSDK.emit("TrackingProjectileDestroyed", false, proj)
-		ProjectileManager.AllTrackingProjectiles.remove(proj)
-		ProjectileManager.AllTrackingProjectilesMap.delete(proj.ID)
-		proj.IsValid = false
-	}
+function DestroyTrackingProjectile(proj: TrackingProjectile) {
+	EventsSDK.emit("TrackingProjectileDestroyed", false, proj)
+	ProjectileManager.AllTrackingProjectiles.remove(proj)
+	ProjectileManager.AllTrackingProjectilesMap.delete(proj.ID)
+	proj.IsValid = false
 }
 
 EventsSDK.on("EntityCreated", ent => {
 	if (!(ent instanceof Unit)) {
 		return
 	}
-	const arrTraking = ProjectileManager.AllTrackingProjectiles
-	for (let index = arrTraking.length - 1; index > -1; index--) {
-		const proj = arrTraking[index]
+	for (const proj of ProjectileManager.AllTrackingProjectiles) {
 		if (proj.Source?.EntityMatches(ent)) {
 			proj.Source = ent
 		}
@@ -65,9 +62,7 @@ EventsSDK.on("EntityCreated", ent => {
 			proj.Target = ent
 		}
 	}
-	const arrLinear = ProjectileManager.AllLinearProjectiles
-	for (let index = arrLinear.length - 1; index > -1; index--) {
-		const proj = arrLinear[index]
+	for (const proj of ProjectileManager.AllLinearProjectiles) {
 		if (proj.Source?.EntityMatches(ent)) {
 			proj.Source = ent
 		}
@@ -96,82 +91,47 @@ EventsSDK.on("EntityDestroyed", ent => {
 	}
 })
 
-EventsSDK.on("PostDataUpdate", () => {
-	const curTime = GameState.RawGameTime
-	const expiredLinearProjectiles: LinearProjectile[] = []
-	const arrLinear = ProjectileManager.AllLinearProjectiles
-	for (let index = 0; index < arrLinear.length; index++) {
-		const proj = arrLinear[index]
-		if (proj.LastUpdate === 0) {
-			proj.LastUpdate = curTime
+EventsSDK.on("PostDataUpdate", dt => {
+	if (dt === 0) {
+		return
+	}
+	for (const proj of ProjectileManager.AllTrackingProjectiles) {
+		if (!proj.IsDodged) {
+			const target = proj.Target
+			if (target instanceof Entity) {
+				const extendPos = !proj.TargetLoc.IsValid && proj.Position.IsValid
+				proj.TargetLoc.CopyFrom(target.GetAttachmentPosition("attach_hitloc"))
+				if (extendPos) {
+					proj.Position.Extend(
+						proj.TargetLoc,
+						(GameState.CurrentGameTick - proj.LaunchTick) * dt * proj.Speed
+					).CopyTo(proj.Position)
+				}
+			}
+		}
+		if (!proj.TargetLoc.IsValid) {
 			continue
 		}
-		const dt = curTime - proj.LastUpdate
-		const add = Vector3.FromVector2(proj.Velocity.MultiplyScalar(dt))
-		proj.Position.AddForThis(add)
-		proj.LastUpdate = curTime
-		proj.Position.z = GetPositionHeight(proj.Position)
-		if (proj.Position.DistanceSqr2D(proj.TargetLoc) < add.LengthSqr) {
-			expiredLinearProjectiles.push(proj)
-		}
-	}
-	for (let index = expiredLinearProjectiles.length - 1; index > -1; index--) {
-		const proj = expiredLinearProjectiles[index]
-		EventsSDK.emit("LinearProjectileDestroyed", false, proj)
-		ProjectileManager.AllLinearProjectiles.remove(proj)
-		ProjectileManager.AllLinearProjectilesMap.delete(proj.ID)
-	}
-	const arrTraking = ProjectileManager.AllTrackingProjectiles
-	for (let index = 0; index < arrTraking.length; index++) {
-		const proj = arrTraking[index]
-		proj.UpdateTargetLoc()
-		if (proj.LastUpdate === 0) {
-			proj.LastUpdate = curTime
-			const source = proj.Source
-			if (source instanceof Entity && proj.SourceAttachment !== "") {
-				const attachmentPos = source.GetAttachmentPosition(
-					proj.SourceAttachment,
-					source.LastActivity,
-					source.LastActivitySequenceVariant,
-					source.LastActivity !== (0 as GameActivity)
-						? source.LastActivityAnimationPoint
-						: Infinity,
-					new Vector3()
-				)
-				proj.Position.AddForThis(attachmentPos)
-			}
-		}
-		const dt = curTime - proj.LastUpdate
 		if (!proj.Position.IsValid) {
-			if (
-				proj.Target instanceof Entity &&
-				proj.Source instanceof Entity &&
-				!proj.IsDodged
-			) {
-				proj.Position.CopyFrom(proj.Source.Position)
-
-				const attachmentPos =
-					proj.SourceAttachment !== ""
-						? proj.Source.GetAttachmentPosition(
-								proj.SourceAttachment,
-								proj.Source.LastActivity,
-								proj.Source.LastActivitySequenceVariant,
-								proj.Source.LastActivity !== (0 as GameActivity)
-									? proj.Source.LastActivityAnimationPoint
-									: Infinity,
-								new Vector3()
-							)
-						: undefined
-				if (attachmentPos !== undefined) {
-					proj.Position.AddForThis(attachmentPos)
-				}
-				proj.Position.Extend(
-					proj.TargetLoc,
-					(GameState.CurrentGameTick - proj.LaunchTick) * dt * proj.Speed
-				).CopyTo(proj.Position)
-			} else {
+			if (!(proj.Source instanceof Entity)) {
 				continue
 			}
+			const attachmentPos =
+				proj.SourceAttachment !== ""
+					? proj.Source.GetAttachmentPosition(
+							proj.SourceAttachment,
+							proj.Source.LastActivity,
+							proj.Source.LastActivitySequenceVariant,
+							proj.Source.LastActivity !== (0 as GameActivity)
+								? proj.Source.LastActivityAnimationPoint
+								: Infinity
+						)
+					: proj.Source.Position
+			proj.Position.CopyFrom(attachmentPos)
+			proj.Position.Extend(
+				proj.TargetLoc,
+				(GameState.CurrentGameTick - proj.LaunchTick) * dt * proj.Speed
+			).CopyTo(proj.Position)
 		}
 		const velocity = proj.Position.GetDirectionTo(
 			proj.TargetLoc
@@ -179,16 +139,26 @@ EventsSDK.on("PostDataUpdate", () => {
 			Math.min(proj.Speed * dt, proj.Position.Distance(proj.TargetLoc))
 		)
 		proj.Position.AddForThis(velocity)
-		proj.LastUpdate = curTime
 		const distSqr = proj.Position.DistanceSqr(proj.TargetLoc)
 		const collisionSize =
 			proj.Target instanceof Entity ? proj.Target.ProjectileCollisionSize ** 2 : 0
-		if (
-			(collisionSize !== 0 && distSqr < collisionSize) ||
-			distSqr < velocity.LengthSqr
-		) {
+		if (distSqr <= collisionSize) {
 			DestroyTrackingProjectile(proj)
 		}
+	}
+	const expiredLinearProjectiles: LinearProjectile[] = []
+	for (const proj of ProjectileManager.AllLinearProjectiles) {
+		const add = Vector3.FromVector2(proj.Velocity.MultiplyScalar(dt))
+		proj.Position.AddForThis(add)
+		proj.Position.z = GetPositionHeight(proj.Position)
+		if (proj.Position.DistanceSqr2D(proj.TargetLoc) < add.LengthSqr) {
+			expiredLinearProjectiles.push(proj)
+		}
+	}
+	for (const proj of expiredLinearProjectiles) {
+		EventsSDK.emit("LinearProjectileDestroyed", false, proj)
+		ProjectileManager.AllLinearProjectiles.remove(proj)
+		ProjectileManager.AllLinearProjectilesMap.delete(proj.ID)
 	}
 })
 
@@ -276,175 +246,194 @@ const projectileAttachmentsNames = [
 Events.on("ServerMessage", (msgID, buf_) => {
 	switch (msgID) {
 		case 471: {
-			const msg = ParseProtobufNamed(
-				new Uint8Array(buf_),
-				"CDOTAUserMsg_CreateLinearProjectile"
-			)
-			const particleSystemHandle = msg.get("particle_index") as bigint
-			const projectile = new LinearProjectile(
-				msg.get("handle") as number,
-				GetPredictionTarget(msg.get("entindex") as number),
-				(particleSystemHandle !== undefined
-					? GetPathByHash(particleSystemHandle)
-					: undefined)!,
-				particleSystemHandle ?? 0n,
-				msg.get("max_speed") as number,
-				msg.get("fow_radius") as number,
-				msg.get("sticky_fow_reveal") as boolean,
-				msg.get("distance") as number,
-				CMsgVectorToVector3(msg.get("origin") as RecursiveProtobuf),
-				CMsgVector2DToVector2(msg.get("velocity") as RecursiveProtobuf),
-				CMsgVector2DToVector2(msg.get("acceleration") as RecursiveProtobuf),
-				NumberToColor(msg.get("colorgemcolor") as number)
-			)
-			// TODO: do we need particle_cp_data?
-			EventsSDK.emit("LinearProjectileCreated", false, projectile)
-			ProjectileManager.AllLinearProjectiles.push(projectile)
-			ProjectileManager.AllLinearProjectilesMap.set(projectile.ID, projectile)
+			QueueEvent(() => {
+				const msg = ParseProtobufNamed(
+					new Uint8Array(buf_),
+					"CDOTAUserMsg_CreateLinearProjectile"
+				)
+				const particleSystemHandle = msg.get("particle_index") as bigint
+				const projectile = new LinearProjectile(
+					msg.get("handle") as number,
+					GetPredictionTarget(msg.get("entindex") as number),
+					(particleSystemHandle !== undefined
+						? GetPathByHash(particleSystemHandle)
+						: undefined)!,
+					particleSystemHandle ?? 0n,
+					msg.get("max_speed") as number,
+					msg.get("fow_radius") as number,
+					msg.get("sticky_fow_reveal") as boolean,
+					msg.get("distance") as number,
+					CMsgVectorToVector3(msg.get("origin") as RecursiveProtobuf),
+					CMsgVector2DToVector2(msg.get("velocity") as RecursiveProtobuf),
+					CMsgVector2DToVector2(msg.get("acceleration") as RecursiveProtobuf),
+					NumberToColor(msg.get("colorgemcolor") as number)
+				)
+				// TODO: do we need particle_cp_data?
+				EventsSDK.emit("LinearProjectileCreated", false, projectile)
+				ProjectileManager.AllLinearProjectiles.push(projectile)
+				ProjectileManager.AllLinearProjectilesMap.set(projectile.ID, projectile)
+			})
 			break
 		}
 		case 472: {
-			const msg = ParseProtobufNamed(
-				new Uint8Array(buf_),
-				"CDOTAUserMsg_DestroyLinearProjectile"
-			)
-			const projectile = ProjectileManager.AllLinearProjectilesMap.get(
-				msg.get("handle") as number
-			)
-			if (projectile === undefined) {
-				return
-			}
-			EventsSDK.emit("LinearProjectileDestroyed", false, projectile)
-			ProjectileManager.AllLinearProjectiles.remove(projectile)
-			ProjectileManager.AllLinearProjectilesMap.delete(projectile.ID)
+			QueueEvent(() => {
+				const msg = ParseProtobufNamed(
+					new Uint8Array(buf_),
+					"CDOTAUserMsg_DestroyLinearProjectile"
+				)
+				const projectile = ProjectileManager.AllLinearProjectilesMap.get(
+					msg.get("handle") as number
+				)
+				if (projectile === undefined) {
+					return
+				}
+				EventsSDK.emit("LinearProjectileDestroyed", false, projectile)
+				ProjectileManager.AllLinearProjectiles.remove(projectile)
+				ProjectileManager.AllLinearProjectilesMap.delete(projectile.ID)
+			})
 			break
 		}
 		case 473: {
-			const msg = ParseProtobufNamed(
-				new Uint8Array(buf_),
-				"CDOTAUserMsg_DodgeTrackingProjectiles"
-			)
-			const ent = GetPredictionTarget(msg.get("entindex") as number)
-			if (ent === undefined) {
-				break
-			}
-			const attacksOnly = msg.get("attacks_only") as boolean
-			EventsSDK.emit("TrackingProjectilesDodged", false, ent, attacksOnly)
-			const arrTraking = ProjectileManager.AllTrackingProjectiles
-			for (let index = arrTraking.length - 1; index > -1; index--) {
-				const proj = arrTraking[index]
-				if (
-					proj.IsDodgeable &&
-					proj.Target === ent &&
-					(!attacksOnly || proj.IsAttack)
-				) {
-					proj.IsDodged = true
+			QueueEvent(() => {
+				const msg = ParseProtobufNamed(
+					new Uint8Array(buf_),
+					"CDOTAUserMsg_DodgeTrackingProjectiles"
+				)
+				const ent = GetPredictionTarget(msg.get("entindex") as number)
+				if (ent === undefined) {
+					return
 				}
-			}
+				const attacksOnly = msg.get("attacks_only") as boolean
+				const removedTrackingProjectiles: TrackingProjectile[] = []
+				for (const proj of ProjectileManager.AllTrackingProjectiles) {
+					if (
+						proj.IsDodgeable &&
+						proj.Target === ent &&
+						(!attacksOnly || proj.IsAttack)
+					) {
+						proj.IsDodged = true
+						if (!proj.TargetLoc.IsValid || !proj.Position.IsValid) {
+							removedTrackingProjectiles.push(proj)
+						}
+					}
+				}
+				for (const proj of removedTrackingProjectiles) {
+					DestroyTrackingProjectile(proj)
+				}
+				EventsSDK.emit("TrackingProjectilesDodged", false, ent, attacksOnly)
+			})
 			break
 		}
 		case 518: {
-			const msg = ParseProtobufNamed(
-				new Uint8Array(buf_),
-				"CDOTAUserMsg_TE_Projectile"
-			)
-			const particleSystemHandle = msg.get("particle_system_handle") as bigint
-			const ability = EntityManager.EntityByIndex(msg.get("ability") as number)
-			const projectile = new TrackingProjectile(
-				msg.get("handle") as number,
-				GetPredictionTarget(msg.get("source") as number),
-				GetPredictionTarget(msg.get("target") as number),
-				msg.get("move_speed") as number,
-				projectileAttachmentsNames[
-					(msg.get("source_attachment") as Nullable<number>) ?? 0
-				],
-				(particleSystemHandle !== undefined
-					? GetPathByHash(particleSystemHandle)
-					: undefined)!,
-				particleSystemHandle ?? 0n,
-				msg.get("dodgeable") as boolean,
-				msg.get("is_attack") as boolean,
-				msg.get("expire_time") as number,
-				msg.get("maximpacttime") as number,
-				msg.get("launch_tick") as number,
-				CMsgVectorToVector3(msg.get("target_loc") as RecursiveProtobuf),
-				NumberToColor(msg.get("colorgemcolor") as number),
-				msg.get("original_move_speed") as number,
-				ability
-			)
-			TrackingProjectileCreated(projectile)
+			QueueEvent(() => {
+				const msg = ParseProtobufNamed(
+					new Uint8Array(buf_),
+					"CDOTAUserMsg_TE_Projectile"
+				)
+				const particleSystemHandle = msg.get("particle_system_handle") as bigint
+				const ability = EntityManager.EntityByIndex(msg.get("ability") as number)
+				const projectile = new TrackingProjectile(
+					msg.get("handle") as number,
+					GetPredictionTarget(msg.get("source") as number),
+					GetPredictionTarget(msg.get("target") as number),
+					msg.get("move_speed") as number,
+					projectileAttachmentsNames[
+						(msg.get("source_attachment") as Nullable<number>) ?? 0
+					],
+					(particleSystemHandle !== undefined
+						? GetPathByHash(particleSystemHandle)
+						: undefined)!,
+					particleSystemHandle ?? 0n,
+					msg.get("dodgeable") as boolean,
+					msg.get("is_attack") as boolean,
+					msg.get("expire_time") as number,
+					msg.get("maximpacttime") as number,
+					msg.get("launch_tick") as number,
+					CMsgVectorToVector3(msg.get("target_loc") as RecursiveProtobuf),
+					NumberToColor(msg.get("colorgemcolor") as number),
+					msg.get("original_move_speed") as number,
+					ability
+				)
+				TrackingProjectileCreated(projectile)
+			})
 			break
 		}
 		case 519: {
-			const msg = ParseProtobufNamed(
-				new Uint8Array(buf_),
-				"CDOTAUserMsg_TE_ProjectileLoc"
-			)
-			const target = GetPredictionTarget(msg.get("target") as number)
-			const handle = msg.get("handle") as number,
-				launchTick = msg.get("launch_tick") as number,
-				expireTime = msg.get("expire_time") as number,
-				moveSpeed = msg.get("move_speed") as number,
-				dodgeable = msg.get("dodgeable") as boolean,
-				isAttack = msg.get("is_attack") as boolean,
-				particleSystemHandle = msg.get("particle_system_handle") as bigint,
-				targetLoc = CMsgVectorToVector3(
-					msg.get("target_loc") as RecursiveProtobuf
+			QueueEvent(() => {
+				const msg = ParseProtobufNamed(
+					new Uint8Array(buf_),
+					"CDOTAUserMsg_TE_ProjectileLoc"
 				)
-			const path = (
-				particleSystemHandle !== undefined
-					? GetPathByHash(particleSystemHandle)
-					: undefined
-			)!
+				const target = GetPredictionTarget(msg.get("target") as number)
+				const handle = msg.get("handle") as number,
+					launchTick = msg.get("launch_tick") as number,
+					expireTime = msg.get("expire_time") as number,
+					moveSpeed = msg.get("move_speed") as number,
+					dodgeable = msg.get("dodgeable") as boolean,
+					isAttack = msg.get("is_attack") as boolean,
+					particleSystemHandle = msg.get("particle_system_handle") as bigint,
+					targetLoc = CMsgVectorToVector3(
+						msg.get("target_loc") as RecursiveProtobuf
+					)
+				const path = (
+					particleSystemHandle !== undefined
+						? GetPathByHash(particleSystemHandle)
+						: undefined
+				)!
 
-			let projectile = ProjectileManager.AllTrackingProjectilesMap.get(handle)
-			if (projectile === undefined) {
-				projectile = new TrackingProjectile(
-					handle,
-					undefined,
+				let projectile = ProjectileManager.AllTrackingProjectilesMap.get(handle)
+				if (projectile === undefined) {
+					projectile = new TrackingProjectile(
+						handle,
+						undefined,
+						target,
+						moveSpeed,
+						"",
+						path,
+						particleSystemHandle ?? 0n,
+						dodgeable,
+						isAttack,
+						expireTime,
+						undefined,
+						launchTick,
+						targetLoc,
+						NumberToColor(msg.get("colorgemcolor") as number),
+						msg.get("original_move_speed") as number
+					)
+					// TODO: do we need particle_cp_data?
+					projectile.Position.CopyFrom(
+						CMsgVectorToVector3(msg.get("source_loc") as RecursiveProtobuf)
+					)
+					TrackingProjectileCreated(projectile)
+				}
+				projectile.Update(
 					target,
 					moveSpeed,
-					"",
 					path,
 					particleSystemHandle ?? 0n,
 					dodgeable,
 					isAttack,
 					expireTime,
-					undefined,
 					launchTick,
-					targetLoc,
-					NumberToColor(msg.get("colorgemcolor") as number),
-					msg.get("original_move_speed") as number
+					targetLoc
 				)
-				// TODO: do we need particle_cp_data?
-				projectile.Position.CopyFrom(
-					CMsgVectorToVector3(msg.get("source_loc") as RecursiveProtobuf)
-				)
-				TrackingProjectileCreated(projectile)
-			}
-			projectile.Update(
-				target,
-				moveSpeed,
-				path,
-				particleSystemHandle ?? 0n,
-				dodgeable,
-				isAttack,
-				expireTime,
-				launchTick,
-				targetLoc
-			)
-			EventsSDK.emit("TrackingProjectileUpdated", false, projectile)
+				EventsSDK.emit("TrackingProjectileUpdated", false, projectile)
+			})
 			break
 		}
 		case 571: {
-			const msg = ParseProtobufNamed(
-				new Uint8Array(buf_),
-				"CDOTAUserMsg_TE_DestroyProjectile"
-			)
-			const projectile = ProjectileManager.AllTrackingProjectilesMap.get(
-				msg.get("handle") as number
-			)
-			DestroyTrackingProjectile(projectile)
+			QueueEvent(() => {
+				const msg = ParseProtobufNamed(
+					new Uint8Array(buf_),
+					"CDOTAUserMsg_TE_DestroyProjectile"
+				)
+				const projectile = ProjectileManager.AllTrackingProjectilesMap.get(
+					msg.get("handle") as number
+				)
+				if (projectile !== undefined) {
+					DestroyTrackingProjectile(projectile)
+				}
+			})
 			break
 		}
 	}

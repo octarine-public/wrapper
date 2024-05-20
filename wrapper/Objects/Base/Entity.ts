@@ -258,11 +258,14 @@ export class Entity {
 	public get Speed(): number {
 		return 0
 	}
+	/**
+	 * @deprecated
+	 */
 	public get CollisionRadius(): number {
 		return 0
 	}
 	public get ProjectileCollisionSize(): number {
-		return this.CollisionRadius
+		return 0
 	}
 	public get RingRadius(): number {
 		return this.RingRadius_
