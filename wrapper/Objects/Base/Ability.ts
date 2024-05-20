@@ -16,6 +16,7 @@ import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GameState } from "../../Utils/GameState"
 import { toPercentage } from "../../Utils/Math"
+import { QuantizePlaybackRate } from "../../Utils/QuantizeUtils"
 import { AbilityData } from "../DataBook/AbilityData"
 import { Entity } from "./Entity"
 import { Unit } from "./Unit"
@@ -367,13 +368,13 @@ export class Ability extends Entity {
 			return pos
 		}
 		scale ??= owner.ModelScale
-		const playbackRate = 1 / Math.sqrt(scale)
+		const playbackRate = QuantizePlaybackRate(1 / Math.sqrt(scale))
 		const castAnim = this.AbilityData.CastAnimation
 		return owner.GetAttachmentPosition(
 			this.ProjectileAttachment,
 			castAnim,
-			owner.GetAnimationID(castAnim, -1, true),
-			playbackRate * this.CastPoint,
+			-1,
+			Math.max(this.CastPoint - GameState.TickInterval, 0) * playbackRate,
 			pos,
 			ang,
 			scale
