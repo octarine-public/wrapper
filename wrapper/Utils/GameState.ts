@@ -3,7 +3,11 @@ import { Flow } from "../Enums/Flow"
 import { Team } from "../Enums/Team"
 
 export const GameState = new (class CGameState {
+	/**
+	 * @deprecated
+	 */
 	public LatestTickDelta = 1 / 30
+	public TickInterval = 1 / 30
 	public CurrentServerTick = 0
 	public CurrentGameTick = 0
 	public IsInputCaptured = false
@@ -30,7 +34,7 @@ export const GameState = new (class CGameState {
 	}
 	public get InputLag() {
 		const latency = this.GetLatency(Flow.OUT),
-			tickDelta = this.LatestTickDelta
+			tickDelta = this.TickInterval
 		if (latency < 0.001 && GameState.MapName.startsWith("hero_demo")) {
 			return tickDelta
 		}
@@ -38,7 +42,7 @@ export const GameState = new (class CGameState {
 	}
 	public get IOLag() {
 		const latency = this.GetLatency(Flow.OUT),
-			tickDelta = this.LatestTickDelta
+			tickDelta = this.TickInterval
 		return Math.max(Math.ceil(latency / tickDelta), 1) * tickDelta
 	}
 	public get IsConnected(): boolean {

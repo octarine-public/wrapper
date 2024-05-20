@@ -5,6 +5,7 @@ import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { Entity } from "../../Objects/Base/Entity"
 import { Unit, Units } from "../../Objects/Base/Unit"
 import { Tower } from "../../Objects/Buildings/Tower"
+import { GameState } from "../../Utils/GameState"
 import { EntityManager } from "../EntityManager"
 import { EventsSDK } from "../EventsSDK"
 
@@ -136,7 +137,8 @@ const Monitor = new (class CUnitAttackChanged {
 			this.attackSleeper.ResetKey(source.Index)
 		}
 		// TODO: use source.AtackRate?
-		const delay = Math.ceil(attackPoint * 30) / 30
+		const delay =
+			Math.ceil(attackPoint / GameState.TickInterval) * GameState.TickInterval
 		this.attackSleeper.Sleep(delay * 1000, source.Index)
 		EventsSDK.emit("AttackStarted", false, source, attackPoint, animationNames)
 	}

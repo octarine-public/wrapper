@@ -75,7 +75,10 @@ EventsSDK.on("ParticleUpdated", par => {
 	abil.IsJumping = true
 	abil.IsJumpingToTree =
 		ent.LastActivity === abil.AbilityData.CastAnimation &&
-		Math.abs(GameState.RawGameTime - ent.LastActivityEndTime - 1 / 30) < 0.04
+		Math.abs(
+			GameState.RawGameTime - ent.LastActivityEndTime - GameState.TickInterval
+		) <
+			GameState.TickInterval * 1.1
 	abil.TargetTree = undefined
 	const castRange = abil.CastRange
 	abil.PredictedPositionsPerTree = [
@@ -105,7 +108,7 @@ EventsSDK.on("ParticleDestroyed", par => {
 		return
 	}
 	abil.IsJumping = false
-	abil.EndedJumpingTime = GameState.RawGameTime + 1 / 30
+	abil.EndedJumpingTime = GameState.RawGameTime + GameState.TickInterval
 })
 
 const abils = EntityManager.GetEntitiesByClass(monkey_king_tree_dance)
@@ -140,7 +143,8 @@ EventsSDK.on("PostDataUpdate", dt => {
 		}
 		const finishedJumping =
 				!abil.IsJumping &&
-				Math.abs(GameState.RawGameTime - abil.EndedJumpingTime) < 0.01,
+				Math.abs(GameState.RawGameTime - abil.EndedJumpingTime) <
+					GameState.TickInterval / 10,
 			finishedJumpingTrees: (Tree | TempTree)[] = []
 		for (let index = abil.PredictedPositionsPerTree.length - 1; index > -1; index--) {
 			const predictedAr = abil.PredictedPositionsPerTree[index]

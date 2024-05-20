@@ -60,7 +60,6 @@ export function SetLatestTickDelta(delta: number): void {
 }
 
 export function UpdateGameTime() {
-	const tickRate = 30 // TODO: is there a better way?
 	if (GameRules === undefined) {
 		return
 	}
@@ -70,13 +69,14 @@ export function UpdateGameTime() {
 		: GameState.CurrentServerTick
 	const prevTime = GameState.RawGameTime
 
-	const totalPausedTicks = GameRules.TotalPausedTicks
+	const totalPausedTicks = GameRules.TotalPausedTicks,
+		tickInterval = GameState.TickInterval
 	GameState.CurrentGameTick =
 		timeTick -
 		(!Array.isArray(totalPausedTicks)
 			? totalPausedTicks
 			: Math.max(...totalPausedTicks))
-	GameState.RawGameTime = GameState.CurrentGameTick / tickRate
+	GameState.RawGameTime = GameState.CurrentGameTick * tickInterval
 	GameRules.RawGameTime = GameState.RawGameTime
 
 	if (prevTime === 0) {
@@ -86,9 +86,11 @@ export function UpdateGameTime() {
 		}
 	}
 	if (LocalPlayer !== undefined) {
-		SetLatestTickDelta(
-			prevTime !== 0 ? GameState.RawGameTime - prevTime : 1 / tickRate
-		)
+		let delta = prevTime !== 0 ? GameState.RawGameTime - prevTime : tickInterval
+		if (Math.abs(delta - tickInterval) < tickInterval / 10) {
+			delta = tickInterval
+		}
+		SetLatestTickDelta(delta)
 	}
 }
 
@@ -110,7 +112,10 @@ const activity2name = new Map<GameActivity, string>(
 	Object.entries(GameActivity).map(([k, v]) => [v as GameActivity, k.toLowerCase()])
 )
 const modelDataCache = new Map<string, [AnimationData[], Map<number, number>, string[]]>()
-EventsSDK.on("ServerInfo", () => modelDataCache.clear())
+EventsSDK.on("ServerInfo", msg => {
+	modelDataCache.clear()
+	GameState.TickInterval = (msg.get("tick_interval") as Nullable<number>) ?? 1 / 30
+})
 // <=== TODO move to manager or monitor ===
 
 @WrapperClass("CBaseEntity")

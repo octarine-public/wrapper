@@ -55,21 +55,28 @@ EventsSDK.on("PostDataUpdate", () => {
 			continue
 		}
 		if (abil.LastKnownOwnerPosition_.IsValid) {
-			if (abil.LastKnownOwnerPositionTime_ > GameState.RawGameTime - 0.04) {
+			if (
+				abil.LastKnownOwnerPositionTime_ >
+				GameState.RawGameTime - GameState.TickInterval * 1.1
+			) {
 				const velocity3D = owner.Position.Subtract(abil.LastKnownOwnerPosition_)
 				const velocity = Vector2.FromVector3(
 					velocity3D.Clone().Normalize()
 				).MultiplyScalarForThis(velocity3D.Length)
-				const timeMoved = buff.ElapsedTime - 1 / 30
+				const timeMoved = buff.ElapsedTime - GameState.TickInterval
 
 				owner.Position.Subtract(
-					Vector3.FromVector2(velocity.MultiplyScalar(timeMoved * 30))
+					Vector3.FromVector2(
+						velocity.MultiplyScalar(timeMoved / GameState.TickInterval)
+					)
 				).CopyTo(abil.StartPosition)
 				abil.StartPosition.z = GetPositionHeight(abil.StartPosition)
 
 				owner.Position.Add(
 					Vector3.FromVector2(
-						velocity.MultiplyScalar((buffEndTime - timeMoved) * 30 + 1)
+						velocity.MultiplyScalar(
+							(buffEndTime - timeMoved) / GameState.TickInterval + 1
+						)
 					)
 				).CopyTo(abil.TargetPosition)
 				abil.TargetPosition.z = GetPositionHeight(abil.TargetPosition)

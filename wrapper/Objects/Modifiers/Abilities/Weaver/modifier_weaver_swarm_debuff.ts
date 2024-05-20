@@ -25,7 +25,6 @@ export class modifier_weaver_swarm_debuff extends Modifier {
 	}
 
 	public SetBonusArmor(specialName = "armor_reduction", _subtract = false): void {
-		// const tick = 1 / 30 // 0.033
 		const reduction = this.GetSpecialValue(specialName)
 		const attackRate = this.GetSpecialValue("attack_rate")
 		this.BonusArmor = -(1 + (this.ElapsedTime / attackRate) * reduction)

@@ -445,7 +445,7 @@ const Monitor = new (class PlayerDataCustomChanged {
 		}
 
 		const [killer, lasTick] = data
-		if (GameState.CurrentServerTick - lasTick > 1 / 30) {
+		if (GameState.CurrentServerTick - lasTick > GameState.TickInterval * 1.1) {
 			this.queueIllusion.delete(entity)
 			return
 		}
