@@ -1286,7 +1286,61 @@ export class Unit extends Entity {
 			ar.push("unleash")
 		}
 
-		// TODO: AttackSpeedActivityModifiers, MovementSpeedActivityModifiers, AttackRangeActivityModifiers
+		// TODO: move to modifiers
+		if (this.HasScepter) {
+			ar.push("ultimate_scepter")
+		}
+		if (this.HasBuffByName("modifier_roshan_inherent_buffs")) {
+			ar.push("roshan")
+		}
+		if (this.HasBuffByName("modifier_monkey_king_unperched_stunned")) {
+			ar.push("unperched_stunned")
+		}
+		if (this.HasBuffByName("modifier_monkey_king_fur_army_soldier")) {
+			ar.push("fur_army_soldier")
+		}
+		if (this.HasBuffByName("modifier_monkey_king_bounce_perch")) {
+			ar.push("perch")
+		}
+		if (this.HasBuffByName("modifier_batrider_firefly")) {
+			ar.push("firefly")
+		}
+		if (this.HasBuffByName("modifier_monkeyking_cloudrun")) {
+			ar.push("cloudrun")
+		}
+		if (this.HasBuffByName("modifier_monkeyking_cloudrunstart")) {
+			ar.push("cloudrun_start")
+		}
+		if (this.HasBuffByName("modifier_phantom_assassin_phantom_strike")) {
+			ar.push("phantom_attack")
+		}
+		{
+			const mod = this.GetBuffByName("modifier_sven_warcry")
+			if (mod !== undefined && mod.Caster === mod.Parent) {
+				ar.push("sven_warcry")
+			}
+		}
+		if (this.HasBuffByName("modifier_winter_wyvern_arctic_burn_flight")) {
+			ar.push("flying")
+		}
+
+		const attackSpeed = this.AttackSpeed
+		const asMod = this.UnitData.AttackSpeedActivityModifiers.find(
+			mod => attackSpeed >= mod[0]
+		)
+		if (asMod !== undefined) {
+			ar.push(asMod[1])
+		}
+
+		const moveSpeed = this.MoveSpeedTotal
+		const msMod = this.UnitData.MovementSpeedActivityModifiers.find(
+			mod => moveSpeed >= mod[0]
+		)
+		if (msMod !== undefined) {
+			ar.push(msMod[1])
+		}
+
+		// TODO: AttackRangeActivityModifiers
 	}
 
 	public GetAnimationID(

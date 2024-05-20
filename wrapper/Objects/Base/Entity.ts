@@ -484,35 +484,38 @@ export class Entity {
 			return undefined
 		}
 		const modifiers: string[] = []
-		if (activityName !== undefined) {
-			modifiers.push(activityName)
-		}
 		this.CalculateActivityModifiers(activity, modifiers)
 		let highestScore = 0,
-			highestScored: Nullable<number>
+			highestScored: Nullable<number>,
+			bestMatches = 0
 
 		for (let i = 0; i < this.Animations.length; i++) {
 			const anim = this.Animations[i]
-			if (anim.activities.length !== modifiers.length) {
-				continue
-			}
 			let score = 0,
-				foundEverything = true
-			for (let index = 0, end = anim.activities.length; index < end; index++) {
-				const activityData = anim.activities[index]
+				matches = 0
+			if (activityName !== undefined) {
+				const animActivity = anim.activities.find(
+					animActivity_ => animActivity_.name.toLowerCase() === activityName
+				)
+				if (animActivity === undefined) {
+					continue
+				}
+				score += animActivity.weight
+				matches++
+			}
+			for (const activityData of anim.activities) {
 				if (modifiers.includes(activityData.name.toLowerCase())) {
 					score += activityData.weight
-				} else {
-					foundEverything = false
-					break
+					matches++
 				}
 			}
-			if (!foundEverything) {
+			if (matches < bestMatches) {
 				continue
 			}
-			if (score > highestScore) {
+			if (matches > bestMatches || score > highestScore) {
 				highestScore = score
 				highestScored = i
+				bestMatches = matches
 			}
 		}
 
