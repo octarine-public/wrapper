@@ -36,7 +36,11 @@ export const GameState = new (class CGameState {
 	public get InputLag() {
 		const latency = this.GetLatency(Flow.OUT),
 			tickDelta = this.TickInterval
-		if (latency < 0.001 && GameState.MapName.startsWith("hero_demo")) {
+		if (
+			latency < 0.001 &&
+			(GameState.MapName.startsWith("hero_demo") ||
+				GameState.MapName === "last_hit_trainer")
+		) {
 			return tickDelta
 		}
 		return Math.max(Math.ceil(latency / tickDelta), 1) * tickDelta + tickDelta
