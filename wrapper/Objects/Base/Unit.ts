@@ -1,4 +1,5 @@
 import { Color } from "../../Base/Color"
+import { QAngle } from "../../Base/QAngle"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
 import { ArmorPerAgility, AttackSpeedData, MoveSpeedData } from "../../Data/GameData"
@@ -29,6 +30,7 @@ import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GridNav } from "../../Resources/ParseGNV"
 import { GameState } from "../../Utils/GameState"
 import { toPercentage } from "../../Utils/Math"
+import { QuantizePlaybackRate } from "../../Utils/QuantizeUtils"
 import { Inventory } from "../DataBook/Inventory"
 import { PlayerCustomData } from "../DataBook/PlayerCustomData"
 import { UnitData } from "../DataBook/UnitData"
@@ -905,6 +907,27 @@ export class Unit extends Entity {
 			attackPoint = baseAttackPoint - lost
 		}
 		return Math.ceil(attackPoint / GameState.TickInterval) * GameState.TickInterval
+	}
+	public GetProjectileStartingPosition(
+		activity: GameActivity,
+		seqVariant: number,
+		attackPoint: number,
+		hasteFactor: number,
+		pos: Vector3,
+		ang: QAngle,
+		scale?: number
+	): Vector3 {
+		return this.GetAttachmentPosition(
+			activity === GameActivity.ACT_DOTA_ATTACK
+				? "attach_attack1"
+				: "attach_attack2",
+			activity,
+			seqVariant,
+			attackPoint * QuantizePlaybackRate(hasteFactor),
+			pos,
+			ang,
+			scale
+		)
 	}
 	public CanMove(
 		checkChanneling: boolean = true,
