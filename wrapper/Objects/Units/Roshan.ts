@@ -3,6 +3,7 @@ import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
 import { GUIInfo } from "../../GUI/GUIInfo"
 import { EventsSDK } from "../../Managers/EventsSDK"
+import { ConVarsSDK } from "../../Native/ConVarsSDK"
 import { Entity, GameRules } from "../Base/Entity"
 import { FakeUnit } from "../Base/FakeUnit"
 import { RoshanSpawner } from "../Base/RoshanSpawner"
@@ -56,15 +57,21 @@ function GetHPChangedByMinute(minute: number): number {
 }
 
 let lastMinute = 0
+function GetLastMinute() {
+	return Math.max(
+		0,
+		Math.floor(
+			(GameRules?.GameTime ?? 0) /
+				ConVarsSDK.GetFloat("dota_roshan_upgrade_rate", 60)
+		)
+	)
+}
 EventsSDK.on("ParticleCreated", par => {
 	if (par.PathNoEcon !== "particles/neutral_fx/roshan_spawn.vpcf") {
 		return
 	}
 	Roshan.Instance = par.AttachedTo
-	if (GameRules === undefined) {
-		return
-	}
-	lastMinute = Math.max(0, Math.floor(GameRules.GameTime / 60))
+	lastMinute = GetLastMinute()
 	Roshan.HP = 6000 + GetHPChangedByMinute(lastMinute)
 	Roshan.MaxHP = Roshan.HP
 })
@@ -83,8 +90,8 @@ EventsSDK.on("LifeStateChanged", ent => {
 })
 
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent === GameRules && lastMinute === -1) {
-		lastMinute = Math.floor(Math.max(GameRules.GameTime ?? 0, 0) / 60)
+	if (ent === GameRules && lastMinute === 0) {
+		lastMinute = GetLastMinute()
 	}
 	if (ent instanceof RoshanSpawner) {
 		Roshan.Spawner = ent
@@ -96,8 +103,7 @@ EventsSDK.on("PreEntityCreated", ent => {
 		return
 	}
 	Roshan.Instance = ent
-	lastMinute =
-		GameRules !== undefined ? Math.floor(Math.max(GameRules.GameTime, 0) / 60) : -1
+	lastMinute = GetLastMinute()
 	Roshan.HP = ent.HP
 	Roshan.MaxHP = ent.MaxHP
 })
@@ -126,7 +132,7 @@ EventsSDK.on("PostDataUpdate", dt => {
 			: Math.min(Roshan.HP + regenAmountFloor, Roshan.MaxHP)
 	Roshan.HPRegenCounter -= regenAmountFloor
 
-	const min = Math.floor(Math.max(GameRules!.GameTime, 0) / 60)
+	const min = GetLastMinute()
 	if (min === lastMinute) {
 		return
 	}
