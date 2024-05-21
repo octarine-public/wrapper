@@ -22,6 +22,7 @@ export const GameState = new (class CGameState {
 	 * and removes indirect dependency on EntityManager
 	 */
 	public RawGameTime = 0
+	public RawServerTime = 0
 	public LocalTeam = Team.Observer
 
 	/** @deprecated */

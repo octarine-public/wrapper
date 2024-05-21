@@ -1293,6 +1293,7 @@ Events.on("InputCaptured", isCaptured => {
 EventsSDK.on("InputCaptured", isCaptured => (GameState.IsInputCaptured = isCaptured))
 EventsSDK.on("ServerTick", tick => {
 	GameState.CurrentServerTick = tick
+	GameState.RawServerTime = tick * GameState.TickInterval
 	UpdateGameTime()
 })
 Events.on("UIStateChanged", newState => (GameState.UIState = newState))
