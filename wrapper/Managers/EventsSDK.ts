@@ -196,7 +196,8 @@ interface EventsSDK extends EventEmitter {
 			castpoint: number,
 			type: number,
 			activity: number,
-			lag_compensation_time: number
+			lagCompensationTime: number,
+			rawCastPoint: number
 		) => void,
 		priority?: number
 	): EventEmitter

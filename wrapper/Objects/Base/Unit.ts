@@ -156,11 +156,17 @@ export class Unit extends Entity {
 	public LastActivity = 0 as GameActivity
 	public LastActivitySequenceVariant = 0
 	public LastAnimationStartTime = 0
+	public LastAnimationServerStartTime = 0
 	public LastAnimationEndTime = 0
+	public LastAnimationRawCastPoint = 0
 	public LastAnimationCastPoint = 0
 	public LastAnimationPlaybackRate = 0
 	public LastAnimationIsAttack = false
+	public LastAnimationCasted = false
 	public IsInAnimation = false
+
+	public AttackTimeAtLastTick = 0
+	public AttackTimeLostToLastTick = 0
 
 	/**
 	 * @description added for compatibility (icore)
@@ -878,6 +884,27 @@ export class Unit extends Entity {
 		)
 		const buff = sortBuffs.find(x => x.IsBoots && x.BonusMoveSpeedAmplifier !== 0)
 		return buff?.BonusMoveSpeedAmplifier ?? 0
+	}
+	public GetNextAttackPoint(delay: number, nth = 0): number {
+		const baseAttackPoint = this.AttackPoint
+		let attackPoint =
+			this.IsInAnimation && this.LastAnimationIsAttack
+				? this.LastAnimationRawCastPoint
+				: baseAttackPoint
+		if (
+			!(this.IsInAnimation && this.LastAnimationIsAttack) &&
+			this.AttackTimeAtLastTick !== 0 &&
+			GameState.RawServerTime + delay - this.AttackTimeAtLastTick < this.AttackRate
+		) {
+			attackPoint -= this.AttackTimeLostToLastTick
+		}
+		for (let i = 0; i < nth; i++) {
+			const lost =
+				Math.ceil(attackPoint / GameState.TickInterval) * GameState.TickInterval -
+				attackPoint
+			attackPoint = baseAttackPoint - lost
+		}
+		return Math.ceil(attackPoint / GameState.TickInterval) * GameState.TickInterval
 	}
 	public CanMove(
 		checkChanneling: boolean = true,

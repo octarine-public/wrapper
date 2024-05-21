@@ -7,6 +7,7 @@ import { DOTAGameUIState } from "../Enums/DOTAGameUIState"
 import { Team } from "../Enums/Team"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { Localization } from "../Menu/Localization"
+import { ConVarsSDK } from "../Native/ConVarsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import * as WASM from "../Native/WASM"
 import { Entity, GameRules, LocalPlayer, UpdateGameTime } from "../Objects/Base/Entity"
@@ -1213,16 +1214,36 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				if (!(ent instanceof Unit)) {
 					return
 				}
+				const type = msg.get("type") as number
+				let rawCastPoint = msg.get("castpoint") as number,
+					castPoint =
+						Math.ceil(rawCastPoint / GameState.TickInterval) *
+						GameState.TickInterval
+				if (
+					type === 0 &&
+					!ConVarsSDK.GetBoolean(
+						"dota_disable_add_fractional_attack_time",
+						false
+					) &&
+					ent.AttackTimeAtLastTick !== 0 &&
+					GameState.RawServerTime - ent.AttackTimeAtLastTick < ent.AttackRate
+				) {
+					rawCastPoint -= ent.AttackTimeLostToLastTick
+					castPoint =
+						Math.ceil(rawCastPoint / GameState.TickInterval) *
+						GameState.TickInterval
+				}
 				EventsSDK.emit(
 					"UnitAnimation",
 					false,
 					ent,
 					msg.get("sequence_variant") as number,
 					QuantizePlaybackRate(msg.get("playbackrate") as number),
-					msg.get("castpoint") as number,
-					msg.get("type") as number,
+					castPoint,
+					type,
 					msg.get("activity") as number,
-					msg.get("lag_compensation_time") as number
+					(msg.get("lag_compensation_time") as Nullable<number>) ?? 0,
+					rawCastPoint
 				)
 			})
 			break

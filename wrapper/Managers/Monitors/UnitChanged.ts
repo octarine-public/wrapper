@@ -74,6 +74,33 @@ const Monitor = new (class CPreUnitChanged {
 					EventsSDK.emit("UnitAnimationEnd", false, unit, false)
 				}
 			}
+			if (unit.IsInAnimation && !unit.LastAnimationCasted) {
+				const lastAnimCastPoint =
+					unit.LastAnimationStartTime + unit.LastAnimationCastPoint
+				if (
+					GameState.RawGameTime > lastAnimCastPoint ||
+					Math.abs(GameState.RawGameTime - lastAnimCastPoint) <
+						GameState.TickInterval / 10
+				) {
+					unit.LastAnimationCasted = true
+					if (unit.LastAnimationIsAttack) {
+						const lastAnimServerCastPoint =
+							unit.LastAnimationServerStartTime +
+							unit.LastAnimationCastPoint
+						if (
+							GameState.RawServerTime <= lastAnimServerCastPoint ||
+							Math.abs(GameState.RawServerTime - lastAnimServerCastPoint) <
+								GameState.TickInterval / 10
+						) {
+							unit.AttackTimeAtLastTick = GameState.RawServerTime
+							unit.AttackTimeLostToLastTick =
+								GameState.RawServerTime -
+								(unit.LastAnimationServerStartTime +
+									unit.LastAnimationRawCastPoint)
+						}
+					}
+				}
+			}
 			// TODO: interpolate DeltaZ from OnModifierUpdated?
 		}
 	}
@@ -146,18 +173,22 @@ const Monitor = new (class CPreUnitChanged {
 		playbackRate: number,
 		castpoint: number,
 		activity: number,
-		type: number
+		type: number,
+		rawCastPoint: number
 	) {
 		if (!unit.IsInAnimation && activity === -1) {
 			return
 		}
 		unit.IsInAnimation = true
+		unit.LastAnimationCasted = false
 		if (activity !== -1) {
 			unit.LastAnimationIsAttack = type === 0
 			unit.LastActivity = activity
 			unit.LastActivitySequenceVariant = sequenceVariant
+			unit.LastAnimationServerStartTime = GameState.RawServerTime
 			unit.LastAnimationStartTime = GameState.RawGameTime
 		}
+		unit.LastAnimationRawCastPoint = rawCastPoint
 		unit.LastAnimationCastPoint = castpoint
 		unit.LastAnimationPlaybackRate = playbackRate
 
@@ -179,12 +210,27 @@ const Monitor = new (class CPreUnitChanged {
 		if (!unit.IsInAnimation) {
 			return
 		}
+		if (unit.LastAnimationIsAttack) {
+			const lastAnimCastPoint =
+				unit.LastAnimationStartTime + unit.LastAnimationCastPoint
+			if (
+				GameState.RawGameTime < lastAnimCastPoint &&
+				Math.abs(GameState.RawGameTime - lastAnimCastPoint) >
+					GameState.TickInterval / 10
+			) {
+				unit.AttackTimeAtLastTick = 0
+				unit.AttackTimeLostToLastTick = 0
+			}
+		}
 		unit.IsInAnimation = false
 		unit.LastAnimationIsAttack = false
+		unit.LastAnimationCasted = false
 		unit.LastActivity = 0 as GameActivity
 		unit.LastActivitySequenceVariant = 0
+		unit.LastAnimationServerStartTime = 0
 		unit.LastAnimationStartTime = 0
 		unit.LastAnimationEndTime = 0
+		unit.LastAnimationRawCastPoint = 0
 		unit.LastAnimationCastPoint = 0
 		unit.LastAnimationPlaybackRate = 0
 	}
@@ -347,7 +393,8 @@ EventsSDK.on(
 		castpoint,
 		type,
 		activity,
-		_lagCompensationTime
+		_lagCompensationTime,
+		rawCastPoint
 	) =>
 		Monitor.UnitAnimation(
 			unit,
@@ -355,7 +402,8 @@ EventsSDK.on(
 			playbackRate,
 			castpoint,
 			activity,
-			type
+			type,
+			rawCastPoint
 		)
 )
 EventsSDK.on("UnitAnimationEnd", unit => Monitor.UnitAnimationEnd(unit))
