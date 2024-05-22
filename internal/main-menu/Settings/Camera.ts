@@ -1,9 +1,11 @@
 import {
 	Color,
 	ConVarsSDK,
+	DOTAGameState,
 	DOTAGameUIState,
 	Entity,
 	ExecuteOrder,
+	GameRules,
 	GameState,
 	GUIInfo,
 	Input,
@@ -70,7 +72,17 @@ export class InternalCamera {
 	}
 
 	private get isInGame(): boolean {
-		return GameState.UIState === DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME
+		if (GameState.UIState !== DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME) {
+			return false
+		}
+		if (
+			GameRules !== undefined &&
+			(GameRules.GameState < DOTAGameState.DOTA_GAMERULES_STATE_PRE_GAME ||
+				GameRules.GameState > DOTAGameState.DOTA_GAMERULES_STATE_POST_GAME)
+		) {
+			return false
+		}
+		return true
 	}
 
 	public Draw(): void {
