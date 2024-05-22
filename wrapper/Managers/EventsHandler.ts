@@ -1357,8 +1357,7 @@ EventsSDK.on("ServerInfo", info => {
 	GameState.MapName = mapName
 	const addonName = (info.get("addon_name") as string) ?? ""
 	GameState.AddonName = addonName
-
-	isDedicated = (info.get("is_dedicated") as boolean) ?? false
+	GameState.IsDedicatedServer = (info.get("is_dedicated") as boolean) ?? false
 
 	TryLoadMapFiles()
 	ReloadGlobalUnitStorage()
@@ -1407,12 +1406,14 @@ EventsSDK.on("ServerInfo", info => {
 	EventsSDK.emit("UnitAbilityDataUpdated", false)
 })
 
-let isDedicated = false
 const text =
 	"Currently, the cheat does not work correctly in the local lobby, to configure and test, create a lobby on Valve servers."
 
 EventsSDK.on("Draw", () => {
-	if (isDedicated || GameState.UIState !== DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME) {
+	if (GameState.IsDedicatedServer || !GameState.IsConnected) {
+		return
+	}
+	if (GameState.UIState !== DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME) {
 		return
 	}
 	if (
@@ -1421,9 +1422,6 @@ EventsSDK.on("Draw", () => {
 			GameRules.GameState <=
 				DOTAGameState.DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD)
 	) {
-		return
-	}
-	if (GameState.MapName === "<empty>") {
 		return
 	}
 	const size = GUIInfo.ScaleHeight(24)

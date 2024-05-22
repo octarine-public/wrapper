@@ -11,6 +11,7 @@ export const GameState = new (class CGameState {
 	public CurrentServerTick = 0
 	public CurrentGameTick = 0
 	public IsInputCaptured = false
+	public IsDedicatedServer = false
 	public UIState = DOTAGameUIState.DOTA_GAME_UI_STATE_DASHBOARD
 	public MapName = "<empty>"
 	public AddonName = ""
@@ -33,22 +34,11 @@ export const GameState = new (class CGameState {
 	public get AvgPing() {
 		return (GetAvgLatency(Flow.IN) + GetAvgLatency(Flow.OUT)) * 1000
 	}
-	public get InputLag() {
-		const latency = this.GetLatency(Flow.OUT),
-			tickDelta = this.TickInterval
-		if (
-			latency < 0.001 &&
-			(GameState.MapName.startsWith("hero_demo") ||
-				GameState.MapName === "last_hit_trainer")
-		) {
-			return tickDelta
-		}
-		return Math.max(Math.ceil(latency / tickDelta), 1) * tickDelta + tickDelta
-	}
 	public get IOLag() {
-		const latency = this.GetLatency(Flow.OUT),
-			tickDelta = this.TickInterval
-		return Math.max(Math.ceil(latency / tickDelta), 1) * tickDelta
+		return this.GetIOLag(this.GetLatency(Flow.OUT))
+	}
+	public get InputLag() {
+		return this.GetInputLag(this.GetLatency(Flow.OUT))
 	}
 	public get IsConnected(): boolean {
 		return this.MapName !== "<empty>"
@@ -61,5 +51,16 @@ export const GameState = new (class CGameState {
 	}
 	public ExecuteCommand(command: string) {
 		return SendToConsole(command)
+	}
+	public GetIOLag(latency: number) {
+		const tickDelta = this.TickInterval
+		return Math.max(Math.ceil(latency / tickDelta), 1) * tickDelta
+	}
+	public GetInputLag(latency: number) {
+		const tickDelta = this.TickInterval
+		if (latency < 0.001 && !this.IsDedicatedServer) {
+			return tickDelta
+		}
+		return Math.max(Math.ceil(latency / tickDelta), 1) * tickDelta + tickDelta
 	}
 })()
