@@ -923,7 +923,8 @@ export class Unit extends Entity {
 				: "attach_attack2",
 			activity,
 			seqVariant,
-			attackPoint * QuantizePlaybackRate(hasteFactor),
+			Math.max(attackPoint - GameState.TickInterval, 0) *
+				QuantizePlaybackRate(hasteFactor),
 			pos,
 			ang,
 			scale
