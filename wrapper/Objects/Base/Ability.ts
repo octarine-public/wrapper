@@ -137,6 +137,12 @@ export class Ability extends Entity {
 	public get IsInnate(): boolean {
 		return this.AbilityData.IsInnate
 	}
+	public get IsInnateHidden(): boolean {
+		return (
+			(this.IsInnate && this.DependentOnAbility !== "") ||
+			this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_INNATE_UI)
+		)
+	}
 	public get EndRadius(): number {
 		// TODO: fix me
 		return this.GetSpecialValue("final_aoe")
