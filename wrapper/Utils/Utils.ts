@@ -1,18 +1,19 @@
 import { readFile } from "./readFile"
 
-export function parseEnumString(
+export function parseEnumString<T = number | bigint>(
 	enumObject: any /* { [key: string]: number } */,
-	str: string
-): number {
+	str: string,
+	defaultVal: T
+): any {
 	const regex = /(\w+)\s?(\||\&|\+|\-)?/g // it's in variable to preserve RegExp#exec steps
 	let lastTok = "",
-		res = 0
+		res = defaultVal as any
 	while (true) {
 		const regexRes = regex.exec(str)
 		if (regexRes === null) {
 			return res
 		}
-		const parsedName = (enumObject[regexRes[1]] as Nullable<number>) ?? 0
+		const parsedName = ((enumObject[regexRes[1]] as Nullable<T>) ?? defaultVal) as any
 		switch (lastTok) {
 			case "&":
 				res &= parsedName

@@ -125,9 +125,6 @@ export class Ability extends Entity {
 	public get Owner(): Nullable<Unit> {
 		return this.OwnerEntity as Nullable<Unit>
 	}
-	public get AbilityBehavior(): DOTA_ABILITY_BEHAVIOR[] {
-		return this.AbilityBehaviorMask.toMask
-	}
 	public get AbilityBehaviorMask(): DOTA_ABILITY_BEHAVIOR {
 		return this.AbilityData.AbilityBehavior
 	}

@@ -61,7 +61,7 @@ export class AbilityData {
 		return (globalThis as any)?.DEBUGGER_INSTALLED ?? false
 	}
 
-	public readonly AbilityBehavior: number // DOTA_ABILITY_BEHAVIOR bitmask
+	public readonly AbilityBehavior: DOTA_ABILITY_BEHAVIOR // bitmask
 	public readonly AbilityType: ABILITY_TYPES
 	public readonly MaxLevel: number
 	public readonly TexturePath: string
@@ -137,7 +137,11 @@ export class AbilityData {
 		this.CacheSpecialValuesOld(kv)
 
 		this.AbilityBehavior = kv.has("AbilityBehavior")
-			? parseEnumString(DOTA_ABILITY_BEHAVIOR, kv.get("AbilityBehavior") as string)
+			? parseEnumString(
+					DOTA_ABILITY_BEHAVIOR,
+					kv.get("AbilityBehavior") as string,
+					0n
+				)
 			: DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NONE
 
 		this.HealthCostCache = this.GetLevelArray(
@@ -170,23 +174,26 @@ export class AbilityData {
 		this.TargetFlags = kv.has("AbilityUnitTargetFlags")
 			? parseEnumString(
 					DOTA_UNIT_TARGET_FLAGS,
-					kv.get("AbilityUnitTargetFlags") as string
+					kv.get("AbilityUnitTargetFlags") as string,
+					0
 				)
 			: DOTA_UNIT_TARGET_FLAGS.DOTA_UNIT_TARGET_FLAG_NONE
 		this.TargetTeam = kv.has("AbilityUnitTargetTeam")
 			? parseEnumString(
 					DOTA_UNIT_TARGET_TEAM,
-					kv.get("AbilityUnitTargetTeam") as string
+					kv.get("AbilityUnitTargetTeam") as string,
+					0
 				)
 			: DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_NONE
 		this.TargetType = kv.has("AbilityUnitTargetType")
 			? parseEnumString(
 					DOTA_UNIT_TARGET_TYPE,
-					kv.get("AbilityUnitTargetType") as string
+					kv.get("AbilityUnitTargetType") as string,
+					0
 				)
 			: DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_NONE
 		this.CastAnimation = kv.has("AbilityCastAnimation")
-			? parseEnumString(GameActivity, kv.get("AbilityCastAnimation") as string)
+			? parseEnumString(GameActivity, kv.get("AbilityCastAnimation") as string, 0)
 			: undefined
 		this.SharedCooldownName = (kv.get("AbilitySharedCooldown") as string) ?? name
 		this.ModelName = (kv.get("Model") as string) ?? ""
@@ -205,7 +212,7 @@ export class AbilityData {
 			? parseInt(kv.get("ItemPurchasable") as string) !== 0
 			: false
 		this.DamageType = kv.has("AbilityUnitDamageType")
-			? parseEnumString(DAMAGE_TYPES, kv.get("AbilityUnitDamageType") as string)
+			? parseEnumString(DAMAGE_TYPES, kv.get("AbilityUnitDamageType") as string, 0)
 			: DAMAGE_TYPES.DAMAGE_TYPE_NONE
 		// this.DispellableType = this.m_pAbilityData.m_iAbilityDispellableType
 		this.LevelsBetweenUpgrades = kv.has("LevelsBetweenUpgrades")
@@ -217,7 +224,11 @@ export class AbilityData {
 				? 6
 				: 1
 		this.AbilityImmunityType = kv.has("SpellImmunityType")
-			? parseEnumString(SPELL_IMMUNITY_TYPES, kv.get("SpellImmunityType") as string)
+			? parseEnumString(
+					SPELL_IMMUNITY_TYPES,
+					kv.get("SpellImmunityType") as string,
+					0
+				)
 			: SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE
 		this.ItemDisplayCharges = kv.has("ItemDisplayCharges")
 			? parseInt(kv.get("ItemDisplayCharges") as string) !== 0
@@ -278,7 +289,8 @@ export class AbilityData {
 		this.ItemDisassembleRule = kv.has("ItemDisassembleRule")
 			? parseEnumString(
 					DOTA_ITEM_DISASSEMBLE,
-					kv.get("ItemDisassembleRule") as string
+					kv.get("ItemDisassembleRule") as string,
+					0
 				)
 			: DOTA_ITEM_DISASSEMBLE.DOTA_ITEM_DISASSEMBLE_NONE
 	}
