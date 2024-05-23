@@ -127,13 +127,7 @@ export const GUIInfo = new (class CGUIInfo {
 								DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_HIDDEN
 							)
 					).length +
-					(unit?.Spells?.filter(
-						abil =>
-							(abil?.IsInnate && abil.DependentOnAbility !== "") ||
-							abil?.HasBehavior(
-								DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_INNATE_UI
-							)
-					).length ?? 0)
+					(unit?.Spells?.filter(abil => abil?.IsInnateHidden).length ?? 0)
 				: 4
 		const isHero = unit?.IsHero ?? false
 		let heroMap = this.LowerHUD_.get(isHero)

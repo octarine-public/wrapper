@@ -139,11 +139,13 @@ export class Ability extends Entity {
 	}
 	public get IsInnateHidden(): boolean {
 		return (
-			(this.IsInnate && this.DependentOnAbility !== "") ||
-			this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_INNATE_UI) ||
-			this.HasBehavior(
-				DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_SKIP_FOR_KEYBINDS
-			)
+			(this.IsInnate &&
+				(this.DependentOnAbility !== "" ||
+					(this.AbilityData.MaxLevel === 1 &&
+						this.HasBehavior(
+							DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE
+						)))) ||
+			this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_INNATE_UI)
 		)
 	}
 	public get EndRadius(): number {
