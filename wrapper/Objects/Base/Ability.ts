@@ -137,6 +137,9 @@ export class Ability extends Entity {
 	public get AbilityType(): ABILITY_TYPES {
 		return this.AbilityData.AbilityType
 	}
+	public get IsInnate(): boolean {
+		return this.AbilityData.IsInnate
+	}
 	public get EndRadius(): number {
 		// TODO: fix me
 		return this.GetSpecialValue("final_aoe")
