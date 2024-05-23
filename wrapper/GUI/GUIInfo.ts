@@ -108,7 +108,8 @@ export const GUIInfo = new (class CGUIInfo {
 					abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_HIDDEN &&
 					!abil.Name.startsWith("plus_") &&
 					!abil.Name.startsWith("seasonal_") &&
-					!abil.IsHidden
+					!abil.IsHidden &&
+					!abil.IsInnateHidden
 			) as Ability[]) ?? []
 		)
 	}
@@ -125,7 +126,14 @@ export const GUIInfo = new (class CGUIInfo {
 							!abil.HasBehavior(
 								DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_HIDDEN
 							)
-					).length
+					).length +
+					(unit?.Spells?.filter(
+						abil =>
+							(abil?.IsInnate && abil.DependentOnAbility !== "") ||
+							abil?.HasBehavior(
+								DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_INNATE_UI
+							)
+					).length ?? 0)
 				: 4
 		const isHero = unit?.IsHero ?? false
 		let heroMap = this.LowerHUD_.get(isHero)
@@ -232,7 +240,6 @@ export const GUIInfo = new (class CGUIInfo {
 			lowerHUD.TalentTree,
 			lowerHUD.RightFlare,
 			lowerHUD.NeutralSlot,
-			lowerHUD.StatsContainer,
 			lowerHUD.AbilitiesContainer,
 			lowerHUD.InventoryContainer,
 			lowerHUD.HealthManaContainer,

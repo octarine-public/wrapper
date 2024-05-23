@@ -8,8 +8,8 @@ export class CLowerHUD {
 	public readonly LeftFlare = new Rectangle()
 	public readonly Portrait = new Rectangle()
 	public readonly XP = new Rectangle()
-	public readonly StatsContainer = new Rectangle()
 	public readonly TalentTree = new Rectangle()
+	public readonly RootInnateDisplay = new Rectangle()
 	public readonly AbilitiesContainer = new Rectangle()
 	public readonly AbilitiesRects: Rectangle[] = []
 	public readonly AghsStatusContainer = new Rectangle()
@@ -39,17 +39,10 @@ export class CLowerHUD {
 		this.Portrait.x = ScaleWidth(52, screenSize)
 		this.Portrait.y = screenSize.y - this.Portrait.Height
 
-		this.XP.Width = ScaleWidth(42, screenSize)
-		this.XP.Height = ScaleHeight(42, screenSize)
-
-		this.XP.x = ScaleWidth(12, screenSize)
-		this.XP.y = screenSize.y - this.XP.Height - ScaleHeight(3, screenSize)
-
-		// TODO: calculate stats groups positions
-		this.StatsContainer.Width = ScaleWidth(129, screenSize)
-		this.StatsContainer.Height = this.StatsContainer.x = ScaleWidth(82, screenSize)
-		this.StatsContainer.y =
-			screenSize.y - this.StatsContainer.Height - ScaleHeight(145, screenSize)
+		this.XP.Width = ScaleWidth(48, screenSize)
+		this.XP.Height = ScaleHeight(48, screenSize)
+		this.XP.x = ScaleWidth(6, screenSize)
+		this.XP.y = screenSize.y - this.XP.Height
 
 		this.AbilitiesContainer.Width = ScaleWidth(321, screenSize)
 		this.AbilitiesContainer.Height =
@@ -70,6 +63,17 @@ export class CLowerHUD {
 		const TalentTreeMargin = isHero ? ScaleWidth(4, screenSize) : 0
 
 		if (isHero) {
+			this.RootInnateDisplay.Width = ScaleWidth(40, screenSize)
+			this.RootInnateDisplay.Height = ScaleHeight(64, screenSize)
+		}
+		this.RootInnateDisplay.x =
+			this.TalentTree.pos2.x + TalentTreeMargin - ScaleWidth(6, screenSize)
+		this.RootInnateDisplay.y =
+			this.AbilitiesContainer.pos2.y -
+			this.RootInnateDisplay.Height -
+			ScaleHeight(24, screenSize)
+
+		if (isHero) {
 			this.AghsStatusContainer.Width =
 				ScaleWidth(62, screenSize) - ScaleWidth(4, screenSize)
 			this.AghsStatusContainer.Height = ScaleHeight(62, screenSize)
@@ -79,10 +83,10 @@ export class CLowerHUD {
 			this.AbilitiesContainer.pos2.y -
 			this.AghsStatusContainer.Height -
 			ScaleHeight(24, screenSize)
-		let aghsStatusContainerStart = this.TalentTree.pos2.x + TalentTreeMargin
+		let aghsStatusContainerStart = this.RootInnateDisplay.pos2.x
 		const AbilitiesContainerMargin = ScaleWidth(2, screenSize)
 		const extendedAbilities = baseAbilitiesCount >= 5
-		const AbilitySize = extendedAbilities ? 58 : 65,
+		const AbilitySize = extendedAbilities ? 58 : 64,
 			AbilityMarginBottom1 = extendedAbilities ? 24 : 25,
 			AbilityMarginBottom2 = extendedAbilities ? 8 : 0
 		for (let i = 0; i < abilitiesCount; i++) {
@@ -91,7 +95,7 @@ export class CLowerHUD {
 			AbilityRect.Height = ScaleHeight(AbilitySize, screenSize)
 			AbilityRect.x =
 				i === 0
-					? this.TalentTree.pos2.x + TalentTreeMargin - AbilitiesContainerMargin
+					? this.RootInnateDisplay.pos2.x - AbilitiesContainerMargin
 					: this.AbilitiesRects[i - 1].pos2.x
 			AbilityRect.y =
 				this.AbilitiesContainer.pos2.y -
@@ -237,6 +241,11 @@ export class CLowerHUD {
 			this.TalentTree.Size,
 			Color.Red.SetA(128)
 		)
+		RendererSDK.FilledRect(
+			this.RootInnateDisplay.pos1,
+			this.RootInnateDisplay.Size,
+			Color.Aqua.SetA(128)
+		)
 		this.AbilitiesRects.forEach(rect =>
 			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Fuchsia.SetA(128))
 		)
@@ -291,7 +300,7 @@ export class CLowerHUD {
 		this.LeftFlare.x += baseX
 		this.Portrait.x += baseX
 		this.XP.x += baseX
-		this.StatsContainer.x += baseX
+		this.RootInnateDisplay.x += baseX
 		this.TalentTree.x += baseX
 		this.AbilitiesRects.forEach(rect => (rect.x += baseX))
 		this.AghsStatusContainer.x += baseX
