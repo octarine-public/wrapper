@@ -26,7 +26,6 @@ export class CLowerHUD {
 		screenSize: Vector2,
 		isHero: boolean,
 		abilitiesCount: number,
-		baseAbilitiesCount: number,
 		hudFlip: boolean
 	) {
 		this.LeftFlare.Width = ScaleWidth(52, screenSize)
@@ -85,7 +84,7 @@ export class CLowerHUD {
 			ScaleHeight(24, screenSize)
 		let aghsStatusContainerStart = this.RootInnateDisplay.pos2.x
 		const AbilitiesContainerMargin = ScaleWidth(2, screenSize)
-		const extendedAbilities = baseAbilitiesCount >= 5
+		const extendedAbilities = abilitiesCount >= 5
 		const AbilitySize = extendedAbilities ? 58 : 64,
 			AbilityMarginBottom1 = extendedAbilities ? 24 : 25,
 			AbilityMarginBottom2 = extendedAbilities ? 8 : 0

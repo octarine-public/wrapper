@@ -71,7 +71,7 @@ export class Hero extends Unit {
 	public get HealthBarSize() {
 		return new Vector2(
 			GUIInfo.ScaleHeight(this.IsMyHero ? 107 : 99),
-			GUIInfo.ScaleHeight(11)
+			GUIInfo.ScaleHeight(8)
 		)
 	}
 	public get HealthBarPositionCorrection() {
@@ -84,7 +84,7 @@ export class Hero extends Unit {
 			case this.HasBuffByName("modifier_morphling_replicate_illusion"):
 				return position.SetY(GUIInfo.ScaleHeight(11))
 			default:
-				return position.SetY(GUIInfo.ScaleHeight(30))
+				return position.SetY(GUIInfo.ScaleHeight(31))
 		}
 	}
 	public get SpellAmplification(): number {

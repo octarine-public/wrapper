@@ -2,4 +2,8 @@ import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("leshrac_chronoptic_nourishment")
-export class leshrac_chronoptic_nourishment extends Ability {}
+export class leshrac_chronoptic_nourishment extends Ability {
+	public get ShouldBeDrawable(): boolean {
+		return false
+	}
+}

@@ -1,7 +1,5 @@
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
-import { ABILITY_TYPES } from "../Enums/ABILITY_TYPES"
-import { DOTA_ABILITY_BEHAVIOR } from "../Enums/DOTA_ABILITY_BEHAVIOR"
 import { DOTAGameState } from "../Enums/DOTAGameState"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputManager, VKeys } from "../Managers/InputManager"
@@ -99,37 +97,20 @@ export const GUIInfo = new (class CGUIInfo {
 			this.DebugDraw()
 		}
 	}
+
 	public GetVisibleAbilitiesForUnit(unit: Nullable<Unit>): Ability[] {
 		return (
 			(unit?.Spells?.filter(
-				abil =>
-					abil !== undefined &&
-					abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES &&
-					abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_HIDDEN &&
-					!abil.Name.startsWith("plus_") &&
-					!abil.Name.startsWith("seasonal_") &&
-					!abil.IsHidden &&
-					!abil.IsInnateHidden
+				abil => abil !== undefined && !abil.IsHidden && abil.ShouldBeDrawable
 			) as Ability[]) ?? []
 		)
 	}
+
 	public GetLowerHUDForUnit(
 		unit: Nullable<Unit> = InputManager.SelectedUnit
 	): CLowerHUD {
-		const abils =
-			unit !== undefined ? this.GetVisibleAbilitiesForUnit(unit) : undefined
-		const abilsCount = abils !== undefined ? abils.length : 4
-		const baseAbilsCount =
-			abils !== undefined
-				? abils.filter(
-						abil =>
-							!abil.HasBehavior(
-								DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_HIDDEN
-							)
-					).length +
-					(unit?.Spells?.filter(abil => abil?.IsInnateHidden).length ?? 0)
-				: 4
 		const isHero = unit?.IsHero ?? false
+		const abilsCount = this.GetVisibleAbilitiesForUnit(unit).length
 		let heroMap = this.LowerHUD_.get(isHero)
 		if (heroMap === undefined) {
 			heroMap = new Map()
@@ -140,16 +121,10 @@ export const GUIInfo = new (class CGUIInfo {
 			abilsMap = new Map()
 			heroMap.set(abilsCount, abilsMap)
 		}
-		let hud = abilsMap.get(baseAbilsCount)
+		let hud = abilsMap.get(abilsCount)
 		if (hud === undefined) {
-			hud = new CLowerHUD(
-				latestScreenSize,
-				isHero,
-				abilsCount,
-				baseAbilsCount,
-				this.HUDFlipped
-			)
-			abilsMap.set(baseAbilsCount, hud)
+			hud = new CLowerHUD(latestScreenSize, isHero, abilsCount, this.HUDFlipped)
+			abilsMap.set(abilsCount, hud)
 		}
 		return hud
 	}

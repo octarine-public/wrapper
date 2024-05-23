@@ -2,4 +2,8 @@ import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("ursa_maul")
-export class ursa_maul extends Ability {}
+export class ursa_maul extends Ability {
+	public get ShouldBeDrawable(): boolean {
+		return false
+	}
+}

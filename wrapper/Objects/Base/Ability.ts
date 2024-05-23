@@ -58,6 +58,8 @@ export class Ability extends Entity {
 	public AbilityCurrentCharges = 0
 	@NetworkedBasicField("m_iDirtyButtons")
 	public DirtyButtons = 0
+	@NetworkedBasicField("m_bGrantedByFacet")
+	public GrantedByFacet = false
 
 	public Level = 0
 	public IsEmpty = false
@@ -89,15 +91,12 @@ export class Ability extends Entity {
 	public get IsInvisibility(): boolean {
 		return false
 	}
+	/** NOTE: @override in child classes */
 	public get ShouldBeDrawable(): boolean {
-		if (this.IsEmpty || this.MaxLevel === 0) {
-			return false
-		}
-		if (this.Name.startsWith("seasonal_")) {
-			return false
-		}
-		return !this.HasTargetFlags(
-			DOTA_UNIT_TARGET_FLAGS.DOTA_UNIT_TARGET_FLAG_INVULNERABLE
+		return (
+			!this.IsAttributes &&
+			!this.IsInnateHidden &&
+			!this.Name.startsWith("seasonal_")
 		)
 	}
 	public get IsUltimate(): boolean {
@@ -138,15 +137,7 @@ export class Ability extends Entity {
 		return this.AbilityData.IsInnate
 	}
 	public get IsInnateHidden(): boolean {
-		return (
-			(this.IsInnate &&
-				(this.DependentOnAbility !== "" ||
-					(this.AbilityData.MaxLevel === 1 &&
-						this.HasBehavior(
-							DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE
-						)))) ||
-			this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_INNATE_UI)
-		)
+		return this.IsUIInnate || (this.IsInnate && this.DependentOnAbility.length !== 0)
 	}
 	public get EndRadius(): number {
 		// TODO: fix me
@@ -259,6 +250,9 @@ export class Ability extends Entity {
 		return this.HasBehavior(
 			DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_IGNORE_BACKSWING
 		)
+	}
+	public get IsUIInnate(): boolean {
+		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_INNATE_UI)
 	}
 	public get CooldownRestore(): number {
 		return Math.max(
