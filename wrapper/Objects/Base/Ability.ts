@@ -218,6 +218,9 @@ export class Ability extends Entity {
 	public get SharedCooldownName(): string {
 		return this.AbilityData.SharedCooldownName
 	}
+	public get DependentOnAbility(): string {
+		return this.AbilityData.DependentOnAbility
+	}
 	public get AbilityImmunityType(): SPELL_IMMUNITY_TYPES {
 		return this.AbilityData.AbilityImmunityType
 	}

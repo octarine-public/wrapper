@@ -71,6 +71,7 @@ export class AbilityData {
 	public readonly SharedCooldownName: string
 	public readonly ModelName: string
 	public readonly AlternateModelName: string
+	public readonly DependentOnAbility: string
 	// public readonly ItemRecipeName: string
 	public readonly IsItem: boolean
 	public readonly IsGrantedByScepter: boolean
@@ -198,6 +199,7 @@ export class AbilityData {
 		this.SharedCooldownName = (kv.get("AbilitySharedCooldown") as string) ?? name
 		this.ModelName = (kv.get("Model") as string) ?? ""
 		this.AlternateModelName = (kv.get("ModelAlternate") as string) ?? ""
+		this.DependentOnAbility = (kv.get("DependentOnAbility") as string) ?? ""
 		// this.ItemRecipeName = m_pAbilityData.m_pszItemRecipeName
 		this.IsItem = name.startsWith("item_")
 		this.IsGrantedByScepter = kv.has("IsGrantedByScepter")
