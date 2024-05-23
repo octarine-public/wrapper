@@ -160,14 +160,16 @@ export class UnitData {
 		this.MovementCapabilities = kv.has("MovementCapabilities")
 			? parseEnumString(
 					DOTAUnitMoveCapability,
-					kv.get("MovementCapabilities") as string
+					kv.get("MovementCapabilities") as string,
+					0
 				)
 			: DOTAUnitMoveCapability.DOTA_UNIT_CAP_MOVE_GROUND
 		this.AttackDamageType = kv.has("CombatClassAttack")
 			? FixCombatClassAttack(
 					parseEnumString(
 						DOTA_COMBAT_CLASS_ATTACK,
-						kv.get("CombatClassAttack") as string
+						kv.get("CombatClassAttack") as string,
+						0
 					)
 				)
 			: AttackDamageType.Basic
@@ -175,12 +177,13 @@ export class UnitData {
 			? FixCombatClassDefend(
 					parseEnumString(
 						DOTA_COMBAT_CLASS_DEFEND,
-						kv.get("CombatClassDefend") as string
+						kv.get("CombatClassDefend") as string,
+						0
 					)
 				)
 			: ArmorType.Basic
 		const boundsHull = kv.has("BoundsHullName")
-			? parseEnumString(DOTAHullSize, kv.get("BoundsHullName") as string)
+			? parseEnumString(DOTAHullSize, kv.get("BoundsHullName") as string, 0)
 			: DOTAHullSize.DOTA_HULL_SIZE_HERO
 		switch (boundsHull) {
 			case DOTAHullSize.DOTA_HULL_SIZE_SMALL:
@@ -255,7 +258,7 @@ export class UnitData {
 			this.WorkshopName = kv.get("workshop_guide_name") as string
 		}
 		this.AttributePrimary = kv.has("AttributePrimary")
-			? parseEnumString(Attributes, kv.get("AttributePrimary") as string)
+			? parseEnumString(Attributes, kv.get("AttributePrimary") as string, 0)
 			: Attributes.DOTA_ATTRIBUTE_STRENGTH
 		this.ArmorPhysical = kv.has("ArmorPhysical")
 			? parseFloat(kv.get("ArmorPhysical") as string)

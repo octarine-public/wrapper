@@ -533,7 +533,9 @@ export class Ability extends Entity {
 		return owner.Mana + bonusMana >= this.ManaCost
 	}
 	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
-		return this.AbilityData.HasBehavior(flag)
+		// don't use AbilityData.HasBehavior() here
+		// because it will be overridden by the child classes for AbilityBehaviorMask
+		return this.AbilityBehaviorMask.hasMask(flag)
 	}
 	public HasTargetFlags(flag: DOTA_UNIT_TARGET_FLAGS): boolean {
 		return this.AbilityData.TargetFlags.hasMask(flag)
