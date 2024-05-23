@@ -176,9 +176,9 @@ const Monitor = new (class CUnitAttackChanged {
 				x !== source &&
 				x.Team !== source.Team &&
 				x.Distance2D(source) <= source.GetAttackRange(x, 25)
-		).orderBy(x => source.GetAngle(x))
+		).orderBy(x => source.GetAngle(x, true))
 
-		return newUnits.find(x => source.GetAngle(x) < 0.35)?.Index ?? -1
+		return newUnits.find(x => source.GetAngle(x, true) < 0.35)?.Index ?? -1
 	}
 
 	private handlerErrorMessage(
