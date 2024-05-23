@@ -349,6 +349,24 @@ export class Entity {
 		}
 		return this.Position.FindRotationAngle(vec, this.RotationRad)
 	}
+	/**
+	 * Returned angle must be compared against Math.cos of respective angles
+	 * Examples of use: Bulwark, Bristleback, Backstab
+	 */
+	public GetSourceAngleToForward(
+		source: Vector3 | Entity,
+		rotationDiff = false,
+		currPos = this.Position
+	): number {
+		let rotation = this.RotationRad
+		if (rotationDiff) {
+			rotation += DegreesToRadian(this.RotationDifference)
+		}
+		const sourcePos = source instanceof Entity ? source.Position : source
+		return new Vector2(currPos.x - sourcePos.x, currPos.y - sourcePos.y)
+			.Normalize()
+			.Dot(Vector2.FromAngle(rotation))
+	}
 
 	public IsInRange(ent: Vector3 | Vector2 | Entity, range: number): boolean {
 		return this.DistanceSqr2D(ent) < range ** 2
