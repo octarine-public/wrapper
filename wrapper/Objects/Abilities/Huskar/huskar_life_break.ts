@@ -1,6 +1,7 @@
 import { WrapperClass } from "../../../Decorators"
 import { EntityManager } from "../../../Managers/EntityManager"
 import { EventsSDK } from "../../../Managers/EventsSDK"
+import { ProjectileManager } from "../../../Managers/ProjectileManager"
 import { GameState } from "../../../Utils/GameState"
 import { Ability } from "../../Base/Ability"
 import { TrackingProjectile } from "../../Base/Projectile"
@@ -24,40 +25,31 @@ export class huskar_life_break extends Ability {
 	}
 }
 
+const abils = EntityManager.GetEntitiesByClass(huskar_life_break)
 EventsSDK.on("ModifierCreated", mod => {
 	if (mod.Name !== "modifier_huskar_life_break_charge") {
 		return
 	}
 
-	const abil = mod.Ability
-	if (!(abil instanceof huskar_life_break)) {
+	const caster = mod.Caster,
+		abil = mod.Ability
+	if (
+		caster === undefined ||
+		!(abil instanceof huskar_life_break) ||
+		abil.CurrentProjectile !== undefined
+	) {
 		return
 	}
 
 	abil.StartedChargingTime = GameState.RawGameTime
-})
-
-const abils = EntityManager.GetEntitiesByClass(huskar_life_break)
-EventsSDK.on("TrackingProjectileCreated", proj => {
-	if (proj.ParticlePath !== undefined || proj.Source !== undefined) {
-		return
-	}
-	for (const abil of abils) {
+	for (const proj of ProjectileManager.AllTrackingProjectiles) {
 		if (
-			abil.StartedChargingTime === GameState.RawGameTime &&
-			abil.CurrentProjectile === undefined &&
-			abil.Owner !== undefined &&
-			abil.Owner.Position.Distance(proj.Position) < 0.1
+			proj.ParticlePath === undefined &&
+			proj.Source === undefined &&
+			proj.LaunchTick === GameState.CurrentGameTick &&
+			caster.Position.Distance(proj.Position) < 0.1
 		) {
 			abil.CurrentProjectile = proj
-			break
-		}
-	}
-})
-EventsSDK.on("TrackingProjectileDestroyed", proj => {
-	for (const abil of abils) {
-		if (abil.CurrentProjectile === proj) {
-			abil.CurrentProjectile = undefined
 			break
 		}
 	}
@@ -67,5 +59,14 @@ EventsSDK.on("ModifierRemoved", mod => {
 	const abil = mod.Ability
 	if (abil instanceof huskar_life_break) {
 		abil.CurrentProjectile = undefined
+	}
+})
+
+EventsSDK.on("TrackingProjectileDestroyed", proj => {
+	for (const abil of abils) {
+		if (abil.CurrentProjectile === proj) {
+			abil.CurrentProjectile = undefined
+			break
+		}
 	}
 })
