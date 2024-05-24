@@ -146,7 +146,7 @@ export class ExecuteOrder {
 	}
 
 	public static get DisableHumanizer() {
-		return this.DisableHumanizer_ || this.unsafeMode
+		return this.DisableHumanizer_
 	}
 	public static set DisableHumanizer(newVal: boolean) {
 		if (this.DisableHumanizer_ === newVal) {
