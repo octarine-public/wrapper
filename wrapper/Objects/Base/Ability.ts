@@ -146,7 +146,8 @@ export class Ability extends Entity {
 	public get CastPoint(): number {
 		let castPoint = this.OverrideCastPoint // default -1
 		if (castPoint < 0) {
-			castPoint = this.GetBaseCastPointForLevel(this.Level)
+			const amp = this.CastPointAmplifier
+			castPoint = amp * this.GetBaseCastPointForLevel(this.Level)
 		}
 		return Math.ceil(castPoint / GameState.TickInterval) * GameState.TickInterval
 	}
@@ -311,13 +312,16 @@ export class Ability extends Entity {
 	public get BonusCastRange(): number {
 		return this.Owner?.BonusCastRange ?? 0
 	}
+	public get CastPointAmplifier(): number {
+		return this.Owner?.BonusCastPointAmplifier ?? 1
+	}
 	public get CastRangeAmplifier(): number {
-		return this.Owner?.CastRangeAmplifier ?? 0
+		return this.Owner?.CastRangeAmplifier ?? 1
 	}
 	public get CastRange(): number {
 		const amp = this.CastRangeAmplifier,
 			bonus = this.GetCastRangeForLevel(this.Level)
-		let calculateBonus = (bonus * amp) >> 0
+		let calculateBonus = bonus * amp
 		if (
 			calculateBonus !== 0 &&
 			this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)

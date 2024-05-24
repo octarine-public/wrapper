@@ -65,6 +65,10 @@ export class Modifier {
 	public IsDeniable = false
 	public IsVisibleForEnemies = false
 
+	// Cast point
+	public BonusCastPointAmplifier = 0
+	public BonusCastPointAmplifierStack = false
+
 	// Damage
 	public DamageType = DAMAGE_TYPES.DAMAGE_TYPE_NONE
 	public AmplifyDamage = DAMAGE_AMPLIFY.DAMAGE_AMPLIFY_NONE
@@ -564,6 +568,14 @@ export class Modifier {
 		}
 		return abil.GetSpecialValue(specialName, level)
 	}
+	/** ======================= Cast Point ======================= */
+	protected SetBonusCastPointAmplifier(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.BonusCastPointAmplifier = (subtract ? value * -1 : value) / 100
+	}
 	/** ======================= Absorb Damage ======================= */
 	protected SetAbsorbDamage(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
@@ -946,6 +958,9 @@ export class Modifier {
 		this.SetBaseBonusAttackSpeed()
 		this.SetFixedAttackAnimationPoint()
 		this.SetBonusBaseAttackSpeedAmplifier()
+
+		// cast point
+		this.SetBonusCastPointAmplifier()
 	}
 
 	private ThroughMagicImmunity(unit?: Unit, caster?: Unit) {

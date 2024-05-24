@@ -292,8 +292,11 @@ export class Unit extends Entity {
 	public get Color(): Color {
 		return PlayerCustomData.get(this.PlayerID)?.Color ?? Color.Red
 	}
+	// ===================================== Cast point ===================================== //
+	public get BonusCastPointAmplifier(): number {
+		return this.CalculateCastPointAmplifier()
+	}
 	// ===================================== Armor ===================================== //
-
 	public get BaseArmor(): number {
 		return !this.BaseFixedArmor ? this.NetworkedBaseArmor : this.BaseFixedArmor
 	}
@@ -307,7 +310,7 @@ export class Unit extends Entity {
 	}
 
 	public get BaseBonusArmorAmplifier(): number {
-		return this.CalculateBaseArmorBonusAmplifier()
+		return this.CalculateBaseBonusArmorAmplifier()
 	}
 
 	public get BonusArmor(): number {
@@ -2050,14 +2053,14 @@ export class Unit extends Entity {
 			if (!buff.BaseBonusArmor) {
 				continue
 			}
-			if (buff.BaseBonusArmorStack && names.has(buff.Name)) {
+			if (!buff.BaseBonusArmorStack && names.has(buff.Name)) {
 				continue
 			}
 			totalBonus += buff.BaseBonusArmor
 		}
 		return totalBonus
 	}
-	public CalculateBaseArmorBonusAmplifier() {
+	public CalculateBaseBonusArmorAmplifier() {
 		let amp = 1
 		const buffs = this.Buffs,
 			names = new Set<string>()
@@ -2066,7 +2069,7 @@ export class Unit extends Entity {
 			if (!buff.BaseBonusArmorAmplifier) {
 				continue
 			}
-			if (buff.BaseBonusArmorAmplifierStack && names.has(buff.Name)) {
+			if (!buff.BaseBonusArmorAmplifierStack && names.has(buff.Name)) {
 				continue
 			}
 			amp += buff.BaseBonusArmorAmplifier
@@ -2082,7 +2085,7 @@ export class Unit extends Entity {
 			if (!buff.BonusArmor) {
 				continue
 			}
-			if (buff.BonusArmorStack && names.has(buff.Name)) {
+			if (!buff.BonusArmorStack && names.has(buff.Name)) {
 				continue
 			}
 			totalBonus += buff.BonusArmor
@@ -2179,7 +2182,7 @@ export class Unit extends Entity {
 			if (!buff.BonusAttackSpeed) {
 				continue
 			}
-			if (buff.BonusAttackSpeedStack && names.has(buff.Name)) {
+			if (!buff.BonusAttackSpeedStack && names.has(buff.Name)) {
 				continue
 			}
 			totalBonus += buff.BonusAttackSpeed
@@ -2517,7 +2520,7 @@ export class Unit extends Entity {
 			if (!buff.BonusNightVision) {
 				continue
 			}
-			if (buff.BonusNightVisionStack && names.has(buff.Name)) {
+			if (!buff.BonusNightVisionStack && names.has(buff.Name)) {
 				continue
 			}
 			names.add(buff.Name)
@@ -2536,7 +2539,7 @@ export class Unit extends Entity {
 			if (!buff.BonusDayVision) {
 				continue
 			}
-			if (buff.BonusDayVisionStack && names.has(buff.Name)) {
+			if (!buff.BonusDayVisionStack && names.has(buff.Name)) {
 				continue
 			}
 			names.add(buff.Name)
@@ -2554,7 +2557,7 @@ export class Unit extends Entity {
 			if (!buff.BonusDayVisionAmplifier) {
 				continue
 			}
-			if (buff.BonusDayVisionAmplifierStack && names.has(buff.Name)) {
+			if (!buff.BonusDayVisionAmplifierStack && names.has(buff.Name)) {
 				continue
 			}
 			names.add(buff.Name)
@@ -2581,7 +2584,7 @@ export class Unit extends Entity {
 			if (!buff.StatusResistanceAmplifier) {
 				continue
 			}
-			if (buff.StatusResistanceAmplifierStack && names.has(buff.Name)) {
+			if (!buff.StatusResistanceAmplifierStack && names.has(buff.Name)) {
 				continue
 			}
 			names.add(buff.Name)
@@ -2589,9 +2592,29 @@ export class Unit extends Entity {
 		}
 		return totalBonus
 	}
+
+	/** ================================ Cast point ======================================= */
+	protected CalculateCastPointAmplifier() {
+		let totalBonus = 1
+		const arrBuffs = this.Buffs,
+			names = new Set<string>()
+		for (let index = arrBuffs.length - 1; index > -1; index--) {
+			const buff = arrBuffs[index]
+			if (!buff.BonusCastPointAmplifier) {
+				continue
+			}
+			if (!buff.BonusCastPointAmplifierStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			totalBonus *= 1 - buff.BonusCastPointAmplifier
+		}
+		return totalBonus
+	}
 }
 
 export const Units = EntityManager.GetEntitiesByClass(Unit)
+
 function UnitNameChanged(unit: Unit) {
 	unit.UnitData = UnitData.globalStorage.get(unit.Name) ?? UnitData.empty
 }
