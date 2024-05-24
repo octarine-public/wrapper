@@ -10,6 +10,7 @@ import {
 	ParseProtobufNamed,
 	RecursiveProtobuf
 } from "../Utils/Protobuf"
+import { QueueEvent } from "./EventsQueue"
 import { EventsSDK } from "./EventsSDK"
 import { StringTables } from "./StringTables"
 
@@ -413,39 +414,50 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 	if (name !== "ActiveModifiers") {
 		return
 	}
-	update.forEach(([, modSerialized], key) => {
-		const replaced = activeModifiersRaw.get(key)
-		if (modSerialized.byteLength === 0 && replaced?.SerialNum !== undefined) {
-			EmitModifierRemoved(activeModifiers.get(replaced.SerialNum))
-			return
-		}
-		const mod = new IModifier(
-			ParseProtobufNamed(
-				new Uint8Array(modSerialized),
-				"CDOTAModifierBuffTableEntry"
+	QueueEvent(() =>
+		update.forEach(([, modSerialized], key) => {
+			const replaced = activeModifiersRaw.get(key)
+			if (modSerialized.byteLength === 0 && replaced?.SerialNum !== undefined) {
+				EmitModifierRemoved(activeModifiers.get(replaced.SerialNum))
+				return
+			}
+			const mod = new IModifier(
+				ParseProtobufNamed(
+					new Uint8Array(modSerialized),
+					"CDOTAModifierBuffTableEntry"
+				)
 			)
-		)
-		if (replaced?.SerialNum !== undefined && replaced.SerialNum !== mod.SerialNum) {
-			EmitModifierRemoved(activeModifiers.get(replaced.SerialNum))
-		}
-		activeModifiersRaw.set(key, mod)
-		const oldMod = activeModifiers.get(mod.SerialNum as number)
-		switch (mod.EntryType) {
-			case DOTA_MODIFIER_ENTRY_TYPE.DOTA_MODIFIER_ENTRY_TYPE_ACTIVE:
-				if (oldMod === undefined) {
-					EmitModifierCreated(mod)
-				} else {
-					EmitModifierChanged(oldMod, mod)
-				}
-				break
-			default:
-				EmitModifierRemoved(oldMod)
-				break
-		}
-	})
+			if (
+				replaced?.SerialNum !== undefined &&
+				replaced.SerialNum !== mod.SerialNum
+			) {
+				EmitModifierRemoved(activeModifiers.get(replaced.SerialNum))
+			}
+			activeModifiersRaw.set(key, mod)
+			const oldMod = activeModifiers.get(mod.SerialNum as number)
+			switch (mod.EntryType) {
+				case DOTA_MODIFIER_ENTRY_TYPE.DOTA_MODIFIER_ENTRY_TYPE_ACTIVE:
+					if (oldMod === undefined) {
+						EmitModifierCreated(mod)
+					} else {
+						EmitModifierChanged(oldMod, mod)
+					}
+					break
+				default:
+					EmitModifierRemoved(oldMod)
+					break
+			}
+		})
+	)
 })
 
 EventsSDK.on("RemoveAllStringTables", () => {
 	activeModifiers.forEach(mod => EmitModifierRemoved(mod))
 	activeModifiersRaw.clear()
+
+	// just in case
+	QueueEvent(() => {
+		activeModifiers.forEach(mod => EmitModifierRemoved(mod))
+		activeModifiersRaw.clear()
+	})
 })
