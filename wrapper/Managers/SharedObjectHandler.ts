@@ -254,6 +254,7 @@ message CMsgLobbyEventPoints {
 		optional uint32 normal_points = 2;
 		optional uint32 premium_points = 3;
 		optional bool owned = 4;
+		optional uint32 event_level = 7;
 		optional uint64 active_effects_mask = 12;
 		optional uint32 wager_streak = 23;
 		repeated .CMsgEventActionData event_game_custom_actions = 25;

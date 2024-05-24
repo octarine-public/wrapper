@@ -147,7 +147,7 @@ export class Ability extends Entity {
 		let castPoint = this.OverrideCastPoint // default -1
 		if (castPoint < 0) {
 			const amp = this.CastPointAmplifier
-			castPoint = amp * this.GetBaseCastPointForLevel(this.Level)
+			castPoint = Math.max(amp * this.GetBaseCastPointForLevel(this.Level), 0)
 		}
 		return Math.ceil(castPoint / GameState.TickInterval) * GameState.TickInterval
 	}

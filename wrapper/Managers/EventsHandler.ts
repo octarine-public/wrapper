@@ -68,7 +68,9 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_FREEZE_TRANSITION_OVERRIDE = 28,
 	GAME_PARTICLE_MANAGER_EVENT_FREEZE_INVOLVING = 29,
 	GAME_PARTICLE_MANAGER_EVENT_ADD_MODELLIST_OVERRIDE_ELEMENT = 30,
-	GAME_PARTICLE_MANAGER_EVENT_CLEAR_MODELLIST_OVERRIDE = 31
+	GAME_PARTICLE_MANAGER_EVENT_CLEAR_MODELLIST_OVERRIDE = 31,
+	GAME_PARTICLE_MANAGER_EVENT_CREATE_PHYSICS_SIM = 32,
+	GAME_PARTICLE_MANAGER_EVENT_DESTROY_PHYSICS_SIM = 33
 }
 enum EDotaEntityMessages {
 	DOTA_UNIT_SPEECH = 0,
@@ -168,6 +170,8 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_FREEZE_INVOLVING = 29;
 	GAME_PARTICLE_MANAGER_EVENT_ADD_MODELLIST_OVERRIDE_ELEMENT = 30;
 	GAME_PARTICLE_MANAGER_EVENT_CLEAR_MODELLIST_OVERRIDE = 31;
+	GAME_PARTICLE_MANAGER_EVENT_CREATE_PHYSICS_SIM = 32;
+	GAME_PARTICLE_MANAGER_EVENT_DESTROY_PHYSICS_SIM = 33;
 }
 
 enum DOTA_CHAT_MESSAGE {
@@ -477,6 +481,13 @@ message CUserMsg_ParticleManager {
 		repeated .CUserMsg_ParticleManager.SetParticleNamedValueContext.EHandleContext ehandle_values = 4;
 	}
 
+	message CreatePhysicsSim {
+		optional string prop_group_name = 1;
+	}
+
+	message DestroyPhysicsSim {
+	}
+
 	required .PARTICLE_MESSAGE type = 1 [default = GAME_PARTICLE_MANAGER_EVENT_CREATE];
 	required uint32 index = 2;
 	optional .CUserMsg_ParticleManager.ReleaseParticleIndex release_particle_index = 3;
@@ -510,6 +521,8 @@ message CUserMsg_ParticleManager {
 	optional .CUserMsg_ParticleManager.FreezeParticleInvolving freeze_particle_involving = 32;
 	optional .CUserMsg_ParticleManager.AddModellistOverrideElement add_modellist_override_element = 33;
 	optional .CUserMsg_ParticleManager.ClearModellistOverride clear_modellist_override = 34;
+	optional .CUserMsg_ParticleManager.CreatePhysicsSim create_physics_sim = 35;
+	optional .CUserMsg_ParticleManager.DestroyPhysicsSim destroy_physics_sim = 36;
 }
 
 enum EDotaEntityMessages {
@@ -991,6 +1004,14 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CLEAR_MODELLIST_OVERRIDE: {
+			// const submsg = msg.get("") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE_PHYSICS_SIM: {
+			// const submsg = msg.get("") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY_PHYSICS_SIM: {
 			// const submsg = msg.get("") as RecursiveProtobuf
 			break
 		}

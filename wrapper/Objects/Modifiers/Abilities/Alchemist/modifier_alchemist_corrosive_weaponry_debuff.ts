@@ -3,7 +3,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_alchemist_corrosive_weaponry_debuff extends Modifier {
-	public readonly IsBuff = true
+	public readonly IsDebuff = true
 
 	public SetMoveSpeedAmplifier(specialName = "slow_per_stack", _subtract = true): void {
 		const maxStacks = this.GetSpecialValue("max_stacks")

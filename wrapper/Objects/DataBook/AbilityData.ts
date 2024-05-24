@@ -503,6 +503,14 @@ export class AbilityData {
 		return talent.GetSpecialValue(specialName, talent.Level)
 	}
 
+	public GetCachedSpecialValue(specialName: string, abilityName?: string) {
+		const arData = this.SpecialValueCache.get(specialName)
+		if (arData !== undefined) {
+			return arData
+		}
+		this.exceptionMessage(specialName, abilityName)
+	}
+
 	private hasTalent(name: string, owner: Unit) {
 		const talent = owner.GetAbilityByName(name)
 		return talent !== undefined && talent.Level !== 0
@@ -719,14 +727,6 @@ export class AbilityData {
 				linkedSpecialBonusOperation
 			] as [number[], string, number | number[], EDOTASpecialBonusOperation])
 		})
-	}
-
-	private GetCachedSpecialValue(specialName: string, abilityName?: string) {
-		const arData = this.SpecialValueCache.get(specialName)
-		if (arData !== undefined) {
-			return arData
-		}
-		this.exceptionMessage(specialName, abilityName)
 	}
 
 	private ExtendLevelArray(ar: number[]): number[] {
