@@ -363,7 +363,7 @@ export class Entity {
 			rotation += DegreesToRadian(this.RotationDifference)
 		}
 		const sourcePos = source instanceof Entity ? source.Position : source
-		return new Vector2(currPos.x - sourcePos.x, currPos.y - sourcePos.y)
+		return new Vector2(sourcePos.x - currPos.x, sourcePos.y - currPos.y)
 			.Normalize()
 			.Dot(Vector2.FromAngle(rotation))
 	}
