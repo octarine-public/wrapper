@@ -298,7 +298,7 @@ export class Ability extends Entity {
 	}
 	public get HasAffectedByAOEIncrease() {
 		// TODO: check by special name value
-		return this.AbilityData.AffectedByAOEIncrease.size !== 0
+		return this.AbilityData.HasAffectedByAOEIncrease
 	}
 	public get MaxDuration(): number {
 		return this.GetMaxDurationForLevel(this.Level)

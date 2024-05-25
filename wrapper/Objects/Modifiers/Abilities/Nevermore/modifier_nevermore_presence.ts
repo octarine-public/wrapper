@@ -1,6 +1,5 @@
 import { WrapperClassModifier } from "../../../../Decorators"
 import { ModifierManager } from "../../../../Managers/ModifierManager"
-import { Ability } from "../../../Base/Ability"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
@@ -38,7 +37,7 @@ export class modifier_nevermore_presence extends Modifier {
 			this.BonusArmor = reduction
 			return
 		}
-		const perStack = this.getPerStackSpecialValue(ability)
+		const perStack = this.GetSpecialValue("bonus_armor_per_stack")
 		const incPerStack = perStack * Math.max(aura.StackCount, 0) * -1
 		this.BonusArmor = incPerStack + reduction
 	}
@@ -48,19 +47,5 @@ export class modifier_nevermore_presence extends Modifier {
 			this.isEmited = true
 			ModifierManager.AddIntervalThink(this)
 		}
-	}
-
-	private getPerStackSpecialValue(ability: Ability): number {
-		const specialName = "bonus_armor_per_stack"
-		let value = this.GetSpecialValue(specialName)
-		// cruth by Valve
-		if (value === 0) {
-			value =
-				(ability.AbilityData.GetCachedSpecialValue(
-					specialName,
-					ability.Name
-				)?.[2] as number) ?? 0
-		}
-		return value
 	}
 }

@@ -10,6 +10,7 @@ import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EDOTASpecialBonusOperation } from "../../Enums/EDOTASpecialBonusOperation"
 import { GameActivity } from "../../Enums/GameActivity"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
+import { MapValueToBoolean, MapValueToString } from "../../Resources/ParseUtils"
 import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
 import { Unit } from "../Base/Unit"
 import { UnitData } from "./UnitData"
@@ -18,6 +19,22 @@ const storageIds: Map<number, string> = new Map()
 function LoadFile(path: string, name: string = "DOTAAbilities"): RecursiveMap {
 	const res = parseKV(path).get(name)
 	return res instanceof Map ? res : new Map()
+}
+
+interface ILinkedSpecialBonus {
+	Name: string
+	IsOld: boolean
+	OldData?: [EDOTASpecialBonusOperation, string]
+	NewData?: [EDOTASpecialBonusOperation, number][]
+}
+
+interface ISpecialValue {
+	BaseValues: number[]
+	RequiresFacet: string
+	RequiresScepter: boolean
+	RequiresShard: boolean
+	AffectedByAOEIncrease: boolean
+	LinkedSpecialBonuses: ILinkedSpecialBonus[]
 }
 
 export class AbilityData {
@@ -101,9 +118,6 @@ export class AbilityData {
 	public readonly ShouldBeInitiallySuggested: boolean
 	public readonly ItemStockInitial: Nullable<number>
 	public readonly ItemDisassembleRule: DOTA_ITEM_DISASSEMBLE
-	public readonly RequiresShard = new Set<string>()
-	public readonly RequiresScepter = new Set<string>()
-	public readonly AffectedByAOEIncrease = new Set<string>()
 
 	public readonly HasCastRangeSpecial: boolean
 	public readonly HasManaCostSpecial: boolean
@@ -116,10 +130,9 @@ export class AbilityData {
 	public readonly HasMaxDurationSpecial: boolean
 	public readonly HasHealthCostSpecial: boolean
 
-	private readonly SpecialValueCache = new Map<
-		string,
-		[number[], string, string | number | number[], EDOTASpecialBonusOperation]
-	>()
+	public readonly HasAffectedByAOEIncrease: boolean
+
+	private readonly SpecialValueCache = new Map<string, ISpecialValue>()
 
 	private readonly CastRangeCache: number[]
 	private readonly ManaCostCache: number[]
@@ -147,6 +160,14 @@ export class AbilityData {
 		}
 		this.CacheSpecialValuesNew(kv)
 		this.CacheSpecialValuesOld(kv)
+
+		this.HasAffectedByAOEIncrease = false
+		for (const [, special] of this.SpecialValueCache) {
+			if (special.AffectedByAOEIncrease) {
+				this.HasAffectedByAOEIncrease = true
+				break
+			}
+		}
 
 		this.AbilityBehavior = kv.has("AbilityBehavior")
 			? parseEnumString(
@@ -320,11 +341,8 @@ export class AbilityData {
 	}
 
 	public DisposeAllData() {
-		this.RequiresShard.clear()
-		this.RequiresScepter.clear()
 		this.ItemRequirements.clear()
 		this.SpecialValueCache.clear()
-		this.AffectedByAOEIncrease.clear()
 	}
 
 	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
@@ -340,10 +358,10 @@ export class AbilityData {
 			return 0
 		}
 		const ar = this.GetCachedSpecialValue(specialName, abilityName)
-		if (ar === undefined || !ar[0].length) {
+		if (ar === undefined || ar.BaseValues.length === 0 || ar.RequiresFacet !== "") {
 			return 0
 		}
-		return ar[0][Math.min(level, ar[0].length) - 1]
+		return ar.BaseValues[Math.min(level, ar.BaseValues.length) - 1]
 	}
 
 	public GetSpecialValueWithTalent(
@@ -355,90 +373,90 @@ export class AbilityData {
 		if (level <= 0) {
 			return 0
 		}
-		if (specialName.startsWith("special_bonus_unique_")) {
-			return this.GetSpecialTalent(specialName, "value", owner)
-		}
-		const ar = this.GetCachedSpecialValue(specialName, abilityName)
-		if (ar === undefined || !ar[0].length) {
+		const specialValue = this.GetCachedSpecialValue(specialName, abilityName)
+		if (specialValue === undefined) {
 			return 0
 		}
+		let baseVal =
+			specialValue.BaseValues.length !== 0
+				? specialValue.BaseValues[
+						Math.min(level, specialValue.BaseValues.length) - 1
+					]
+				: 0
 		if (
-			!ar[1].length &&
-			((this.RequiresShard.has(specialName) && !owner.HasShard) ||
-				(this.RequiresScepter.has(specialName) && !owner.HasScepter))
+			(specialValue.RequiresShard && !owner.HasShard) ||
+			(specialValue.RequiresScepter && !owner.HasScepter) ||
+			(specialValue.RequiresFacet !== "" &&
+				specialValue.RequiresFacet !== owner.HeroFacet)
 		) {
-			return 0
+			baseVal = 0
 		}
-		let baseVal = ar[0][Math.min(level, ar[0].length) - 1]
-		if (
-			(ar[1] === "special_bonus_shard" && !owner.HasShard) ||
-			(ar[1] === "special_bonus_scepter" && !owner.HasScepter)
-		) {
-			return baseVal
-		}
-		let talentVal = 0
-		const val = ar[2]
-		switch (true) {
-			case typeof val === "string":
-				if (val.length !== 0) {
-					talentVal = this.GetSpecialValue(val, level, abilityName)
-					break
+		for (const linkedSpecialBonus of specialValue.LinkedSpecialBonuses) {
+			let data: [EDOTASpecialBonusOperation, number]
+			if (!linkedSpecialBonus.IsOld) {
+				if (linkedSpecialBonus.Name.startsWith("special_bonus_facet_")) {
+					if (owner.HeroFacet !== linkedSpecialBonus.Name.substring(20)) {
+						continue
+					}
+				} else if (linkedSpecialBonus.Name === "special_bonus_shard") {
+					if (!owner.HasShard) {
+						continue
+					}
+				} else if (linkedSpecialBonus.Name === "special_bonus_scepter") {
+					if (!owner.HasScepter) {
+						continue
+					}
+				} else {
+					const linkedSpecialBonusAbil = owner.GetAbilityByName(
+						linkedSpecialBonus.Name
+					)
+					if (
+						linkedSpecialBonusAbil === undefined ||
+						linkedSpecialBonusAbil.Level <= 0
+					) {
+						continue
+					}
 				}
-				if (ar[1].includes("special_bonus_unique_")) {
-					// ex. templar_assassin_meld -> bonus_armor
-					// troll_warlord_berserkers_rage -> bonus_armor
-					talentVal = this.GetSpecialTalent(ar[1], "value", owner)
-					break
-				}
-				break
-			case Array.isArray(val):
-				if (!val.length) {
-					break
-				}
-				talentVal = val[Math.min(level, val.length) - 1]
-				break
-			default:
-				if (!ar[1].length) {
-					break
-				}
+				data =
+					linkedSpecialBonus.NewData![
+						Math.min(level, linkedSpecialBonus.NewData!.length) - 1
+					]
+			} else {
+				const linkedSpecialBonusAbil = owner.GetAbilityByName(
+					linkedSpecialBonus.Name
+				)
 				if (
-					ar[1] === "special_bonus_shard" ||
-					ar[1] === "special_bonus_scepter"
+					linkedSpecialBonusAbil === undefined ||
+					linkedSpecialBonusAbil.Level <= 0
 				) {
-					talentVal = Array.isArray(val)
-						? val[Math.min(level, val.length) - 1]
-						: val
+					continue
+				}
+				data = [
+					linkedSpecialBonus.OldData![0],
+					linkedSpecialBonusAbil.GetSpecialValue(linkedSpecialBonus.OldData![1])
+				]
+			}
+			switch (data[0]) {
+				default:
+				case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
+					baseVal += data[1]
 					break
-				}
-				if (this.hasTalent(ar[1], owner)) {
-					talentVal = val || this.GetSpecialTalent(ar[1], "value", owner)
-				}
-				break
-		}
-		switch (ar[3]) {
-			default:
-			case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
-				baseVal += talentVal
-				break
-			case EDOTASpecialBonusOperation.SPECIAL_BONUS_SUBTRACT:
-				baseVal -= talentVal
-				break
-			case EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY:
-				if (talentVal > 0) {
-					baseVal *= talentVal
-				}
-				break
-			case EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD:
-				baseVal *= 1 + talentVal / 100
-				break
-			case EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT:
-				baseVal *= 1 - talentVal / 100
-				break
-			case EDOTASpecialBonusOperation.SPECIAL_BONUS_SET:
-				if (talentVal > 0) {
-					baseVal = talentVal
-				}
-				break
+				case EDOTASpecialBonusOperation.SPECIAL_BONUS_SUBTRACT:
+					baseVal -= data[1]
+					break
+				case EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY:
+					baseVal *= data[1]
+					break
+				case EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD:
+					baseVal *= 1 + data[1] / 100
+					break
+				case EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT:
+					baseVal *= 1 - data[1] / 100
+					break
+				case EDOTASpecialBonusOperation.SPECIAL_BONUS_SET:
+					baseVal = data[1]
+					break
+			}
 		}
 		return baseVal
 	}
@@ -517,34 +535,40 @@ export class AbilityData {
 		]
 	}
 
-	private GetSpecialTalent(abilityName: string, specialName = "value", owner: Unit) {
-		const talent = owner.GetAbilityByName(abilityName)
-		if (talent === undefined || talent.Level === 0) {
-			return 0
-		}
-		return talent.GetSpecialValue(specialName, talent.Level)
-	}
-
 	public GetCachedSpecialValue(specialName: string, abilityName?: string) {
 		const arData = this.SpecialValueCache.get(specialName)
-		if (arData !== undefined) {
-			return arData
+		if (arData === undefined) {
+			this.exceptionMessage(specialName, abilityName)
+			return undefined
 		}
-		this.exceptionMessage(specialName, abilityName)
-	}
-
-	private hasTalent(name: string, owner: Unit) {
-		const talent = owner.GetAbilityByName(name)
-		return talent !== undefined && talent.Level !== 0
+		return arData
 	}
 
 	private parseFloat(str: string): number {
-		if (!str.length) {
-			return 0
-		}
-		return parseFloat(str.endsWith("f") ? str.substring(0, str.length - 1) : str)
+		return str !== "" ? parseFloat(str) : 0
 	}
 
+	private ExtractOldTalent(special: RecursiveMap): Nullable<ILinkedSpecialBonus> {
+		const name = MapValueToString(special.get("LinkedSpecialBonus"))
+		if (name === "") {
+			return undefined
+		}
+		let linkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+		const linkedSpecialBonusOperationStr = special.get("LinkedSpecialBonusOperation")
+		if (typeof linkedSpecialBonusOperationStr === "string") {
+			linkedSpecialBonusOperation =
+				(EDOTASpecialBonusOperation as any)[linkedSpecialBonusOperationStr] ??
+				linkedSpecialBonusOperation
+		}
+		return {
+			Name: name,
+			IsOld: true,
+			OldData: [
+				linkedSpecialBonusOperation,
+				MapValueToString(special.get("LinkedSpecialBonusField"), "value")
+			]
+		}
+	}
 	private CacheSpecialValuesOld(kv: RecursiveMap) {
 		const abilitySpecial = kv.get("AbilitySpecial") as RecursiveMap
 		if (abilitySpecial === undefined) {
@@ -554,6 +578,8 @@ export class AbilityData {
 			if (!(special instanceof Map)) {
 				return
 			}
+			let finalName = "",
+				finalValue = ""
 			special.forEach((value, name) => {
 				if (
 					name === "var_type" ||
@@ -561,69 +587,30 @@ export class AbilityData {
 					name === "levelkey" ||
 					name === "ad_linked_abilities" ||
 					name === "LinkedSpecialBonusOperation" ||
+					name === "RequiresShard" ||
+					name === "RequiresScepter" ||
+					name === "affected_by_aoe_increase" ||
+					name === "" ||
 					typeof value !== "string"
 				) {
 					return
 				}
-				if (name === "RequiresShard") {
-					const iterator = special.keys()
-					iterator.next()
-					const shardVal = iterator.next().value
-					if (!this.RequiresShard.has(shardVal)) {
-						this.RequiresShard.add(shardVal)
-					}
-					return
-				}
-				if (name === "RequiresScepter") {
-					const iterator = special.keys()
-					iterator.next()
-					const scepterVal = iterator.next().value
-					if (!this.RequiresScepter.has(scepterVal)) {
-						this.RequiresScepter.add(scepterVal)
-					}
-					return
-				}
-				if (name === "affected_by_aoe_increase") {
-					const iterator = special.keys()
-					iterator.next()
-					const increaseVal = iterator.next().value
-					if (!this.AffectedByAOEIncrease.has(increaseVal)) {
-						this.AffectedByAOEIncrease.add(increaseVal)
-					}
-					return
-				}
-				const ar = this.ExtendLevelArray(
-					value.split(" ").map(str => this.parseFloat(str))
+				finalName = name
+				finalValue = value
+			})
+			const linkedSpecialBonusData = this.ExtractOldTalent(special)
+			this.SpecialValueCache.set(finalName, {
+				BaseValues: this.ExtendLevelArray(
+					finalValue.split(" ").map(str => this.parseFloat(str))
+				),
+				LinkedSpecialBonuses:
+					linkedSpecialBonusData !== undefined ? [linkedSpecialBonusData] : [],
+				RequiresFacet: MapValueToString(special.get("RequiresFacet")),
+				RequiresScepter: MapValueToBoolean(special.get("RequiresScepter")),
+				RequiresShard: MapValueToBoolean(special.get("RequiresShard")),
+				AffectedByAOEIncrease: MapValueToBoolean(
+					special.get("affected_by_aoe_increase")
 				)
-				let linkedSpecialBonus = special.get("LinkedSpecialBonus")
-				if (typeof linkedSpecialBonus !== "string") {
-					linkedSpecialBonus = ""
-				}
-				const linkedSpecialBonusOperationStr = special.get(
-					"LinkedSpecialBonusOperation"
-				)
-				let linkedSpecialBonusOperation =
-					EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-				if (typeof linkedSpecialBonusOperationStr === "string") {
-					linkedSpecialBonusOperation =
-						(EDOTASpecialBonusOperation as any)[
-							linkedSpecialBonusOperationStr
-						] ?? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-				}
-				let linkedSpecialBonusFieldStr = special.get("LinkedSpecialBonusField")
-				if (linkedSpecialBonusFieldStr !== undefined) {
-					if (typeof linkedSpecialBonusFieldStr !== "string") {
-						linkedSpecialBonusFieldStr = "value"
-					}
-				} else {
-					linkedSpecialBonusFieldStr = ""
-				}
-				this.SpecialValueCache.set(name, [
-					ar,
-					linkedSpecialBonus,
-					linkedSpecialBonusFieldStr,
-					linkedSpecialBonusOperation
-				] as [number[], string, string, EDOTASpecialBonusOperation])
 			})
 		})
 	}
@@ -636,118 +623,97 @@ export class AbilityData {
 		abilityValues.forEach((special, name) => {
 			if (!(special instanceof Map)) {
 				if (typeof special === "string") {
-					this.SpecialValueCache.set(name, [
-						this.ExtendLevelArray(
+					this.SpecialValueCache.set(name, {
+						BaseValues: this.ExtendLevelArray(
 							special.split(" ").map(str => this.parseFloat(str))
 						),
-						"",
-						0,
-						EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-					] as [number[], string, number, EDOTASpecialBonusOperation])
+						RequiresFacet: "",
+						RequiresScepter: false,
+						RequiresShard: false,
+						AffectedByAOEIncrease: false,
+						LinkedSpecialBonuses: []
+					})
 				}
 				return
 			}
 
-			let linkedSpecialBonus = "",
-				talentChangeStr = "+0"
+			const linkedSpecialBonuses: ILinkedSpecialBonus[] = []
 			special.forEach((specialValue, specialName) => {
 				if (
 					specialName === "value" ||
 					specialName === "CalculateSpellDamageTooltip" ||
 					specialName === "DamageTypeTooltip" ||
 					specialName === "levelkey" ||
-					specialName === "LinkedSpecialBonus" ||
 					specialName === "LinkedSpecialBonusOperation" ||
+					specialName === "RequiresShard" ||
+					specialName === "RequiresScepter" ||
+					specialName === "affected_by_aoe_increase" ||
+					specialName === "" ||
 					typeof specialValue !== "string"
 				) {
 					return
 				}
-				if (specialName === "RequiresShard") {
-					if (!this.RequiresShard.has(name)) {
-						this.RequiresShard.add(name)
+
+				if (specialName === "LinkedSpecialBonus") {
+					// TODO: is this supposed to be in order like other talents?
+					const oldLinkedSpecialBonus = this.ExtractOldTalent(special)
+					if (oldLinkedSpecialBonus !== undefined) {
+						linkedSpecialBonuses.push(oldLinkedSpecialBonus)
 					}
 					return
 				}
-				if (specialName === "RequiresScepter") {
-					if (!this.RequiresScepter.has(name)) {
-						this.RequiresScepter.add(name)
-					}
-					return
+
+				const linkedSpecialBonus: ILinkedSpecialBonus = {
+					Name: specialName,
+					IsOld: false,
+					NewData: specialValue.split(" ").map(talentChangeStr => {
+						if (talentChangeStr.startsWith("x")) {
+							return [
+								EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY,
+								this.parseFloat(talentChangeStr.substring(1))
+							]
+						} else if (talentChangeStr.startsWith("=")) {
+							const newValue = this.parseFloat(talentChangeStr.substring(1))
+							return [
+								EDOTASpecialBonusOperation.SPECIAL_BONUS_SET,
+								newValue
+							]
+						}
+						let linkedSpecialBonusOperation =
+							EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+						if (talentChangeStr.endsWith("%")) {
+							talentChangeStr = talentChangeStr.substring(
+								0,
+								talentChangeStr.length - 1
+							)
+							linkedSpecialBonusOperation =
+								EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD
+						}
+						return [
+							linkedSpecialBonusOperation,
+							this.parseFloat(talentChangeStr)
+						]
+					})
 				}
-				if (specialName === "affected_by_aoe_increase") {
-					if (!this.AffectedByAOEIncrease.has(name)) {
-						this.AffectedByAOEIncrease.add(name)
-					}
-					return
+				if (linkedSpecialBonus.NewData!.length !== 0) {
+					linkedSpecialBonuses.push(linkedSpecialBonus)
 				}
-				linkedSpecialBonus = specialName
-				talentChangeStr = specialValue
 			})
-			let value = special.get("value") ?? ""
-			if (typeof value !== "string") {
-				value = ""
-			}
-			const ar = this.ExtendLevelArray(
-				value.split(" ").map(str => this.parseFloat(str))
-			)
 
-			let talentChange: number | number[]
-			let linkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-
-			switch (true) {
-				case talentChangeStr.startsWith("x"):
-					linkedSpecialBonusOperation =
-						EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY
-					talentChange = this.parseFloat(talentChangeStr.substring(1))
-					break
-				case talentChangeStr.startsWith("="):
-					linkedSpecialBonusOperation =
-						EDOTASpecialBonusOperation.SPECIAL_BONUS_SET
-					const newValue = this.parseFloat(talentChangeStr.substring(1))
-					talentChange = newValue <= 0 ? Number.MAX_SAFE_INTEGER : newValue
-					break
-				case talentChangeStr.startsWith("+") || talentChangeStr.startsWith("-"):
-					const isArray = talentChangeStr.indexOf(" ") !== -1
-					const isPercent =
-						talentChangeStr[talentChangeStr.length - 1].indexOf("%") !== -1
-					linkedSpecialBonusOperation = !isPercent
-						? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-						: talentChangeStr.startsWith("+")
-							? EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD
-							: EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT
-					// axe_battle_hunger -> special_bonus_unique_axe_6
-					talentChange = isArray
-						? talentChangeStr.split(" ").map(str => this.parseFloat(str))
-						: this.parseFloat(talentChangeStr)
-					break
-				default:
-					linkedSpecialBonusOperation =
-						EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-					talentChange = this.parseFloat(talentChangeStr)
-					break
-			}
-
-			if (!linkedSpecialBonus.length) {
-				const getlinkedSpecialBonus = special.get("LinkedSpecialBonus")
-				linkedSpecialBonus =
-					typeof getlinkedSpecialBonus !== "string" ? "" : getlinkedSpecialBonus
-			}
-
-			const linkedSpecialBonusOperationStr = special.get(
-				"LinkedSpecialBonusOperation"
-			)
-			if (typeof linkedSpecialBonusOperationStr === "string") {
-				linkedSpecialBonusOperation =
-					(EDOTASpecialBonusOperation as any)[linkedSpecialBonusOperationStr] ??
-					EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-			}
-
-			this.SpecialValueCache.set(name, [
-				ar,
-				linkedSpecialBonus,
-				talentChange,
-				linkedSpecialBonusOperation
-			] as [number[], string, number | number[], EDOTASpecialBonusOperation])
+			this.SpecialValueCache.set(name, {
+				BaseValues: this.ExtendLevelArray(
+					MapValueToString(special.get("value"))
+						.split(" ")
+						.map(str => this.parseFloat(str))
+				),
+				LinkedSpecialBonuses: linkedSpecialBonuses,
+				RequiresFacet: MapValueToString(special.get("RequiresFacet")),
+				RequiresScepter: MapValueToBoolean(special.get("RequiresScepter")),
+				RequiresShard: MapValueToBoolean(special.get("RequiresShard")),
+				AffectedByAOEIncrease: MapValueToBoolean(
+					special.get("affected_by_aoe_increase")
+				)
+			})
 		})
 	}
 

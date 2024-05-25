@@ -16,8 +16,8 @@ export function GetMapNumberProperty(
 	return MapValueToNumber(map.get(key), defaultValue)
 }
 
-export function MapValueToString(value: any) {
-	return typeof value === "string" ? value : ""
+export function MapValueToString(value: any, defaultValue = "") {
+	return typeof value === "string" ? value : defaultValue
 }
 
 export function MapValueToBoolean(value: any) {
