@@ -6,9 +6,6 @@ export class omniknight_hammer_of_purity extends Ability {
 	public get ProjectileAttachment(): string {
 		return "attach_attack2"
 	}
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("bonus_damage", level)
 	}

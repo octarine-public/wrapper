@@ -7,10 +7,6 @@ export class venomancer_venomous_gale extends Ability {
 		return this.CastRange + this.AOERadius
 	}
 
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
-
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

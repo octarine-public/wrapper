@@ -14,8 +14,4 @@ export class dragon_knight_breathe_fire extends Ability {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)
 	}
-
-	public GetBaseCastRangeForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCastRange", level)
-	}
 }

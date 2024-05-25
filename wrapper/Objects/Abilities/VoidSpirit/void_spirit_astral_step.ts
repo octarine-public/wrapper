@@ -14,8 +14,4 @@ export class void_spirit_astral_step extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
-
-	public GetChargeRestoreTimeForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityChargeRestoreTime", level)
-	}
 }

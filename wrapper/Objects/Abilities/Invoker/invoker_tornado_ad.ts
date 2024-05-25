@@ -9,8 +9,4 @@ export class invoker_tornado_ad extends Ability {
 	public WexLevel = 0
 	@NetworkedBasicField("m_nExortLevel")
 	public ExortLevel = 0
-
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
 }

@@ -6,9 +6,6 @@ export class axe_counter_helix extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

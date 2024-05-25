@@ -14,8 +14,4 @@ export class marci_companion_run extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("landing_radius", level)
 	}
-
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
 }

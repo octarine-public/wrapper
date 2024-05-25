@@ -7,10 +7,6 @@ export class dazzle_shadow_wave extends Ability {
 		return this.GetSpecialValue("damage_radius", level)
 	}
 
-	public GetBaseCastRangeForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCastRange", level)
-	}
-
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}

@@ -394,30 +394,60 @@ export class Ability extends Entity {
 	}
 
 	public GetMaxCooldownForLevel(level: number): number {
+		if (this.AbilityData.HasMaxCooldownSpecial) {
+			return this.GetSpecialValue("AbilityCooldown", level)
+		}
 		return this.AbilityData.GetMaxCooldownForLevel(level)
 	}
 	public GetChargeRestoreTimeForLevel(level: number): number {
+		if (this.AbilityData.HasChargeRestoreTimeSpecial) {
+			return this.GetSpecialValue("AbilityChargeRestoreTime", level)
+		}
 		return this.AbilityData.GetChargeRestoreTime(level)
 	}
 	public GetMaxChargesForLevel(level: number): number {
+		if (this.AbilityData.HasMaxChargesSpecial) {
+			return this.GetSpecialValue("AbilityCharges", level)
+		}
 		return this.AbilityData.GetMaxCharges(level)
 	}
 	public GetMaxDurationForLevel(level: number): number {
+		if (this.AbilityData.HasMaxDurationSpecial) {
+			return this.GetSpecialValue("AbilityDuration", level)
+		}
 		return this.AbilityData.GetMaxDurationForLevel(level)
 	}
 	public GetBaseCastPointForLevel(level: number): number {
+		if (this.AbilityData.HasCastPointSpecial) {
+			return this.GetSpecialValue("AbilityCastPoint", level)
+		}
 		return this.AbilityData.GetCastPoint(level)
 	}
 	public GetBaseDamageForLevel(level: number): number {
+		if (this.AbilityData.HasAbilityDamageSpecial) {
+			return this.GetSpecialValue("AbilityDamage", level)
+		}
 		return this.AbilityData.GetAbilityDamage(level)
 	}
 	public GetBaseManaCostForLevel(level: number): number {
+		if (this.AbilityData.HasManaCostSpecial) {
+			return this.GetSpecialValue("AbilityManaCost", level)
+		}
 		return this.AbilityData.GetManaCost(level)
+	}
+	public GetBaseHealthCostForLevel(level: number): number {
+		if (this.AbilityData.HasHealthCostSpecial) {
+			return this.GetSpecialValue("AbilityHealthCost", level)
+		}
+		return this.AbilityData.GetHealthCost(level)
 	}
 	public GetCastRangeForLevel(level: number): number {
 		return this.GetBaseCastRangeForLevel(level) + this.BonusCastRange
 	}
 	public GetBaseCastRangeForLevel(level: number): number {
+		if (this.AbilityData.HasCastRangeSpecial) {
+			return this.GetSpecialValue("AbilityCastRange", level)
+		}
 		return this.AbilityData.GetCastRange(level)
 	}
 	public GetBaseActivationDelayForLevel(_level: number): number {
@@ -430,6 +460,9 @@ export class Ability extends Entity {
 		return 0 // child classes should override
 	}
 	public GetBaseChannelTimeForLevel(level: number): number {
+		if (this.AbilityData.HasChannelTimeSpecial) {
+			return this.GetSpecialValue("AbilityChannelTime", level)
+		}
 		return this.AbilityData.GetChannelTime(level)
 	}
 	public GetCastDelay(

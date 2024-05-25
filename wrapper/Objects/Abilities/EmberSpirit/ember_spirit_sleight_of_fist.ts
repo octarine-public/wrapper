@@ -6,8 +6,4 @@ export class ember_spirit_sleight_of_fist extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
-
-	public GetMaxChargesForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCharges", level)
-	}
 }

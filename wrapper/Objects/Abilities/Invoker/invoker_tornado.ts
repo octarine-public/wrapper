@@ -18,10 +18,6 @@ export class invoker_tornado extends Ability {
 		return this.GetSpecialValue("area_of_effect", level)
 	}
 
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
-
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("wex_damage", level)
 	}

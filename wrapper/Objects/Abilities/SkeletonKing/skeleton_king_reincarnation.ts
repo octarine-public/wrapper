@@ -6,10 +6,4 @@ export class skeleton_king_reincarnation extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("slow_radius", level)
 	}
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
-	public GetBaseManaCostForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityManaCost", level)
-	}
 }

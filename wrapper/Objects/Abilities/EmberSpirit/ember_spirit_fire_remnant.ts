@@ -18,10 +18,6 @@ export class ember_spirit_fire_remnant extends Ability {
 		return this.GetSpecialValue("damage", level)
 	}
 
-	public GetChargeRestoreTimeForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityChargeRestoreTime", level)
-	}
-
 	protected GetSpeedMultiplier(hasScepter: boolean): number {
 		let multiplier = this.GetSpecialValue("speed_multiplier") / 100
 		if (hasScepter) {

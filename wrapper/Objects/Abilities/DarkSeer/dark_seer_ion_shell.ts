@@ -6,8 +6,4 @@ export class dark_seer_ion_shell extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
-
-	public GetMaxChargesForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCharges", level)
-	}
 }

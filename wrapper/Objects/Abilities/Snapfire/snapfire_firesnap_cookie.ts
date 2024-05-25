@@ -16,9 +16,6 @@ export class snapfire_firesnap_cookie extends Ability {
 		return this.GetSpecialValue("impact_radius", level)
 	}
 
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
 	public GetCastDelay(
 		unit?: Unit | Vector3,
 		currentTurnRate: boolean = true,

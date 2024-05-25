@@ -11,10 +11,6 @@ export class troll_warlord_whirling_axes_melee extends Ability {
 		return this.GetSpecialValue("max_range", level)
 	}
 
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
-
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("axe_movement_speed", level)
 	}

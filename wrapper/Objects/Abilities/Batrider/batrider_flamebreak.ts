@@ -7,10 +7,6 @@ export class batrider_flamebreak extends Ability {
 		return this.GetSpecialValue("explosion_radius", level)
 	}
 
-	public GetMaxChargesForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCharges", level)
-	}
-
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)
 	}

@@ -11,8 +11,4 @@ export class earth_spirit_stone_caller extends Ability {
 			order.Position.Distance2D(doubletapTarget) < 32
 		)
 	}
-
-	public GetMaxChargesForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCharges", level)
-	}
 }

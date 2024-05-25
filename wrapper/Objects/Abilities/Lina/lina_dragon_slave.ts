@@ -7,10 +7,6 @@ export class lina_dragon_slave extends Ability {
 		return this.GetSpecialValue("dragon_slave_width_end")
 	}
 
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
-
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("dragon_slave_damage", level)
 	}

@@ -3,10 +3,6 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("razor_static_link")
 export class razor_static_link extends Ability {
-	public GetBaseCastRangeForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCastRange", level)
-	}
-
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

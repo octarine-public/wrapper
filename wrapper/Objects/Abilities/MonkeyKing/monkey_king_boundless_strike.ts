@@ -9,7 +9,4 @@ export class monkey_king_boundless_strike extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("strike_radius", level)
 	}
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
 }

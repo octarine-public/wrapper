@@ -7,10 +7,6 @@ export class jakiro_ice_path extends Ability {
 		return this.GetSpecialValue("path_radius", level)
 	}
 
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
-
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}

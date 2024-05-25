@@ -22,8 +22,4 @@ export class troll_warlord_whirling_axes_ranged extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("axe_damage", level)
 	}
-
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
 }

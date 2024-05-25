@@ -6,9 +6,6 @@ export class bristleback_viscous_nasal_goo extends Ability {
 	public get ProjectileAttachment(): string {
 		return "attach_attack3"
 	}
-	public GetBaseCastRangeForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCastRange", level)
-	}
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("goo_speed", level)
 	}

@@ -10,8 +10,4 @@ export class kunkka_tidebringer extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("cleave_distance", level)
 	}
-
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
 }

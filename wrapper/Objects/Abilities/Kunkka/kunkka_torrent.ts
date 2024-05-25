@@ -9,10 +9,6 @@ export class kunkka_torrent extends Ability {
 		return this.GetSpecialValue("radius", level)
 	}
 
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
-
 	public GetBaseActivationDelayForLevel(level: number): number {
 		return this.GetSpecialValue("delay", level)
 	}

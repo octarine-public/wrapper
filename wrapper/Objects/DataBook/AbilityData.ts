@@ -87,8 +87,6 @@ export class AbilityData {
 	public readonly AbilityImmunityType: SPELL_IMMUNITY_TYPES
 	public readonly ItemDisplayCharges: boolean
 	public readonly ItemHideCharges: boolean
-	public readonly MaxCooldownCache: number[]
-	public readonly MaxDurationCache: number[]
 	public readonly SecretShop: boolean
 	public readonly ItemRequirements: string[][] = []
 	public readonly ItemQuality: Nullable<string>
@@ -107,6 +105,17 @@ export class AbilityData {
 	public readonly RequiresScepter = new Set<string>()
 	public readonly AffectedByAOEIncrease = new Set<string>()
 
+	public readonly HasCastRangeSpecial: boolean
+	public readonly HasManaCostSpecial: boolean
+	public readonly HasChannelTimeSpecial: boolean
+	public readonly HasAbilityDamageSpecial: boolean
+	public readonly HasCastPointSpecial: boolean
+	public readonly HasMaxChargesSpecial: boolean
+	public readonly HasChargeRestoreTimeSpecial: boolean
+	public readonly HasMaxCooldownSpecial: boolean
+	public readonly HasMaxDurationSpecial: boolean
+	public readonly HasHealthCostSpecial: boolean
+
 	private readonly SpecialValueCache = new Map<
 		string,
 		[number[], string, string | number | number[], EDOTASpecialBonusOperation]
@@ -117,8 +126,10 @@ export class AbilityData {
 	private readonly ChannelTimeCache: number[]
 	private readonly AbilityDamageCache: number[]
 	private readonly CastPointCache: number[]
-	private readonly ChargesCache: number[]
+	private readonly MaxChargesCache: number[]
 	private readonly ChargeRestoreTimeCache: number[]
+	private readonly MaxCooldownCache: number[]
+	private readonly MaxDurationCache: number[]
 	private readonly HealthCostCache: number[]
 
 	constructor(name: string, kv: RecursiveMap) {
@@ -144,10 +155,6 @@ export class AbilityData {
 					0n
 				)
 			: DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NONE
-
-		this.HealthCostCache = this.GetLevelArray(
-			kv.get("AbilityHealthCost") as Nullable<string>
-		)
 
 		this.LinkedAbility = (kv.get("LinkedAbility") as string) ?? ""
 
@@ -242,30 +249,45 @@ export class AbilityData {
 		this.ManaCostCache = this.GetLevelArray(
 			kv.get("AbilityManaCost") as Nullable<string>
 		)
+		this.HasManaCostSpecial = this.SpecialValueCache.has("AbilityManaCost")
 		this.CastRangeCache = this.GetLevelArray(
 			kv.get("AbilityCastRange") as Nullable<string>
 		)
+		this.HasCastRangeSpecial = this.SpecialValueCache.has("AbilityCastRange")
 		this.ChannelTimeCache = this.GetLevelArray(
 			kv.get("AbilityChannelTime") as Nullable<string>
 		)
+		this.HasChannelTimeSpecial = this.SpecialValueCache.has("AbilityChannelTime")
 		this.AbilityDamageCache = this.GetLevelArray(
 			kv.get("AbilityDamage") as Nullable<string>
 		)
+		this.HasAbilityDamageSpecial = this.SpecialValueCache.has("AbilityDamage")
 		this.CastPointCache = this.GetLevelArray(
 			kv.get("AbilityCastPoint") as Nullable<string>
 		)
-		this.ChargesCache = this.GetLevelArray(
+		this.HasCastPointSpecial = this.SpecialValueCache.has("AbilityCastPoint")
+		this.MaxChargesCache = this.GetLevelArray(
 			kv.get("AbilityCharges") as Nullable<string>
 		)
+		this.HasMaxChargesSpecial = this.SpecialValueCache.has("AbilityCharges")
 		this.ChargeRestoreTimeCache = this.GetLevelArray(
 			kv.get("AbilityChargeRestoreTime") as Nullable<string>
+		)
+		this.HasChargeRestoreTimeSpecial = this.SpecialValueCache.has(
+			"AbilityChargeRestoreTime"
 		)
 		this.MaxCooldownCache = this.GetLevelArray(
 			kv.get("AbilityCooldown") as Nullable<string>
 		)
+		this.HasMaxCooldownSpecial = this.SpecialValueCache.has("AbilityCooldown")
 		this.MaxDurationCache = this.GetLevelArray(
 			kv.get("AbilityDuration") as Nullable<string>
 		)
+		this.HasMaxDurationSpecial = this.SpecialValueCache.has("AbilityDuration")
+		this.HealthCostCache = this.GetLevelArray(
+			kv.get("AbilityHealthCost") as Nullable<string>
+		)
+		this.HasHealthCostSpecial = this.SpecialValueCache.has("AbilityHealthCost")
 		this.SecretShop = kv.has("SecretShop")
 			? parseInt(kv.get("SecretShop") as string) !== 0
 			: false
@@ -422,49 +444,49 @@ export class AbilityData {
 	}
 
 	public GetCastRange(level: number): number {
-		if (level <= 0 || !this.CastRangeCache.length) {
+		if (level <= 0 || this.CastRangeCache.length === 0) {
 			return 0
 		}
 		return this.CastRangeCache[Math.min(level, this.CastRangeCache.length) - 1]
 	}
 
 	public GetHealthCost(level: number): number {
-		if (level <= 0 || !this.HealthCostCache.length) {
+		if (level <= 0 || this.HealthCostCache.length === 0) {
 			return 0
 		}
 		return this.HealthCostCache[Math.min(level, this.HealthCostCache.length) - 1]
 	}
 
 	public GetManaCost(level: number): number {
-		if (level <= 0 || !this.ManaCostCache.length) {
+		if (level <= 0 || this.ManaCostCache.length === 0) {
 			return 0
 		}
 		return this.ManaCostCache[Math.min(level, this.ManaCostCache.length) - 1]
 	}
 
 	public GetMaxDurationForLevel(level: number): number {
-		if (level <= 0 || !this.MaxDurationCache.length) {
+		if (level <= 0 || this.MaxDurationCache.length === 0) {
 			return 0
 		}
 		return this.MaxDurationCache[Math.min(level, this.MaxDurationCache.length) - 1]
 	}
 
 	public GetMaxCooldownForLevel(level: number): number {
-		if (level <= 0 || !this.MaxCooldownCache.length) {
+		if (level <= 0 || this.MaxCooldownCache.length === 0) {
 			return 0
 		}
 		return this.MaxCooldownCache[Math.min(level, this.MaxCooldownCache.length) - 1]
 	}
 
 	public GetChannelTime(level: number): number {
-		if (level <= 0 || !this.ChannelTimeCache.length) {
+		if (level <= 0 || this.ChannelTimeCache.length === 0) {
 			return 0
 		}
 		return this.ChannelTimeCache[Math.min(level, this.ChannelTimeCache.length) - 1]
 	}
 
 	public GetAbilityDamage(level: number): number {
-		if (level <= 0 || !this.AbilityDamageCache.length) {
+		if (level <= 0 || this.AbilityDamageCache.length === 0) {
 			return 0
 		}
 		return this.AbilityDamageCache[
@@ -473,21 +495,21 @@ export class AbilityData {
 	}
 
 	public GetCastPoint(level: number): number {
-		if (level <= 0 || !this.CastPointCache.length) {
+		if (level <= 0 || this.CastPointCache.length === 0) {
 			return 0
 		}
 		return this.CastPointCache[Math.min(level, this.CastPointCache.length) - 1]
 	}
 
 	public GetMaxCharges(level: number): number {
-		if (level <= 0 || !this.ChargesCache.length) {
+		if (level <= 0 || this.MaxChargesCache.length === 0) {
 			return 0
 		}
-		return this.ChargesCache[Math.min(level, this.ChargesCache.length) - 1]
+		return this.MaxChargesCache[Math.min(level, this.MaxChargesCache.length) - 1]
 	}
 
 	public GetChargeRestoreTime(level: number): number {
-		if (level <= 0 || !this.ChargeRestoreTimeCache.length) {
+		if (level <= 0 || this.ChargeRestoreTimeCache.length === 0) {
 			return 0
 		}
 		return this.ChargeRestoreTimeCache[
@@ -737,7 +759,7 @@ export class AbilityData {
 	}
 
 	private GetLevelArray(str: Nullable<string>): number[] {
-		return this.ExtendLevelArray(str?.split(" ")?.map(val => parseFloat(val)) ?? [])
+		return str?.split(" ")?.map(val => parseFloat(val)) ?? []
 	}
 
 	private exceptionMessage(specialName: string, abilityName?: string) {

@@ -11,10 +11,6 @@ export class queenofpain_sonic_wave extends Ability {
 		return this.GetSpecialValue("starting_aoe", level)
 	}
 
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
-
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}

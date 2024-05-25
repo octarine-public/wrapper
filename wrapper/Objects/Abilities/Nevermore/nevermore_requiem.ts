@@ -17,10 +17,6 @@ export class nevermore_requiem extends Ability {
 		return this.GetSpecialValue("requiem_radius", level)
 	}
 
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
-
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("requiem_line_speed", level)
 	}

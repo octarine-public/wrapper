@@ -7,10 +7,6 @@ export class faceless_void_time_walk extends Ability {
 		return this.GetSpecialValue("range", level)
 	}
 
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
-
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

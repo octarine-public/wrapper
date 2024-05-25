@@ -12,10 +12,6 @@ export class obsidian_destroyer_astral_imprisonment extends Ability {
 			: 0
 	}
 
-	public GetBaseCastRangeForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCastRange", level)
-	}
-
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}

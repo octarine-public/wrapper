@@ -18,10 +18,6 @@ export class invoker_chaos_meteor extends Ability {
 		return this.GetSpecialValue("area_of_effect", level)
 	}
 
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
-
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("travel_speed", level)
 	}

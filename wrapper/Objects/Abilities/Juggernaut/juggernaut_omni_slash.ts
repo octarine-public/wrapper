@@ -6,7 +6,4 @@ export class juggernaut_omni_slash extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("omni_slash_radius", level)
 	}
-	public GetBaseCastRangeForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCastRange", level)
-	}
 }

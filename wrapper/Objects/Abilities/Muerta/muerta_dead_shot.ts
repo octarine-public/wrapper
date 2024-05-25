@@ -6,9 +6,6 @@ export class muerta_dead_shot extends Ability {
 	public get ProjectileAttachment(): string {
 		return "attach_attack1"
 	}
-	public GetBaseCastRangeForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCastRange", level)
-	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

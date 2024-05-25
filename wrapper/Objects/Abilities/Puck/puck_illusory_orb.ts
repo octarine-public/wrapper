@@ -11,10 +11,6 @@ export class puck_illusory_orb extends Ability {
 		return this.GetSpecialValue("max_distance", level)
 	}
 
-	public GetMaxCooldownForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCooldown", level)
-	}
-
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("orb_speed", level)
 	}

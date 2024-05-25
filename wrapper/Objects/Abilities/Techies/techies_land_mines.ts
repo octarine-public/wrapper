@@ -14,8 +14,4 @@ export class techies_land_mines extends Ability {
 	public GetBaseActivationDelayForLevel(level: number): number {
 		return this.GetSpecialValue("activation_delay", level)
 	}
-
-	public GetChargeRestoreTimeForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityChargeRestoreTime", level)
-	}
 }
