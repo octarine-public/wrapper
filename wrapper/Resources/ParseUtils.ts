@@ -20,6 +20,18 @@ export function MapValueToString(value: any) {
 	return typeof value === "string" ? value : ""
 }
 
+export function MapValueToBoolean(value: any) {
+	switch (value) {
+		case "true":
+		case true:
+		case "1":
+		case 1:
+			return true
+		default:
+			return false
+	}
+}
+
 export function GetMapStringProperty(map: RecursiveMap, key: string): string {
 	return MapValueToString(map.get(key))
 }

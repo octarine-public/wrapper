@@ -3,6 +3,11 @@ import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { Attributes } from "../../Enums/Attributes"
 import { DOTAHullSize } from "../../Enums/DOTAHullSize"
 import { DOTAUnitMoveCapability } from "../../Enums/DOTAUnitMoveCapability"
+import {
+	MapValueToBoolean,
+	MapValueToNumber,
+	MapValueToString
+} from "../../Resources/ParseUtils"
 import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
 
 function LoadUnitFile(path: string): RecursiveMap {
@@ -59,6 +64,18 @@ function FixCombatClassDefend(type: DOTA_COMBAT_CLASS_DEFEND): ArmorType {
 		case DOTA_COMBAT_CLASS_DEFEND.DOTA_COMBAT_CLASS_DEFEND_STRUCTURE:
 			return ArmorType.Structure
 	}
+}
+
+export interface IFacetAbilityData {
+	AbilityName: string
+	AbilityIndex: number
+	ReplaceAbility: string
+	AutoLevelAbility: boolean
+}
+
+export interface IFacetData {
+	Name: string
+	Abilities: IFacetAbilityData[]
 }
 
 export class UnitData {
@@ -125,6 +142,7 @@ export class UnitData {
 	public readonly ArmorPhysical: number
 	public readonly MagicalResistance: number
 	public readonly Abilities = new Map<string, boolean>()
+	public readonly Facets: IFacetData[] = []
 	public readonly AttackSpeedActivityModifiers: [number, string][] = []
 	public readonly MovementSpeedActivityModifiers: [number, string][] = []
 	public readonly AttackRangeActivityModifiers: [number, string][] = []
@@ -298,6 +316,44 @@ export class UnitData {
 				})
 			}
 			this.AttackRangeActivityModifiers.sort((a, b) => b[0] - a[0])
+		}
+
+		if (kv.has("Facets")) {
+			const m = kv.get("Facets")
+			if (m instanceof Map) {
+				m.forEach((v, k) => {
+					const facetData: IFacetData = {
+						Name: k,
+						Abilities: []
+					}
+					if (v instanceof Map) {
+						const abilitiesMap = v.get("Abilities")
+						if (abilitiesMap instanceof Map) {
+							abilitiesMap.forEach((v2, k2) => {
+								if (k2.startsWith("Ability") && v2 instanceof Map) {
+									const abilityData: IFacetAbilityData = {
+										AbilityName: MapValueToString(
+											v2.get("AbilityName")
+										),
+										AbilityIndex: MapValueToNumber(
+											v2.get("AbilityIndex"),
+											-1
+										),
+										ReplaceAbility: MapValueToString(
+											v2.get("ReplaceAbility")
+										),
+										AutoLevelAbility: MapValueToBoolean(
+											v2.get("AutoLevelAbility")
+										)
+									}
+									facetData.Abilities.push(abilityData)
+								}
+							})
+						}
+					}
+					this.Facets.push(facetData)
+				})
+			}
 		}
 
 		for (let index = 1; index < 17; index++) {
