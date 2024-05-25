@@ -587,6 +587,7 @@ export class AbilityData {
 					name === "levelkey" ||
 					name === "ad_linked_abilities" ||
 					name === "LinkedSpecialBonusOperation" ||
+					name === "RequiresFacet" ||
 					name === "RequiresShard" ||
 					name === "RequiresScepter" ||
 					name === "affected_by_aoe_increase" ||
@@ -645,6 +646,7 @@ export class AbilityData {
 					specialName === "DamageTypeTooltip" ||
 					specialName === "levelkey" ||
 					specialName === "LinkedSpecialBonusOperation" ||
+					specialName === "RequiresFacet" ||
 					specialName === "RequiresShard" ||
 					specialName === "RequiresScepter" ||
 					specialName === "affected_by_aoe_increase" ||
