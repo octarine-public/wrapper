@@ -1,6 +1,7 @@
 import { Vector2 } from "../../Base/Vector2"
 import { DamageAmplifyPerIntellectPrecent } from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { EPropertyType } from "../../Enums/PropertyType"
 import { GUIInfo } from "../../GUI/GUIInfo"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
@@ -34,6 +35,8 @@ export class Hero extends Unit {
 	public BaseTotalIntellect = 0
 	@NetworkedBasicField("m_flStrengthTotal")
 	public TotalStrength = 0
+	@NetworkedBasicField("m_iHeroFacetID", EPropertyType.UINT32)
+	public HeroFacetID = 0
 
 	public RespawnTime = 0
 	public MaxRespawnDuration = 0
@@ -92,6 +95,15 @@ export class Hero extends Unit {
 			super.SpellAmplification +
 			(this.TotalIntellect * DamageAmplifyPerIntellectPrecent) / 100
 		)
+	}
+	public get HeroFacet(): string {
+		if (
+			this.HeroFacetID <= 0 ||
+			this.HeroFacetID - 1 >= this.UnitData.Facets.length
+		) {
+			return ""
+		}
+		return this.UnitData.Facets[this.HeroFacetID - 1].Name
 	}
 }
 

@@ -844,6 +844,9 @@ export class Unit extends Entity {
 	public get HealthBarPositionCorrection(): Vector2 {
 		return new Vector2(this.HealthBarSize.x / 2, GUIInfo.ScaleHeight(11))
 	}
+	public get HeroFacet(): string {
+		return ""
+	}
 	protected get AttackSpeed(): number {
 		const base = this.BaseAttackSpeed,
 			baseAs = this.BaseAttackSpeedAmplifier
