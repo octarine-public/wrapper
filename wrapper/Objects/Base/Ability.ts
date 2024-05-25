@@ -65,7 +65,7 @@ export class Ability extends Entity {
 	public IsEmpty = false
 	public IsSpellAmplify = true
 	public AbilityChargeRestoreTimeRemaining = 0
-	public AbilitySlot = EAbilitySlot.DOTA_SPELL_SLOT_1
+	public AbilitySlot = EAbilitySlot.DOTA_SPELL_SLOT_HIDDEN
 
 	public Cooldown_ = 0
 	public CooldownChangeTime = 0

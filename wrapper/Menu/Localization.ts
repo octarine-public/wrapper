@@ -21,7 +21,7 @@ export const Localization = new (class CLocalization {
 			this.LocalizationUnits.set(unitName, existingUnit)
 		}
 		unit.forEach((v, k) => {
-			existingUnit.set(k, v)
+			existingUnit!.set(k, v)
 		})
 		this.wasChanged = true
 	}

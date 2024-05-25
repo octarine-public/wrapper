@@ -1,3 +1,4 @@
+import { EAbilitySlot } from "../../Enums/EAbilitySlot"
 import { GameActivity } from "../../Enums/GameActivity"
 import { Ability } from "../../Objects/Base/Ability"
 import { Entity } from "../../Objects/Base/Entity"
@@ -235,6 +236,30 @@ const Monitor = new (class CPreUnitChanged {
 		unit.LastAnimationPlaybackRate = 0
 	}
 
+	public AbilityHiddenChanged(entity: Ability) {
+		const owner = entity.Owner
+		if (!(owner instanceof Unit)) {
+			return
+		}
+		if (entity.IsItem) {
+			for (let i = 0, end = owner.TotalItems_.length; i < end; i++) {
+				if (entity.HandleMatches(owner.TotalItems_[i])) {
+					this.slotChanged(entity, i)
+					EventsSDK.emit("UnitItemsChanged", false, owner)
+					break
+				}
+			}
+			return
+		}
+		for (let i = 0, end = owner.Spells_.length; i < end; i++) {
+			if (entity.HandleMatches(owner.Spells_[i])) {
+				this.slotChanged(entity, i)
+				EventsSDK.emit("UnitAbilitiesChanged", false, owner)
+				break
+			}
+		}
+	}
+
 	/** ========================== CHANGED ========================== */
 	private spellChanged(entity: Ability) {
 		if (entity.IsItem) {
@@ -359,17 +384,28 @@ const Monitor = new (class CPreUnitChanged {
 	}
 
 	// hack workaround owner abilities
+	// hack workaround owner abilities
 	private setNewProperty(entity: Item | Ability, unit: Unit, arrIndex: number) {
 		entity.Owner_ = unit.Handle
 		entity.OwnerEntity = unit
 		entity.Prediction = new Prediction() as any // TODO
 		if (!(entity instanceof Item)) {
 			unit.Spells[arrIndex] = entity
-			entity.AbilitySlot = arrIndex
+			this.slotChanged(entity, arrIndex)
 			return
 		}
-		entity.ItemSlot = arrIndex
+		this.slotChanged(entity, arrIndex)
 		unit.TotalItems[arrIndex] = entity
+	}
+
+	private slotChanged(entity: Ability, arrIndex: number) {
+		if (entity instanceof Item) {
+			entity.ItemSlot = arrIndex
+			return
+		}
+		entity.AbilitySlot = entity.IsHidden
+			? EAbilitySlot.DOTA_SPELL_SLOT_HIDDEN
+			: arrIndex
 	}
 })()
 
@@ -411,5 +447,11 @@ EventsSDK.on("UnitAnimationEnd", unit => Monitor.UnitAnimationEnd(unit))
 EventsSDK.on(
 	"UnitItemsChanged",
 	unit => Monitor.UnitItemsChanged(unit),
+	Number.MIN_SAFE_INTEGER
+)
+
+EventsSDK.on(
+	"AbilityHiddenChanged",
+	ability => Monitor.AbilityHiddenChanged(ability),
 	Number.MIN_SAFE_INTEGER
 )

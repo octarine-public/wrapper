@@ -15,6 +15,7 @@ import { DOTAScriptInventorySlot } from "../../Enums/DOTAScriptInventorySlot"
 import { DOTAUnitAttackCapability } from "../../Enums/DOTAUnitAttackCapability"
 import { DOTAUnitMoveCapability } from "../../Enums/DOTAUnitMoveCapability"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
+import { EAbilitySlot } from "../../Enums/EAbilitySlot"
 import { GameActivity } from "../../Enums/GameActivity"
 import { GridNavCellFlags } from "../../Enums/GridNavCellFlags"
 import { modifierstate } from "../../Enums/modifierstate"
@@ -2669,7 +2670,7 @@ RegisterFieldHandler(Unit, "m_hAbilities", (unit, newVal) => {
 		if (ent instanceof Ability) {
 			ent.Owner_ = unit.Handle
 			ent.OwnerEntity = unit
-			ent.AbilitySlot = i
+			ent.AbilitySlot = ent.IsHidden ? EAbilitySlot.DOTA_SPELL_SLOT_HIDDEN : i
 			unit.Spells[i] = ent
 		} else {
 			unit.Spells[i] = undefined
@@ -2723,6 +2724,9 @@ RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, newVal) => {
 	}
 })
 RegisterFieldHandler(Unit, "m_iParity", (unit, newVal) => {
-	EventsSDK.emit("UnitParityChanged", false, unit.Parity, newVal as number)
-	unit.Parity = newVal as number
+	const oldValue = unit.Parity
+	if (oldValue !== newVal) {
+		EventsSDK.emit("UnitParityChanged", false, unit.Parity, newVal)
+		unit.Parity = newVal as number
+	}
 })
