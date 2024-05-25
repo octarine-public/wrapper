@@ -583,18 +583,7 @@ export class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_DEBUFF_IMMUNE)
 	}
 	public get IsDeniable(): boolean {
-		if (this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE)) {
-			return true
-		}
-		return (
-			this.HPPercent < 25 &&
-			this.Buffs.some(
-				buff =>
-					buff.Name === "modifier_doom_bringer_doom" ||
-					buff.Name === "modifier_queenofpain_shadow_strike" ||
-					buff.Name === "modifier_venomancer_venomous_gale"
-			)
-		)
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE)
 	}
 	public get HasModifierVisibleForEnemies(): boolean {
 		for (let index = this.Buffs.length - 1; index > -1; index--) {

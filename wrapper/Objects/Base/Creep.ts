@@ -48,7 +48,7 @@ export class Creep extends Unit {
 	}
 
 	public get IsDeniable(): boolean {
-		return this.HPPercent <= 50 || super.IsDeniable
+		return super.IsDeniable || this.HPPercent <= 50
 	}
 	public get RingRadius(): number {
 		return 60
