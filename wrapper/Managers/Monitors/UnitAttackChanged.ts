@@ -170,15 +170,16 @@ const Monitor = new (class CUnitAttackChanged {
 		if (targetIndex !== undefined) {
 			return targetIndex
 		}
-		const newUnits = Units.filter(
-			x =>
-				x.IsAlive &&
-				x !== source &&
-				x.Team !== source.Team &&
-				x.Distance2D(source) <= source.GetAttackRange(x, 25)
-		).orderBy(x => source.GetAngle(x, true))
-
-		return newUnits.find(x => source.GetAngle(x, true) < 0.35)?.Index ?? -1
+		return (
+			Units.filter(
+				x =>
+					x.IsAlive &&
+					x !== source &&
+					(x.Team !== source.Team || x.IsDeniable) &&
+					x.Distance2D(source) <= source.GetAttackRange(x, 25) &&
+					source.GetAngle(x, true) < 1.5
+			).orderByFirst(x => source.GetAngle(x, true))?.Index ?? -1
+		)
 	}
 
 	private handlerErrorMessage(
