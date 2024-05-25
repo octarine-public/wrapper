@@ -10,4 +10,8 @@ export class primal_beast_pulverize extends Ability {
 	public GetBaseChannelTimeForLevel(level: number): number {
 		return this.GetSpecialValue("channel_time", level)
 	}
+
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("splash_radius", level)
+	}
 }

@@ -97,8 +97,6 @@ export class Unit extends Entity {
 	public HasUpgradeableAbilities = false
 	@NetworkedBasicField("m_bCanBeDominated")
 	public IsDominatable = false
-	@NetworkedBasicField("m_iAttackCapabilities")
-	public AttackCapabilities = 0
 	@NetworkedBasicField("m_iDamageMin")
 	public AttackDamageMin = 0
 	@NetworkedBasicField("m_iDamageMax")
@@ -153,6 +151,7 @@ export class Unit extends Entity {
 	public BaseTotalIntellect = 0
 	public TotalStrength = 0
 	public MoveSpeedTotal = 0
+	public AttackCapabilities = 0
 
 	public Spawner_: number = 0
 	public Spawner: Nullable<NeutralSpawner>
@@ -299,7 +298,7 @@ export class Unit extends Entity {
 	}
 	// ===================================== Armor ===================================== //
 	public get BaseArmor(): number {
-		return !this.BaseFixedArmor ? this.NetworkedBaseArmor : this.BaseFixedArmor
+		return this.BaseFixedArmor === 0 ? this.NetworkedBaseArmor : this.BaseFixedArmor
 	}
 
 	public get BaseFixedArmor(): number {
@@ -772,6 +771,9 @@ export class Unit extends Entity {
 	}
 	public get BonusAOERadius(): number {
 		return this.CalcualteBonusAOERadius()
+	}
+	public get BonusAOERadiusAmplifier(): number {
+		return this.CalcualteBonusAOERadiusAmplifier()
 	}
 	public get BaseStatusResistance(): number {
 		// maybe valve add new future status resist
@@ -2413,6 +2415,18 @@ export class Unit extends Entity {
 		return totalBonus
 	}
 
+	protected CalcualteBonusAOERadiusAmplifier() {
+		let amp = 1
+		const buffs = this.Buffs
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const buff = buffs[index]
+			if (!buff.BonusAOERadiusAmplifier) {
+				continue
+			}
+			amp += buff.BonusAOERadiusAmplifier
+		}
+		return amp
+	}
 	/** ================================ Cast Range ======================================= */
 	protected CalcualteAmpCastRange() {
 		let amp = 1
@@ -2729,7 +2743,15 @@ RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, newVal) => {
 RegisterFieldHandler(Unit, "m_iParity", (unit, newVal) => {
 	const oldValue = unit.Parity
 	if (oldValue !== newVal) {
-		EventsSDK.emit("UnitParityChanged", false, unit.Parity, newVal)
 		unit.Parity = newVal as number
+		EventsSDK.emit("UnitParityChanged", false, unit.Parity, newVal)
+	}
+})
+
+RegisterFieldHandler(Unit, "m_iAttackCapabilities", (unit, newVal) => {
+	const oldValue = unit.AttackCapabilities
+	if (oldValue !== newVal) {
+		unit.AttackCapabilities = newVal as number
+		EventsSDK.emit("UnitPropertyChanged", false, unit)
 	}
 })

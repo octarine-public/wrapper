@@ -3,7 +3,15 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_sven_warcry_passive extends Modifier {
-	protected SetBonusArmor(specialName = "shard_passive_armor", subtract = false): void {
+	public OnShardChanged(): void {
+		this.SetBonusArmor()
+		this.SetMoveSpeedAmplifier()
+	}
+
+	protected SetBonusArmor(
+		specialName = this.Caster !== this.Parent ? "shard_passive_armor" : undefined,
+		subtract = false
+	): void {
 		super.SetBonusArmor(specialName, subtract)
 	}
 

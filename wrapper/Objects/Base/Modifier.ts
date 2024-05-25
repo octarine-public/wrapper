@@ -112,6 +112,7 @@ export class Modifier {
 
 	// Bonus radius
 	public BonusAOERadius = 0
+	public BonusAOERadiusAmplifier = 0
 
 	// Base move speed
 	public MoveSpeedBase = 0
@@ -849,7 +850,13 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.BonusAOERadius = subtract ? value * -1 : value
 	}
-
+	protected SetBonusAOERadiusAmplifier(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.BonusAOERadiusAmplifier = subtract ? value * -1 : value
+	}
 	/** ======================= Turn rate ======================= */
 	protected SetFixedTurnRate(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
@@ -930,6 +937,7 @@ export class Modifier {
 
 		// bonus spells radius
 		this.SetBonusAOERadius()
+		this.SetBonusAOERadiusAmplifier()
 
 		// bonus attack range
 		this.SetBonusAttackRange()

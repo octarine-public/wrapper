@@ -3,8 +3,7 @@ import { ModifierManager } from "../../../../Managers/ModifierManager"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_axe_battle_hunger extends Modifier {
-	public readonly IsDebuff = true
+export class modifier_elder_titan_momentum extends Modifier {
 	private isEmited = false
 
 	public Update(): void {
@@ -16,32 +15,33 @@ export class modifier_axe_battle_hunger extends Modifier {
 		if (!super.Remove()) {
 			return false
 		}
-		this.BonusMoveSpeedAmplifier = 0
+		this.BaseBonusAttackSpeed = 0
 		this.isEmited = false
 		return true
 	}
 
 	public OnIntervalThink(): void {
-		this.SetMoveSpeedAmplifier()
+		this.SetBaseBonusAttackSpeed()
 	}
 
-	public SetMoveSpeedAmplifier(specialName = "slow", subtract = false): void {
+	protected SetBaseBonusAttackSpeed(
+		specialName = "attack_speed_penalty",
+		_subtract = true
+	): void {
 		const owner = this.Parent
-		const caster = this.Caster
-		if (owner === undefined || caster === undefined) {
+		if (owner === undefined) {
+			this.BaseBonusAttackSpeed = 0
 			return
 		}
-		if (owner.GetAngle(caster.Position) <= Math.PI / 2) {
-			this.BonusMoveSpeedAmplifier = 0
-			return
-		}
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+		const penalty = this.GetSpecialValue(specialName)
+		const bonusFraction = this.GetSpecialValue("attack_speed_from_movespeed") / 100
+		this.BaseBonusAttackSpeed = owner.Speed * bonusFraction - penalty
 	}
 
 	private addIntervalThink(): void {
 		if (!this.isEmited) {
 			this.isEmited = true
-			ModifierManager.AddIntervalThinkTemporary(this)
+			ModifierManager.AddIntervalThink(this)
 		}
 	}
 }

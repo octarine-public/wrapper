@@ -336,8 +336,15 @@ export class Ability extends Entity {
 		}
 		return this.Owner.BonusAOERadius
 	}
+	public get BonusAOERadiusAmplifier(): number {
+		if (this.Owner === undefined || !this.HasAffectedByAOEIncrease) {
+			return 0
+		}
+		return this.Owner.BonusAOERadiusAmplifier
+	}
 	public get AOERadius(): number {
-		return this.GetBaseAOERadiusForLevel(this.Level) + this.BonusAOERadius
+		const value = this.GetBaseAOERadiusForLevel(this.Level) + this.BonusAOERadius
+		return Math.max(value * this.BonusAOERadiusAmplifier, value)
 	}
 	public get SkillshotRange(): number {
 		return this.CastRange

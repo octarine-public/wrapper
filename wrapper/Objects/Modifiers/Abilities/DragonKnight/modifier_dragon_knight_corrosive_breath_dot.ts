@@ -3,28 +3,21 @@ import { Modifier } from "../../../Base/Modifier"
 import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_dragon_knight_frost_breath_slow extends Modifier {
+export class modifier_dragon_knight_corrosive_breath_dot extends Modifier {
 	public readonly IsDebuff = true
 
 	private get amplificationBonus() {
 		const owner = this.Caster
 		const dragonForm = owner?.GetAbilityByName("dragon_knight_elder_dragon_form")
-		const specialValue = dragonForm?.GetSpecialValue("frost_breath_effect_bonus")
+		const specialValue = dragonForm?.GetSpecialValue("corrosive_breath_effect_bonus")
 		return 1 + (specialValue ?? 0) / 100
 	}
 
-	protected SetMoveSpeedAmplifier(
-		specialName = "frost_bonus_movement_speed",
-		subtract = false
+	protected SetBonusArmor(
+		specialName = "corrosive_breath_armor_reduction",
+		subtract = true
 	): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
-	}
-
-	protected SetBonusAttackSpeed(
-		specialName = "frost_bonus_attack_speed",
-		subtract = false
-	): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+		super.SetBonusArmor(specialName, subtract)
 	}
 
 	protected GetSpecialValue(

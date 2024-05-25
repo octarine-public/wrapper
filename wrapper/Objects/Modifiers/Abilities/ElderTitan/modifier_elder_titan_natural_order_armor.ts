@@ -11,4 +11,15 @@ export class modifier_elder_titan_natural_order_armor extends Modifier {
 	) {
 		super.SetBaseBonusArmorAmplifier(specialName, subtract)
 	}
+
+	protected SetBonusArmor(_specialName?: string, _subtract = true) {
+		const isImmune = this.IsMagicImmune() || this.IsDebuffImmune()
+		const isPassiveDisabled = this.IsPassiveDisabled()
+		if (isPassiveDisabled || isImmune) {
+			this.BonusArmor = 0
+			return
+		}
+		const stackCount = this.StackCount + 1
+		this.BonusArmor = -Math.min(stackCount, this.GetSpecialValue("max_stacks"))
+	}
 }
