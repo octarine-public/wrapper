@@ -4,9 +4,10 @@ import { Modifier } from "../../../Base/Modifier"
 @WrapperClassModifier()
 export class modifier_beastmaster_inner_beast extends Modifier {
 	protected SetBonusAttackSpeed(
-		specialName = this.Caster !== this.Parent ? "bonus_attack_speed" : undefined,
-		subtract = false
+		specialName = "bonus_attack_speed",
+		_subtract = false
 	): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+		const value = this.GetSpecialAttackSpeedByState(specialName)
+		this.BonusAttackSpeed = value + this.NetworkDamage
 	}
 }

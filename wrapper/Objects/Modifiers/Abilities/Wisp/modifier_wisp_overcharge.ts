@@ -5,6 +5,10 @@ import { Modifier } from "../../../Base/Modifier"
 export class modifier_wisp_overcharge extends Modifier {
 	public readonly IsBuff = true
 
+	protected SetBonusArmor(specialName = "bonus_armor", subtract = false): void {
+		super.SetBonusArmor(specialName, subtract)
+	}
+
 	protected SetStatusResistanceSpeed(
 		specialName = "shard_bonus_slow_resistance",
 		subtract = true

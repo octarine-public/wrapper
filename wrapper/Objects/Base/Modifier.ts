@@ -234,14 +234,7 @@ export class Modifier {
 				: undefined
 		this.DDAbilityName = ddAbilityName ?? "ability_base"
 	}
-	// TODO: rework this after add ModifierManager
 	public get InvisibilityLevel(): number {
-		if (
-			this.Name === "modifier_monkey_king_bounce_leap" ||
-			this.Name === "modifier_monkey_king_arc_to_ground"
-		) {
-			return 0
-		}
 		const fadeTime = this.kv.FadeTime
 		if (fadeTime === undefined) {
 			return 0
@@ -252,24 +245,8 @@ export class Modifier {
 		return Math.min(this.ElapsedTime / (fadeTime * 2), 1)
 	}
 
-	// TODO: rework this after add ModifierManager
 	public get DeltaZ(): number {
-		if (
-			(this.Name === "modifier_monkey_king_bounce_leap" ||
-				this.Name === "modifier_monkey_king_arc_to_ground") &&
-			this.ElapsedTime < 10 // just in case buff bugs out
-		) {
-			return this.kv.FadeTime ?? 0
-		}
-		switch (this.Name) {
-			case "modifier_rattletrap_jetpack":
-				return 260
-			case "modifier_lina_flame_cloak":
-			case "modifier_monkey_king_bounce_perch":
-				return 100
-			default:
-				return 0
-		}
+		return 0
 	}
 
 	public get DieTime(): number {
@@ -480,6 +457,10 @@ export class Modifier {
 		}
 		if (this.NetworkChannelTime !== newChannelTime) {
 			this.NetworkChannelTime = newChannelTime
+			updated = true
+		}
+		if (this.NetworkAttackSpeed !== newAttackSpeed) {
+			this.NetworkAttackSpeed = newAttackSpeed
 			updated = true
 		}
 		if (
@@ -941,6 +922,7 @@ export class Modifier {
 
 		// bonus attack range
 		this.SetBonusAttackRange()
+		this.SetFixedAttackRange()
 		this.SetAttackRangeAmplifier()
 
 		// bonus vision

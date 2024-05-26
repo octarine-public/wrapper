@@ -849,7 +849,7 @@ export class Unit extends Entity {
 	public get HeroFacet(): string {
 		return ""
 	}
-	protected get AttackSpeed(): number {
+	public get AttackSpeed(): number {
 		const base = this.BaseAttackSpeed,
 			baseAs = this.BaseAttackSpeedAmplifier
 

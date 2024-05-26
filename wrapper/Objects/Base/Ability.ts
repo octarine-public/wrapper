@@ -297,7 +297,6 @@ export class Ability extends Entity {
 		return this.GetBaseSpeedForLevel(this.Level)
 	}
 	public get HasAffectedByAOEIncrease() {
-		// TODO: check by special name value
 		return this.AbilityData.HasAffectedByAOEIncrease
 	}
 	public get MaxDuration(): number {

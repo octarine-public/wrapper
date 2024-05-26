@@ -3,7 +3,7 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("slark_shadow_dance")
 export class slark_shadow_dance extends Ability {
-	public GetBaseActivationDelayForLevel(level: number): number {
-		return this.GetSpecialValue("activation_delay", level)
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("duration", level)
 	}
 }
