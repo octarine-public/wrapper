@@ -231,6 +231,7 @@ export { bounty_hunter_jinada } from "./Objects/Abilities/BountyHunter/bounty_hu
 export { bounty_hunter_shuriken_toss } from "./Objects/Abilities/BountyHunter/bounty_hunter_shuriken_toss"
 export { bounty_hunter_track } from "./Objects/Abilities/BountyHunter/bounty_hunter_track"
 export { bounty_hunter_wind_walk } from "./Objects/Abilities/BountyHunter/bounty_hunter_wind_walk"
+export { bounty_hunter_wind_walk_ally } from "./Objects/Abilities/BountyHunter/bounty_hunter_wind_walk_ally"
 export { brewmaster_cinder_brew } from "./Objects/Abilities/Brewmaster/brewmaster_cinder_brew"
 export { brewmaster_drunken_brawler } from "./Objects/Abilities/Brewmaster/brewmaster_drunken_brawler"
 export { brewmaster_drunken_haze } from "./Objects/Abilities/Brewmaster/brewmaster_drunken_haze"
