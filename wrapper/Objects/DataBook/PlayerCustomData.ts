@@ -185,6 +185,7 @@ export class PlayerCustomData {
 	private unreliableGold = 600
 	private changeDetectedUnload = false
 
+	private prevTeam = Team.None
 	private readonly sleeper = new GameSleeper()
 	private readonly goldAfterTimeAr: [number, number][] = []
 	private readonly counters = new Map<string, GPMCounter>([["GPM", new GPMCounter()]])
@@ -575,8 +576,12 @@ export class PlayerCustomData {
 	 * @internal
 	 * @description internal only for wrapper
 	 */
-	public PostDataUpdate() {
+	public PostDataUpdate(dt: number) {
 		this.TeamChanged()
+
+		if (dt === 0) {
+			return
+		}
 
 		if (this.DataTeamPlayer === undefined) {
 			this.UpdateCounters()
@@ -688,7 +693,8 @@ export class PlayerCustomData {
 
 	protected TeamChanged() {
 		const playerData = PlayerCustomData.get(this.PlayerID)
-		if (playerData?.IsValid && playerData.Team !== this.Team) {
+		if (playerData?.IsValid && playerData.Team !== this.prevTeam) {
+			this.prevTeam = playerData.Team
 			EventsSDK.emit("PlayerCustomDataUpdated", false, playerData)
 		}
 	}

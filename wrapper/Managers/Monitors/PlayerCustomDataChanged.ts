@@ -139,14 +139,10 @@ const Monitor = new (class PlayerDataCustomChanged {
 	}
 
 	// Events
-	public PostDataUpdate() {
-		if (GameRules?.IsPaused) {
-			return
-		}
+	public PostDataUpdate(dt: number) {
 		const arr = PlayerCustomData.Array
 		for (let index = arr.length - 1; index > -1; index--) {
-			const playerData = arr[index]
-			playerData.PostDataUpdate()
+			arr[index].PostDataUpdate(dt)
 		}
 	}
 
@@ -1031,6 +1027,11 @@ const Monitor = new (class PlayerDataCustomChanged {
 		}
 	}
 })()
+
+EventsSDK.on("GameStarted", () => Monitor.GameStarted())
+
+EventsSDK.on("PostDataUpdate", dt => Monitor.PostDataUpdate(dt))
+
 EventsSDK.on(
 	"LifeStateChanged",
 	entity => Monitor.LifeStateChanged(entity),
@@ -1109,7 +1110,3 @@ EventsSDK.on(
 	player => Monitor.PlayerCustomDataUpdated(player),
 	Number.MIN_SAFE_INTEGER
 )
-
-EventsSDK.on("GameStarted", () => Monitor.GameStarted(), Number.MIN_SAFE_INTEGER)
-
-EventsSDK.on("PostDataUpdate", () => Monitor.PostDataUpdate(), Number.MIN_SAFE_INTEGER)
