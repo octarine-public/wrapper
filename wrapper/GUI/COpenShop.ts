@@ -8,7 +8,7 @@ export class COpenShop {
 	private static readonly MainPanelMiniWidth = 360
 	private static readonly MainPanelLargeWidth = 400
 
-	private static readonly HeaderAndItemsHeight = 650
+	private static readonly HeaderAndItemsHeight = 670
 	private static readonly HeaderHeight = 84
 	private static readonly ItemsHeight =
 		COpenShop.HeaderAndItemsHeight - COpenShop.HeaderHeight
