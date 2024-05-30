@@ -88,8 +88,8 @@ export class CShop {
 			this.CourierGold.pos1.x = this.Quickbuy1Row.x
 		}
 		this.CourierGold.pos1.y = this.Courier.pos1.y
-		this.CourierGold.pos2.x = this.Courier.pos2.x
-		this.CourierGold.pos2.y = this.Courier.pos2.y
+		this.CourierGold.pos2.x = hudFlip ? this.Quickbuy1Row.pos2.x : screenSize.x
+		this.CourierGold.pos2.y = screenSize.y
 	}
 	private CalculateQuickbuyAndSticky(screenSize: Vector2, hudFlip: boolean): void {
 		this.ClearQuickBuy1Row.Width = this.ClearQuickBuy2Rows.Width = ScaleWidth(
