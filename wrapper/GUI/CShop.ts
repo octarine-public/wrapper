@@ -6,6 +6,7 @@ import { ScaleHeight, ScaleWidth } from "./Helpers"
 
 export class CShop {
 	public readonly CourierGold = new Rectangle()
+	public readonly Courier = new Rectangle()
 	public readonly ShopButton = new Rectangle()
 	public readonly Quickbuy1Row = new Rectangle()
 	public readonly Quickbuy2Rows = new Rectangle()
@@ -18,8 +19,8 @@ export class CShop {
 	public readonly StashGrabAll = new Rectangle()
 
 	constructor(screenSize: Vector2, hudFlipped: boolean) {
-		this.CalculateCourierGold(screenSize, hudFlipped)
 		this.CalculateQuickbuyAndSticky(screenSize, hudFlipped)
+		this.CalculateCourierGold(screenSize, hudFlipped)
 		this.CalculateStash(screenSize, hudFlipped)
 	}
 
@@ -67,17 +68,28 @@ export class CShop {
 	}
 
 	private CalculateCourierGold(screenSize: Vector2, hudFlip: boolean): void {
-		this.CourierGold.Width = ScaleWidth(278, screenSize)
-		this.CourierGold.Height = ScaleHeight(60, screenSize)
-		this.CourierGold.x = !hudFlip ? screenSize.x - this.CourierGold.Width : 0
-		this.CourierGold.y = screenSize.y - this.CourierGold.Height
-
 		this.ShopButton.Width = ScaleWidth(100, screenSize)
 		this.ShopButton.Height = ScaleHeight(36, screenSize)
+		this.ShopButton.x = !hudFlip
+			? this.Quickbuy1Row.x + ScaleWidth(12, screenSize)
+			: ScaleWidth(8, screenSize)
+		this.ShopButton.y =
+			screenSize.y - this.ShopButton.Height - ScaleHeight(12, screenSize)
 
-		this.ShopButton.x =
-			this.CourierGold.x + ScaleWidth(8 + (!hudFlip ? 20 : 0), screenSize)
-		this.ShopButton.y = this.CourierGold.y + ScaleHeight(12, screenSize)
+		this.Courier.Width = ScaleWidth(132, screenSize)
+		this.Courier.Height = ScaleHeight(60, screenSize)
+		this.Courier.x = !hudFlip
+			? this.Quickbuy1Row.x + ScaleWidth(114, screenSize)
+			: ScaleWidth(115, screenSize)
+		this.Courier.y = screenSize.y - this.Courier.Height
+
+		this.CourierGold.pos1.x = 0
+		if (!hudFlip) {
+			this.CourierGold.pos1.x = this.Quickbuy1Row.x
+		}
+		this.CourierGold.pos1.y = this.Courier.pos1.y
+		this.CourierGold.pos2.x = this.Courier.pos2.x
+		this.CourierGold.pos2.y = this.Courier.pos2.y
 	}
 	private CalculateQuickbuyAndSticky(screenSize: Vector2, hudFlip: boolean): void {
 		this.ClearQuickBuy1Row.Width = this.ClearQuickBuy2Rows.Width = ScaleWidth(
@@ -89,23 +101,28 @@ export class CShop {
 			screenSize
 		)
 
-		this.Quickbuy1Row.Width = this.Quickbuy2Rows.Width = ScaleWidth(202, screenSize)
+		const quickbuyRowsWidth = ScaleWidth(292, screenSize),
+			stickyWidth = ScaleWidth(53, screenSize)
+		const quickbuyRowsY = screenSize.y - ScaleHeight(60, screenSize)
+
+		this.Quickbuy1Row.Width = this.Quickbuy2Rows.Width =
+			quickbuyRowsWidth - stickyWidth
 		this.Quickbuy1Row.Height = ScaleHeight(40, screenSize)
 		this.Quickbuy2Rows.Height = ScaleHeight(74, screenSize)
-		this.Quickbuy1Row.y = this.CourierGold.y - this.Quickbuy1Row.Height
-		this.Quickbuy2Rows.y = this.CourierGold.y - this.Quickbuy2Rows.Height
+		this.Quickbuy1Row.y = quickbuyRowsY - this.Quickbuy1Row.Height
+		this.Quickbuy2Rows.y = quickbuyRowsY - this.Quickbuy2Rows.Height
 
-		const clearQuickBuyOffsetX = ScaleWidth(68, screenSize),
-			clearQuickBuyOffsetY = ScaleHeight(8, screenSize)
+		const clearQuickBuyOffsetX = ScaleWidth(!hudFlip ? 56 : 62, screenSize),
+			clearQuickBuyOffsetY = ScaleHeight(6, screenSize)
 		this.ClearQuickBuy1Row.y = this.Quickbuy1Row.y + clearQuickBuyOffsetY
 		this.ClearQuickBuy2Rows.y = this.Quickbuy2Rows.y + clearQuickBuyOffsetY
 
-		this.Sticky1Row.Width = this.Sticky2Rows.Width = ScaleWidth(60, screenSize)
+		this.Sticky1Row.Width = this.Sticky2Rows.Width = stickyWidth
 		this.Sticky1Row.Height = this.Quickbuy1Row.Height
 		this.Sticky2Rows.Height = this.Quickbuy2Rows.Height
 
-		this.Sticky1Row.y = this.CourierGold.y - this.Sticky1Row.Height
-		this.Sticky2Rows.y = this.CourierGold.y - this.Sticky2Rows.Height
+		this.Sticky1Row.y = quickbuyRowsY - this.Sticky1Row.Height
+		this.Sticky2Rows.y = quickbuyRowsY - this.Sticky2Rows.Height
 
 		if (hudFlip) {
 			this.Quickbuy1Row.x = this.Sticky1Row.Width
