@@ -24,7 +24,7 @@ export class CScoreboard {
 
 	private CalculateBackground(screenSize: Vector2): void {
 		this.Background.Width = ScaleWidth(822, screenSize)
-		this.Background.Height = ScaleHeight(680, screenSize)
+		this.Background.Height = ScaleHeight(810, screenSize)
 		this.Background.x = 0
 		this.Background.y = ScaleHeight(54, screenSize)
 	}
