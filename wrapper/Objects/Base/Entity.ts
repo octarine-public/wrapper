@@ -189,7 +189,7 @@ export class Entity {
 			return
 		}
 		this.CustomGlowColor_ = val
-		//lastGlowEnts.add(this)
+		lastGlowEnts.add(this)
 	}
 	public get CustomDrawColor(): Nullable<[Color, RenderMode]> {
 		return this.CustomDrawColor_
