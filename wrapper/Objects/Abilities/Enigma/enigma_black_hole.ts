@@ -3,7 +3,7 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("enigma_black_hole")
 export class enigma_black_hole extends Ability {
-	public get Speed(): number {
+	public get PullSpeed(): number {
 		return this.GetSpecialValue("pull_speed")
 	}
 
