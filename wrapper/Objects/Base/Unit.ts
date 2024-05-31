@@ -130,8 +130,6 @@ export class Unit extends Entity {
 	public NetworkedNightVision = 0
 	@NetworkedBasicField("m_flTauntCooldown")
 	public TauntCooldown = 0
-	@NetworkedBasicField("m_nUnitState64", EPropertyType.UINT64)
-	public UnitStateNetworked = 0n
 	@NetworkedBasicField("m_iXPBounty")
 	public XPBounty = 0
 	@NetworkedBasicField("m_iXPBountyExtra")
@@ -152,6 +150,7 @@ export class Unit extends Entity {
 	public TotalStrength = 0
 	public MoveSpeedTotal = 0
 	public AttackCapabilities = 0
+	public UnitStateNetworked = 0n
 
 	public Spawner_: number = 0
 	public Spawner: Nullable<NeutralSpawner>
@@ -230,8 +229,8 @@ export class Unit extends Entity {
 	public TargetIndex_: number = -1
 	public IsIllusion_: boolean = false
 
-	public IsStrongIllusion_: boolean = false
 	public IsClone_: boolean = false
+	public IsStrongIllusion_: boolean = false
 
 	public IsVisibleForEnemies_: boolean = false
 	public cellIsVisibleForEnemies_: boolean = false // TODO: calculate grid nav from enemies
@@ -2655,11 +2654,14 @@ RegisterFieldHandler(Unit, "m_iPlayerID", (unit, newVal) => {
 	PlayerCustomData.set(unit.PlayerID)
 })
 RegisterFieldHandler(Unit, "m_nUnitState64", (unit, newVal) => {
-	unit.UnitStateNetworked = ReencodeProperty(newVal, EPropertyType.UINT64) as bigint
-	for (let index = unit.Buffs.length - 1; index > -1; index--) {
-		unit.Buffs[index].OnUnitStateChaged()
+	const oldValue = unit.UnitStateNetworked
+	if (oldValue !== newVal) {
+		unit.UnitStateNetworked = ReencodeProperty(newVal, EPropertyType.UINT64) as bigint
+		for (let index = unit.Buffs.length - 1; index > -1; index--) {
+			unit.Buffs[index].OnUnitStateChaged()
+		}
+		EventsSDK.emit("UnitStateChanged", false, unit)
 	}
-	EventsSDK.emit("UnitStateChanged", false, unit)
 })
 RegisterFieldHandler(Unit, "m_hOwnerNPC", (unit, newVal) => {
 	unit.OwnerNPC_ = newVal as number
@@ -2669,8 +2671,11 @@ RegisterFieldHandler(Unit, "m_nPlayerOwnerID", (unit, newVal) => {
 	unit.OwnerPlayerID = ReencodeProperty(newVal, EPropertyType.INT32) as number
 })
 RegisterFieldHandler(Unit, "m_bIsIllusion", (unit, newVal) => {
-	unit.IsIllusion_ = newVal as boolean
-	EventsSDK.emit("UnitPropertyChanged", false, unit)
+	const oldValue = unit.IsIllusion_
+	if (oldValue !== newVal) {
+		unit.IsIllusion_ = newVal as boolean
+		EventsSDK.emit("UnitPropertyChanged", false, unit)
+	}
 })
 RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", (unit, newVal) => {
 	unit.IsControllableByPlayerMask = newVal as bigint
@@ -2747,11 +2752,17 @@ RegisterFieldHandler(Unit, "m_iParity", (unit, newVal) => {
 		EventsSDK.emit("UnitParityChanged", false, unit.Parity, newVal)
 	}
 })
-
 RegisterFieldHandler(Unit, "m_iAttackCapabilities", (unit, newVal) => {
 	const oldValue = unit.AttackCapabilities
 	if (oldValue !== newVal) {
 		unit.AttackCapabilities = newVal as number
+		EventsSDK.emit("UnitPropertyChanged", false, unit)
+	}
+})
+RegisterFieldHandler(Unit, "m_bIsClone", (unit, newVal) => {
+	const oldValue = unit.IsClone_
+	if (oldValue !== newVal) {
+		unit.IsClone_ = newVal as boolean
 		EventsSDK.emit("UnitPropertyChanged", false, unit)
 	}
 })

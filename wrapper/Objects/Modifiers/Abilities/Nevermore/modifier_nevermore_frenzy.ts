@@ -10,13 +10,16 @@ export class modifier_nevermore_frenzy extends Modifier {
 		super.SetBonusAttackSpeed(specialName, subtract)
 	}
 	protected SetBonusCastPointAmplifier(
-		_specialName = "cast_speed_pct",
+		specialName = "cast_speed_pct_tooltip",
 		subtract = false
 	): void {
-		// error in special data
+		// error in special data "cast_speed_pct"
 		// use super.SetBonusCastPointAmplifier after fix
-		const value = 40 // this.GetSpecialValue(specialName)
-		this.BonusCastPointAmplifier = (subtract ? value * -1 : value) / 100
+		const value = this.GetSpecialValue(specialName)
+		this.BonusCastPointAmplifier = Math.max(
+			(subtract ? value * -1 : value) / 100 - 1,
+			0
+		)
 		// super.SetBonusCastPointAmplifier(specialName, subtract)
 	}
 }

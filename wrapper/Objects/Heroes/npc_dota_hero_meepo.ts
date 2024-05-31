@@ -10,11 +10,10 @@ export class npc_dota_hero_meepo extends Hero {
 		if (findWeStand === undefined) {
 			return 0
 		}
-
 		return findWeStand.WhichDividedWeStand
 	}
 	public get IsClone(): boolean {
-		return this.WhichMeepo !== 0
+		return super.IsClone || this.WhichMeepo !== 0
 	}
 	public get IsIllusion(): boolean {
 		return super.IsIllusion && !this.IsClone

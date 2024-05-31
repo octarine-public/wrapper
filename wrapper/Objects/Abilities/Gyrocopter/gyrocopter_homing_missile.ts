@@ -6,4 +6,7 @@ export class gyrocopter_homing_missile extends Ability {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)
 	}
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("hit_damage", level)
+	}
 }
