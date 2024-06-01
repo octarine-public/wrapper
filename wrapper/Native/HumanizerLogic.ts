@@ -1590,10 +1590,13 @@ Events.on("DebuggerPrepareUnitOrders", (isUserInput, wasCancelled) => {
 function ClearHumanizerState() {
 	ExecuteOrder.orderQueue.clear()
 	ExecuteOrder.lastMove = undefined
+	ExecuteOrder.HoldOrders = 0
+	ExecuteOrder.HoldOrdersTarget = undefined
 	lastOrderFinish = 0
 	latestCameraX = 0
 	latestCameraY = 0
 	currentOrder = undefined
+	lastOrderTarget = undefined
 	debugCursor.toZero()
 	lastUpdate = 0
 	latestUsercmd = new UserCmd()
@@ -1616,6 +1619,9 @@ function ClearHumanizerState() {
 function RestartHumanizerState() {
 	ExecuteOrder.orderQueue.clear()
 	ExecuteOrder.lastMove = undefined
+	ExecuteOrder.HoldOrders = 0
+	ExecuteOrder.HoldOrdersTarget = undefined
+	lastOrderTarget = undefined
 	lastOrderFinish = 0
 	latestCameraX = 0
 	latestCameraY = 0
