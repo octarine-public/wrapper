@@ -15,4 +15,14 @@ export class muerta_dead_shot extends Ability {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)
 	}
+	public GetMaxChargesForLevel(level: number): number {
+		const owner = this.Owner
+		if (owner === undefined) {
+			return 0
+		}
+		const ability = owner.GetAbilityByName(
+			"special_bonus_unique_muerta_dead_shot_charges"
+		)
+		return ability?.GetSpecialValue("value", level) ?? 0
+	}
 }
