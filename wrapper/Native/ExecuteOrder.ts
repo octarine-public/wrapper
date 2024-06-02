@@ -342,34 +342,34 @@ export class ExecuteOrder {
 			ExecuteOrder.lastMove = [this.Position, currentTime]
 		}
 
-		if (!this.Queue && WillInterruptOrderQueue(this)) {
-			while (
-				ExecuteOrder.orderQueue.removeCallback(
-					([order, _orderStartTime, _orderUsedMinimap, executed], i) =>
-						i !== 0 &&
-						!executed &&
-						(order.Issuers.every(unit => this.Issuers.includes(unit)) ||
-							(order.Issuers.length === 1 &&
-								this.Issuers.includes(order.Issuers[0]))) &&
-						CanBeIgnored(order)
-				)
-			) {
-				continue
+		if (!this.Queue) {
+			let interrupt = WillInterruptOrderQueue(this)
+			if (interrupt) {
+				while (
+					ExecuteOrder.orderQueue.removeCallback(
+						([order, _orderStartTime, _orderUsedMinimap, executed], i) =>
+							i !== 0 &&
+							!executed &&
+							(order.Issuers.every(unit => this.Issuers.includes(unit)) ||
+								(order.Issuers.length === 1 &&
+									this.Issuers.includes(order.Issuers[0]))) &&
+							CanBeIgnored(order)
+					)
+				) {
+					continue
+				}
+
+				switch (this.OrderType as dotaunitorder_t) {
+					case dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION:
+					case dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE:
+					case dotaunitorder_t.DOTA_UNIT_ORDER_STOP:
+						interrupt = false
+				}
 			}
 
-			switch (this.OrderType as dotaunitorder_t) {
-				case dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_STOP:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_ALT:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET:
-					this.Execute()
-					return
-				default:
-					break
+			if (!interrupt) {
+				this.Execute()
+				return
 			}
 		}
 		ExecuteOrder.orderQueue.push([this, hrtime(), false, false])
