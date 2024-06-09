@@ -94,7 +94,6 @@ export class Ability extends Entity {
 	/** NOTE: @override in child classes */
 	public get ShouldBeDrawable(): boolean {
 		return (
-			!this.IsEmpty &&
 			!this.IsAttributes &&
 			!this.IsInnateHidden &&
 			!this.Name.startsWith("seasonal_")
