@@ -70,7 +70,7 @@ const Monitor = new (class CPlayerDataCustomChanged {
 
 	// Events
 	public UnitItemsChanged(unit: Unit) {
-		if (!unit.IsEnemy() || unit.IsClone || this.IsIllusion(unit)) {
+		if (unit.IsClone || this.IsIllusion(unit)) {
 			return
 		}
 		let playerID = unit.PlayerID
@@ -86,7 +86,7 @@ const Monitor = new (class CPlayerDataCustomChanged {
 			this.playersItems.delete(playerID)
 			return
 		}
-		// typescript 5.5 fix type (item is Item | undefined)
+		// typescript v5.5 fix type (item is Item | undefined)
 		const totalItems = unit.TotalItems.filter(
 			(item): item is Item => item !== undefined && item.Cost !== 0
 		)
@@ -144,10 +144,7 @@ const Monitor = new (class CPlayerDataCustomChanged {
 
 	private destroyedItem(item: Item) {
 		const owner = item.Owner
-		if (!(owner instanceof Unit)) {
-			return
-		}
-		if (!owner.IsEnemy() || owner.IsClone || this.IsIllusion(owner)) {
+		if (!(owner instanceof Unit) || !owner.IsClone || this.IsIllusion(owner)) {
 			return
 		}
 		let playerID = owner.PlayerID
