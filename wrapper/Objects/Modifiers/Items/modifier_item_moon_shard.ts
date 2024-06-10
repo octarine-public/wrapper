@@ -4,10 +4,8 @@ import { Modifier } from "../../Base/Modifier"
 @WrapperClassModifier()
 export class modifier_item_moon_shard extends Modifier {
 	public static readonly ChildName = "modifier_item_moon_shard_consumed"
-
 	public readonly BonusAttackSpeedStack = true
-
-	protected readonly CustomAbilityName = "item_moon_shard"
+	public readonly ConsumedAbilityName = "item_moon_shard"
 
 	protected SetBonusNightVision(
 		specialName = "bonus_night_vision",

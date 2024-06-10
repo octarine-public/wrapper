@@ -213,7 +213,7 @@ export class Modifier {
 	protected IsRanged = false
 
 	/** @description need maybe only for spent abilities */
-	protected CustomAbilityName: Nullable<string> = undefined
+	public ConsumedAbilityName: Nullable<string> = undefined
 
 	constructor(public kv: IModifier) {
 		this.Index = this.kv.Index ?? -1
@@ -290,9 +290,13 @@ export class Modifier {
 		if (abil !== undefined) {
 			return abil.TexturePath
 		}
-		return this.Name.includes("item_")
-			? GetItemTexture(this.Name)
-			: GetSpellTexture(this.Name)
+		const abilName = this.ConsumedAbilityName
+		if (abilName === undefined) {
+			return ""
+		}
+		return abilName.includes("item_")
+			? GetItemTexture(abilName)
+			: GetSpellTexture(abilName)
 	}
 
 	public IsEnemy(team = this.Caster?.Team ?? GameState.LocalTeam) {
@@ -536,9 +540,9 @@ export class Modifier {
 		const abil = this.Ability
 		level = Math.max(abil?.Level ?? level, level)
 
-		if (this.CustomAbilityName !== undefined) {
+		if (this.ConsumedAbilityName !== undefined) {
 			return this.byAbilityData(
-				this.CustomAbilityName,
+				this.ConsumedAbilityName,
 				specialName,
 				// some abilities don't have levels ex: (modifier_item_moon_shard_consumed)
 				// valve updated set AbilityLevel to 0

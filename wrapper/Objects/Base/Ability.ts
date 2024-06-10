@@ -46,14 +46,10 @@ export class Ability extends Entity {
 	public OverrideCastPoint = 0
 	@NetworkedBasicField("m_flCooldownLength")
 	public CooldownLength_ = 0
-	public IsInAbilityPhase_ = false
-	public IsInAbilityPhaseChangeTime = 0
 	@NetworkedBasicField("m_flCastStartTime")
 	public CastStartTime = 0
-	public ChannelStartTime = 0
 	@NetworkedBasicField("m_bToggleState")
 	public IsToggled = false
-	public IsHidden = false
 	@NetworkedBasicField("m_nAbilityCurrentCharges")
 	public AbilityCurrentCharges = 0
 	@NetworkedBasicField("m_iDirtyButtons")
@@ -63,9 +59,14 @@ export class Ability extends Entity {
 
 	public Level = 0
 	public IsEmpty = false
+	public IsHidden = false
 	public IsSpellAmplify = true
+	public ChannelStartTime = 0
 	public AbilityChargeRestoreTimeRemaining = 0
 	public AbilitySlot = EAbilitySlot.DOTA_SPELL_SLOT_HIDDEN
+
+	public IsInAbilityPhase_ = false
+	public IsInAbilityPhaseChangeTime = 0
 
 	public Cooldown_ = 0
 	public CooldownChangeTime = 0

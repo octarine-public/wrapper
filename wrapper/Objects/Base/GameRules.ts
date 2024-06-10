@@ -17,6 +17,10 @@ import { TurboHeroPickRules } from "./TurboPickRules"
 @WrapperClass("CDOTAGamerulesProxy")
 export class CGameRules extends Entity {
 	public RawGameTime = 0
+	@NetworkedBasicField("m_flDaytimeStart")
+	public DayTimeStart = 0
+	@NetworkedBasicField("m_flNighttimeStart")
+	public NightTimeStart = 0
 	@NetworkedBasicField("m_bGamePaused")
 	public IsPaused = false
 	@NetworkedBasicField("m_nRuneCycle")
@@ -66,6 +70,12 @@ export class CGameRules extends Entity {
 	public AllDraftRadiantFirst = false
 	@NetworkedBasicField("m_unMatchID64", EPropertyType.UINT64)
 	public MatchID = 0n
+	// @NetworkedBasicField("m_nRoshanRespawnPhase")
+	// public RoshanRespawnPhase = 0n // TODO: check
+	// @NetworkedBasicField("m_flRoshanRespawnPhaseEndTime")
+	// public RoshanRespawnPhaseEndTime = 0 // TODO: check
+	// @NetworkedBasicField("m_flPlayerDraftTimeBank")
+	// public PlayerDraftTimeBank = 0 // TODO: check
 	public NeutralSpawnBoxes: NeutralSpawnBox[] = []
 	public StockInfo: StockInfo[] = []
 	public HeroPickState = DOTAHeroPickState.DOTA_HEROPICK_STATE_NONE

@@ -83,6 +83,10 @@ export class Unit extends Entity {
 	public BKBChargesUsed = 0
 	@NetworkedBasicField("m_iAeonChargesUsed")
 	public AeonChargesUsed = 0
+	@NetworkedBasicField("m_flRefresherUseTime")
+	public RefresherUseTime = 0
+	@NetworkedBasicField("m_flRefresherLastCooldown")
+	public RefresherLastCooldown = 0
 	@NetworkedBasicField("m_iDamageBonus")
 	public BonusDamage = 0
 	@NetworkedBasicField("m_iDayTimeVisionRange")
@@ -107,8 +111,6 @@ export class Unit extends Entity {
 	public IsPhantom = false
 	@NetworkedBasicField("m_bIsSummoned")
 	public IsSummoned = false
-	@NetworkedBasicField("m_iRecentDamage")
-	public RecentDamage = 0
 	@NetworkedBasicField("m_flLastAttackTime")
 	public LastAttackTime = 0
 	@NetworkedBasicField("m_flLastDamageTime")
@@ -130,6 +132,8 @@ export class Unit extends Entity {
 	public NetworkedNightVision = 0
 	@NetworkedBasicField("m_flTauntCooldown")
 	public TauntCooldown = 0
+	@NetworkedBasicField("m_flTauntCooldown2")
+	public TauntCooldown2 = 0
 	@NetworkedBasicField("m_iXPBounty")
 	public XPBounty = 0
 	@NetworkedBasicField("m_iXPBountyExtra")
@@ -141,6 +145,17 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_nHealthBarOffsetOverride")
 	public HealthBarOffsetOverride = 0
 	public HealthBarOffset_: Nullable<number>
+	@NetworkedBasicField("m_NetworkActivity")
+	public NetworkActivity = 0 as GameActivity
+	public NetworkActivityPrev = 0 as GameActivity
+	public NetworkActivityStartTime = 0
+	@NetworkedBasicField("m_NetworkSequenceIndex")
+	public NetworkSequenceIndex = 0
+	public NetworkSequenceIndexPrev = 0
+	@NetworkedBasicField("m_nResetEventsParity")
+	public SequenceParity = 0
+	public SequenceParityPrev = 0
+
 	public Parity = 0
 	public Agility = 0
 	public Intellect = 0
@@ -204,16 +219,6 @@ export class Unit extends Entity {
 	public OwnerPlayerID = -1
 	public HPRegenCounter = 0
 	public IsControllableByPlayerMask = 0n
-	@NetworkedBasicField("m_NetworkActivity")
-	public NetworkActivity = 0 as GameActivity
-	public NetworkActivityPrev = 0 as GameActivity
-	public NetworkActivityStartTime = 0
-	@NetworkedBasicField("m_NetworkSequenceIndex")
-	public NetworkSequenceIndex = 0
-	public NetworkSequenceIndexPrev = 0
-	@NetworkedBasicField("m_nResetEventsParity")
-	public SequenceParity = 0
-	public SequenceParityPrev = 0
 
 	public MyWearables_: number[] = []
 	public MyWearables: Wearable[] = []
