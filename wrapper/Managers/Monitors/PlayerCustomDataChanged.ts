@@ -173,6 +173,8 @@ const Monitor = new (class CPlayerDataCustomChanged {
 
 EventsSDK.on("PostDataUpdate", () => Monitor.PostDataUpdate())
 
+EventsSDK.on("EntityDestroyed", entity => Monitor.EntityDestroyed(entity))
+
 EventsSDK.on(
 	"UnitItemsChanged",
 	entity => Monitor.UnitItemsChanged(entity),
