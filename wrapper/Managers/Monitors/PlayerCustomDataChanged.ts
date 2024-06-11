@@ -109,20 +109,24 @@ const Monitor = new (class CPlayerDataCustomChanged {
 	private lastHitChanged(indexKilled: number, indexAttacker: number) {
 		const target = EntityManager.EntityByIndex(indexKilled)
 		const attacker = EntityManager.EntityByIndex(indexAttacker)
-		if (!(target instanceof Unit) || !(attacker instanceof Unit)) {
+		if (!(attacker instanceof Unit)) {
 			return
 		}
-		if (target.Name === "npc_dota_aether_remnant") {
-			return
-		}
-		if (target.IsBuilding || target.IsHero || target.IsRoshan) {
-			return
-		}
-		if (target.IsClone || target.IsIllusion || target.IsCourier) {
-			return
+		let playerID = attacker.PlayerID
+		if (playerID === -1) {
+			playerID = attacker.OwnerPlayerID // example: spirit bear
 		}
 		const attackerData = PlayerCustomData.get(attacker.PlayerID)
 		if (attackerData === undefined || !attackerData.IsValid) {
+			return
+		}
+		if (target === undefined && attacker.IsEnemy() && !attacker.IsVisible) {
+			attackerData.LastHitCount++
+		}
+		if (!(target instanceof Unit) || target.IsHero) {
+			return
+		}
+		if (target.Name === "npc_dota_aether_remnant") {
 			return
 		}
 		if (!attackerData.IsEnemy(target)) {
@@ -187,5 +191,11 @@ EventsSDK.on(
 EventsSDK.on(
 	"PlayerCustomDataUpdated",
 	player => Monitor.PlayerCustomDataUpdated(player),
+	Number.MIN_SAFE_INTEGER
+)
+
+EventsSDK.on(
+	"GameEvent",
+	(name, obj) => Monitor.GameEvent(name, obj),
 	Number.MIN_SAFE_INTEGER
 )
