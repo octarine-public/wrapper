@@ -15,6 +15,7 @@ function UpdateTimingData(): void {
 	loadFile().forEach((map, name) => cacheTimingData.set(name, map))
 }
 
+// TODO: TeamData -> m_vecKnownClearCamps
 export class NeutralSpawnBox {
 	public readonly Angles = new QAngle()
 	public readonly StackEnd: number = -1

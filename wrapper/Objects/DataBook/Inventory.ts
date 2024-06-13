@@ -68,10 +68,6 @@ export class Inventory {
 			this.HasAnyItem(
 				DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1,
 				DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6
-			) &&
-			this.HasAnyItem(
-				DOTAScriptInventorySlot.DOTA_ITEM_TP_SCROLL,
-				DOTAScriptInventorySlot.DOTA_ITEM_NEUTRAL_SLOT
 			)
 		)
 	}
