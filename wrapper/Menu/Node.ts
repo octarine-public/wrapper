@@ -10,6 +10,7 @@ import { Base, IMenu } from "./Base"
 import { Button } from "./Button"
 import { ColorPicker } from "./ColorPicker"
 import { Dropdown } from "./Dropdown"
+import { DummyJson } from "./DummyJson"
 import { DynamicImageSelector } from "./DynamicImageSelector"
 import { ImageSelector } from "./ImageSelector"
 import { IMenuParticlePicker } from "./ITypes"
@@ -625,6 +626,13 @@ export class Node extends Base {
 		priority = 0
 	): ColorPicker {
 		return this.AddEntry(new ColorPicker(this, name, defaultColor, tooltip), priority)
+	}
+
+	public AddDummyJson<T>(
+		name: string,
+		defaultValue: T
+	): DummyJson<T> {
+		return this.AddEntry(new DummyJson(this, name, defaultValue), 0)
 	}
 
 	public AddParticlePicker(
