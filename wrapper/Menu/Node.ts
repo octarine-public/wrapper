@@ -13,6 +13,7 @@ import { Dropdown } from "./Dropdown"
 import { DummyJson } from "./DummyJson"
 import { DynamicImageSelector } from "./DynamicImageSelector"
 import { ImageSelector } from "./ImageSelector"
+import { ImageSelectorArray } from "./ImageSelectorArr"
 import { IMenuParticlePicker } from "./ITypes"
 import { KeyBind } from "./KeyBind"
 import { Slider } from "./Slider"
@@ -486,17 +487,39 @@ export class Node extends Base {
 	public AddImageSelector(
 		name: string,
 		values: string[],
-		defaultValues = new Map<string, boolean>(),
-		tooltip = "",
+		defaultValues?: Map<string, boolean>,
+		tooltip?: string,
+		createdDefaultState?: boolean,
+		priority?: number
+	): ImageSelector
+	public AddImageSelector(
+		name: string,
+		values: string[],
+		defaultValues?: [string, boolean][],
+		tooltip?: string,
+		createdDefaultState?: boolean,
+		priority?: number
+	): ImageSelectorArray
+	public AddImageSelector(
+		name: string,
+		values: string[],
+		defaultValues?: Map<string, boolean> | [string, boolean][],
+		tooltip: string = "",
 		createdDefaultState = false,
-		priority = 0
-	) {
+		priority: number = 0
+	): ImageSelector | ImageSelectorArray {
+		if (Array.isArray(defaultValues)) {
+			return this.AddEntry(
+				new ImageSelectorArray(this, name, values, defaultValues, tooltip),
+				priority
+			)
+		}
 		return this.AddEntry(
 			new ImageSelector(
 				this,
 				name,
 				values,
-				defaultValues,
+				defaultValues ?? new Map<string, boolean>(),
 				tooltip,
 				createdDefaultState
 			),
@@ -628,10 +651,7 @@ export class Node extends Base {
 		return this.AddEntry(new ColorPicker(this, name, defaultColor, tooltip), priority)
 	}
 
-	public AddDummyJson<T>(
-		name: string,
-		defaultValue: T
-	): DummyJson<T> {
+	public AddDummyJson<T>(name: string, defaultValue: T): DummyJson<T> {
 		return this.AddEntry(new DummyJson(this, name, defaultValue), 0)
 	}
 

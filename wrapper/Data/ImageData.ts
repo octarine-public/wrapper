@@ -21,6 +21,7 @@ export const Paths = new (class BaseImageData {
 
 	public readonly Icons = {
 		topbar_mana: `${this.reborn}/topbar_mana_psd.vtex_c`,
+		invoker_cataclysm: `${this.AbilityIcons}/invoker/magus_apex/invoker_sun_strike_png.vtex_c`,
 		topbar_health: `${this.reborn}/topbar_health_psd.vtex_c`,
 		topbar_health_dire: `${this.reborn}/topbar_health_dire_psd.vtex_c`,
 		topbar_health_colorblind: `${this.reborn}/topbar_health_colorblind_psd.vtex_c`,
@@ -121,7 +122,12 @@ const getTexturePath = (name: string, isItem = false): string => {
 		return abilityData.TexturePath
 	}
 	if (!isItem) {
-		return Paths.AbilityIcons + "/" + name + "_png.vtex_c"
+		switch (name) {
+			case "invoker_cataclysm":
+				return Paths.Icons.invoker_cataclysm
+			default:
+				return Paths.AbilityIcons + "/" + name + "_png.vtex_c"
+		}
 	}
 	name = !name.includes("recipe_")
 		? name.replace("item_", "")

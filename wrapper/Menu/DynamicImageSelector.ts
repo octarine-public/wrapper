@@ -1,11 +1,16 @@
 import { Color } from "../Base/Color"
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
+import {
+	GetHeroTexture,
+	GetItemTexture,
+	GetRuneTexture,
+	GetSpellTexture
+} from "../Data/ImageData"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputEventSDK, InputManager, VKeys } from "../Managers/InputManager"
 import { RendererSDK } from "../Native/RendererSDK"
-import { AbilityData } from "../Objects/DataBook/AbilityData"
 import { Base, IMenu } from "./Base"
 
 type IDefaultValues = Map<
@@ -165,17 +170,16 @@ export class DynamicImageSelector extends Base {
 				continue
 			}
 			let path = name
-			if (path.startsWith("rune_")) {
-				path = `panorama/images/spellicons/${path}_png.vtex_c`
+			if (!path.startsWith("npc_dota_hero_")) {
+				path = path.startsWith("item_")
+					? GetItemTexture(path)
+					: GetSpellTexture(path)
+			} else if (path.startsWith("rune_")) {
+				path = GetRuneTexture(path)
 			} else if (path.startsWith("item_bottle_")) {
 				path = `panorama/images/items/${path.substring(5)}_png.vtex_c`
-			} else if (!path.startsWith("npc_dota_hero_")) {
-				const abil = AbilityData.GetAbilityByName(path)
-				if (abil !== undefined) {
-					path = abil.TexturePath
-				}
 			} else {
-				path = `panorama/images/heroes/${path}_png.vtex_c`
+				path = GetHeroTexture(path)
 			}
 			const pathIamgeSize = RendererSDK.GetImageSize(path)
 			this.imageSize.x = Math.max(

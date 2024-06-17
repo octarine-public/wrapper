@@ -13,12 +13,12 @@ import { RendererSDK } from "../Native/RendererSDK"
 import { Base, IMenu } from "./Base"
 
 // every icon: 32x32, 1x1 border
-export class ImageSelector extends Base {
+export class ImageSelectorArray extends Base {
 	public static OnWindowSizeChanged(): void {
-		ImageSelector.imageBorderWidth = GUIInfo.ScaleWidth(2)
-		ImageSelector.imageGap = GUIInfo.ScaleWidth(2)
-		ImageSelector.baseImageHeight = GUIInfo.ScaleHeight(32)
-		ImageSelector.randomHeightValue = GUIInfo.ScaleHeight(40)
+		ImageSelectorArray.imageBorderWidth = GUIInfo.ScaleWidth(2)
+		ImageSelectorArray.imageGap = GUIInfo.ScaleWidth(2)
+		ImageSelectorArray.baseImageHeight = GUIInfo.ScaleHeight(32)
+		ImageSelectorArray.randomHeightValue = GUIInfo.ScaleHeight(40)
 	}
 
 	private static imageBorderWidth = 0
@@ -28,7 +28,7 @@ export class ImageSelector extends Base {
 	private static readonly elementsPerRow = 5
 	private static readonly imageActivatedBorderColor = new Color(104, 4, 255)
 
-	public enabledValues: Map<string, boolean>
+	public enabledValues: [string, boolean][]
 	protected readonly imageSize = new Vector2()
 	protected renderedPaths: string[] = []
 
@@ -36,9 +36,8 @@ export class ImageSelector extends Base {
 		parent: IMenu,
 		name: string,
 		public values: string[],
-		public readonly defaultValues = new Map<string, boolean>(),
-		tooltip = "",
-		public createdDefaultState = false
+		public readonly defaultValues: [string, boolean][] = [],
+		tooltip = ""
 	) {
 		super(parent, name, tooltip)
 		this.enabledValues = defaultValues
@@ -46,14 +45,14 @@ export class ImageSelector extends Base {
 
 	// TODO: check current state
 	public get IsZeroSelected(): boolean {
-		let state = false
-		this.enabledValues.forEach((_, value) => {
-			if (value) {
-				return
+		const arr = this.enabledValues
+		for (let index = arr.length - 1; index > -1; index--) {
+			const [, state] = arr[index]
+			if (state) {
+				return false
 			}
-			state = true
-		})
-		return state
+		}
+		return true
 	}
 
 	public get IconsRect() {
@@ -64,23 +63,29 @@ export class ImageSelector extends Base {
 				.Add(
 					this.imageSize
 						.AddScalar(
-							ImageSelector.imageBorderWidth * 2 + ImageSelector.imageGap
+							ImageSelectorArray.imageBorderWidth * 2 +
+								ImageSelectorArray.imageGap
 						)
 						.MultiplyScalarX(
-							Math.min(this.values.length, ImageSelector.elementsPerRow)
+							Math.min(
+								this.values.length,
+								ImageSelectorArray.elementsPerRow
+							)
 						)
 						.MultiplyScalarY(
-							Math.ceil(this.values.length / ImageSelector.elementsPerRow)
+							Math.ceil(
+								this.values.length / ImageSelectorArray.elementsPerRow
+							)
 						)
 				)
 				.SubtractScalar(
-					(ImageSelector.elementsPerRow - 1) * ImageSelector.imageGap
+					(ImageSelectorArray.elementsPerRow - 1) * ImageSelectorArray.imageGap
 				)
 		)
 	}
 
 	public get ConfigValue() {
-		return [...this.enabledValues.entries()]
+		return this.enabledValues
 	}
 	public set ConfigValue(value) {
 		if (
@@ -90,12 +95,7 @@ export class ImageSelector extends Base {
 		) {
 			return
 		}
-		this.enabledValues = new Map<string, boolean>(value)
-		this.values.forEach(value_ => {
-			if (!this.enabledValues.has(value_)) {
-				this.enabledValues.set(value_, this.createdDefaultState)
-			}
-		})
+		this.enabledValues = value
 	}
 
 	public get ClassPriority(): number {
@@ -108,14 +108,7 @@ export class ImageSelector extends Base {
 		}
 
 		const values = this.values
-		for (let index = 0, end = values.length; index < end; index++) {
-			const path = values[index]
-			if (!this.enabledValues.has(path)) {
-				this.enabledValues.set(path, this.createdDefaultState)
-			}
-		}
-
-		this.imageSize.x = this.imageSize.y = ImageSelector.baseImageHeight
+		this.imageSize.x = this.imageSize.y = ImageSelectorArray.baseImageHeight
 		this.renderedPaths = []
 
 		for (let index = 0, end = values.length; index < end; index++) {
@@ -134,30 +127,30 @@ export class ImageSelector extends Base {
 			const pathIamgeSize = RendererSDK.GetImageSize(path)
 			this.imageSize.x = Math.max(
 				this.imageSize.x,
-				ImageSelector.baseImageHeight * (pathIamgeSize.x / pathIamgeSize.y)
+				ImageSelectorArray.baseImageHeight * (pathIamgeSize.x / pathIamgeSize.y)
 			)
 			this.renderedPaths.push(path)
 		}
 		this.Size.x =
 			Math.max(
 				this.nameSize.x,
-				Math.min(this.values.length, ImageSelector.elementsPerRow) *
+				Math.min(this.values.length, ImageSelectorArray.elementsPerRow) *
 					(this.imageSize.x +
-						ImageSelector.imageBorderWidth * 2 +
-						ImageSelector.imageGap)
+						ImageSelectorArray.imageBorderWidth * 2 +
+						ImageSelectorArray.imageGap)
 			) +
 			this.textOffset.x * 2
 		this.Size.y =
-			Math.ceil(this.values.length / ImageSelector.elementsPerRow) *
+			Math.ceil(this.values.length / ImageSelectorArray.elementsPerRow) *
 				(this.imageSize.y +
-					ImageSelector.imageBorderWidth * 2 +
-					ImageSelector.imageGap) +
-			ImageSelector.randomHeightValue
+					ImageSelectorArray.imageBorderWidth * 2 +
+					ImageSelectorArray.imageGap) +
+			ImageSelectorArray.randomHeightValue
 		return true
 	}
 
 	public IsEnabled(value: string): boolean {
-		return this.enabledValues.get(value) ?? false
+		return this.enabledValues.some(([name, state]) => name === value && state)
 	}
 
 	public IsEnabledID(id: number): boolean {
@@ -175,12 +168,13 @@ export class ImageSelector extends Base {
 			}
 			const size = this.imageSize,
 				pos = new Vector2(
-					index % ImageSelector.elementsPerRow,
-					Math.floor(index / ImageSelector.elementsPerRow)
+					index % ImageSelectorArray.elementsPerRow,
+					Math.floor(index / ImageSelectorArray.elementsPerRow)
 				)
 					.Multiply(
 						this.imageSize.AddScalar(
-							ImageSelector.imageBorderWidth * 2 + ImageSelector.imageGap
+							ImageSelectorArray.imageBorderWidth * 2 +
+								ImageSelectorArray.imageGap
 						)
 					)
 					.Add(basePos)
@@ -200,8 +194,8 @@ export class ImageSelector extends Base {
 				RendererSDK.OutlinedRect(
 					pos,
 					size,
-					ImageSelector.imageBorderWidth,
-					ImageSelector.imageActivatedBorderColor
+					ImageSelectorArray.imageBorderWidth,
+					ImageSelectorArray.imageActivatedBorderColor
 				)
 			}
 		}
@@ -219,18 +213,17 @@ export class ImageSelector extends Base {
 		const off = rect.GetOffset(this.MousePosition)
 		for (let i = 0, end = this.values.length; i < end; i++) {
 			const basePos = new Vector2(
-				i % ImageSelector.elementsPerRow,
-				Math.floor(i / ImageSelector.elementsPerRow)
+				i % ImageSelectorArray.elementsPerRow,
+				Math.floor(i / ImageSelectorArray.elementsPerRow)
 			).Multiply(
 				this.imageSize.AddScalar(
-					ImageSelector.imageBorderWidth * 2 + ImageSelector.imageGap
+					ImageSelectorArray.imageBorderWidth * 2 + ImageSelectorArray.imageGap
 				)
 			)
 			if (!new Rectangle(basePos, basePos.Add(this.imageSize)).Contains(off)) {
 				continue
 			}
-			const value = this.values[i]
-			this.enabledValues.set(value, !this.IsEnabled(value))
+			this.enabledValues[i][1] = !this.IsEnabled(this.values[i])
 			this.TriggerOnValueChangedCBs()
 			break
 		}
@@ -238,4 +231,4 @@ export class ImageSelector extends Base {
 	}
 }
 
-EventsSDK.on("WindowSizeChanged", () => ImageSelector.OnWindowSizeChanged())
+EventsSDK.on("WindowSizeChanged", () => ImageSelectorArray.OnWindowSizeChanged())
