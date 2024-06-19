@@ -10,6 +10,10 @@ export class invoker_chaos_meteor extends Ability {
 	@NetworkedBasicField("m_nExortLevel")
 	public ExortLevel = 0
 
+	public get LandTime() {
+		return this.GetSpecialValue("land_time")
+	}
+
 	public get Speed() {
 		return this.GetBaseSpeedForLevel(this.Level + this.WexLevel)
 	}
@@ -20,10 +24,6 @@ export class invoker_chaos_meteor extends Ability {
 
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("travel_speed", level)
-	}
-
-	public GetBaseActivationDelayForLevel(level: number): number {
-		return this.GetSpecialValue("land_time", level)
 	}
 
 	public GetBaseDamageForLevel(level: number): number {
