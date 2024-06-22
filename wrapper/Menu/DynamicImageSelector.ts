@@ -63,16 +63,13 @@ export class DynamicImageSelector extends Base {
 		this.enabledValues = defaultValues
 	}
 
-	// TODO: check current state
 	public get IsZeroSelected(): boolean {
-		let state = false
-		this.enabledValues.forEach((_, value) => {
-			if (value) {
-				return
+		for (const [, [state]] of this.enabledValues) {
+			if (state) {
+				return false
 			}
-			state = true
-		})
-		return state
+		}
+		return true
 	}
 
 	public get IconsRect() {

@@ -43,7 +43,6 @@ export class ImageSelectorArray extends Base {
 		this.enabledValues = defaultValues
 	}
 
-	// TODO: check current state
 	public get IsZeroSelected(): boolean {
 		const arr = this.enabledValues
 		for (let index = arr.length - 1; index > -1; index--) {

@@ -44,16 +44,13 @@ export class ImageSelector extends Base {
 		this.enabledValues = defaultValues
 	}
 
-	// TODO: check current state
 	public get IsZeroSelected(): boolean {
-		let state = false
-		this.enabledValues.forEach((_, value) => {
+		for (const [, value] of this.enabledValues) {
 			if (value) {
-				return
+				return false
 			}
-			state = true
-		})
-		return state
+		}
+		return true
 	}
 
 	public get IconsRect() {
