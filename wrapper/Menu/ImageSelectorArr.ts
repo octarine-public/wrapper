@@ -95,6 +95,7 @@ export class ImageSelectorArray extends Base {
 			return
 		}
 		this.enabledValues = value
+		this.UpdateEnabledValues()
 	}
 
 	public get ClassPriority(): number {
@@ -227,6 +228,17 @@ export class ImageSelectorArray extends Base {
 			break
 		}
 		return false
+	}
+
+	protected UpdateEnabledValues() {
+		for (let i = 0, end = this.values.length; i < end; i++) {
+			const name = this.values[i]
+			if (this.enabledValues[i] === undefined) {
+				this.enabledValues.push([name, true])
+				continue
+			}
+			this.enabledValues[i][1] = this.IsEnabled(name)
+		}
 	}
 }
 
