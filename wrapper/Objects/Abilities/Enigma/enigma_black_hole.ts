@@ -14,4 +14,8 @@ export class enigma_black_hole extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
+
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("duration", level)
+	}
 }
