@@ -28,6 +28,8 @@ export class InternalCamera {
 	private readonly ctrlState: Menu.Toggle
 
 	private readonly distance: Menu.Slider
+	private readonly animationSpeed: Menu.Slider
+
 	private readonly angles: {
 		readonly node: Menu.Node
 		readonly X: Menu.Slider
@@ -38,10 +40,16 @@ export class InternalCamera {
 	private readonly sleepTime = 2 * 1000
 	private readonly sleeper = new Sleeper()
 
+	private startTime: Nullable<number>
+	private animating: boolean = false
+	private startValue: number = 0
+	private endValue: number = 0
+
 	constructor(settings: Menu.Node) {
 		const treeMenu = settings.AddNode("Camera", "menu/icons/camera.svg")
 
 		this.distance = treeMenu.AddSlider("Camera Distance", 1200, 1200, 3500)
+
 		this.infoState = treeMenu.AddToggle(
 			"Draw camera distance",
 			true,
@@ -58,9 +66,14 @@ export class InternalCamera {
 		this.inverseDire = this.angles.node.AddToggle("Inverse for Dire", false)
 
 		const treeMenuMouse = treeMenu.AddNode("Mouse wheel")
+
 		this.mouseState = treeMenuMouse.AddToggle("State", true)
-		this.ctrlState = treeMenuMouse.AddToggle("Change if Ctrl is down", true)
-		this.step = treeMenuMouse.AddSlider("Camera Step", 50, 10, 1000)
+		this.ctrlState = treeMenuMouse.AddToggle(
+			"Change if Ctrl is down",
+			ConVarsSDK.GetBoolean("dota_camera_disable_zoom", false)
+		)
+		this.step = treeMenuMouse.AddSlider("Camera Step", 200, 50, 1000)
+		this.animationSpeed = treeMenuMouse.AddSlider("Animation speed", 600, 0, 1500)
 
 		treeMenu
 			.AddButton("Reset", "Reset settings")
@@ -104,6 +117,10 @@ export class InternalCamera {
 
 		IOBuffer[2] = 0
 		Camera.Angles = true
+
+		this.setDisableZoom()
+		this.updateAnimation()
+
 		Camera.Distance = !this.disableHumanizer ? this.distance.value : -1
 		ConVarsSDK.Set("r_farz", !this.disableHumanizer ? this.distance.value * 10 : -1)
 	}
@@ -115,17 +132,16 @@ export class InternalCamera {
 		if (this.ctrlState.value && !Input.IsKeyDown(VKeys.CONTROL)) {
 			return true
 		}
-		let camDist = this.distance.value
-		if (up) {
-			camDist -= this.step.value
-		} else {
-			camDist += this.step.value
-		}
-		this.distance.value = Math.min(
-			Math.max(camDist, this.distance.min),
-			this.distance.max
-		)
 		Menu.Base.SaveConfigASAP = true
+		let newValue = (this.startValue = this.distance.value)
+		if (up) {
+			newValue -= this.step.value
+		} else {
+			newValue += this.step.value
+		}
+		this.animating = true
+		this.startTime = hrtime()
+		this.endValue = Math.min(Math.max(newValue, this.distance.min), this.distance.max)
 		this.sleepDrawInfoCameraDistance()
 		return false
 	}
@@ -148,6 +164,7 @@ export class InternalCamera {
 		this.mouseState.value = this.mouseState.defaultValue
 		this.inverseDire.value = this.inverseDire.defaultValue
 		this.ctrlState.value = this.ctrlState.defaultValue
+		this.animationSpeed.value = this.animationSpeed.defaultValue
 		this.sleepDrawInfoCameraDistance()
 	}
 
@@ -159,7 +176,7 @@ export class InternalCamera {
 		const remaining = this.sleeper.RemainingSleepTime("Camera")
 		const color = Color.White.SetA(Math.min(remaining / 1000, 1) * 255)
 		const dist = Math.max(Camera.Distance, this.distance.min)
-		const text = `${Menu.Localization.Localize("Camera distance")}: ${dist}`
+		const text = `${Menu.Localization.Localize("Camera distance")}: ${Math.floor(dist)}`
 
 		const textSize = GUIInfo.ScaleHeight(48)
 		const windowSize = RendererSDK.WindowSize
@@ -189,5 +206,35 @@ export class InternalCamera {
 		if (this.infoState.value) {
 			this.sleeper.Sleep(this.sleepTime, "Camera")
 		}
+	}
+
+	private setDisableZoom() {
+		if (!this.disableHumanizer) {
+			ConVarsSDK.Set("dota_camera_disable_zoom", true)
+		}
+	}
+
+	public updateAnimation(): void {
+		if (!this.animating) {
+			return
+		}
+
+		const currentTime = hrtime()
+		const duration = Math.max(this.animationSpeed.value, 100)
+		const timeElapsed = currentTime - (this.startTime ?? 0)
+
+		if (timeElapsed < duration) {
+			const start = this.startValue
+			const end = this.endValue
+			const progress = this.easeInOutQuad(timeElapsed / duration)
+			this.distance.value = start + (end - start) * progress
+		} else {
+			this.distance.value = this.endValue
+			this.animating = false
+		}
+	}
+
+	private easeInOutQuad(t: number): number {
+		return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
 	}
 }
