@@ -66,14 +66,10 @@ export class InternalCamera {
 		this.inverseDire = this.angles.node.AddToggle("Inverse for Dire", false)
 
 		const treeMenuMouse = treeMenu.AddNode("Mouse wheel")
-
-		this.mouseState = treeMenuMouse.AddToggle("State", true)
-		this.ctrlState = treeMenuMouse.AddToggle(
-			"Change if Ctrl is down",
-			ConVarsSDK.GetBoolean("dota_camera_disable_zoom", false)
-		)
+		this.mouseState = treeMenuMouse.AddToggle("State", false)
+		this.ctrlState = treeMenuMouse.AddToggle("Change if Ctrl is down", true)
 		this.step = treeMenuMouse.AddSlider("Camera Step", 200, 50, 1000)
-		this.animationSpeed = treeMenuMouse.AddSlider("Animation speed", 600, 0, 1500)
+		this.animationSpeed = treeMenuMouse.AddSlider("Animation speed", 0, 0, 1500)
 
 		treeMenu
 			.AddButton("Reset", "Reset settings")
