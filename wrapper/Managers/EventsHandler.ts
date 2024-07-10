@@ -70,7 +70,8 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_ADD_MODELLIST_OVERRIDE_ELEMENT = 30,
 	GAME_PARTICLE_MANAGER_EVENT_CLEAR_MODELLIST_OVERRIDE = 31,
 	GAME_PARTICLE_MANAGER_EVENT_CREATE_PHYSICS_SIM = 32,
-	GAME_PARTICLE_MANAGER_EVENT_DESTROY_PHYSICS_SIM = 33
+	GAME_PARTICLE_MANAGER_EVENT_DESTROY_PHYSICS_SIM = 33,
+	GAME_PARTICLE_MANAGER_EVENT_SET_VDATA = 34
 }
 enum EDotaEntityMessages {
 	DOTA_UNIT_SPEECH = 0,
@@ -172,6 +173,7 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_CLEAR_MODELLIST_OVERRIDE = 31;
 	GAME_PARTICLE_MANAGER_EVENT_CREATE_PHYSICS_SIM = 32;
 	GAME_PARTICLE_MANAGER_EVENT_DESTROY_PHYSICS_SIM = 33;
+	GAME_PARTICLE_MANAGER_EVENT_SET_VDATA = 34;
 }
 
 enum DOTA_CHAT_MESSAGE {
@@ -302,6 +304,7 @@ message CUserMsg_ParticleManager {
 		optional string control_point_configuration = 7;
 		optional bool cluster = 8;
 		optional float endcap_time = 9;
+		optional .CMsgVector aggregation_position = 10;
 	}
 
 	message DestroyParticle {
@@ -483,9 +486,15 @@ message CUserMsg_ParticleManager {
 
 	message CreatePhysicsSim {
 		optional string prop_group_name = 1;
+		optional bool use_high_quality_simulation = 2;
+		optional uint32 max_particle_count = 3;
 	}
 
 	message DestroyPhysicsSim {
+	}
+
+	message SetVData {
+		optional string vdata_name = 1;
 	}
 
 	required .PARTICLE_MESSAGE type = 1 [default = GAME_PARTICLE_MANAGER_EVENT_CREATE];
@@ -523,6 +532,7 @@ message CUserMsg_ParticleManager {
 	optional .CUserMsg_ParticleManager.ClearModellistOverride clear_modellist_override = 34;
 	optional .CUserMsg_ParticleManager.CreatePhysicsSim create_physics_sim = 35;
 	optional .CUserMsg_ParticleManager.DestroyPhysicsSim destroy_physics_sim = 36;
+	optional .CUserMsg_ParticleManager.SetVData set_vdata = 37;
 }
 
 enum EDotaEntityMessages {
@@ -1012,6 +1022,10 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY_PHYSICS_SIM: {
+			// const submsg = msg.get("") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_VDATA: {
 			// const submsg = msg.get("") as RecursiveProtobuf
 			break
 		}

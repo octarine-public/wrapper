@@ -45,7 +45,7 @@ message CSODOTAGameAccountClient {
 	optional uint32 solo_competitive_games_played = 61;
 	optional uint32 party_competitive_games_played = 62;
 	optional uint32 casual_1v1_games_played = 65;
-	optional uint32 curr_all_hero_challenge_id = 67;
+	optional int32 curr_all_hero_challenge_id = 67;
 	optional uint32 play_time_points = 68;
 	optional uint32 account_flags = 69;
 	optional uint32 play_time_level = 70;
@@ -70,7 +70,7 @@ message CSODOTAGameAccountClient {
 	repeated .CSODOTAGameAccountClient.RoleHandicap role_handicaps = 115;
 	optional uint32 event_mode_recent_time = 120;
 	optional uint32 mmr_recalibration_time = 121;
-	repeated uint32 banned_hero_ids = 123;
+	repeated int32 banned_hero_ids = 123;
 }
 enum ETourneyQueueDeadlineState {
 	k_ETourneyQueueDeadlineState_Normal = 0;
@@ -105,7 +105,7 @@ message CSODOTAPartyMember {
 	optional bool has_hp_resource = 15;
 	optional bool joined_from_partyfinder = 12;
 	optional bool is_steam_china = 16;
-	repeated uint32 banned_hero_ids = 17;
+	repeated int32 banned_hero_ids = 17;
 }
 enum DOTABotDifficulty {
 	BOT_DIFFICULTY_PASSIVE = 0;
@@ -227,7 +227,7 @@ message CSODOTAParty {
 }
 message CMsgLobbyPlayerPlusSubscriptionData {
 	message HeroBadge {
-		optional uint32 hero_id = 1;
+		optional int32 hero_id = 1;
 		optional uint32 hero_badge_xp = 2;
 	}
 
@@ -348,6 +348,7 @@ enum EEvent {
 	EVENT_ID_10TH_ANNIVERSARY = 46;
 	EVENT_ID_CROWNFALL = 47;
 	EVENT_ID_FROSTIVUS_2023 = 48;
+	EVENT_ID_INTERNATIONAL_2024 = 49;
 }
 message CLobbyGuildChallenge {
 	optional uint32 guild_id = 1;
@@ -458,7 +459,7 @@ enum DOTALeaverStatus_t {
 }
 message CSODOTALobbyMember {
 	optional fixed64 id = 1 [(key_field) = true];
-	optional uint32 hero_id = 2;
+	optional int32 hero_id = 2;
 	optional .DOTA_GC_TEAM team = 3 [default = DOTA_GC_TEAM_GOOD_GUYS];
 	optional string name = 6;
 	optional uint32 slot = 7;
@@ -469,8 +470,8 @@ message CSODOTALobbyMember {
 	optional .DOTALeaverStatus_t leaver_status = 16 [default = DOTA_LEAVER_NONE];
 	optional uint32 leaver_actions = 28;
 	optional uint32 channel = 17 [default = 6];
-	repeated uint32 disabled_hero_id = 20;
-	repeated uint32 enabled_hero_id = 22;
+	repeated int32 disabled_hero_id = 20;
+	repeated int32 enabled_hero_id = 22;
 	optional .DOTA_GC_TEAM coach_team = 23 [default = DOTA_GC_TEAM_NOTEAM];
 	repeated uint32 coached_account_ids = 53;
 	optional uint32 coach_rating = 42;
@@ -498,7 +499,7 @@ message CSODOTALobbyMember {
 	optional bool is_steam_china = 54;
 	optional uint32 live_spectator_account_id = 55;
 	optional uint32 comms_reports_available = 56;
-	repeated uint32 banned_hero_ids = 57;
+	repeated int32 banned_hero_ids = 57;
 }
 message CLobbyTeamDetails {
 	optional string team_name = 1;
@@ -681,7 +682,7 @@ message CSODOTALobby {
 	optional .DOTASelectionPriorityChoice series_current_non_priority_team_choice = 101 [default = k_DOTASelectionPriorityChoice_Invalid];
 	optional bool series_current_selection_priority_used_coin_toss = 102;
 	optional .EEvent current_primary_event = 103 [default = EVENT_ID_NONE];
-	repeated uint32 emergency_disabled_hero_ids = 105;
+	repeated int32 emergency_disabled_hero_ids = 105;
 	optional fixed64 custom_game_private_key = 106;
 	optional bool custom_game_penalties = 107;
 	optional string lan_host_ping_location = 109;
@@ -692,7 +693,7 @@ message CSODOTALobby {
 	repeated .CLobbyGuildChallenge guild_challenges = 117;
 	repeated .CLobbyGuildDetails guild_details = 118;
 	repeated .CMsgLobbyEventPoints lobby_event_points = 119;
-	repeated uint32 requested_hero_ids = 124;
+	repeated int32 requested_hero_ids = 124;
 	repeated .CMsgLobbyCoachFriendRequest coach_friend_requests = 125;
 	optional bool is_in_steam_china = 126;
 	optional bool with_scenario_save = 127;
@@ -717,7 +718,7 @@ message CSODOTAPlayerChallenge {
 	optional uint32 quest_rank = 14;
 	optional uint32 max_quest_rank = 15;
 	optional uint32 instance_id = 16;
-	optional uint32 hero_id = 17;
+	optional int32 hero_id = 17;
 	optional uint32 template_id = 18;
 }
 message CSODOTALobbyInvite {
