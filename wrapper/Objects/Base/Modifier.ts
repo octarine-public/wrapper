@@ -159,6 +159,10 @@ export class Modifier {
 	public BonusTurnRateAmplifier = 0
 	public BonusTurnRateAmplifierStack = false
 
+	// Bonus / Reduction mana cost
+	public BonusManaCostAmplifier = 0
+	public BonusManaCostAmplifierStack = false
+
 	// move speed resistance
 	/** @readonly */
 	// TODO?
@@ -633,7 +637,6 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.BonusBaseAttackTime = subtract ? value * -1 : value
 	}
-
 	protected SetFixedBaseAttackTime(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -641,7 +644,6 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.FixedBaseAttackTime = subtract ? value * -1 : value
 	}
-
 	protected SetBaseBonusAttackSpeed(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -649,7 +651,6 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.BaseBonusAttackSpeed = subtract ? value * -1 : value
 	}
-
 	protected SetBonusBaseAttackSpeedAmplifier(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -657,7 +658,6 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.BaseAttackSpeedAmplifier = (subtract ? value * -1 : value) / 100
 	}
-
 	protected SetAttackSpeedAmplifier(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -665,7 +665,6 @@ export class Modifier {
 		const value = this.GetSpecialAttackSpeedByState(specialName)
 		this.AttackSpeedAmplifier = (subtract ? value * -1 : value) / 100
 	}
-
 	protected SetBonusAttackSpeed(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -673,7 +672,6 @@ export class Modifier {
 		const value = this.GetSpecialAttackSpeedByState(specialName)
 		this.BonusAttackSpeed = subtract ? value * -1 : value
 	}
-
 	protected SetFixedAttackAnimationPoint(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -681,7 +679,6 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.FixedAttackAnimationPoint = subtract ? value * -1 : value
 	}
-
 	protected GetSpecialAttackSpeedByState(specialName: string): number {
 		const isImmune = this.IsMagicImmune() || this.IsDebuffImmune()
 		const isPassiveDisabled = this.IsPassiveDisabled()
@@ -693,7 +690,6 @@ export class Modifier {
 		}
 		return this.GetSpecialValue(specialName)
 	}
-
 	/** ======================= Move Speed ======================= */
 	protected SetStatusResistanceSpeed(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
@@ -702,7 +698,6 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.StatusResistanceSpeed = (subtract ? value * -1 : value) / 100
 	}
-
 	protected SetFixedMoveSpeed(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -710,7 +705,6 @@ export class Modifier {
 		const value = this.GetSpecialMoveSpeedByState(specialName)
 		this.MoveSpeedFixed = subtract ? value * -1 : value
 	}
-
 	protected SetBonusMoveSpeed(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -718,7 +712,6 @@ export class Modifier {
 		const value = this.GetSpecialMoveSpeedByState(specialName)
 		this.BonusMoveSpeed = subtract ? value * -1 : value
 	}
-
 	protected SetBaseMoveSpeed(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -726,7 +719,6 @@ export class Modifier {
 		const value = this.GetSpecialMoveSpeedByState(specialName)
 		this.MoveSpeedBase = subtract ? value * -1 : value
 	}
-
 	protected SetBaseMoveSpeedAmplifier(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -734,7 +726,6 @@ export class Modifier {
 		const value = this.GetSpecialMoveSpeedByState(specialName)
 		this.MoveSpeedBaseAmplifier = (subtract ? value * -1 : value) / 100
 	}
-
 	protected SetMoveSpeedAmplifier(
 		specialName?: string,
 		subtract: boolean = false
@@ -745,7 +736,6 @@ export class Modifier {
 		const value = this.GetSpecialMoveSpeedByState(specialName)
 		this.BonusMoveSpeedAmplifier = (subtract ? value * -1 : value) / 100
 	}
-
 	protected GetSpecialMoveSpeedByState(specialName: string): number {
 		const isImmuneSlow = this.ShouldUnslowable()
 		const isPassiveDisabled = this.IsPassiveDisabled()
@@ -757,7 +747,6 @@ export class Modifier {
 		}
 		return this.GetSpecialValue(specialName)
 	}
-
 	/** ======================= Day night vision ======================= */
 	protected SetBonusDayVision(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
@@ -766,7 +755,6 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.BonusDayVision = subtract ? value * -1 : value
 	}
-
 	protected SetBonusDayVisionAmplifier(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -774,7 +762,6 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.BonusDayVisionAmplifier = (subtract ? value * -1 : value) / 100
 	}
-
 	protected SetBonusNightVision(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -782,7 +769,6 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.BonusNightVision = subtract ? value * -1 : value
 	}
-
 	/** ======================= Attack Range ======================= */
 	protected SetFixedAttackRange(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
@@ -791,7 +777,6 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.FixedAttackRange = subtract ? value * -1 : value
 	}
-
 	protected SetBonusAttackRange(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -799,7 +784,6 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.BonusAttackRange = subtract ? value * -1 : value
 	}
-
 	protected SetAttackRangeAmplifier(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -808,7 +792,6 @@ export class Modifier {
 		const state = this.IsDebuff && (this.IsMagicImmune() || this.IsDebuffImmune())
 		this.AttackRangeAmplifier = !state ? (subtract ? value * -1 : value) / 100 : 0
 	}
-
 	/** ======================= Cast Range ======================= */
 	protected SetBonusCastRange(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
@@ -817,7 +800,6 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.BonusCastRange = subtract ? value * -1 : value
 	}
-
 	protected SetCastRangeAmplifier(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -826,7 +808,6 @@ export class Modifier {
 		const state = this.IsDebuff && (this.IsMagicImmune() || this.IsDebuffImmune())
 		this.CastRangeAmplifier = !state ? (subtract ? value * -1 : value) / 100 : 0
 	}
-
 	/** ======================= AOE Radius ======================= */
 	protected SetBonusAOERadius(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
@@ -840,7 +821,7 @@ export class Modifier {
 			return
 		}
 		const value = this.GetSpecialValue(specialName)
-		this.BonusAOERadiusAmplifier = subtract ? value * -1 : value
+		this.BonusAOERadiusAmplifier = (subtract ? value * -1 : value) / 100
 	}
 	/** ======================= Turn rate ======================= */
 	protected SetFixedTurnRate(specialName?: string, subtract = false) {
@@ -857,7 +838,6 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.FixedBaseTurnRate = subtract ? value * -1 : value
 	}
-
 	protected SetBonusTurnRate(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -866,7 +846,6 @@ export class Modifier {
 		const state = this.IsDebuff && (this.IsMagicImmune() || this.IsDebuffImmune())
 		this.BonusTurnRate = !state ? (subtract ? value * -1 : value) : 0
 	}
-
 	protected SetTurnRateAmplifier(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
 			return
@@ -875,7 +854,6 @@ export class Modifier {
 		const state = this.IsDebuff && (this.IsMagicImmune() || this.IsDebuffImmune())
 		this.BonusTurnRate = !state ? (subtract ? value * -1 : value) / 100 : 0
 	}
-
 	/** ======================= Status Resistance ======================= */
 	protected SetStatusResistanceAmplifier(specialName?: string, subtract = false) {
 		if (specialName === undefined) {
@@ -884,7 +862,14 @@ export class Modifier {
 		const value = this.GetSpecialValue(specialName)
 		this.StatusResistanceAmplifier = (subtract ? value * -1 : value) / 100
 	}
-
+	/** ======================= Bonus / Reduction mana costs ======================= */
+	protected SetBonusManaCostAmplifier(specialName?: string, subtract = false) {
+		if (specialName === undefined) {
+			return
+		}
+		const value = this.GetSpecialValue(specialName)
+		this.BonusManaCostAmplifier = (subtract ? value * -1 : value) / 100
+	}
 	/** @description NOTE: does not include talents (recommended use only items) */
 	protected byAbilityData(
 		abilName: string,
@@ -955,6 +940,9 @@ export class Modifier {
 
 		// cast point
 		this.SetBonusCastPointAmplifier()
+
+		// mana cost
+		this.SetBonusManaCostAmplifier()
 	}
 
 	private ThroughMagicImmunity(unit?: Unit, caster?: Unit) {

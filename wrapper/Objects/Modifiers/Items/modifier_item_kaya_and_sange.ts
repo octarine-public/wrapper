@@ -9,4 +9,11 @@ export class modifier_item_kaya_and_sange extends Modifier {
 	) {
 		super.SetStatusResistanceAmplifier(specialName, subtract)
 	}
+
+	public SetBonusManaCostAmplifier(
+		specialName = "manacost_reduction",
+		subtract = true
+	): void {
+		super.SetBonusManaCostAmplifier(specialName, subtract)
+	}
 }

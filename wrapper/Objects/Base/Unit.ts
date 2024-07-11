@@ -747,6 +747,9 @@ export class Unit extends Entity {
 	public get BonusAOERadiusAmplifier(): number {
 		return this.CalcualteBonusAOERadiusAmplifier()
 	}
+	public get BonusManaCostAmplifier(): number {
+		return this.CalcualteBonusManaCostAmplifier()
+	}
 	public get BaseStatusResistance(): number {
 		// maybe valve add new future status resist
 		return 0
@@ -2574,6 +2577,25 @@ export class Unit extends Entity {
 			totalBonus *= 1 - buff.BonusCastPointAmplifier
 		}
 		return totalBonus
+	}
+
+	/** ================================ Cast point ======================================= */
+	protected CalcualteBonusManaCostAmplifier() {
+		let amp = 1
+		const buffs = this.Buffs,
+			names = new Set<string>()
+		for (let index = buffs.length - 1; index > -1; index--) {
+			const buff = buffs[index]
+			if (!buff.BonusManaCostAmplifier) {
+				continue
+			}
+			if (!buff.BonusManaCostAmplifierStack && names.has(buff.Name)) {
+				continue
+			}
+			names.add(buff.Name)
+			amp += buff.BonusManaCostAmplifier
+		}
+		return amp
 	}
 }
 

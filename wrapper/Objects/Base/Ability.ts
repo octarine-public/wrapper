@@ -41,7 +41,7 @@ export class Ability extends Entity {
 	@NetworkedBasicField("m_bStolen")
 	public IsStolen = false
 	@NetworkedBasicField("m_iManaCost")
-	public ManaCost = 0
+	public NetworkedManaCost = 0
 	@NetworkedBasicField("m_flOverrideCastPoint")
 	public OverrideCastPoint = 0
 	@NetworkedBasicField("m_flCooldownLength")
@@ -192,6 +192,13 @@ export class Ability extends Entity {
 	public get IsCooldownReady(): boolean {
 		return this.Cooldown === 0
 	}
+	public get ManaCost(): number {
+		const value = Math.max(
+			this.NetworkedManaCost,
+			this.GetBaseManaCostForLevel(this.Level)
+		)
+		return value * this.ManaCostAmplifier
+	}
 	public get IsReady(): boolean {
 		if (!this.IsCooldownReady || this.Level === 0) {
 			return false
@@ -315,6 +322,9 @@ export class Ability extends Entity {
 	public get CastPointAmplifier(): number {
 		return this.Owner?.BonusCastPointAmplifier ?? 1
 	}
+	public get ManaCostAmplifier(): number {
+		return this.Owner?.BonusManaCostAmplifier ?? 1
+	}
 	public get CastRangeAmplifier(): number {
 		return this.Owner?.CastRangeAmplifier ?? 1
 	}
@@ -344,7 +354,7 @@ export class Ability extends Entity {
 	}
 	public get AOERadius(): number {
 		const value = this.GetBaseAOERadiusForLevel(this.Level) + this.BonusAOERadius
-		return Math.max(value * this.BonusAOERadiusAmplifier, value)
+		return value * this.BonusAOERadiusAmplifier
 	}
 	public get SkillshotRange(): number {
 		return this.CastRange
@@ -399,7 +409,6 @@ export class Ability extends Entity {
 			scale
 		)
 	}
-
 	public GetMaxCooldownForLevel(level: number): number {
 		if (this.AbilityData.HasMaxCooldownSpecial) {
 			return this.GetSpecialValue("AbilityCooldown", level)
@@ -511,11 +520,9 @@ export class Ability extends Entity {
 		const delay = castDelay + activationDelay
 		return speed > 0 ? owner.Distance2D(unit) / speed + delay : delay
 	}
-
 	public GetRawDamage(target: Unit, _health?: number) {
 		return !this.IsDebuffImmune(target) ? this.AbilityDamage : 0
 	}
-
 	public GetDamage(target: Unit, _manaCost?: number) {
 		const owner = this.Owner
 		if (owner === undefined) {
@@ -532,7 +539,6 @@ export class Ability extends Entity {
 		// TODO: damage block, ex. rune shield etc
 		return rawDamage * amplification
 	}
-
 	public UseAbility(
 		target?: Vector3 | Entity,
 		checkAutoCast: boolean = false,
@@ -549,11 +555,9 @@ export class Ability extends Entity {
 			showEffects
 		)
 	}
-
 	public UpgradeAbility() {
 		return this.Owner?.TrainAbility(this)
 	}
-
 	public PingAbility() {
 		return this.Owner?.PingAbility(this)
 	}
@@ -617,7 +621,6 @@ export class Ability extends Entity {
 	public IsDoubleTap(_order: ExecuteOrder): boolean {
 		return false
 	}
-
 	protected IsDebuffImmune(target?: Unit): boolean {
 		return (
 			(target?.IsDebuffImmune ?? false) &&
