@@ -10,6 +10,7 @@ import {
 	GUIInfo,
 	Input,
 	LocalPlayer,
+	MathSDK,
 	Menu,
 	RendererSDK,
 	Sleeper,
@@ -39,11 +40,7 @@ export class InternalCamera {
 
 	private readonly sleepTime = 2 * 1000
 	private readonly sleeper = new Sleeper()
-
-	private startTime: Nullable<number>
-	private animating: boolean = false
-	private startValue: number = 0
-	private endValue: number = 0
+	private distanceSave = 0
 
 	constructor(settings: Menu.Node) {
 		const treeMenu = settings.AddNode("Camera", "menu/icons/camera.svg")
@@ -52,7 +49,7 @@ export class InternalCamera {
 
 		this.infoState = treeMenu.AddToggle(
 			"Draw camera distance",
-			true,
+			false,
 			"Draw info camera distance\non mouse wheel"
 		)
 
@@ -69,7 +66,7 @@ export class InternalCamera {
 		this.mouseState = treeMenuMouse.AddToggle("State", false)
 		this.ctrlState = treeMenuMouse.AddToggle("Change if Ctrl is down", true)
 		this.step = treeMenuMouse.AddSlider("Camera Step", 200, 50, 1000)
-		this.animationSpeed = treeMenuMouse.AddSlider("Animation speed", 0, 0, 1500)
+		this.animationSpeed = treeMenuMouse.AddSlider("Animation speed", 500, 50, 1000)
 
 		treeMenu
 			.AddButton("Reset", "Reset settings")
@@ -94,15 +91,24 @@ export class InternalCamera {
 		return true
 	}
 
+	private clampDistance(distance: number) {
+		return MathSDK.Clamp(distance, this.distance.min, this.distance.max)
+	}
+	private lastFrame = 0
 	public Draw(): void {
 		if (!this.isInGame) {
 			return
 		}
 
+		const timeNow = hrtime()
+		const frameTime = (timeNow - this.lastFrame) / 1000
+		this.lastFrame = timeNow
+
 		this.drawCameraDistance()
 
 		if (!this.disableHumanizer) {
 			this.angles.Vector.toIOBuffer()
+
 			if (this.inverseDire.value && GameState.LocalTeam === Team.Dire) {
 				IOBuffer[1] -= 180
 			}
@@ -115,30 +121,55 @@ export class InternalCamera {
 		Camera.Angles = true
 
 		this.setDisableZoom()
-		this.updateAnimation()
 
-		Camera.Distance = !this.disableHumanizer ? this.distance.value : -1
+		if (this.disableHumanizer) {
+			this.distanceSave = -1
+		} else {
+			const delta = this.distance.value - this.distanceSave
+
+			if (delta !== 0) {
+				this.sleepDrawInfoCameraDistance()
+
+				const step = Math.min(
+					this.step.value,
+					(this.animationSpeed.value * 10 * frameTime) | 0
+				)
+
+				this.distanceSave =
+					Math.abs(delta) < step
+						? this.distance.value
+						: this.clampDistance(this.distanceSave + Math.sign(delta) * step)
+			}
+		}
+		Camera.Distance = this.distanceSave
 		ConVarsSDK.Set("r_farz", !this.disableHumanizer ? this.distance.value * 10 : -1)
 	}
 
+	private lastWheelDirection = false
 	public MouseWheel(up: boolean): boolean {
-		if (!this.mouseState.value || this.disableHumanizer || !this.isInGame) {
+		if (
+			!this.mouseState.value ||
+			this.disableHumanizer ||
+			!this.isInGame ||
+			GameState.IsInputCaptured
+		) {
 			return true
 		}
 		if (this.ctrlState.value && !Input.IsKeyDown(VKeys.CONTROL)) {
 			return true
 		}
-		Menu.Base.SaveConfigASAP = true
-		let newValue = (this.startValue = this.distance.value)
-		if (up) {
-			newValue -= this.step.value
-		} else {
-			newValue += this.step.value
+
+		if (this.lastWheelDirection !== up) {
+			this.lastWheelDirection = up
+
+			this.distance.value = this.distanceSave
 		}
-		this.animating = true
-		this.startTime = hrtime()
-		this.endValue = Math.min(Math.max(newValue, this.distance.min), this.distance.max)
-		this.sleepDrawInfoCameraDistance()
+
+		this.distance.value += this.step.value * (up ? -1 : 1)
+		this.distance.value = this.clampDistance(this.distance.value)
+
+		Menu.Base.SaveConfigASAP = true
+
 		return false
 	}
 
@@ -154,6 +185,7 @@ export class InternalCamera {
 
 	private resetCameraSettings() {
 		this.step.value = this.step.defaultValue
+		this.infoState.value = this.infoState.defaultValue
 		this.distance.value = this.distance.defaultValue
 		this.angles.X.value = this.angles.X.defaultValue
 		this.angles.Y.value = this.angles.Y.defaultValue
@@ -208,29 +240,5 @@ export class InternalCamera {
 		if (!this.disableHumanizer) {
 			ConVarsSDK.Set("dota_camera_disable_zoom", true)
 		}
-	}
-
-	public updateAnimation(): void {
-		if (!this.animating) {
-			return
-		}
-
-		const currentTime = hrtime()
-		const duration = Math.max(this.animationSpeed.value, 100)
-		const timeElapsed = currentTime - (this.startTime ?? 0)
-
-		if (timeElapsed < duration) {
-			const start = this.startValue
-			const end = this.endValue
-			const progress = this.easeInOutQuad(timeElapsed / duration)
-			this.distance.value = start + (end - start) * progress
-		} else {
-			this.distance.value = this.endValue
-			this.animating = false
-		}
-	}
-
-	private easeInOutQuad(t: number): number {
-		return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
 	}
 }
