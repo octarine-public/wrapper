@@ -807,7 +807,7 @@ class CRendererSDK {
 			1,
 			outlineWidth !== -1 ? Color.White : fillColor,
 			outlineWidth !== -1 ? Color.White : strokeColor,
-			PathFlags.STROKE_AND_FILL,
+			PathFlags.STROKE_AND_FILL | PathFlags.FILL_AA_ON,
 			grayscale,
 			cap,
 			join
