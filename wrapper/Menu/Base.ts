@@ -249,11 +249,11 @@ export class Base {
 			false
 		)
 	}
-	protected RenderTextDefault(text: string, position: Vector2): void {
+	protected RenderTextDefault(text: string, position: Vector2, color?: Color): void {
 		RendererSDK.Text(
 			text,
 			position,
-			Color.White,
+			color ?? Color.White,
 			this.FontName,
 			GUIInfo.ScaleHeight(this.FontSize),
 			this.FontWeight,

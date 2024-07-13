@@ -72,6 +72,10 @@ export class Node extends Base {
 	private IsAtScrollEnd = true
 	private VisibleEntries = 0
 
+	private iconColor_ = Color.White
+	private iconGrayScale_ = false
+	private textColor_ = Color.White
+
 	constructor(
 		parent: IMenu,
 		name: string,
@@ -102,7 +106,27 @@ export class Node extends Base {
 		this.iconPath_ = val
 		this.Update()
 	}
-
+	public get IconColor(): Color {
+		return this.iconColor_
+	}
+	public set IconColor(val: Color) {
+		this.iconColor_ = val
+		this.Update()
+	}
+	public get IconGrayScale(): boolean {
+		return this.iconGrayScale_
+	}
+	public set IconGrayScale(val: boolean) {
+		this.iconGrayScale_ = val
+		this.Update()
+	}
+	public get TextColor(): Color {
+		return this.textColor_
+	}
+	public set TextColor(val: Color) {
+		this.textColor_ = val
+		this.Update()
+	}
 	public get IconRound(): number {
 		if (this.iconRound_ === 0) {
 			return Node.iconRectRounding
@@ -113,7 +137,6 @@ export class Node extends Base {
 		this.iconRound_ = val
 		this.Update()
 	}
-
 	public get ConfigValue() {
 		if (!this.SaveUnusedConfigs && this.entries.length === 0) {
 			return undefined
@@ -286,21 +309,25 @@ export class Node extends Base {
 		const textPos = this.Position.Clone()
 		if (this.IconPath !== "") {
 			textPos.AddForThis(Node.textOffsetWithIcon)
-
+			const color = this.IconColor
+			const alpha = color.a
 			for (let i = this.IconRound > 0 ? -2 : 0; i < 1; i++) {
 				RendererSDK.Image(
 					this.IconPath,
 					this.Position.Add(Node.iconOffset),
 					this.IconRound * (1 + Node.coef1 * i),
 					Node.iconSize,
-					Color.White.SetA(255 * (1 + Node.coef2 * i))
+					alpha >= 255 ? color.SetA(255 * (1 + Node.coef2 * i)) : color,
+					undefined,
+					undefined,
+					this.IconGrayScale
 				)
 			}
 		} else {
 			textPos.AddForThis(this.textOffset)
 		}
 
-		this.RenderTextDefault(this.Name, textPos)
+		this.RenderTextDefault(this.Name, textPos, this.TextColor)
 		const arrowPos = this.Position.Clone()
 			.AddScalarX(this.parent.EntriesSizeX)
 			.AddScalarY(this.Size.y)
@@ -558,7 +585,7 @@ export class Node extends Base {
 	public AddButton(name: string, tooltip = "", priority = 0): Button {
 		return this.AddEntry(new Button(this, name, tooltip), priority)
 	}
-
+	/** @deprecated */
 	public AddVector2(
 		name: string,
 		vector: Vector2,
@@ -599,6 +626,7 @@ export class Node extends Base {
 			}
 		}
 	}
+	/** @deprecated */
 	public AddVector3(
 		name: string,
 		vector: Vector3,
@@ -654,7 +682,7 @@ export class Node extends Base {
 	public AddDummyJson<T>(name: string, defaultValue: T): DummyJson<T> {
 		return this.AddEntry(new DummyJson(this, name, defaultValue), 0)
 	}
-
+	/** @deprecated */
 	public AddParticlePicker(
 		name: string,
 		color: Color | number = new Color(0, 255, 0),
