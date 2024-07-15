@@ -132,7 +132,7 @@ export class InternalCamera {
 
 				const step = Math.min(
 					this.step.value,
-					(this.animationSpeed.value * 10 * frameTime) | 0
+					this.animationSpeed.value * frameTime * 10
 				)
 
 				this.distanceSave =
@@ -141,8 +141,11 @@ export class InternalCamera {
 						: this.clampDistance(this.distanceSave + Math.sign(delta) * step)
 			}
 		}
-		Camera.Distance = this.distanceSave
-		ConVarsSDK.Set("r_farz", !this.disableHumanizer ? this.distance.value * 10 : -1)
+		Camera.Distance = this.distanceSave | 0
+		ConVarsSDK.Set(
+			"r_farz",
+			!this.disableHumanizer ? (this.distanceSave * 10) | 0 : -1
+		)
 	}
 
 	private lastWheelDirection = false
@@ -162,7 +165,7 @@ export class InternalCamera {
 		if (this.lastWheelDirection !== up) {
 			this.lastWheelDirection = up
 
-			this.distance.value = this.distanceSave
+			this.distance.value = this.distanceSave | 0
 		}
 
 		this.distance.value += this.step.value * (up ? -1 : 1)
