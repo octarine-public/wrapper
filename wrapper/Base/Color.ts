@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export class Color {
 	// Player color | Index arr (TeamSlot)
 	public static get PlayerColorDire(): Color[] {
@@ -61,15 +62,13 @@ export class Color {
 	}
 	// reverse toUint32
 	public static fromUint32(num: number): Color {
-		const color = new Color()
-		color.r = num & 0xff
-		num >>= 8
-		color.g = num & 0xff
-		num >>= 8
-		color.b = num & 0xff
-		num >>= 8
-		color.a = num & 0xff
-		return color
+		const a = num >> 24
+		return new Color(
+			(num >> 0x00) & 0xff,
+			(num >> 0x08) & 0xff,
+			(num >> 0x10) & 0xff,
+			!num || a ? a : 0xff
+		)
 	}
 	/**
 	 * Create new Color with r, g, b, a
@@ -77,21 +76,40 @@ export class Color {
 	 * @example
 	 * let color = new Color(1, 2, 3)
 	 */
-	constructor(
-		public r = 0,
-		public g = 0,
-		public b = 0,
-		public a = 255
-	) {}
+	public data32 = -1
+
+	constructor(r = 0, g = 0, b = 0, a = 255, u32: undefined | number = undefined) {
+		this.data32 = u32 ?? (
+			((0xff & r) << 0x00) |
+			((0xff & g) << 0x08) |
+			((0xff & b) << 0x10) |
+			((0xff & a) << 0x18)
+		)
+	}
+
+	public get r(): number { return 0xff & this.data32 >> 0x00 }
+	public set r(v: number) { this.data32 = this.data32 & ~(0xff << 0x00) | v << 0x00 }
+	public get g(): number { return 0xff & this.data32 >> 0x08 }
+	public set g(v: number) { this.data32 = this.data32 & ~(0xff << 0x08) | v << 0x08 }
+	public get b(): number { return 0xff & this.data32 >> 0x10 }
+	public set b(v: number) { this.data32 = this.data32 & ~(0xff << 0x10) | v << 0x10 }
+	public get a(): number { return 0xff & this.data32 >> 0x18 }
+	public set a(v: number) { this.data32 = this.data32 & ~(0xff << 0x18) | v << 0x18 }
+
+	public Set32(int32: number): Color {
+		this.data32 = int32
+		return this
+	}
 
 	/**
 	 * Set Color by numbers
 	 */
 	public SetColor(r: number = 0, g: number = 0, b: number = 0, a: number = 255): Color {
-		this.r = r
-		this.g = g
-		this.b = b
-		this.a = a
+		this.data32 =
+			((0xff & r) << 0x00) |
+			((0xff & g) << 0x08) |
+			((0xff & b) << 0x10) |
+			((0xff & a) << 0x18)
 		return this
 	}
 
@@ -128,13 +146,11 @@ export class Color {
 	}
 
 	public Equals(col: Color): boolean {
-		return (
-			this.r === col.r && this.g === col.g && this.b === col.b && this.a === col.a
-		)
+		return this.data32 === col.data32
 	}
 
 	public Clone(): Color {
-		return new Color(this.r, this.g, this.b, this.a)
+		return new Color(0, 0, 0, 0, this.data32)
 	}
 
 	/**
@@ -144,10 +160,7 @@ export class Color {
 	 * @returns another color
 	 */
 	public CopyTo(color: Color): Color {
-		color.r = this.r
-		color.g = this.g
-		color.b = this.b
-		color.a = this.a
+		color.data32 = this.data32
 		return color
 	}
 
@@ -158,10 +171,7 @@ export class Color {
 	 * @returns this color
 	 */
 	public CopyFrom(color: Color): Color {
-		this.r = color.r
-		this.g = color.g
-		this.b = color.b
-		this.a = color.a
+		this.data32 = color.data32
 		return this
 	}
 
@@ -172,15 +182,7 @@ export class Color {
 		return [this.r, this.g, this.b, this.a]
 	}
 	public toUint32(): number {
-		let num = 0
-		num |= Math.max(Math.min(this.a, 255), 0)
-		num <<= 8
-		num |= Math.max(Math.min(this.b, 255), 0)
-		num <<= 8
-		num |= Math.max(Math.min(this.g, 255), 0)
-		num <<= 8
-		num |= Math.max(Math.min(this.r, 255), 0)
-		return num
+		return this.data32
 	}
 	public toJSON() {
 		return this.toArray()
