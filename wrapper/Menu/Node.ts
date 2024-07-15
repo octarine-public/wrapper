@@ -309,19 +309,41 @@ export class Node extends Base {
 		const textPos = this.Position.Clone()
 		if (this.IconPath !== "") {
 			textPos.AddForThis(Node.textOffsetWithIcon)
-			const color = this.IconColor
-			const alpha = color.a
-			for (let i = this.IconRound > 0 ? -2 : 0; i < 1; i++) {
+
+			if (this.IconPath.startsWith("panorama/images/emoticons/")) {
+				const totalSize = RendererSDK.GetImageSize(this.IconPath),
+					size = totalSize.y
+
+				const framesCount = totalSize.x / size
+				const frameIdx = (hrtime() / 250) | 0
+
 				RendererSDK.Image(
 					this.IconPath,
 					this.Position.Add(Node.iconOffset),
-					this.IconRound * (1 + Node.coef1 * i),
+					undefined,
 					Node.iconSize,
-					alpha >= 255 ? color.SetA(255 * (1 + Node.coef2 * i)) : color,
 					undefined,
 					undefined,
-					this.IconGrayScale
+					undefined,
+					undefined,
+					new Vector2(size * (frameIdx % framesCount), 0),
+					new Vector2(size, size)
 				)
+			} else {
+				const color = this.IconColor
+				const alpha = color.a
+				for (let i = this.IconRound > 0 ? -2 : 0; i < 1; i++) {
+					RendererSDK.Image(
+						this.IconPath,
+						this.Position.Add(Node.iconOffset),
+						this.IconRound * (1 + Node.coef1 * i),
+						Node.iconSize,
+						alpha < 255 ? color : color.SetA(255 * (1 + Node.coef2 * i)),
+						undefined,
+						undefined,
+						this.IconGrayScale
+					)
+				}
 			}
 		} else {
 			textPos.AddForThis(this.textOffset)
