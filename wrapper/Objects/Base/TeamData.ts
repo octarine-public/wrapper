@@ -3,6 +3,7 @@ import { EntityPropertiesNode } from "../../Base/EntityProperties"
 import { TreeModelReplacement } from "../../Base/TreeModelReplacement"
 import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { EPropertyType } from "../../Enums/PropertyType"
 import { Events } from "../../Managers/Events"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GridNav } from "../../Resources/ParseGNV"
@@ -19,7 +20,7 @@ export class TeamData extends Entity {
 	public PossibleWardPlacement: Vector2[] = []
 	@NetworkedBasicField("m_nEnemyStartingPosition")
 	public EnemyStartingPosition: number[] = []
-	@NetworkedBasicField("m_nCaptainInspectedHeroID")
+	@NetworkedBasicField("m_nCaptainInspectedHeroID", EPropertyType.UINT32)
 	public CaptainInspectedHeroID = 0
 	@NetworkedBasicField("m_flSuggestedWardWeights")
 	public SuggestedWardWeights: number[] = []

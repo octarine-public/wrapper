@@ -1,226 +1,230 @@
+import { EPropertyType } from "../Enums/PropertyType"
 import { EntityPropertiesNode } from "./EntityProperties"
 
 export class DataTeamPlayer {
 	constructor(public readonly properties: EntityPropertiesNode) {}
 
 	public get TotalEarnedGold(): number {
-		return this.properties.get("m_iTotalEarnedGold") as number
+		return this.properties.get("m_iTotalEarnedGold") ?? -1
 	}
 	public get ReliableGold(): number {
-		return this.properties.get("m_iReliableGold") as number
+		return this.properties.get("m_iReliableGold") ?? -1
 	}
 	public get UnreliableGold(): number {
-		return this.properties.get("m_iUnreliableGold") as number
+		return this.properties.get("m_iUnreliableGold") ?? -1
 	}
 	public get StartingPosition(): number {
-		return this.properties.get("m_iStartingPosition") as number
+		return this.properties.get("m_iStartingPosition") ?? -1
 	}
 	public get TotalEarnedXP(): number {
-		return this.properties.get("m_iTotalEarnedXP") as number
+		return this.properties.get("m_iTotalEarnedXP") ?? -1
 	}
 	public get SharedGold(): number {
-		return this.properties.get("m_iSharedGold") as number
+		return this.properties.get("m_iSharedGold") ?? -1
 	}
 	public get HeroKillGold(): number {
-		return this.properties.get("m_iHeroKillGold") as number
+		return this.properties.get("m_iHeroKillGold") ?? -1
 	}
 	public get CreepKillGold(): number {
-		return this.properties.get("m_iCreepKillGold") as number
+		return this.properties.get("m_iCreepKillGold") ?? -1
 	}
 	public get BuildingGold(): number {
-		return this.properties.get("m_iBuildingGold") as number
+		return this.properties.get("m_iBuildingGold") ?? -1
 	}
 	public get OtherGold(): number {
-		return this.properties.get("m_iOtherGold") as number
+		return this.properties.get("m_iOtherGold") ?? -1
 	}
 	public get ComebackGold(): number {
-		return this.properties.get("m_iComebackGold") as number
+		return this.properties.get("m_iComebackGold") ?? -1
 	}
 	// m_iExperimentalGold, m_iExperimental2Gold?
 	public get CreepDenyGold(): number {
-		return this.properties.get("m_iCreepDenyGold") as number
+		return this.properties.get("m_iCreepDenyGold") ?? -1
 	}
 	public get TPScrollsPurchased(): number {
-		return this.properties.get("m_iTPScrollsPurchased") as number
+		return this.properties.get("m_iTPScrollsPurchased") ?? -1
 	}
 	public get IncomeGold(): number {
-		return this.properties.get("m_iIncomeGold") as number
+		return this.properties.get("m_iIncomeGold") ?? -1
 	}
 	public get NetWorth(): number {
-		return this.properties.get("m_iNetWorth") as number
+		return this.properties.get("m_iNetWorth") ?? -1
 	}
 	public get DenyCount(): number {
-		return this.properties.get("m_iDenyCount") as number
+		return this.properties.get("m_iDenyCount") ?? -1
 	}
 	public get LastHitCount(): number {
-		return this.properties.get("m_iLastHitCount") as number
+		return this.properties.get("m_iLastHitCount") ?? -1
 	}
 	public get LastHitStreak(): number {
-		return this.properties.get("m_iLastHitStreak") as number
+		return this.properties.get("m_iLastHitStreak") ?? -1
 	}
 	public get LastHitMultikill(): number {
-		return this.properties.get("m_iLastHitMultikill") as number
+		return this.properties.get("m_iLastHitMultikill") ?? -1
 	}
 	public get NearbyCreepDeathCount(): number {
-		return this.properties.get("m_iNearbyCreepDeathCount") as number
+		return this.properties.get("m_iNearbyCreepDeathCount") ?? -1
 	}
 	public get ClaimedDenyCount(): number {
-		return this.properties.get("m_iClaimedDenyCount") as number
+		return this.properties.get("m_iClaimedDenyCount") ?? -1
 	}
 	public get ClaimedMissCount(): number {
-		return this.properties.get("m_iClaimedMissCount") as number
+		return this.properties.get("m_iClaimedMissCount") ?? -1
 	}
 	public get MissCount(): number {
-		return this.properties.get("m_iMissCount") as number
+		return this.properties.get("m_iMissCount") ?? -1
 	}
 	public get PossibleHeroSelection(): number {
-		return this.properties.get("m_nPossibleHeroSelection") as number
+		return this.properties.get("m_nPossibleHeroSelection", EPropertyType.INT32) ?? -1
 	}
 	public get MetaLevel(): number {
-		return this.properties.get("m_iMetaLevel") as number
+		return this.properties.get("m_iMetaLevel") ?? -1
 	}
 	public get MetaExperience(): number {
-		return this.properties.get("m_iMetaExperience") as number
+		return this.properties.get("m_iMetaExperience") ?? -1
 	}
 	public get MetaExperienceAwarded(): number {
-		return this.properties.get("m_iMetaExperienceAwarded") as number
+		return this.properties.get("m_iMetaExperienceAwarded") ?? -1
 	}
 	public get BuybackCooldownTime(): number {
-		return this.properties.get("m_flBuybackCooldownTime") as number
+		return this.properties.get("m_flBuybackCooldownTime") ?? -1
 	}
 	public get BuybackGoldLimitTime(): number {
-		return this.properties.get("m_flBuybackGoldLimitTime") as number
+		return this.properties.get("m_flBuybackGoldLimitTime") ?? -1
 	}
 	public get BuybackCostTime(): number {
-		return this.properties.get("m_flBuybackCostTime") as number
+		return this.properties.get("m_flBuybackCostTime") ?? -1
 	}
 	public get CustomBuybackCooldown(): number {
-		return this.properties.get("m_flCustomBuybackCooldown") as number
+		return this.properties.get("m_flCustomBuybackCooldown") ?? -1
 	}
 	public get Stuns(): number {
-		return this.properties.get("m_fStuns") as number
+		return this.properties.get("m_fStuns") ?? -1
 	}
 	public get Healing(): number {
-		return this.properties.get("m_fHealing") as number
+		return this.properties.get("m_fHealing") ?? -1
 	}
 	public get TowerKills(): number {
-		return this.properties.get("m_iTowerKills") as number
+		return this.properties.get("m_iTowerKills") ?? -1
 	}
 	public get RoshanKills(): number {
-		return this.properties.get("m_iRoshanKills") as number
+		return this.properties.get("m_iRoshanKills") ?? -1
 	}
 	// m_hCameraTarget, m_hOverrideSelectionEntity?
 	public get ObserverWardsPlaced(): number {
-		return this.properties.get("m_iObserverWardsPlaced") as number
+		return this.properties.get("m_iObserverWardsPlaced") ?? -1
 	}
 	public get SentryWardsPlaced(): number {
-		return this.properties.get("m_iSentryWardsPlaced") as number
+		return this.properties.get("m_iSentryWardsPlaced") ?? -1
 	}
 	public get CreepsStacked(): number {
-		return this.properties.get("m_iCreepsStacked") as number
+		return this.properties.get("m_iCreepsStacked") ?? -1
 	}
 	public get CampsStacked(): number {
-		return this.properties.get("m_iCampsStacked") as number
+		return this.properties.get("m_iCampsStacked") ?? -1
 	}
 	public get RunePickups(): number {
-		return this.properties.get("m_iRunePickups") as number
+		return this.properties.get("m_iRunePickups") ?? -1
 	}
 	public get GoldSpentOnSupport(): number {
-		return this.properties.get("m_iGoldSpentOnSupport") as number
+		return this.properties.get("m_iGoldSpentOnSupport") ?? -1
 	}
 	public get HeroDamage(): number {
-		return this.properties.get("m_iHeroDamage") as number
+		return this.properties.get("m_iHeroDamage") ?? -1
 	}
 	public get WardsPurchased(): number {
-		return this.properties.get("m_iWardsPurchased") as number
+		return this.properties.get("m_iWardsPurchased") ?? -1
 	}
 	public get WardsDestroyed(): number {
-		return this.properties.get("m_iWardsDestroyed") as number
+		return this.properties.get("m_iWardsDestroyed") ?? -1
 	}
 	public get Items(): number[] {
-		return this.properties.get("m_hItems") as number[]
+		return this.properties.get("m_hItems") ?? []
 	}
 	public get Parity(): number {
-		return this.properties.get("m_iParity") as number
+		return this.properties.get("m_iParity") ?? -1
 	}
 	public get InventoryParent(): number {
-		return this.properties.get("m_hInventoryParent") as number
+		return this.properties.get("m_hInventoryParent") ?? -1
 	}
 	public get StashEnabled(): boolean {
-		return this.properties.get("m_bStashEnabled") as boolean
+		return this.properties.get("m_bStashEnabled") ?? false
 	}
 	public get TransientCastItem(): number {
-		return this.properties.get("m_hTransientCastItem") as number
+		return this.properties.get("m_hTransientCastItem") ?? -1
 	}
 	public get KillsPerOpposingTeamMember(): number[] {
-		return this.properties.get("m_nKillsPerOpposingTeamMember") as number[]
+		return this.properties.get("m_nKillsPerOpposingTeamMember") ?? []
 	}
 	public get SuggestedAbilities(): number[] {
-		return this.properties.get("m_iSuggestedAbilities") as number[]
+		return this.properties.get("m_iSuggestedAbilities") ?? []
 	}
 	public get SuggestedAbilityWeights(): number[] {
-		return this.properties.get("m_fSuggestedAbilityWeights") as number[]
+		return this.properties.get("m_fSuggestedAbilityWeights") ?? []
 	}
 	public get SuggestedPregameItems(): number[] {
-		return this.properties.get("m_iSuggestedPregameItems") as number[]
+		return this.properties.get("m_iSuggestedPregameItems") ?? []
 	}
 	public get SuggestedItemSequences(): number[] {
-		return this.properties.get("m_iSuggestedItemSequences") as number[]
+		return this.properties.get("m_iSuggestedItemSequences") ?? []
 	}
 	// TODO: m_iSuggestedWeightedItems: WeightedSuggestion_t[]
 	public get SuggestedHeroes(): number[] {
-		return this.properties.get("m_iSuggestedHeroes") as number[]
+		return this.properties.get("m_iSuggestedHeroes", EPropertyType.UINT32) ?? []
 	}
 	public get SuggestedHeroesWeights(): number[] {
-		return this.properties.get("m_flSuggestedHeroesWeights") as number[]
+		return this.properties.get("m_flSuggestedHeroesWeights") ?? []
 	}
 	public get DamageByTypeReceivedPreReduction(): number[] {
-		return this.properties.get("m_iDamageByTypeReceivedPreReduction") as number[]
+		return this.properties.get("m_iDamageByTypeReceivedPreReduction") ?? []
 	}
 	public get DamageByTypeReceivedPostReduction(): number[] {
-		return this.properties.get("m_iDamageByTypeReceivedPostReduction") as number[]
+		return this.properties.get("m_iDamageByTypeReceivedPostReduction") ?? []
 	}
 	public get CommandsIssued(): number {
-		return this.properties.get("m_iCommandsIssued") as number
+		return this.properties.get("m_iCommandsIssued") ?? -1
 	}
 	public get GoldSpentOnConsumables(): number {
-		return this.properties.get("m_iGoldSpentOnConsumables") as number
+		return this.properties.get("m_iGoldSpentOnConsumables") ?? -1
 	}
 	public get GoldSpentOnItems(): number {
-		return this.properties.get("m_iGoldSpentOnItems") as number
+		return this.properties.get("m_iGoldSpentOnItems") ?? -1
 	}
 	public get GoldSpentOnBuybacks(): number {
-		return this.properties.get("m_iGoldSpentOnBuybacks") as number
+		return this.properties.get("m_iGoldSpentOnBuybacks") ?? -1
 	}
 	public get GoldLostToDeath(): number {
-		return this.properties.get("m_iGoldLostToDeath") as number
+		return this.properties.get("m_iGoldLostToDeath") ?? -1
 	}
 	public get IsNewPlayer(): boolean {
-		return this.properties.get("m_bIsNewPlayer") as boolean
+		return this.properties.get("m_bIsNewPlayer") ?? false
 	}
 	public get IsGuidePlayer(): boolean {
-		return this.properties.get("m_bIsGuidePlayer") as boolean
+		return this.properties.get("m_bIsGuidePlayer") ?? false
 	}
 	public get PlayerSteamID(): bigint {
-		return this.properties.get("m_iPlayerSteamID") as bigint
+		return this.properties.get("m_iPlayerSteamID") ?? 1n
 	}
 	public get SmokesUsed(): number {
-		return this.properties.get("m_iSmokesUsed") as number
+		return this.properties.get("m_iSmokesUsed") ?? -1
 	}
 	public get NeutralTokensFound(): number {
-		return this.properties.get("m_iNeutralTokensFound") as number
+		return this.properties.get("m_iNeutralTokensFound") ?? -1
 	}
 	public get WatchersTaken(): number {
-		return this.properties.get("m_iWatchersTaken") as number
+		return this.properties.get("m_iWatchersTaken") ?? -1
 	}
 	public get LotusesTaken(): number {
-		return this.properties.get("m_iLotusesTaken") as number
+		return this.properties.get("m_iLotusesTaken") ?? -1
 	}
 	public get TormentorKills(): number {
-		return this.properties.get("m_iTormentorKills") as number
+		return this.properties.get("m_iTormentorKills") ?? -1
 	}
 	public get CourierKills(): number {
-		return this.properties.get("m_iCourierKills") as number
+		return this.properties.get("m_iCourierKills") ?? -1
+	}
+	public get PossibleHeroFacetSelection(): bigint {
+		return this.properties.get("m_nPossibleHeroFacetSelection") ?? 0n
 	}
 	public toJSON(): any {
 		return {

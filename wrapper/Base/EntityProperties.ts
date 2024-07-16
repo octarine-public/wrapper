@@ -1,3 +1,5 @@
+import { ReencodeProperty } from "../Decorators"
+import { EPropertyType } from "../Enums/PropertyType"
 import { Events } from "../Managers/Events"
 import { EntitiesSymbols } from "../Objects/NativeToSDK"
 import { Vector2 } from "./Vector2"
@@ -44,7 +46,10 @@ export class EntityPropertiesNode {
 	public static ResetEntitySymbolCache(): void {
 		EntityPropertiesNode.entitiesSymbolsCached.clear()
 	}
-	public get(name: string): Nullable<EntityPropertyType> {
+	public get<T extends EntityPropertyType>(
+		name: string,
+		propType = EPropertyType.INVALID
+	): Nullable<T> {
 		let cachedID = EntityPropertiesNode.entitiesSymbolsCached.get(name)
 		if (cachedID === undefined) {
 			cachedID = EntitiesSymbols.indexOf(name)
@@ -53,7 +58,14 @@ export class EntityPropertiesNode {
 		if (cachedID === -1) {
 			return undefined
 		}
-		return this.map.get(cachedID)
+		const value = this.map.get(cachedID)
+		if (value === undefined || propType === EPropertyType.INVALID) {
+			return value as T
+		}
+		if (!Array.isArray(value)) {
+			return ReencodeProperty(value, propType) as T
+		}
+		return value.map(val => ReencodeProperty(val, propType)) as T
 	}
 	public set(id: number, prop: EntityPropertyType): void {
 		this.map.set(id, prop)

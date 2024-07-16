@@ -1,6 +1,7 @@
 import { AttackSpeedData } from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAHUDVisibility } from "../../Enums/DOTAHUDVisibility"
+import { EPropertyType } from "../../Enums/PropertyType"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { Entity } from "./Entity"
 
@@ -16,7 +17,7 @@ export class DOTABaseGameMode extends Entity {
 	@NetworkedBasicField("m_flMinimumAttackSpeed")
 	public MinimumAttackSpeed: number = 0
 
-	@NetworkedBasicField("m_nCustomGameForceHeroSelectionId")
+	@NetworkedBasicField("m_nCustomGameForceHeroSelectionId", EPropertyType.UINT32)
 	public CustomGameForceHeroSelectionId: number = -1
 
 	public IsHUDVisible(elem: DOTAHUDVisibility): boolean {
