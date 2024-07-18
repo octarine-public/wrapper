@@ -60,6 +60,10 @@ export class Color {
 	public static get White() {
 		return new Color(255, 255, 255)
 	}
+
+	public static WhiteReadonly = Color.White
+	public static ZeroReadonly = Color.fromUint32(0)
+
 	// reverse toUint32
 	public static fromUint32(num: number): Color {
 		const a = num >> 24
@@ -141,6 +145,12 @@ export class Color {
 	 * Set A of color by number
 	 */
 	public SetA(a: number): Color {
+
+		if (a > 255) {
+			//console.log("nice A, clown:", a, { ...this.toArray() }, new Error().stack)
+			a = 255
+		}
+
 		this.a = a
 		return this
 	}

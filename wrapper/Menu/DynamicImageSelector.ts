@@ -42,7 +42,7 @@ export class DynamicImageSelector extends Base {
 	private static readonly elementsPerRow = 5
 	private static readonly imageActivatedBorderColor = new Color(104, 4, 255)
 
-	public enabledValues: IDefaultValues
+	public enabledValues!: IDefaultValues
 
 	protected readonly itemDrop = new Map<string, number>()
 	protected readonly imageSize = new Vector2()
@@ -55,12 +55,12 @@ export class DynamicImageSelector extends Base {
 		parent: IMenu,
 		name: string,
 		public values: string[],
-		defaultValues: IDefaultValues = new Map(),
+		private defaultValues: IDefaultValues = new Map(),
 		public createdDefaultState = false,
 		tooltip = ""
 	) {
 		super(parent, name, tooltip)
-		this.enabledValues = defaultValues
+		this.ResetToDefault()
 	}
 
 	public get IsZeroSelected(): boolean {
@@ -101,17 +101,18 @@ export class DynamicImageSelector extends Base {
 				)
 		)
 	}
+	public ResetToDefault(): void {
+		this.enabledValues = this.defaultValues
+		this.defaultValues = new Map(this.defaultValues)
 
+		super.ResetToDefault()
+	}
 	public get ConfigValue() {
 		return [...this.enabledValues.entries()]
 	}
 
 	public set ConfigValue(value) {
-		if (
-			this.ShouldIgnoreNewConfigValue ||
-			value === undefined ||
-			!Array.isArray(value)
-		) {
+		if (!Array.isArray(value) || this.ShouldIgnoreNewConfigValue) {
 			return
 		}
 
@@ -141,6 +142,12 @@ export class DynamicImageSelector extends Base {
 				.filter(name => this.IsVisibleImage(name))
 				.orderBy(x => this.GetPriority(x))
 		]
+
+		this.IsDefaultValue =
+			this.enabledValues === this.defaultValues || // eslint-disable-next-line prettier/prettier
+			this.enabledValues && this.defaultValues && // eslint-disable-next-line prettier/prettier
+			JSON.stringify(this.enabledValues) === // eslint-disable-next-line prettier/prettier
+			JSON.stringify(this.defaultValues)
 	}
 
 	public get ClassPriority(): number {
@@ -150,6 +157,12 @@ export class DynamicImageSelector extends Base {
 	public Update(): boolean {
 		if (!super.Update()) {
 			return false
+		}
+
+		if (this.enabledValues === undefined) {
+			console.log("fixing undefined update\ncopy:", { ...this }, "ref: ", this)
+			this.ResetToDefault()
+			this.enabledValues ??= new Map()
 		}
 
 		this.values = [
@@ -244,6 +257,16 @@ export class DynamicImageSelector extends Base {
 			this.values.push(name)
 		}
 
+		if (this.enabledValues === undefined) {
+			console.log(
+				"fixing undefined OnAddNewImage\ncopy:",
+				{ ...this },
+				"ref: ",
+				this
+			)
+			this.ResetToDefault()
+			this.enabledValues ??= new Map()
+		}
 		const enabledValues = this.enabledValues.get(name)
 		if (enabledValues === undefined || !Array.isArray(enabledValues)) {
 			this.enabledValues.set(name, [

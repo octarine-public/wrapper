@@ -20,7 +20,7 @@ export class Button extends Base {
 
 	public readonly FontSize = 16
 
-	protected readonly executeOnAdd = false
+	public executeOnAdd = false
 
 	public get ClassPriority(): number {
 		return 8
@@ -70,8 +70,13 @@ export class Button extends Base {
 		return !this.IsHovered
 	}
 	public OnMouseLeftUp(): boolean {
-		if (this.ButtonRect.Contains(this.MousePosition)) {
+		if (this.IsHovered) {
 			this.TriggerOnValueChangedCBs()
+
+			// update after reseting settings with button
+			if (this.parent instanceof Base) {
+				this.parent.UpdateIsDefault()
+			}
 		}
 		return false
 	}

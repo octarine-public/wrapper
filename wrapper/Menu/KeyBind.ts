@@ -34,25 +34,34 @@ export class KeyBind extends Base {
 		KeyBind.keybindInactivePath
 	).Clone()
 	protected readonly keybindTextSize = new Vector2()
-	protected readonly executeOnAdd = false
+	public executeOnAdd = false
 
 	constructor(
 		parent: IMenu,
 		name: string,
-		public readonly defaultKey = "None",
-		tooltip = ""
+		public defaultKey = "None",
+		tooltip = "",
+		public defaultKeyIdx = KeyNames.indexOf(defaultKey)
 	) {
 		super(parent, name, tooltip)
-		this.assignedKey = KeyNames.indexOf(defaultKey)
+		this.ResetToDefault()
+	}
+	public ResetToDefault(): void {
+		this.assignedKey = this.defaultKeyIdx
+		super.ResetToDefault()
+	}
+	public IsDefault(): boolean {
+		return this.assignedKey === this.defaultKeyIdx
 	}
 	public get ConfigValue() {
 		return this.assignedKey
 	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number") {
+		if (typeof value !== "number" || this.ShouldIgnoreNewConfigValue) {
 			return
 		}
-		this.assignedKey = value !== undefined ? value : this.assignedKey
+		this.assignedKey = value
+		this.UpdateIsDefault()
 	}
 	public get isPressed(): boolean {
 		return this.IsPressed_
@@ -153,21 +162,31 @@ export class KeyBind extends Base {
 			)
 		)
 	}
-
+	public OnPreMouseLeftDown(): boolean {
+		if (KeyBind.changingNow === this) {
+			if (this.Rect.Contains(this.MousePosition)) {
+				return false
+			}
+			this.assignedKey = -1
+			this.Update()
+		}
+		return true
+	}
 	public OnMouseLeftDown(): boolean {
 		return !this.IsHovered
 	}
 	public OnMouseLeftUp(): boolean {
-		if (
-			this.KeybindRect.Contains(this.MousePosition) &&
-			KeyBind.changingNow !== this
-		) {
-			const old = KeyBind.changingNow
-			KeyBind.changingNow = this
-			this.assignedKeyStr = "..."
-			this.Update(false, false)
-			if (old !== undefined) {
-				old.Update()
+		if (this.IsHovered) {
+			if (KeyBind.changingNow === this) {
+				KeyBind.changingNow = undefined
+			} else {
+				const old = KeyBind.changingNow
+				KeyBind.changingNow = this
+				this.assignedKeyStr = "..."
+				this.Update(false, false)
+				if (old !== undefined) {
+					old.Update()
+				}
 			}
 		}
 		return false

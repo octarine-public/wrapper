@@ -103,20 +103,16 @@ export class InternalChanger {
 			"Trees",
 			ImageData.Paths.Icons.icon_svg_tree_alt
 		)
-		this.emoticons = this.node.AddToggle("Emoticons chat", true)
-		this.weather = this.node.AddDropdown("Weather", this.weatherNames, 0)
-		this.riverPaint = this.node.AddDropdown("River", this.riverNames, 0)
 
-		this.node
-			.AddButton("Reset", "Reset settings")
-			.OnValue(() => this.ChangeResetSettings())
-
-		this.weather.OnValue(call => ConVarsSDK.Set("cl_weather", call.SelectedID))
-		this.riverPaint.OnValue(val => ConVarsSDK.Set("dota_river_type", val.SelectedID))
-
-		this.emoticons.OnValue(call =>
-			ConVarsSDK.Set("dota_hud_chat_enable_all_emoticons", call.value)
-		)
+		this.emoticons = this.node
+			.AddToggle("Emoticons chat", true)
+			.OnValue(t => ConVarsSDK.Set("dota_hud_chat_enable_all_emoticons", t.value))
+		this.weather = this.node
+			.AddDropdown("Weather", this.weatherNames, 0)
+			.OnValue(t => ConVarsSDK.Set("cl_weather", t.SelectedID))
+		this.riverPaint = this.node
+			.AddDropdown("River", this.riverNames, 0)
+			.OnValue(t => ConVarsSDK.Set("dota_river_type", t.SelectedID))
 
 		this.treeChanger.SortNodes = false
 		this.treeMenuNames = this.treeChanger.AddDropdown(
@@ -125,6 +121,7 @@ export class InternalChanger {
 				return data.nameUI
 			})
 		)
+		this.treeMenuNames.UseOneLine = false
 
 		this.treeScale = this.treeChanger.AddSlider("Size", this.treeScaleVal, 0.5, 1, 1)
 		this.treeColor = this.treeChanger.AddColorPicker("Colors", this.treeColorVal)
@@ -173,14 +170,6 @@ export class InternalChanger {
 			data.zeroRotation,
 			data.canChangeColor ? this.treeColorVal.toUint32() : 0
 		)
-		this.node.Update()
-	}
-
-	protected ChangeResetSettings(): void {
-		this.weather.SelectedID = 0
-		this.emoticons.value = true
-		this.riverPaint.SelectedID = 0
-		this.ChangeResetSettingsTreeModels()
 		this.node.Update()
 	}
 

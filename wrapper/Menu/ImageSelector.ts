@@ -28,7 +28,7 @@ export class ImageSelector extends Base {
 	private static readonly elementsPerRow = 5
 	private static readonly imageActivatedBorderColor = new Color(104, 4, 255)
 
-	public enabledValues: Map<string, boolean>
+	public enabledValues!: Map<string, boolean>
 	protected readonly imageSize = new Vector2()
 	protected renderedPaths: string[] = []
 
@@ -36,12 +36,12 @@ export class ImageSelector extends Base {
 		parent: IMenu,
 		name: string,
 		public values: string[],
-		public readonly defaultValues = new Map<string, boolean>(),
+		public defaultValues = new Map<string, boolean>(),
 		tooltip = "",
 		public createdDefaultState = false
 	) {
 		super(parent, name, tooltip)
-		this.enabledValues = defaultValues
+		this.ResetToDefault()
 	}
 
 	public get IsZeroSelected(): boolean {
@@ -75,16 +75,23 @@ export class ImageSelector extends Base {
 				)
 		)
 	}
+	public ResetToDefault(): void {
+		this.enabledValues = this.defaultValues
+		this.defaultValues = new Map(this.defaultValues)
 
+		super.ResetToDefault()
+	}
+	public IsDefault(): boolean {
+		return (
+			JSON.stringify([...this.enabledValues.entries()]) ===
+			JSON.stringify([...this.defaultValues.entries()])
+		)
+	}
 	public get ConfigValue() {
 		return [...this.enabledValues.entries()]
 	}
 	public set ConfigValue(value) {
-		if (
-			this.ShouldIgnoreNewConfigValue ||
-			value === undefined ||
-			!Array.isArray(value)
-		) {
+		if (!Array.isArray(value) || this.ShouldIgnoreNewConfigValue) {
 			return
 		}
 		this.enabledValues = new Map<string, boolean>(value)
@@ -93,6 +100,7 @@ export class ImageSelector extends Base {
 				this.enabledValues.set(value_, this.createdDefaultState)
 			}
 		})
+		this.UpdateIsDefault()
 	}
 
 	public get ClassPriority(): number {
@@ -105,15 +113,15 @@ export class ImageSelector extends Base {
 		}
 
 		const values = this.values
-		for (let index = 0, end = values.length; index < end; index++) {
-			const path = values[index]
+
+		values.forEach(path => {
 			if (!this.enabledValues.has(path)) {
 				this.enabledValues.set(path, this.createdDefaultState)
 			}
-		}
+		})
 
 		this.imageSize.x = this.imageSize.y = ImageSelector.baseImageHeight
-		this.renderedPaths = []
+		this.renderedPaths.clear()
 
 		for (let index = 0, end = values.length; index < end; index++) {
 			let path = values[index]

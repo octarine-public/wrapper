@@ -76,5 +76,15 @@
 	"Currently, the cheat does not work correctly in the local lobby, to configure and test, create a lobby on Valve servers.": "Сейчас чит не работает правильно в локальном лобби, для настройки и тестирования создайте лобби на серверах valve.",
 	"Draw camera distance": "Показывать дистанцию камеры",
 	"Animation speed": "Скорость анимации",
-	"Draw info camera distance\non mouse wheel": "Показывать дистанцию камеры\nпри прокрутке колеса мыши"
+	"Draw info camera distance\non mouse wheel": "Показывать дистанцию камеры\nпри прокрутке колеса мыши",
+	"Config": "Конфигурация",
+	"Mark new settings": "Помечать новые настройки",
+	"Show green circle\non new settings": "Помечает новые элементы\nзеленым кружочком",
+	"Mark changed settings": "Помечать измененные настройки",
+	"Show white circle\non settings you've changed": "Помечает измененные настройки\nбелым кружочком",
+	"Keybinds list": "Список работающих биндов",
+	"Non defaults list": "Список измененных настроек",
+	"Hard reset config": "Полностью сбросить настройки",
+	"Reset to default": "Сбросить",
+	"[New]": "[Новое]"
 }

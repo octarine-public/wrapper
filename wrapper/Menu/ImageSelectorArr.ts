@@ -28,7 +28,7 @@ export class ImageSelectorArray extends Base {
 	private static readonly elementsPerRow = 5
 	private static readonly imageActivatedBorderColor = new Color(104, 4, 255)
 
-	public enabledValues: [string, boolean][]
+	public enabledValues!: [string, boolean][]
 	protected readonly imageSize = new Vector2()
 	protected renderedPaths: string[] = []
 
@@ -37,10 +37,11 @@ export class ImageSelectorArray extends Base {
 		name: string,
 		public values: string[],
 		public readonly defaultValues: [string, boolean][] = [],
-		tooltip = ""
+		tooltip = "",
+		private defaultValuesString = JSON.stringify(defaultValues)
 	) {
 		super(parent, name, tooltip)
-		this.enabledValues = defaultValues
+		this.ResetToDefault()
 	}
 
 	public get IsZeroSelected(): boolean {
@@ -82,20 +83,23 @@ export class ImageSelectorArray extends Base {
 				)
 		)
 	}
-
+	public ResetToDefault(): void {
+		this.enabledValues = JSON.parse(this.defaultValuesString)
+		super.ResetToDefault()
+	}
+	public IsDefault(): boolean {
+		return JSON.stringify(this.enabledValues) === this.defaultValuesString
+	}
 	public get ConfigValue() {
 		return this.enabledValues
 	}
 	public set ConfigValue(value) {
-		if (
-			this.ShouldIgnoreNewConfigValue ||
-			value === undefined ||
-			!Array.isArray(value)
-		) {
+		if (!Array.isArray(value) || this.ShouldIgnoreNewConfigValue) {
 			return
 		}
 		this.enabledValues = value
 		this.UpdateEnabledValues()
+		this.UpdateIsDefault()
 	}
 
 	public get ClassPriority(): number {

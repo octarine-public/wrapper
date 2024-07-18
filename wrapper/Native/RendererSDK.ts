@@ -1071,7 +1071,7 @@ class CRendererSDK {
 		this.tex2size.set(textureID, Vector2.fromIOBuffer())
 		return textureID
 	}
-	private GetFont(fontName: string, weight: number, italic: boolean): number {
+	public GetFont(fontName: string, weight: number, italic: boolean): number {
 		const fontAr = this.fontCache.get(fontName)
 		if (fontAr === undefined) {
 			return -1

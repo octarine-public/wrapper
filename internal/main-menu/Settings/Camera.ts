@@ -67,10 +67,6 @@ export class InternalCamera {
 		this.ctrlState = treeMenuMouse.AddToggle("Change if Ctrl is down", true)
 		this.step = treeMenuMouse.AddSlider("Camera Step", 200, 50, 1000)
 		this.animationSpeed = treeMenuMouse.AddSlider("Animation speed", 500, 50, 1000)
-
-		treeMenu
-			.AddButton("Reset", "Reset settings")
-			.OnValue(() => this.resetCameraSettings())
 	}
 
 	private get disableHumanizer(): boolean {
@@ -184,19 +180,6 @@ export class InternalCamera {
 		if (entity === LocalPlayer?.Hero) {
 			this.sleepDrawInfoCameraDistance()
 		}
-	}
-
-	private resetCameraSettings() {
-		this.step.value = this.step.defaultValue
-		this.infoState.value = this.infoState.defaultValue
-		this.distance.value = this.distance.defaultValue
-		this.angles.X.value = this.angles.X.defaultValue
-		this.angles.Y.value = this.angles.Y.defaultValue
-		this.mouseState.value = this.mouseState.defaultValue
-		this.inverseDire.value = this.inverseDire.defaultValue
-		this.ctrlState.value = this.ctrlState.defaultValue
-		this.animationSpeed.value = this.animationSpeed.defaultValue
-		this.sleepDrawInfoCameraDistance()
 	}
 
 	private drawCameraDistance() {

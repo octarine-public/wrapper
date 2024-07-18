@@ -1,6 +1,7 @@
 import { Entity, ExecuteOrder, Menu, MenuLanguageID } from "../../../wrapper/Imports"
 import { InternalCamera } from "./Camera"
 import { InternalChanger } from "./Changer"
+import { InternalConfig } from "./Config"
 import { InternalNotifications } from "./Notifications"
 
 export const InternalSettings = new (class {
@@ -8,6 +9,7 @@ export const InternalSettings = new (class {
 	private readonly InternalCamera: InternalCamera
 	private readonly InternalChanger: InternalChanger
 	private readonly InternalNotifications: InternalNotifications
+	private readonly InternalConfig: InternalConfig
 
 	constructor() {
 		this.Tree = Menu.AddEntry("Settings")
@@ -15,6 +17,7 @@ export const InternalSettings = new (class {
 		this.InternalCamera = new InternalCamera(this.Tree)
 		this.InternalChanger = new InternalChanger(this.Tree)
 		this.InternalNotifications = new InternalNotifications(this.Tree)
+		this.InternalConfig = new InternalConfig(this.Tree)
 
 		this.Tree.AddToggle(
 			"Humanizer",
@@ -31,7 +34,7 @@ export const InternalSettings = new (class {
 
 		this.Tree.AddDropdown("Language", ["English", "Russian"], 1).OnValue(call =>
 			this.onLangugeChanged(call)
-		)
+		).KeepArrowGap = false
 
 		/** Node Reload Scripts */
 		const reloadTree = this.Tree.AddNode("Reload Scripts", "menu/icons/reload.svg")
@@ -43,6 +46,8 @@ export const InternalSettings = new (class {
 
 	public Draw() {
 		this.InternalCamera.Draw()
+		this.InternalConfig.OnDraw()
+		this.InternalNotifications.onDraw()
 	}
 
 	public MouseWheel(up: boolean) {

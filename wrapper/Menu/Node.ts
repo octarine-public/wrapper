@@ -10,12 +10,12 @@ import { Base, IMenu } from "./Base"
 import { Button } from "./Button"
 import { ColorPicker } from "./ColorPicker"
 import { Dropdown } from "./Dropdown"
-import { DummyJson } from "./DummyJson"
 import { DynamicImageSelector } from "./DynamicImageSelector"
 import { ImageSelector } from "./ImageSelector"
 import { ImageSelectorArray } from "./ImageSelectorArr"
 import { IMenuParticlePicker } from "./ITypes"
 import { KeyBind } from "./KeyBind"
+import { Localization } from "./Localization"
 import { Slider } from "./Slider"
 import { Toggle } from "./Toggle"
 
@@ -38,7 +38,12 @@ export class Node extends Base {
 		Node.scrollbarWidth = GUIInfo.ScaleWidth(3)
 		Node.scrollbarOffset.x = GUIInfo.ScaleWidth(2)
 		Node.scrollbarOffset.y = GUIInfo.ScaleHeight(2)
+		Node.popupTextPadding = GUIInfo.ScaleHeight(8)
+		Node.popupHoverPadding = GUIInfo.ScaleHeight(2)
 	}
+
+	private static readonly popupElementColor = new Color(16, 16, 28)
+	private static readonly popupElementColorHovered = new Color(30, 30, 50)
 
 	private static readonly arrowActivePath = "menu/arrow_active.svg"
 	private static readonly arrowInactivePath = "menu/arrow_inactive.svg"
@@ -56,11 +61,14 @@ export class Node extends Base {
 	private static coef2 = 0.3
 	private static readonly iconSize = new Vector2()
 	private static readonly iconOffset = new Vector2()
-	private static readonly textOffsetNode = new Vector2(15, 14)
+	private static readonly textOffsetNode = new Vector2()
 	private static readonly textOffsetWithIcon = new Vector2()
 
+	private static popupTextPadding = 0
+	private static popupHoverPadding = 0
+
 	public entries: Base[] = []
-	public SaveUnusedConfigs = false
+	public SaveUnusedConfigs = true
 	public SortNodes = true
 	public EntriesSizeX = 0
 	public EntriesSizeY = 0
@@ -84,6 +92,7 @@ export class Node extends Base {
 		private iconRound_ = -1
 	) {
 		super(parent, name, tooltip)
+		this.ResetToDefault()
 	}
 
 	public get IsOpen(): boolean {
@@ -137,36 +146,50 @@ export class Node extends Base {
 		this.iconRound_ = val
 		this.Update()
 	}
+	public ResetToDefault(): void {
+		this.entries.forEach(e => e?.ResetToDefault())
+		super.ResetToDefault()
+	}
+	public IsDefault(): boolean {
+		return !this.SaveConfig || this.entries.every(e => e.IsDefault())
+	}
+	private cfgDefValue = null
 	public get ConfigValue() {
-		if (!this.SaveUnusedConfigs && this.entries.length === 0) {
-			return undefined
-		}
 		if (!this.SaveUnusedConfigs) {
 			this.configStorage = Object.create(null)
 		}
-		const entries = this.entries
-		for (let index = 0; index < entries.length; index++) {
-			const entry = entries[index]
-			if (entry.SaveConfig) {
-				this.configStorage[entry.InternalName] = entry.ConfigValue
+		this.entries.forEach(e => {
+			if (e?.SaveConfig) {
+				this.configStorage[e.InternalName] =
+					e.IsDefaultValue && !e.IsNode ? this.cfgDefValue : e.ConfigValue
 			}
-		}
+		})
 		return this.configStorage
 	}
 	public set ConfigValue(obj) {
-		if (obj === undefined || typeof obj !== "object" || Array.isArray(obj)) {
+		if (obj === this.cfgDefValue || typeof obj !== "object") {
 			return
 		}
 		if (this.SaveUnusedConfigs) {
 			this.configStorage = obj
 		}
-		const entries = this.entries
-		for (let index = 0; index < entries.length; index++) {
-			const entry = entries[index]
-			if (entry.SaveConfig) {
-				entry.ConfigValue = obj[entry.InternalName]
+		this.IsDefaultValue = true
+		this.entries.forEach(e => {
+			if (e.SaveConfig) {
+				let value = obj[e.InternalName]
+				if (value === undefined) {
+					e.foreachParent(node => (node.FirstTime = true), true)
+				} else if (value === this.cfgDefValue) {
+					value = undefined
+				}
+
+				e.ConfigValue = value
+				this.IsDefaultValue &&= e.IsDefaultValue
 			}
-		}
+		})
+	}
+	public get IsNode(): boolean {
+		return true
 	}
 	public get ClassPriority(): number {
 		return 7
@@ -221,13 +244,7 @@ export class Node extends Base {
 		)
 	}
 	public OnConfigLoaded() {
-		const entries = this.entries
-		for (let i = 0, end = entries.length; i < end; i++) {
-			const entry = entries[i]
-			if (entry !== undefined && entry.SaveConfig) {
-				entry.OnConfigLoaded()
-			}
-		}
+		this.entries?.forEach(e => e?.OnConfigLoaded())
 	}
 	public Update(recursive = false): boolean {
 		if (!super.Update(recursive)) {
@@ -355,12 +372,25 @@ export class Node extends Base {
 			.AddScalarY(this.Size.y)
 			.SubtractForThis(Node.arrowOffset)
 			.SubtractForThis(Node.arrowSize)
-		if (this.IsOpen) {
-			RendererSDK.Image(Node.arrowActivePath, arrowPos, -1, Node.arrowSize)
-		} else {
-			RendererSDK.Image(Node.arrowInactivePath, arrowPos, -1, Node.arrowSize)
-		}
+
+		RendererSDK.Image(
+			this.IsOpen ? Node.arrowActivePath : Node.arrowInactivePath,
+			arrowPos,
+			-1,
+			Node.arrowSize
+		)
 	}
+	public static ActivePopup: Nullable<{
+		Position: Vector2
+		Size: Vector2
+		Target: Base
+		Options: {
+			Text: string
+			Callback: (target: Base, idx: number) => void
+			TextSize: Vector3
+		}[]
+	}>
+
 	public PostRender(): void {
 		if (!this.IsOpen) {
 			return
@@ -378,21 +408,116 @@ export class Node extends Base {
 			)
 			RendererSDK.Image(Node.scrollbarPath, rect.pos1, -1, rect.Size)
 		}
+
+		const popup = Node.ActivePopup
+
+		if (popup && popup.Target.parent === this) {
+			if (popup.Size.x === 0 && popup.Size.y === 0) {
+				popup.Options.forEach(o => {
+					o.TextSize = this.GetTextSizeDefault(o.Text)
+					o.TextSize.x += Node.popupTextPadding * 2
+					o.TextSize.y += Node.popupTextPadding * 2
+					o.TextSize.z = Node.popupTextPadding - o.TextSize.z / 2
+					popup.Size.x = Math.max(popup.Size.x, o.TextSize.x)
+					popup.Size.y += o.TextSize.y
+				})
+				popup.Position.y -= popup.Size.y
+				popup.Options.forEach(o => (o.TextSize.x = popup.Size.x))
+			}
+
+			const pos = popup.Position.Clone()
+
+			RendererSDK.FilledRect(pos, popup.Size, Node.popupElementColor)
+			popup.Options.forEach(o => {
+				const size = Vector2.FromVector3(o.TextSize)
+				const rect = new Rectangle(pos, pos.Add(size))
+
+				if (rect.Contains(this.MousePosition)) {
+					const padding = new Vector2().AddScalarForThis(Node.popupHoverPadding)
+					RendererSDK.FilledRect(
+						pos.Add(padding),
+						size.Add(padding.MultiplyScalar(-2)),
+						Node.popupElementColorHovered
+					)
+				}
+				this.RenderTextDefault(
+					o.Text,
+					pos.Clone().AddScalarX(Node.popupTextPadding).AddScalarY(o.TextSize.z)
+				)
+				pos.AddScalarY(size.y)
+			})
+		}
 	}
 
 	public OnParentNotVisible(ignoreOpen = false): void {
 		if (ignoreOpen || this.IsOpen) {
-			const entries = this.entries
-			for (let i = 0, end = entries.length; i < end; i++) {
-				const entry = entries[i]
-				if (entry === undefined) {
-					continue
-				}
-				entry.OnParentNotVisible()
-			}
+			this.entries.forEach(e => e?.OnParentNotVisible())
 		}
 	}
+	public OnPopupClick(create = false): boolean {
+		if (!this.IsOpen) {
+			return true
+		}
 
+		const mousePos = this.MousePosition
+		const popup = Node.ActivePopup
+
+		if (popup) {
+			Node.ActivePopup = undefined
+
+			const rect = new Rectangle(popup.Position, popup.Position.Add(popup.Size))
+			if (popup.Target && rect.Contains(mousePos)) {
+				let posy = popup.Position.y
+				popup.Options.some((opt, i) => {
+					posy += opt.TextSize.y
+					const active = mousePos.y < posy
+					if (active) {
+						opt.Callback(popup.Target, i)
+					}
+					return active
+				})
+
+				return false
+			}
+		}
+
+		if (
+			!create ||
+			!Base.HoveredElement ||
+			!Base.HoveredElement.SaveConfig ||
+			Base.HoveredElement.IsDefaultValue
+		) {
+			return !Base.HoveredElement
+		}
+
+		Node.ActivePopup = {
+			Position: mousePos,
+			Size: new Vector2(),
+			Target: Base.HoveredElement,
+			Options: [
+				{
+					Text: Localization.Localize("Reset to default"),
+					Callback: (target: Base) => {
+						target.ResetToDefault()
+						target.OnConfigLoaded()
+						target.Update(true)
+					},
+					TextSize: new Vector3()
+				}
+			]
+		}
+		return false
+	}
+	public OnPreMouseLeftDown(): boolean {
+		return !(
+			Node.ActivePopup &&
+			Node.ActivePopup.Target.parent === this &&
+			new Rectangle(
+				Node.ActivePopup.Position,
+				Node.ActivePopup.Position.Add(Node.ActivePopup.Size)
+			).Contains(this.MousePosition)
+		)
+	}
 	public OnMouseLeftDown(): boolean {
 		if (this.activeElement !== undefined || this.IsHovered) {
 			return false
@@ -401,7 +526,7 @@ export class Node extends Base {
 			return true
 		}
 		const entries = this.entries
-		for (let i = 0, end = entries.length; i < end; i++) {
+		for (let i = 0, end = entries.length; i < 0; i++) {
 			const entry = entries[i]
 			if (entry === undefined) {
 				continue
@@ -471,6 +596,7 @@ export class Node extends Base {
 			entry instanceof Node ? entry.OnMouseWheel(up) : false
 		)
 	}
+
 	public AddToggle(
 		name: string,
 		defaultValue: boolean = false,
@@ -700,10 +826,6 @@ export class Node extends Base {
 	): ColorPicker {
 		return this.AddEntry(new ColorPicker(this, name, defaultColor, tooltip), priority)
 	}
-
-	public AddDummyJson<T>(name: string, defaultValue: T): DummyJson<T> {
-		return this.AddEntry(new DummyJson(this, name, defaultValue), 0)
-	}
 	/** @deprecated */
 	public AddParticlePicker(
 		name: string,
@@ -792,7 +914,6 @@ export class Node extends Base {
 			}
 		}
 	}
-
 	private AddEntry<T extends Base>(entry: T, priority = entry.Priority): T {
 		entry.Priority = priority
 		this.entries.push(entry)

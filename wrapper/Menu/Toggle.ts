@@ -45,6 +45,7 @@ export class Toggle extends Base {
 	private static readonly toggleOffset = new Vector2()
 	private static readonly toggleBackgroundColorActive = new Color(104, 4, 255)
 	private static readonly toggleBackgroundColorInactive = new Color(31, 30, 53)
+	private static readonly toggleCircleColor = Color.fromUint32(0xff251515)
 	private static readonly iconActive = Color.Green
 	private static readonly iconInactive = Color.Red
 
@@ -70,7 +71,7 @@ export class Toggle extends Base {
 		private iconRound_ = -1
 	) {
 		super(parent, name, tooltip)
-		this.value = defaultValue
+		this.ResetToDefault()
 	}
 
 	public get IconPath(): string {
@@ -87,14 +88,22 @@ export class Toggle extends Base {
 		this.iconRound_ = val
 		this.Update()
 	}
+	public ResetToDefault(): void {
+		this.value = this.defaultValue
+		super.ResetToDefault()
+	}
+	public IsDefault(): boolean {
+		return this.value === this.defaultValue
+	}
 	public get ConfigValue() {
 		return this.value
 	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || typeof value !== "boolean") {
+		if (typeof value !== "boolean" || this.ShouldIgnoreNewConfigValue) {
 			return
 		}
-		this.value = value ?? this.value
+		this.value = value
+		this.UpdateIsDefault()
 	}
 	public get ClassPriority(): number {
 		return 1
@@ -197,7 +206,8 @@ export class Toggle extends Base {
 						togglePos
 				),
 			-1,
-			Toggle.toggleSize
+			Toggle.toggleSize,
+			Toggle.toggleCircleColor
 		)
 	}
 
@@ -205,9 +215,11 @@ export class Toggle extends Base {
 		return !this.IsHovered
 	}
 	public OnMouseLeftUp(): boolean {
-		this.value = !this.value
-		this.animationStartTime = hrtime()
-		this.TriggerOnValueChangedCBs()
+		if (this.IsHovered) {
+			this.value = !this.value
+			this.animationStartTime = hrtime()
+			this.TriggerOnValueChangedCBs()
+		}
 		return false
 	}
 }

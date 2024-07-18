@@ -7,10 +7,13 @@ import { InputEventSDK, InputManager, VMouseKeys } from "../Managers/InputManage
 import { RendererSDK } from "../Native/RendererSDK"
 import { readJSON } from "../Utils/Utils"
 import { Base } from "./Base"
+import { ColorPicker } from "./ColorPicker"
 import { Dropdown } from "./Dropdown"
 import { Header } from "./Header"
+import { KeyBind } from "./KeyBind"
 import { Localization } from "./Localization"
 import { Node } from "./Node"
+import { Slider } from "./Slider"
 
 const hardcodedIcons = new Map<string, string>(
 		Object.entries(readJSON("hardcoded_icons.json"))
@@ -67,14 +70,15 @@ class CMenuManager {
 	}
 
 	public get ConfigValue() {
+		//this.config = Object.create(null)
 		this.config = Object.create(null)
-		const entries = this.entries
-		for (let i = 0, end = entries.length; i < end; i++) {
-			const entry = entries[i]
-			if (entry !== undefined && entry.SaveConfig) {
-				this.config[entry.InternalName] = entry.ConfigValue
+
+		this.entries.forEach(e => {
+			if (e?.SaveConfig) {
+				this.config[e.InternalName] = e.ConfigValue
 			}
-		}
+		})
+
 		this.config.Header = this.header.ConfigValue
 		this.config.SelectedLocalization = Localization.SelectedUnitName
 		return this.config
@@ -134,6 +138,14 @@ class CMenuManager {
 			pos.Clone().AddScalarX(this.EntriesSizeX).AddScalarY(height)
 		)
 	}
+	private foreachRecursiveInternal(element: Base, cb: (element: Base) => any) {
+		if (element && (cb(element), true) && element instanceof Node) {
+			element.entries.forEach(e => this.foreachRecursiveInternal(e, cb))
+		}
+	}
+	public foreachRecursive(cb: (element: Base) => any) {
+		this.entries.forEach(node => this.foreachRecursiveInternal(node, cb))
+	}
 
 	public async LoadConfig() {
 		try {
@@ -167,13 +179,51 @@ class CMenuManager {
 			Localization.wasChanged = false
 			Base.SaveConfigASAP = true
 		}
+
+		if (this.entries.length === 1) {
+			Base.NoWriteConfig = true
+
+			const main = this.entries[0]
+
+			main.Name = main.InternalName = "Try to reload"
+			main.IconPath = "menu/icons/reload.svg"
+
+			if (RendererSDK.GetFont(main.FontName, main.FontWeight, false) === -1) {
+				RendererSDK.CreateFont(
+					main.FontName,
+					"fonts/PTSans/PTSans-Regular.ttf",
+					main.FontWeight,
+					false
+				)
+			}
+			if (main.IsOpen) {
+				main.IsOpen = false
+				reload()
+			}
+		}
+
 		if (Base.SaveConfigASAP) {
 			const config = this.ConfigValue
-			writeConfig(JSON.stringify(config))
-			Base.SaveConfigASAP = false
+			if (Base.NoWriteConfig) {
+				console.log("NoWriteConfig prevented from saving config", { ...config })
+			} else {
+				writeConfig(JSON.stringify(config))
+			}
 
+			Base.SaveConfigASAP = false
 			EventsSDK.emit("MenuConfigChanged", false, config)
 		}
+
+		const popup = Node.ActivePopup?.Target.parent
+
+		Base.HoveredElement = undefined
+		Base.ActiveElement =
+			Slider.DraggingNow ??
+			KeyBind.changingNow ??
+			Dropdown.activeDropdown ??
+			ColorPicker.activeColorpicker ??
+			(popup instanceof Base ? popup : undefined)
+
 		if (!this.IsOpen) {
 			return
 		}
@@ -212,7 +262,7 @@ class CMenuManager {
 				entry.QueuedUpdate = false
 				entry.Update(entry.QueuedUpdateRecursive)
 			}
-			updatedEntries = updatedEntries || entry.NeedsRootUpdate
+			updatedEntries ||= entry.NeedsRootUpdate
 			entry.Render()
 			position.AddScalarY(entry.Size.y)
 			if (--visibleEntries <= 0) {
@@ -222,33 +272,48 @@ class CMenuManager {
 		if (updatedEntries) {
 			this.Update()
 		}
-		const arrEntries2 = this.entries
-		for (let i = 0, end = arrEntries2.length; i < end; i++) {
-			const node = arrEntries2[i]
-			if (node.IsVisible) {
-				node.PostRender()
-			}
-		}
+
+		this.entries.forEach(e => (e.IsVisible ? e.PostRender() : 0))
 		this.PostRender()
 	}
 	public Update(recursive = false): void {
 		if (recursive) {
-			const entries = this.entries
-			for (let i = 0, end = entries.length; i < end; i++) {
-				const entry = entries[i]
-				if (entry !== undefined) {
-					entry.Update(true)
-				}
-			}
+			this.entries?.forEach(e => e?.Update(true))
 		}
 		this.UpdateScrollbar()
 		this.EntriesSizeX = this.EntriesSizeX_
 		this.EntriesSizeY = this.EntriesSizeY_
 	}
 
+	public OnMouseRightDown(): boolean {
+		if (this.IsOpen && Base.HoveredElement?.parent instanceof Node) {
+			return Base.HoveredElement.parent.OnPopupClick(true)
+		}
+		return true
+	}
+
 	public OnMouseLeftDown(): boolean {
 		if (!this.IsOpen) {
 			return true
+		}
+		// close popups if clicked outside, skip click
+		if (Base.ActiveElement && Base.ActiveElement.OnPreMouseLeftDown()) {
+			Base.ActiveElement =
+				KeyBind.changingNow =
+				Dropdown.activeDropdown =
+				ColorPicker.activeColorpicker =
+				Node.ActivePopup =
+					/**/ undefined
+
+			return false
+		}
+
+		if (
+			Node.ActivePopup &&
+			Node.ActivePopup.Target.parent instanceof Node &&
+			!Node.ActivePopup.Target.parent.OnPopupClick()
+		) {
+			return false
 		}
 		if (!this.header.OnMouseLeftDown()) {
 			this.activeElement = this.header
@@ -406,21 +471,14 @@ class CMenuManager {
 		}
 	}
 	private ForwardConfig() {
-		while (Base.ForwardConfigASAP && this.config !== undefined) {
+		while (Base.ForwardConfigASAP) {
 			Base.ForwardConfigASAP = false
-			const entries = this.entries
-			for (let i = 0, end = entries.length; i < end; i++) {
-				const entry = entries[i]
-				if (entry !== undefined && entry.SaveConfig) {
-					entry.ConfigValue = this.config[entry.InternalName]
+			this.entries.forEach(e => {
+				if (e) {
+					e.ConfigValue = this.config[e.InternalName]
+					e.OnConfigLoaded()
 				}
-			}
-			for (let i = 0, end = entries.length; i < end; i++) {
-				const entry = entries[i]
-				if (entry !== undefined && entry.SaveConfig) {
-					entry.OnConfigLoaded()
-				}
-			}
+			})
 		}
 	}
 }
@@ -438,6 +496,9 @@ EventsSDK.on("UnitAbilityDataUpdated", () => MenuManager.Update(true))
 InputEventSDK.on("MouseKeyDown", key => {
 	if (key === VMouseKeys.MK_LBUTTON) {
 		return MenuManager.OnMouseLeftDown()
+	}
+	if (key === VMouseKeys.MK_RBUTTON) {
+		return MenuManager.OnMouseRightDown()
 	}
 	return true
 })

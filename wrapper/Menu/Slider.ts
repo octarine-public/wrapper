@@ -26,8 +26,22 @@ export class Slider extends Base {
 	private static textValueGap = 0
 	private static textSliderVerticalGap = 0
 
-	public value = 0
+	public static DraggingNow?: Slider
+
 	public isDragging = false
+	public value_ = 0
+
+	public get value(): number {
+		return this.value_
+	}
+	public set value(v: number) {
+		const newv = v < this.min ? this.min : v > this.max ? this.max : v
+		if (this.value_ !== newv) {
+			this.value_ = newv
+			this.TriggerOnValueChangedCBs()
+			this.UpdateIsDefault()
+		}
+	}
 
 	constructor(
 		parent: IMenu,
@@ -39,20 +53,23 @@ export class Slider extends Base {
 		tooltip = ""
 	) {
 		super(parent, name, tooltip)
-		this.value = defaultValue
+		this.ResetToDefault()
 	}
-
+	public ResetToDefault(): void {
+		this.value_ = this.defaultValue
+		super.ResetToDefault()
+	}
+	public IsDefault(): boolean {
+		return this.value === this.defaultValue
+	}
 	public get ConfigValue() {
 		return this.value
 	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number") {
+		if (typeof value !== "number" || this.ShouldIgnoreNewConfigValue) {
 			return
 		}
-		this.value =
-			value !== undefined
-				? Math.min(Math.max(value, this.min), this.max)
-				: this.value
+		this.value = value
 	}
 
 	public get ClassPriority(): number {
@@ -81,6 +98,7 @@ export class Slider extends Base {
 		).Max(this.GetTextSizeDefault(this.min.toFixed(this.precision)))
 		this.Size.x =
 			this.nameSize.x + this.textOffset.x * 2 + Slider.textValueGap + maxValueSize.x
+
 		this.Size.y =
 			this.textOffset.y +
 			Math.max(maxValueSize.y - maxValueSize.z, this.nameSize.y - this.nameSize.z) +
@@ -97,22 +115,16 @@ export class Slider extends Base {
 		}
 
 		const rect = this.Rect,
-			valueText = this.value.toFixed(this.precision)
-		const valueTextSize = this.GetTextSizeDefault(valueText)
-		const nameHeight = this.nameSize.y - this.nameSize.z,
-			valueHeight = valueTextSize.y - valueTextSize.z
-		const maxTextSize = Math.max(nameHeight, valueHeight)
-		this.RenderTextDefault(
-			this.Name,
-			this.Position.Add(this.textOffset).AddScalarY(maxTextSize - nameHeight)
-		)
-		this.RenderTextDefault(
-			valueText,
-			new Vector2(
-				rect.pos2.x - this.textOffset.x + 2 - valueTextSize.x, // +2 because textOffset includes bar size
-				rect.pos1.y + this.textOffset.y + maxTextSize - valueHeight
+			valueText = this.value.toFixed(this.precision),
+			valueTextSize = this.GetTextSizeDefault(valueText),
+			valueTextPos = new Vector2(
+				rect.pos2.x - this.textOffset.x - valueTextSize.x,
+				// eslint-disable-next-line prettier/prettier
+				rect.pos1.y + this.textOffset.y - valueTextSize.y + valueTextSize.z + this.nameSize.y
 			)
-		)
+
+		this.RenderTextDefault(this.Name, rect.pos1.Add(this.textOffset))
+		this.RenderTextDefault(valueText, valueTextPos)
 
 		const sliderRect = this.SliderRect,
 			sliderProgress = (this.value - this.min) / (this.max - this.min)
@@ -133,26 +145,23 @@ export class Slider extends Base {
 	}
 	public OnValueChanged(): void {
 		const sliderRect = this.SliderRect
-		const off = Math.max(sliderRect.GetOffset(this.MousePosition).x, 0)
-		const oldValue = this.value
-		this.value = Math.min(
-			this.max,
-			this.Round(this.min + (off / sliderRect.Size.x) * (this.max - this.min))
+		const off = sliderRect.GetOffset(this.MousePosition).x
+		this.value = this.Round(
+			this.min + (off / sliderRect.Size.x) * (this.max - this.min)
 		)
-		if (this.value !== oldValue) {
-			this.TriggerOnValueChangedCBs()
-		}
 	}
 
 	public OnMouseLeftDown(): boolean {
-		if (this.SliderRect.Contains(this.MousePosition)) {
+		if (this.Rect.Contains(this.MousePosition)) {
 			this.isDragging = true
+			Slider.DraggingNow = this
 			return false
 		}
 		return true
 	}
 	public OnMouseLeftUp(): boolean {
 		this.isDragging = false
+		Slider.DraggingNow = undefined
 		return false
 	}
 	private Round(num: number): number {

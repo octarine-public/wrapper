@@ -17,8 +17,12 @@ export interface IMenu {
 }
 
 export class Base {
+	public static HoveredElement: Nullable<Base>
+	public static ActiveElement: Nullable<Base>
+
 	public static ForwardConfigASAP = false
 	public static SaveConfigASAP = true
+	public static NoWriteConfig = false // set on suspicion of bad config
 	public static triggerOnChat = false
 	public static barWidth = 0
 	public static OnWindowSizeChanged(): void {
@@ -54,8 +58,15 @@ export class Base {
 	private static readonly UnscaledDefaultSize = RendererSDK.GetImageSize(
 		Base.backgroundInactivePath
 	)
-	private static readonly DefaultSize = new Vector2()
 	private static readonly textOffset = new Vector2()
+	public static readonly DefaultSize = new Vector2()
+
+	public static DrawMarksNew = true
+	public static DrawMarksNonDefault = true
+
+	public static markColorNew = new Color(34, 177, 76)
+	public static markColorNonDefault = Color.fromUint32(0xffbbbbbb)
+	public markColorCustom = Color.ZeroReadonly
 
 	public IsHidden = false
 	public IsHiddenBecauseOfSearch = false
@@ -72,6 +83,8 @@ export class Base {
 	public QueuedUpdateRecursive = false
 	public NeedsRootUpdate = true
 	public SaveConfig = true
+	public IsDefaultValue = true
+	public FirstTime = false
 
 	public readonly Position = new Vector2()
 	public readonly Size = new Vector2()
@@ -83,23 +96,45 @@ export class Base {
 	protected readonly textOffset = Base.textOffset
 	protected readonly nameSize = new Vector3()
 
-	protected readonly executeOnAdd: boolean = true
+	public executeOnAdd: boolean = true
 	protected readonly OnValueChangedCBs: ((caller: Base) => any)[] = []
 
 	constructor(
 		public parent: IMenu,
-		public readonly InternalName: string = "",
+		public InternalName: string = "",
 		public readonly InternalTooltipName: string
 	) {
 		this.Name = this.InternalName
 		this.Tooltip = this.InternalTooltipName
 	}
+	public ResetToDefault(): void {
+		this.IsDefaultValue = this.configDirty = true
 
+		if (!this.IsDefault()) {
+			console.log("failed to ResetToDefault:\n", { ...this })
+		}
+	}
+	public IsDefault(): boolean {
+		return true
+	}
+	public UpdateIsDefault(fast = false): void {
+		const isDefault = !this.SaveConfig || (!fast && this.IsDefault())
+		if (this.IsDefaultValue !== isDefault) {
+			this.IsDefaultValue = isDefault
+
+			if (this.parent instanceof Base) {
+				this.parent.UpdateIsDefault(!isDefault)
+			}
+		}
+	}
 	public get ConfigValue(): any {
 		return undefined
 	}
 	public set ConfigValue(_value: any) {
 		// to be implemented in child classes
+	}
+	public get IsNode(): boolean {
+		return false
 	}
 	public get IsVisible(): boolean {
 		return !this.IsHidden && !this.IsHiddenBecauseOfSearch
@@ -124,21 +159,24 @@ export class Base {
 	protected get WindowSize(): Vector2 {
 		return RendererSDK.WindowSize
 	}
-	protected get IsHovered(): boolean {
-		return this.Rect.Contains(this.MousePosition)
+	public get IsHovered(): boolean {
+		const hovered = this.Rect.Contains(this.MousePosition)
+		if (hovered) {
+			Base.HoveredElement = this as Base
+		}
+
+		return Base.ActiveElement ? Base.ActiveElement === this : hovered
 	}
 	protected get ShouldIgnoreNewConfigValue(): boolean {
 		return !this.configDirty
 	}
-
 	public OnConfigLoaded() {
-		if (!this.configDirty) {
-			return
+		if (this.configDirty && this.SaveConfig) {
+			if (this.executeOnAdd) {
+				this.TriggerOnValueChangedCBs()
+			}
 		}
 		this.configDirty = false
-		if (this.executeOnAdd) {
-			this.TriggerOnValueChangedCBs()
-		}
 	}
 
 	public OnValue(func: (caller: this) => any): this {
@@ -155,6 +193,9 @@ export class Base {
 			this.QueuedUpdateRecursive = recursive
 			return false
 		}
+
+		this.UpdateIsDefault()
+
 		this.ApplyLocalization()
 		this.NeedsRootUpdate = true
 		this.Size.CopyFrom(Base.DefaultSize)
@@ -182,31 +223,46 @@ export class Base {
 	}
 
 	public Render(drawBar = true): void {
-		if (this.isActive) {
-			RendererSDK.Image(
-				Base.backgroundActivePath,
-				this.Position,
-				-1,
-				this.RenderSize
-			)
-		} else {
-			RendererSDK.Image(
-				Base.backgroundInactivePath,
-				this.Position,
-				-1,
-				this.RenderSize
-			)
-		}
-		const isHovered = this.IsHovered
+		RendererSDK.Image(
+			this.isActive ? Base.backgroundActivePath : Base.backgroundInactivePath,
+			this.Position,
+			-1,
+			this.RenderSize
+		)
 		if (drawBar) {
-			const barSize = new Vector2(Base.barWidth, this.Size.y)
-			if (isHovered || this.isActive) {
-				RendererSDK.Image(Base.barActivePath, this.Position, -1, barSize)
-			} else {
-				RendererSDK.Image(Base.barInactivePath, this.Position, -1, barSize)
-			}
+			RendererSDK.Image(
+				this.IsHovered || this.isActive
+					? Base.barActivePath
+					: Base.barInactivePath,
+				this.Position,
+				-1,
+				new Vector2(Base.barWidth, this.Size.y)
+			)
 		}
-		if (isHovered) {
+
+		let col
+
+		if (this.markColorCustom.a) {
+			col = this.markColorCustom
+		} else if (!this.SaveConfig) {
+			//
+		} else if (Base.DrawMarksNew && this.FirstTime) {
+			col = Base.markColorNew
+		} else if (Base.DrawMarksNonDefault && !this.IsDefaultValue && drawBar) {
+			col = Base.markColorNonDefault
+		}
+
+		if (col && col.a) {
+			const sizepad = new Vector2(-1, +1).MultiplyScalarForThis(
+				Base.DefaultSize.y / 8
+			)
+			RendererSDK.FilledCircle(
+				this.Position.Add(sizepad).AddScalarX(this.RenderSize.x),
+				sizepad,
+				col
+			)
+		}
+		if (this.IsHovered) {
 			this.RenderTooltip()
 		}
 	}
@@ -238,6 +294,11 @@ export class Base {
 	protected ApplyLocalization() {
 		this.Name = Localization.Localize(this.InternalName)
 		this.Tooltip = Localization.Localize(this.InternalTooltipName)
+
+		if (this.FirstTime && (!this.IsNode || this.Tooltip)) {
+			const prefix = Localization.Localize("[New]")
+			this.Tooltip = prefix + this.Tooltip
+		}
 	}
 
 	protected GetTextSizeDefault(text: string): Vector3 {
@@ -247,7 +308,7 @@ export class Base {
 			GUIInfo.ScaleHeight(this.FontSize),
 			this.FontWeight,
 			false
-		)
+		).DivideScalarZ(2)
 	}
 	protected RenderTextDefault(text: string, position: Vector2, color?: Color): void {
 		RendererSDK.Text(
@@ -261,10 +322,29 @@ export class Base {
 			false
 		)
 	}
+	public foreachParent(cb: (node: Base) => any, includeThis = false) {
+		for (
+			let node = includeThis ? (this as Base) : this.parent;
+			node instanceof Base;
+			node = node.parent
+		) {
+			cb(node)
+		}
+	}
+	public everyParent(cb: (node: Base) => boolean, includeThis = false): boolean {
+		let result = true
+		let node = includeThis ? (this as Base) : this.parent
+		while (node instanceof Base && (result = cb(node))) {
+			node = node.parent
+		}
+		return result
+	}
+
 	public TriggerOnValueChangedCBs(): void {
 		for (let i = this.OnValueChangedCBs.length - 1; i > -1; i--) {
 			this.OnValueChangedCBs[i](this)
 		}
+		this.UpdateIsDefault()
 	}
 
 	private RenderTooltip(): void {

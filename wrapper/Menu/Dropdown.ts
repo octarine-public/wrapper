@@ -10,10 +10,10 @@ import { Localization } from "./Localization"
 
 export class Dropdown extends Base {
 	public static activeDropdown: Nullable<Dropdown>
-	public static readonly dropdownPopupElementsLimit = 4
+	public static readonly dropdownPopupElementsLimit = 6
 	public static OnWindowSizeChanged(): void {
 		Dropdown.dropdownOffset.x = GUIInfo.ScaleWidth(14)
-		Dropdown.dropdownOffset.y = GUIInfo.ScaleWidth(11)
+		Dropdown.dropdownOffset.y = GUIInfo.ScaleWidth(6)
 		Dropdown.dropdownBorderSize.x = GUIInfo.ScaleWidth(2)
 		Dropdown.dropdownBorderSize.y = GUIInfo.ScaleWidth(2)
 		Dropdown.dropdownArrowSize.x = GUIInfo.ScaleWidth(
@@ -34,7 +34,7 @@ export class Dropdown extends Base {
 		Dropdown.dropdownPopupElementsScrollbarOffset.y = GUIInfo.ScaleHeight(2)
 		Dropdown.dropdownPopupElementsScrollbarWidth = GUIInfo.ScaleWidth(3)
 		Dropdown.nameDropdownGap = GUIInfo.ScaleHeight(8)
-		Dropdown.dropdownEndGap = GUIInfo.ScaleWidth(24)
+		Dropdown.dropdownEndGap = GUIInfo.ScaleWidth(20)
 	}
 
 	private static readonly dropdownPath = "menu/dropdown.svg"
@@ -44,7 +44,6 @@ export class Dropdown extends Base {
 	private static readonly dropdownPopupElementActiveColor = new Color(8, 7, 14)
 	private static readonly dropdownPopupElementHoveredColor = new Color(24, 23, 40)
 	private static readonly dropdownPopupElementInactiveColor = new Color(16, 16, 28)
-	private static readonly dropdownBackgroundColor = new Color(16, 16, 28)
 	private static readonly dropdownArrowActiveColor = new Color(104, 4, 255)
 	private static readonly dropdownArrowInactiveColor = new Color(47, 45, 77)
 	private static readonly dropdownOffset = new Vector2()
@@ -63,7 +62,10 @@ export class Dropdown extends Base {
 	private static dropdownEndGap = 0
 
 	public ValuesNames: string[]
-	public SelectedID = 0
+	private SelectedID_ = 0
+	public KeepArrowGap = true
+	public UseOneLine = true
+
 	public currentlyAtID = 0
 	protected ValuesSizes: Vector3[] = []
 	protected readonly longestValueSize = new Vector2()
@@ -77,32 +79,59 @@ export class Dropdown extends Base {
 	) {
 		super(parent, name, tooltip)
 		this.ValuesNames = InternalValuesNames
-		this.SelectedID = defaultValue
+		this.ResetToDefault()
 	}
 
+	public get SelectedID(): number {
+		return this.SelectedID_
+	}
+	public set SelectedID(value: number) {
+		this.SelectedID_ = Math.max(
+			Math.min(value, this.InternalValuesNames.length - 1),
+			0
+		)
+		this.UpdateIsDefault()
+	}
+	public ResetToDefault(): void {
+		this.SelectedID = this.defaultValue
+		super.ResetToDefault()
+	}
+	public IsDefault(): boolean {
+		return this.SelectedID === this.defaultValue
+	}
 	public get ConfigValue() {
 		return this.SelectedID
 	}
 	public set ConfigValue(value) {
-		if (this.ShouldIgnoreNewConfigValue || typeof value !== "number") {
+		if (typeof value !== "number" || this.ShouldIgnoreNewConfigValue) {
 			return
 		}
-		this.SelectedID = value ?? this.SelectedID
-		this.FixSelectedID()
-		this.currentlyAtID =
-			this.SelectedID - Math.floor(Dropdown.dropdownPopupElementsLimit / 2) + 1
+		this.currentlyAtID = this.SelectedID = value
+		this.currentlyAtID -= Math.floor(Dropdown.dropdownPopupElementsLimit / 2) + 1
 	}
 	public get DropdownRect(): Rectangle {
-		const rect = this.Rect
+		const rect = this.Rect,
+			offset = Dropdown.dropdownOffset,
+			arrowGap = Dropdown.dropdownEndGap,
+			staticWidth = offset.x + arrowGap + Dropdown.dropdownTextOffset.x * 2,
+			staticHeight = offset.y + Dropdown.dropdownTextOffset.y * 2,
+			maxSize = this.longestValueSize,
+			textWidth = this.KeepArrowGap
+				? maxSize.x
+				: Math.max(maxSize.x - arrowGap, this.ValuesSizes[this.SelectedID].x),
+			startPos = this.UseOneLine
+				? new Vector2(
+					rect.pos2.x - textWidth - staticWidth,
+					rect.pos1.y + offset.y
+				)
+				: new Vector2(
+					rect.pos1.x + offset.x,
+					rect.pos2.y - maxSize.y - staticHeight
+				)
+
 		return new Rectangle(
-			new Vector2(
-				rect.pos1.x + Dropdown.dropdownOffset.x,
-				rect.pos2.y -
-					Dropdown.dropdownOffset.y -
-					this.longestValueSize.y -
-					Dropdown.dropdownTextOffset.y * 2
-			),
-			rect.pos2.Subtract(Dropdown.dropdownOffset).AddScalarX(2) // because dropdownOffset includes bar size
+			startPos,
+			rect.pos2.Subtract(offset).AddScalarX(2) // because dropdownOffset includes bar size
 		)
 	}
 	public get PopupElementHeight(): number {
@@ -123,21 +152,31 @@ export class Dropdown extends Base {
 			prev.y = Math.max(prev.y, cur.y + cur.z)
 			return prev
 		}, new Vector2()).CopyTo(this.longestValueSize)
-		this.Size.x = Math.max(
-			this.nameSize.x + this.textOffset.x * 2,
-			this.longestValueSize.x +
+
+		if (this.UseOneLine) {
+			this.Size.x =
+				this.nameSize.x + this.textOffset.x * 2 + this.longestValueSize.x
+			this.Size.x += Dropdown.dropdownTextOffset.x * 2 + Dropdown.dropdownOffset.x
+			this.Size.x += Dropdown.dropdownEndGap - 2
+
+			this.Size.y = Base.DefaultSize.y
+		} else {
+			this.Size.x = Math.max(
+				this.nameSize.x + this.textOffset.x * 2,
+				this.longestValueSize.x +
 				Dropdown.dropdownTextOffset.x * 2 +
 				Dropdown.dropdownOffset.x * 2 -
 				2 + // because dropdownOffset includes bar size
 				Dropdown.dropdownEndGap
-		)
-		this.Size.y =
-			this.nameSize.y +
-			this.textOffset.y +
-			Dropdown.nameDropdownGap +
-			Dropdown.dropdownTextOffset.y * 2 +
-			this.longestValueSize.y +
-			Dropdown.dropdownOffset.y
+			)
+			this.Size.y =
+				this.nameSize.y +
+				this.textOffset.y +
+				Dropdown.nameDropdownGap +
+				Dropdown.dropdownTextOffset.y * 2 +
+				this.longestValueSize.y +
+				Dropdown.dropdownOffset.y
+		}
 		return true
 	}
 
@@ -185,18 +224,12 @@ export class Dropdown extends Base {
 
 	public Render(): void {
 		this.isActive = Dropdown.activeDropdown === this
-		this.FixSelectedID()
 		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
+
 		const dropdownRect = this.DropdownRect
 		RendererSDK.Image(Dropdown.dropdownPath, dropdownRect.pos1, -1, dropdownRect.Size)
-		RendererSDK.FilledRect(
-			dropdownRect.pos1.Add(Dropdown.dropdownBorderSize),
-			dropdownRect.Size.SubtractForThis(
-				Dropdown.dropdownBorderSize.MultiplyScalar(2)
-			),
-			Dropdown.dropdownBackgroundColor
-		)
+
 		const arrowRect = this.GetArrowRect(dropdownRect)
 		RendererSDK.Image(
 			Dropdown.dropdownArrowPath,
@@ -295,20 +328,17 @@ export class Dropdown extends Base {
 		return !this.IsHovered
 	}
 	public OnMouseLeftUp(): boolean {
-		const dropdownRect = this.DropdownRect,
-			mousePos = this.MousePosition
 		if (this.isActive) {
 			const popupElementsRect = this.GetPopupElementsRect(
-				this.GetPopupRect(dropdownRect)
+				this.GetPopupRect(this.DropdownRect)
 			)
-			if (popupElementsRect.Contains(mousePos)) {
+			if (popupElementsRect.Contains(this.MousePosition)) {
 				this.SelectedID = this.GetHoveredID(popupElementsRect)
 				this.isActive = false
 				Dropdown.activeDropdown = undefined
 				this.TriggerOnValueChangedCBs()
 			}
-		}
-		if (dropdownRect.Contains(mousePos)) {
+		} else if (this.IsHovered) {
 			this.isActive = !this.isActive
 			if (this.isActive) {
 				Dropdown.activeDropdown = this
@@ -358,12 +388,6 @@ export class Dropdown extends Base {
 			.Clone()
 			.AddScalarY((positionsSize.y * this.currentlyAtID) / this.ValuesNames.length)
 		return new Rectangle(scrollbarPos, scrollbarPos.Add(scrollbarSize))
-	}
-	private FixSelectedID(): void {
-		this.SelectedID = Math.max(
-			Math.min(this.InternalValuesNames.length - 1, this.SelectedID),
-			0
-		)
 	}
 }
 

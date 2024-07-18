@@ -138,36 +138,25 @@ export class ColorPicker extends Base {
 		tooltip = ""
 	) {
 		super(parent, name, tooltip)
-		defaultColor.CopyTo(this.SelectedColor)
+		this.ResetToDefault()
 	}
-
+	public ResetToDefault(): void {
+		this.defaultColor.CopyTo(this.SelectedColor)
+		super.ResetToDefault()
+	}
+	public IsDefault(): boolean {
+		return this.SelectedColor.Equals(this.defaultColor)
+	}
 	public get ConfigValue() {
 		return this.SelectedColor.toArray()
 	}
 	public set ConfigValue(value) {
-		if (
-			this.ShouldIgnoreNewConfigValue ||
-			value === undefined ||
-			!Array.isArray(value)
-		) {
+		if (!Array.isArray(value) || this.ShouldIgnoreNewConfigValue) {
+			// todo check for !undefined
 			return
 		}
-		this.SelectedColor.r = Math.max(
-			0,
-			Math.min(255, value[0] ?? this.SelectedColor.r)
-		)
-		this.SelectedColor.g = Math.max(
-			0,
-			Math.min(255, value[1] ?? this.SelectedColor.g)
-		)
-		this.SelectedColor.b = Math.max(
-			0,
-			Math.min(255, value[2] ?? this.SelectedColor.b)
-		)
-		this.SelectedColor.a = Math.max(
-			0,
-			Math.min(255, value[3] ?? this.SelectedColor.a)
-		)
+		this.SelectedColor.SetColor(...value)
+		this.UpdateIsDefault()
 	}
 
 	public get ClassPriority(): number {
