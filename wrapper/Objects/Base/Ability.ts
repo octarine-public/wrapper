@@ -348,7 +348,7 @@ export class Ability extends Entity {
 	}
 	public get BonusAOERadiusAmplifier(): number {
 		if (this.Owner === undefined || !this.HasAffectedByAOEIncrease) {
-			return 0
+			return 1
 		}
 		return this.Owner.BonusAOERadiusAmplifier
 	}
