@@ -215,6 +215,7 @@ export class Unit extends Entity {
 	public IsTrueSightedForEnemies = false
 	public HasScepterModifier = false
 	public HasShardModifier = false
+	public CanBeHealed = true
 
 	public UnitName_ = ""
 	public PlayerID = -1
@@ -1473,6 +1474,15 @@ export class Unit extends Entity {
 			if (hasShard !== lastHasShard) {
 				this.HasShardModifier = hasShard
 				EventsSDK.emit("HasShardChanged", false, this)
+			}
+		}
+
+		{
+			// CanBeHealed
+			const lastCanBeHealed = this.CanBeHealed
+			const newCanBeHealed = Modifier.CanBeHealed(buffs)
+			if (newCanBeHealed !== lastCanBeHealed) {
+				this.CanBeHealed = newCanBeHealed
 			}
 		}
 	}

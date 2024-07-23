@@ -25,7 +25,11 @@ import { Unit } from "./Unit"
 const scepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
 export class Modifier {
-	public static AttackThroughImmunity: string[] = [
+	public static readonly DebuffHeal: string[] = [
+		"modifier_ice_blast",
+		"modifier_doom_bringer_doom"
+	]
+	public static readonly AttackThroughImmunity: string[] = [
 		"modifier_item_revenants_brooch_active",
 		"modifier_muerta_pierce_the_veil_buff"
 	]
@@ -52,6 +56,14 @@ export class Modifier {
 	// TODO: rework this after add ModifierManager
 	public static HasShardBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => buff.Name === "modifier_item_aghanims_shard")
+	}
+
+	public static CanBeHealed(unit: Unit): boolean
+	public static CanBeHealed(buffs: Modifier[]): boolean
+	public static CanBeHealed(option: Unit | Modifier[]): boolean {
+		return Array.isArray(option)
+			? option.every(buff => !this.DebuffHeal.includes(buff.Name))
+			: option.Buffs.every(buff => !this.DebuffHeal.includes(buff.Name))
 	}
 
 	public IsValid = true
