@@ -499,6 +499,16 @@ interface EventsSDK extends EventEmitter {
 		listener: (obj: { [key: string]: any }) => void,
 		priority?: number
 	): EventEmitter
+	on(
+		name: "TaskReleased",
+		listener: (handleID: bigint) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "TaskCancelled",
+		listener: (handleID: bigint) => void,
+		priority?: number
+	): EventEmitter
 }
 
 export const EventsSDK: EventsSDK = new EventEmitter()

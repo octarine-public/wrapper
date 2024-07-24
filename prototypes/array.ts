@@ -107,11 +107,43 @@ Array.prototype.orderByFirst = function <T>(callback: (obj: T) => number): Nulla
 	return lowestScored
 }
 
-Array.prototype.compare = function <T>(array: T[]): boolean {
+Array.prototype.compare = function <T>(array: T[], unique = false): boolean {
 	if (this.length !== array.length) {
 		return false
 	}
-	return this.every((a, i) => a === array[i])
+	if (unique) {
+		const set1 = new Set(this)
+		const set2 = new Set(array)
+		if (set1.size !== set2.size) {
+			return false
+		}
+		for (const elem of set1) {
+			if (!set2.has(elem)) {
+				return false
+			}
+		}
+		return true
+	}
+
+	const map1 = new Map<T, number>(),
+		map2 = new Map<T, number>()
+	for (let i = 0; i < this.length; i++) {
+		const elem = this[i]
+		map1.set(elem, (map1.get(elem) ?? 0) + 1)
+	}
+	for (let i = 0; i < array.length; i++) {
+		const elem = array[i]
+		map2.set(elem, (map2.get(elem) ?? 0) + 1)
+	}
+	if (map1.size !== map2.size) {
+		return false
+	}
+	for (const [key, value] of map1) {
+		if (map2.get(key) !== value) {
+			return false
+		}
+	}
+	return true
 }
 
 Array.prototype.intersect = function <T>(array: T[]): T[] {
@@ -189,8 +221,10 @@ Array.prototype.removeCallback = function <T>(
 }
 
 Array.prototype.clear = function (): void {
-	// length = 0 (GC = immediately)
-	// this.arr = [] (GC = deferred)
-	// this.splice(0, this.length) (GC = deferred?)
-	this.length = 0
+	if (this.length !== 0) {
+		// length = 0 (GC = immediately)
+		// this.arr = [] (GC = deferred)
+		// this.splice(0, this.length) (GC = deferred?)
+		this.length = 0
+	}
 }

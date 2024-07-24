@@ -114,6 +114,7 @@ declare interface Array<T> {
 	 * @description Compares two arrays
 	 */
 	compare(array: T[]): boolean
+	compare(array: T[], unique: boolean): boolean
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or

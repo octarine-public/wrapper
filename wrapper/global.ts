@@ -18,6 +18,7 @@ import { MinimapSDK as _MinimapSDK } from "./Managers/MinimapSDK"
 import { ModifierManager as _ModifierManager } from "./Managers/ModifierManager"
 import { ParticlesSDK as _ParticlesSDK } from "./Managers/ParticleManager"
 import { PathfinderSDK as _PathfinderSDK } from "./Managers/Pathfinder/PathfinderSDK"
+import { TaskManager as _TaskManager } from "./Managers/TaskManager"
 import { MenuManager as _Menu } from "./Menu/Menu"
 import { RendererSDK as _RendererSDK } from "./Native/RendererSDK"
 import { SoundSDK as _SoundSDK } from "./Native/SoundSDK"
@@ -105,6 +106,7 @@ globalThis.ParticlesSDK = _ParticlesSDK
 globalThis.WASM = _WASM
 globalThis.MinimapSDK = _MinimapSDK
 globalThis.InputManager = _InputManager
+globalThis.TaskManager = _TaskManager
 globalThis.GUIInfo = _GUIInfo
 
 globalThis.Menu = _Menu

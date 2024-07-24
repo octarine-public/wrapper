@@ -106,6 +106,7 @@ export {
 } from "./Managers/ParticleManager"
 export { PathfinderSDK } from "./Managers/Pathfinder/PathfinderSDK"
 export { ProjectileManager } from "./Managers/ProjectileManager"
+export { TaskManager } from "./Managers/TaskManager"
 export * as Menu from "./Menu/index"
 export { ConVarsSDK } from "./Native/ConVarsSDK"
 export { ExecuteOrder } from "./Native/ExecuteOrder"

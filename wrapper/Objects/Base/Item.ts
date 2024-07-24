@@ -3,6 +3,7 @@ import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAScriptInventorySlot } from "../../Enums/DOTAScriptInventorySlot"
 import { EShareAbility } from "../../Enums/EShareAbility"
 import { EPropertyType } from "../../Enums/PropertyType"
+import { Team } from "../../Enums/Team"
 import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { GameState } from "../../Utils/GameState"
 import { Ability } from "./Ability"
@@ -57,6 +58,8 @@ export class Item extends Ability {
 	public IsNeutralDrop: boolean = false
 	@NetworkedBasicField("m_iCurrentCharges")
 	public ItemCurrentCharges: number = 0
+	@NetworkedBasicField("m_nNeutralDropTeam")
+	public NeutralDropTeam: Team = Team.None
 	public ItemSlot = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1
 
 	public get Purchaser() {
