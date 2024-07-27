@@ -178,7 +178,12 @@ export class Node extends Base {
 			if (e.SaveConfig) {
 				let value = obj[e.InternalName]
 				if (value === undefined) {
-					e.foreachParent(node => (node.FirstTime = true), true)
+					let isVisible = true
+					e.foreachParent(node => {
+						if ((isVisible &&= !node.IsHidden)) {
+							node.FirstTime = true
+						}
+					}, true)
 				} else if (value === this.cfgDefValue) {
 					value = undefined
 				}
@@ -525,20 +530,8 @@ export class Node extends Base {
 		if (!this.IsOpen) {
 			return true
 		}
-		const entries = this.entries
-		for (let i = 0, end = entries.length; i < 0; i++) {
-			const entry = entries[i]
-			if (entry === undefined) {
-				continue
-			}
-			if (entry.IsVisible && !entry.OnPreMouseLeftDown()) {
-				this.activeElement = entry
-				return false
-			}
-		}
-		const entries2 = this.entries
-		for (let i = 0, end = entries2.length; i < end; i++) {
-			const entry = entries2[i]
+		for (let i = 0, end = this.entries.length; i < end; i++) {
+			const entry = this.entries[i]
 			if (entry.IsVisible && !entry.OnMouseLeftDown()) {
 				this.activeElement = entry
 				return false

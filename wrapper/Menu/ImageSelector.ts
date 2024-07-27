@@ -82,10 +82,13 @@ export class ImageSelector extends Base {
 		super.ResetToDefault()
 	}
 	public IsDefault(): boolean {
-		return (
-			JSON.stringify([...this.enabledValues.entries()]) ===
-			JSON.stringify([...this.defaultValues.entries()])
-		)
+		let isDefault = true
+
+		this.enabledValues.forEach((value, key) => {
+			isDefault &&=
+				value === (this.defaultValues.get(key) ?? this.createdDefaultState)
+		})
+		return isDefault
 	}
 	public get ConfigValue() {
 		return [...this.enabledValues.entries()]

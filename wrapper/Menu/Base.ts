@@ -109,10 +109,6 @@ export class Base {
 	}
 	public ResetToDefault(): void {
 		this.IsDefaultValue = this.configDirty = true
-
-		if (!this.IsDefault()) {
-			console.log("failed to ResetToDefault:\n", { ...this })
-		}
 	}
 	public IsDefault(): boolean {
 		return true
@@ -192,6 +188,14 @@ export class Base {
 			this.QueuedUpdate = true
 			this.QueuedUpdateRecursive = recursive
 			return false
+		}
+		if (this.FirstTime) {
+			let isVisible = true
+			this.foreachParent(node => {
+				if ((isVisible &&= !node.IsHidden)) {
+					node.FirstTime = true
+				}
+			}, true)
 		}
 
 		this.UpdateIsDefault()

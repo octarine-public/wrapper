@@ -286,8 +286,19 @@ class CMenuManager {
 	}
 
 	public OnMouseRightDown(): boolean {
-		if (this.IsOpen && Base.HoveredElement?.parent instanceof Node) {
-			return Base.HoveredElement.parent.OnPopupClick(true)
+		if (
+			this.IsOpen &&
+			Base.HoveredElement?.parent instanceof Node &&
+			!Base.HoveredElement.parent.OnPopupClick(true)
+		) {
+			Base.ActiveElement =
+				Slider.DraggingNow =
+				KeyBind.changingNow =
+				Dropdown.activeDropdown =
+				ColorPicker.activeColorpicker =
+					/**/ undefined
+
+			return false
 		}
 		return true
 	}

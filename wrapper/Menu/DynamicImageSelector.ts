@@ -159,12 +159,6 @@ export class DynamicImageSelector extends Base {
 			return false
 		}
 
-		if (this.enabledValues === undefined) {
-			console.log("fixing undefined update\ncopy:", { ...this }, "ref: ", this)
-			this.ResetToDefault()
-			this.enabledValues ??= new Map()
-		}
-
 		this.values = [
 			...[...this.enabledValues.keys()]
 				.filter(name => this.IsVisibleImage(name))
@@ -257,16 +251,6 @@ export class DynamicImageSelector extends Base {
 			this.values.push(name)
 		}
 
-		if (this.enabledValues === undefined) {
-			console.log(
-				"fixing undefined OnAddNewImage\ncopy:",
-				{ ...this },
-				"ref: ",
-				this
-			)
-			this.ResetToDefault()
-			this.enabledValues ??= new Map()
-		}
 		const enabledValues = this.enabledValues.get(name)
 		if (enabledValues === undefined || !Array.isArray(enabledValues)) {
 			this.enabledValues.set(name, [

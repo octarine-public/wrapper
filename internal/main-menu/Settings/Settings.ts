@@ -41,13 +41,15 @@ export const InternalSettings = new (class {
 		const key = reloadTree.AddKeybind("Key Bind")
 		reloadTree.AddButton("Reload").OnValue(() => reload())
 		key.ActivatesInMenu = true
-		key.OnPressed(() => reload())
+		key.OnPressed(() => this.InternalNotifications.OnBindPressed())
+		key.OnRelease(() => this.InternalNotifications.OnBindRelease())
 	}
 
 	public Draw() {
 		this.InternalCamera.Draw()
 		this.InternalConfig.OnDraw()
 		this.InternalNotifications.onDraw()
+		this.InternalNotifications.OnDraw()
 	}
 
 	public MouseWheel(up: boolean) {

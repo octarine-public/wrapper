@@ -99,6 +99,8 @@ export class ColorPicker extends Base {
 	private static readonly colorpickerHueSize = new Vector2()
 	private static colorpickerColorHueGap = 0
 	private static readonly colorpickerAlphaPath = "menu/colorpicker_alpha.svg"
+	private static readonly colorpickerAlphaPathBackground =
+		"menu/colorpicker_alpha_background.svg"
 	private static readonly origColorpickerAlphaSize = RendererSDK.GetImageSize(
 		ColorPicker.colorpickerAlphaPath
 	)
@@ -126,6 +128,9 @@ export class ColorPicker extends Base {
 	private static colorpickerTextXGap = 0
 
 	public readonly SelectedColor = new Color()
+	protected selectedHue = 0
+	protected selectedSaturation = 0
+
 	protected draggingColor = false
 	protected draggingHue = false
 	protected draggingAlpha = false
@@ -194,8 +199,8 @@ export class ColorPicker extends Base {
 			return false
 		}
 		this.Size.x =
-			this.textOffset.x +
 			this.nameSize.x +
+			ColorPicker.textOffsetWithIcon.x +
 			ColorPicker.textColorGap +
 			ColorPicker.selectedColorSize.x +
 			ColorPicker.colorOffset.x
@@ -242,12 +247,8 @@ export class ColorPicker extends Base {
 			-1,
 			colorpickerRect.Size
 		)
-		const [h] = RGBToHSV(
-			this.SelectedColor.r,
-			this.SelectedColor.g,
-			this.SelectedColor.b
-		)
-		const hueColor = new Color(...HSVToRGB(h, 1, 1))
+
+		const hueColor = new Color(...HSVToRGB(this.selectedHue, 1, 1))
 		const colorpickerColorRect = this.GetColorPickerColorRect(colorpickerRect)
 		RendererSDK.Image(
 			ColorPicker.colorpickerColorPath,
@@ -299,6 +300,12 @@ export class ColorPicker extends Base {
 		)
 
 		const colorpickerAlphaRect = this.GetColorPickerAlphaRect(colorpickerHueRect)
+		RendererSDK.Image(
+			ColorPicker.colorpickerAlphaPathBackground,
+			colorpickerAlphaRect.pos1,
+			-1,
+			colorpickerAlphaRect.Size
+		)
 		RendererSDK.Image(
 			ColorPicker.colorpickerAlphaPath,
 			colorpickerAlphaRect.pos1,
@@ -366,10 +373,11 @@ export class ColorPicker extends Base {
 				.DivideForThis(colorpickerColorRect.Size)
 			const s = Math.min(Math.max(sv.x, 0), 1),
 				v = 1 - Math.min(Math.max(sv.y, 0), 1)
-			const [r, g, b] = HSVToRGB(h, s, v)
+			const [r, g, b] = HSVToRGB(this.selectedHue, s, v)
 			this.SelectedColor.SetColor(r, g, b, this.SelectedColor.a)
+			this.selectedSaturation = s
 		} else if (this.draggingHue) {
-			const hue = Math.min(
+			this.selectedHue = Math.min(
 				Math.max(
 					(mousePos.x - colorpickerHueRect.pos1.x) / colorpickerHueRect.Width,
 					0
@@ -381,7 +389,7 @@ export class ColorPicker extends Base {
 				this.SelectedColor.g,
 				this.SelectedColor.b
 			)
-			const [r, g, b] = HSVToRGB(hue, s, v)
+			const [r, g, b] = HSVToRGB(this.selectedHue, s, v)
 			this.SelectedColor.SetColor(r, g, b, this.SelectedColor.a)
 		} else if (this.draggingAlpha) {
 			const alpha = Math.min(
@@ -406,9 +414,26 @@ export class ColorPicker extends Base {
 	public OnPreMouseLeftDown(): boolean {
 		const colorpickerRect = this.ColorPickerRect,
 			mousePos = this.MousePosition
-		if (!(this.isActive && colorpickerRect.Contains(mousePos))) {
+		return !(this.isActive && colorpickerRect.Contains(mousePos))
+	}
+	public OnMouseLeftDown(): boolean {
+		if (!this.IsHovered) {
 			return true
 		}
+		if (!this.isActive) {
+			ColorPicker.activeColorpicker = this
+
+			this.selectedHue = RGBToHSV(
+				this.SelectedColor.r,
+				this.SelectedColor.g,
+				this.SelectedColor.b
+			)[0]
+
+			return false
+		}
+		const colorpickerRect = this.ColorPickerRect,
+			mousePos = this.MousePosition
+
 		const colorpickerColorRect = this.GetColorPickerColorRect(colorpickerRect)
 		const colorpickerColorPickerRect =
 			this.GetColorPickerCircleRect(colorpickerColorRect)
@@ -451,19 +476,6 @@ export class ColorPicker extends Base {
 		}
 		return false
 	}
-	public OnMouseLeftDown(): boolean {
-		if (!this.IsHovered) {
-			return true
-		}
-		if (ColorPicker.activeColorpicker !== this) {
-			ColorPicker.activeColorpicker = this
-			this.isActive = true
-		} else {
-			ColorPicker.activeColorpicker = undefined
-			this.isActive = false
-		}
-		return false
-	}
 	public OnMouseLeftUp(): boolean {
 		this.draggingColor = this.draggingHue = this.draggingAlpha = false
 		return false
@@ -473,18 +485,21 @@ export class ColorPicker extends Base {
 		return new Rectangle(basePos, basePos.AddScalar(ColorPicker.colorpickerColorSize))
 	}
 	private GetColorPickerCircleRect(colorpickerColorRect: Rectangle): Rectangle {
-		const [, s, v] = RGBToHSV(
-			this.SelectedColor.r,
-			this.SelectedColor.g,
-			this.SelectedColor.b
-		)
+		const sv = new Vector2(this.selectedSaturation, 1)
+		if (this.SelectedColor.toUint32() & 0xffffff) {
+			const hsv = RGBToHSV(
+				this.SelectedColor.r,
+				this.SelectedColor.g,
+				this.SelectedColor.b
+			)
+			sv.SetVector(hsv[1], 1 - hsv[2])
+		}
+		const circleSize = ColorPicker.colorpickerPickerCircleSize
 		const basePos = colorpickerColorRect.pos1
-			.Add(colorpickerColorRect.Size.MultiplyScalarX(s).MultiplyScalarY(1 - v))
-			.SubtractForThis(ColorPicker.colorpickerPickerCircleSize.DivideScalar(2))
-		return new Rectangle(
-			basePos,
-			basePos.Add(ColorPicker.colorpickerPickerCircleSize)
-		)
+			.Add(colorpickerColorRect.Size.MultiplyForThis(sv))
+			.SubtractForThis(circleSize.DivideScalar(2))
+
+		return new Rectangle(basePos, basePos.Add(circleSize))
 	}
 	private GetColorPickerHueRect(colorpickerColorRect: Rectangle): Rectangle {
 		const basePos = colorpickerColorRect.pos1
@@ -493,14 +508,9 @@ export class ColorPicker extends Base {
 		return new Rectangle(basePos, basePos.Add(ColorPicker.colorpickerHueSize))
 	}
 	private GetColorPickerHuePickerRect(colorpickerHueRect: Rectangle): Rectangle {
-		const [h] = RGBToHSV(
-			this.SelectedColor.r,
-			this.SelectedColor.g,
-			this.SelectedColor.b
-		)
 		const basePos = colorpickerHueRect.pos1
 			.Clone()
-			.AddScalarX(colorpickerHueRect.Size.x * h)
+			.AddScalarX(colorpickerHueRect.Size.x * this.selectedHue)
 			.SubtractScalarX(ColorPicker.colorpickerPickerRectSize.x / 2)
 			.AddScalarY(
 				(colorpickerHueRect.Height - ColorPicker.colorpickerPickerRectSize.y) / 2

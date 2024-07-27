@@ -63,6 +63,7 @@ export class Dropdown extends Base {
 
 	public ValuesNames: string[]
 	private SelectedID_ = 0
+	/** keep space for longest value + arrow. false is used for language dropdown */
 	public KeepArrowGap = true
 	public UseOneLine = true
 
@@ -113,25 +114,30 @@ export class Dropdown extends Base {
 		const rect = this.Rect,
 			offset = Dropdown.dropdownOffset,
 			arrowGap = Dropdown.dropdownEndGap,
-			staticWidth = offset.x + arrowGap + Dropdown.dropdownTextOffset.x * 2,
-			staticHeight = offset.y + Dropdown.dropdownTextOffset.y * 2,
-			maxSize = this.longestValueSize,
-			textWidth = this.KeepArrowGap
-				? maxSize.x
-				: Math.max(maxSize.x - arrowGap, this.ValuesSizes[this.SelectedID].x),
-			startPos = this.UseOneLine
-				? new Vector2(
-					rect.pos2.x - textWidth - staticWidth,
-					rect.pos1.y + offset.y
-				)
-				: new Vector2(
-					rect.pos1.x + offset.x,
-					rect.pos2.y - maxSize.y - staticHeight
-				)
+			staticSize = Dropdown.dropdownTextOffset
+				.MultiplyScalar(2)
+				.AddForThis(offset)
+				.AddScalarX(arrowGap),
+			textSize = this.longestValueSize
 
+		if (!this.KeepArrowGap) {
+			textSize.x = Math.max(
+				textSize.x - arrowGap,
+				this.ValuesSizes[this.SelectedID].x
+			)
+		}
+
+		let x, y
+		if (this.UseOneLine) {
+			x = rect.pos2.x - textSize.x - staticSize.x
+			y = rect.pos1.y + offset.y
+		} else {
+			x = rect.pos1.x + offset.x
+			y = rect.pos2.y - textSize.y - staticSize.y
+		}
 		return new Rectangle(
-			startPos,
-			rect.pos2.Subtract(offset).AddScalarX(2) // because dropdownOffset includes bar size
+			new Vector2(x, y),
+			rect.pos2.Subtract(offset).AddScalarX(Base.barWidth)
 		)
 	}
 	public get PopupElementHeight(): number {
@@ -153,29 +159,25 @@ export class Dropdown extends Base {
 			return prev
 		}, new Vector2()).CopyTo(this.longestValueSize)
 
-		if (this.UseOneLine) {
-			this.Size.x =
-				this.nameSize.x + this.textOffset.x * 2 + this.longestValueSize.x
-			this.Size.x += Dropdown.dropdownTextOffset.x * 2 + Dropdown.dropdownOffset.x
-			this.Size.x += Dropdown.dropdownEndGap - 2
+		const nameWidth = this.nameSize.x + this.textOffset.x * 2
+		let dropdownWidth = this.longestValueSize.x
+		if (!this.KeepArrowGap) {
+			dropdownWidth = Math.max(
+				dropdownWidth - Dropdown.dropdownEndGap,
+				this.ValuesSizes[this.SelectedID].x
+			)
+		}
+		const textPad = Dropdown.dropdownTextOffset.MultiplyScalar(2),
+			offset = Dropdown.dropdownOffset
+		dropdownWidth += Dropdown.dropdownEndGap + textPad.x + offset.x
 
+		if (this.UseOneLine) {
+			this.Size.x = nameWidth + dropdownWidth
 			this.Size.y = Base.DefaultSize.y
 		} else {
-			this.Size.x = Math.max(
-				this.nameSize.x + this.textOffset.x * 2,
-				this.longestValueSize.x +
-				Dropdown.dropdownTextOffset.x * 2 +
-				Dropdown.dropdownOffset.x * 2 -
-				2 + // because dropdownOffset includes bar size
-				Dropdown.dropdownEndGap
-			)
-			this.Size.y =
-				this.nameSize.y +
-				this.textOffset.y +
-				Dropdown.nameDropdownGap +
-				Dropdown.dropdownTextOffset.y * 2 +
-				this.longestValueSize.y +
-				Dropdown.dropdownOffset.y
+			this.Size.x = Math.max(nameWidth, dropdownWidth + offset.x - Base.barWidth)
+			this.Size.y = this.nameSize.y + this.textOffset.y + this.longestValueSize.y
+			this.Size.y += Dropdown.nameDropdownGap + textPad.y + offset.y
 		}
 		return true
 	}

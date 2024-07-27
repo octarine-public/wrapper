@@ -32,7 +32,7 @@ export class Button extends Base {
 				.AddScalarX(this.parent.EntriesSizeX)
 				.AddScalarY(this.Size.y)
 				.SubtractForThis(Button.buttonOffset)
-				.AddScalarX(2) // because textButtonGap includes bar size
+				.AddScalarX(Base.barWidth)
 		)
 	}
 	public Update(): boolean {
@@ -41,7 +41,7 @@ export class Button extends Base {
 		}
 		Button.buttonOffset
 			.MultiplyScalar(2)
-			.SubtractScalarX(2) // because textButtonGap includes bar size
+			.SubtractScalarX(Base.barWidth)
 			.AddForThis(Vector2.FromVector3(this.nameSize))
 			.AddScalarX(Button.textButtonGap * 2)
 			.AddScalarY(Button.textVerticalButtonGap * 2)

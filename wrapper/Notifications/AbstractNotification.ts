@@ -11,8 +11,8 @@ export abstract class Notification {
 	private TimeToShow = 4 * 1000 // 4 seconds by default
 
 	private IsPlaying = false
-	private stopDisplayTime = 0
-	private startDisplayTime = 0
+	public StopDisplayTime = 0
+	public StartDisplayTime = 0
 	private sourceEntity: Nullable<Entity>
 	private position = new Vector3().Invalidate()
 	private playSoundName: Nullable<string> = undefined
@@ -32,7 +32,7 @@ export abstract class Notification {
 	}
 
 	public get IsExpired() {
-		return hrtime() > this.stopDisplayTime
+		return hrtime() > this.StopDisplayTime
 	}
 
 	public get BackgroundCover() {
@@ -51,10 +51,10 @@ export abstract class Notification {
 	protected get Opacity() {
 		let timeSince = 1000
 		const currentTime = hrtime()
-		if (this.startDisplayTime + 500 > currentTime) {
-			timeSince = currentTime - this.startDisplayTime
-		} else if (currentTime + 500 > this.stopDisplayTime) {
-			timeSince = this.stopDisplayTime - currentTime
+		if (this.StartDisplayTime + 500 > currentTime) {
+			timeSince = currentTime - this.StartDisplayTime
+		} else if (currentTime + 500 > this.StopDisplayTime) {
+			timeSince = this.StopDisplayTime - currentTime
 		}
 		return Math.min((Math.max(timeSince, 0) / 1000) * 2, 1) * 255
 	}
@@ -70,8 +70,12 @@ export abstract class Notification {
 	 * don't use method. Please, use global method Notificator.Push(new yourClassName())
 	 */
 	public PushTime() {
-		this.startDisplayTime = hrtime()
-		this.stopDisplayTime = this.startDisplayTime + this.TimeToShow
+		if (this.StartDisplayTime === 0) {
+			this.StartDisplayTime = hrtime()
+		}
+		if (this.TimeToShow) {
+			this.StopDisplayTime = this.StartDisplayTime + this.TimeToShow
+		}
 	}
 
 	public PlaySound() {

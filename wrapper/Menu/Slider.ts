@@ -85,7 +85,10 @@ export class Slider extends Base {
 					Slider.sliderBackgroundOffset.y -
 					Slider.sliderBackgroundHeight
 			),
-			rect.pos2.Clone().SubtractForThis(Slider.sliderBackgroundOffset).AddScalarX(1) // because sliderBackgroundOffset includes bar size (?)
+			rect.pos2
+				.Clone()
+				.SubtractForThis(Slider.sliderBackgroundOffset)
+				.AddScalarX(Base.barWidth)
 		)
 	}
 
