@@ -43,7 +43,7 @@ export class Ability extends Entity {
 	@NetworkedBasicField("m_iManaCost")
 	public NetworkedManaCost = 0
 	@NetworkedBasicField("m_flOverrideCastPoint")
-	public OverrideCastPoint = 0
+	public OverrideCastPoint = -1
 	@NetworkedBasicField("m_flCooldownLength")
 	public CooldownLength_ = 0
 	@NetworkedBasicField("m_flCastStartTime")
@@ -145,10 +145,10 @@ export class Ability extends Entity {
 		return this.GetSpecialValue("final_aoe")
 	}
 	public get CastPoint(): number {
-		let castPoint = this.OverrideCastPoint // default -1
-		if (castPoint < 0) {
+		let castPoint = this.OverrideCastPoint
+		if (castPoint === -1) {
 			const amp = this.CastPointAmplifier
-			castPoint = Math.max(amp * this.GetBaseCastPointForLevel(this.Level), 0)
+			castPoint = amp * this.GetBaseCastPointForLevel(this.Level)
 		}
 		return Math.ceil(castPoint / GameState.TickInterval) * GameState.TickInterval
 	}
