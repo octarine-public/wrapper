@@ -35,7 +35,7 @@ export class InternalConfig {
 
 		this.markNonDefault.markColorCustom = Menu.Base.markColorNonDefault
 
-		const skipNodes = (path: string[], depth: number) => {
+		const skipNodes = (path: string[], depth: number, pop = false) => {
 			let list = this.list!
 
 			if (
@@ -48,7 +48,9 @@ export class InternalConfig {
 						list = list.AddNode(path.shift()!, s.IconPath, "", -1, 1)
 					}
 				}
-				path.pop()
+				if (pop) {
+					path.pop()
+				}
 			}
 			return list
 		}
@@ -76,7 +78,7 @@ export class InternalConfig {
 				),
 			create: (origEl, path) => {
 				const origKb = origEl as unknown as Menu.KeyBind
-				const kb = skipNodes(path, 3).AddKeybind(
+				const kb = skipNodes(path, 3, true).AddKeybind(
 					path.join(" > "),
 					origKb.assignedKeyStr
 				)
@@ -85,7 +87,6 @@ export class InternalConfig {
 					kb.defaultKey = origKb.defaultKey
 					kb.defaultKeyIdx = origKb.defaultKeyIdx
 				}
-				kb.executeOnAdd = false
 				kb.OnValue(b => {
 					origKb.ResetToDefault()
 					origKb.ConfigValue = b.assignedKey
