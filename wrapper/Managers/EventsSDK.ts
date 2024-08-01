@@ -357,6 +357,14 @@ interface EventsSDK extends EventEmitter {
 		listener: (oldValue: number, newValue: number) => void,
 		priority?: number
 	): EventEmitter
+	/**
+	 * @description Includes fog of war
+	 */
+	on(
+		name: "UnitLevelChanged",
+		listener: (unit: Unit) => void,
+		priority?: number
+	): EventEmitter
 	on(
 		name: "ServerTick",
 		listener: (

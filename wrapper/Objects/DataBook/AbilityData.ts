@@ -9,6 +9,7 @@ import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EDOTASpecialBonusOperation } from "../../Enums/EDOTASpecialBonusOperation"
 import { GameActivity } from "../../Enums/GameActivity"
+import { SPELL_DISPELLABLE_TYPES } from "../../Enums/SPELL_DISPELLABLE_TYPES"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { MapValueToBoolean, MapValueToString } from "../../Resources/ParseUtils"
 import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
@@ -82,9 +83,10 @@ export class AbilityData {
 	public readonly AbilityType: ABILITY_TYPES
 	public readonly MaxLevel: number
 	public readonly TexturePath: string
-	public readonly TargetFlags: number // DOTA_UNIT_TARGET_FLAGS bitmask
-	public readonly TargetTeam: number // DOTA_UNIT_TARGET_TEAM bitmask
-	public readonly TargetType: number // DOTA_UNIT_TARGET_TYPE bitmask
+	public readonly TargetFlags: DOTA_UNIT_TARGET_FLAGS // bitmask
+	public readonly TargetTeam: DOTA_UNIT_TARGET_TEAM // bitmask
+	public readonly TargetType: DOTA_UNIT_TARGET_TYPE // bitmask
+	public readonly SpellDispellableType: SPELL_DISPELLABLE_TYPES
 	public readonly SharedCooldownName: string
 	public readonly ModelName: string
 	public readonly AlternateModelName: string
@@ -204,23 +206,30 @@ export class AbilityData {
 			? parseEnumString(
 					DOTA_UNIT_TARGET_FLAGS,
 					kv.get("AbilityUnitTargetFlags") as string,
-					0
+					DOTA_UNIT_TARGET_FLAGS.DOTA_UNIT_TARGET_FLAG_NONE
 				)
 			: DOTA_UNIT_TARGET_FLAGS.DOTA_UNIT_TARGET_FLAG_NONE
 		this.TargetTeam = kv.has("AbilityUnitTargetTeam")
 			? parseEnumString(
 					DOTA_UNIT_TARGET_TEAM,
 					kv.get("AbilityUnitTargetTeam") as string,
-					0
+					DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_NONE
 				)
 			: DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_NONE
 		this.TargetType = kv.has("AbilityUnitTargetType")
 			? parseEnumString(
 					DOTA_UNIT_TARGET_TYPE,
 					kv.get("AbilityUnitTargetType") as string,
-					0
+					DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_NONE
 				)
 			: DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_NONE
+		this.SpellDispellableType = kv.has("AbilityUnitTargetType")
+			? parseEnumString(
+					SPELL_DISPELLABLE_TYPES,
+					kv.get("SpellDispellableType") as string,
+					SPELL_DISPELLABLE_TYPES.SPELL_DISPELLABLE_NONE
+				)
+			: SPELL_DISPELLABLE_TYPES.SPELL_DISPELLABLE_NONE
 		this.CastAnimation = kv.has("AbilityCastAnimation")
 			? parseEnumString(GameActivity, kv.get("AbilityCastAnimation") as string, 0)
 			: undefined
@@ -338,6 +347,10 @@ export class AbilityData {
 					0
 				)
 			: DOTA_ITEM_DISASSEMBLE.DOTA_ITEM_DISASSEMBLE_NONE
+	}
+
+	public HasTargetTeam(flag: DOTA_UNIT_TARGET_TEAM): boolean {
+		return this.TargetTeam.hasMask(flag)
 	}
 
 	public DisposeAllData() {

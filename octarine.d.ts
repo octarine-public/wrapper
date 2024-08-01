@@ -112,8 +112,17 @@ declare interface Array<T> {
 	 * `import "github.com/octarine-public/wrapper/global"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description Compares two arrays
+	 * @param {T[]} array - The array to compare.
 	 */
 	compare(array: T[]): boolean
+	/**
+	 * @requires
+	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
+	 * @description Compares two arrays
+	 * @param {T[]} array - The array to compare.
+	 * @param {boolean} unique - Used Set([1, 1, 2]) remove duplicates
+	 */
 	compare(array: T[], unique: boolean): boolean
 	/**
 	 * @requires

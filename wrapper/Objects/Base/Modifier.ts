@@ -362,6 +362,10 @@ export class Modifier {
 		this.updateAllSpecialValues()
 	}
 
+	public OnUnitLevelChanged(): void {
+		this.updateAllSpecialValues()
+	}
+
 	public OnAbilityCooldownChanged(): void {
 		// implement in child classes
 	}

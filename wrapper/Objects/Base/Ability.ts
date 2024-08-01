@@ -1,6 +1,6 @@
 import { QAngle } from "../../Base/QAngle"
 import { Vector3 } from "../../Base/Vector3"
-import { GetSpellTexture } from "../../Data/ImageData"
+import { GetSpellTexture, GetUnitTexture } from "../../Data/ImageData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { ABILITY_TYPES } from "../../Enums/ABILITY_TYPES"
 import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
@@ -9,6 +9,7 @@ import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
 import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EAbilitySlot } from "../../Enums/EAbilitySlot"
+import { SPELL_DISPELLABLE_TYPES } from "../../Enums/SPELL_DISPELLABLE_TYPES"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { IPrediction } from "../../Managers/Prediction/IPrediction"
@@ -128,6 +129,18 @@ export class Ability extends Entity {
 	public get AbilityBehaviorMask(): DOTA_ABILITY_BEHAVIOR {
 		return this.AbilityData.AbilityBehavior
 	}
+	public get TargetTypeMask(): DOTA_UNIT_TARGET_TYPE {
+		return this.AbilityData.TargetType
+	}
+	public get TargetTeamMask(): DOTA_UNIT_TARGET_TEAM {
+		return this.AbilityData.TargetTeam
+	}
+	public get TargetFlagsMask(): DOTA_UNIT_TARGET_FLAGS {
+		return this.AbilityData.TargetFlags
+	}
+	public get SpellDispellableTypeMask(): SPELL_DISPELLABLE_TYPES {
+		return this.AbilityData.SpellDispellableType
+	}
 	public get AbilityDamage(): number {
 		return this.GetBaseDamageForLevel(this.Level)
 	}
@@ -235,25 +248,34 @@ export class Ability extends Entity {
 	public get AbilityImmunityType(): SPELL_IMMUNITY_TYPES {
 		return this.AbilityData.AbilityImmunityType
 	}
-	public get TargetFlags(): DOTA_UNIT_TARGET_FLAGS[] {
+	public get TargetFlags() {
 		return this.AbilityData.TargetFlags.toMask
 	}
-	public get TargetTeam(): DOTA_UNIT_TARGET_TEAM[] {
+	public get TargetTeam() {
 		return this.AbilityData.TargetTeam.toMask
 	}
-	public get TargetType(): DOTA_UNIT_TARGET_TYPE[] {
+	public get TargetType() {
 		return this.AbilityData.TargetType.toMask
 	}
 	public get TexturePath(): string {
-		return GetSpellTexture(this.Name)
+		const owner = this.Owner
+		const abilityTexture = GetSpellTexture(this.Name)
+		if (owner === undefined) {
+			return abilityTexture
+		}
+		const unitTexture = GetUnitTexture(owner.Name)
+		return this.IsInnate && this.IsHidden
+			? unitTexture ?? abilityTexture
+			: abilityTexture
 	}
 	public get IsPassive(): boolean {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
 	}
+	public get IsNotLearnable(): boolean {
+		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE)
+	}
 	public get NoTarget(): boolean {
-		return this.HasBehavior(
-			DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_IGNORE_BACKSWING
-		)
+		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)
 	}
 	public get IgnoreBackSwing(): boolean {
 		return this.HasBehavior(
@@ -582,13 +604,16 @@ export class Ability extends Entity {
 		return this.AbilityBehaviorMask.hasMask(flag)
 	}
 	public HasTargetFlags(flag: DOTA_UNIT_TARGET_FLAGS): boolean {
-		return this.AbilityData.TargetFlags.hasMask(flag)
+		return this.TargetFlagsMask.hasMask(flag)
 	}
 	public HasTargetTeam(flag: DOTA_UNIT_TARGET_TEAM): boolean {
-		return this.AbilityData.TargetTeam.hasMask(flag)
+		return this.TargetTeamMask.hasMask(flag)
 	}
 	public HasTargetType(flag: DOTA_UNIT_TARGET_TYPE): boolean {
-		return this.AbilityData.TargetType.hasMask(flag)
+		return this.TargetTypeMask.hasMask(flag)
+	}
+	public HasDispellableType(flag: SPELL_DISPELLABLE_TYPES): boolean {
+		return this.SpellDispellableTypeMask.hasMask(flag)
 	}
 	public CanHit(target: Unit): boolean {
 		if (this.Owner === undefined) {
@@ -619,6 +644,15 @@ export class Ability extends Entity {
 		return this.IsManaEnough(bonusMana)
 	}
 	public IsDoubleTap(_order: ExecuteOrder): boolean {
+		return false
+	}
+	public IsHealthCost(): this is IHealthCost {
+		return false
+	}
+	public IsManaRestore(): this is IManaRestore<Unit> {
+		return false
+	}
+	public IsHealthRestore(): this is IHealthRestore<Unit> {
 		return false
 	}
 	protected IsDebuffImmune(target?: Unit): boolean {

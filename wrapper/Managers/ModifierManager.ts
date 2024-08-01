@@ -281,6 +281,14 @@ EventsSDK.on("AbilityLevelChanged", abil => {
 	})
 })
 
+EventsSDK.on("UnitLevelChanged", unit => {
+	activeModifiers.forEach(mod => {
+		if (unit === mod.Ability?.Owner || unit === mod.Parent || unit === mod.Caster) {
+			mod.OnUnitLevelChanged()
+		}
+	})
+})
+
 EventsSDK.on("HasShardChanged", unit => {
 	activeModifiers.forEach(mod => {
 		if (mod.Ability !== undefined && unit === mod.Ability.Owner) {

@@ -1,5 +1,7 @@
 import { WrapperClass } from "../../Decorators"
-import { Item } from "../Base/Item"
+import { item_magic_wand } from "./item_magic_wand"
 
 @WrapperClass("item_holy_locket")
-export class item_holy_locket extends Item {}
+export class item_holy_locket extends item_magic_wand {
+	public readonly RestoresAlly = true
+}

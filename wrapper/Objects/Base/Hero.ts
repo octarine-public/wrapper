@@ -54,10 +54,7 @@ export class Hero extends Unit {
 		return this.UnitData.BaseAttackSpeed
 	}
 	public get BaseAttackRange(): number {
-		return (
-			this.ReplicatingOtherHeroModel?.BaseAttackRange ??
-			this.CalcualteBaseAttackRange()
-		)
+		return this.ReplicatingOtherHeroModel?.BaseAttackRange ?? super.BaseAttackRange
 	}
 	public get IsRealHero(): boolean {
 		return !this.IsClone && !this.IsIllusion && !this.IsStrongIllusion

@@ -122,8 +122,6 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_bIsWaitingToSpawn")
 	public IsWaitingToSpawn = false
 	public PredictedIsWaitingToSpawn = true
-	@NetworkedBasicField("m_iCurrentLevel")
-	public Level = 0
 	@NetworkedBasicField("m_flMana")
 	public Mana = 0
 	@NetworkedBasicField("m_flMaxMana")
@@ -157,6 +155,7 @@ export class Unit extends Entity {
 	public SequenceParityPrev = 0
 
 	public Parity = 0
+	public Level = 0
 	public Agility = 0
 	public Intellect = 0
 	public Strength = 0
@@ -605,7 +604,7 @@ export class Unit extends Entity {
 		return this.Buffs.some(x => x.IsInfinityAttackRange)
 	}
 	public get BaseAttackRange(): number {
-		return this.CalcualteBaseAttackRange()
+		return this.UnitData.BaseAttackRange
 	}
 	public get BonusAttackRange(): number {
 		return this.CalcualteBonusAttackRange()
@@ -997,17 +996,15 @@ export class Unit extends Entity {
 	public GetAttackRange(target?: Unit, additional?: number): number {
 		const addAndHull = this.HullRadius + (target?.HullRadius ?? 0) + (additional ?? 0)
 		if (this.FixedAttackRange !== 0) {
-			return (this.FixedAttackRange + addAndHull) >> 0
+			return this.FixedAttackRange + addAndHull
 		}
 		if (this.IsInfinityAttackRange) {
-			return (this.InfinityAttackRange + addAndHull) >> 0
+			return this.InfinityAttackRange + addAndHull
 		}
 		const base = this.BaseAttackRange,
 			bonus = this.BonusAttackRange,
 			amp = this.AttackRangeAmplifier
-		const baseRange = base + bonus
-		const totalBonus = Math.max(baseRange * amp, 0)
-		return (totalBonus + addAndHull) >> 0
+		return (base + bonus) * amp + addAndHull
 	}
 	public TexturePath(small?: boolean, team = this.Team): Nullable<string> {
 		return GetUnitTexture(this.Name, small, team)
@@ -2316,13 +2313,6 @@ export class Unit extends Entity {
 	}
 
 	/** ================================ Attack Range ======================================= */
-	protected CalcualteBaseAttackRange() {
-		const fixedAttackRange = this.CalcualteFixedAttackRange()
-		if (fixedAttackRange !== 0) {
-			return fixedAttackRange
-		}
-		return this.UnitData.BaseAttackRange
-	}
 
 	protected CalcualteAmpAttackRange() {
 		let amp = 1
@@ -2761,5 +2751,12 @@ RegisterFieldHandler(Unit, "m_bIsClone", (unit, newVal) => {
 	if (oldValue !== newVal) {
 		unit.IsClone_ = newVal as boolean
 		EventsSDK.emit("UnitPropertyChanged", false, unit)
+	}
+})
+RegisterFieldHandler(Unit, "m_iCurrentLevel", (unit, newVal) => {
+	const oldValue = unit.Level
+	if (oldValue !== newVal) {
+		unit.Level = newVal as number
+		EventsSDK.emit("UnitLevelChanged", false, unit)
 	}
 })

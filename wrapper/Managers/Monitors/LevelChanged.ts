@@ -60,6 +60,7 @@ const Monitor = new (class CLevelChanged {
 		}
 		if (playerData.Hero.Level !== newLevel && !playerData.Hero.IsVisible) {
 			playerData.Hero.Level = newLevel
+			EventsSDK.emit("UnitLevelChanged", false, playerData.Hero)
 		}
 	}
 
