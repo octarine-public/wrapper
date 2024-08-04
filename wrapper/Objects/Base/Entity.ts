@@ -726,13 +726,13 @@ RegisterFieldHandler(Entity, "m_hierarchyAttachName", (ent, newVal) => {
 RegisterFieldHandler(Entity, "m_cellX", (ent, newVal) => {
 	ent.NetworkedPosition_.x = QuantitizedVecCoordToCoord(
 		newVal as number,
-		ent.CBodyComponent_?.get("m_vecX") as Nullable<number>
+		ent.CBodyComponent_?.get("m_vecX")
 	)
 	ent.UpdatePositions()
 })
 RegisterFieldHandler(Entity, "m_vecX", (ent, newVal) => {
 	ent.NetworkedPosition_.x = QuantitizedVecCoordToCoord(
-		ent.CBodyComponent_?.get("m_cellX") as Nullable<number>,
+		ent.CBodyComponent_?.get("m_cellX"),
 		newVal as number
 	)
 	ent.UpdatePositions()
@@ -740,13 +740,13 @@ RegisterFieldHandler(Entity, "m_vecX", (ent, newVal) => {
 RegisterFieldHandler(Entity, "m_cellY", (ent, newVal) => {
 	ent.NetworkedPosition_.y = QuantitizedVecCoordToCoord(
 		newVal as number,
-		ent.CBodyComponent_?.get("m_vecY") as Nullable<number>
+		ent.CBodyComponent_?.get("m_vecY")
 	)
 	ent.UpdatePositions()
 })
 RegisterFieldHandler(Entity, "m_vecY", (ent, newVal) => {
 	ent.NetworkedPosition_.y = QuantitizedVecCoordToCoord(
-		ent.CBodyComponent_?.get("m_cellY") as Nullable<number>,
+		ent.CBodyComponent_?.get("m_cellY"),
 		newVal as number
 	)
 	ent.UpdatePositions()
@@ -754,13 +754,13 @@ RegisterFieldHandler(Entity, "m_vecY", (ent, newVal) => {
 RegisterFieldHandler(Entity, "m_cellZ", (ent, newVal) => {
 	ent.NetworkedPosition_.z = QuantitizedVecCoordToCoord(
 		newVal as number,
-		ent.CBodyComponent_?.get("m_vecZ") as Nullable<number>
+		ent.CBodyComponent_?.get("m_vecZ")
 	)
 	ent.UpdatePositions()
 })
 RegisterFieldHandler(Entity, "m_vecZ", (ent, newVal) => {
 	ent.NetworkedPosition_.z = QuantitizedVecCoordToCoord(
-		ent.CBodyComponent_?.get("m_cellZ") as Nullable<number>,
+		ent.CBodyComponent_?.get("m_cellZ"),
 		newVal as number
 	)
 	ent.UpdatePositions()

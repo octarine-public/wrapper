@@ -1,21 +1,5 @@
 import { WrapperClass } from "../../../Decorators"
-import { Ability } from "../../Base/Ability"
+import { nevermore_shadowraze1 } from "./nevermore_shadowraze1"
 
 @WrapperClass("nevermore_shadowraze2")
-export class nevermore_shadowraze2 extends Ability {
-	public get UsesRotation() {
-		return true
-	}
-
-	public GetBaseCastRangeForLevel(level: number): number {
-		return this.GetSpecialValue("shadowraze_range", level)
-	}
-
-	public GetCastRangeForLevel(level: number): number {
-		return this.GetBaseCastRangeForLevel(level)
-	}
-
-	public GetBaseAOERadiusForLevel(level: number): number {
-		return this.GetSpecialValue("shadowraze_radius", level)
-	}
-}
+export class nevermore_shadowraze2 extends nevermore_shadowraze1 {}

@@ -64,11 +64,9 @@ export class Inventory {
 		)
 	}
 	public get HasAnyItemInventory(): boolean {
-		return (
-			this.HasAnyItem(
-				DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1,
-				DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6
-			)
+		return this.HasAnyItem(
+			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1,
+			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6
 		)
 	}
 	public get HasAnyItemBackpack(): boolean {

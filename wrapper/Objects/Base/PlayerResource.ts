@@ -38,9 +38,7 @@ RegisterFieldHandler(CPlayerResource, "m_vecPlayerTeamData", (playerResource, ne
 	playerResource.PlayerTeamData = (newVal as EntityPropertiesNode[]).map(map => {
 		const retMap = new PlayerTeamData(map)
 		retMap.PlayerEventsData = (
-			(retMap.properties.get("m_vecPlayerEventData") as Nullable<
-				EntityPropertiesNode[]
-			>) ?? []
+			retMap.properties.get<EntityPropertiesNode[]>("m_vecPlayerEventData") ?? []
 		).map(newMap => new PlayerEventData(newMap))
 		return retMap
 	})
