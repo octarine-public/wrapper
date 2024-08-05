@@ -1,5 +1,4 @@
 import { ProjectionInfo } from "../Geometry/ProjectionInfo"
-import { RadianToDegrees } from "../Utils/Math"
 import { Vector3 } from "./Vector3"
 
 export class Vector2 {
@@ -87,7 +86,7 @@ export class Vector2 {
 		if (Math.abs(this.x) <= 1e-9) {
 			return this.y > 0 ? 90 : this.y < 0 ? 270 : 0
 		}
-		return RadianToDegrees(Math.atan2(this.y, this.x) + 360) % 360
+		return Math.radianToDegrees(Math.atan2(this.y, this.x) + 360) % 360
 	}
 
 	public Equals(vec: Vector2): boolean {
@@ -141,10 +140,9 @@ export class Vector2 {
 	 * Randomizes this vector within given values
 	 */
 	public Random(minVal: number, maxVal: number): Vector2 {
-		const range = maxVal - minVal
-		const randomRange = Math.random() * range
-		this.x = randomRange + minVal
-		this.y = randomRange + minVal
+		const randomRange = Math.randomRange(minVal, maxVal)
+		this.x = randomRange
+		this.y = randomRange
 		return this
 	}
 	/**
@@ -310,10 +308,7 @@ export class Vector2 {
 	 * Restricts a vector between a min and max value.
 	 */
 	public Clamp(min: Vector2, max: Vector2): Vector2 {
-		return new Vector2(
-			Math.min(this.x > max.x ? max.x : this.x, min.x),
-			Math.min(this.y > max.y ? max.y : this.y, min.y)
-		)
+		return this.Min(max).Max(min)
 	}
 
 	/* ======== Add ======== */

@@ -1,4 +1,3 @@
-import { SmoothStep } from "../Utils/Math"
 import { Quaternion } from "./Quaternion"
 import { Vector3 } from "./Vector3"
 
@@ -593,7 +592,7 @@ export class Vector4 {
 	 * @return {Vector4}
 	 */
 	public SmoothStep(vec: Vector4, amount: number): Vector4 {
-		return this.Lerp(vec, SmoothStep(amount))
+		return this.Lerp(vec, Math.smoothStep(amount))
 	}
 	/**
 	 * Interpolates between this vector and the provided vector using
@@ -604,7 +603,7 @@ export class Vector4 {
 	 * @return {Vector4}
 	 */
 	public SmoothStepForThis(vec: Vector4, amount: number): Vector4 {
-		return this.LerpForThis(vec, SmoothStep(amount))
+		return this.LerpForThis(vec, Math.smoothStep(amount))
 	}
 	/**
 	 * Calculates the interpolated value at the given fraction

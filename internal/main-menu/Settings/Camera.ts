@@ -10,7 +10,6 @@ import {
 	GUIInfo,
 	Input,
 	LocalPlayer,
-	MathSDK,
 	Menu,
 	RendererSDK,
 	Sleeper,
@@ -91,7 +90,7 @@ export class InternalCamera {
 	}
 
 	private clampDistance(distance: number) {
-		return MathSDK.Clamp(distance, this.distance.min, this.distance.max)
+		return Math.clamp(distance, this.distance.min, this.distance.max)
 	}
 
 	public Draw(): void {

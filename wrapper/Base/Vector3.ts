@@ -1,4 +1,3 @@
-import { RadianToDegrees, SmoothStep } from "../Utils/Math"
 import { Vector2 } from "./Vector2"
 
 export class Vector3 {
@@ -106,7 +105,7 @@ export class Vector3 {
 		if (Math.abs(this.x) <= 1e-9) {
 			return this.y > 0 ? 90 : this.y < 0 ? 270 : 0
 		}
-		return RadianToDegrees(Math.atan2(this.y, this.x) + 360) % 360
+		return Math.radianToDegrees(Math.atan2(this.y, this.x) + 360) % 360
 	}
 
 	public Equals(vec: Vector3): boolean {
@@ -169,11 +168,10 @@ export class Vector3 {
 	 * Randomizes this vector within given values
 	 */
 	public Random(minVal: number, maxVal: number): Vector3 {
-		const range = maxVal - minVal
-		const randomRange = Math.random() * range
-		this.x = randomRange + minVal
-		this.y = randomRange + minVal
-		this.z = randomRange + minVal
+		const randomRange = Math.randomRange(minVal, maxVal)
+		this.x = randomRange
+		this.y = randomRange
+		this.z = randomRange
 		return this
 	}
 	/**
@@ -290,7 +288,7 @@ export class Vector3 {
 	 * @return {Vector3}
 	 */
 	public SmoothStep(vec: Vector3, amount: number): Vector3 {
-		return this.Lerp(vec, SmoothStep(amount))
+		return this.Lerp(vec, Math.smoothStep(amount))
 	}
 	/**
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
@@ -404,11 +402,7 @@ export class Vector3 {
 	 * @returns (new Vector3)
 	 */
 	public Clamp(min: Vector3, max: Vector3): Vector3 {
-		return new Vector3(
-			Math.min(this.x > max.x ? max.x : this.x, min.x),
-			Math.min(this.y > max.y ? max.y : this.y, min.y),
-			Math.min(this.z > max.z ? max.z : this.z, min.z)
-		)
+		return this.Max(min).Min(max)
 	}
 
 	/* ======== Add ======== */

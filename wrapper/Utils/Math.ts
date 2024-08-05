@@ -1,5 +1,6 @@
 /**
  * x * 180 / PI
+ * @deprecated use Math.radianToDegrees
  */
 export function RadianToDegrees(radian: number): number {
 	return (radian * 180) / Math.PI
@@ -7,6 +8,7 @@ export function RadianToDegrees(radian: number): number {
 
 /**
  * x * PI / 180
+ * @deprecated use Math.degreesToRadian
  */
 export function DegreesToRadian(degrees: number): number {
 	return (degrees * Math.PI) / 180
@@ -241,6 +243,7 @@ export function FormatTime(time: number, isChat = false) {
  * @param amount - The amount to interpolate between the start and end numbers.
  *                 Should be a value between 0 and 1.
  * @return {number}
+ * @deprecated use Math.lerp
  */
 export function Lerp(start: number, end: number, amount: number): number {
 	return (1 - amount) * start + amount * end
@@ -252,6 +255,7 @@ export function Lerp(start: number, end: number, amount: number): number {
  * For any other value of amount, it performs a smooth interpolation calculation and returns the result.
  * @param amount - The input amount to interpolate.
  * @return {number}
+ * @deprecated use Math.smoothStep
  */
 export function SmoothStep(amount: number): number {
 	if (amount <= 0) {
@@ -269,6 +273,7 @@ export function SmoothStep(amount: number): number {
  * @param {number} min - the minimum value
  * @param {number} max - the maximum value
  * @return {number} the clamped value
+ * @deprecated use Math.clamp
  */
 export function Clamp(value: number, min: number, max: number): number {
 	return Math.min(Math.max(value, min), max)
