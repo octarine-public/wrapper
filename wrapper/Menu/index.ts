@@ -11,6 +11,7 @@ export { ImageSelectorArray } from "./ImageSelectorArr"
 export * from "./ITypes"
 export { KeyBind } from "./KeyBind"
 export { Localization } from "./Localization"
+export { ShortDescription } from "./ShortDescription"
 export { Slider } from "./Slider"
 export { Toggle } from "./Toggle"
 export { Node }

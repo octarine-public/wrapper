@@ -132,39 +132,28 @@ export class InternalConfig {
 		if (!this.isConstructed || !Menu.MenuManager.IsOpen) {
 			return
 		}
-
-		if (this.list !== undefined && !this.list.IsOpen) {
-			this.list.entries.clear()
+		if (this.list?.IsOpen === false) {
+			this.list?.entries.clear()
 			this.list = undefined
 			return
 		}
-
-		this.dynamicLists.forEach(list => {
-			if (list.node.IsOpen) {
-				this.list = list.node
-			}
-		})
-
-		if (this.list === undefined) {
+		if (this.list !== undefined) {
 			return
 		}
-
-		const dlist = this.dynamicLists.find(l => l.node === this.list)
+		const dlist = this.dynamicLists.find(x => x.node.IsOpen)
+		this.list = dlist?.node
 		if (dlist === undefined) {
 			return
 		}
-
 		this.keybindsSkipNodeIdx = Menu.MenuManager.entries.findIndex(
 			v => v.InternalName === this.keybindsSkipNodeInternalName
 		)
-
 		if (this.keybindsSkipNodeIdx === -1) {
 			console.error(
 				`failed to find [${this.keybindsSkipNodeInternalName}] node in`,
 				[...Menu.MenuManager.entries]
 			)
 		}
-
 		Menu.MenuManager.foreachRecursive(el => {
 			if (
 				!el.IsNode &&
@@ -178,7 +167,7 @@ export class InternalConfig {
 				dlist.create(el, path)
 			}
 		})
-
 		dlist.node.Update(true)
+		// dlist.node.entries.reverse();
 	}
 }

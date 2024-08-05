@@ -8,6 +8,7 @@ import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
 import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EDOTASpecialBonusOperation } from "../../Enums/EDOTASpecialBonusOperation"
+import { EDOTASpecialBonusStats } from "../../Enums/EDOTASpecialBonusStats"
 import { GameActivity } from "../../Enums/GameActivity"
 import { SPELL_DISPELLABLE_TYPES } from "../../Enums/SPELL_DISPELLABLE_TYPES"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
@@ -15,12 +16,6 @@ import { MapValueToBoolean, MapValueToString } from "../../Resources/ParseUtils"
 import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
 import { Unit } from "../Base/Unit"
 import { UnitData } from "./UnitData"
-
-const storageIds: Map<number, string> = new Map()
-function LoadFile(path: string, name: string = "DOTAAbilities"): RecursiveMap {
-	const res = parseKV(path).get(name)
-	return res instanceof Map ? res : new Map()
-}
 
 interface ILinkedSpecialBonus {
 	Name: string
@@ -38,9 +33,26 @@ interface ISpecialValue {
 	LinkedSpecialBonuses: ILinkedSpecialBonus[]
 }
 
+const storageIds: Map<number, string> = new Map()
+const allStats = ["bonus_all_stats", "bonus_stats"]
+const hpStats = ["bonus_strength", "bonus_str", "bonus_health"]
+const manaStats = [
+	"bonus_intellect",
+	"bonus_intelligence",
+	"bonus_int",
+	"bonus_mana",
+	"intelligence_pct"
+]
+
+function LoadFile(path: string, name: string = "DOTAAbilities"): RecursiveMap {
+	const res = parseKV(path).get(name)
+	return res instanceof Map ? res : new Map()
+}
+
 export class AbilityData {
 	public static readonly empty = new AbilityData("", new Map())
 	public static readonly globalStorage: Map<string, AbilityData> = new Map()
+
 	private static readonly cacheWithoutSpecialData = new Set<string>()
 
 	public static DisposeAllData() {
@@ -81,12 +93,13 @@ export class AbilityData {
 
 	public readonly AbilityBehavior: DOTA_ABILITY_BEHAVIOR // bitmask
 	public readonly AbilityType: ABILITY_TYPES
+	public readonly BonusStats: EDOTASpecialBonusStats
 	public readonly MaxLevel: number
 	public readonly TexturePath: string
 	public readonly TargetFlags: DOTA_UNIT_TARGET_FLAGS // bitmask
 	public readonly TargetTeam: DOTA_UNIT_TARGET_TEAM // bitmask
 	public readonly TargetType: DOTA_UNIT_TARGET_TYPE // bitmask
-	public readonly SpellDispellableType: SPELL_DISPELLABLE_TYPES
+	public readonly SpellDispellableType: SPELL_DISPELLABLE_TYPES // bitmask
 	public readonly SharedCooldownName: string
 	public readonly ModelName: string
 	public readonly AlternateModelName: string
@@ -100,7 +113,6 @@ export class AbilityData {
 	public readonly IsInnate: boolean
 	public readonly Purchasable: boolean
 	public readonly DamageType: DAMAGE_TYPES
-	// public readonly DispellableType: SPELL_DISPELLABLE_TYPES
 	public readonly LevelsBetweenUpgrades: number
 	public readonly RequiredLevel: number
 	public readonly AbilityImmunityType: SPELL_IMMUNITY_TYPES
@@ -115,12 +127,16 @@ export class AbilityData {
 	public readonly HasScepterUpgrade: boolean
 	public readonly ItemIsNeutralDrop: boolean
 	public readonly ShouldBeSuggested: number
+	public readonly IsTempestDoubleClonable: boolean
+	public readonly SuggestPregame: boolean
+	public readonly ItemSupport: boolean
+	public readonly SpeciallyBannedFromNeutralSlot: boolean
 	public readonly CastAnimation: Nullable<GameActivity>
 	public readonly LinkedAbility: string
 	public readonly ShouldBeInitiallySuggested: boolean
 	public readonly ItemStockInitial: Nullable<number>
 	public readonly ItemDisassembleRule: DOTA_ITEM_DISASSEMBLE
-
+	public readonly ItemAliases: string[] = []
 	public readonly HasCastRangeSpecial: boolean
 	public readonly HasManaCostSpecial: boolean
 	public readonly HasChannelTimeSpecial: boolean
@@ -131,11 +147,9 @@ export class AbilityData {
 	public readonly HasMaxCooldownSpecial: boolean
 	public readonly HasMaxDurationSpecial: boolean
 	public readonly HasHealthCostSpecial: boolean
-
 	public readonly HasAffectedByAOEIncrease: boolean
 
 	private readonly SpecialValueCache = new Map<string, ISpecialValue>()
-
 	private readonly CastRangeCache: number[]
 	private readonly ManaCostCache: number[]
 	private readonly ChannelTimeCache: number[]
@@ -148,7 +162,10 @@ export class AbilityData {
 	private readonly HealthCostCache: number[]
 
 	constructor(name: string, kv: RecursiveMap) {
-		this.DisposeAllData()
+		this.clearAllData()
+		this.cacheSpecialValuesNew(kv)
+		this.cacheSpecialValuesOld(kv)
+
 		this.AbilityType = kv.has("AbilityType")
 			? (ABILITY_TYPES as any)[(kv.get("AbilityType") as string).substring(5)]
 			: ABILITY_TYPES.ABILITY_TYPE_BASIC
@@ -159,16 +176,6 @@ export class AbilityData {
 		} else {
 			this.MaxLevel =
 				this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE ? 3 : 4
-		}
-		this.CacheSpecialValuesNew(kv)
-		this.CacheSpecialValuesOld(kv)
-
-		this.HasAffectedByAOEIncrease = false
-		for (const [, special] of this.SpecialValueCache) {
-			if (special.AffectedByAOEIncrease) {
-				this.HasAffectedByAOEIncrease = true
-				break
-			}
 		}
 
 		this.AbilityBehavior = kv.has("AbilityBehavior")
@@ -276,56 +283,63 @@ export class AbilityData {
 			? parseInt(kv.get("ItemHideCharges") as string) !== 0
 			: true
 
-		this.ManaCostCache = this.GetLevelArray(
+		this.ManaCostCache = this.getLevelArray(
 			kv.get("AbilityManaCost") as Nullable<string>
 		)
 		this.HasManaCostSpecial = this.SpecialValueCache.has("AbilityManaCost")
-		this.CastRangeCache = this.GetLevelArray(
+		this.CastRangeCache = this.getLevelArray(
 			kv.get("AbilityCastRange") as Nullable<string>
 		)
 		this.HasCastRangeSpecial = this.SpecialValueCache.has("AbilityCastRange")
-		this.ChannelTimeCache = this.GetLevelArray(
+		this.ChannelTimeCache = this.getLevelArray(
 			kv.get("AbilityChannelTime") as Nullable<string>
 		)
 		this.HasChannelTimeSpecial = this.SpecialValueCache.has("AbilityChannelTime")
-		this.AbilityDamageCache = this.GetLevelArray(
+		this.AbilityDamageCache = this.getLevelArray(
 			kv.get("AbilityDamage") as Nullable<string>
 		)
 		this.HasAbilityDamageSpecial = this.SpecialValueCache.has("AbilityDamage")
-		this.CastPointCache = this.GetLevelArray(
+		this.CastPointCache = this.getLevelArray(
 			kv.get("AbilityCastPoint") as Nullable<string>
 		)
 		this.HasCastPointSpecial = this.SpecialValueCache.has("AbilityCastPoint")
-		this.MaxChargesCache = this.GetLevelArray(
+		this.MaxChargesCache = this.getLevelArray(
 			kv.get("AbilityCharges") as Nullable<string>
 		)
 		this.HasMaxChargesSpecial = this.SpecialValueCache.has("AbilityCharges")
-		this.ChargeRestoreTimeCache = this.GetLevelArray(
+		this.ChargeRestoreTimeCache = this.getLevelArray(
 			kv.get("AbilityChargeRestoreTime") as Nullable<string>
 		)
 		this.HasChargeRestoreTimeSpecial = this.SpecialValueCache.has(
 			"AbilityChargeRestoreTime"
 		)
-		this.MaxCooldownCache = this.GetLevelArray(
+		this.MaxCooldownCache = this.getLevelArray(
 			kv.get("AbilityCooldown") as Nullable<string>
 		)
 		this.HasMaxCooldownSpecial = this.SpecialValueCache.has("AbilityCooldown")
-		this.MaxDurationCache = this.GetLevelArray(
+		this.MaxDurationCache = this.getLevelArray(
 			kv.get("AbilityDuration") as Nullable<string>
 		)
 		this.HasMaxDurationSpecial = this.SpecialValueCache.has("AbilityDuration")
-		this.HealthCostCache = this.GetLevelArray(
+		this.HealthCostCache = this.getLevelArray(
 			kv.get("AbilityHealthCost") as Nullable<string>
 		)
 		this.HasHealthCostSpecial = this.SpecialValueCache.has("AbilityHealthCost")
 		this.SecretShop = kv.has("SecretShop")
 			? parseInt(kv.get("SecretShop") as string) !== 0
 			: false
+		this.ItemSupport = kv.has("ItemSupport")
+			? parseInt(kv.get("ItemSupport") as string) !== 0
+			: false
 		if (kv.has("ItemRequirements")) {
 			const map = kv.get("ItemRequirements") as Map<string, string>
 			map.forEach(str => this.ItemRequirements.push(str.split(";")))
 		}
+		if (kv.has("ItemAliases")) {
+			this.ItemAliases = (kv.get("ItemAliases") as string).split(";")
+		}
 		this.ItemResult = kv.get("ItemResult") as Nullable<string>
+
 		this.ItemQuality = kv.get("ItemQuality") as Nullable<string>
 
 		this.ItemStockInitial = kv.has("ItemStockInitial")
@@ -347,19 +361,50 @@ export class AbilityData {
 					0
 				)
 			: DOTA_ITEM_DISASSEMBLE.DOTA_ITEM_DISASSEMBLE_NONE
+
+		this.IsTempestDoubleClonable = kv.has("IsTempestDoubleClonable")
+			? parseInt(kv.get("IsTempestDoubleClonable") as string) !== 0
+			: false
+
+		this.SuggestPregame = kv.has("SuggestPregame")
+			? parseInt(kv.get("SuggestPregame") as string) !== 0
+			: false
+
+		this.SpeciallyBannedFromNeutralSlot = kv.has("SpeciallyBannedFromNeutralSlot")
+			? parseInt(kv.get("SpeciallyBannedFromNeutralSlot") as string) !== 0
+			: false
+
+		this.HasAffectedByAOEIncrease = false
+		for (const [, special] of this.SpecialValueCache) {
+			if (special.AffectedByAOEIncrease) {
+				this.HasAffectedByAOEIncrease = true
+				break
+			}
+		}
+
+		const hasSpecialValue = (values: string[]) =>
+			values.some(valueName => this.SpecialValueCache.has(valueName))
+
+		this.BonusStats = hasSpecialValue(allStats)
+			? EDOTASpecialBonusStats.All
+			: (hasSpecialValue(hpStats)
+					? EDOTASpecialBonusStats.HP
+					: EDOTASpecialBonusStats.None) |
+				(hasSpecialValue(manaStats)
+					? EDOTASpecialBonusStats.Mana
+					: EDOTASpecialBonusStats.None)
+	}
+
+	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
+		return this.AbilityBehavior.hasMask(flag)
 	}
 
 	public HasTargetTeam(flag: DOTA_UNIT_TARGET_TEAM): boolean {
 		return this.TargetTeam.hasMask(flag)
 	}
 
-	public DisposeAllData() {
-		this.ItemRequirements.clear()
-		this.SpecialValueCache.clear()
-	}
-
-	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
-		return this.AbilityBehavior.hasMask(flag)
+	public HasBonusStats(flag: EDOTASpecialBonusStats): boolean {
+		return this.BonusStats.hasMask(flag)
 	}
 
 	public GetSpecialValue(
@@ -370,7 +415,7 @@ export class AbilityData {
 		if (level <= 0) {
 			return 0
 		}
-		const ar = this.GetCachedSpecialValue(specialName, abilityName)
+		const ar = this.getCachedSpecialValue(specialName, abilityName)
 		if (ar === undefined || ar.BaseValues.length === 0 || ar.RequiresFacet !== "") {
 			return 0
 		}
@@ -386,7 +431,7 @@ export class AbilityData {
 		if (level <= 0) {
 			return 0
 		}
-		const specialValue = this.GetCachedSpecialValue(specialName, abilityName)
+		const specialValue = this.getCachedSpecialValue(specialName, abilityName)
 		if (specialValue === undefined) {
 			return 0
 		}
@@ -548,7 +593,7 @@ export class AbilityData {
 		]
 	}
 
-	public GetCachedSpecialValue(specialName: string, abilityName?: string) {
+	private getCachedSpecialValue(specialName: string, abilityName?: string) {
 		const arData = this.SpecialValueCache.get(specialName)
 		if (arData === undefined) {
 			this.exceptionMessage(specialName, abilityName)
@@ -561,7 +606,7 @@ export class AbilityData {
 		return str !== "" ? parseFloat(str) : 0
 	}
 
-	private ExtractOldTalent(special: RecursiveMap): Nullable<ILinkedSpecialBonus> {
+	private extractOldTalent(special: RecursiveMap): Nullable<ILinkedSpecialBonus> {
 		const name = MapValueToString(special.get("LinkedSpecialBonus"))
 		if (name === "") {
 			return undefined
@@ -582,7 +627,8 @@ export class AbilityData {
 			]
 		}
 	}
-	private CacheSpecialValuesOld(kv: RecursiveMap) {
+
+	private cacheSpecialValuesOld(kv: RecursiveMap) {
 		const abilitySpecial = kv.get("AbilitySpecial") as RecursiveMap
 		if (abilitySpecial === undefined) {
 			return
@@ -612,9 +658,9 @@ export class AbilityData {
 				finalName = name
 				finalValue = value
 			})
-			const linkedSpecialBonusData = this.ExtractOldTalent(special)
+			const linkedSpecialBonusData = this.extractOldTalent(special)
 			this.SpecialValueCache.set(finalName, {
-				BaseValues: this.ExtendLevelArray(
+				BaseValues: this.extendLevelArray(
 					finalValue.split(" ").map(str => this.parseFloat(str))
 				),
 				LinkedSpecialBonuses:
@@ -629,7 +675,7 @@ export class AbilityData {
 		})
 	}
 
-	private CacheSpecialValuesNew(kv: RecursiveMap) {
+	private cacheSpecialValuesNew(kv: RecursiveMap) {
 		const abilityValues = kv.get("AbilityValues") as RecursiveMap
 		if (abilityValues === undefined) {
 			return
@@ -638,7 +684,7 @@ export class AbilityData {
 			if (!(special instanceof Map)) {
 				if (typeof special === "string") {
 					this.SpecialValueCache.set(name, {
-						BaseValues: this.ExtendLevelArray(
+						BaseValues: this.extendLevelArray(
 							special.split(" ").map(str => this.parseFloat(str))
 						),
 						RequiresFacet: "",
@@ -671,7 +717,7 @@ export class AbilityData {
 
 				if (specialName === "LinkedSpecialBonus") {
 					// TODO: is this supposed to be in order like other talents?
-					const oldLinkedSpecialBonus = this.ExtractOldTalent(special)
+					const oldLinkedSpecialBonus = this.extractOldTalent(special)
 					if (oldLinkedSpecialBonus !== undefined) {
 						linkedSpecialBonuses.push(oldLinkedSpecialBonus)
 					}
@@ -716,7 +762,7 @@ export class AbilityData {
 			})
 
 			this.SpecialValueCache.set(name, {
-				BaseValues: this.ExtendLevelArray(
+				BaseValues: this.extendLevelArray(
 					MapValueToString(special.get("value"))
 						.split(" ")
 						.map(str => this.parseFloat(str))
@@ -732,14 +778,14 @@ export class AbilityData {
 		})
 	}
 
-	private ExtendLevelArray(ar: number[]): number[] {
+	private extendLevelArray(ar: number[]): number[] {
 		if (ar.length === 0) {
 			ar.push(0)
 		}
 		return ar
 	}
 
-	private GetLevelArray(str: Nullable<string>): number[] {
+	private getLevelArray(str: Nullable<string>): number[] {
 		return str?.split(" ")?.map(val => parseFloat(val)) ?? []
 	}
 
@@ -758,6 +804,11 @@ export class AbilityData {
 			).stack
 		)
 		AbilityData.cacheWithoutSpecialData.add(keyName)
+	}
+
+	private clearAllData() {
+		this.ItemRequirements.clear()
+		this.SpecialValueCache.clear()
 	}
 }
 

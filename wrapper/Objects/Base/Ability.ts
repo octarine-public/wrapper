@@ -9,6 +9,7 @@ import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
 import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EAbilitySlot } from "../../Enums/EAbilitySlot"
+import { EDOTASpecialBonusStats } from "../../Enums/EDOTASpecialBonusStats"
 import { SPELL_DISPELLABLE_TYPES } from "../../Enums/SPELL_DISPELLABLE_TYPES"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { EventsSDK } from "../../Managers/EventsSDK"
@@ -140,6 +141,9 @@ export class Ability extends Entity {
 	}
 	public get SpellDispellableTypeMask(): SPELL_DISPELLABLE_TYPES {
 		return this.AbilityData.SpellDispellableType
+	}
+	public get BonusStatsMask(): EDOTASpecialBonusStats {
+		return this.AbilityData.BonusStats
 	}
 	public get AbilityDamage(): number {
 		return this.GetBaseDamageForLevel(this.Level)
@@ -602,6 +606,11 @@ export class Ability extends Entity {
 		// don't use AbilityData.HasBehavior() here
 		// because it will be overridden by the child classes for AbilityBehaviorMask
 		return this.AbilityBehaviorMask.hasMask(flag)
+	}
+	public HasBonusStats(flag: EDOTASpecialBonusStats): boolean {
+		// don't use AbilityData.HasBonusStats() here
+		// because it will be overridden by the child classes for AbilityBehaviorMask
+		return this.BonusStatsMask.hasMask(flag)
 	}
 	public HasTargetFlags(flag: DOTA_UNIT_TARGET_FLAGS): boolean {
 		return this.TargetFlagsMask.hasMask(flag)

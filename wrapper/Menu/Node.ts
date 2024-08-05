@@ -16,6 +16,7 @@ import { ImageSelectorArray } from "./ImageSelectorArr"
 import { IMenuParticlePicker } from "./ITypes"
 import { KeyBind } from "./KeyBind"
 import { Localization } from "./Localization"
+import { ShortDescription } from "./ShortDescription"
 import { Slider } from "./Slider"
 import { Toggle } from "./Toggle"
 
@@ -600,6 +601,18 @@ export class Node extends Base {
 	): Toggle {
 		return this.AddEntry(
 			new Toggle(this, name, defaultValue, tooltip, iconPath, iconRound),
+			priority
+		)
+	}
+	public AddShortDescription(
+		text: string,
+		tooltip = "",
+		priority = 0,
+		iconPath = "menu/icons/alert.svg",
+		iconRound = -1
+	): ShortDescription {
+		return this.AddEntry(
+			new ShortDescription(this, text, tooltip, iconPath, iconRound),
 			priority
 		)
 	}

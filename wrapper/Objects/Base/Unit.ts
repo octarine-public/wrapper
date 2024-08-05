@@ -196,7 +196,9 @@ export class Unit extends Entity {
 	 */
 	public IsFogVisible = false
 	public IsAttacking = false
+	/** @deprecated */
 	public CanUseItems = false
+	/** @deprecated */
 	public CanUseAbilities = false
 	public IsVisibleForEnemiesLastTime = 0
 
@@ -503,6 +505,11 @@ export class Unit extends Entity {
 	}
 	public get IsRooted(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ROOTED)
+	}
+	public get CanUseBackpack(): boolean {
+		return this.IsUnitStateFlagSet(
+			modifierstate.MODIFIER_STATE_CAN_USE_BACKPACK_ITEMS
+		)
 	}
 	public get IgnoreMoveAndAttackOrders(): boolean {
 		return this.IsUnitStateFlagSet(

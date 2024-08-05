@@ -54,6 +54,8 @@ export class Item extends Ability {
 	public PurchaseTime: number = 0
 	@NetworkedBasicField("m_iSecondaryCharges")
 	public SecondaryCharges: number = 0
+	@NetworkedBasicField("m_iStackableMax")
+	public StackableMax: number = 0
 	@NetworkedBasicField("m_bIsNeutralDrop")
 	public IsNeutralDrop: boolean = false
 	@NetworkedBasicField("m_iCurrentCharges")
@@ -92,7 +94,7 @@ export class Item extends Ability {
 		if (owner.CannotUseItem(this)) {
 			return false
 		}
-		return owner.Inventory.HasAnyItemInventory
+		return this.CanUseByInventory(owner.CanUseBackpack)
 	}
 	public get SaleRemainingTime(): number {
 		// Maximum duration of the sale in seconds
@@ -155,32 +157,41 @@ export class Item extends Ability {
 	public ItemUnlock() {
 		return this.Owner?.ItemLock(this, false)
 	}
-	// public CanBeCasted(bonusMana: number = 0): boolean {
-	// 	if (!this.CanBeUsable || !this.IsReady) {
-	// 		return false
-	// 	}
-	// 	// TODO: Add other checks
-	// 	return this.IsManaEnough(bonusMana)
-	// }
+	/**
+	 * TODO: need improve
+	 * Owner.CanBeCastedWhileChanneling, IsImmediateCasting
+	 * Owner.CanBeCastedWhileStunned, CanBeCastedWhileRooted,
+	 * Owner.CanBeCastedWhileSilenced
+	 */
 	public CanBeCasted(bonusMana: number = 0): boolean {
-		if (!this.IsValid || this.IsMuted) {
+		if (!this.CanBeUsable) {
 			return false
 		}
-
 		const rootOwner = this.RootOwner
 		if (rootOwner?.CannotUseItem(this)) {
 			return false
 		}
-
+		// TODO: need improve
 		if (this.RequiresCharges && this.CurrentCharges < 1) {
 			return false
 		}
-
 		return (
 			this.Level !== 0 &&
 			!this.Owner?.IsMuted &&
 			this.IsManaEnough(bonusMana) &&
 			this.IsCooldownReady
+		)
+	}
+
+	private CanUseByInventory(includeBackpack = false): boolean {
+		return (
+			(this.ItemSlot >= DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1 &&
+				this.ItemSlot <= DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6) ||
+			this.ItemSlot === DOTAScriptInventorySlot.DOTA_ITEM_TP_SCROLL ||
+			this.ItemSlot === DOTAScriptInventorySlot.DOTA_ITEM_NEUTRAL_SLOT ||
+			(includeBackpack &&
+				this.ItemSlot >= DOTAScriptInventorySlot.DOTA_ITEM_SLOT_7 &&
+				this.ItemSlot <= DOTAScriptInventorySlot.DOTA_ITEM_SLOT_9)
 		)
 	}
 }
