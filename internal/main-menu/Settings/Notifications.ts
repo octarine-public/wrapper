@@ -10,6 +10,12 @@ import {
 } from "../../../wrapper/Imports"
 
 export class InternalNotifications {
+	private pressStart = 0
+	private ScriptLatest = true
+	private AutoReload: Nullable<ScriptsUpdated>
+
+	private readonly holdMs = 1000
+
 	private readonly tree: Menu.Node
 	private readonly stateScripts: Menu.Toggle
 	private readonly clickState: Menu.Toggle
@@ -61,17 +67,9 @@ export class InternalNotifications {
 			.OnValue(slider => (NotificationsSDK.limit = slider.value))
 	}
 
-	public onDraw(): void {
+	public Draw(): void {
 		NotificationsSDK.debug = this.tree.IsOpen
-	}
 
-	private ScriptLatest = true
-	private AutoReload: Nullable<ScriptsUpdated>
-
-	private pressStart = 0
-	private holdMs = 1000
-
-	public OnDraw(): void {
 		if (!this.pressStart) {
 			return
 		}
@@ -104,12 +102,13 @@ export class InternalNotifications {
 			}
 		}
 	}
+
 	public OnBindPressed() {
 		if (this.ScriptLatest) {
 			this.pressStart = hrtime()
-		} else {
-			reload()
+			return
 		}
+		reload()
 	}
 	public OnBindRelease() {
 		if (hrtime() - this.pressStart < this.holdMs) {
@@ -131,17 +130,17 @@ export class InternalNotifications {
 
 class ScriptsUpdated extends Notification {
 	constructor(
-		private clickState: boolean,
-		private stopAutoReload?: () => void
+		private readonly clickState: boolean,
+		private readonly stopAutoReload?: () => void
 	) {
 		super({
-			timeToShow: stopAutoReload ? 0 : 6000,
-			uniqueKey: stopAutoReload ? "AutoReload" : undefined
+			timeToShow: stopAutoReload === undefined ? 0 : 6 * 1000,
+			uniqueKey: stopAutoReload === undefined ? "AutoReload" : undefined
 		})
 	}
 
 	public OnClick(): boolean {
-		return this.stopAutoReload
+		return this.stopAutoReload !== undefined
 			? (this.stopAutoReload(), true)
 			: (reload(), this.clickState)
 	}
@@ -178,9 +177,8 @@ class ScriptsUpdated extends Notification {
 		const textFontSize = GUIInfo.ScaleHeight(11)
 		const textPadding = Math.ceil(infoPadding / 2)
 
-		let text
-
-		if (this.stopAutoReload) {
+		let text: Nullable<string>
+		if (this.stopAutoReload !== undefined) {
 			const waitingS = 0 | ((hrtime() - this.StartDisplayTime) / 1000)
 			const waitingM = 0 | (waitingS / 60)
 			text =

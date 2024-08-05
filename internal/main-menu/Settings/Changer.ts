@@ -11,6 +11,10 @@ class TreeModelInfo {
 	) {}
 }
 export class InternalChanger {
+	private treeIdx = 0
+	private treeScaleVal = 1
+	private treeColorVal = Color.Gray
+
 	private readonly node: Menu.Node
 
 	private readonly weather: Menu.Dropdown
@@ -21,10 +25,6 @@ export class InternalChanger {
 	private readonly treeMenuNames: Menu.Dropdown
 	private readonly treeScale: Menu.Slider
 	private readonly treeColor: Menu.ColorPicker
-
-	private treeIdx = 0
-	private treeScaleVal = 1
-	private treeColorVal = Color.Gray
 
 	private readonly riverNames = [
 		"Default",
@@ -37,7 +37,7 @@ export class InternalChanger {
 		"Blood"
 	]
 
-	private treeData: TreeModelInfo[] = [
+	private readonly treeData: TreeModelInfo[] = [
 		new TreeModelInfo("Default"),
 		new TreeModelInfo(
 			"Simple Cube",
@@ -94,7 +94,7 @@ export class InternalChanger {
 		"Ash",
 		"Aurora"
 	]
-	public treeScala = 0
+
 	constructor(settings: Menu.Node) {
 		this.node = settings.AddNode("Changer", "menu/icons/changer.svg")
 		this.node.SortNodes = false

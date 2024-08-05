@@ -205,7 +205,7 @@ export class ParticlesSDK {
 				? startOpt
 				: startOpt instanceof Vector3
 					? startOpt
-					: startOpt?.Position ?? entity.Position
+					: (startOpt?.Position ?? entity.Position)
 
 		const endOpt = options.End
 		const ctrl7 =
@@ -213,7 +213,7 @@ export class ParticlesSDK {
 				? endOpt
 				: endOpt instanceof Vector3
 					? endOpt
-					: endOpt?.Position ?? target.Position
+					: (endOpt?.Position ?? target.Position)
 
 		return this.AddOrUpdate(
 			key,

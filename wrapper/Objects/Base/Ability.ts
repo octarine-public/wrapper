@@ -265,7 +265,7 @@ export class Ability extends Entity {
 		}
 		const unitTexture = GetUnitTexture(owner.Name)
 		return this.IsInnate && this.IsHidden
-			? unitTexture ?? abilityTexture
+			? (unitTexture ?? abilityTexture)
 			: abilityTexture
 	}
 	public get IsPassive(): boolean {

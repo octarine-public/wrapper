@@ -244,7 +244,7 @@ export class AbilityData {
 			: false
 		this.ID = kv.has("ID")
 			? parseInt(kv.get("ID") as string)
-			: AbilityData.GetAbilityIDByName(name) ?? -1
+			: (AbilityData.GetAbilityIDByName(name) ?? -1)
 		this.EffectName = (kv.get("Effect") as string) ?? ""
 		this.Cost = kv.has("ItemCost") ? parseInt(kv.get("ItemCost") as string) : 0
 		this.Purchasable = kv.has("ItemPurchasable")

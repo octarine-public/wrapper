@@ -10,7 +10,7 @@ export class bounty_hunter_shuriken_toss extends Ability {
 		return this.GetSpecialValue("speed", level)
 	}
 	public GetBaseCastRangeForLevel(level: number): number {
-		return this.Owner?.HasScepter ?? false
+		return (this.Owner?.HasScepter ?? false)
 			? this.GetSpecialValue("scepter_cast_range", level)
 			: super.GetBaseCastRangeForLevel(level)
 	}

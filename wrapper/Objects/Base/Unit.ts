@@ -2614,7 +2614,8 @@ function UpdateModifiersByUnitState(unit: Unit) {
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, newVal) => {
 	const oldName = unit.Name
 	const newValue = newVal as number
-	unit.UnitName_ = newValue >= 0 ? UnitData.GetUnitNameByNameIndex(newValue) ?? "" : ""
+	unit.UnitName_ =
+		newValue >= 0 ? (UnitData.GetUnitNameByNameIndex(newValue) ?? "") : ""
 	if (unit.UnitName_ === "") {
 		unit.UnitName_ = unit.Name_
 	}
@@ -2717,7 +2718,7 @@ RegisterFieldHandler(Unit, "m_hMyWearables", (unit, newVal) => {
 	unit.MyWearables_ = newVal as number[]
 	unit.MyWearables = unit.MyWearables_.map(id =>
 		EntityManager.EntityByIndex<Wearable>(id)
-	).filter(ent => ent !== undefined) as Wearable[]
+	).filter(ent => ent !== undefined)
 })
 RegisterFieldHandler(Unit, "m_anglediff", (unit, newVal) => {
 	const oldValue = unit.RotationDifference

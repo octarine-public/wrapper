@@ -1371,8 +1371,8 @@ function ProcessUserCmd(force = false): void {
 	}
 
 	InputManager.SelectedUnit = !ConVarsSDK.GetBoolean("dota_hud_new_query_panel", false)
-		? InputManager.QueryUnit ?? InputManager.SelectedEntities[0]
-		: InputManager.SelectedEntities[0] ?? InputManager.QueryUnit
+		? (InputManager.QueryUnit ?? InputManager.SelectedEntities[0])
+		: (InputManager.SelectedEntities[0] ?? InputManager.QueryUnit)
 
 	InputManager.CursorOnWorld = RendererSDK.ScreenToWorldFar(
 		[latestUsercmd.MousePosition],

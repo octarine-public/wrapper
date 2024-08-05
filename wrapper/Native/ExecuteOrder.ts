@@ -261,7 +261,7 @@ export class ExecuteOrder {
 		return {
 			OrderType: this.OrderType,
 			Target: target,
-			Ability: ability instanceof Ability ? ability.Index : ability ?? -1,
+			Ability: ability instanceof Ability ? ability.Index : (ability ?? -1),
 			Issuers: this.Issuers.map(ent => ent.Index),
 			Queue: this.Queue,
 			ShowEffects: this.ShowEffects,

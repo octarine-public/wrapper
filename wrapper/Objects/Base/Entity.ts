@@ -208,13 +208,8 @@ export class Entity {
 	}
 	public get RootOwner(): Nullable<Entity> {
 		let owner = this.Owner
-		while (true) {
-			const rootOwner = owner?.Owner
-			if (rootOwner === undefined) {
-				break
-			}
-
-			owner = rootOwner
+		while (owner?.Owner !== undefined) {
+			owner = owner.Owner
 		}
 		return owner
 	}

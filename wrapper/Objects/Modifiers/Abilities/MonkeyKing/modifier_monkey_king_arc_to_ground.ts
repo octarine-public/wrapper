@@ -8,6 +8,6 @@ export class modifier_monkey_king_arc_to_ground extends Modifier {
 	}
 	public get DeltaZ(): number {
 		// just in case buff bugs out
-		return this.ElapsedTime < 10 ? this.kv.FadeTime ?? 0 : 0
+		return this.ElapsedTime < 10 ? (this.kv.FadeTime ?? 0) : 0
 	}
 }

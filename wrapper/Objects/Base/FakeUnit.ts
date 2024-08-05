@@ -24,7 +24,7 @@ export class FakeUnit {
 
 	public get BaseAttackRange(): number {
 		return this.Name.includes("npc_dota_")
-			? UnitData.GetUnitDataByName(this.Name)?.BaseAttackRange ?? 0
+			? (UnitData.GetUnitDataByName(this.Name)?.BaseAttackRange ?? 0)
 			: 0
 	}
 	public SerialMatches(serial: number): boolean {

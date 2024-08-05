@@ -21,6 +21,13 @@ import {
 
 /** Camera Menu Manager  */
 export class InternalCamera {
+	private lastFrame = 0
+	private distanceSave = 0
+	private lastWheelDirection = false
+
+	private readonly sleepTime = 2 * 1000
+	private readonly sleeper = new Sleeper()
+
 	private readonly step: Menu.Slider
 	private readonly inverseDire: Menu.Toggle
 
@@ -37,10 +44,6 @@ export class InternalCamera {
 		readonly Y: Menu.Slider
 		readonly Vector: Vector2
 	}
-
-	private readonly sleepTime = 2 * 1000
-	private readonly sleeper = new Sleeper()
-	private distanceSave = 0
 
 	constructor(settings: Menu.Node) {
 		const treeMenu = settings.AddNode("Camera", "menu/icons/camera.svg")
@@ -90,7 +93,7 @@ export class InternalCamera {
 	private clampDistance(distance: number) {
 		return MathSDK.Clamp(distance, this.distance.min, this.distance.max)
 	}
-	private lastFrame = 0
+
 	public Draw(): void {
 		if (!this.isInGame) {
 			return
@@ -144,7 +147,6 @@ export class InternalCamera {
 		)
 	}
 
-	private lastWheelDirection = false
 	public MouseWheel(up: boolean): boolean {
 		if (
 			!this.mouseState.value ||

@@ -1,22 +1,22 @@
 import { Menu, NotificationsSDK, ResetSettingsUpdated } from "../../../wrapper/Imports"
 
+interface IDynamicList {
+	node: Menu.Node
+	filter: (el: Menu.Base) => boolean
+	create: (el: Menu.Base, path: string[]) => any
+}
+
 export class InternalConfig {
 	private isConstructed = false
+	private keybindsSkipNodeIdx = 0
+	private list: Nullable<Menu.Node>
 
 	private readonly node: Menu.Node
 	private readonly markNonDefault: Menu.Toggle
 	private readonly markNew: Menu.Toggle
 
-	private list: Menu.Node | undefined
-
-	public readonly dynamicLists = new Array<{
-		node: Menu.Node
-		filter: (el: Menu.Base) => boolean
-		create: (el: Menu.Base, path: string[]) => any
-	}>()
-
+	private readonly dynamicLists: IDynamicList[] = []
 	private readonly keybindsSkipNodeInternalName = "Heroes"
-	private keybindsSkipNodeIdx = 0
 
 	constructor(settings: Menu.Node) {
 		this.node = settings.AddNode("Config", "menu/icons/document1.svg")
@@ -128,49 +128,57 @@ export class InternalConfig {
 			NotificationsSDK.Push(new ResetSettingsUpdated())
 		})
 	}
-	public OnDraw() {
+	public Draw() {
 		if (!this.isConstructed || !Menu.MenuManager.IsOpen) {
 			return
 		}
 
-		if (this.list !== undefined) {
-			if (!this.list.IsOpen) {
-				this.list.entries.clear()
-				this.list = undefined
-			}
-		} else {
-			this.dynamicLists.forEach(l =>
-				l.node.IsOpen ? ((this.list = l.node), 0) : 0
-			)
-			if (this.list !== undefined) {
-				const dlist = this.dynamicLists.find(l => l.node === this.list)
-				if (dlist !== undefined) {
-					this.keybindsSkipNodeIdx = Menu.MenuManager.entries.findIndex(
-						v => v.InternalName === this.keybindsSkipNodeInternalName
-					)
-					if (this.keybindsSkipNodeIdx === -1) {
-						console.error(
-							`failed to find [${this.keybindsSkipNodeInternalName}] node in`,
-							[...Menu.MenuManager.entries]
-						)
-					}
-					Menu.MenuManager.foreachRecursive(el => {
-						if (
-							!el.IsNode &&
-							el.SaveConfig &&
-							el.parent instanceof Menu.Base &&
-							el.parent.SaveConfig &&
-							dlist.filter(el)
-						) {
-							const path = [el.Name]
-							el.foreachParent(node => path.unshift(node.Name))
-							dlist.create(el, path)
-						}
-					})
-					dlist.node.Update(true)
-					//dlist.node.entries.reverse()
-				}
-			}
+		if (this.list !== undefined && !this.list.IsOpen) {
+			this.list.entries.clear()
+			this.list = undefined
+			return
 		}
+
+		this.dynamicLists.forEach(list => {
+			if (list.node.IsOpen) {
+				this.list = list.node
+			}
+		})
+
+		if (this.list === undefined) {
+			return
+		}
+
+		const dlist = this.dynamicLists.find(l => l.node === this.list)
+		if (dlist === undefined) {
+			return
+		}
+
+		this.keybindsSkipNodeIdx = Menu.MenuManager.entries.findIndex(
+			v => v.InternalName === this.keybindsSkipNodeInternalName
+		)
+
+		if (this.keybindsSkipNodeIdx === -1) {
+			console.error(
+				`failed to find [${this.keybindsSkipNodeInternalName}] node in`,
+				[...Menu.MenuManager.entries]
+			)
+		}
+
+		Menu.MenuManager.foreachRecursive(el => {
+			if (
+				!el.IsNode &&
+				el.SaveConfig &&
+				el.parent instanceof Menu.Base &&
+				el.parent.SaveConfig &&
+				dlist.filter(el)
+			) {
+				const path = [el.Name]
+				el.foreachParent(node => path.unshift(node.Name))
+				dlist.create(el, path)
+			}
+		})
+
+		dlist.node.Update(true)
 	}
 }
