@@ -1,5 +1,5 @@
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
-@WrapperClass("CDOTA_Ability_PrimalBeast_Rock_Throw")
+@WrapperClass("primal_beast_rock_throw")
 export class primal_beast_rock_throw extends Ability {}
