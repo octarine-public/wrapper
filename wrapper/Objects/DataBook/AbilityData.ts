@@ -182,7 +182,7 @@ export class AbilityData {
 			? parseEnumString(
 					DOTA_ABILITY_BEHAVIOR,
 					kv.get("AbilityBehavior") as string,
-					0n
+					DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NONE
 				)
 			: DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NONE
 

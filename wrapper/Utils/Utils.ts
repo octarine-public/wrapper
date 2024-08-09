@@ -5,7 +5,7 @@ export function parseEnumString<T = number | bigint>(
 	str: string,
 	defaultVal: T
 ): any {
-	const regex = /(\w+)\s?(\||\&|\+|\-)?/g // it's in variable to preserve RegExp#exec steps
+	const regex = /(\w+)\s*(\||\&|\+|\-)?\s*/g // it's in variable to preserve RegExp#exec steps
 	let lastTok = "",
 		res = defaultVal as any
 	while (true) {
@@ -31,7 +31,7 @@ export function parseEnumString<T = number | bigint>(
 				res = parsedName
 				break
 		}
-		lastTok = regexRes[2] || ""
+		lastTok = (regexRes[2] || "").trim()
 	}
 }
 
