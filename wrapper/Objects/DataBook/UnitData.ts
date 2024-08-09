@@ -201,9 +201,17 @@ export class UnitData {
 				)
 			: ArmorType.Basic
 		const boundsHull = kv.has("BoundsHullName")
-			? parseEnumString(DOTAHullSize, kv.get("BoundsHullName") as string, 0)
+			? parseEnumString(
+					DOTAHullSize,
+					kv.get("BoundsHullName") as string,
+					DOTAHullSize.DOTA_HULL_SIZE_NONE
+				)
 			: DOTAHullSize.DOTA_HULL_SIZE_HERO
 		switch (boundsHull) {
+			case DOTAHullSize.DOTA_HULL_SIZE_SMALLEST:
+				this.HullRadius = 2
+				this.CollisionPadding = 2
+				break
 			case DOTAHullSize.DOTA_HULL_SIZE_SMALL:
 				this.HullRadius = 8
 				this.CollisionPadding = 10
@@ -212,14 +220,25 @@ export class UnitData {
 				this.HullRadius = 16
 				this.CollisionPadding = 20
 				break
+			case DOTAHullSize.DOTA_HULL_SIZE_HERO:
+				this.HullRadius = 24
+				this.CollisionPadding = 3
+				break
+			case DOTAHullSize.DOTA_HULL_SIZE_BIG_HERO:
+				this.HullRadius = 40
+				this.CollisionPadding = 3
+				break
 			case DOTAHullSize.DOTA_HULL_SIZE_SIEGE:
 				this.HullRadius = 16
 				this.CollisionPadding = 24
 				break
-			default:
-			case DOTAHullSize.DOTA_HULL_SIZE_HERO:
-				this.HullRadius = 24
-				this.CollisionPadding = 3
+			case DOTAHullSize.DOTA_HULL_SIZE_TOWER:
+				this.HullRadius = 144
+				this.CollisionPadding = 0
+				break
+			case DOTAHullSize.DOTA_HULL_SIZE_LARGE:
+				this.HullRadius = 40
+				this.CollisionPadding = 1
 				break
 			case DOTAHullSize.DOTA_HULL_SIZE_HUGE:
 				this.HullRadius = 80
@@ -229,18 +248,20 @@ export class UnitData {
 				this.HullRadius = 0
 				this.CollisionPadding = 16
 				break
-			case DOTAHullSize.DOTA_HULL_SIZE_FILLER:
-				this.HullRadius = 96
-				this.CollisionPadding = 16
-				break
 			case DOTAHullSize.DOTA_HULL_SIZE_BARRACKS:
 				this.HullRadius = 144
 				this.CollisionPadding = 16
 				break
-			case DOTAHullSize.DOTA_HULL_SIZE_TOWER:
-				this.HullRadius = 144
-				this.CollisionPadding = 0
+			case DOTAHullSize.DOTA_HULL_SIZE_FILLER:
+				this.HullRadius = 96
+				this.CollisionPadding = 16
 				break
+			default: {
+				this.HullRadius = 0
+				this.CollisionPadding = 0
+				console.log("Unknown bounds hull size:", boundsHull, "Name:", name)
+				break
+			}
 		}
 		this.ProjectileCollisionSize = kv.has("ProjectileCollisionSize")
 			? parseInt(kv.get("ProjectileCollisionSize") as string)

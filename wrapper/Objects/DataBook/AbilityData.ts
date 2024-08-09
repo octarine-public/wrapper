@@ -258,7 +258,11 @@ export class AbilityData {
 			? parseInt(kv.get("ItemPurchasable") as string) !== 0
 			: false
 		this.DamageType = kv.has("AbilityUnitDamageType")
-			? parseEnumString(DAMAGE_TYPES, kv.get("AbilityUnitDamageType") as string, 0)
+			? parseEnumString(
+					DAMAGE_TYPES,
+					kv.get("AbilityUnitDamageType") as string,
+					DAMAGE_TYPES.DAMAGE_TYPE_NONE
+				)
 			: DAMAGE_TYPES.DAMAGE_TYPE_NONE
 		// this.DispellableType = this.m_pAbilityData.m_iAbilityDispellableType
 		this.LevelsBetweenUpgrades = kv.has("LevelsBetweenUpgrades")
@@ -358,7 +362,7 @@ export class AbilityData {
 			? parseEnumString(
 					DOTA_ITEM_DISASSEMBLE,
 					kv.get("ItemDisassembleRule") as string,
-					0
+					DOTA_ITEM_DISASSEMBLE.DOTA_ITEM_DISASSEMBLE_NONE
 				)
 			: DOTA_ITEM_DISASSEMBLE.DOTA_ITEM_DISASSEMBLE_NONE
 

@@ -134,13 +134,13 @@ class ScriptsUpdated extends Notification {
 		private readonly stopAutoReload?: () => void
 	) {
 		super({
-			timeToShow: stopAutoReload === undefined ? 0 : 6 * 1000,
-			uniqueKey: stopAutoReload === undefined ? "AutoReload" : undefined
+			timeToShow: stopAutoReload !== undefined ? 0 : 6 * 1000,
+			uniqueKey: stopAutoReload !== undefined ? "AutoReload" : undefined
 		})
 	}
 
 	public OnClick(): boolean {
-		return this.stopAutoReload !== undefined
+		return this.stopAutoReload
 			? (this.stopAutoReload(), true)
 			: (reload(), this.clickState)
 	}
