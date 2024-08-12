@@ -1,6 +1,5 @@
 export const Localization = new (class CLocalization {
 	public wasChanged = true
-	public PreferredUnitName = ""
 	private SelectedUnitName_ = ""
 	private readonly LocalizationUnits = new Map<string, Map<string, string>>()
 
@@ -11,6 +10,11 @@ export const Localization = new (class CLocalization {
 		this.SelectedUnitName_ = name
 		this.wasChanged = true
 	}
+	public Languages = ["english", "russian"]
+	public SetLang(idx: number) {
+		this.SelectedUnitName = this.Languages.at(idx) ?? this.Languages[0]
+	}
+	/** @deprecated unused ?*/
 	public get LocalizationUnitsNames(): string[] {
 		return [...this.LocalizationUnits.keys()]
 	}

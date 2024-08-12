@@ -32,13 +32,11 @@ class CMenuManager {
 	private static readonly scrollbarOffset = new Vector2()
 	public entries: Node[] = []
 	public config: any
-	public emptyConfig = false
 	public EntriesSizeX = 0
 	public EntriesSizeY = 0
 	private readonly header = new Header(this)
 	private activeElement?: Base
 	private IsOpen_ = true
-	private initializedLanguage = false
 	private ScrollPosition = 0
 	private IsAtScrollEnd = true
 	private VisibleEntries = 0
@@ -138,29 +136,19 @@ class CMenuManager {
 			pos.Clone().AddScalarX(this.EntriesSizeX).AddScalarY(height)
 		)
 	}
-	private foreachRecursiveInternal(element: Base, cb: (element: Base) => any) {
-		if (element && (cb(element), true) && element instanceof Node) {
-			element.entries.forEach(e => this.foreachRecursiveInternal(e, cb))
-		}
-	}
 	public foreachRecursive(cb: (element: Base) => any) {
-		this.entries.forEach(node => this.foreachRecursiveInternal(node, cb))
+		this.entries.forEach(node => node.foreachRecursive(cb))
 	}
 
 	public async LoadConfig() {
 		try {
 			this.ConfigValue = JSON.parse(await readConfig())
-		} catch {
-			this.emptyConfig = true
-			this.ConfigValue = {}
 		} finally {
 			this.header.ConfigValue = this.config.Header
-			if (
-				this.config.SelectedLocalization !== undefined &&
-				this.config.SelectedLocalization !== ""
-			) {
+			if (this.config.SelectedLocalization) {
 				Localization.SelectedUnitName = this.config.SelectedLocalization
-				this.initializedLanguage = true
+			} else {
+				this.ConfigValue = {}
 			}
 			this.Update(true)
 		}
@@ -169,12 +157,17 @@ class CMenuManager {
 		if (this.config === undefined) {
 			return
 		}
-		if (!this.initializedLanguage && Localization.PreferredUnitName !== "") {
-			Localization.SelectedUnitName = Localization.PreferredUnitName
-			this.initializedLanguage = true
-		}
 		this.ForwardConfig()
 		if (Localization.wasChanged) {
+			const langDD = this.entries
+				.at(-1)
+				?.entries.find(e => e.InternalName === "Language")
+
+			if (langDD instanceof Dropdown) {
+				langDD.SelectedID = langDD.InternalValuesNames.findIndex(
+					l => l.toLowerCase() === Localization.SelectedUnitName
+				)
+			}
 			this.Update(true)
 			Localization.wasChanged = false
 			Base.SaveConfigASAP = true
@@ -216,7 +209,17 @@ class CMenuManager {
 
 		const popup = Node.ActivePopup?.Target.parent
 
-		Base.HoveredElement = undefined
+		if (Base.HoveredElement) {
+			if (
+				Base.HoveredElement.FirstTime &&
+				!Base.HoveredElement.IsHovered &&
+				!Base.HoveredElement.IsNode
+			) {
+				Base.HoveredElement.FirstTime = false
+			}
+			Base.HoveredElement = undefined
+		}
+
 		Base.ActiveElement =
 			Slider.DraggingNow ??
 			KeyBind.changingNow ??

@@ -103,6 +103,10 @@ export class Node extends Base {
 		if (this.IsOpen_ === val) {
 			return
 		}
+		if (this.FirstTime) {
+			this.FirstTime = false
+			this.foreachRecursive(e => (this.FirstTime ||= e.FirstTime && e.IsVisible))
+		}
 		if (!val) {
 			this.OnMouseLeftUp(true)
 		}
@@ -154,6 +158,13 @@ export class Node extends Base {
 	public IsDefault(): boolean {
 		return !this.SaveConfig || this.entries.every(e => e.IsDefault())
 	}
+	public foreachRecursive(cb: (element: Base) => any) {
+		this.entries.forEach(e => {
+			if (e && cb(e) !== false && e instanceof Node) {
+				e.foreachRecursive(cb)
+			}
+		})
+	}
 	private cfgDefValue = null
 	public get ConfigValue() {
 		if (!this.SaveUnusedConfigs) {
@@ -181,7 +192,7 @@ export class Node extends Base {
 				if (value === undefined) {
 					let isVisible = true
 					e.foreachParent(node => {
-						if ((isVisible &&= !node.IsHidden)) {
+						if ((isVisible &&= node.IsVisible)) {
 							node.FirstTime = true
 						}
 					}, true)
@@ -507,6 +518,7 @@ export class Node extends Base {
 						target.ResetToDefault()
 						target.OnConfigLoaded()
 						target.Update(true)
+						Base.SaveConfigASAP = true
 					},
 					TextSize: new Vector3()
 				}

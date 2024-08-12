@@ -35,6 +35,14 @@ export class Dropdown extends Base {
 		Dropdown.dropdownPopupElementsScrollbarWidth = GUIInfo.ScaleWidth(3)
 		Dropdown.nameDropdownGap = GUIInfo.ScaleHeight(8)
 		Dropdown.dropdownEndGap = GUIInfo.ScaleWidth(20)
+
+		Dropdown.textOffsetWithIcon.x = GUIInfo.ScaleWidth(48)
+		Dropdown.textOffsetWithIcon.y = Dropdown.dropdownTextOffset.y
+
+		Dropdown.iconSize.x = GUIInfo.ScaleWidth(24)
+		Dropdown.iconSize.y = GUIInfo.ScaleHeight(24)
+		Dropdown.iconOffset.x = GUIInfo.ScaleWidth(12)
+		Dropdown.iconOffset.y = GUIInfo.ScaleHeight(8)
 	}
 
 	private static readonly dropdownPath = "menu/dropdown.svg"
@@ -61,6 +69,10 @@ export class Dropdown extends Base {
 	private static nameDropdownGap = 0
 	private static dropdownEndGap = 0
 
+	private static readonly iconSize = new Vector2()
+	private static readonly iconOffset = new Vector2()
+	private static readonly textOffsetWithIcon = new Vector2()
+
 	public ValuesNames: string[]
 	private SelectedID_ = 0
 	/** keep space for longest value + arrow. false is used for language dropdown */
@@ -76,13 +88,20 @@ export class Dropdown extends Base {
 		name: string,
 		public InternalValuesNames: string[],
 		public readonly defaultValue = 0,
-		tooltip = ""
+		tooltip = "",
+		private iconPath_ = ""
 	) {
 		super(parent, name, tooltip)
 		this.ValuesNames = InternalValuesNames
 		this.ResetToDefault()
 	}
-
+	public get IconPath(): string {
+		return this.iconPath_
+	}
+	public set IconPath(val: string) {
+		this.iconPath_ = val
+		this.Update()
+	}
 	public get SelectedID(): number {
 		return this.SelectedID_
 	}
@@ -159,7 +178,7 @@ export class Dropdown extends Base {
 			return prev
 		}, new Vector2()).CopyTo(this.longestValueSize)
 
-		const nameWidth = this.nameSize.x + this.textOffset.x * 2
+		const nameWidth = this.nameSize.x + this.textOffset.x
 		let dropdownWidth = this.longestValueSize.x
 		if (!this.KeepArrowGap) {
 			dropdownWidth = Math.max(
@@ -179,6 +198,13 @@ export class Dropdown extends Base {
 			this.Size.y = this.nameSize.y + this.textOffset.y + this.longestValueSize.y
 			this.Size.y += Dropdown.nameDropdownGap + textPad.y + offset.y
 		}
+
+		if (this.IconPath !== "") {
+			this.Size.AddScalarX(Dropdown.textOffsetWithIcon.x)
+		} else {
+			this.Size.AddScalarX(this.textOffset.x)
+		}
+
 		return true
 	}
 
@@ -227,7 +253,22 @@ export class Dropdown extends Base {
 	public Render(): void {
 		this.isActive = Dropdown.activeDropdown === this
 		super.Render()
-		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
+
+		const textPos = this.Position.Clone()
+		if (this.IconPath !== "") {
+			textPos.AddScalarX(Dropdown.textOffsetWithIcon.x)
+			RendererSDK.Image(
+				this.IconPath,
+				this.Position.Add(Dropdown.iconOffset),
+				undefined,
+				Dropdown.iconSize
+			)
+		} else {
+			textPos.AddScalarX(this.textOffset.x)
+		}
+		textPos.AddScalarY(this.textOffset.y)
+
+		this.RenderTextDefault(this.Name, textPos)
 
 		const dropdownRect = this.DropdownRect
 		RendererSDK.Image(Dropdown.dropdownPath, dropdownRect.pos1, -1, dropdownRect.Size)

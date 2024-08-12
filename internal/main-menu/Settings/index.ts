@@ -4,8 +4,7 @@ import {
 	EventsSDK,
 	ExecuteOrder,
 	InputEventSDK,
-	Menu,
-	MenuLanguageID
+	Menu
 } from "../../../wrapper/Imports"
 import { InternalCamera } from "./Camera"
 import { InternalChanger } from "./Changer"
@@ -49,9 +48,15 @@ new (class CInternalSettings {
 			() => (Menu.MenuManager.IsOpen = !Menu.MenuManager.IsOpen)
 		)
 
-		this.tree
-			.AddDropdown("Language", ["English", "Russian"], 1)
-			.OnValue(call => this.onLangugeChanged(call)).KeepArrowGap = false
+		const langDD = this.tree.AddDropdown(
+			"Language",
+			Menu.Localization.Languages.map(l => l[0].toUpperCase() + l.slice(1))
+		)
+		langDD.IconPath = "menu/icons/lang.svg"
+		langDD.KeepArrowGap = false
+		langDD.SaveConfig = false
+		langDD.executeOnAdd = false
+		langDD.OnValue(call => Menu.Localization.SetLang(call.SelectedID))
 
 		this.reloadTree.AddButton("Reload").OnValue(() => reload())
 		this.key.ActivatesInMenu = true
@@ -84,22 +89,5 @@ new (class CInternalSettings {
 
 	protected HumanizerStateChanged() {
 		this.cCamera.HumanizerStateChanged()
-	}
-
-	private onLangugeChanged(call: Menu.Dropdown) {
-		if (Menu.MenuManager.emptyConfig) {
-			return
-		}
-		switch (call.SelectedID) {
-			case MenuLanguageID.english:
-				Menu.Localization.SelectedUnitName = "english"
-				break
-			case MenuLanguageID.russian:
-				Menu.Localization.SelectedUnitName = "russian"
-				break
-			case MenuLanguageID.chinese:
-				Menu.Localization.SelectedUnitName = "chinese"
-				break
-		}
 	}
 })()

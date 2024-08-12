@@ -1,4 +1,9 @@
-import { Menu, NotificationsSDK, ResetSettingsUpdated } from "../../../wrapper/Imports"
+import {
+	Color,
+	Menu,
+	NotificationsSDK,
+	ResetSettingsUpdated
+} from "../../../wrapper/Imports"
 
 interface IDynamicList {
 	node: Menu.Node
@@ -118,7 +123,11 @@ export class InternalConfig {
 
 		this.isConstructed = true
 
-		this.node.AddButton("Hard reset config").OnValue(() => {
+		const reset = "Hard reset config"
+		const resetNode = this.node.AddNode(reset)
+		resetNode.IconPath = "menu/icons/reload.svg"
+		resetNode.IconColor = Color.Red
+		resetNode.AddButton(reset).OnValue(() => {
 			Menu.MenuManager.config = {}
 			Menu.MenuManager.entries.forEach(e => {
 				e?.ResetToDefault()

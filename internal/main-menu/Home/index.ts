@@ -67,18 +67,11 @@ new (class CInternalMainMenu {
 		}
 	}
 
+	protected SetLanguageCounter = 0
 	protected SetLanguage(language: MenuLanguageID): void {
-		switch (language) {
-			default:
-			case MenuLanguageID.english:
-				Menu.Localization.PreferredUnitName = "english"
-				break
-			case MenuLanguageID.russian:
-				Menu.Localization.PreferredUnitName = "russian"
-				break
-			case MenuLanguageID.chinese:
-				Menu.Localization.PreferredUnitName = "chinese"
-				break
+		if (this.SetLanguageCounter++ || !Menu.Localization.SelectedUnitName) {
+			Menu.Localization.SetLang(language)
+			console.info("SetLanguage: ", Menu.Localization.SelectedUnitName)
 		}
 	}
 
