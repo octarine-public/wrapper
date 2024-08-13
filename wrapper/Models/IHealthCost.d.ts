@@ -1,3 +1,4 @@
 declare interface IHealthCost {
-	get HealthCost(): number
+	// get
+	readonly HealthCost: number
 }
