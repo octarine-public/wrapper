@@ -143,6 +143,8 @@ class CMenuManager {
 	public async LoadConfig() {
 		try {
 			this.ConfigValue = JSON.parse(await readConfig())
+		} catch {
+			this.ConfigValue = {}
 		} finally {
 			if (this.config.SelectedLocalization) {
 				Localization.SelectedUnitName = this.config.SelectedLocalization
