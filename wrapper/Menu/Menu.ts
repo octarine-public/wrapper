@@ -144,12 +144,12 @@ class CMenuManager {
 		try {
 			this.ConfigValue = JSON.parse(await readConfig())
 		} finally {
-			this.header.ConfigValue = this.config.Header
 			if (this.config.SelectedLocalization) {
 				Localization.SelectedUnitName = this.config.SelectedLocalization
 			} else {
 				this.ConfigValue = {}
 			}
+			this.header.ConfigValue = this.config.Header
 			this.Update(true)
 		}
 	}
