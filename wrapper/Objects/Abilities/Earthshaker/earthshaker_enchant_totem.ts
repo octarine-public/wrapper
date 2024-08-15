@@ -3,23 +3,14 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("earthshaker_enchant_totem")
 export class earthshaker_enchant_totem extends Ability {
-	public get AftershockRadius() {
-		const owner = this.Owner
-		if (owner === undefined || owner.IsPassiveDisabled) {
-			return 0
-		}
-		const aftershock = owner.GetAbilityByName("earthshaker_aftershock")
-		if (aftershock === undefined) {
-			return 0
-		}
-		return aftershock.AOERadius
+	public get ScepterRadius() {
+		return this.GetSpecialValue("scepter_cleave_distance")
 	}
-
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue("distance_scepter", level)
 	}
-
 	public GetBaseAOERadiusForLevel(level: number): number {
-		return this.GetSpecialValue("scepter_cleave_distance", level)
+		const aftershock = this.Owner?.GetAbilityByName("earthshaker_aftershock")
+		return aftershock?.GetBaseAOERadiusForLevel(level) ?? 0
 	}
 }
