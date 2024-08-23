@@ -1,3 +1,4 @@
+import { HealthGainPerStrength } from "../../../Data/GameData"
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
@@ -11,7 +12,8 @@ export class morphling_morph_str extends Ability implements IHealthRestore<Unit>
 
 	public HealthGain(seconds: number) {
 		// todo: move to HealthRestore ?
-		return this.GetSpecialValue("morph_rate_tooltip") * seconds * 22
+		const rate = this.GetSpecialValue("morph_rate")
+		return rate * seconds * HealthGainPerStrength
 	}
 	public GetHealthRestore(_target: Unit): number {
 		return 0

@@ -30,8 +30,10 @@ export const DamageAmplifyPerIntellectPrecent = 0.07
 export const MaxManaPerIntellect = 12
 export const MaxManaRegenerationPerIntellect = 0.05
 
-/** @deprecated */
-export const HealthGainPerStrength = 20
+export let HealthGainPerStrength = 22
+export function SetHealthGainPerStrength(value: number) {
+	HealthGainPerStrength = value
+}
 
 /** @deprecated */
 export const HurricanePikeBonusAttackSpeed = 100

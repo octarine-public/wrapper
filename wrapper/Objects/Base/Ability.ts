@@ -178,6 +178,10 @@ export class Ability extends Entity {
 	public get ChannelTime(): number {
 		return Math.max(GameState.RawGameTime - this.ChannelStartTime, 0)
 	}
+	public get ChannelEndTime(): number {
+		const channelTime = this.ChannelStartTime + this.MaxChannelTime
+		return Math.max(channelTime - GameState.RawGameTime, 0)
+	}
 	public get MaxCharges(): number {
 		return this.GetMaxChargesForLevel(this.Level)
 	}
@@ -379,8 +383,12 @@ export class Ability extends Entity {
 		return this.Owner.BonusAOERadiusAmplifier
 	}
 	public get AOERadius(): number {
-		const value = this.GetBaseAOERadiusForLevel(this.Level) + this.BonusAOERadius
-		return value * this.BonusAOERadiusAmplifier
+		const base = this.GetBaseAOERadiusForLevel(this.Level)
+		return (base + this.BonusAOERadius) * this.BonusAOERadiusAmplifier
+	}
+	public get MinAOERadius(): number {
+		const base = this.GetBaseMinAOERadiusForLevel(this.Level)
+		return (base + this.BonusAOERadius) * this.BonusAOERadiusAmplifier
 	}
 	public get SkillshotRange(): number {
 		return this.CastRange
@@ -499,6 +507,9 @@ export class Ability extends Entity {
 		return 0 // child classes should override
 	}
 	public GetBaseAOERadiusForLevel(_level: number): number {
+		return 0 // child classes should override
+	}
+	public GetBaseMinAOERadiusForLevel(_level: number): number {
 		return 0 // child classes should override
 	}
 	public GetBaseChannelTimeForLevel(level: number): number {
