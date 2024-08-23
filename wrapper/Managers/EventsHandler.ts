@@ -71,7 +71,8 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_CLEAR_MODELLIST_OVERRIDE = 31,
 	GAME_PARTICLE_MANAGER_EVENT_CREATE_PHYSICS_SIM = 32,
 	GAME_PARTICLE_MANAGER_EVENT_DESTROY_PHYSICS_SIM = 33,
-	GAME_PARTICLE_MANAGER_EVENT_SET_VDATA = 34
+	GAME_PARTICLE_MANAGER_EVENT_SET_VDATA = 34,
+	GAME_PARTICLE_MANAGER_EVENT_SET_MATERIAL_OVERRIDE = 35
 }
 enum EDotaEntityMessages {
 	DOTA_UNIT_SPEECH = 0,
@@ -95,6 +96,7 @@ message CNETMsg_Tick {
 	optional uint32 hltv_replay_flags = 9;
 	optional uint32 expected_long_tick = 10;
 	optional string expected_long_tick_reason = 11;
+	optional uint32 jitter = 12;
 }
 
 message CSVCMsg_GameSessionConfiguration {
@@ -174,6 +176,7 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_CREATE_PHYSICS_SIM = 32;
 	GAME_PARTICLE_MANAGER_EVENT_DESTROY_PHYSICS_SIM = 33;
 	GAME_PARTICLE_MANAGER_EVENT_SET_VDATA = 34;
+	GAME_PARTICLE_MANAGER_EVENT_SET_MATERIAL_OVERRIDE = 35;
 }
 
 enum DOTA_CHAT_MESSAGE {
@@ -497,6 +500,11 @@ message CUserMsg_ParticleManager {
 		optional string vdata_name = 1;
 	}
 
+	message SetMaterialOverride {
+		optional string material_name = 1;
+		optional bool include_children = 2;
+	}
+
 	required .PARTICLE_MESSAGE type = 1 [default = GAME_PARTICLE_MANAGER_EVENT_CREATE];
 	required uint32 index = 2;
 	optional .CUserMsg_ParticleManager.ReleaseParticleIndex release_particle_index = 3;
@@ -533,6 +541,7 @@ message CUserMsg_ParticleManager {
 	optional .CUserMsg_ParticleManager.CreatePhysicsSim create_physics_sim = 35;
 	optional .CUserMsg_ParticleManager.DestroyPhysicsSim destroy_physics_sim = 36;
 	optional .CUserMsg_ParticleManager.SetVData set_vdata = 37;
+	optional .CUserMsg_ParticleManager.SetMaterialOverride set_material_override = 38;
 }
 
 enum EDotaEntityMessages {
@@ -1026,6 +1035,10 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_VDATA: {
+			// const submsg = msg.get("") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_MATERIAL_OVERRIDE: {
 			// const submsg = msg.get("") as RecursiveProtobuf
 			break
 		}

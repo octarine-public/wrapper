@@ -83,4 +83,10 @@ export class PlayerData {
 	public get LiveSpectatorSpectatedHeroIndex(): number {
 		return this.properties.get("m_nLiveSpectatorSpectatedHeroIndex") ?? -1
 	}
+	public get LeaderboardRank(): number {
+		return this.properties.get("m_iLeaderboardRank") ?? -1
+	}
+	public get EMmrBoostType(): number {
+		return this.properties.get("m_eMmrBoostType") ?? -1
+	}
 }

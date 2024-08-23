@@ -1,5 +1,5 @@
 import { Runes } from "../../Data/GameData"
-import { WrapperClass } from "../../Decorators"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { RuneSpawnerType } from "../../Enums/RuneSpawnerType"
 import { RegisterFieldHandler } from "../NativeToSDK"
 import { GameRules } from "./Entity"
@@ -7,6 +7,11 @@ import { RuneSpawner } from "./RuneSpawner"
 
 @WrapperClass("CDOTA_Item_RuneSpawner_Powerup")
 export class RuneSpawnerPowerup extends RuneSpawner {
+	@NetworkedBasicField("m_bNextRuneIsWater")
+	public readonly NextRuneIsWater = false // TODO: check
+	@NetworkedBasicField("m_bWillSpawnNextPowerRune")
+	public readonly WillSpawnNextPowerRune = false // TODO: check
+
 	public readonly Type = RuneSpawnerType.Pwowerup
 
 	protected get SpawnsTime(): [number, number] {

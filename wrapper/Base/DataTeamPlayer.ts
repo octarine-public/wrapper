@@ -77,15 +77,6 @@ export class DataTeamPlayer {
 	public get PossibleHeroSelection(): number {
 		return this.properties.get("m_nPossibleHeroSelection", EPropertyType.INT32) ?? -1
 	}
-	public get MetaLevel(): number {
-		return this.properties.get("m_iMetaLevel") ?? -1
-	}
-	public get MetaExperience(): number {
-		return this.properties.get("m_iMetaExperience") ?? -1
-	}
-	public get MetaExperienceAwarded(): number {
-		return this.properties.get("m_iMetaExperienceAwarded") ?? -1
-	}
 	public get BuybackCooldownTime(): number {
 		return this.properties.get("m_flBuybackCooldownTime") ?? -1
 	}
@@ -252,9 +243,6 @@ export class DataTeamPlayer {
 			ClaimedMissCount: this.ClaimedMissCount,
 			MissCount: this.MissCount,
 			PossibleHeroSelection: this.PossibleHeroSelection,
-			MetaLevel: this.MetaLevel,
-			MetaExperience: this.MetaExperience,
-			MetaExperienceAwarded: this.MetaExperienceAwarded,
 			BuybackCooldownTime: this.BuybackCooldownTime,
 			BuybackGoldLimitTime: this.BuybackGoldLimitTime,
 			BuybackCostTime: this.BuybackCostTime,
