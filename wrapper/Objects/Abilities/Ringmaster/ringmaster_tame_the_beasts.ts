@@ -9,9 +9,6 @@ export class ringmaster_tame_the_beasts extends Ability {
 	public readonly StartLocation = new Vector3().Invalidate()
 
 	public get AOERadius(): number {
-		return this.CalculateRadius
-	}
-	protected get CalculateRadius(): number {
 		return this.calculateByTime(
 			super.MinAOERadius,
 			super.AOERadius,
@@ -30,10 +27,8 @@ export class ringmaster_tame_the_beasts extends Ability {
 		return this.GetSpecialValue("end_width", level)
 	}
 	private calculateByTime(min: number, max: number, time: number): number {
-		const owner = this.Owner
-		if (owner === undefined || !owner.IsChanneling) {
-			return min
-		}
-		return Math.max(min, min + (max - min) * (time + GameState.TickInterval))
+		return this.IsChanneling
+			? Math.max(min, min + (max - min) * (time + GameState.TickInterval))
+			: min
 	}
 }
