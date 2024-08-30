@@ -86,7 +86,7 @@ export class Vector2 {
 		if (Math.abs(this.x) <= 1e-9) {
 			return this.y > 0 ? 90 : this.y < 0 ? 270 : 0
 		}
-		return Math.radianToDegrees(Math.atan2(this.y, this.x) + 360) % 360
+		return (Math.radianToDegrees(this.Angle) + 360) % 360
 	}
 
 	public Equals(vec: Vector2): boolean {
