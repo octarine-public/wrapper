@@ -163,6 +163,8 @@ RegisterFieldHandler(CGameRules, "m_vecItemStockInfo", (game, newVal) => {
 })
 
 RegisterFieldHandler(CGameRules, "m_nGameState", (game, newVal) => {
-	game.GameState = newVal as DOTAGameState
-	EventsSDK.emit("GameStateChanged", false, newVal)
+	if (game.GameState !== newVal) {
+		game.GameState = newVal as DOTAGameState
+		EventsSDK.emit("GameStateChanged", false, newVal)
+	}
 })
