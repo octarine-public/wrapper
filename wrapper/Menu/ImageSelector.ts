@@ -128,16 +128,16 @@ export class ImageSelector extends Base {
 
 		for (let index = 0, end = values.length; index < end; index++) {
 			let path = values[index]
-			if (!path.startsWith("npc_dota_hero_")) {
-				path = path.startsWith("item_")
-					? GetItemTexture(path)
-					: GetSpellTexture(path)
+			if (path.startsWith("npc_dota_hero_")) {
+				path = GetHeroTexture(path)
 			} else if (path.startsWith("rune_")) {
-				path = GetRuneTexture(path)
+				path = GetRuneTexture(path.substring(5))
 			} else if (path.startsWith("item_bottle_")) {
 				path = `panorama/images/items/${path.substring(5)}_png.vtex_c`
 			} else {
-				path = GetHeroTexture(path)
+				path = path.startsWith("item_")
+					? GetItemTexture(path)
+					: GetSpellTexture(path)
 			}
 			const pathIamgeSize = RendererSDK.GetImageSize(path)
 			this.imageSize.x = Math.max(
