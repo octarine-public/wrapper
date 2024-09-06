@@ -17,6 +17,14 @@ import { TurboHeroPickRules } from "./TurboPickRules"
 @WrapperClass("CDOTAGamerulesProxy")
 export class CGameRules extends Entity {
 	public RawGameTime = 0
+	// @NetworkedBasicField("m_nRoshanRespawnPhase")
+	// public RoshanRespawnPhase = 0n // TODO: check
+	// @NetworkedBasicField("m_flRoshanRespawnPhaseEndTime")
+	// public RoshanRespawnPhaseEndTime = 0 // TODO: check
+	// @NetworkedBasicField("m_flPlayerDraftTimeBank")
+	// public PlayerDraftTimeBank = 0 // TODO: check
+	@NetworkedBasicField("m_unMatchID64", EPropertyType.UINT64)
+	public MatchID = 0n
 	@NetworkedBasicField("m_flDaytimeStart")
 	public DayTimeStart = 0
 	@NetworkedBasicField("m_flNighttimeStart")
@@ -68,14 +76,9 @@ export class CGameRules extends Entity {
 	public PlayerDraftActiveTeam = Team.None
 	@NetworkedBasicField("m_bAllDraftRadiantFirst")
 	public AllDraftRadiantFirst = false
-	@NetworkedBasicField("m_unMatchID64", EPropertyType.UINT64)
-	public MatchID = 0n
-	// @NetworkedBasicField("m_nRoshanRespawnPhase")
-	// public RoshanRespawnPhase = 0n // TODO: check
-	// @NetworkedBasicField("m_flRoshanRespawnPhaseEndTime")
-	// public RoshanRespawnPhaseEndTime = 0 // TODO: check
-	// @NetworkedBasicField("m_flPlayerDraftTimeBank")
-	// public PlayerDraftTimeBank = 0 // TODO: check
+	@NetworkedBasicField("m_vecPlayerDraftPickOrder")
+	public PlayerDraftPickOrder: number[] = []
+	public BannedHeroesIDs: number[] = []
 	public NeutralSpawnBoxes: NeutralSpawnBox[] = []
 	public StockInfo: StockInfo[] = []
 	public HeroPickState = DOTAHeroPickState.DOTA_HEROPICK_STATE_NONE
@@ -151,17 +154,17 @@ export class CGameRules extends Entity {
 RegisterFieldHandler(CGameRules, "m_nHeroPickState", (game, newVal) => {
 	game.HeroPickState = Number(newVal)
 })
-
+RegisterFieldHandler(CGameRules, "m_vecNewBannedHeroes", (game, newVal) => {
+	game.BannedHeroesIDs = (newVal as bigint[]).map(val => Number(val >> 1n))
+})
 RegisterFieldHandler(CGameRules, "m_NeutralSpawnBoxes", (game, newVal) => {
 	game.NeutralSpawnBoxes = (newVal as EntityPropertiesNode[]).map(
 		map => new NeutralSpawnBox(map)
 	)
 })
-
 RegisterFieldHandler(CGameRules, "m_vecItemStockInfo", (game, newVal) => {
 	game.StockInfo = (newVal as EntityPropertiesNode[]).map(map => new StockInfo(map))
 })
-
 RegisterFieldHandler(CGameRules, "m_nGameState", (game, newVal) => {
 	if (game.GameState !== newVal) {
 		game.GameState = newVal as DOTAGameState
