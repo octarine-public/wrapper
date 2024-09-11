@@ -673,15 +673,17 @@ function QuantitizedVecCoordToCoord(
 }
 RegisterFieldHandler(Entity, "m_iTeamNum", (ent, newVal) => {
 	const oldTeam = ent.Team
-	ent.Team = newVal as Team
-	if (ent.IsValid && oldTeam !== ent.Team) {
+	const newTeam = newVal as Team
+	if (ent.IsValid && oldTeam !== newTeam) {
+		ent.Team = newTeam
 		EventsSDK.emit("EntityTeamChanged", false, ent)
 	}
 })
 RegisterFieldHandler(Entity, "m_lifeState", (ent, newVal) => {
 	const oldState = ent.LifeState
-	ent.LifeState = newVal as LifeState
-	if (ent.IsValid && oldState !== ent.LifeState) {
+	const newState = newVal as LifeState
+	if (ent.IsValid && oldState !== newState) {
+		ent.LifeState = newState
 		EventsSDK.emit("LifeStateChanged", false, ent)
 	}
 })
