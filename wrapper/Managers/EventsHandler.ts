@@ -1523,12 +1523,17 @@ function GetLocalTeam(): Team {
 
 function UpdateLocalTeam() {
 	const team = GetLocalTeam()
-	if (GameState.LocalTeam === team) {
-		return
+	if (GameState.LocalTeam !== team) {
+		GameState.LocalTeam = team
+		EventsSDK.emit("LocalTeamChanged", false)
 	}
-	GameState.LocalTeam = team
-	EventsSDK.emit("LocalTeamChanged", false)
 }
+
+EventsSDK.on("EntityTeamChanged", ent => {
+	if (ent === LocalPlayer) {
+		UpdateLocalTeam()
+	}
+})
 
 EventsSDK.on("PlayerResourceUpdated", () => UpdateLocalTeam())
 
