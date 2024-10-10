@@ -138,6 +138,8 @@ export class Entity {
 	public Children: Entity[] = []
 	public IsVisible = true
 	public IsShop = false
+	public IsUnit = false
+	public IsAbility = false
 	public IsGameRules = false
 	public IsTree = false
 	public DeltaZ = 0

@@ -210,6 +210,7 @@ export class Unit extends Entity {
 	public IsTower = false
 	public IsOutpost = false
 	public IsBuilding = false
+	public IsUnit = true
 
 	public IsVisibleForTeamMask = 0
 	public UnitData = UnitData.empty

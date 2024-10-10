@@ -383,11 +383,27 @@ export class Modifier {
 	}
 
 	public Update(): void {
-		const newCaster = EntityManager.EntityByIndex<Unit>(this.kv.Caster),
+		let newParent = EntityManager.EntityByIndex<Unit>(this.kv.Parent),
+			newCaster = EntityManager.EntityByIndex<Unit>(this.kv.Caster),
 			newAbility = EntityManager.EntityByIndex<Ability>(this.kv.Ability),
 			newAuraOwner = EntityManager.EntityByIndex<Unit>(this.kv.AuraOwner),
-			newParent = EntityManager.EntityByIndex<Unit>(this.kv.Parent),
-			newAbilityLevel = this.kv.AbilityLevel ?? 0,
+			newCustomEntity = EntityManager.EntityByIndex<Unit>(this.kv.CustomEntity)
+		if (!newParent?.IsUnit) {
+			newParent = undefined
+		}
+		if (!newCaster?.IsUnit) {
+			newCaster = undefined
+		}
+		if (!newAbility?.IsAbility) {
+			newAbility = undefined
+		}
+		if (!newAuraOwner?.IsUnit) {
+			newAuraOwner = undefined
+		}
+		if (!newCustomEntity?.IsUnit) {
+			newCustomEntity = undefined
+		}
+		const newAbilityLevel = this.kv.AbilityLevel ?? 0,
 			newDuration = this.kv.Duration ?? 0,
 			newStackCount = this.kv.StackCount ?? 0,
 			newCreationTime = this.kv.CreationTime ?? 0,
@@ -397,7 +413,6 @@ export class Modifier {
 			newBonusAllStats = this.kv.BonusAllStats ?? 0,
 			newBonusHealth = this.kv.BonusHealth ?? 0,
 			newBonusMana = this.kv.BonusMana ?? 0,
-			newCustomEntity = EntityManager.EntityByIndex<Unit>(this.kv.CustomEntity),
 			newChannelTime = this.kv.ChannelTime ?? 0,
 			newDamage = this.kv.Damage ?? 0,
 			newIsRanged = newParent?.IsRanged ?? false,

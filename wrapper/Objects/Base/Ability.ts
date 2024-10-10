@@ -61,6 +61,7 @@ export class Ability extends Entity {
 
 	public Level = 0
 	public IsEmpty = false
+	public IsAbility = true
 	public IsHidden = false
 	public IsSpellAmplify = true
 	public ChannelStartTime = 0
