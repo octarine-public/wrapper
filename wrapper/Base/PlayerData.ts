@@ -27,10 +27,10 @@ export class PlayerData {
 		return this.properties.get("m_bIsBroadcaster") ?? false
 	}
 	public get BroadcasterChannel(): number {
-		return this.properties.get("m_iBroadcasterChannel") ?? -1
+		return this.properties.get("m_iBroadcasterChannel") ?? 0
 	}
 	public get BroadcasterChannelSlot(): number {
-		return this.properties.get("m_iBroadcasterChannelSlot") ?? -1
+		return this.properties.get("m_iBroadcasterChannelSlot") ?? 0
 	}
 	public get IsBroadcasterChannelCameraman(): boolean {
 		return this.properties.get("m_bIsBroadcasterChannelCameraman") ?? false
@@ -45,7 +45,7 @@ export class PlayerData {
 		return Number(this.properties.get("m_eCoachTeam")) ?? Team.Invalid
 	}
 	public get CoachRating(): number {
-		return this.properties.get("m_unCoachRating") ?? -1
+		return this.properties.get("m_unCoachRating") ?? 0
 	}
 	public get LiveSpectatorTeam(): Team {
 		return Number(this.properties.get("m_eLiveSpectatorTeam")) ?? Team.Invalid
@@ -63,10 +63,10 @@ export class PlayerData {
 		return this.properties.get("m_unAccoladeData") ?? []
 	}
 	public get RankTier(): number {
-		return this.properties.get("m_iRankTier") ?? -1
+		return this.properties.get("m_iRankTier") ?? 0
 	}
 	public get Title(): number {
-		return this.properties.get("m_iTitle") ?? -1
+		return this.properties.get("m_iTitle") ?? 0
 	}
 	public get FavTeamPacked(): bigint {
 		return this.properties.get("m_unFavTeamPacked") ?? 0n
@@ -81,12 +81,12 @@ export class PlayerData {
 		return this.properties.get("m_nCavernCrawlMapVariant") ?? 0n
 	}
 	public get LiveSpectatorSpectatedHeroIndex(): number {
-		return this.properties.get("m_nLiveSpectatorSpectatedHeroIndex") ?? -1
+		return this.properties.get("m_nLiveSpectatorSpectatedHeroIndex") ?? 0
 	}
 	public get LeaderboardRank(): number {
-		return this.properties.get("m_iLeaderboardRank") ?? -1
+		return this.properties.get("m_iLeaderboardRank") ?? 0
 	}
 	public get EMmrBoostType(): number {
-		return this.properties.get("m_eMmrBoostType") ?? -1
+		return this.properties.get("m_eMmrBoostType") ?? 0
 	}
 }

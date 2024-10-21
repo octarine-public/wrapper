@@ -58,7 +58,7 @@ export class NeutralSpawnerBox {
 	}
 
 	public get StackEndTime() {
-		return this.Spawner.SpawnBox?.StackEnd ?? -1
+		return this.Spawner.SpawnBox?.StackEnd ?? 0
 	}
 
 	public get Team() {
@@ -66,7 +66,7 @@ export class NeutralSpawnerBox {
 	}
 
 	public get StackStartTime() {
-		return this.Spawner.SpawnBox?.StackStart ?? -1
+		return this.Spawner.SpawnBox?.StackStart ?? 0
 	}
 
 	public get IsValidSpawner() {

@@ -150,7 +150,7 @@ export class PlayerCustomData {
 	 * @return {boolean}
 	 */
 	public get IsLocalPlayer(): boolean {
-		return (LocalPlayer?.PlayerID ?? -1) === this.PlayerID
+		return (LocalPlayer?.PlayerID ?? 0) === this.PlayerID
 	}
 	/**
 	 * @description Check if the player is a spectator.
@@ -228,7 +228,7 @@ export class PlayerCustomData {
 	 * @return {number | -1}
 	 */
 	public get RespawnSeconds(): number | -1 {
-		return this.PlayerTeamData?.RespawnSeconds ?? -1
+		return this.PlayerTeamData?.RespawnSeconds ?? 0
 	}
 	public get ReliableGold(): number {
 		return this.DataTeamPlayer === undefined
@@ -325,7 +325,7 @@ export class PlayerCustomData {
 	 * @return {number}
 	 */
 	public get TeamSlot(): number {
-		return this.PlayerTeamData?.TeamSlot ?? -1
+		return this.PlayerTeamData?.TeamSlot ?? 0
 	}
 	/**
 	 * Get the index of the selected hero.
@@ -333,7 +333,7 @@ export class PlayerCustomData {
 	 * @return {number}
 	 */
 	public get SelectedHeroIndex(): number {
-		return this.PlayerTeamData?.SelectedHeroIndex ?? -1
+		return this.PlayerTeamData?.SelectedHeroIndex ?? 0
 	}
 	/**
 	 * Returns the ID of the selected hero.
@@ -341,7 +341,7 @@ export class PlayerCustomData {
 	 * @return {number}
 	 */
 	public get SelectedHeroID(): number {
-		return this.PlayerTeamData?.SelectedHeroID ?? -1
+		return this.PlayerTeamData?.SelectedHeroID ?? 0
 	}
 	/**
 	 * @description Retrieves the DataTeamPlayer for the current player.
@@ -362,7 +362,7 @@ export class PlayerCustomData {
 	 * @return {boolean}
 	 */
 	public get IsPreparedSelectionHero(): boolean {
-		return (this.PlayerTeamData?.SelectedHeroID ?? -1) === 0
+		return (this.PlayerTeamData?.SelectedHeroID ?? 0) === 0
 	}
 	public get EventsData() {
 		return this.PlayerTeamData?.PlayerEventsData ?? []

@@ -48,7 +48,7 @@ export class Player extends Entity {
 		return PlayerCustomData.get(this.PlayerID)
 	}
 	public get TeamSlot(): number {
-		return this.PlayerCustomData?.TeamSlot ?? -1
+		return this.PlayerCustomData?.TeamSlot ?? 0
 	}
 	public get PlayerColor(): Color {
 		return this.PlayerCustomData?.Color ?? Color.Red
@@ -56,7 +56,7 @@ export class Player extends Entity {
 	public get HeroName(): Nullable<string> {
 		return (
 			this.Hero?.Name ??
-			UnitData.GetHeroNameByID(this.PlayerCustomData?.SelectedHeroID ?? -1)
+			UnitData.GetHeroNameByID(this.PlayerCustomData?.SelectedHeroID ?? 0)
 		)
 	}
 	public get RespawnPosition(): Nullable<Vector3> {
