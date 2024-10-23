@@ -1,16 +1,113 @@
 import { ERankType } from "../Enums/ERankType"
 import { MenuLanguageID } from "../Enums/MenuLanguageID"
 import { SOType } from "../Enums/SOType"
-import { GameState } from "../Utils/GameState"
 
 type Listener = (...args: any) => false | any
+
+class ListenerStats {
+	public callsCount = 0
+	public totalRuntime = 0
+	public maxRuntime = 0
+}
+
 export class EventEmitter {
 	protected readonly events = new Map<string, [Listener, number][]>()
 	protected readonly eventsAfter = new Map<string, [Listener, number][]>()
 	protected readonly listener2line = new WeakMap<Listener, string>()
 
+	public listenerStatsMode = false
+	public listenerStatsDuration = 1000
+	public listenerMaxLines = 1
+	public listenerSortByMax = false
+	public listenerNameFilter = ""
+	public listenerStr: string[][] = []
+	public listenerStrTime = 0
+	public listenerStats = new Map<string, ListenerStats>()
+	protected lastTime = 0
+
+	protected pushCallStats(name: string) {
+		if (!this.listenerStats.has(name)) {
+			this.listenerStats.set(name, new ListenerStats())
+		}
+		const lastTime = this.lastTime
+		this.lastTime = hrtime()
+		const runtime = this.lastTime - lastTime
+
+		const s = this.listenerStats.get(name)!
+		s.callsCount++
+		s.totalRuntime += runtime
+		if (s.maxRuntime < runtime) {
+			s.maxRuntime = runtime
+		}
+	}
+	protected updateStats() {
+		const eventStartTime = hrtime()
+		// eslint-disable-next-line prettier/prettier
+		if (this.listenerStatsMode &&
+			this.listenerStrTime < eventStartTime
+		) {
+			this.listenerStrTime = eventStartTime + this.listenerStatsDuration
+
+			this.listenerStr = [["| Total", " | Max", " | Avg", " | Count |", " Name"]]
+
+			this.listenerStats.forEach((v, k) => {
+				if (v.callsCount === 0) {
+					this.listenerStats.delete(k)
+				}
+			})
+			const stats = this.listenerStats.entries().toArray()
+
+			let best: [string, ListenerStats] = ["", new ListenerStats()]
+			let biggestDiff = 0
+
+			stats.forEach(v => {
+				const diff = !this.listenerSortByMax
+					? v[1].maxRuntime - best[1].maxRuntime
+					: v[1].totalRuntime - best[1].totalRuntime
+				if (biggestDiff < diff) {
+					biggestDiff = diff
+					best = v
+				}
+			})
+
+			stats
+				.toSorted((s1, s2) =>
+					this.listenerSortByMax
+						? s2[1].maxRuntime - s1[1].maxRuntime
+						: s2[1].totalRuntime - s1[1].totalRuntime
+				)
+				.slice(0, this.listenerMaxLines)
+				.concat([best])
+				.forEach(v => {
+					const s = v[1]
+					const formatFlt = (n: number, l = 4) =>
+						n.toFixed(l - 1).substring(0, l)
+					this.listenerStr.push([
+						//"|",
+						formatFlt((s.totalRuntime / this.listenerStatsDuration) * 100) +
+						"%",
+						formatFlt(s.maxRuntime),
+						formatFlt(s.totalRuntime / s.callsCount),
+						s.callsCount.toFixed() + "  |",
+						" " + v[0]
+					])
+
+					s.callsCount = s.maxRuntime = s.totalRuntime = 0
+				})
+		}
+	}
+
+	protected listenersSet = new Set<string>()
 	public on(name: string, listener: Listener, priority = 0): EventEmitter {
-		this.listener2line.set(listener, new Error().stack?.split("\n")[2] ?? "")
+		const n = new Error().stack?.split("\n")[2] ?? ""
+		this.listener2line.set(listener, n)
+
+		const sn = name + n
+		console.log(sn)
+		if (this.listenersSet.has(sn)) {
+			console.log(new Error().stack)
+		}
+		this.listenersSet.add(sn)
 
 		const listeners = this.events.get(name) ?? []
 		listeners.push([listener, priority])
@@ -46,55 +143,47 @@ export class EventEmitter {
 	}
 
 	public emit(name: string, cancellable = false, ...args: any[]): boolean {
-		const listeners = this.events.get(name),
-			listenersAfter = this.eventsAfter.get(name)
+		this.updateStats()
 
-		if (listeners !== undefined) {
-			for (let index = 0; index < listeners.length; index++) {
-				const startTime = hrtime()
-				const [listener] = listeners[index]
-				try {
-					if (listener(...args) === false && cancellable) {
-						return false
+		const eventStartTime = (this.lastTime = hrtime())
+		const statsIndividual =
+			this.listenerStatsMode &&
+			(this.listenerNameFilter.length === 0 ||
+				name.startsWith(this.listenerNameFilter))
+
+		const allListeners = [this.events.get(name), this.eventsAfter.get(name)]
+
+		for (let listenerIdx = 0; listenerIdx < 2; listenerIdx++) {
+			const listeners = allListeners[listenerIdx]
+			if (listeners !== undefined) {
+				for (let index = 0; index < listeners.length; index++) {
+					const listener = listeners[index][0]
+
+					try {
+						if (listener(...args) === false && cancellable) {
+							return false
+						}
+					} catch (e: any) {
+						console.error(
+							e instanceof Error ? e : new Error(e),
+							this.listener2line.get(listener)
+						)
 					}
-				} catch (e: any) {
-					console.error(
-						e instanceof Error ? e : new Error(e),
-						this.listener2line.get(listener)
-					)
-				}
-				const runTime = hrtime() - startTime
-				if (runTime > 3) {
-					SendListenerPerf(
-						this.listener2line.get(listener)!,
-						runTime,
-						GameState.RawGameTime
-					)
+					if (statsIndividual) {
+						this.pushCallStats(name + this.listener2line.get(listener))
+					}
 				}
 			}
 		}
-		if (listenersAfter !== undefined) {
-			for (let index = 0; index < listenersAfter.length; index++) {
-				const startTime = hrtime()
-				const [listener] = listenersAfter[index]
-				try {
-					listener(...args)
-				} catch (e: any) {
-					console.error(
-						e instanceof Error ? e : new Error(e),
-						this.listener2line.get(listener)
-					)
-				}
-				const runTime = hrtime() - startTime
-				if (runTime > 3) {
-					SendListenerPerf(
-						this.listener2line.get(listener)!,
-						runTime,
-						GameState.RawGameTime
-					)
-				}
+
+		if (this.listenerStatsMode) {
+			const totalName = "Total"
+			if (this.listenerNameFilter === totalName) {
+				this.lastTime = eventStartTime
+				this.pushCallStats(totalName + name)
 			}
 		}
+
 		return true
 	}
 

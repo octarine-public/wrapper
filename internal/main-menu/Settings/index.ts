@@ -1,10 +1,15 @@
 import {
+	Color,
 	Entity,
 	Events,
 	EventsSDK,
 	ExecuteOrder,
 	InputEventSDK,
-	Menu
+	InputManager,
+	Menu,
+	Rectangle,
+	RendererSDK,
+	Vector2
 } from "../../../wrapper/Imports"
 import { InternalCamera } from "./Camera"
 import { InternalChanger } from "./Changer"
@@ -27,7 +32,8 @@ new (class CInternalSettings {
 	private readonly key = this.reloadTree.AddKeybind("Key Bind")
 
 	constructor() {
-		EventsSDK.on("Draw", this.Draw.bind(this))
+		console.log("CInternalSettings", new Error().stack)
+		EventsSDK.after("Draw", this.Draw.bind(this))
 		EventsSDK.on("GameStarted", this.GameStarted.bind(this))
 		Events.on("ScriptsUpdated", this.ScriptsUpdated.bind(this))
 		InputEventSDK.on("MouseWheel", this.MouseWheel.bind(this))
@@ -62,14 +68,103 @@ new (class CInternalSettings {
 		this.key.ActivatesInMenu = true
 		this.key.OnPressed(() => this.cNotifications.OnBindPressed())
 		this.key.OnRelease(() => this.cNotifications.OnBindRelease())
+
+		const profiler = this.tree.AddNode("Events Profiler")
+
+		profiler
+			.AddDropdown("State", ["Disabled", "All", "Total", "Draw", "Tick"])
+			.OnValue(c => {
+				EventsSDK.listenerStr = [["Starting profile..."]]
+				EventsSDK.listenerStrTime = 0
+				EventsSDK.listenerNameFilter =
+					c.SelectedID > 1 ? c.ValuesNames[c.SelectedID] : ""
+				EventsSDK.listenerStatsMode = !!c.SelectedID
+			})
+		profiler.AddSlider("Duration, seconds", 1, 1, 30).OnValue(c => {
+			EventsSDK.listenerStrTime = 0
+			EventsSDK.listenerStatsDuration = c.value * 1000
+		})
+		profiler.AddSlider("Max lines", 5, 1, 50).OnValue(c => {
+			EventsSDK.listenerStrTime = 0
+			EventsSDK.listenerMaxLines = c.value
+		})
+		profiler.AddToggle("Sort by max", true).OnValue(c => {
+			EventsSDK.listenerStrTime = 0
+			EventsSDK.listenerSortByMax = c.value
+		})
+		profiler
+			.AddKeybind("Start manual hotkey")
+			.OnPressed(c => {
+				EventsSDK.listenerStatsMode = !EventsSDK.listenerStatsMode
+				EventsSDK.listenerStats.clear()
+				EventsSDK.listenerNameFilter = ""
+				EventsSDK.listenerStr = [["Starting profile..."]]
+				EventsSDK.listenerStrTime =
+					hrtime() + EventsSDK.listenerStatsDuration + 50
+			})
+			.OnRelease(c => {
+				if (EventsSDK.listenerStatsMode) {
+					EventsSDK.listenerStr = [
+						[
+							"Profiling for " +
+							(EventsSDK.listenerStatsDuration / 1000).toFixed() +
+							" seconds"
+						]
+					]
+				}
+			})
 	}
 
 	protected Draw() {
 		this.cCamera.Draw()
 		this.cConfig.Draw()
 		this.cNotifications.Draw()
-	}
 
+		if (EventsSDK.listenerStatsMode) {
+			const startX = 10
+			let y = 100
+			const height = 14
+
+			const fontCfg = [undefined, 12, 400, false] as any
+
+			const width = []
+			let widthTotal = 0
+			const lineHeader = EventsSDK.listenerStr[0]
+			for (let i = 0; i < lineHeader.length; i++) {
+				const w = RendererSDK.GetTextSize(lineHeader[i], ...fontCfg).x
+				widthTotal += w
+				width.push(w)
+			}
+			//width[width.length - 1] = EventsSDK.listenerStr
+			//	.map(v => RendererSDK.GetTextSize(v.at(-1) ?? "", ...fontCfg).x)
+			//	.reduce((max, v) => (v > max ? v : max))
+
+			const rect = new Rectangle(
+				new Vector2(startX, y),
+				new Vector2(
+					startX + widthTotal,
+					y + height * EventsSDK.listenerStr.length
+				)
+			)
+			if (rect.Contains(InputManager.CursorOnScreen)) {
+				RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Black)
+			}
+			for (let i = 0; i < EventsSDK.listenerStr.length; i++) {
+				const line = EventsSDK.listenerStr[i]
+				let x = startX
+				for (let j = 0; j < line.length; j++) {
+					const s = line[j]
+					const w =
+						j === width.length - 1
+							? width[j]
+							: RendererSDK.GetTextSize(s, ...fontCfg).x
+					x += width[j]
+					RendererSDK.Text(s, new Vector2(x - w, y), undefined, ...fontCfg)
+				}
+				y += height
+			}
+		}
+	}
 	protected MouseWheel(up: boolean) {
 		return this.cCamera.MouseWheel(up)
 	}

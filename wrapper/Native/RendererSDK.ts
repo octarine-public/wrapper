@@ -621,7 +621,7 @@ class CRendererSDK {
 			)
 		}
 
-		if (text === "") {
+		if (!text) {
 			return new Vector3()
 		}
 
