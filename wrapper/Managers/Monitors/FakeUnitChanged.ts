@@ -3,8 +3,16 @@ import { FakeUnit } from "../../Objects/Base/FakeUnit"
 import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { EventsSDK } from "../EventsSDK"
 
-const Monitor = new (class CMonitorFakeUnit {
-	public FakeUnitChanged(entity: FakeUnit) {
+new (class CMonitorFakeUnit {
+	constructor() {
+		EventsSDK.on(
+			"FakeUnitCreated",
+			entity => this.FakeUnitChanged(entity),
+			EventPriority.IMMEDIATE
+		)
+	}
+
+	protected FakeUnitChanged(entity: FakeUnit) {
 		if (entity.PlayerCustomData === undefined) {
 			const player = this.findPlayerCustomData(entity)
 			entity.Level = player !== undefined ? 1 : 0
@@ -18,9 +26,3 @@ const Monitor = new (class CMonitorFakeUnit {
 		)
 	}
 })()
-
-EventsSDK.on(
-	"FakeUnitCreated",
-	entity => Monitor.FakeUnitChanged(entity),
-	EventPriority.IMMEDIATE
-)

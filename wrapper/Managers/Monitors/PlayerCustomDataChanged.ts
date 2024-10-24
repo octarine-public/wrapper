@@ -9,23 +9,51 @@ import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { EntityManager } from "../EntityManager"
 import { EventsSDK } from "../EventsSDK"
 
-const Monitor = new (class CPlayerDataCustomChanged {
-	private readonly playersItems = new Map<number, Item[]>()
+new (class CPlayerDataCustomChanged {
+	private readonly playersItems = new Map<number, Map<number, number>>()
 
-	protected IsIllusion(entity: Unit) {
-		return entity.IsIllusion || entity.IsStrongIllusion
+	constructor() {
+		EventsSDK.on(
+			"GameEvent",
+			(name, obj) => this.GameEvent(name, obj),
+			EventPriority.IMMEDIATE
+		)
+
+		EventsSDK.on(
+			"UnitItemsChanged",
+			unit => this.UnitItemsChanged(unit),
+			EventPriority.IMMEDIATE
+		)
+
+		EventsSDK.on(
+			"PreEntityCreated",
+			entity => this.PreEntityCreated(entity),
+			EventPriority.IMMEDIATE
+		)
+
+		EventsSDK.on(
+			"EntityDestroyed",
+			entity => this.EntityDestroyed(entity),
+			EventPriority.IMMEDIATE
+		)
+
+		EventsSDK.on(
+			"PlayerCustomDataUpdated",
+			player => this.PlayerCustomDataUpdated(player),
+			EventPriority.IMMEDIATE
+		)
+
+		EventsSDK.on("PreDataUpdate", () => this.PreDataUpdate(), EventPriority.IMMEDIATE)
 	}
 
-	// Events
-	public PostDataUpdate() {
+	protected PreDataUpdate() {
 		const arr = PlayerCustomData.Array
-		for (let index = arr.length - 1; index > -1; index--) {
-			arr[index].PostDataUpdate()
+		for (let i = arr.length - 1; i > -1; i--) {
+			arr[i].PreDataUpdate()
 		}
 	}
 
-	// Events
-	public GameEvent(name: string, obj: any) {
+	protected GameEvent(name: string, obj: any) {
 		switch (name) {
 			case "dota_buyback":
 				PlayerCustomData.get(obj.player_id)?.SetBuyBack()
@@ -36,42 +64,39 @@ const Monitor = new (class CPlayerDataCustomChanged {
 		}
 	}
 
-	// Events
-	public PreEntityCreated(entity: Entity) {
+	protected PreEntityCreated(entity: Entity) {
 		if (entity instanceof TeamData) {
 			this.teamDataChanged(entity)
 		}
 	}
 
-	// Events
-	public EntityDestroyed(entity: Entity) {
+	protected EntityDestroyed(entity: Entity) {
+		if (entity instanceof Item) {
+			this.destroyedItem(entity)
+		}
 		if (entity instanceof CPlayerResource) {
 			PlayerCustomData.DeleteAll()
 		}
 		if (entity instanceof TeamData) {
 			this.teamDataChanged(entity, true)
 		}
-		if (entity instanceof Hero && entity.IsRealHero) {
-			this.playersItems.get(entity.PlayerID)?.clear()
-			this.playersItems.delete(entity.PlayerID)
-			PlayerCustomData.Delete(entity.PlayerID)
+		if (!(entity instanceof Hero) || !entity.IsRealHero) {
+			return
 		}
-		if (entity instanceof Item) {
-			this.destroyedItem(entity)
-		}
+		this.playersItems.get(entity.PlayerID)?.clear()
+		this.playersItems.delete(entity.PlayerID)
+		PlayerCustomData.Delete(entity.PlayerID)
 	}
 
-	// Events
-	public PlayerCustomDataUpdated(playerData: PlayerCustomData) {
+	protected PlayerCustomDataUpdated(playerData: PlayerCustomData) {
 		if (!playerData.IsValid) {
 			this.playersItems.get(playerData.PlayerID)?.clear()
 			this.playersItems.delete(playerData.PlayerID)
 		}
 	}
 
-	// Events
-	public UnitItemsChanged(unit: Unit) {
-		if (unit.IsClone || this.IsIllusion(unit)) {
+	protected UnitItemsChanged(unit: Unit) {
+		if (unit.IsClone || this.isIllusion(unit)) {
 			return
 		}
 		let playerID = unit.PlayerID
@@ -87,22 +112,14 @@ const Monitor = new (class CPlayerDataCustomChanged {
 			this.playersItems.delete(playerID)
 			return
 		}
-		// typescript v5.5 fix type (item is Item | undefined)
-		const totalItems = unit.TotalItems.filter(
-			(item): item is Item => item !== undefined && item.Cost !== 0
-		)
+		const totalItems = this.getTotalItems(unit)
 		const oldItems = this.playersItems.get(playerID)
 		if (oldItems === undefined) {
 			this.playersItems.set(playerID, totalItems)
 			this.updateGoldByItems(playerData, totalItems)
 			return
 		}
-		for (let index = totalItems.length - 1; index > -1; index--) {
-			const item = totalItems[index]
-			if (!oldItems.includes(item)) {
-				oldItems.push(item)
-			}
-		}
+		totalItems.forEach((value, key) => oldItems.set(key, value))
 		this.updateGoldByItems(playerData, oldItems)
 	}
 
@@ -149,7 +166,7 @@ const Monitor = new (class CPlayerDataCustomChanged {
 
 	private destroyedItem(item: Item) {
 		const owner = item.Owner
-		if (!(owner instanceof Unit) || !owner.IsClone || this.IsIllusion(owner)) {
+		if (!(owner instanceof Unit) || this.isIllusion(owner) || owner.IsClone) {
 			return
 		}
 		let playerID = owner.PlayerID
@@ -161,42 +178,31 @@ const Monitor = new (class CPlayerDataCustomChanged {
 			return
 		}
 		const oldItems = this.playersItems.get(playerID)
-		if (oldItems === undefined) {
-			return
+		if (oldItems !== undefined) {
+			oldItems.delete(item.Index)
+			this.updateGoldByItems(playerData, oldItems)
 		}
-		oldItems.remove(item)
-		this.updateGoldByItems(playerData, oldItems)
 	}
 
-	private updateGoldByItems(playerData: PlayerCustomData, items: Item[]) {
-		playerData.ItemsGold = items.reduce((sum, item) => sum + item.Cost, 0)
+	private updateGoldByItems(playerData: PlayerCustomData, items: Map<number, number>) {
+		let gold = 0
+		items.forEach(value => (gold += value))
+		playerData.ItemsGold = gold
+	}
+
+	private getTotalItems(unit: Unit) {
+		const arr = unit.TotalItems
+		const newMap = new Map<number, number>()
+		for (let i = arr.length - 1; i > -1; i--) {
+			const item = arr[i]
+			if (item !== undefined && item.Cost > 0) {
+				newMap.set(item.Index, item.Cost)
+			}
+		}
+		return newMap
+	}
+
+	protected isIllusion(entity: Unit) {
+		return entity.IsIllusion || entity.IsStrongIllusion
 	}
 })()
-
-EventsSDK.on("PostDataUpdate", () => Monitor.PostDataUpdate())
-
-EventsSDK.on("EntityDestroyed", entity => Monitor.EntityDestroyed(entity))
-
-EventsSDK.on(
-	"UnitItemsChanged",
-	entity => Monitor.UnitItemsChanged(entity),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"PreEntityCreated",
-	entity => Monitor.PreEntityCreated(entity),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"PlayerCustomDataUpdated",
-	player => Monitor.PlayerCustomDataUpdated(player),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"GameEvent",
-	(name, obj) => Monitor.GameEvent(name, obj),
-	EventPriority.IMMEDIATE
-)

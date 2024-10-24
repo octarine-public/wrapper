@@ -5,14 +5,28 @@ import { Rune } from "../../Objects/Base/Rune"
 import { Unit } from "../../Objects/Base/Unit"
 import { EventsSDK } from "../EventsSDK"
 
-const Monitor = new (class CEntityVisibleChanged {
+new (class CEntityVisibleChanged {
 	private readonly entities = new Map<Entity, [boolean]>()
 
-	public PreDataUpdate() {
-		this.entities.forEach((entData, ent) => {
-			if (entData[0] !== ent.IsVisible) {
-				entData[0] = ent.IsVisible
-				EventsSDK.emit("EntityVisibleChanged", false, ent)
+	constructor() {
+		EventsSDK.on(
+			"PreEntityCreated",
+			entity => this.PreEntityCreated(entity),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"EntityDestroyed",
+			entity => this.EntityDestroyed(entity),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on("PreDataUpdate", () => this.PreDataUpdate(), EventPriority.IMMEDIATE)
+	}
+
+	protected PreDataUpdate() {
+		this.entities.forEach((entData, entity) => {
+			if (entData[0] !== entity.IsVisible) {
+				entData[0] = entity.IsVisible
+				EventsSDK.emit("EntityVisibleChanged", false, entity)
 			}
 		})
 	}
@@ -39,17 +53,3 @@ const Monitor = new (class CEntityVisibleChanged {
 		)
 	}
 })()
-
-EventsSDK.on("PreDataUpdate", () => Monitor.PreDataUpdate())
-
-EventsSDK.on(
-	"PreEntityCreated",
-	entity => Monitor.PreEntityCreated(entity),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"EntityDestroyed",
-	entity => Monitor.EntityDestroyed(entity),
-	EventPriority.IMMEDIATE
-)

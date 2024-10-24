@@ -291,12 +291,12 @@ interface EventsSDK extends EventEmitter {
 	): EventEmitter
 	/**
 	 * @description Emitted if the properties of an unit have changed
-	 * e.x:
-	 * Unit#IsClone,
-	 * Unit#IsIllusion
+	 * example:
+	 * Unit#IsClone
 	 * Unit#IsRanged
-	 * Unit#CanUseItems,
-	 * Unit#CanUseAbilities
+	 * Unit#IsIllusion
+	 * Unit#AttackCapabilities
+	 * Unit#IsStrongIllusion
 	 * SpiritBear#ShouldRespawn
 	 * */
 	on(

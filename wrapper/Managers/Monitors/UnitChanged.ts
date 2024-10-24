@@ -293,8 +293,6 @@ const Monitor = new (class CPreUnitChanged {
 	}
 
 	private unitChanged(entity: Unit) {
-		entity.CanUseItems = !entity.IsIllusion
-		entity.CanUseAbilities = !entity.IsIllusion
 		entity.PredictedPosition.CopyFrom(entity.NetworkedPosition)
 		entity.LastRealPredictedPositionUpdate = GameState.RawGameTime
 		entity.LastPredictedPositionUpdate = GameState.RawGameTime

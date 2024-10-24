@@ -7,13 +7,9 @@ import { RegisterFieldHandler } from "../NativeToSDK"
 
 @WrapperClass("CDOTA_Unit_SpiritBear")
 export class SpiritBear extends Unit {
-	/**
-	 * @readonly
-	 * @return {boolean}
-	 */
+	/** @readonly */
 	public ShouldRespawn = false
 
-	/** @ignore */
 	constructor(
 		public readonly Index: number,
 		serial: number
@@ -21,6 +17,7 @@ export class SpiritBear extends Unit {
 		super(Index, serial)
 		this.IsSpiritBear = true
 	}
+
 	public CanMove(
 		checkChanneling: boolean = true,
 		checkAbilityPhase: boolean = true
@@ -49,6 +46,9 @@ export class SpiritBear extends Unit {
 }
 
 RegisterFieldHandler(SpiritBear, "m_bShouldRespawn", (unit, newVal) => {
-	unit.ShouldRespawn = newVal as boolean
-	EventsSDK.emit("UnitPropertyChanged", false, unit)
+	const oldValue = unit.ShouldRespawn
+	if (oldValue !== newVal) {
+		unit.ShouldRespawn = newVal as boolean
+		EventsSDK.emit("UnitPropertyChanged", false, unit)
+	}
 })

@@ -46,8 +46,18 @@ import { TempTree } from "./TempTree"
 import { Tree } from "./Tree"
 import { Wearable } from "./Wearable"
 
-const MAX_SPELLS = 31
 const MAX_ITEMS = 16
+const MAX_SPELLS = 31
+
+function UnitNameChanged(unit: Unit) {
+	unit.UnitData = UnitData.globalStorage.get(unit.Name) ?? UnitData.empty
+}
+
+function UpdateModifiersByUnitState(unit: Unit) {
+	for (let i = unit.Buffs.length - 1; i > -1; i--) {
+		unit.Buffs[i].OnUnitStateChaged()
+	}
+}
 
 @WrapperClass("CDOTA_BaseNPC")
 export class Unit extends Entity {
@@ -70,120 +80,124 @@ export class Unit extends Entity {
 		return false
 	}
 	@NetworkedBasicField("m_flHealthThinkRegen")
-	public HPRegen = 0
+	public readonly HPRegen: number = 0
 	@NetworkedBasicField("m_flManaThinkRegen")
-	public ManaRegen = 0
+	public readonly ManaRegen: number = 0
 	@NetworkedBasicField("m_bIsAncient")
-	public IsAncient = false
+	public readonly IsAncient: boolean = false
 	@NetworkedBasicField("m_flPhysicalArmorValue")
-	public NetworkedBaseArmor = 0
+	public readonly NetworkedBaseArmor: number = 0
 	@NetworkedBasicField("m_iCurShop", EPropertyType.UINT32)
-	public CurrentShop = DOTA_SHOP_TYPE.DOTA_SHOP_NONE
+	public readonly CurrentShop: DOTA_SHOP_TYPE = DOTA_SHOP_TYPE.DOTA_SHOP_NONE
 	@NetworkedBasicField("m_iBKBChargesUsed")
-	public BKBChargesUsed = 0
+	public readonly BKBChargesUsed: number = 0
 	@NetworkedBasicField("m_iAeonChargesUsed")
-	public AeonChargesUsed = 0
+	public readonly AeonChargesUsed: number = 0
 	@NetworkedBasicField("m_flRefresherUseTime")
-	public RefresherUseTime = 0
+	public readonly RefresherUseTime: number = 0
 	@NetworkedBasicField("m_flRefresherLastCooldown")
-	public RefresherLastCooldown = 0
+	public readonly RefresherLastCooldown: number = 0
 	@NetworkedBasicField("m_iDamageBonus")
-	public BonusDamage = 0
+	public readonly BonusDamage: number = 0
 	@NetworkedBasicField("m_iDayTimeVisionRange")
-	public NetworkedDayVision = 0
+	public readonly NetworkedDayVision: number = 0
 	@NetworkedBasicField("m_flDeathTime")
-	public DeathTime = 0
+	public readonly DeathTime: number = 0
 	@NetworkedBasicField("m_bStolenScepter")
-	public HasStolenScepter = false
-	@NetworkedBasicField("m_bVisibleinPVS")
-	public VisibleinPVS = false
+	public readonly HasStolenScepter: boolean = false
 	@NetworkedBasicField("m_bHasUpgradeableAbilities")
-	public HasUpgradeableAbilities = false
+	public readonly HasUpgradeableAbilities: boolean = false
 	@NetworkedBasicField("m_bCanBeDominated")
-	public IsDominatable = false
+	public readonly IsDominatable: boolean = false
+	@NetworkedBasicField("m_bCanRespawn")
+	public readonly CanBeRespawn: boolean = false
+	@NetworkedBasicField("m_iBaseDamageMin")
+	public readonly BaseDamageMin: number = 0
+	@NetworkedBasicField("m_iBaseDamageMax")
+	public readonly BaseDamageMax: number = 0
 	@NetworkedBasicField("m_iDamageMin")
-	public AttackDamageMin = 0
+	public readonly AttackDamageMin: number = 0
 	@NetworkedBasicField("m_iDamageMax")
-	public AttackDamageMax = 0
+	public readonly AttackDamageMax: number = 0
 	@NetworkedBasicField("m_bIsMoving")
-	public IsMoving = false
+	public readonly IsMoving: boolean = false
 	@NetworkedBasicField("m_bIsPhantom")
-	public IsPhantom = false
+	public readonly IsPhantom: boolean = false
 	@NetworkedBasicField("m_bIsSummoned")
-	public IsSummoned = false
+	public readonly IsSummoned: boolean = false
 	@NetworkedBasicField("m_flLastAttackTime")
-	public LastAttackTime = 0
+	public readonly LastAttackTime: number = 0
 	@NetworkedBasicField("m_flLastDamageTime")
-	public LastDamageTime = 0
+	public readonly LastDamageTime: number = 0
 	@NetworkedBasicField("m_flLastDealtDamageTime")
-	public LastDealtDamageTime = 0
+	public readonly LastDealtDamageTime: number = 0
 	@NetworkedBasicField("m_iMoveSpeed")
-	public readonly NetworkBaseMoveSpeed = 0
+	public readonly NetworkBaseMoveSpeed: number = 0
 	@NetworkedBasicField("m_bIsWaitingToSpawn")
-	public IsWaitingToSpawn = false
+	public readonly IsWaitingToSpawn: boolean = false
 	public PredictedIsWaitingToSpawn = true
 	@NetworkedBasicField("m_flMana")
-	public Mana = 0
+	public Mana: number = 0
 	@NetworkedBasicField("m_flMaxMana")
-	public MaxMana = 0
+	public readonly MaxMana: number = 0
 	@NetworkedBasicField("m_iNightTimeVisionRange")
-	public NetworkedNightVision = 0
+	public readonly NetworkedNightVision: number = 0
 	@NetworkedBasicField("m_flTauntCooldown")
-	public TauntCooldown = 0
+	public readonly TauntCooldown: number = 0
 	@NetworkedBasicField("m_flTauntCooldown2")
-	public TauntCooldown2 = 0
+	public readonly TauntCooldown2: number = 0
 	@NetworkedBasicField("m_iXPBounty")
-	public XPBounty = 0
+	public readonly XPBounty: number = 0
 	@NetworkedBasicField("m_iXPBountyExtra")
-	public XPBountyExtra = 0
+	public readonly XPBountyExtra: number = 0
 	@NetworkedBasicField("m_iGoldBountyMin")
-	public GoldBountyMin = 0
+	public readonly GoldBountyMin: number = 0
 	@NetworkedBasicField("m_iGoldBountyMax")
-	public GoldBountyMax = 0
+	public readonly GoldBountyMax: number = 0
 	@NetworkedBasicField("m_nHealthBarOffsetOverride")
-	public HealthBarOffsetOverride = 0
+	public readonly HealthBarOffsetOverride: number = 0
 	public HealthBarOffset_: Nullable<number>
 	@NetworkedBasicField("m_NetworkActivity")
-	public NetworkActivity = 0 as GameActivity
-	public NetworkActivityPrev = 0 as GameActivity
-	public NetworkActivityStartTime = 0
+	public readonly NetworkActivity: GameActivity = 0 as GameActivity
+	public NetworkActivityPrev: GameActivity = 0 as GameActivity
+	public NetworkActivityStartTime: number = 0
 	@NetworkedBasicField("m_NetworkSequenceIndex")
-	public NetworkSequenceIndex = 0
-	public NetworkSequenceIndexPrev = 0
+	public readonly NetworkSequenceIndex: number = 0
+	public NetworkSequenceIndexPrev: number = 0
 	@NetworkedBasicField("m_nResetEventsParity")
-	public SequenceParity = 0
-	public SequenceParityPrev = 0
+	public SequenceParity: number = 0
+	public SequenceParityPrev: number = 0
 
-	public Parity = 0
-	public Level = 0
-	public Agility = 0
-	public Intellect = 0
-	public Strength = 0
-	public TotalAgility = 0
-	public BaseTotalIntellect = 0
-	public TotalStrength = 0
-	public MoveSpeedTotal = 0
-	public AttackCapabilities = 0
-	public UnitStateNetworked = 0n
+	public Parity: number = 0
+	public Level: number = 0
+	public Agility: number = 0
+	public Intellect: number = 0
+	public Strength: number = 0
+	public TotalAgility: number = 0
+	public BaseTotalIntellect: number = 0
+	public TotalStrength: number = 0
+	public MoveSpeedTotal: number = 0
+	public AttackCapabilities: number = 0
+	public UnitStateNetworked: bigint = 0n
 
 	public Spawner_: number = 0
 	public Spawner: Nullable<NeutralSpawner>
-	public LastActivity = 0 as GameActivity
-	public LastActivitySequenceVariant = 0
-	public LastAnimationStartTime = 0
-	public LastAnimationServerStartTime = 0
-	public LastAnimationEndTime = 0
-	public LastAnimationRawCastPoint = 0
-	public LastAnimationCastPoint = 0
-	public LastAnimationPlaybackRate = 0
-	public LastAnimationIsAttack = false
-	public LastAnimationCasted = false
-	public IsInAnimation = false
+	public LastActivity: GameActivity = 0 as GameActivity
+	public LastActivitySequenceVariant: number = 0
+	public LastAnimationStartTime: number = 0
+	public LastAnimationServerStartTime: number = 0
+	public LastAnimationEndTime: number = 0
+	public LastAnimationRawCastPoint: number = 0
+	public LastAnimationCastPoint: number = 0
+	public LastAnimationPlaybackRate: number = 0
+	public LastAnimationIsAttack: boolean = false
+	public LastAnimationCasted: boolean = false
+	public IsInAnimation: boolean = false
 
-	public AttackTimeAtLastTick = 0
-	public AttackTimeLostToLastTick = 0
-	public LastPredictedPositionUpdate = 0
-	public LastRealPredictedPositionUpdate = 0
+	public AttackTimeAtLastTick: number = 0
+	public AttackTimeLostToLastTick: number = 0
+	public LastPredictedPositionUpdate: number = 0
+	public LastRealPredictedPositionUpdate: number = 0
 
 	/**
 	 * @description added for compatibility (icore)
@@ -194,36 +208,32 @@ export class Unit extends Entity {
 	 * @description added for compatibility (icore)
 	 * @deprecated
 	 */
-	public IsFogVisible = false
-	public IsAttacking = false
-	/** @deprecated */
-	public CanUseItems = false
-	/** @deprecated */
-	public CanUseAbilities = false
+	public IsFogVisible: boolean = false
+	public IsAttacking: boolean = false
 	public IsVisibleForEnemiesLastTime = 0
 
-	public IsRoshan = false
-	public IsCourier = false
-	public IsHero = false
-	public IsSpiritBear = false
-	public IsCreep = false
-	public IsTower = false
-	public IsOutpost = false
-	public IsBuilding = false
-	public IsUnit = true
+	public IsRoshan: boolean = false
+	public IsCourier: boolean = false
+	public IsHero: boolean = false
+	public IsSpiritBear: boolean = false
+	public IsCreep: boolean = false
+	public IsTower: boolean = false
+	public IsOutpost: boolean = false
+	public IsBuilding: boolean = false
+	public IsUnit: boolean = true
 
 	public IsVisibleForTeamMask = 0
 	public UnitData = UnitData.empty
-	public IsTrueSightedForEnemies = false
-	public HasScepterModifier = false
-	public HasShardModifier = false
-	public CanBeHealed = true
+	public IsTrueSightedForEnemies: boolean = false
+	public HasScepterModifier: boolean = false
+	public HasShardModifier: boolean = false
+	public CanBeHealed: boolean = true
 
-	public UnitName_ = ""
-	public PlayerID = -1
-	public OwnerPlayerID = -1
-	public HPRegenCounter = 0
-	public IsControllableByPlayerMask = 0n
+	public UnitName_: string = ""
+	public PlayerID: number = -1
+	public OwnerPlayerID: number = -1
+	public HPRegenCounter: number = 0
+	public IsControllableByPlayerMask: bigint = 0n
 
 	public MyWearables_: number[] = []
 	public MyWearables: Wearable[] = []
@@ -2607,18 +2617,6 @@ export class Unit extends Entity {
 	}
 }
 
-export const Units = EntityManager.GetEntitiesByClass(Unit)
-
-function UnitNameChanged(unit: Unit) {
-	unit.UnitData = UnitData.globalStorage.get(unit.Name) ?? UnitData.empty
-}
-
-function UpdateModifiersByUnitState(unit: Unit) {
-	for (let index = unit.Buffs.length - 1; index > -1; index--) {
-		unit.Buffs[index].OnUnitStateChaged()
-	}
-}
-
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, newVal) => {
 	const oldName = unit.Name
 	const newValue = newVal as number
@@ -2769,3 +2767,5 @@ RegisterFieldHandler(Unit, "m_iCurrentLevel", (unit, newVal) => {
 		EventsSDK.emit("UnitLevelChanged", false, unit)
 	}
 })
+
+export const Units = EntityManager.GetEntitiesByClass(Unit)
