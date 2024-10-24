@@ -3,49 +3,50 @@ import { Entity } from "../../Objects/Base/Entity"
 import { Hero, Heroes } from "../../Objects/Base/Hero"
 import { Players } from "../../Objects/Base/Player"
 import { PlayerPawn } from "../../Objects/Base/PlayerPawn"
+import { Unit } from "../../Objects/Base/Unit"
 import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { EventsSDK } from "../EventsSDK"
 
-const Monitor = new (class CPlayerChanged {
-	public EntityChanged(entity: Entity) {
+new (class CPlayerChanged {
+	constructor() {
+		EventsSDK.on(
+			"PreEntityCreated",
+			this.EntityChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"EntityDestroyed",
+			this.EntityChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"UnitPropertyChanged",
+			this.UnitPropertyChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
+	}
+
+	protected EntityChanged(entity: Entity) {
 		if (!(entity instanceof Hero || entity instanceof PlayerPawn)) {
 			return
 		}
-		if (entity instanceof Hero && entity.IsIllusion) {
+		if (entity instanceof Hero && !entity.IsRealHero) {
 			return
 		}
-		for (let index = Players.length - 1; index > -1; index--) {
-			const player = Players[index]
-			player.UpdateProperties(entity)
+		for (let i = Players.length - 1; i > -1; i--) {
+			Players[i].UpdateProperties(entity)
 		}
 		if (entity instanceof Hero) {
 			this.UnitPropertyChanged()
 		}
 	}
 
-	public UnitPropertyChanged() {
-		for (let index = Heroes.length - 1; index > -1; index--) {
-			const hero = Heroes[index]
-			if (this.isValidHero(hero)) {
+	protected UnitPropertyChanged(_unit?: Unit) {
+		for (let i = Heroes.length - 1; i > -1; i--) {
+			const hero = Heroes[i]
+			if (hero.IsValid && hero.IsRealHero) {
 				PlayerCustomData.set(hero.PlayerID, hero)
 			}
 		}
 	}
-
-	private isValidHero = (hero: Hero) =>
-		hero.IsValid && hero.IsRealHero && hero.CanUseAbilities && hero.CanUseItems
 })()
-
-EventsSDK.on(
-	"PreEntityCreated",
-	entity => Monitor.EntityChanged(entity),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"UnitPropertyChanged",
-	() => Monitor.UnitPropertyChanged(),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on("EntityDestroyed", entity => Monitor.EntityChanged(entity))

@@ -295,8 +295,6 @@ interface EventsSDK extends EventEmitter {
 	 * Unit#IsClone,
 	 * Unit#IsIllusion
 	 * Unit#IsRanged
-	 * Unit#CanUseItems,
-	 * Unit#CanUseAbilities
 	 * SpiritBear#ShouldRespawn
 	 * */
 	on(

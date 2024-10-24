@@ -19,17 +19,22 @@ import { Player } from "../../Objects/Base/Player"
 import { FieldHandler, RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GameState } from "../../Utils/GameState"
 import { DegreesToRadian, toPercentage } from "../../Utils/Math"
+import { QuantitizedVecCoordToCoord } from "../../Utils/QuantizeUtils"
 import { CGameRules } from "./GameRules"
 import { Item } from "./Item"
 
 // === TODO move to manager or monitor ===>
-export var LocalPlayer: Nullable<Player>
 let playerSlot = NaN
-EventsSDK.on(
-	"ServerInfo",
-	info => (playerSlot = (info.get("player_slot") as number) ?? NaN)
-)
 let gameInProgress = false
+const activity2name = new Map<GameActivity, string>(
+	Object.entries(GameActivity).map(([k, v]) => [v as GameActivity, k.toLowerCase()])
+)
+const modelDataCache = new Map<string, [AnimationData[], Map<number, number>, string[]]>()
+
+export let latestTickDelta = 0
+export var LocalPlayer: Nullable<Player>
+export let GameRules: Nullable<CGameRules>
+
 function SetGameInProgress(newVal: boolean) {
 	if (!gameInProgress && newVal) {
 		EventsSDK.emit("GameStarted", false)
@@ -40,21 +45,7 @@ function SetGameInProgress(newVal: boolean) {
 	}
 	gameInProgress = newVal
 }
-EventsSDK.on("PreEntityCreated", ent => {
-	if (ent.Index === playerSlot + 1) {
-		LocalPlayer = ent as Player
-		SetGameInProgress(true)
-	}
-})
-EventsSDK.on("EntityDestroyed", ent => {
-	if (ent === LocalPlayer) {
-		LocalPlayer = undefined
-		SetGameInProgress(false)
-	}
-})
-export let GameRules: Nullable<CGameRules>
 
-export let latestTickDelta = 0
 export function SetLatestTickDelta(delta: number): void {
 	latestTickDelta = delta
 }
@@ -94,66 +85,71 @@ export function UpdateGameTime() {
 	}
 }
 
+EventsSDK.on("ServerInfo", msg => {
+	playerSlot = (msg.get("player_slot") as number) ?? NaN
+	modelDataCache.clear()
+	GameState.TickInterval = (msg.get("tick_interval") as Nullable<number>) ?? 1 / 30
+})
+
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent.IsGameRules) {
 		GameRules = ent as CGameRules
 		UpdateGameTime()
 	}
+	if (ent.Index === playerSlot + 1) {
+		LocalPlayer = ent as Player
+		SetGameInProgress(true)
+	}
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	if (!ent.IsGameRules) {
-		return
+	if (ent === LocalPlayer) {
+		LocalPlayer = undefined
+		SetGameInProgress(false)
 	}
-	GameRules = undefined
-	GameState.RawGameTime = 0
+	if (ent.IsGameRules) {
+		GameRules = undefined
+		GameState.RawGameTime = 0
+	}
 })
 
-const activity2name = new Map<GameActivity, string>(
-	Object.entries(GameActivity).map(([k, v]) => [v as GameActivity, k.toLowerCase()])
-)
-const modelDataCache = new Map<string, [AnimationData[], Map<number, number>, string[]]>()
-EventsSDK.on("ServerInfo", msg => {
-	modelDataCache.clear()
-	GameState.TickInterval = (msg.get("tick_interval") as Nullable<number>) ?? 1 / 30
-})
 // <=== TODO move to manager or monitor ===
 
 @WrapperClass("CBaseEntity")
 export class Entity {
 	@NetworkedBasicField("m_flCreateTime")
-	public CreateTime_ = 0
-	@NetworkedBasicField("m_iHealth")
-	public HP = 0
-	public HPPrediction = 0
+	public readonly CreateTime_: number = 0
 	@NetworkedBasicField("m_iMaxHealth")
-	public MaxHP = 0
+	public readonly MaxHP: number = 0
 	@NetworkedBasicField("m_flPlaybackRate")
-	public PlaybackRate = 1
+	public readonly PlaybackRate: number = 1
 	@NetworkedBasicField("CBodyComponent")
-	public CBodyComponent_: Nullable<EntityPropertiesNode> = undefined
+	public readonly CBodyComponent_: Nullable<EntityPropertiesNode> = undefined
+	@NetworkedBasicField("m_iHealth")
+	public HP: number = 0
+	public HPPrediction: number = 0
 
-	public IsValid = true
-	public ClassName = ""
-	public ModelName = ""
+	public IsValid: boolean = true
+	public ClassName: string = ""
+	public ModelName: string = ""
 	public Children: Entity[] = []
-	public IsVisible = true
-	public IsShop = false
-	public IsUnit = false
-	public IsAbility = false
-	public IsGameRules = false
-	public IsTree = false
-	public DeltaZ = 0
-	public AnimationTime = 0
-	public ModelScale = 1
-	public BecameDormantTime = 0
-	public RotationDifference = 0
-	public HierarchyAttachName = 0
+	public IsVisible: boolean = true
+	public IsShop: boolean = false
+	public IsUnit: boolean = false
+	public IsAbility: boolean = false
+	public IsGameRules: boolean = false
+	public IsTree: boolean = false
+	public DeltaZ: number = 0
+	public AnimationTime: number = 0
+	public ModelScale: number = 1
+	public BecameDormantTime: number = 0
+	public RotationDifference: number = 0
+	public HierarchyAttachName: number = 0
 	public Attachments: string[] = []
 	public ModelData: Nullable<ModelData>
 	public Animations: AnimationData[] = []
-	public Team = Team.None
-	public LifeState = LifeState.LIFE_DEAD
-	public FakeCreateTime_ = GameState.RawGameTime
+	public Team: Team = Team.None
+	public LifeState: LifeState = LifeState.LIFE_DEAD
+	public FakeCreateTime_: number = GameState.RawGameTime
 
 	public readonly VisualPosition = new Vector3()
 	public readonly NetworkedPosition = new Vector3()
@@ -164,17 +160,17 @@ export class Entity {
 	public readonly BoundingBox = new AABB(this.VisualPosition)
 	public readonly SpawnPosition = new Vector3()
 
-	public Name_ = ""
-	public Owner_ = 0
+	public Name_: string = ""
+	public Owner_: number = 0
 	public OwnerEntity: Nullable<Entity> = undefined
-	public Parent_ = 0
+	public Parent_: number = 0
 	public ParentEntity: Nullable<Entity> = undefined
 
 	public AttachmentsHashMap: Nullable<Map<number, number>>
 	public FieldHandlers_: Nullable<Map<number, FieldHandler>>
-	public Properties_ = new EntityPropertiesNode()
+	public Properties_: EntityPropertiesNode = new EntityPropertiesNode()
 
-	private RingRadius_ = 30
+	private RingRadius_: number = 30
 	private CustomGlowColor_: Nullable<Color>
 	private CustomDrawColor_: Nullable<[Color, RenderMode]>
 
@@ -667,12 +663,6 @@ export class Entity {
 	}
 }
 
-function QuantitizedVecCoordToCoord(
-	cell: Nullable<number>,
-	inside: Nullable<number>
-): number {
-	return ((cell ?? 0) - 128) * 128 + (inside ?? 0)
-}
 RegisterFieldHandler(Entity, "m_iTeamNum", (ent, newVal) => {
 	const oldTeam = ent.Team
 	const newTeam = newVal as Team
@@ -911,7 +901,6 @@ EventsSDK.on("AbilityLevelChanged", abil => {
 
 EventsSDK.on("EntityVisibleChanged", ent => {
 	requestUnitUpdate(ent)
-
 	if (lastColoredEnts.has(ent)) {
 		lastColoredEnts.set(ent, GameState.CurrentServerTick)
 	}

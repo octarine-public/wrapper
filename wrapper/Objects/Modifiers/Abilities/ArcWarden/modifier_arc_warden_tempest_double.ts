@@ -11,8 +11,6 @@ export class modifier_arc_warden_tempest_double extends Modifier {
 			return false
 		}
 		owner.IsClone_ = state
-		owner.CanUseItems = state
-		owner.CanUseAbilities = state
 		owner.IsStrongIllusion_ = state
 		EventsSDK.emit("UnitPropertyChanged", false, owner)
 		return super.UnitPropertyChanged(changed)

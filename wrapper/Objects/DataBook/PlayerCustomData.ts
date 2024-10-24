@@ -463,7 +463,7 @@ export class PlayerCustomData {
 	 * @internal
 	 * @description internal only for wrapper
 	 */
-	public PostDataUpdate() {
+	public PreDataUpdate() {
 		this.TeamChanged()
 	}
 	/**
