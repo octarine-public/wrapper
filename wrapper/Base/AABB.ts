@@ -9,6 +9,9 @@ export class AABB {
 		public DeltaZ = 0
 	) {}
 
+	public get MaxZ(): number {
+		return this.Base.z + this.MaxOffset.z + this.DeltaZ
+	}
 	public get Min(): Vector3 {
 		return this.Base.Add(this.MinOffset).AddScalarZ(this.DeltaZ)
 	}
@@ -26,7 +29,7 @@ export class AABB {
 		]
 	}
 	public get Polygon(): WorldPolygon {
-		const maxZ = this.Base.z + this.MaxOffset.z + this.DeltaZ
+		const maxZ = this.MaxZ
 		const basePoints = this.Points
 		return new WorldPolygon(
 			basePoints[0],
