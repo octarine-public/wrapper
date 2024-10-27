@@ -180,7 +180,7 @@ function ParseEntityUpdate(
 	stream: ViewBinaryStream,
 	entID: number,
 	createdEntities: Entity[],
-	isCreate = false
+	isCreate: boolean
 ): void {
 	const entSerial = isCreate ? stream.ReadUint32() : 0
 	const nameStringableIndex = isCreate ? stream.ReadInt32() : -1
@@ -200,11 +200,8 @@ function ParseEntityUpdate(
 	if (debugParsing) {
 		entityDump += entID + " with class " + entClass + ":\n"
 	}
-	if (ent !== undefined) {
-		ent.IsVisible = true
-		if (entWasCreated) {
-			ent.IsValid = false
-		}
+	if (ent !== undefined && entWasCreated) {
+		ent.IsValid = false
 	}
 	const entHandlers = ent?.FieldHandlers_,
 		entNode = ent?.Properties_ ?? new EntityPropertiesNode(),
@@ -329,7 +326,9 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 			stream.ReadFloat32() // m_flTotalMoveSpeed
 		])
 	}
-	const createdEntities: Entity[] = []
+	const createdEntities: Entity[] = [],
+		leftVis: Entity[] = [],
+		enteredVis: Entity[] = []
 	while (!stream.Empty()) {
 		const entID = stream.ReadUint16()
 		const pvs: EntityPVS = stream.ReadUint8()
@@ -340,18 +339,40 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 			case EntityPVS.LEAVE: {
 				const ent = EntityManager.EntityByIndex(entID)
 				if (ent !== undefined) {
-					ent.BecameDormantTime = GameState.RawGameTime
-					ent.IsVisible = false
+					if (!leftVis.includes(ent)) {
+						leftVis.push(ent)
+					}
+					enteredVis.remove(ent)
 				}
 				break
 			}
 			case EntityPVS.CREATE:
-				ParseEntityUpdate(stream, entID, createdEntities, true)
+			case EntityPVS.UPDATE: {
+				ParseEntityUpdate(
+					stream,
+					entID,
+					createdEntities,
+					pvs === EntityPVS.CREATE
+				)
+				const ent = EntityManager.EntityByIndex(entID)
+				if (ent !== undefined) {
+					if (!enteredVis.includes(ent)) {
+						enteredVis.push(ent)
+					}
+					leftVis.remove(ent)
+				}
 				break
-			case EntityPVS.UPDATE:
-				ParseEntityUpdate(stream, entID, createdEntities)
-				break
+			}
 		}
+	}
+	for (const ent of leftVis) {
+		if (ent.IsVisible) {
+			ent.BecameDormantTime = GameState.RawGameTime
+			ent.IsVisible = false
+		}
+	}
+	for (const ent of enteredVis) {
+		ent.IsVisible = true
 	}
 	for (let index = 0, end = nativeChanges.length; index < end; index++) {
 		const [entID, healthBarOffset, totalMoveSpeed] = nativeChanges[index]
