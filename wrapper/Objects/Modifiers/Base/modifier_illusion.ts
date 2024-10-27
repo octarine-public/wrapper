@@ -9,7 +9,7 @@ export class modifier_illusion extends Modifier {
 	public UnitPropertyChanged(changed?: boolean): boolean {
 		const owner = this.Parent
 		const state = (changed ??= true)
-		if (owner === undefined || !owner.IsSpiritBear) {
+		if (owner === undefined) {
 			return super.UnitPropertyChanged(changed)
 		}
 		owner.IsIllusion_ = state

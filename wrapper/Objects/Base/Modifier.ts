@@ -560,7 +560,7 @@ export class Modifier {
 		return true
 	}
 
-	protected UnitPropertyChanged(_changed?: boolean): boolean {
+	public UnitPropertyChanged(_changed?: boolean): boolean {
 		this.updateAllSpecialValues()
 		return true
 	}

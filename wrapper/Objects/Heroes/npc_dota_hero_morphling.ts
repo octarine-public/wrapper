@@ -1,14 +1,13 @@
 import { WrapperClass } from "../../Decorators"
 import { GameActivity } from "../../Enums/GameActivity"
-import { EntityManager } from "../../Managers/EntityManager"
-import { EventsSDK } from "../../Managers/EventsSDK"
 import { Hero } from "../Base/Hero"
 
 @WrapperClass("CDOTA_Unit_Hero_Morphling")
 export class npc_dota_hero_morphling extends Hero {
-	public IsGuaranteedReal = false
+	public IsGuaranteedReal_: boolean = false
+
 	public get IsIllusion(): boolean {
-		return !this.IsGuaranteedReal && super.IsIllusion
+		return this.IsIllusion_ || (!this.IsGuaranteedReal_ && super.IsIllusion)
 	}
 	public CalculateActivityModifiers(activity: GameActivity, ar: string[]): void {
 		super.CalculateActivityModifiers(activity, ar)
@@ -19,13 +18,3 @@ export class npc_dota_hero_morphling extends Hero {
 		}
 	}
 }
-
-const morphlings = EntityManager.GetEntitiesByClass(npc_dota_hero_morphling)
-EventsSDK.on("PostDataUpdate", () => {
-	for (let index = morphlings.length - 1; index > -1; index--) {
-		const hero = morphlings[index]
-		if (!hero.IsGuaranteedReal && !hero.IsIllusion) {
-			hero.IsGuaranteedReal = true
-		}
-	}
-})

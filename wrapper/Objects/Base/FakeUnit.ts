@@ -65,7 +65,7 @@ export const FakeUnits: FakeUnit[] = []
 export function GetPredictionTarget(
 	handle: Nullable<Entity | number>
 ): Nullable<Unit | FakeUnit> {
-	if (handle === undefined) {
+	if (handle === undefined || handle === 16777215) {
 		return undefined
 	}
 	if (handle instanceof Entity) {
