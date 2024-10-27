@@ -365,24 +365,23 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 			}
 		}
 	}
-	for (const ent of leftVis) {
+	for (let i = leftVis.length - 1; i > -1; i--) {
+		const ent = leftVis[i]
 		if (ent.IsVisible) {
 			ent.BecameDormantTime = GameState.RawGameTime
 			ent.IsVisible = false
 		}
 	}
-	for (const ent of enteredVis) {
-		ent.IsVisible = true
+	for (let i = enteredVis.length - 1; i > -1; i--) {
+		enteredVis[i].IsVisible = true
 	}
-	for (let index = 0, end = nativeChanges.length; index < end; index++) {
-		const [entID, healthBarOffset, totalMoveSpeed] = nativeChanges[index]
+	for (let i = nativeChanges.length - 1; i > -1; i--) {
+		const [entID, healthBarOffset, totalMoveSpeed] = nativeChanges[i]
 		const ent = EntityManager.EntityByIndex(entID)
-		if (ent !== undefined) {
-			ent.ForwardNativeProperties(healthBarOffset, totalMoveSpeed)
-		}
+		ent?.ForwardNativeProperties(healthBarOffset, totalMoveSpeed)
 	}
-	for (let index = 0, end = createdEntities.length; index < end; index++) {
-		const ent = createdEntities[index]
+	for (let i = 0, end = createdEntities.length; i < end; i++) {
+		const ent = createdEntities[i]
 		EventsSDK.emit("EntityCreated", false, ent)
 	}
 	EventsSDK.emit("PostDataUpdate", false, latestTickDelta)
