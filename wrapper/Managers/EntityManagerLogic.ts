@@ -370,10 +370,15 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 		if (ent.IsVisible) {
 			ent.BecameDormantTime = GameState.RawGameTime
 			ent.IsVisible = false
+			EventsSDK.emit("EntityVisibleChanged", false, ent)
 		}
 	}
 	for (let i = enteredVis.length - 1; i > -1; i--) {
-		enteredVis[i].IsVisible = true
+		const ent = enteredVis[i]
+		if (!ent.IsVisible) {
+			ent.IsVisible = true
+			EventsSDK.emit("EntityVisibleChanged", false, ent)
+		}
 	}
 	for (let i = nativeChanges.length - 1; i > -1; i--) {
 		const [entID, healthBarOffset, totalMoveSpeed] = nativeChanges[i]
