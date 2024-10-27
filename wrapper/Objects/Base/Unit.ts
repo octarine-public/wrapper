@@ -2620,8 +2620,7 @@ export class Unit extends Entity {
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, newVal) => {
 	const oldName = unit.Name
 	const newValue = newVal as number
-	unit.UnitName_ =
-		newValue >= 0 ? (UnitData.GetUnitNameByNameIndex(newValue) ?? "") : ""
+	unit.UnitName_ = newValue >= 0 ? UnitData.GetUnitNameByNameIndex(newValue) ?? "" : ""
 	if (unit.UnitName_ === "") {
 		unit.UnitName_ = unit.Name_
 	}
@@ -2721,10 +2720,33 @@ RegisterFieldHandler(Unit, "m_hItems", (unit, newVal) => {
 	}
 })
 RegisterFieldHandler(Unit, "m_hMyWearables", (unit, newVal) => {
+	for (const ent of unit.MyWearables) {
+		ent.Parent_ = 0
+		const prevParentEnt = ent.ParentEntity
+		if (prevParentEnt !== undefined) {
+			prevParentEnt.Children.remove(ent)
+			ent.ParentEntity = undefined
+			ent.UpdatePositions()
+		}
+	}
+
 	unit.MyWearables_ = newVal as number[]
 	unit.MyWearables = unit.MyWearables_.map(id =>
 		EntityManager.EntityByIndex<Wearable>(id)
 	).filter(ent => ent !== undefined)
+
+	for (const ent of unit.MyWearables) {
+		ent.Parent_ = unit.Handle
+		const prevParentEnt = ent.ParentEntity
+		if (unit !== prevParentEnt) {
+			if (prevParentEnt !== undefined) {
+				prevParentEnt.Children.remove(ent)
+			}
+			unit.Children.push(ent)
+			ent.ParentEntity = unit
+			ent.UpdatePositions()
+		}
+	}
 })
 RegisterFieldHandler(Unit, "m_anglediff", (unit, newVal) => {
 	const oldValue = unit.RotationDifference

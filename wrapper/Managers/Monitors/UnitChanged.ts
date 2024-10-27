@@ -307,6 +307,16 @@ const Monitor = new (class CPreUnitChanged {
 				}
 				if (!unit.MyWearables.includes(entity)) {
 					unit.MyWearables.push(entity)
+					entity.Parent_ = unit.Handle
+					const prevParentEnt = entity.ParentEntity
+					if (unit !== prevParentEnt) {
+						if (prevParentEnt !== undefined) {
+							prevParentEnt.Children.remove(entity)
+						}
+						unit.Children.push(entity)
+						entity.ParentEntity = unit
+						entity.UpdatePositions()
+					}
 					EventsSDK.emit("UnitWearablesChanged", false, unit)
 					break
 				}

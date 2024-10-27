@@ -699,7 +699,7 @@ RegisterFieldHandler(Entity, "m_hParent", (ent, newVal) => {
 	ent.Parent_ = Number(newVal as bigint)
 	const parentEnt = EntityManager.EntityByIndex(ent.Parent_),
 		prevParentEnt = ent.ParentEntity
-	if (parentEnt !== ent.ParentEntity) {
+	if (parentEnt !== prevParentEnt) {
 		if (prevParentEnt !== undefined) {
 			prevParentEnt.Children.remove(ent)
 		}
