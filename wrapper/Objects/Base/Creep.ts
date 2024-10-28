@@ -91,10 +91,9 @@ EventsSDK.on("PostDataUpdate", dt => {
 	if (localTeam !== Team.Dire && localTeam !== Team.Radiant) {
 		return
 	}
-
-	const waveTime = Math.abs(GameRules.GameTime % 30)
-	for (let index = Creeps.length - 1; index > -1; index--) {
-		const creep = Creeps[index]
+	const waveTime = Math.floor(Math.abs(GameRules.GameTime % 30) * 10) / 10
+	for (let i = Creeps.length - 1; i > -1; i--) {
+		const creep = Creeps[i]
 		if (creep.IsNeutral || creep.Owner !== undefined) {
 			creep.Lane = MapArea.Unknown
 			continue
