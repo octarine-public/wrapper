@@ -90,7 +90,7 @@ export class NeutralSpawnerBox {
 		if (GameRules === undefined) {
 			return 0
 		}
-		return parseFloat((GameRules.GameTime % 60).toFixed(1))
+		return Math.floor((GameRules.GameTime % 60) * 10) / 10
 	}
 
 	protected get IsSpawnTime() {
@@ -146,10 +146,10 @@ export class NeutralSpawnerBox {
 		}
 
 		const time = this.TimeLeft,
+			box = this.Spawner.SpawnBox,
 			creeps = this.Creeps.filter(x => x.IsAlive && x.IsSpawned)
 
 		if (time >= this.StackEndTime || this.MaxHits >= 5) {
-			const box = this.Spawner.SpawnBox
 			this.IsEmpty =
 				!creeps.some(x => box?.Includes2D(Vector2.FromVector3(x.Position))) &&
 				creeps.length < 2
@@ -161,10 +161,9 @@ export class NeutralSpawnerBox {
 				continue
 			}
 			if (unit instanceof WardTrueSight || unit instanceof WardObserver) {
-				const box = this.Spawner.SpawnBox
 				this.IsEmpty =
 					(box?.Includes2D(Vector2.FromVector3(unit.Position)) ?? false) &&
-					this.Creeps.filter(x => x.IsAlive && x.IsSpawned).length < 2
+					creeps.length < 2
 				continue
 			}
 			if (!this.IsStack && time >= this.StackEndTime && this.checkPosition(unit)) {
