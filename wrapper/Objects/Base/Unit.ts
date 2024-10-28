@@ -1052,6 +1052,7 @@ export class Unit extends Entity {
 			}
 		}
 	}
+
 	public GetAmplificationDamage(
 		_source: Unit,
 		_damageType: DAMAGE_TYPES,
@@ -1090,8 +1091,8 @@ export class Unit extends Entity {
 
 	// TODO: damage
 	public GetDamageBlockers(): Modifier[] {
-		// for (let index = this.Buffs.length - 1; index > -1; index--) {
-		// 	const buff = this.Buffs[index]
+		// for (let i = this.Buffs.length - 1; i > -1; i--) {
+		// 	const buff = this.Buffs[i]
 		// }
 		return []
 	}

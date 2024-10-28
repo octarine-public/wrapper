@@ -64,15 +64,6 @@ declare interface Number {
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
-	 * @param {number} [fractionDigits=3]
-	 *
-	 * @returns {number}
-	 */
-	toNumberFixed(fractionDigits?: number): number
-	/**
-	 * @requires
-	 * `import "github.com/octarine-public/wrapper/global"` or
-	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 */
 	toMask: number[]
 	/**

@@ -88,7 +88,6 @@ export class TrackingProjectile extends Projectile {
 			this.Position.Invalidate()
 		}
 	}
-
 	public get IsDodgeable(): boolean {
 		return this.dodgeable
 	}
@@ -98,7 +97,7 @@ export class TrackingProjectile extends Projectile {
 	public get ExpireTime(): number {
 		return this.expireTime
 	}
-
+	/** @internal */
 	public Update(
 		targetEntity: Nullable<Unit | FakeUnit>,
 		speed: number,
