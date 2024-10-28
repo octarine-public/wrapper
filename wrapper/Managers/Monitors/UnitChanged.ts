@@ -20,7 +20,7 @@ const Monitor = new (class CPreUnitChanged {
 			const unit = Units[index]
 			// see: https://dota2.fandom.com/wiki/Health_Regeneration
 			unit.HPRegenCounter += unit.HPRegen * 0.1
-			const regenAmount = Math.floor(unit.HPRegenCounter * 10) / 10
+			const regenAmount = Math.floor(unit.HPRegenCounter)
 			unit.HPRegenCounter -= regenAmount
 			unit.HPPrediction = Math.max(Math.min(unit.MaxHP, unit.HP + regenAmount), 0)
 			if (!unit.IsVisible) {
