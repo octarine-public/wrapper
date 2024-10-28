@@ -1244,20 +1244,21 @@ export class Unit extends Entity {
 	public TurnTime(angle: number, currentTurnRate = true): number {
 		return Math.max(angle / (30 * this.TurnRate(currentTurnRate)), 0)
 	}
-	// TODO: rewrite this
 	public IsInside(vec: Vector3, radius: number): boolean {
-		const direction = this.Forward,
-			npcPos = this.Position
-		for (let i = Math.floor(vec.Distance2D(npcPos) / radius) + 1; i--; ) {
-			if (
-				npcPos.Distance2D(
-					new Vector3(
-						vec.x - direction.x * i * radius,
-						vec.y - direction.y * i * radius,
-						vec.z - direction.z * i * radius
-					)
-				) <= radius
-			) {
+		const position = this.Position
+		const direction = this.Forward
+
+		const distance = vec.Distance2D(position)
+		const steps = Math.floor(distance / radius) + 1
+
+		for (let i = steps; i-- > 0; ) {
+			const offset = i * radius
+			const targetPos = new Vector3(
+				vec.x - direction.x * offset,
+				vec.y - direction.y * offset,
+				vec.z - direction.z * offset
+			)
+			if (position.Distance2D(targetPos) <= radius) {
 				return true
 			}
 		}
