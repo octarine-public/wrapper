@@ -91,7 +91,7 @@ EventsSDK.on("PostDataUpdate", dt => {
 	if (localTeam !== Team.Dire && localTeam !== Team.Radiant) {
 		return
 	}
-	const waveTime = Math.floor(Math.abs(GameRules.GameTime % 30) * 10) / 10
+	const waveTime = GameRules.GameTime % 30
 	for (let i = Creeps.length - 1; i > -1; i--) {
 		const creep = Creeps[i]
 		if (creep.IsNeutral || creep.Owner !== undefined) {
@@ -108,7 +108,7 @@ EventsSDK.on("PostDataUpdate", dt => {
 			continue
 		}
 
-		if (waveTime <= dt) {
+		if (waveTime >= 0 && waveTime < dt) {
 			creep.PredictedIsWaitingToSpawn = false
 		} else if (!creep.IsSpawned && creep.PredictedIsWaitingToSpawn) {
 			continue
