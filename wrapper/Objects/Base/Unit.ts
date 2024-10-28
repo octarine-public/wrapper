@@ -875,6 +875,12 @@ export class Unit extends Entity {
 		const buff = sortBuffs.find(x => x.IsBoots && x.BonusMoveSpeedAmplifier !== 0)
 		return buff?.BonusMoveSpeedAmplifier ?? 0
 	}
+	/**
+	 * @description example: panorama/images/heroes/npc_dota_hero_windrunner_png.vtex_c
+	 */
+	public TexturePath(small?: boolean, team = this.Team): Nullable<string> {
+		return GetUnitTexture(this.Name, small, team)
+	}
 	public GetNextAttackPoint(delay: number, nth = 0): number {
 		const baseAttackPoint = this.AttackPoint
 		let attackPoint =
@@ -1024,10 +1030,7 @@ export class Unit extends Entity {
 			amp = this.AttackRangeAmplifier
 		return (base + bonus) * amp + addAndHull
 	}
-	public TexturePath(small?: boolean, team = this.Team): Nullable<string> {
-		return GetUnitTexture(this.Name, small, team)
-	}
-	public IsVisibleForEnemies(seconds: number = 2, method: number = 0): boolean {
+	public IsVisibleForEnemies(method: number = 0, seconds: number = 2): boolean {
 		switch (method) {
 			default:
 			case 0: // old method
@@ -1049,7 +1052,7 @@ export class Unit extends Entity {
 			}
 		}
 	}
-	public GetDamageAmplification(
+	public GetAmplificationDamage(
 		_source: Unit,
 		_damageType: DAMAGE_TYPES,
 		_spellAmplify: boolean,
@@ -1107,7 +1110,6 @@ export class Unit extends Entity {
 	public HasItemInInventory(name: string | RegExp, includeBackpack = false): boolean {
 		return this.GetItemByName(name, includeBackpack) !== undefined
 	}
-
 	/**
 	 * @param flag if not exists => is Melee or Range attack
 	 */
@@ -1135,7 +1137,6 @@ export class Unit extends Entity {
 		}
 		return (this.UnitData.MovementCapabilities & flag) !== 0
 	}
-
 	public IsUnitStateFlagSet(flag: modifierstate): boolean {
 		return this.UnitStateMask.hasBit(BigInt(flag))
 	}
@@ -1143,6 +1144,7 @@ export class Unit extends Entity {
 		return this.IsControllableByPlayerMask.hasBit(BigInt(playerID))
 	}
 	/**
+	 * @internal
 	 * @deprecated
 	 */
 	public ForwardNativeProperties(
@@ -1152,7 +1154,6 @@ export class Unit extends Entity {
 		this.HealthBarOffset_ = healthBarOffset
 		this.MoveSpeedTotal = totalMoveSpeed
 	}
-
 	/**
 	 * @param fromCenterToCenter include HullRadiuses (for Units)
 	 */
@@ -1204,8 +1205,7 @@ export class Unit extends Entity {
 		return names.some(name => this.GetBuffByName(name) !== undefined)
 	}
 	/**
-	 * faster (Distance <= range)
-	 *
+	 * @description faster (Distance <= range)
 	 * @param fromCenterToCenter include HullRadiuses (for Units)
 	 */
 	public IsInRange(
@@ -1219,10 +1219,8 @@ export class Unit extends Entity {
 				range += ent.HullRadius
 			}
 		}
-
 		return super.IsInRange(ent, range)
 	}
-
 	/** ================================ Turn Time ======================================= */
 	public GetTurnTime(
 		angle: number | Vector3,
@@ -1234,21 +1232,17 @@ export class Unit extends Entity {
 		}
 		return this.TurnTime(angle, currentTurnRate)
 	}
-
 	public GetRotationTime(vec: Vector3, currentTurnRate = true): number {
 		const turnRad = Math.PI - 0.25
 		const ang = this.FindRotationAngle(vec)
 		return ang <= turnRad ? (30 * ang) / this.TurnRate(currentTurnRate) : 0
 	}
-
 	public TurnRate(currentTurnRate = true): number {
 		return currentTurnRate ? this.MovementTurnRate : this.BaseTurnRate || 0.5
 	}
-
 	public TurnTime(angle: number, currentTurnRate = true): number {
 		return Math.max(angle / (30 * this.TurnRate(currentTurnRate)), 0)
 	}
-
 	// TODO: rewrite this
 	public IsInside(vec: Vector3, radius: number): boolean {
 		const direction = this.Forward,
@@ -1268,20 +1262,16 @@ export class Unit extends Entity {
 		}
 		return false
 	}
-
 	public IsManaEnough(abil: Ability): boolean {
 		return this.Mana >= abil.ManaCost
 	}
 
 	public HasLinkenAtTime(time: number = 0): boolean {
 		const sphere = this.GetItemByName("item_sphere")
-
 		if (sphere !== undefined && sphere.Cooldown - time <= 0) {
 			return true
 		}
-
 		const sphereTarget = this.GetBuffByName("modifier_item_sphere_target")
-
 		return sphereTarget !== undefined && sphereTarget.RemainingTime - time <= 0
 	}
 
@@ -1456,7 +1446,6 @@ export class Unit extends Entity {
 
 	public ChangeFieldsByEvents(): void {
 		const buffs = this.Buffs
-
 		{
 			// IsTrueSightedForEnemies
 			const lastIsTrueSighted = this.IsTrueSightedForEnemies
@@ -1467,7 +1456,6 @@ export class Unit extends Entity {
 				EventsSDK.emit("TrueSightedChanged", false, this)
 			}
 		}
-
 		{
 			// HasScepter
 			const lastHasScepter = this.HasScepter
@@ -1480,7 +1468,6 @@ export class Unit extends Entity {
 				EventsSDK.emit("HasScepterChanged", false, this)
 			}
 		}
-
 		{
 			// HasShard
 			const lastHasShard = this.HasShard
@@ -1491,7 +1478,6 @@ export class Unit extends Entity {
 				EventsSDK.emit("HasShardChanged", false, this)
 			}
 		}
-
 		{
 			// CanBeHealed
 			const lastCanBeHealed = this.CanBeHealed

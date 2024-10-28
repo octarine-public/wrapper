@@ -2,6 +2,7 @@ import { WrapperClassModifier } from "../../../Decorators"
 import { EventsSDK } from "../../../Managers/EventsSDK"
 import { Modifier } from "../../Base/Modifier"
 
+// only local server
 @WrapperClassModifier()
 export class modifier_illusion extends Modifier {
 	public readonly IsHidden = true

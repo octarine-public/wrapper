@@ -558,6 +558,9 @@ export class Ability extends Entity {
 		const delay = castDelay + activationDelay
 		return speed > 0 ? owner.Distance2D(unit) / speed + delay : delay
 	}
+	/**
+	 * @description Returns the raw damage of the ability without any amplification
+	 */
 	public GetRawDamage(target: Unit, _health?: number) {
 		return !this.IsDebuffImmune(target) ? this.AbilityDamage : 0
 	}
@@ -567,7 +570,7 @@ export class Ability extends Entity {
 			return 0
 		}
 		const rawDamage = this.GetRawDamage(target, target.HP),
-			amplification = target.GetDamageAmplification(
+			amplification = target.GetAmplificationDamage(
 				owner,
 				this.DamageType,
 				this.IsSpellAmplify,
