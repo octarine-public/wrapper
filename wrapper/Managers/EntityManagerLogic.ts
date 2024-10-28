@@ -314,7 +314,7 @@ function ParseEntityUpdate(
 
 function ParseEntityPacket(stream: ViewBinaryStream): void {
 	EventsSDK.emit("PreDataUpdate", false)
-	const nativeChanges: [number, number, number][] = []
+	const nativeChanges: [number, number][] = []
 	while (!stream.Empty()) {
 		const entID = stream.ReadUint16()
 		if (entID === 0) {
@@ -322,8 +322,7 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 		}
 		nativeChanges.push([
 			entID,
-			stream.ReadInt32(), // m_iHealthBarOffset
-			stream.ReadFloat32() // m_flTotalMoveSpeed
+			stream.ReadInt32() // m_iHealthBarOffset
 		])
 	}
 	const createdEntities: Entity[] = [],
@@ -381,9 +380,9 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 		}
 	}
 	for (let i = nativeChanges.length - 1; i > -1; i--) {
-		const [entID, healthBarOffset, totalMoveSpeed] = nativeChanges[i]
+		const [entID, healthBarOffset] = nativeChanges[i]
 		const ent = EntityManager.EntityByIndex(entID)
-		ent?.ForwardNativeProperties(healthBarOffset, totalMoveSpeed)
+		ent?.ForwardNativeProperties(healthBarOffset)
 	}
 	for (let i = 0, end = createdEntities.length; i < end; i++) {
 		const ent = createdEntities[i]

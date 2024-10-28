@@ -178,7 +178,6 @@ export class Unit extends Entity {
 	public TotalAgility: number = 0
 	public BaseTotalIntellect: number = 0
 	public TotalStrength: number = 0
-	public MoveSpeedTotal: number = 0
 	public AttackCapabilities: number = 0
 	public UnitStateNetworked: bigint = 0n
 
@@ -428,7 +427,7 @@ export class Unit extends Entity {
 		// const totalSpeed = isLimit
 		// 	? Math.min(MoveSpeedData.Max, Math.max(MoveSpeedData.Min, calculateSpeed))
 		// 	: Math.max(MoveSpeedData.Min, calculateSpeed)
-		return this.MoveSpeedTotal
+		return 0
 	}
 	/** ============================== Turn Rate ======================================= */
 	public get BaseMovementTurnRateData(): number {
@@ -1145,12 +1144,8 @@ export class Unit extends Entity {
 	 * @internal
 	 * @deprecated
 	 */
-	public ForwardNativeProperties(
-		healthBarOffset: number,
-		totalMoveSpeed: number
-	): void {
+	public ForwardNativeProperties(healthBarOffset: number): void {
 		this.HealthBarOffset_ = healthBarOffset
-		this.MoveSpeedTotal = totalMoveSpeed
 	}
 	/**
 	 * @param fromCenterToCenter include HullRadiuses (for Units)
@@ -1346,7 +1341,7 @@ export class Unit extends Entity {
 			ar.push(asMod[1])
 		}
 
-		const moveSpeed = this.MoveSpeedTotal
+		const moveSpeed = this.Speed
 		const msMod = this.UnitData.MovementSpeedActivityModifiers.find(
 			mod => moveSpeed >= mod[0]
 		)
