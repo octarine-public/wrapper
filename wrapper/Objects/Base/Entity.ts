@@ -591,7 +591,7 @@ export class Entity {
 	}
 
 	/** @deprecated */
-	public ForwardNativeProperties(_healthBarOffset: number, _totalMoveSpeed: number) {
+	public ForwardNativeProperties(_healthBarOffset: number) {
 		// To be implemented in child classes
 	}
 
@@ -880,45 +880,15 @@ function CustomColorEnts(): void {
 	})
 }
 
-let unitsForUpdateSize = 0
-const unitsForUpdate = new Uint16Array(0x4000) // for sure
-
-function requestUnitUpdate(ent: Entity) {
-	if (ent.IsVisible && ent.Index < 0x4000) {
-		unitsForUpdate[unitsForUpdateSize++] = ent.Index
-	}
-}
-EventsSDK.on("ModifierCreated", mod => {
-	if (mod.Parent !== undefined) {
-		requestUnitUpdate(mod.Parent)
-	}
-})
-EventsSDK.on("ModifierRemoved", mod => {
-	if (mod.Parent !== undefined) {
-		requestUnitUpdate(mod.Parent)
-	}
-})
-EventsSDK.on("AbilityLevelChanged", abil => {
-	if (abil.Owner !== undefined) {
-		requestUnitUpdate(abil.Owner)
-	}
-})
-
 EventsSDK.on("EntityVisibleChanged", ent => {
-	requestUnitUpdate(ent)
 	if (lastColoredEnts.has(ent)) {
 		lastColoredEnts.set(ent, GameState.CurrentServerTick)
 	}
 })
 
 EventsSDK.after("PostDataUpdate", () => {
-	CustomColorEnts()
 	CustomGlowEnts()
-
-	if (unitsForUpdateSize > 0) {
-		RequestUnitsProperties(unitsForUpdate.subarray(0, unitsForUpdateSize))
-		unitsForUpdateSize = 0
-	}
+	CustomColorEnts()
 })
 
 Events.on("NewConnection", () => {
