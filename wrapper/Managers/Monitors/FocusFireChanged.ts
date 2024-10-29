@@ -38,24 +38,24 @@ new (class CFocusFireChanged {
 	}
 
 	protected PrepareUnitOrders(order: ExecuteOrder) {
-		if (order.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET) {
-			return
-		}
-		if (!(order.Ability_ instanceof windrunner_focusfire)) {
-			return
-		}
-		const orderTarget = order.Target
-		if (orderTarget === undefined) {
-			return
-		}
-		const target = orderTarget instanceof Entity ? orderTarget.Index : orderTarget
-		for (let i = order.Issuers.length - 1; i > -1; i--) {
-			const issuer = order.Issuers[i]
-			if (!(issuer instanceof Hero)) {
-				continue
+		if (order.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET) {
+			if (order.Ability_ instanceof windrunner_focusfire) {
+				this.setTargetFocusFire(order.Issuers, order.Target)
 			}
-			issuer.FocusFireTargetIndex_ = target
+			// return
 		}
+		// TODO: add other orders & enemies any check events
+		// switch (order.OrderType) {
+		// 	case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
+		// 		this.setTargetFocusFire(order.Issuers, order.Target)
+		// 		break
+		// 	case dotaunitorder_t.DOTA_UNIT_ORDER_STOP:
+		// 	case dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE:
+		// 	case dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION:
+		// 	case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION:
+		// 		this.setTargetFocusFire(order.Issuers)
+		// 		break
+		// }
 	}
 
 	protected ModifierCreated(mod: Modifier) {
@@ -74,9 +74,15 @@ new (class CFocusFireChanged {
 		if (!(entity instanceof Unit)) {
 			return
 		}
-		const hero = Heroes.find(x => x.FocusFireTarget === entity)
-		if (hero !== undefined) {
-			this.invalidateFocusFire(hero)
+		for (let i = Heroes.length - 1; i > -1; i--) {
+			const hero = Heroes[i],
+				target = hero.FocusFireTarget
+			if (target === undefined) {
+				continue
+			}
+			if (target === entity) {
+				this.invalidateFocusFire(hero)
+			}
 		}
 	}
 
@@ -84,9 +90,15 @@ new (class CFocusFireChanged {
 		if (!(entity instanceof Unit) || entity.IsAlive) {
 			return
 		}
-		const hero = Heroes.find(x => x.FocusFireTarget === entity)
-		if (hero !== undefined) {
-			this.invalidateFocusFire(hero)
+		for (let i = Heroes.length - 1; i > -1; i--) {
+			const hero = Heroes[i],
+				target = hero.FocusFireTarget
+			if (target === undefined) {
+				continue
+			}
+			if (target === entity) {
+				this.invalidateFocusFire(hero)
+			}
 		}
 	}
 
@@ -97,5 +109,19 @@ new (class CFocusFireChanged {
 	private invalidateFocusFire(hero: Hero) {
 		hero.FocusFireActive = false
 		hero.FocusFireTargetIndex_ = -1
+	}
+
+	private setTargetFocusFire(arr: Unit[], target?: Nullable<Entity | number>) {
+		const targetIndex = target instanceof Entity ? target.Index : target
+		for (let i = arr.length - 1; i > -1; i--) {
+			const issuer = arr[i]
+			if (!(issuer instanceof Hero) || !issuer.IsAlive) {
+				continue
+			}
+			if (!issuer.FocusFireActive) {
+				issuer.FocusFireTargetIndex_ =
+					targetIndex === undefined ? -1 : targetIndex
+			}
+		}
 	}
 })()
