@@ -43,6 +43,10 @@ export class Hero extends Unit {
 	public RespawnTimePenalty = 0
 	public ReplicatingOtherHeroModel: Nullable<Unit | FakeUnit>
 
+	public FocusFireActive = false
+	/** @internal (changed by CFocusFireChanged) */
+	public FocusFireTargetIndex_ = -1
+
 	constructor(
 		public readonly Index: number,
 		serial: number
@@ -67,6 +71,9 @@ export class Hero extends Unit {
 	}
 	public get IsMyHero(): boolean {
 		return this === LocalPlayer?.Hero
+	}
+	public get FocusFireTarget() {
+		return EntityManager.EntityByIndex<Unit>(this.FocusFireTargetIndex_)
 	}
 	public get HealthBarSize() {
 		return new Vector2(
