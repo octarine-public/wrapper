@@ -136,7 +136,10 @@ export class CGameRules extends Entity {
 		return !this.IsDayGameTime || (this.GameTime / 60 / 5) % 2 >= 1
 	}
 	public get IsNight(): boolean {
-		return this.IsNightGameTime || this.IsNightstalkerNight || this.IsTemporaryNight
+		return (
+			!this.IsTemporaryDay &&
+			(this.IsNightGameTime || this.IsNightstalkerNight || this.IsTemporaryNight)
+		)
 	}
 	public get IsBanPhase() {
 		if (this.GameState !== DOTAGameState.DOTA_GAMERULES_STATE_HERO_SELECTION) {
