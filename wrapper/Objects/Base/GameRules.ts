@@ -24,64 +24,68 @@ export class CGameRules extends Entity {
 	// @NetworkedBasicField("m_flPlayerDraftTimeBank")
 	// public PlayerDraftTimeBank = 0 // TODO: check
 	@NetworkedBasicField("m_unMatchID64", EPropertyType.UINT64)
-	public MatchID = 0n
+	public readonly MatchID: bigint = 0n
 	@NetworkedBasicField("m_flDaytimeStart")
-	public DayTimeStart = 0
+	public readonly DayTimeStart: number = 0
 	@NetworkedBasicField("m_flNighttimeStart")
-	public NightTimeStart = 0
+	public readonly NightTimeStart: number = 0
+	@NetworkedBasicField("m_iNetTimeOfDay")
+	public readonly NetTimeOfDay: number = 0
 	@NetworkedBasicField("m_bGamePaused")
-	public IsPaused = false
+	public readonly IsPaused = false
 	@NetworkedBasicField("m_nRuneCycle")
-	public RuneCycle = 0
+	public readonly RuneCycle: number = 0
 	@NetworkedBasicField("m_nTotalPausedTicks")
-	public TotalPausedTicks: number | number[] = 0
+	public readonly TotalPausedTicks: number | number[] = 0
 	@NetworkedBasicField("m_nPauseStartTick")
-	public PauseStartTick = 0
+	public readonly PauseStartTick: number = 0
 	@NetworkedBasicField("m_nExpectedPlayers")
-	public ExpectedPlayers = 0
+	public readonly ExpectedPlayers: number = 0
 	@NetworkedBasicField("m_iGameMode")
-	public GameMode = DOTAGameMode.DOTA_GAMEMODE_NONE
-	public GameState = DOTAGameState.DOTA_GAMERULES_STATE_INIT
+	public readonly GameMode: DOTAGameMode = DOTAGameMode.DOTA_GAMEMODE_NONE
 	@NetworkedBasicField("m_flGameStartTime")
-	public GameStartTime = 0
+	public readonly GameStartTime: number = 0
 	@NetworkedBasicField("m_flGameLoadTime")
-	public GameLoadTime = 0
+	public readonly GameLoadTime: number = 0
 	@NetworkedBasicField("m_flStateTransitionTime")
-	public StateTransitionTime = 0
+	public readonly StateTransitionTime: number = 0
 	@NetworkedBasicField("m_flHeroPickStateTransitionTime")
-	public HeroPickStateTransitionTime: number = 0
+	public readonly HeroPickStateTransitionTime: number = 0
 	@NetworkedBasicField("m_fGoodGlyphCooldown")
-	public GlyphCooldownRadiantTime = 0
+	public readonly GlyphCooldownRadiantTime: number = 0
 	@NetworkedBasicField("m_fBadGlyphCooldown")
-	public GlyphCooldownDireTime = 0
+	public readonly GlyphCooldownDireTime: number = 0
 	@NetworkedBasicField("m_fGoodRadarCooldown")
-	public ScanCooldownRadiantTime = 0
+	public readonly ScanCooldownRadiantTime: number = 0
 	@NetworkedBasicField("m_fBadRadarCooldown")
-	public ScanCooldownDireTime = 0
+	public readonly ScanCooldownDireTime: number = 0
 	@NetworkedBasicField("m_iGoodRadarCharges")
-	public ScanChargesRadiant = 0
+	public readonly ScanChargesRadiant: number = 0
 	@NetworkedBasicField("m_iBadRadarCharges")
-	public ScanChargesDire = 0
+	public readonly ScanChargesDire: number = 0
 	@NetworkedBasicField("m_bIsNightstalkerNight")
-	public IsNightstalkerNight = false
+	public readonly IsNightstalkerNight: boolean = false
 	@NetworkedBasicField("m_bIsTemporaryNight")
-	public IsTemporaryNight = false
+	public readonly IsTemporaryNight: boolean = false
 	@NetworkedBasicField("m_bIsTemporaryDay")
-	public IsTemporaryDay = false
+	public readonly IsTemporaryDay: boolean = false
 	@NetworkedBasicField("m_nAllDraftPhase")
-	public AllDraftPhase = 0
+	public readonly AllDraftPhase: number = 0
 	@NetworkedBasicField("m_nLoadedPlayers")
-	public LoadedPlayers = 0
+	public readonly LoadedPlayers: number = 0
 	@NetworkedBasicField("m_nPlayerDraftActiveTeam") // Only is supported immortal draft
-	public PlayerDraftActiveTeam = Team.None
+	public readonly PlayerDraftActiveTeam: Team = Team.None
 	@NetworkedBasicField("m_bAllDraftRadiantFirst")
-	public AllDraftRadiantFirst = false
+	public readonly AllDraftRadiantFirst: boolean = false
 	@NetworkedBasicField("m_vecPlayerDraftPickOrder")
-	public PlayerDraftPickOrder: number[] = []
+	public readonly PlayerDraftPickOrder: number[] = []
+
+	public GameState = DOTAGameState.DOTA_GAMERULES_STATE_INIT
+	public HeroPickState = DOTAHeroPickState.DOTA_HEROPICK_STATE_NONE
+
+	public StockInfo: StockInfo[] = []
 	public BannedHeroesIDs: number[] = []
 	public NeutralSpawnBoxes: NeutralSpawnBox[] = []
-	public StockInfo: StockInfo[] = []
-	public HeroPickState = DOTAHeroPickState.DOTA_HEROPICK_STATE_NONE
 
 	constructor(
 		public readonly Index: number,
@@ -91,6 +95,9 @@ export class CGameRules extends Entity {
 		this.IsGameRules = true
 	}
 
+	public get NetTimeOfDayNormilize(): number {
+		return this.NetTimeOfDay / 65535
+	}
 	public get GameTime(): number {
 		const time = this.RawGameTime,
 			transitionTime =
@@ -119,22 +126,18 @@ export class CGameRules extends Entity {
 				GameState.IsConnected)
 		)
 	}
-	public get IsNightGameTime(): boolean {
-		if (this.GameState === DOTAGameState.DOTA_GAMERULES_STATE_PRE_GAME) {
-			return true
-		}
+	public get IsDayGameTime(): boolean {
 		return (
-			this.GameState === DOTAGameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS &&
-			(this.GameTime / 60 / 5) % 2 >= 1
+			this.NetTimeOfDayNormilize >= this.DayTimeStart &&
+			this.NetTimeOfDayNormilize <= this.NightTimeStart
 		)
+	}
+	public get IsNightGameTime(): boolean {
+		return !this.IsDayGameTime || (this.GameTime / 60 / 5) % 2 >= 1
 	}
 	public get IsNight(): boolean {
-		return (
-			!this.IsTemporaryDay &&
-			(this.IsNightGameTime || this.IsNightstalkerNight || this.IsTemporaryNight)
-		)
+		return this.IsNightGameTime || this.IsNightstalkerNight || this.IsTemporaryNight
 	}
-
 	public get IsBanPhase() {
 		if (this.GameState !== DOTAGameState.DOTA_GAMERULES_STATE_HERO_SELECTION) {
 			return false
