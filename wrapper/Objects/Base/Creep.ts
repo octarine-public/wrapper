@@ -50,6 +50,12 @@ export class Creep extends Unit {
 	public get IsDeniable(): boolean {
 		return super.IsDeniable || this.HPPercent <= 50
 	}
+	public get Speed(): number {
+		if (this.IsVisible) {
+			return super.Speed
+		}
+		return GameRules?.IsNight ? 355 : 325 // temporary fix
+	}
 	public get RingRadius(): number {
 		return 60
 	}
