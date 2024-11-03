@@ -23,7 +23,7 @@ export const ScanActiveTime = 8
 export const ScanRadius = 900
 
 /** @description use GameState.TickInterval */
-export const TickInterval = 1 / 30
+export const DefaultTickInterval = 1 / 30
 /**
  * https://dota2.gamepedia.com/Attributes
  */

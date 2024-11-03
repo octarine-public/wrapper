@@ -1,12 +1,12 @@
-import { TickInterval } from "../Data/GameData"
+import { DefaultTickInterval } from "../Data/GameData"
 import { DOTAGameUIState } from "../Enums/DOTAGameUIState"
 import { Flow } from "../Enums/Flow"
 import { Team } from "../Enums/Team"
 
 export const GameState = new (class CGameState {
-	public TickInterval = TickInterval
+	public TickInterval = DefaultTickInterval
 	/** @deprecated use GameState.TickInterval */
-	public LatestTickDelta = TickInterval
+	public LatestTickDelta = DefaultTickInterval
 	public CurrentServerTick = 0
 	public CurrentGameTick = 0
 	public IsInputCaptured = false

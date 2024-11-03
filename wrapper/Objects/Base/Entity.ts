@@ -5,7 +5,7 @@ import { Matrix3x4 } from "../../Base/Matrix3x4"
 import { QAngle } from "../../Base/QAngle"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
-import { TickInterval } from "../../Data/GameData"
+import { DefaultTickInterval } from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { GameActivity } from "../../Enums/GameActivity"
 import { LifeState } from "../../Enums/LifeState"
@@ -90,7 +90,7 @@ EventsSDK.on("ServerInfo", msg => {
 	playerSlot = (msg.get("player_slot") as number) ?? NaN
 	modelDataCache.clear()
 	GameState.TickInterval =
-		(msg.get("tick_interval") as Nullable<number>) ?? TickInterval
+		(msg.get("tick_interval") as Nullable<number>) ?? DefaultTickInterval
 })
 
 EventsSDK.on("PreEntityCreated", ent => {
