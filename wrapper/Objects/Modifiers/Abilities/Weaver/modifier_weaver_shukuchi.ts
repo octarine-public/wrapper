@@ -1,8 +1,35 @@
 import { MoveSpeedData } from "../../../../Data/GameData"
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_weaver_shukuchi extends Modifier {
-	public readonly BonusMoveSpeed = MoveSpeedData.Max
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_ABSOLUTE_MIN,
+			this.GetMoveSpeedAbsoluteMin.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
+			this.GetMoveSpeedBonusConstant.bind(this)
+		]
+	])
+
+	private cachedSpeed = 0
+	private cachedSpeedMax = 0
+
+	protected GetMoveSpeedBonusConstant(): [number, boolean] {
+		return [this.cachedSpeed, false]
+	}
+
+	protected GetMoveSpeedAbsoluteMin(): [number, boolean] {
+		return [Math.max(this.cachedSpeedMax, MoveSpeedData.Max), false]
+	}
+
+	protected UpdateSpecialValues(): void {
+		const name = "weaver_shukuchi"
+		this.cachedSpeed = this.GetSpecialValue("speed", name)
+		this.cachedSpeedMax = this.GetSpecialValue("min_movespeed_override", name)
+	}
 }

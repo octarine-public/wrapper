@@ -1,21 +1,28 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_power_treads extends Modifier {
-	public readonly IsBoots = true
-	public readonly BonusAttackSpeedStack = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_UNIQUE,
+			this.GetMoveSpeedBonusUnique.bind(this)
+		]
+	])
 
-	protected SetBonusMoveSpeed(_specialName?: string, _subtract = false): void {
-		const owner = this.Parent
-		if (owner === undefined) {
-			return
-		}
-		const specialName = `bonus_movement_speed_${owner.IsRanged ? "ranged" : "melee"}`
-		super.SetBonusMoveSpeed(specialName)
+	private cachedSpeedMelee = 0
+	private cachedSpeedRanged = 0
+
+	protected GetMoveSpeedBonusUnique(): [number, boolean] {
+		const isRanged = this.Parent?.IsRanged ?? false,
+			value = isRanged ? this.cachedSpeedRanged : this.cachedSpeedMelee
+		return [value, false]
 	}
 
-	protected SetBonusAttackSpeed(specialName = "bonus_attack_speed", subtract = false) {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	protected UpdateSpecialValues() {
+		const name = "item_power_treads"
+		this.cachedSpeedMelee = this.GetSpecialValue("bonus_movement_speed_melee", name)
+		this.cachedSpeedRanged = this.GetSpecialValue("bonus_movement_speed_ranged", name)
 	}
 }

@@ -5,7 +5,7 @@ import { Ability } from "../../Base/Ability"
 export class ember_spirit_fire_remnant extends Ability {
 	public get Speed() {
 		return (
-			(this.Owner?.Speed ?? 0) *
+			(this.Owner?.MoveSpeed ?? 0) *
 			this.GetSpeedMultiplier(this.Owner?.HasScepter ?? false)
 		)
 	}

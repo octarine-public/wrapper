@@ -1,18 +1,31 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_orb_of_venom_slow extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetMoveSpeedAmplifier(_specialName?: string, subtract = false): void {
+	private cachedSpeedMelee = 0
+	private cachedSpeedRanged = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const caster = this.Caster
 		if (caster === undefined) {
-			return
+			return [0, false]
 		}
-		const specialName = `poison_movement_speed${
-			caster.IsRanged ? "_range" : "_melee"
-		}`
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+		const value = caster.IsRanged ? this.cachedSpeedRanged : this.cachedSpeedMelee
+		return [value, this.IsMagicImmune()]
+	}
+
+	protected UpdateSpecialValues() {
+		const name = "item_orb_of_venom"
+		this.cachedSpeedMelee = this.GetSpecialValue("poison_movement_speed_melee", name)
+		this.cachedSpeedRanged = this.GetSpecialValue("poison_movement_speed_range", name)
 	}
 }

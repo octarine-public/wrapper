@@ -1,16 +1,31 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_orb_of_corrosion_debuff extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetMoveSpeedAmplifier(_specialName?: string, subtract = true): void {
+	private slowMelee = 0
+	private slowRanged = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const caster = this.Caster
 		if (caster === undefined) {
-			return
+			return [0, false]
 		}
-		const specialName = `slow${caster.IsRanged ? "_range" : "_melee"}`
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+		const value = caster.IsRanged ? this.slowRanged : this.slowMelee
+		return [-value, this.IsMagicImmune()]
+	}
+
+	protected UpdateSpecialValues(): void {
+		const name = "item_orb_of_corrosion"
+		this.slowMelee = this.GetSpecialValue("slow_melee", name)
+		this.slowRanged = this.GetSpecialValue("slow_range", name)
 	}
 }

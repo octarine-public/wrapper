@@ -1,12 +1,29 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_tidehunter_dead_in_the_water extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_LIMIT,
+			this.GetMoveSpeedLimit.bind(this)
+		]
+	])
 
-	public SetFixedMoveSpeed(_specialName?: string, _subtract = false): void {
-		const isImmuneSlow = this.ShouldUnslowable()
-		this.MoveSpeedFixed = isImmuneSlow ? 0 : this.NetworkArmor
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedLimit(): [number, boolean] {
+		if (this.NetworkArmor !== 1) {
+			return [0, false]
+		}
+		return [this.cachedSpeed, this.IsMagicImmune()]
+	}
+
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue(
+			"max_movement_speed",
+			"tidehunter_dead_in_the_water"
+		)
 	}
 }

@@ -1,19 +1,27 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_boots_of_bearing_active extends Modifier {
-	protected SetMoveSpeedAmplifier(
-		specialName = "bonus_movement_speed_pct",
-		subtract = false
-	): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	protected readonly RecurseUpdate = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
+
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, false]
 	}
 
-	protected SetBonusAttackSpeed(
-		specialName = "bonus_attack_speed_pct",
-		subtract = false
-	): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	protected UpdateSpecialValues() {
+		this.cachedSpeed = this.GetSpecialValue(
+			"bonus_movement_speed_pct",
+			"item_ancient_janggo"
+		)
 	}
 }

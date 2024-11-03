@@ -10,58 +10,60 @@ import { Ability } from "./Ability"
 @WrapperClass("CDOTA_Item")
 export class Item extends Ability {
 	@NetworkedBasicField("m_flEnableTime")
-	public EnableTime = 0
+	public readonly EnableTime: number = 0
 	@NetworkedBasicField("m_iSharability")
-	public Shareability = EShareAbility.ITEM_NOT_SHAREABLE
+	public readonly Shareability: EShareAbility = EShareAbility.ITEM_NOT_SHAREABLE
 	@NetworkedBasicField("m_bDroppable")
-	public IsDroppable = true
+	public readonly IsDroppable: boolean = true
 	@NetworkedBasicField("m_flAssembledTime")
-	public AssembledTime = 0
+	public readonly AssembledTime: number = 0
 	@NetworkedBasicField("m_bCanBeUsedOutOfInventory")
-	public CanBeUsedOutOfInventory = false
+	public readonly CanBeUsedOutOfInventory: boolean = false
 	@NetworkedBasicField("m_iInitialCharges")
-	public InitialCharges = 0
+	public readonly InitialCharges: number = 0
 	@NetworkedBasicField("m_bAlertable")
-	public IsAlertable = true
+	public readonly IsAlertable: boolean = true
 	@NetworkedBasicField("m_bCastOnPickup")
-	public IsCastedOnPickup = false
+	public readonly IsCastedOnPickup: boolean = false
 	@NetworkedBasicField("m_bCombinable")
-	public IsCombinable = true
+	public readonly IsCombinable: boolean = true
 	@NetworkedBasicField("m_bCombineLocked")
-	public IsCombineLocked: boolean = false
+	public readonly IsCombineLocked: boolean = false
 	@NetworkedBasicField("m_bDisassemblable")
-	public IsDisassemblable: boolean = false
+	public readonly IsDisassemblable: boolean = false
 	@NetworkedBasicField("m_bKillable")
-	public IsKillable = false
+	public readonly IsKillable: boolean = false
 	@NetworkedBasicField("m_bPermanent")
-	public IsPermanent: boolean = false
+	public readonly IsPermanent: boolean = false
 	@NetworkedBasicField("m_bPurchasable")
-	public IsPurchasable: boolean = true
+	public readonly IsPurchasable: boolean = true
 	@NetworkedBasicField("m_bPurchasedWhileDead")
-	public IsPurchasedWhileDead: boolean = false
+	public readonly IsPurchasedWhileDead: boolean = false
 	@NetworkedBasicField("m_bRecipe")
-	public IsRecipe: boolean = false
+	public readonly IsRecipe: boolean = false
 	@NetworkedBasicField("m_bRequiresCharges")
-	public RequiresCharges: boolean = false
+	public readonly RequiresCharges: boolean = false
 	@NetworkedBasicField("m_bSellable")
-	public IsSellable: boolean = true
+	public readonly IsSellable: boolean = true
 	@NetworkedBasicField("m_bStackable")
-	public IsStackable: boolean = false
+	public readonly IsStackable: boolean = false
 	@NetworkedBasicField("m_iPlayerOwnerID")
-	public PlayerOwnerID: number = -1
+	public readonly PlayerOwnerID: number = -1
 	@NetworkedBasicField("m_flPurchaseTime")
-	public PurchaseTime: number = 0
+	public readonly PurchaseTime: number = 0
 	@NetworkedBasicField("m_iSecondaryCharges")
-	public SecondaryCharges: number = 0
+	public readonly SecondaryCharges: number = 0
 	@NetworkedBasicField("m_iStackableMax")
-	public StackableMax: number = 0
+	public readonly StackableMax: number = 0
 	@NetworkedBasicField("m_bIsNeutralDrop")
-	public IsNeutralDrop: boolean = false
-	@NetworkedBasicField("m_iCurrentCharges")
-	public ItemCurrentCharges: number = 0
+	public readonly IsNeutralDrop: boolean = false
 	@NetworkedBasicField("m_nNeutralDropTeam")
-	public NeutralDropTeam: Team = Team.None
+	public readonly NeutralDropTeam: Team = Team.None
+	/** @readonly */
 	public ItemSlot = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1
+
+	@NetworkedBasicField("m_iCurrentCharges")
+	private itemCurrentCharges: number = 0
 
 	public get Purchaser() {
 		return PlayerCustomData.get(this.PlayerOwnerID)?.Hero
@@ -130,10 +132,10 @@ export class Item extends Ability {
 		return this.GetSpecialValue("spell_amp") / 100
 	}
 	public get CurrentCharges() {
-		return this.ItemCurrentCharges
+		return this.itemCurrentCharges
 	}
 	public set CurrentCharges(newVal: number) {
-		this.ItemCurrentCharges = newVal
+		this.itemCurrentCharges = newVal
 	}
 	public DisassembleItem(queue?: boolean) {
 		return this.Owner?.DisassembleItem(this, queue)

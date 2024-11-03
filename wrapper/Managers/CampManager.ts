@@ -133,7 +133,7 @@ export class NeutralSpawnerBox {
 		}
 
 		unit.MoveTo(endPosition)
-		const delay = (unit.Distance2D(endPosition) / unit.Speed) * 1000
+		const delay = (unit.Distance2D(endPosition) / unit.MoveSpeed) * 1000
 		this.Sleeper.Sleep(delay, unit.Index)
 		return true
 	}

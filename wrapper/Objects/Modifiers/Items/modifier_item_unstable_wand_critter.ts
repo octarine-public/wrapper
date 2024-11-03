@@ -1,12 +1,26 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_unstable_wand_critter extends Modifier {
-	public readonly IsBuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetBonusMoveSpeed(_specialName?: string, _subtract = false): void {
-		// HARDCODED: no special data
-		this.BonusMoveSpeedAmplifier = 10 / 100
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, false]
+	}
+
+	protected UpdateSpecialValues() {
+		this.cachedSpeed = this.GetSpecialValue(
+			"active_movespeed_pct",
+			"item_unstable_wand"
+		)
 	}
 }

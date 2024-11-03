@@ -1,27 +1,37 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_bristleback_viscous_nasal_goo extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	private get getStackCount(): number {
-		return Math.min(this.StackCount, this.GetSpecialValue("stack_limit"))
+	private cachedSlow = 0
+	private cachedBaseSlow = 0
+	private cachedMaxStacks = 0
+
+	private get maxStackCount(): number {
+		return Math.min(this.StackCount, this.cachedMaxStacks)
 	}
 
-	protected SetBaseMoveSpeedAmplifier(
-		specialName = "base_move_slow",
-		_subtract = true
-	): void {
-		const baseSlow = this.GetSpecialMoveSpeedByState(specialName)
-		const moveStackSlow = this.GetSpecialMoveSpeedByState("move_slow_per_stack")
-		const value = ((baseSlow + moveStackSlow) * this.getStackCount) / -100
-		this.MoveSpeedBaseAmplifier = value
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		const owner = this.Parent
+		if (owner === undefined) {
+			return [0, false]
+		}
+		const slowPerStack = this.cachedSlow * this.maxStackCount
+		return [-(slowPerStack + this.cachedBaseSlow), this.IsMagicImmune()]
 	}
 
-	protected SetBaseBonusArmor(specialName = "base_armor", _subtract = true) {
-		const perStack = this.GetSpecialArmorByState("armor_per_stack")
-		const value = this.GetSpecialArmorByState(specialName)
-		this.BaseBonusArmor = -(value + perStack * this.getStackCount)
+	protected UpdateSpecialValues(): void {
+		const name = "bristleback_viscous_nasal_goo"
+		this.cachedSlow = this.GetSpecialValue("move_slow_per_stack", name)
+		this.cachedBaseSlow = this.GetSpecialValue("base_move_slow", name)
+		this.cachedMaxStacks = this.GetSpecialValue("stack_limit", name)
 	}
 }

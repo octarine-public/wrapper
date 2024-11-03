@@ -1,12 +1,26 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_invisibility_edge_windwalk extends Modifier {
-	protected SetMoveSpeedAmplifier(
-		specialName = "windwalk_movement_speed",
-		subtract = false
-	): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
+
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, false]
+	}
+
+	protected UpdateSpecialValues() {
+		this.cachedSpeed = this.GetSpecialValue(
+			"windwalk_movement_speed",
+			"item_invis_sword"
+		)
 	}
 }

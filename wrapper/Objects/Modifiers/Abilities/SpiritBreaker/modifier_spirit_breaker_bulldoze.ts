@@ -1,38 +1,26 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { DAMAGE_TYPES } from "../../../../Enums/DAMAGE_TYPES"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_spirit_breaker_bulldoze extends Modifier {
-	public readonly AbsorbDamageType = DAMAGE_TYPES.DAMAGE_TYPE_ALL
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	public Update(): void {
-		super.Update()
-		if (!this.IsShield) {
-			this.IsShield = this.NetworkFadeTime !== 0
-		}
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, false]
 	}
 
-	public Remove(): boolean {
-		if (!super.Remove()) {
-			return false
-		}
-		this.IsShield = false
-		return true
-	}
-
-	protected SetAbsorbDamage(_specialName?: string, _subtract = false) {
-		this.AbsorbDamage = Math.max(this.NetworkFadeTime, 0)
-	}
-
-	protected SetMoveSpeedAmplifier(specialName = "movement_speed"): void {
-		super.SetMoveSpeedAmplifier(specialName)
-	}
-
-	protected SetStatusResistanceAmplifier(
-		specialName = "status_resistance",
-		subtract = false
-	) {
-		super.SetStatusResistanceAmplifier(specialName, subtract)
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue(
+			"movement_speed",
+			"spirit_breaker_bulldoze"
+		)
 	}
 }

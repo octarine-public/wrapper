@@ -21,7 +21,9 @@ interface ILinkedSpecialBonus {
 	Name: string
 	IsOld: boolean
 	OldData?: [EDOTASpecialBonusOperation, string]
-	NewData?: [EDOTASpecialBonusOperation, number][]
+	// bool flag need for unquie talents and exludes NaN where used "+-value"
+	// example: pudge_rot->rot_slow, tiny_grow->attack_speed_reduction
+	NewData?: [EDOTASpecialBonusOperation, number, boolean][]
 }
 
 interface ISpecialValue {
@@ -148,6 +150,7 @@ export class AbilityData {
 	public readonly HasMaxDurationSpecial: boolean
 	public readonly HasHealthCostSpecial: boolean
 	public readonly HasAffectedByAOEIncrease: boolean
+	public readonly IsBreakable: boolean
 
 	private readonly SpecialValueCache = new Map<string, ISpecialValue>()
 	private readonly CastRangeCache: number[]
@@ -397,10 +400,33 @@ export class AbilityData {
 				(hasSpecialValue(manaStats)
 					? EDOTASpecialBonusStats.Mana
 					: EDOTASpecialBonusStats.None)
+
+		this.IsBreakable = kv.has("IsBreakable")
+			? parseInt(kv.get("IsBreakable") as string) !== 0
+			: false
+	}
+
+	public get CanHitSpellImmuneEnemy(): boolean {
+		return (
+			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES ||
+			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
+		)
+	}
+
+	public get CanHitSpellImmuneAlly(): boolean {
+		return (
+			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE ||
+			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES ||
+			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
+		)
 	}
 
 	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
 		return this.AbilityBehavior.hasMask(flag)
+	}
+
+	public HasSpellDispellableType(flag: SPELL_DISPELLABLE_TYPES): boolean {
+		return this.SpellDispellableType.hasMask(flag)
 	}
 
 	public HasTargetTeam(flag: DOTA_UNIT_TARGET_TEAM): boolean {
@@ -409,6 +435,14 @@ export class AbilityData {
 
 	public HasBonusStats(flag: EDOTASpecialBonusStats): boolean {
 		return this.BonusStats.hasMask(flag)
+	}
+
+	public HasTargetFlags(flag: DOTA_UNIT_TARGET_FLAGS): boolean {
+		return this.TargetFlags.hasMask(flag)
+	}
+
+	public HasTargetType(flag: DOTA_UNIT_TARGET_TYPE): boolean {
+		return this.TargetType.hasMask(flag)
 	}
 
 	public GetSpecialValue(
@@ -453,8 +487,11 @@ export class AbilityData {
 		) {
 			baseVal = 0
 		}
-		for (const linkedSpecialBonus of specialValue.LinkedSpecialBonuses) {
-			let data: [EDOTASpecialBonusOperation, number]
+
+		const arr = specialValue.LinkedSpecialBonuses
+		for (let i = arr.length - 1; i > -1; i--) {
+			const linkedSpecialBonus = arr[i]
+			let data: [EDOTASpecialBonusOperation, number, boolean]
 			if (!linkedSpecialBonus.IsOld) {
 				if (linkedSpecialBonus.Name.startsWith("special_bonus_facet_")) {
 					if (owner.HeroFacet !== linkedSpecialBonus.Name.substring(20)) {
@@ -495,13 +532,17 @@ export class AbilityData {
 				}
 				data = [
 					linkedSpecialBonus.OldData![0],
-					linkedSpecialBonusAbil.GetSpecialValue(linkedSpecialBonus.OldData![1])
+					linkedSpecialBonusAbil.GetSpecialValue(
+						linkedSpecialBonus.OldData![1]
+					),
+					false
 				]
 			}
+
 			switch (data[0]) {
 				default:
 				case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
-					baseVal += data[1]
+					baseVal += baseVal < 0 && data[2] ? -data[1] : data[1]
 					break
 				case EDOTASpecialBonusOperation.SPECIAL_BONUS_SUBTRACT:
 					baseVal -= data[1]
@@ -735,13 +776,15 @@ export class AbilityData {
 						if (talentChangeStr.startsWith("x")) {
 							return [
 								EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY,
-								this.parseFloat(talentChangeStr.substring(1))
+								this.parseFloat(talentChangeStr.substring(1)),
+								false
 							]
 						} else if (talentChangeStr.startsWith("=")) {
 							const newValue = this.parseFloat(talentChangeStr.substring(1))
 							return [
 								EDOTASpecialBonusOperation.SPECIAL_BONUS_SET,
-								newValue
+								newValue,
+								false
 							]
 						}
 						let linkedSpecialBonusOperation =
@@ -753,10 +796,18 @@ export class AbilityData {
 							)
 							linkedSpecialBonusOperation =
 								EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD
+						} else if (talentChangeStr.startsWith("+-")) {
+							talentChangeStr = talentChangeStr.substring(2)
+							return [
+								linkedSpecialBonusOperation,
+								this.parseFloat(talentChangeStr),
+								true
+							]
 						}
 						return [
 							linkedSpecialBonusOperation,
-							this.parseFloat(talentChangeStr)
+							this.parseFloat(talentChangeStr),
+							false
 						]
 					})
 				}

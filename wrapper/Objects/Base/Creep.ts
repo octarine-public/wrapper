@@ -50,12 +50,6 @@ export class Creep extends Unit {
 	public get IsDeniable(): boolean {
 		return super.IsDeniable || this.HPPercent <= 50
 	}
-	public get Speed(): number {
-		if (this.IsVisible) {
-			return super.Speed
-		}
-		return GameRules?.IsNight ? 355 : 325 // temporary fix
-	}
 	public get RingRadius(): number {
 		return 60
 	}
@@ -83,12 +77,15 @@ export class Creep extends Unit {
 }
 
 export const Creeps = EntityManager.GetEntitiesByClass(Creep)
+
+// TODO: move to wrapper/Managers/Monitors (to avoid circular dependencies)
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof Creep) {
 		ent.TryAssignLane()
 	}
 })
 
+// TODO: move to wrapper/Managers/Monitors (to avoid circular dependencies)
 EventsSDK.on("PostDataUpdate", dt => {
 	if (GameRules === undefined || dt === 0) {
 		return
@@ -134,7 +131,7 @@ EventsSDK.on("PostDataUpdate", dt => {
 		if (dist2D > 0.01) {
 			const newPos = Vector2.FromVector3(creep.PredictedPosition).Extend(
 				Vector2.FromVector3(nextPos),
-				Math.min(creep.Speed * dt, dist2D)
+				Math.min(creep.MoveSpeed * dt, dist2D)
 			)
 			creep.PredictedPosition.SetX(newPos.x)
 				.SetY(newPos.y)

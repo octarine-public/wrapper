@@ -27,39 +27,35 @@ import { Unit } from "./Unit"
 export class Ability extends Entity {
 	public readonly AbilityData: AbilityData
 	@NetworkedBasicField("m_bInIndefiniteCooldown")
-	public IsInIndefiniteCooldown = false
+	public readonly IsInIndefiniteCooldown: boolean = false
 	@NetworkedBasicField("m_nMaxLevelOverride")
-	public MaxLevelOverride = -1
+	public readonly MaxLevelOverride: number = -1
 	@NetworkedBasicField("m_bActivated")
-	public IsActivated = false
+	public readonly IsActivated: boolean = false
 	@NetworkedBasicField("m_bAltCastState")
-	public AltCastState = false
+	public readonly AltCastState: boolean = false
 	@NetworkedBasicField("m_bAutoCastState")
-	public IsAutoCastEnabled = false
+	public readonly IsAutoCastEnabled: boolean = false
 	@NetworkedBasicField("m_bFrozenCooldown")
-	public IsCooldownFrozen = false
+	public readonly IsCooldownFrozen: boolean = false
 	@NetworkedBasicField("m_bReplicated")
-	public IsReplicated = false
+	public readonly IsReplicated: boolean = false
 	@NetworkedBasicField("m_bStolen")
-	public IsStolen = false
+	public readonly IsStolen: boolean = false
 	@NetworkedBasicField("m_iManaCost")
-	public NetworkedManaCost = 0
+	public readonly NetworkedManaCost: number = 0
 	@NetworkedBasicField("m_flOverrideCastPoint")
-	public OverrideCastPoint = -1
-	@NetworkedBasicField("m_flCooldownLength")
-	public CooldownLength_ = 0
+	public readonly OverrideCastPoint: number = -1
 	@NetworkedBasicField("m_flCastStartTime")
-	public CastStartTime = 0
+	public readonly CastStartTime: number = 0
 	@NetworkedBasicField("m_bToggleState")
-	public IsToggled = false
-	@NetworkedBasicField("m_nAbilityCurrentCharges")
-	public AbilityCurrentCharges = 0
+	public readonly IsToggled: boolean = false
 	@NetworkedBasicField("m_iDirtyButtons")
-	public DirtyButtons = 0
+	public readonly DirtyButtons: number = 0
 	@NetworkedBasicField("m_bGrantedByFacet")
-	public GrantedByFacet = false
+	public readonly GrantedByFacet: boolean = false
 	@NetworkedBasicField("m_bStealable")
-	public IsStealable = false
+	public readonly IsStealable: boolean = false
 
 	public Level = 0
 	public IsEmpty = false
@@ -69,19 +65,28 @@ export class Ability extends Entity {
 	public ChannelStartTime = 0
 	public AbilityChargeRestoreTimeRemaining = 0
 	public AbilitySlot = EAbilitySlot.DOTA_SPELL_SLOT_HIDDEN
+	public Prediction: Nullable<IPrediction>
 
+	/** @private NOTE: this is internal field, use IsInAbilityPhase */
 	public IsInAbilityPhase_ = false
 	public IsInAbilityPhaseChangeTime = 0
 
+	/** @private NOTE: this is internal field, use Owner or Cooldown */
 	public Cooldown_ = 0
 	public CooldownChangeTime = 0
+
+	/** @private NOTE: this is internal field, use CooldownRestore */
 	public CooldownRestore_ = 0
 	public CooldownRestoreTime = 0
 
-	public Prediction: Nullable<IPrediction>
-
 	/**@deprecated */
 	public readonly ProjectilePath: Nullable<string>
+
+	/**@private fields */
+	@NetworkedBasicField("m_nAbilityCurrentCharges")
+	private abilityCurrentCharges: number = 0
+	@NetworkedBasicField("m_flCooldownLength")
+	private readonly cooldownLength_: number = 0
 
 	constructor(index: number, serial: number, name: string) {
 		super(index, serial)
@@ -108,6 +113,9 @@ export class Ability extends Entity {
 	}
 	public get IsUltimate(): boolean {
 		return this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE
+	}
+	public get IsBreakable(): boolean {
+		return this.AbilityData.IsBreakable
 	}
 	public get IsAttributes(): boolean {
 		return this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES
@@ -218,7 +226,7 @@ export class Ability extends Entity {
 		if (chargeRestoreTime !== 0) {
 			return chargeRestoreTime
 		} // workaround of bad m_flCooldownLength, TODO: use cooldown reductions
-		return this.CooldownLength_
+		return this.cooldownLength_
 	}
 	public get IsCooldownReady(): boolean {
 		return this.Cooldown === 0
@@ -363,7 +371,7 @@ export class Ability extends Entity {
 		return this.Owner?.BonusCastRange ?? 0
 	}
 	public get CastPointAmplifier(): number {
-		return this.Owner?.BonusCastPointAmplifier ?? 1
+		return 1
 	}
 	public get ManaCostAmplifier(): number {
 		return this.Owner?.BonusManaCostAmplifier ?? 1
@@ -420,10 +428,11 @@ export class Ability extends Entity {
 		return false
 	}
 	public get CurrentCharges() {
-		return this.AbilityCurrentCharges
+		return this.abilityCurrentCharges
 	}
+
 	public set CurrentCharges(newVal: number) {
-		this.AbilityCurrentCharges = newVal
+		this.abilityCurrentCharges = newVal
 	}
 	protected get CanBeCastedWhileRooted() {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_ROOT_DISABLES)
@@ -636,19 +645,27 @@ export class Ability extends Entity {
 	}
 	public HasBonusStats(flag: EDOTASpecialBonusStats): boolean {
 		// don't use AbilityData.HasBonusStats() here
-		// because it will be overridden by the child classes for AbilityBehaviorMask
+		// because it will be overridden by the child classes for BonusStatsMask
 		return this.BonusStatsMask.hasMask(flag)
 	}
 	public HasTargetFlags(flag: DOTA_UNIT_TARGET_FLAGS): boolean {
+		// don't use AbilityData.HasTargetFlags() here
+		// because it will be overridden by the child classes for TargetFlagsMask
 		return this.TargetFlagsMask.hasMask(flag)
 	}
 	public HasTargetTeam(flag: DOTA_UNIT_TARGET_TEAM): boolean {
+		// don't use AbilityData.HasTargetTeam() here
+		// because it will be overridden by the child classes for TargetTeamMask
 		return this.TargetTeamMask.hasMask(flag)
 	}
 	public HasTargetType(flag: DOTA_UNIT_TARGET_TYPE): boolean {
+		// don't use AbilityData.HasTargetType() here
+		// because it will be overridden by the child classes for TargetTypeMask
 		return this.TargetTypeMask.hasMask(flag)
 	}
 	public HasDispellableType(flag: SPELL_DISPELLABLE_TYPES): boolean {
+		// don't use AbilityData.HasSpellDispellableType() here
+		// because it will be overridden by the child classes for SpellDispellableTypeMask
 		return this.SpellDispellableTypeMask.hasMask(flag)
 	}
 	public CanHit(target: Unit): boolean {

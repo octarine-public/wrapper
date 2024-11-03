@@ -1,28 +1,34 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_sange_and_yasha extends Modifier {
-	public readonly BonusAttackSpeedStack = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE,
+			this.GetSlowResistanceUnique.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE_UNIQUE,
+			this.GetMoveSpeedBonusPercentageUnique.bind(this)
+		]
+	])
 
-	protected SetMoveSpeedAmplifier(
-		specialName = "movement_speed_percent_bonus",
-		subtract = false
-	): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	private cachedSpeed = 0
+	private cachedSpeedResist = 0
+
+	protected GetSlowResistanceUnique(): [number, boolean] {
+		return [this.cachedSpeedResist, false]
 	}
 
-	protected SetBonusAttackSpeed(
-		specialName = "bonus_attack_speed",
-		subtract = false
-	): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	protected GetMoveSpeedBonusPercentageUnique(): [number, boolean] {
+		return [this.cachedSpeed, false]
 	}
 
-	protected SetStatusResistanceAmplifier(
-		specialName = "status_resistance",
-		subtract = false
-	) {
-		super.SetStatusResistanceAmplifier(specialName, subtract)
+	protected UpdateSpecialValues() {
+		const name = "item_sange_and_yasha"
+		this.cachedSpeed = this.GetSpecialValue("movement_speed_percent_bonus", name)
+		this.cachedSpeedResist = this.GetSpecialValue("slow_resistance", name)
 	}
 }

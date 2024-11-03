@@ -1,15 +1,17 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_rattletrap_overheated extends Modifier {
-	protected SetBonusAttackSpeed(_specialName?: string, subtract = false): void {
-		const value = -100 // no special value data
-		this.BonusAttackSpeed = subtract ? value * -1 : value
-	}
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetMoveSpeedAmplifier(_specialName: string, subtract: boolean): void {
-		const value = -100 // no special value data
-		this.BonusMoveSpeedAmplifier = (subtract ? value * -1 : value) / 100
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [-100 /** no special data */, false]
 	}
 }

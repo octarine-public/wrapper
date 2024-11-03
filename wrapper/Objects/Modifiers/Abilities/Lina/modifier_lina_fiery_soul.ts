@@ -1,30 +1,30 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_lina_fiery_soul extends Modifier {
-	public readonly IsBuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	public SetBonusAttackSpeed(
-		specialName = "fiery_soul_attack_speed_bonus",
-		subtract = false
-	): void {
-		const maxStack = this.GetStacks()
-		const value = this.GetSpecialAttackSpeedByState(specialName)
-		this.BonusAttackSpeed = (subtract ? value * -1 : value) * maxStack
+	private cachedSpeed = 0
+	private cachedStacks = 0
+
+	public get MaxStacks(): number {
+		return Math.min(this.StackCount, this.cachedStacks)
 	}
 
-	public SetMoveSpeedAmplifier(
-		specialName = "fiery_soul_move_speed_bonus",
-		subtract = false
-	): void {
-		const maxStack = this.GetStacks()
-		const value = this.GetSpecialAttackSpeedByState(specialName)
-		this.BonusMoveSpeedAmplifier = ((subtract ? value * -1 : value) / 100) * maxStack
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed * this.MaxStacks, false]
 	}
 
-	private GetStacks() {
-		const maxStacks = this.GetSpecialValue("fiery_soul_max_stacks")
-		return Math.min(this.StackCount, maxStacks)
+	protected UpdateSpecialValues(): void {
+		const name = "lina_fiery_soul"
+		this.cachedSpeed = this.GetSpecialValue("fiery_soul_move_speed_bonus", name)
+		this.cachedStacks = this.GetSpecialValue("fiery_soul_max_stacks", name)
 	}
 }

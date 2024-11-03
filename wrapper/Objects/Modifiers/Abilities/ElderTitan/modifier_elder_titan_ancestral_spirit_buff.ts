@@ -1,15 +1,17 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_elder_titan_ancestral_spirit_buff extends Modifier {
-	public readonly IsBuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetMoveSpeedAmplifier(_specialName?: string, _subtract = false): void {
-		this.BonusMoveSpeedAmplifier = this.NetworkChannelTime / 100
-	}
-
-	protected SetBonusArmor(_specialName?: string, _subtract = false) {
-		this.BonusArmor = this.NetworkArmor
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.NetworkChannelTime, false]
 	}
 }

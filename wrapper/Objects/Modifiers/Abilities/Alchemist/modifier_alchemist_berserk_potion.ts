@@ -1,15 +1,23 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_alchemist_berserk_potion extends Modifier {
-	public readonly IsBuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
+			this.GetMoveSpeedBonusConstant.bind(this)
+		]
+	])
 
-	protected SetBonusMoveSpeed(specialName = "move_speed", subtract = false): void {
-		super.SetBonusMoveSpeed(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusConstant(): [number, boolean] {
+		return [this.cachedSpeed, false]
 	}
 
-	protected SetBonusAttackSpeed(specialName = "attack_speed", subtract = false): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue("move_speed", "alchemist_berserk_potion")
 	}
 }

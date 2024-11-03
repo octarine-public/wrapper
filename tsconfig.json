@@ -23,8 +23,9 @@
 		"../**/*.d.ts" 
 	],
 	"exclude": [
+		"tools/**/*",
 		"node_modules/**/*",
 		"scripts_files/**/*",
-		"../deadlock-sdk/**/*"
+		"../deadlock-sdk/**/*",
 	]
 }

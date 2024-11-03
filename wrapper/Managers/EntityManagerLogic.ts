@@ -37,11 +37,9 @@ function ClassFromNative(
 export function CreateEntityInternal(entity: Entity): void {
 	AllEntitiesAsMap.set(entity.Index, entity)
 	EntityManager.AllEntities.push(entity)
-
-	const entities = ClassToEntitiesAr.get(entity.constructor as Constructor<Entity>)!
-	for (let index = 0; index < entities.length; index++) {
-		const classEntities = entities[index]
-		classEntities.push(entity)
+	const arr = ClassToEntitiesAr.get(entity.constructor as Constructor<Entity>)!
+	for (let i = 0; i < arr.length; i++) {
+		arr[i].push(entity)
 	}
 }
 
@@ -84,10 +82,9 @@ export function DeleteEntity(entID: number): void {
 	entity.IsVisible = false
 	AllEntitiesAsMap.delete(entID)
 
-	const entities = ClassToEntitiesAr.get(entity.constructor as Constructor<Entity>)!
-	for (let index = entities.length - 1; index > -1; index--) {
-		const classEntities = entities[index]
-		classEntities.remove(entity)
+	const arr = ClassToEntitiesAr.get(entity.constructor as Constructor<Entity>)!
+	for (let i = arr.length - 1; i > -1; i--) {
+		arr[i].remove(entity)
 	}
 }
 

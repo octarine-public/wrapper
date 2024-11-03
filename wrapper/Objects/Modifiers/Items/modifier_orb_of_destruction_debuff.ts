@@ -1,22 +1,31 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_orb_of_destruction_debuff extends Modifier {
-	// because it's neutral tier without SpellImmunityType
-	// SPELL_IMMUNITY_ENEMIES_YES
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetBonusArmor(specialName = "armor_reduction", subtract = true): void {
-		super.SetBonusArmor(specialName, subtract)
+	private slowMelee = 0
+	private slowRanged = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		const caster = this.Caster
+		if (caster === undefined) {
+			return [0, false]
+		}
+		const value = caster.IsRanged ? this.slowRanged : this.slowMelee
+		return [-value, this.IsMagicImmune()]
 	}
 
-	protected SetMoveSpeedAmplifier(_specialName?: string, subtract = true): void {
-		const owner = this.Parent
-		if (owner === undefined) {
-			return
-		}
-		const specialName = `slow_${owner.IsRanged ? "range" : "melee"}`
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	protected UpdateSpecialValues(): void {
+		const name = "item_orb_of_destruction"
+		this.slowMelee = this.GetSpecialValue("slow_melee", name)
+		this.slowRanged = this.GetSpecialValue("slow_range", name)
 	}
 }

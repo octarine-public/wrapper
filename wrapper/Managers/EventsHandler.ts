@@ -741,6 +741,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 		const particleSystemHandle = submsg.get("particle_name_index") as bigint,
 			entID = submsg.get("entity_handle") as number,
 			modifiersEntID = submsg.get("entity_handle_for_modifiers") as number
+
 		const path =
 			particleSystemHandle !== undefined
 				? GetPathByHash(particleSystemHandle)

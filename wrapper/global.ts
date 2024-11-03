@@ -15,7 +15,6 @@ import { Events as _Events } from "./Managers/Events"
 import { EventsSDK as _EventsSDK } from "./Managers/EventsSDK"
 import { InputManager as _InputManager } from "./Managers/InputManager"
 import { MinimapSDK as _MinimapSDK } from "./Managers/MinimapSDK"
-import { ModifierManager as _ModifierManager } from "./Managers/ModifierManager"
 import { ParticlesSDK as _ParticlesSDK } from "./Managers/ParticleManager"
 import { PathfinderSDK as _PathfinderSDK } from "./Managers/Pathfinder/PathfinderSDK"
 import { TaskManager as _TaskManager } from "./Managers/TaskManager"
@@ -49,7 +48,6 @@ globalThis.GameData = _GameData
 globalThis.NetworkedParticle = _NetworkedParticle
 globalThis.FakeUnits = _FakeUnits
 globalThis.SoundSDK = _SoundSDK
-globalThis.ModifierManager = _ModifierManager
 globalThis.PathfinderSDK = _PathfinderSDK
 
 Object.defineProperty(globalThis, "LocalPlayer", {

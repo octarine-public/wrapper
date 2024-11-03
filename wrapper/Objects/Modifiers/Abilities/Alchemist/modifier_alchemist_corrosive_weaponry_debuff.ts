@@ -1,14 +1,27 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_alchemist_corrosive_weaponry_debuff extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	public SetMoveSpeedAmplifier(specialName = "slow_per_stack", _subtract = true): void {
-		const maxStacks = this.GetSpecialValue("max_stacks")
-		const valueByState = this.GetSpecialMoveSpeedByState(specialName)
-		const value = Math.min(this.StackCount, maxStacks) * valueByState
-		this.BonusMoveSpeedAmplifier = (value * -1) / 100
+	private cachedSpeed = 0
+	private cachedMaxStacks = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		const stackCount = Math.min(this.StackCount, this.cachedMaxStacks)
+		return [-(this.cachedSpeed * stackCount), this.IsMagicImmune()]
+	}
+
+	protected UpdateSpecialValues(): void {
+		const name = "alchemist_corrosive_weaponry"
+		this.cachedSpeed = this.GetSpecialValue("slow_per_stack", name)
+		this.cachedMaxStacks = this.GetSpecialValue("max_stacks", name)
 	}
 }
