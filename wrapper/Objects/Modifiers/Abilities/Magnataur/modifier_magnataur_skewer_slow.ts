@@ -1,12 +1,23 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_magnataur_skewer_slow extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	// valve: error tooltip -> tool_attack_slow (10 20 30 40)
-	// protected SetBonusAttackSpeed(specialName = "slow_pct", subtract = true): void {
-	// 	super.SetBonusAttackSpeed(specialName, subtract)
-	// }
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [-this.cachedSpeed, this.IsMagicImmune()]
+	}
+
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue("slow_pct", "magnataur_skewer")
+	}
 }

@@ -1,11 +1,23 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_earth_spirit_boulder_smash_debuff extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetMoveSpeedAmplifier(specialName = "move_slow", subtract = true): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [-this.cachedSpeed, this.IsPassiveDisabled()]
+	}
+
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue("move_slow", "earth_spirit_boulder_smash")
 	}
 }

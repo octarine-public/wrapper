@@ -1,35 +1,33 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_faceless_void_time_zone_effect extends Modifier {
-	protected SetBonusAttackSpeed(
-		specialName = "bonus_attack_speed",
-		subtract = false
-	): void {
-		super.SetBonusAttackSpeed(
-			specialName,
-			this.Caster?.IsEnemy() ? subtract : !subtract
-		)
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
+
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		const owner = this.Parent
+		const caster = this.Caster
+		if (owner === undefined || caster === undefined) {
+			return [0, false]
+		}
+		const isEnemy = owner.IsEnemy(caster),
+			value = isEnemy ? -this.cachedSpeed : this.cachedSpeed
+		return [value, false] // isEnemy && this.IsMagicImmune()
 	}
 
-	protected SetTurnRateAmplifier(
-		specialName = "bonus_turn_speed",
-		subtract = false
-	): void {
-		super.SetTurnRateAmplifier(
-			specialName,
-			this.Caster?.IsEnemy() ? subtract : !subtract
-		)
-	}
-
-	protected SetBonusCastPointAmplifier(
-		specialName = "bonus_cast_speed",
-		subtract = false
-	): void {
-		super.SetBonusCastPointAmplifier(
-			specialName,
-			this.Caster?.IsEnemy() ? subtract : !subtract
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue(
+			"bonus_move_speed",
+			"faceless_void_time_zone"
 		)
 	}
 }

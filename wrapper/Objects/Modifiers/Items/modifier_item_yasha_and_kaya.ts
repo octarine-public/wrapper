@@ -1,28 +1,26 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_yasha_and_kaya extends Modifier {
-	public readonly BonusAttackSpeedStack = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE_UNIQUE,
+			this.GetMoveSpeedBonusPercentageUnique.bind(this)
+		]
+	])
 
-	public SetBonusCastPointAmplifier(
-		specialName = "cast_speed_pct",
-		subtract = false
-	): void {
-		super.SetBonusCastPointAmplifier(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentageUnique(): [number, boolean] {
+		return [this.cachedSpeed, false]
 	}
 
-	protected SetMoveSpeedAmplifier(
-		specialName = "movement_speed_percent_bonus",
-		subtract = false
-	): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
-	}
-
-	protected SetBonusAttackSpeed(
-		specialName = "bonus_attack_speed",
-		subtract = false
-	): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	protected UpdateSpecialValues() {
+		this.cachedSpeed = this.GetSpecialValue(
+			"movement_speed_percent_bonus",
+			"item_yasha_and_kaya"
+		)
 	}
 }

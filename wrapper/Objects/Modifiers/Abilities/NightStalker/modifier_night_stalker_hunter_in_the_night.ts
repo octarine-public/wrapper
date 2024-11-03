@@ -1,65 +1,30 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { ModifierManager } from "../../../../Managers/ModifierManager"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { GameRules } from "../../../Base/Entity"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_night_stalker_hunter_in_the_night extends Modifier {
-	public readonly IsBuff = true
-	private isEmited = false
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	public Update(): void {
-		super.Update()
-		this.addIntervalThink()
-	}
+	private cachedSpeed = 0
 
-	public Remove(): boolean {
-		if (!super.Remove()) {
-			return false
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		if (GameRules === undefined) {
+			return [0, false]
 		}
-		this.BonusAttackSpeed = 0
-		this.BonusMoveSpeedAmplifier = 0
-		this.StatusResistanceAmplifier = 0
-		this.isEmited = false
-		return true
+		return [this.cachedSpeed, !GameRules.IsNight]
 	}
 
-	public OnIntervalThink(): void {
-		this.SetBonusAttackSpeed()
-		this.SetMoveSpeedAmplifier()
-		this.SetStatusResistanceAmplifier()
-	}
-
-	protected SetMoveSpeedAmplifier(
-		specialName = "bonus_movement_speed_pct_night",
-		_subtract = false
-	): void {
-		const value = this.GetSpecialMoveSpeedByState(specialName)
-		this.BonusMoveSpeedAmplifier = GameRules?.IsNight ? value / 100 : 0
-	}
-
-	protected SetBonusAttackSpeed(
-		specialName = "bonus_attack_speed_night",
-		_subtract = false
-	): void {
-		const value = this.GetSpecialAttackSpeedByState(specialName)
-		this.BonusAttackSpeed = GameRules?.IsNight ? value : 0
-	}
-
-	protected SetStatusResistanceAmplifier(
-		specialName = "bonus_status_resist_night",
-		_subtract = false
-	) {
-		const isDisabled = this.IsPassiveDisabled()
-		const value = this.GetSpecialValue(specialName)
-		const state = GameRules?.IsNight && !isDisabled
-		this.StatusResistanceAmplifier = state ? value / 100 : 0
-	}
-
-	private addIntervalThink(): void {
-		if (!this.isEmited) {
-			this.isEmited = true
-			ModifierManager.AddIntervalThink(this)
-		}
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue(
+			"bonus_movement_speed_pct_night",
+			"night_stalker_hunter_in_the_night"
+		)
 	}
 }

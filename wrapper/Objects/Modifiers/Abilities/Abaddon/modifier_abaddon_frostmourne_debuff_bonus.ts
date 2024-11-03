@@ -1,11 +1,23 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_abaddon_frostmourne_debuff_bonus extends Modifier {
-	public readonly IsDebuff = true
-	// TODO: calculate shard
-	// protected SetMoveSpeedAmplifier(specialName = "curse_slow", subtract = true): void {
-	// 	super.SetMoveSpeedAmplifier(specialName, subtract)
-	// }
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
+
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [-this.cachedSpeed, this.IsMagicImmune()]
+	}
+
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue("curse_slow", "abaddon_frostmourne")
+	}
 }

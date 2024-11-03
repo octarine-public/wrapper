@@ -18,8 +18,8 @@ const Monitor = new (class CPreUnitChanged {
 		if (dt === 0) {
 			return
 		}
-		for (let index = Units.length - 1; index > -1; index--) {
-			const unit = Units[index]
+		for (let i = Units.length - 1; i > -1; i--) {
+			const unit = Units[i]
 			// see: https://dota2.fandom.com/wiki/Health_Regeneration
 			unit.HPRegenCounter += unit.HPRegen * 0.1
 			const regenAmount = Math.floor(unit.HPRegenCounter)
@@ -184,29 +184,26 @@ const Monitor = new (class CPreUnitChanged {
 	}
 
 	public EntityDestroyed(entity: Entity) {
-		switch (true) {
-			case entity instanceof Item:
-				this.itemDestroyed(entity)
-				break
-			case entity instanceof Ability:
-				this.spellDestroyed(entity)
-				break
-			case entity instanceof Wearable:
-				this.wariableDestroyed(entity)
-				break
-			case entity instanceof NeutralSpawner:
-				this.unitSpawnerDestroyed(entity)
-				break
-			case entity instanceof Unit: {
-				this.spawnerUnitDestroyed(entity)
-				break
-			}
+		if (entity instanceof Item) {
+			this.itemDestroyed(entity)
+		}
+		if (entity instanceof Ability) {
+			this.spellDestroyed(entity)
+		}
+		if (entity instanceof Wearable) {
+			this.wariableDestroyed(entity)
+		}
+		if (entity instanceof NeutralSpawner) {
+			this.unitSpawnerDestroyed(entity)
+		}
+		if (entity instanceof Unit) {
+			this.spawnerUnitDestroyed(entity)
 		}
 	}
 
 	public LocalTeamChanged() {
-		for (let index = Units.length - 1; index > -1; index--) {
-			const unit = Units[index]
+		for (let i = Units.length - 1; i > -1; i--) {
+			const unit = Units[i]
 			unit.IsVisibleForEnemies_ = Unit.IsVisibleForEnemies(unit)
 		}
 	}
@@ -458,16 +455,20 @@ const Monitor = new (class CPreUnitChanged {
 	}
 })()
 
-EventsSDK.on("PostDataUpdate", dt => Monitor.PostDataUpdate(dt))
-
-EventsSDK.on("LocalTeamChanged", () => Monitor.LocalTeamChanged())
-
 EventsSDK.on("EntityDestroyed", ent => Monitor.EntityDestroyed(ent))
 
 EventsSDK.on("PreEntityCreated", ent => Monitor.PreEntityCreated(ent))
 
+EventsSDK.on("PostDataUpdate", dt => Monitor.PostDataUpdate(dt), EventPriority.IMMEDIATE)
+
 // workaround owner abilities
 EventsSDK.on("EntityCreated", ent => Monitor.EntityCreated(ent), EventPriority.IMMEDIATE)
+
+EventsSDK.on(
+	"LocalTeamChanged",
+	() => Monitor.LocalTeamChanged(),
+	EventPriority.IMMEDIATE
+)
 
 EventsSDK.on(
 	"UnitAnimation",
@@ -502,5 +503,5 @@ EventsSDK.on(
 EventsSDK.on(
 	"AbilityHiddenChanged",
 	ability => Monitor.AbilityHiddenChanged(ability),
-	Number.MIN_SAFE_INTEGER
+	EventPriority.IMMEDIATE
 )

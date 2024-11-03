@@ -1,18 +1,23 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_solar_crest extends Modifier {
-	public readonly BonusArmorStack = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
+			this.GetMoveSpeedBonusConstant.bind(this)
+		]
+	])
 
-	protected SetBonusArmor(specialName = "bonus_armor", subtract = false): void {
-		super.SetBonusArmor(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusConstant(): [number, boolean] {
+		return [this.cachedSpeed, false]
 	}
 
-	protected SetBonusMoveSpeed(
-		specialName = "self_movement_speed",
-		subtract = false
-	): void {
-		super.SetBonusMoveSpeed(specialName, subtract)
+	protected UpdateSpecialValues() {
+		this.cachedSpeed = this.GetSpecialValue("self_movement_speed", "item_solar_crest")
 	}
 }

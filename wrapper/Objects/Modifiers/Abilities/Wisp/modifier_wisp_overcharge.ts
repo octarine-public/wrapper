@@ -1,25 +1,26 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_wisp_overcharge extends Modifier {
-	public readonly IsBuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING,
+			this.GetSlowResistanceStacking.bind(this)
+		]
+	])
 
-	protected SetBonusArmor(specialName = "bonus_armor", subtract = false): void {
-		super.SetBonusArmor(specialName, subtract)
+	private cachedSpeedResist = 0
+
+	protected GetSlowResistanceStacking(): [number, boolean] {
+		return [this.cachedSpeedResist, false]
 	}
 
-	protected SetStatusResistanceSpeed(
-		specialName = "shard_bonus_slow_resistance",
-		subtract = true
-	): void {
-		super.SetStatusResistanceSpeed(specialName, subtract)
-	}
-
-	protected SetBonusAttackSpeed(
-		specialName = "bonus_attack_speed",
-		subtract = false
-	): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeedResist = this.GetSpecialValue(
+			"shard_bonus_slow_resistance",
+			"wisp_overcharge"
+		)
 	}
 }

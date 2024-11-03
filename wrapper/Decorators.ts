@@ -15,14 +15,11 @@ export function WrapperClass(networkedClassName: string) {
 		RegisterClass(networkedClassName, constructor)
 }
 
-/**
- * Creates a class modifier that registers the class with a given name.
- *
- * @param {string} modName - The name of the class modifier.
- */
-export function WrapperClassModifier(modName?: string) {
-	return (constructor: Constructor<Modifier>) =>
-		RegisterClassModifier(modName ?? constructor.name, constructor)
+export function WrapperClassModifier(name?: string): any {
+	return (constructor: Constructor<Modifier>) => {
+		// Called as @WrapperClassModifier("modifier_class_name") or @WrapperClassModifier()
+		RegisterClassModifier(name ?? constructor.name, constructor)
+	}
 }
 
 const convertBuf = new ArrayBuffer(16)

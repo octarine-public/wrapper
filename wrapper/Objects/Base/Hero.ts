@@ -40,7 +40,6 @@ export class Hero extends Unit {
 	public RespawnTime = 0
 
 	public FocusFireActive = false
-
 	/** @internal (changed by CFocusFireChanged) */
 	public FocusFireTargetIndex_: number = -1
 	@NetworkedBasicField("m_hReplicatingOtherHeroModel")
@@ -60,9 +59,15 @@ export class Hero extends Unit {
 		return EntityManager.EntityByIndex<Unit>(this.replicatingOtherHeroModel)
 	}
 	public get BaseAttackSpeedData() {
+		// override this e.g. morphling
 		return this.UnitData.BaseAttackSpeed
 	}
+	public get MoveSpeedBase(): number {
+		// override this e.g. morphling
+		return this.ReplicatingOtherHeroModel?.MoveSpeedBase ?? super.MoveSpeedBase
+	}
 	public get BaseAttackRange(): number {
+		// override this e.g. morphling
 		return this.ReplicatingOtherHeroModel?.BaseAttackRange ?? super.BaseAttackRange
 	}
 	public get IsRealHero(): boolean {

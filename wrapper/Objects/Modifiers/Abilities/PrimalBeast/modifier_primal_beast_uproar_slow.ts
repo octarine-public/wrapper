@@ -1,17 +1,26 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_primal_beast_uproar_slow extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetMoveSpeedAmplifier(
-		specialName = "move_slow_per_stack",
-		_subtract = true
-	): void {
-		const maxStacks = this.GetSpecialValue("stack_limit")
-		const stack = Math.min(this.StackCount, maxStacks)
-		const moveStackSlow = this.GetSpecialMoveSpeedByState(specialName)
-		this.BonusMoveSpeedAmplifier = (moveStackSlow * stack) / -100
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [-(this.cachedSpeed * this.StackCount), this.IsMagicImmune()]
+	}
+
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue(
+			"move_slow_per_stack",
+			"primal_beast_uproar"
+		)
 	}
 }

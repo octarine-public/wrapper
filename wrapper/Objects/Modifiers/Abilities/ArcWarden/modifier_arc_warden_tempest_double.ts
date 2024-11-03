@@ -4,7 +4,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_arc_warden_tempest_double extends Modifier {
-	public UnitPropertyChanged(changed?: boolean): boolean {
+	protected UnitPropertyChanged(changed?: boolean): boolean {
 		const owner = this.Parent
 		const state = (changed ??= true)
 		if (owner === undefined) {

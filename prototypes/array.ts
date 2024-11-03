@@ -2,6 +2,9 @@ Array.prototype.orderBy = function <T>(
 	callback: (obj: T) => number | boolean,
 	thenBy?: (obj: T) => number | boolean
 ): T[] {
+	if (this.length === 0) {
+		return []
+	}
 	return this.sort((a: T, b: T) => {
 		const resultA = callback(a)
 		const resultB = callback(b)
@@ -25,6 +28,9 @@ Array.prototype.toOrderBy = function <T>(
 	callback: (obj: T) => number | boolean,
 	thenBy?: (obj: T) => number | boolean
 ): T[] {
+	if (this.length === 0) {
+		return []
+	}
 	return this.toSorted((a: T, b: T) => {
 		const resultA = callback(a)
 		const resultB = callback(b)
@@ -48,6 +54,9 @@ Array.prototype.orderByDescending = function <T>(
 	callback: (obj: T, thenBy?: T) => number | boolean,
 	thenBy?: (obj: T) => number | boolean
 ): T[] {
+	if (this.length === 0) {
+		return []
+	}
 	return this.sort((a, b) => {
 		const resultA = callback(a)
 		const resultB = callback(b)
@@ -71,6 +80,9 @@ Array.prototype.toOrderByDescending = function <T>(
 	callback: (obj: T, thenBy?: T) => number | boolean,
 	thenBy?: (obj: T) => number | boolean
 ): T[] {
+	if (this.length === 0) {
+		return []
+	}
 	return this.toSorted((a, b) => {
 		const resultA = callback(a)
 		const resultB = callback(b)
@@ -183,6 +195,9 @@ Array.prototype.contains = function <T>(array: T[]): boolean {
 }
 
 Array.prototype.count = function <T>(element: T): number {
+	if (this.length === 0) {
+		return 0
+	}
 	return this.reduce((prev, val) => {
 		if (val === element) {
 			prev++
@@ -192,6 +207,9 @@ Array.prototype.count = function <T>(element: T): number {
 }
 
 Array.prototype.remove = function <T>(value: T, useDelete?: boolean): boolean {
+	if (this.length === 0) {
+		return false
+	}
 	const index = this.indexOf(value)
 	if (index === -1) {
 		return false
@@ -208,6 +226,9 @@ Array.prototype.removeCallback = function <T>(
 	callback: (value: T, index: number, obj: T[]) => boolean,
 	useDelete?: boolean
 ): boolean {
+	if (this.length === 0) {
+		return false
+	}
 	const index = this.findIndex(callback)
 	if (index === -1) {
 		return false

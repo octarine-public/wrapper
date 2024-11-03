@@ -1,15 +1,23 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_rattlecage_slow extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetMoveSpeedAmplifier(specialName = "slow", subtract = true): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [-this.cachedSpeed, this.IsMagicImmune()]
 	}
 
-	protected SetBonusAttackSpeed(specialName = "slow", subtract = true) {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	protected UpdateSpecialValues() {
+		this.cachedSpeed = this.GetSpecialValue("slow", "item_rattlecage")
 	}
 }

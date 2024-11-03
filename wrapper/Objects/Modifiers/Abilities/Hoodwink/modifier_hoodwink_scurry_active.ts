@@ -1,15 +1,23 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_hoodwink_scurry_active extends Modifier {
-	public readonly IsBuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetBonusCastRange(specialName = "cast_range", subtract = false) {
-		super.SetBonusCastRange(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, false]
 	}
 
-	protected SetBonusAttackRange(specialName = "attack_range", subtract = false): void {
-		super.SetBonusAttackRange(specialName, subtract)
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue("movement_speed_pct", "hoodwink_scurry")
 	}
 }

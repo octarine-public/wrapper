@@ -1,97 +1,53 @@
 import { WrapperClassModifier } from "../../../../Decorators"
 import { BrawlActive } from "../../../../Enums/BrawlActive"
-import { ModifierManager } from "../../../../Managers/ModifierManager"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { brewmaster_drunken_brawler } from "../../../Abilities/Brewmaster/brewmaster_drunken_brawler"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
-	public readonly IsHidden = true
-	private isEmited = false
+	protected readonly CanPostDataUpdate = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	private get brawlActive() {
-		return (this.Ability as Nullable<brewmaster_drunken_brawler>)?.BrawlActive
+	private cachedSpeed = 0
+	private cachedMultiplier = 1
+	private cachedSpeedValue = 0
+
+	private get multiplier(): number {
+		const hasMultiplier =
+			this.Parent?.HasBuffByName("modifier_brewmaster_brew_up") ?? false
+		return !hasMultiplier ? 1 : this.cachedMultiplier
 	}
 
-	public Update(): void {
-		super.Update()
-		this.addIntervalThink()
-	}
-
-	public OnIntervalThink(): void {
-		this.SetBonusArmor()
-		this.SetBonusAttackSpeed()
-		this.SetStatusResistanceAmplifier()
-	}
-
-	public Remove(): boolean {
-		if (!super.Remove()) {
-			return false
-		}
-		this.BonusArmor = 0
-		this.BonusAttackSpeed = 0
-		this.StatusResistanceAmplifier = 0
-		this.isEmited = false
-		return true
-	}
-
-	protected SetBonusArmor(specialName = "armor", subtract = false): void {
-		const brawlActive = this.brawlActive
-		if (brawlActive === undefined) {
-			this.BonusArmor = 0
+	public PostDataUpdate(): void {
+		const ability = this.Ability,
+			owner = this.Parent
+		if (!(ability instanceof brewmaster_drunken_brawler) || owner === undefined) {
+			this.cachedSpeed = 0
 			return
 		}
-		switch (brawlActive) {
-			case BrawlActive.EARTH_FIGHTER:
-				super.SetBonusArmor(specialName, subtract)
+		switch (ability.BrawlActive) {
+			case BrawlActive.STORM_FIGHTER:
+				this.cachedSpeed = this.cachedSpeedValue * this.multiplier
 				break
 			default:
-				this.BonusArmor = 0
+				this.cachedSpeed = 0
 				break
 		}
 	}
 
-	protected SetBonusAttackSpeed(specialName = "attack_speed", subtract = false): void {
-		const brawlActive = this.brawlActive
-		if (brawlActive === undefined) {
-			this.BonusAttackSpeed = 0
-			return
-		}
-		switch (brawlActive) {
-			case BrawlActive.FIRE_FIGHTER:
-				super.SetBonusAttackSpeed(specialName, subtract)
-				break
-			default:
-				this.BonusAttackSpeed = 0
-				break
-		}
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, false]
 	}
 
-	protected SetStatusResistanceAmplifier(
-		specialName = "bonus_status_resist",
-		_subtract = false
-	): void {
-		const brawlActive = this.brawlActive
-		if (brawlActive === undefined) {
-			this.StatusResistanceAmplifier = 0
-			return
-		}
-		const value = this.GetSpecialValue(specialName)
-		const hasBrewUp = this.Parent?.HasBuffByName("modifier_brewmaster_brew_up")
-		switch (brawlActive) {
-			case BrawlActive.VOID_FIGHTER:
-				this.StatusResistanceAmplifier = (hasBrewUp ? value * 2 : value) / 100
-				break
-			default:
-				this.StatusResistanceAmplifier = 0
-				break
-		}
-	}
-
-	private addIntervalThink(): void {
-		if (!this.isEmited) {
-			this.isEmited = true
-			ModifierManager.AddIntervalThink(this)
-		}
+	protected UpdateSpecialValues(): void {
+		const name = "brewmaster_drunken_brawler"
+		this.cachedSpeedValue = this.GetSpecialValue("bonus_move_speed", name)
+		this.cachedMultiplier = this.GetSpecialValue("active_multiplier", name)
 	}
 }

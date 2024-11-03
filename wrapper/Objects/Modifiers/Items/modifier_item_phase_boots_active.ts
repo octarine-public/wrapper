@@ -1,21 +1,28 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_phase_boots_active extends Modifier {
-	public readonly IsBuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetFixedBaseTurnRate(_specialName?: string, _subtract = false) {
-		// no data https://dota2.fandom.com/wiki/Phase_Boots
-		this.FixedBaseTurnRate = this.IsRanged ? 0 : 1
+	private cachedRangeSpeed = 0
+	private cachedMeleeSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		const isRanged = this.Parent?.IsRanged ?? false,
+			value = isRanged ? this.cachedRangeSpeed : this.cachedMeleeSpeed
+		return [value, false]
 	}
 
-	protected SetMoveSpeedAmplifier(_specialName?: string, subtract = false): void {
-		const owner = this.Parent
-		if (owner === undefined) {
-			return
-		}
-		const specialName = `phase_movement_speed${owner.IsRanged ? "_range" : ""}`
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	protected UpdateSpecialValues() {
+		const name = "item_phase_boots"
+		this.cachedMeleeSpeed = this.GetSpecialValue("phase_movement_speed", name)
+		this.cachedRangeSpeed = this.GetSpecialValue("phase_movement_speed_range", name)
 	}
 }

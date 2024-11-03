@@ -1,12 +1,17 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { DegreesToRadian } from "../../../../Utils/Math"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_phoenix_sun_ray extends Modifier {
-	public readonly IsBuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_LIMIT,
+			this.GetMoveSpeedLimit.bind(this)
+		]
+	])
 
-	protected SetFixedTurnRate(specialName = "turn_rate", _subtract = false) {
-		this.FixedTurnRate = DegreesToRadian(this.GetSpecialValue(specialName))
+	protected GetMoveSpeedLimit(): [number, boolean] {
+		return [-1, false]
 	}
 }

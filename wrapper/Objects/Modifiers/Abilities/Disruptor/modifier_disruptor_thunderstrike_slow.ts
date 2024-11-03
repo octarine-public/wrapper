@@ -1,15 +1,23 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_disruptor_thunderstrike_slow extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	public SetAttackSpeedAmplifier(specialName = "slow_amount", subtract = true): void {
-		super.SetAttackSpeedAmplifier(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [-this.cachedSpeed, this.IsMagicImmune()]
 	}
 
-	public SetMoveSpeedAmplifier(specialName = "slow_amount", subtract = true): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue("slow_amount", "disruptor_thunder_strike")
 	}
 }

@@ -1,13 +1,18 @@
 import { MoveSpeedData } from "../../../Data/GameData"
-import { GetRuneTexture } from "../../../Data/ImageData"
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_rune_haste extends Modifier {
-	public readonly BonusMoveSpeed = MoveSpeedData.Max
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_ABSOLUTE_MIN,
+			this.GetMoveSpeedAbsoluteMin.bind(this)
+		]
+	])
 
-	public GetTexturePath(small = false) {
-		return GetRuneTexture("haste", small)
+	protected GetMoveSpeedAbsoluteMin(): [number, boolean] {
+		return [MoveSpeedData.Max, false]
 	}
 }

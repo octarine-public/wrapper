@@ -1,17 +1,19 @@
 import { EntityPropertyType } from "../Base/EntityProperties"
 import { Events } from "../Managers/Events"
+import { EventsSDK } from "../Managers/EventsSDK"
+import { Modifier } from "../Objects/Base/Modifier"
 import { ParseProtobufDesc, ParseProtobufNamed } from "../Utils/Protobuf"
 import { MapToObject } from "../Utils/Utils"
 import { Entity } from "./Base/Entity"
-import { Modifier } from "./Base/Modifier"
 
+const modifierSDKClassTempNames: string[] = []
 const constructors = new Map<string, Constructor<Entity>>()
 const excludedErrorClassNames = new Set<string>(["CDeferredLightBase"])
 
 export type FieldHandler = (entity: Entity, newValue: EntityPropertyType) => any
 export const SDKClasses: [Constructor<Entity>, Entity[]][] = []
-export const ModifierSDKClass = new Map<string, Constructor<Modifier>>()
 export const ClassToEntities = new WeakMap<Constructor<any>, Entity[]>()
+export const ModifierSDKClass = new Map<string, Constructor<Modifier>>()
 export const ClassToEntitiesAr = new WeakMap<Constructor<any>, Entity[][]>()
 export const CachedFieldHandlers = new WeakMap<
 	Constructor<Entity>,
@@ -19,15 +21,20 @@ export const CachedFieldHandlers = new WeakMap<
 >()
 export const FieldHandlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>()
 
-export function RegisterClassModifier(name: string, constructor: Constructor<Modifier>) {
-	ModifierSDKClass.set(name, constructor)
-}
-
 export function RegisterClass(name: string, constructor: Constructor<Entity>) {
 	constructors.set(name, constructor)
 	if (!FieldHandlers.has(constructor)) {
 		RegisterClassInternal(constructor)
 	}
+}
+
+export function RegisterClassModifier(name: string, constructor: Constructor<Modifier>) {
+	if (ModifierSDKClass.has(name)) {
+		console.error(`Modifier ${name} already registered`)
+		return
+	}
+	ModifierSDKClass.set(name, constructor)
+	modifierSDKClassTempNames.push(name)
 }
 
 export function RegisterFieldHandler<T extends Entity>(
@@ -310,5 +317,19 @@ declare class ${name} {
 			})
 			break
 		}
+	}
+})
+
+EventsSDK.on("UpdateStringTable", (name, update) => {
+	if (name !== "ModifierNames" || modifierSDKClassTempNames.length === 0) {
+		return
+	}
+	const arrTables = [...update.values()]
+	for (let i = modifierSDKClassTempNames.length - 1; i > -1; i--) {
+		const modName = modifierSDKClassTempNames[i]
+		if (!arrTables.some(([modifierName]) => modifierName === modName)) {
+			console.error(`Modifier class name ${modName} can't be found in string table`)
+		}
+		modifierSDKClassTempNames.remove(modName)
 	}
 })

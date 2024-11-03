@@ -1,15 +1,23 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_zuus_static_field_slow extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetBonusAttackSpeed(specialName = "aspd_slow", subtract = true): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [-this.cachedSpeed, this.IsMagicImmune()]
 	}
 
-	protected SetMoveSpeedAmplifier(specialName = "move_slow", subtract = true): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue("move_slow", "zuus_heavenly_jump")
 	}
 }

@@ -1,21 +1,26 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_storm_spirit_overload_debuff extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetBonusAttackSpeed(
-		specialName = "overload_attack_slow",
-		subtract = false
-	): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
 
-	protected SetMoveSpeedAmplifier(
-		specialName = "overload_move_slow",
-		subtract = false
-	): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	protected UpdateSpecialValues() {
+		this.cachedSpeed = this.GetSpecialValue(
+			"overload_move_slow",
+			"storm_spirit_overload"
+		)
 	}
 }

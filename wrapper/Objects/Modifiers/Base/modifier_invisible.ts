@@ -1,24 +1,36 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
+import { mirana_invis } from "../../Abilities/Mirana/mirana_invis"
+import { riki_backstab } from "../../Abilities/Riki/riki_backstab"
 import { Modifier } from "../../Base/Modifier"
-import { item_glimmer_cape } from "../../Items/item_glimmer_cape"
 
 @WrapperClassModifier()
 export class modifier_invisible extends Modifier {
-	// ? public readonly IsHidden = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetBonusMoveSpeed(_specialName?: string, subtract = false): void {
-		const owner = this.Parent
-		if (owner === undefined) {
-			return
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, false]
+	}
+
+	protected UpdateSpecialValues(): void {
+		if (this.Ability instanceof riki_backstab) {
+			const talent = this.Parent?.GetAbilityByName(
+				"special_bonus_unique_riki_8"
+			)?.GetSpecialValue("value")
+			this.cachedSpeed = talent ?? 0
 		}
-		switch (true) {
-			case this.Ability instanceof item_glimmer_cape:
-				super.SetBonusMoveSpeed("active_movement_speed", subtract)
-				break
+		if (this.Ability instanceof mirana_invis) {
+			this.cachedSpeed = this.GetSpecialValue(
+				"bonus_movement_speed",
+				this.Ability.Name
+			)
 		}
-		// because the condition is invisible unknown for unit
-		// we need to update the special value manually
-		// example maybe reload script or any changes
-		owner.GetBuffByName("modifier_item_dustofappearance")?.OnUnitStateChaged()
 	}
 }

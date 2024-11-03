@@ -1,21 +1,26 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_vindicators_axe extends Modifier {
-	protected SetBonusAttackSpeed(
-		specialName = "bonus_attack_speed",
-		subtract = false
-	): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING,
+			this.GetSlowResistanceStacking.bind(this)
+		]
+	])
+
+	private cachedSpeedResist = 0
+
+	protected GetSlowResistanceStacking(): [number, boolean] {
+		return [this.cachedSpeedResist, false]
 	}
 
-	protected SetBonusArmor(specialName = "bonus_armor", _subtract = false): void {
-		const owner = this.Parent
-		if (owner === undefined) {
-			this.BonusArmor = 0
-			return
-		}
-		this.BonusArmor = owner.IsStunned ? this.GetSpecialValue(specialName) : 0
+	protected UpdateSpecialValues() {
+		this.cachedSpeedResist = this.GetSpecialValue(
+			"bonus_slow_resist",
+			"item_vindicators_axe"
+		)
 	}
 }

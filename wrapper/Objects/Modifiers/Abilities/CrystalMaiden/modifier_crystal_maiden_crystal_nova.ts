@@ -1,15 +1,26 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_crystal_maiden_crystal_nova extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	public SetBonusAttackSpeed(specialName = "attackspeed_slow", subtract = false): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
 
-	public SetMoveSpeedAmplifier(specialName = "movespeed_slow", subtract = false): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue(
+			"movespeed_slow",
+			"crystal_maiden_crystal_nova"
+		)
 	}
 }

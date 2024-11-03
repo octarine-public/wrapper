@@ -19,7 +19,7 @@ import { RendererSDK } from "../../Native/RendererSDK"
 import { Player } from "../../Objects/Base/Player"
 import { FieldHandler, RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GameState } from "../../Utils/GameState"
-import { DegreesToRadian, toPercentage } from "../../Utils/Math"
+import { toPercentage } from "../../Utils/Math"
 import { QuantitizedVecCoordToCoord } from "../../Utils/QuantizeUtils"
 import { CGameRules } from "./GameRules"
 import { Item } from "./Item"
@@ -118,6 +118,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 
 @WrapperClass("CBaseEntity")
 export class Entity {
+	/** @private NOTE: this is internal field use CreateTime */
 	@NetworkedBasicField("m_flCreateTime")
 	public readonly CreateTime_: number = 0
 	@NetworkedBasicField("m_iMaxHealth")
@@ -152,6 +153,7 @@ export class Entity {
 	public Animations: AnimationData[] = []
 	public Team: Team = Team.None
 	public LifeState: LifeState = LifeState.LIFE_DEAD
+	/** @private NOTE: this is internal field, use CreateTime */
 	public FakeCreateTime_: number = GameState.RawGameTime
 
 	public readonly VisualPosition = new Vector3()
@@ -165,14 +167,19 @@ export class Entity {
 	public readonly BoundingBox = new AABB(this.VisualPosition)
 	public readonly SpawnPosition = new Vector3()
 
+	/** @private NOTE: this is internal field, use Name */
 	public Name_: string = ""
+	/** @private NOTE: this is internal field, use Owner or OwnerEntity */
 	public Owner_: number = 0
 	public OwnerEntity: Nullable<Entity> = undefined
+	/** @private NOTE: this is internal field, use ParentEntity */
 	public Parent_: number = 0
 	public ParentEntity: Nullable<Entity> = undefined
 
 	public AttachmentsHashMap: Nullable<Map<number, number>>
+	/** @private NOTE: this is internal field */
 	public FieldHandlers_: Nullable<Map<number, FieldHandler>>
+	/** @private NOTE: this is internal field */
 	public Properties_: EntityPropertiesNode = new EntityPropertiesNode()
 
 	private RingRadius_: number = 30
@@ -249,15 +256,19 @@ export class Entity {
 		)
 	}
 	public get RotationRad(): number {
-		return DegreesToRadian(this.Rotation)
+		return Math.degreesToRadian(this.Rotation)
 	}
 	public get NetworkedRotationRad(): number {
-		return DegreesToRadian(this.NetworkedRotation)
+		return Math.degreesToRadian(this.NetworkedRotation)
 	}
 	public get IsNeutral(): boolean {
 		return this.Team === Team.Neutral || this.Team === Team.Shop
 	}
 
+	public get MoveSpeed(): number {
+		return 0
+	}
+	/** @deprecated Use MoveSpeed */
 	public get Speed(): number {
 		return 0
 	}
@@ -336,7 +347,7 @@ export class Entity {
 	): number {
 		let rotation = this.RotationRad
 		if (rotationDiff) {
-			rotation += DegreesToRadian(this.RotationDifference)
+			rotation += Math.degreesToRadian(this.RotationDifference)
 		}
 		const vec = position instanceof Entity ? position.Position : position
 		return currPos.FindRotationAngle(vec, rotation)
@@ -358,7 +369,7 @@ export class Entity {
 	): number {
 		let rotation = this.RotationRad
 		if (rotationDiff) {
-			rotation += DegreesToRadian(this.RotationDifference)
+			rotation += Math.degreesToRadian(this.RotationDifference)
 		}
 		const sourcePos = source instanceof Entity ? source.Position : source
 		return new Vector2(sourcePos.x - currPos.x, sourcePos.y - currPos.y)
@@ -799,41 +810,6 @@ EventsSDK.on("EntityDestroyed", ent => {
 			iter.ParentEntity = undefined
 			iter.UpdatePositions()
 		}
-	}
-})
-
-EventsSDK.on("GameEvent", (name, obj) => {
-	switch (name) {
-		case "entity_hurt": {
-			const ent = EntityManager.EntityByIndex(obj.entindex_killed)
-			if (ent !== undefined && !ent.IsVisible && ent.IsAlive) {
-				ent.HP = Math.max(Math.round(ent.HP - obj.damage), 1)
-			}
-			break
-		}
-		case "entity_killed": {
-			const ent = EntityManager.EntityByIndex(obj.entindex_killed)
-			if (
-				ent !== undefined &&
-				!ent.IsVisible &&
-				ent.LifeState !== LifeState.LIFE_DEAD
-			) {
-				ent.LifeState = LifeState.LIFE_DEAD
-				ent.HP = 0
-				EventsSDK.emit("LifeStateChanged", false, ent)
-			}
-			break
-		}
-		case "dota_buyback": {
-			const ent = EntityManager.EntityByIndex(obj.entindex)
-			if (ent !== undefined && ent.LifeState === LifeState.LIFE_DEAD) {
-				ent.LifeState = LifeState.LIFE_ALIVE
-				ent.HP = ent.MaxHP
-				EventsSDK.emit("LifeStateChanged", false, ent)
-			}
-		}
-		default:
-			break
 	}
 })
 

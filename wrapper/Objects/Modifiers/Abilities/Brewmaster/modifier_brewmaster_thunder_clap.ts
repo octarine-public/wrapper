@@ -1,21 +1,26 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_brewmaster_thunder_clap extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetBonusAttackSpeed(
-		specialName = "attack_speed_slow",
-		subtract = true
-	): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [-this.cachedSpeed, this.IsMagicImmune()]
 	}
 
-	protected SetMoveSpeedAmplifier(
-		specialName = "movement_slow",
-		subtract = true
-	): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue(
+			"movement_slow",
+			"brewmaster_thunder_clap"
+		)
 	}
 }

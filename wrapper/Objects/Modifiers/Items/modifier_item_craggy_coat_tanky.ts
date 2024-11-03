@@ -1,16 +1,23 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_craggy_coat_tanky extends Modifier {
-	// public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
+			this.GetMoveSpeedBonusConstant.bind(this)
+		]
+	])
 
-	protected SetBonusArmor(specialName = "active_armor", subtract = false): void {
-		super.SetBonusArmor(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusConstant(): [number, boolean] {
+		return [-this.cachedSpeed, false]
 	}
 
-	// TODO
-	// protected SetBonusMoveSpeed(specialName = "move_speed", subtract = true): void {
-	// 	super.SetBonusMoveSpeed(specialName, subtract)
-	// }
+	protected UpdateSpecialValues() {
+		this.cachedSpeed = this.GetSpecialValue("move_speed", "item_craggy_coat")
+	}
 }

@@ -1,16 +1,26 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_lone_druid_rabid extends Modifier {
-	protected SetBonusAttackSpeed(
-		specialName = "shard_attack_speed",
-		subtract = false
-	): void {
-		if (!this.Caster?.HasShard) {
-			this.BonusAttackSpeed = 0
-			return
-		}
-		super.SetBonusAttackSpeed(specialName, subtract)
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
+
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, false]
+	}
+
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue(
+			"shard_movement_speed_pct",
+			"lone_druid_savage_roar"
+		)
 	}
 }

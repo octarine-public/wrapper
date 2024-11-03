@@ -1,16 +1,23 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_guardian_greaves extends Modifier {
-	public readonly IsBoots = true
-	public readonly BonusArmorStack = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
+			this.GetMoveSpeedBonusConstant.bind(this)
+		]
+	])
 
-	protected SetBonusMoveSpeed(specialName = "bonus_movement", subtract = false): void {
-		super.SetBonusMoveSpeed(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusConstant(): [number, boolean] {
+		return [this.cachedSpeed, false]
 	}
 
-	protected SetBonusArmor(specialName = "bonus_armor", subtract = false): void {
-		super.SetBonusArmor(specialName, subtract)
+	protected UpdateSpecialValues() {
+		this.cachedSpeed = this.GetSpecialValue("bonus_movement", "item_guardian_greaves")
 	}
 }

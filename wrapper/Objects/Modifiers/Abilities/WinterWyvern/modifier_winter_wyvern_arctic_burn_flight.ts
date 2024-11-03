@@ -1,21 +1,26 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_winter_wyvern_arctic_burn_flight extends Modifier {
-	public readonly ShouldDoFlyHeightVisual = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	public SetBonusAttackRange(
-		specialName = "attack_range_bonus",
-		subtract = false
-	): void {
-		super.SetBonusAttackRange(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, false]
 	}
 
-	public SetFixedAttackAnimationPoint(
-		specialName = "attack_point",
-		subtract = false
-	): void {
-		super.SetFixedAttackAnimationPoint(specialName, subtract)
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue(
+			"movement_scepter",
+			"winter_wyvern_arctic_burn"
+		)
 	}
 }

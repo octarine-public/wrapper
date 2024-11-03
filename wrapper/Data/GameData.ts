@@ -53,11 +53,11 @@ export const MoveSpeedData = new (class CMoveSpeedData {
 	/**
 	 * @readonly
 	 */
-	public Max = 550
+	public readonly Max = 550
 	/**
 	 * @readonly
 	 */
-	public Min = 100
+	public readonly Min = 100
 })()
 
 export const AttackSpeedData = new (class CAttackSpeedData {

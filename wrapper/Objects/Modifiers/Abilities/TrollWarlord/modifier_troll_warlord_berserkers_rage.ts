@@ -1,9 +1,26 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_troll_warlord_berserkers_rage extends Modifier {
-	protected SetBonusArmor(specialName = "bonus_armor", subtract = false): void {
-		super.SetBonusArmor(specialName, subtract)
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
+			this.GetMoveSpeedBonusConstant.bind(this)
+		]
+	])
+
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusConstant(): [number, boolean] {
+		return [this.Parent?.IsRanged ? 0 : this.cachedSpeed, false]
+	}
+
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue(
+			"bonus_move_speed",
+			"troll_warlord_berserkers_rage"
+		)
 	}
 }

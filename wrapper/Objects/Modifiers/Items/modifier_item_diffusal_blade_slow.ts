@@ -1,45 +1,56 @@
 import { WrapperClassModifier } from "../../../Decorators"
-import { ModifierManager } from "../../../Managers/ModifierManager"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
+import { Unit } from "../../Base/Unit"
 
 @WrapperClassModifier()
 export class modifier_item_diffusal_blade_slow extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	private isEmited = false
+	private cachedPurge = 0
 
-	public Remove(): boolean {
-		if (!super.Remove()) {
-			return false
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		const owner = this.Parent
+		if (owner === undefined) {
+			return [0, false]
 		}
-		this.BonusMoveSpeedAmplifier = 0
-		this.isEmited = false
-		return true
+		const remainingTime = this.RemainingTime,
+			reduction = this.selfReduction(owner),
+			effectivePurge = (remainingTime / (reduction * this.cachedPurge)) * 100
+		const value = this.calculateValue(effectivePurge)
+		return [-(100 - value / this.cachedPurge), this.IsMagicImmune()]
 	}
 
-	public Update(): void {
-		super.Update()
-		this.addIntervalThink()
+	protected UpdateSpecialValues() {
+		this.cachedPurge = this.GetSpecialValue("purge_rate", "item_diffusal_blade")
 	}
 
-	public OnIntervalThink(): void {
-		this.SetMoveSpeedAmplifier()
+	private selfReduction(owner: Unit) {
+		const modifierManager = owner.ModifierManager
+		const slowResistanceStacking = modifierManager.GetPercentageEffectiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE
+		)
+		return 2 - slowResistanceStacking
 	}
 
-	protected SetMoveSpeedAmplifier(_specialName?: string, _subtract = false): void {
-		if (this.ShouldUnslowable()) {
-			this.BonusMoveSpeedAmplifier = 0
-			return
-		}
-		const elapsed = this.ElapsedTime
-		// TODO
-		this.BonusMoveSpeedAmplifier = -Math.max(1 - (elapsed / 0.8) * 0.2, 0.2)
-	}
-
-	private addIntervalThink(): void {
-		if (!this.isEmited) {
-			this.isEmited = true
-			ModifierManager.AddIntervalThinkTemporary(this)
-		}
+	private calculateValue(effectivePurge: number): number {
+		if (effectivePurge > 80) {
+			return 0
+		} // 100%
+		if (effectivePurge > 60) {
+			return 100
+		} // 80%
+		if (effectivePurge > 40) {
+			return 200
+		} // 60%
+		if (effectivePurge > 20) {
+			return 300
+		} // 40%
+		return 400 // 20%
 	}
 }

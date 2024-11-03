@@ -1,21 +1,26 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_slithereen_crush extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	public SetMoveSpeedAmplifier(
-		specialName = "crush_extra_slow",
-		subtract = false
-	): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
 
-	protected SetBonusAttackSpeed(
-		specialName = "crush_attack_slow_tooltip",
-		subtract = false
-	): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue(
+			"crush_extra_slow",
+			"slardar_slithereen_crush"
+		)
 	}
 }

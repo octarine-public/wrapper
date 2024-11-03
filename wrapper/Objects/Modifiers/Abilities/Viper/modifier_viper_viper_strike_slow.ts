@@ -1,59 +1,27 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { ModifierManager } from "../../../../Managers/ModifierManager"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_viper_viper_strike_slow extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	private isEmited = false
+	private cachedSpeed = 0
 
-	public OnIntervalThink(): void {
-		this.SetBonusAttackSpeed()
-		this.SetMoveSpeedAmplifier()
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		const value = (this.RemainingTime / this.Duration) * this.cachedSpeed
+		return [value, this.IsMagicImmune()]
 	}
 
-	public Update(): void {
-		super.Update()
-		this.addIntervalThink()
-	}
-
-	public Remove(): boolean {
-		if (!super.Remove()) {
-			return false
-		}
-		this.BonusAttackSpeed = 0
-		this.BonusMoveSpeedAmplifier = 0
-		this.isEmited = false
-		return true
-	}
-
-	public SetBonusAttackSpeed(
-		specialName = "bonus_attack_speed",
-		subtract = false
-	): void {
-		const baseValue = this.GetSpecialAttackSpeedByState(specialName)
-		const value = this.getSpeedByTime(baseValue)
-		this.BonusAttackSpeed = subtract ? value * -1 : value
-	}
-
-	public SetMoveSpeedAmplifier(
-		specialName = "bonus_movement_speed",
-		subtract = false
-	): void {
-		const baseValue = this.GetSpecialMoveSpeedByState(specialName)
-		const value = this.getSpeedByTime(baseValue)
-		this.BonusMoveSpeedAmplifier = (subtract ? value * -1 : value) / 100
-	}
-
-	private getSpeedByTime(value: number): number {
-		return (1 - this.ElapsedTime / this.Duration) * value
-	}
-
-	private addIntervalThink(): void {
-		if (!this.isEmited) {
-			this.isEmited = true
-			ModifierManager.AddIntervalThinkTemporary(this)
-		}
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue(
+			"bonus_movement_speed",
+			"viper_viper_strike"
+		)
 	}
 }

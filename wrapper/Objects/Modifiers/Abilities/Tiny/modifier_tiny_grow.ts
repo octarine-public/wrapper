@@ -1,16 +1,23 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_tiny_grow extends Modifier {
-	protected SetAttackSpeedAmplifier(
-		specialName = "attack_speed_reduction",
-		subtract = false
-	): void {
-		super.SetAttackSpeedAmplifier(specialName, subtract)
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
+			this.GetMoveSpeedBonusConstant.bind(this)
+		]
+	])
+
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusConstant(): [number, boolean] {
+		return [this.cachedSpeed, this.IsPassiveDisabled()]
 	}
 
-	protected SetBonusArmor(specialName = "bonus_armor", subtract = false) {
-		super.SetBonusArmor(specialName, subtract)
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue("move_speed", "tiny_grow")
 	}
 }

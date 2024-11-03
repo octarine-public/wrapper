@@ -1,21 +1,26 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_beastmaster_primal_roar_slow extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetBonusAttackSpeed(
-		specialName = "slow_attack_speed_pct",
-		subtract = false
-	): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
 
-	protected SetMoveSpeedAmplifier(
-		specialName = "slow_movement_speed_pct",
-		subtract = false
-	): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue(
+			"slow_movement_speed_pct",
+			"beastmaster_primal_roar"
+		)
 	}
 }

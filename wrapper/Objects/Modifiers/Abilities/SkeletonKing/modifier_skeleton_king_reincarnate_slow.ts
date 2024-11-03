@@ -1,18 +1,26 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_skeleton_king_reincarnate_slow extends Modifier {
-	public readonly IsDebuff = true
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
 
-	protected SetMoveSpeedAmplifier(
-		specialName = "movespeed",
-		subtract: boolean = false
-	): void {
-		super.SetMoveSpeedAmplifier(specialName, subtract)
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
 
-	protected SetBonusAttackSpeed(specialName = "attackslow", subtract = false): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
+	protected UpdateSpecialValues(): void {
+		this.cachedSpeed = this.GetSpecialValue(
+			"movespeed",
+			"skeleton_king_reincarnation"
+		)
 	}
 }

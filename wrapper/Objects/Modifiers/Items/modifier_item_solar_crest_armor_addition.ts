@@ -1,29 +1,26 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
+
 @WrapperClassModifier()
 export class modifier_item_solar_crest_armor_addition extends Modifier {
-	protected SetBonusArmor(
-		specialName = this.isTarget() ? "target_armor" : undefined,
-		subtract = false
-	): void {
-		super.SetBonusArmor(specialName, subtract)
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
+		]
+	])
+
+	private cachedSpeed = 0
+
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.Parent !== this.Caster ? this.cachedSpeed : 0, false]
 	}
 
-	protected SetBonusAttackSpeed(
-		specialName = this.isTarget() ? "target_attack_speed" : undefined,
-		subtract = false
-	): void {
-		super.SetBonusAttackSpeed(specialName, subtract)
-	}
-
-	protected SetBonusMoveSpeed(
-		specialName = this.isTarget() ? "target_movement_speed" : undefined,
-		subtract = false
-	): void {
-		super.SetBonusMoveSpeed(specialName, subtract)
-	}
-
-	private isTarget(): boolean {
-		return this.Caster !== this.Parent
+	protected UpdateSpecialValues() {
+		this.cachedSpeed = this.GetSpecialValue(
+			"target_movement_speed",
+			"item_solar_crest"
+		)
 	}
 }
