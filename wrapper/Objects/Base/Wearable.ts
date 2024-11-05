@@ -2,6 +2,7 @@ import { WrapperClass } from "../../Decorators"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { RegisterFieldHandler } from "../NativeToSDK"
+import { AdditionalWearable } from "./AdditionalWearable"
 import { Entity } from "./Entity"
 
 @WrapperClass("CEconWearable")
@@ -9,7 +10,7 @@ export class Wearable extends Entity {
 	public ItemDefinitionIndex = 0
 	public ItemName = ""
 	public HealthBarOffset: Nullable<number>
-	public AdditionalWearable: Nullable<Wearable>
+	public AdditionalWearable: Nullable<AdditionalWearable>
 	public AdditionalWearable_ = 0
 
 	public get Name() {
@@ -28,7 +29,7 @@ RegisterFieldHandler(Wearable, "m_hAdditionalWearable", (ent, newVal) => {
 	ent.AdditionalWearable = EntityManager.EntityByIndex(ent.AdditionalWearable_)
 })
 EventsSDK.on("PreEntityCreated", ent => {
-	if (ent.Index === 0 || !(ent instanceof Wearable)) {
+	if (ent.Index === 0 || !(ent instanceof AdditionalWearable)) {
 		return
 	}
 	for (let index = Wearables.length - 1; index > -1; index--) {
@@ -39,7 +40,7 @@ EventsSDK.on("PreEntityCreated", ent => {
 	}
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	if (ent.Index === 0 || !(ent instanceof Wearable)) {
+	if (ent.Index === 0 || !(ent instanceof AdditionalWearable)) {
 		return
 	}
 	for (let index = Wearables.length - 1; index > -1; index--) {
