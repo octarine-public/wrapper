@@ -4,7 +4,7 @@ import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
 import { ArmorPerAgility, AttackSpeedData, MoveSpeedData } from "../../Data/GameData"
 import { GetUnitTexture } from "../../Data/ImageData"
-import { NetworkedBasicField, ReencodeProperty, WrapperClass } from "../../Decorators"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { Attributes } from "../../Enums/Attributes"
@@ -231,6 +231,7 @@ export class Unit extends Entity {
 
 	public UnitName_: string = ""
 	public PlayerID: number = -1
+	@NetworkedBasicField("m_nPlayerOwnerID")
 	public OwnerPlayerID: number = -1
 	public HPRegenCounter: number = 0
 	public IsControllableByPlayerMask: bigint = 0n
@@ -2609,7 +2610,7 @@ RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, newVal) => {
 	const oldName = unit.Name
 	const newValue = newVal as number
 	unit.UnitName_ =
-		newValue >= 0 ? (UnitData.GetUnitNameByNameIndex(newValue) ?? "") : ""
+		newValue >= 0 ? UnitData.GetUnitNameByNameIndex(newValue) ?? "" : ""
 	if (unit.UnitName_ === "") {
 		unit.UnitName_ = unit.Name_
 	}
@@ -2631,13 +2632,13 @@ RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, newValue) => {
 	}
 })
 RegisterFieldHandler(Unit, "m_iPlayerID", (unit, newVal) => {
-	unit.PlayerID = ReencodeProperty(newVal, EPropertyType.INT32) as number
+	unit.PlayerID = newVal as number
 	PlayerCustomData.set(unit.PlayerID)
 })
 RegisterFieldHandler(Unit, "m_nUnitState64", (unit, newVal) => {
 	const oldValue = unit.UnitStateNetworked
 	if (oldValue !== newVal) {
-		unit.UnitStateNetworked = ReencodeProperty(newVal, EPropertyType.UINT64) as bigint
+		unit.UnitStateNetworked = newVal as bigint
 		UpdateModifiersByUnitState(unit)
 		EventsSDK.emit("UnitStateChanged", false, unit)
 	}
@@ -2645,9 +2646,6 @@ RegisterFieldHandler(Unit, "m_nUnitState64", (unit, newVal) => {
 RegisterFieldHandler(Unit, "m_hOwnerNPC", (unit, newVal) => {
 	unit.OwnerNPC_ = newVal as number
 	unit.OwnerNPC = EntityManager.EntityByIndex(unit.OwnerNPC_)
-})
-RegisterFieldHandler(Unit, "m_nPlayerOwnerID", (unit, newVal) => {
-	unit.OwnerPlayerID = ReencodeProperty(newVal, EPropertyType.INT32) as number
 })
 RegisterFieldHandler(Unit, "m_bIsIllusion", (unit, newVal) => {
 	const oldValue = unit.IsIllusion_

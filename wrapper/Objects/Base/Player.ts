@@ -111,11 +111,11 @@ RegisterFieldHandler(Player, "m_quickBuyItems", (player, newVal) => {
 	player.QuickBuyItems = (newVal as bigint[]).map(val => Number(val) >> 1)
 })
 RegisterFieldHandler(Player, "m_nPlayerID", (player, newVal) => {
-	player.playerID_ = ReencodeProperty(newVal, EPropertyType.INT32) as number
+	player.playerID_ = newVal as number
 	PlayerCustomData.set(player.PlayerID)
 })
 RegisterFieldHandler(Player, "m_hPawn", (player, newVal) => {
-	player.pawn_ = ReencodeProperty(newVal, EPropertyType.UINT32) as number
+	player.pawn_ = newVal as number
 	player.UpdateProperties(EntityManager.EntityByIndex<PlayerPawn>(player.pawn_))
 })
 RegisterFieldHandler(Player, "m_hAssignedHero", (player, newVal) => {
