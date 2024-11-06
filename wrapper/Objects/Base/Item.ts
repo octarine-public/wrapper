@@ -2,7 +2,6 @@ import { GetItemTexture } from "../../Data/ImageData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAScriptInventorySlot } from "../../Enums/DOTAScriptInventorySlot"
 import { EShareAbility } from "../../Enums/EShareAbility"
-import { EPropertyType } from "../../Enums/PropertyType"
 import { Team } from "../../Enums/Team"
 import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { GameState } from "../../Utils/GameState"
@@ -48,7 +47,7 @@ export class Item extends Ability {
 	public IsSellable: boolean = true
 	@NetworkedBasicField("m_bStackable")
 	public IsStackable: boolean = false
-	@NetworkedBasicField("m_iPlayerOwnerID", EPropertyType.INT32)
+	@NetworkedBasicField("m_iPlayerOwnerID")
 	public PlayerOwnerID: number = -1
 	@NetworkedBasicField("m_flPurchaseTime")
 	public PurchaseTime: number = 0
