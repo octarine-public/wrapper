@@ -222,7 +222,8 @@ interface EventsSDK extends EventEmitter {
 			muteable: boolean,
 			predelay_start: number,
 			predelay_range: number,
-			flags: number
+			flags: number,
+			responseType: number
 		) => void,
 		priority?: number
 	): EventEmitter
@@ -369,12 +370,15 @@ interface EventsSDK extends EventEmitter {
 		name: "ServerTick",
 		listener: (
 			tick: number,
-			host_frametime: number,
-			host_frametime_std_deviation: number,
 			host_computationtime: number,
 			host_computationtime_std_deviation: number,
-			host_framestarttime_std_deviation: number,
-			host_loss: number
+			legacy_host_loss: number,
+			host_unfiltered_frametime: number,
+			hltv_replay_flags: number,
+			expected_long_tick: number,
+			expected_long_tick_reason: string,
+			host_frame_dropped_pct_x10: number,
+			host_frame_irregular_arrival_pct_x10: number
 		) => void,
 		priority?: number
 	): EventEmitter

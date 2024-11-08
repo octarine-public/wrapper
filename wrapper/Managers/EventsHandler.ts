@@ -86,17 +86,15 @@ enum EDotaEntityMessages {
 ParseProtobufDesc(`
 message CNETMsg_Tick {
 	optional uint32 tick = 1;
-	optional uint32 host_frametime = 2;
-	optional uint32 host_frametime_std_deviation = 3;
 	optional uint32 host_computationtime = 4;
 	optional uint32 host_computationtime_std_deviation = 5;
-	optional uint32 host_framestarttime_std_deviation = 6;
-	optional uint32 host_loss = 7;
+	optional uint32 legacy_host_loss = 7;
 	optional uint32 host_unfiltered_frametime = 8;
 	optional uint32 hltv_replay_flags = 9;
 	optional uint32 expected_long_tick = 10;
 	optional string expected_long_tick_reason = 11;
-	optional uint32 jitter = 12;
+	optional uint32 host_frame_dropped_pct_x10 = 12;
+	optional uint32 host_frame_irregular_arrival_pct_x10 = 13;
 }
 
 message CSVCMsg_GameSessionConfiguration {
@@ -594,6 +592,7 @@ message CDOTAUserMsg_UnitEvent {
 		optional bool muteable = 5 [default = false];
 		optional .CDOTAUserMsg_UnitEvent.Interval predelay = 6;
 		optional uint32 flags = 7;
+		optional int32 response_type = 8;
 	}
 
 	message SpeechMute {
@@ -1063,12 +1062,15 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				"ServerTick",
 				false,
 				msg.get("tick") as number,
-				msg.get("host_frametime") as number,
-				msg.get("host_frametime_std_deviation") as number,
 				msg.get("host_computationtime") as number,
 				msg.get("host_computationtime_std_deviation") as number,
-				msg.get("host_framestarttime_std_deviation") as number,
-				msg.get("host_loss") as number
+				msg.get("legacy_host_loss") as number,
+				msg.get("host_unfiltered_frametime") as string,
+				msg.get("hltv_replay_flags") as number,
+				msg.get("expected_long_tick") as number,
+				msg.get("expected_long_tick_reason") as string,
+				msg.get("host_frame_dropped_pct_x10") as number,
+				msg.get("host_frame_irregular_arrival_pct_x10") as number
 			)
 			break
 		}
@@ -1173,7 +1175,8 @@ Events.on("ServerMessage", (msgID, buf_) => {
 							submsg.get("muteable") as boolean,
 							(predelay?.get("start") as number) ?? 0,
 							(predelay?.get("range") as number) ?? 0,
-							submsg.get("flags") as number
+							submsg.get("flags") as number,
+							submsg.get("response_type") as number
 						)
 						break
 					}
