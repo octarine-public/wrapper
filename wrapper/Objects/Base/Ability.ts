@@ -58,6 +58,8 @@ export class Ability extends Entity {
 	public DirtyButtons = 0
 	@NetworkedBasicField("m_bGrantedByFacet")
 	public GrantedByFacet = false
+	@NetworkedBasicField("m_bStealable")
+	public IsStealable = false
 
 	public Level = 0
 	public IsEmpty = false

@@ -281,6 +281,18 @@ EventsSDK.on("AbilityLevelChanged", abil => {
 	})
 })
 
+EventsSDK.on("AbilityHiddenChanged", abil => {
+	const owner = abil.Owner
+	if (owner === undefined) {
+		return
+	}
+	activeModifiers.forEach(mod => {
+		if (mod.Ability !== undefined && owner === mod.Ability.Owner) {
+			mod.OnAbilityHiddenChanged()
+		}
+	})
+})
+
 EventsSDK.on("UnitLevelChanged", unit => {
 	activeModifiers.forEach(mod => {
 		if (unit === mod.Ability?.Owner || unit === mod.Parent || unit === mod.Caster) {

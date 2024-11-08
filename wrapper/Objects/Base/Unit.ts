@@ -2610,7 +2610,7 @@ RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, newVal) => {
 	const oldName = unit.Name
 	const newValue = newVal as number
 	unit.UnitName_ =
-		newValue >= 0 ? UnitData.GetUnitNameByNameIndex(newValue) ?? "" : ""
+		newValue >= 0 ? (UnitData.GetUnitNameByNameIndex(newValue) ?? "") : ""
 	if (unit.UnitName_ === "") {
 		unit.UnitName_ = unit.Name_
 	}

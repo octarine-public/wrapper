@@ -366,6 +366,10 @@ export class Modifier {
 		this.updateAllSpecialValues()
 	}
 
+	public OnAbilityHiddenChanged(): void {
+		// implement in child classes
+	}
+
 	public OnAbilityCooldownChanged(): void {
 		// implement in child classes
 	}
