@@ -4,11 +4,8 @@ import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { GUIInfo } from "../../GUI/GUIInfo"
 import { EntityManager } from "../../Managers/EntityManager"
-import { EventsSDK } from "../../Managers/EventsSDK"
-import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GameState } from "../../Utils/GameState"
 import { LocalPlayer } from "./Entity"
-import { FakeUnit, GetPredictionTarget } from "./FakeUnit"
 import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Hero")
@@ -37,15 +34,17 @@ export class Hero extends Unit {
 	public TotalStrength = 0
 	@NetworkedBasicField("m_iHeroFacetID", EPropertyType.UINT32)
 	public HeroFacetID = 0
-
-	public RespawnTime = 0
-	public MaxRespawnDuration = 0
+	@NetworkedBasicField("m_flRespawnTimePenalty")
 	public RespawnTimePenalty = 0
-	public ReplicatingOtherHeroModel: Nullable<Unit | FakeUnit>
+	@NetworkedBasicField("m_flRespawnTime")
+	public RespawnTime = 0
 
 	public FocusFireActive = false
+
 	/** @internal (changed by CFocusFireChanged) */
-	public FocusFireTargetIndex_ = -1
+	public FocusFireTargetIndex_: number = -1
+	@NetworkedBasicField("m_hReplicatingOtherHeroModel")
+	private readonly replicatingOtherHeroModel_: number = -1
 
 	constructor(
 		public readonly Index: number,
@@ -53,6 +52,12 @@ export class Hero extends Unit {
 	) {
 		super(Index, serial)
 		this.IsHero = true
+	}
+	public get FocusFireTarget() {
+		return EntityManager.EntityByIndex<Unit>(this.FocusFireTargetIndex_)
+	}
+	public get ReplicatingOtherHeroModel() {
+		return EntityManager.EntityByIndex<Unit>(this.replicatingOtherHeroModel_)
 	}
 	public get BaseAttackSpeedData() {
 		return this.UnitData.BaseAttackSpeed
@@ -67,13 +72,16 @@ export class Hero extends Unit {
 		return this.UnitData.HeroID
 	}
 	public get IsIllusion(): boolean {
-		return this.ReplicatingOtherHeroModel !== undefined
+		return (
+			this.replicatingOtherHeroModel_ !== -1 &&
+			this.replicatingOtherHeroModel_ !== 16777215
+		)
 	}
 	public get IsMyHero(): boolean {
 		return this === LocalPlayer?.Hero
 	}
-	public get FocusFireTarget() {
-		return EntityManager.EntityByIndex<Unit>(this.FocusFireTargetIndex_)
+	public get MaxRespawnDuration() {
+		return Math.max(this.RespawnTime - GameState.RawGameTime, 0)
 	}
 	public get HealthBarSize() {
 		return new Vector2(
@@ -112,41 +120,3 @@ export class Hero extends Unit {
 }
 
 export const Heroes = EntityManager.GetEntitiesByClass(Hero)
-
-RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", (ent, newVal) => {
-	const id = newVal as number
-	ent.ReplicatingOtherHeroModel = GetPredictionTarget(id)
-})
-
-RegisterFieldHandler(Hero, "m_flRespawnTime", (ent, newVal) => {
-	ent.RespawnTime = newVal as number
-	ent.MaxRespawnDuration = Math.max(ent.RespawnTime - GameState.RawGameTime, 0)
-})
-
-RegisterFieldHandler(Hero, "m_flRespawnTimePenalty", (ent, newVal) => {
-	ent.RespawnTimePenalty = newVal as number
-})
-
-EventsSDK.on("PreEntityCreated", ent => {
-	if (!(ent instanceof Unit)) {
-		return
-	}
-	for (let index = Heroes.length - 1; index > -1; index--) {
-		const hero = Heroes[index]
-		if (hero.ReplicatingOtherHeroModel?.EntityMatches(ent)) {
-			hero.ReplicatingOtherHeroModel = ent
-		}
-	}
-})
-
-EventsSDK.on("EntityDestroyed", ent => {
-	if (!(ent instanceof Unit)) {
-		return
-	}
-	for (let index = Heroes.length - 1; index > -1; index--) {
-		const hero = Heroes[index]
-		if (hero.ReplicatingOtherHeroModel === ent) {
-			hero.ReplicatingOtherHeroModel = undefined
-		}
-	}
-})
