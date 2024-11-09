@@ -8,7 +8,7 @@ import { RegisterFieldHandler } from "../NativeToSDK"
 
 @WrapperClass("CDOTA_BaseNPC_Tower")
 export class Tower extends Building {
-	public TowerAttackTarget_: number = 16777215 // default by networked field
+	public TowerAttackTarget_: number = EntityManager.INVALID_HANDLE
 
 	constructor(
 		public readonly Index: number,
@@ -40,6 +40,6 @@ export class Tower extends Building {
 }
 
 RegisterFieldHandler(Tower, "m_hTowerAttackTarget", (unit, newVal) => {
-	unit.IsAttacking = newVal !== 16777215
+	unit.IsAttacking = newVal !== EntityManager.INVALID_HANDLE
 	unit.TowerAttackTarget_ = newVal as number
 })

@@ -44,7 +44,7 @@ export class Hero extends Unit {
 	/** @internal (changed by CFocusFireChanged) */
 	public FocusFireTargetIndex_: number = -1
 	@NetworkedBasicField("m_hReplicatingOtherHeroModel")
-	private readonly replicatingOtherHeroModel_: number = -1
+	private readonly replicatingOtherHeroModel: number = EntityManager.INVALID_HANDLE
 
 	constructor(
 		public readonly Index: number,
@@ -57,7 +57,7 @@ export class Hero extends Unit {
 		return EntityManager.EntityByIndex<Unit>(this.FocusFireTargetIndex_)
 	}
 	public get ReplicatingOtherHeroModel() {
-		return EntityManager.EntityByIndex<Unit>(this.replicatingOtherHeroModel_)
+		return EntityManager.EntityByIndex<Unit>(this.replicatingOtherHeroModel)
 	}
 	public get BaseAttackSpeedData() {
 		return this.UnitData.BaseAttackSpeed
@@ -73,8 +73,9 @@ export class Hero extends Unit {
 	}
 	public get IsIllusion(): boolean {
 		return (
-			this.replicatingOtherHeroModel_ !== -1 &&
-			this.replicatingOtherHeroModel_ !== 16777215
+			this.replicatingOtherHeroModel !== -1 &&
+			this.replicatingOtherHeroModel !== -2 &&
+			this.replicatingOtherHeroModel !== EntityManager.INVALID_HANDLE
 		)
 	}
 	public get IsMyHero(): boolean {

@@ -10,6 +10,7 @@ import {
 	ParseProtobufNamed,
 	RecursiveProtobuf
 } from "../Utils/Protobuf"
+import { EntityManager } from "./EntityManager"
 import { QueueEvent } from "./EventsQueue"
 import { EventsSDK } from "./EventsSDK"
 import { StringTables } from "./StringTables"
@@ -218,7 +219,7 @@ export class IModifier {
 	}
 
 	private isValid<T>(value: T) {
-		return value !== 16777215
+		return value !== EntityManager.INVALID_HANDLE
 	}
 }
 

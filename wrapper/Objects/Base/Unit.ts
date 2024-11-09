@@ -483,14 +483,9 @@ export class Unit extends Entity {
 	public get IsStrongIllusion(): boolean {
 		return this.IsStrongIllusion_
 	}
+	/** @deprecated use IsIllusion or IsStrongIllusion */
 	public get IsHiddenIllusion(): boolean {
-		if (!this.IsIllusion) {
-			return false
-		}
-		return (
-			this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_OUT_OF_GAME) &&
-			this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_COMMAND_RESTRICTED)
-		)
+		return this.IsIllusion
 	}
 	// TODO: by classes
 	public get CanReincarnate() {
