@@ -19,7 +19,7 @@ const queuedEnts: (Unit | Ability)[] = []
 const cooldownChanged = new Set<Ability>()
 
 const activeModifiers = new Map<number, Modifier>()
-const activeModifiersRaw = new Map<number, IModifier>()
+const activeModifiersRaw: Nullable<IModifier>[] = []
 
 export const ModifierManager = new (class CModifierManager {
 	public readonly TemporaryUpdate: Modifier[] = []
@@ -437,7 +437,7 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 	}
 	QueueEvent(() =>
 		update.forEach(([, modSerialized], key) => {
-			const replaced = activeModifiersRaw.get(key)
+			const replaced = activeModifiersRaw[key]
 			if (modSerialized.byteLength === 0 && replaced?.SerialNum !== undefined) {
 				EmitModifierRemoved(activeModifiers.get(replaced.SerialNum))
 				return
@@ -454,7 +454,7 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 			) {
 				EmitModifierRemoved(activeModifiers.get(replaced.SerialNum))
 			}
-			activeModifiersRaw.set(key, mod)
+			activeModifiersRaw[key] = mod
 			const oldMod = activeModifiers.get(mod.SerialNum as number)
 			switch (mod.EntryType) {
 				case DOTA_MODIFIER_ENTRY_TYPE.DOTA_MODIFIER_ENTRY_TYPE_ACTIVE:
