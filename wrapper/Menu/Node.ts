@@ -173,7 +173,9 @@ export class Node extends Base {
 		this.entries.forEach(e => {
 			if (e?.SaveConfig) {
 				this.configStorage[e.InternalName] =
-					e.IsDefaultValue && !e.IsNode ? this.cfgDefValue : e.ConfigValue
+					e.IsDefaultValue && !(e instanceof Node && e.SaveUnusedConfigs)
+						? this.cfgDefValue
+						: e.ConfigValue
 			}
 		})
 		return this.configStorage
