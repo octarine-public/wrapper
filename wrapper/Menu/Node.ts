@@ -68,6 +68,9 @@ export class Node extends Base {
 	private static popupTextPadding = 0
 	private static popupHoverPadding = 0
 
+	public static DebugUntouchedValues = false
+	private static DebugUntouchedStack: string[] = []
+
 	public entries: Base[] = []
 	public SaveUnusedConfigs = true
 	public SortNodes = true
@@ -156,7 +159,13 @@ export class Node extends Base {
 		super.ResetToDefault()
 	}
 	public IsDefault(): boolean {
-		return !this.SaveConfig || this.entries.every(e => e.IsDefault())
+		if (!this.SaveConfig) {
+			return true
+		}
+		if (Node.DebugUntouchedValues) {
+			return false
+		}
+		return this.entries.every(e => e.IsDefault())
 	}
 	public foreachRecursive(cb: (element: Base) => any) {
 		this.entries.forEach(e => {
@@ -170,6 +179,19 @@ export class Node extends Base {
 		if (!this.SaveUnusedConfigs) {
 			this.configStorage = Object.create(null)
 		}
+		const untouched = "untouched:"
+		if (Node.DebugUntouchedValues) {
+			Node.DebugUntouchedStack.push(this.InternalName)
+
+			if (!Base.NoWriteConfig) {
+				Base.NoWriteConfig = true
+				console.log("DebugUntouchedValues list:")
+			}
+
+			for (const key of Object.keys(this.configStorage)) {
+				this.configStorage[key] = untouched
+			}
+		}
 		this.entries.forEach(e => {
 			if (e?.SaveConfig) {
 				this.configStorage[e.InternalName] =
@@ -178,6 +200,17 @@ export class Node extends Base {
 						: e.ConfigValue
 			}
 		})
+		if (Node.DebugUntouchedValues) {
+			for (const key of Object.keys(this.configStorage)) {
+				if (this.configStorage[key] === untouched) {
+					Node.DebugUntouchedStack.push(key)
+					console.log(untouched, Node.DebugUntouchedStack.join(" / "))
+					Node.DebugUntouchedStack.pop()
+				}
+			}
+			Node.DebugUntouchedStack.pop()
+		}
+
 		return this.configStorage
 	}
 	public set ConfigValue(obj) {
