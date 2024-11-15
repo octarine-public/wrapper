@@ -102,7 +102,7 @@ export class Base {
 	constructor(
 		public parent: IMenu,
 		public InternalName: string = "",
-		public readonly InternalTooltipName: string
+		public InternalTooltipName: string
 	) {
 		this.Name = this.InternalName
 		this.Tooltip = this.InternalTooltipName

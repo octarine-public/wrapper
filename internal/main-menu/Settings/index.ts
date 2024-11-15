@@ -1,4 +1,5 @@
 import {
+	Color,
 	Entity,
 	Events,
 	EventsSDK,
@@ -25,6 +26,9 @@ new (class CInternalSettings {
 
 	private readonly menuKeyBind = this.tree.AddKeybind("Menu Bind", "Insert")
 	private readonly key = this.reloadTree.AddKeybind("Key Bind")
+	private readonly reloadButton = this.reloadTree
+		.AddButton("Reload")
+		.OnValue(() => reload())
 
 	constructor() {
 		EventsSDK.on("Draw", this.Draw.bind(this))
@@ -58,7 +62,6 @@ new (class CInternalSettings {
 		langDD.executeOnAdd = false
 		langDD.OnValue(call => Menu.Localization.SetLang(call.SelectedID))
 
-		this.reloadTree.AddButton("Reload").OnValue(() => reload())
 		this.key.ActivatesInMenu = true
 		this.key.OnPressed(() => this.cNotifications.OnBindPressed())
 		this.key.OnRelease(() => this.cNotifications.OnBindRelease())
@@ -82,9 +85,17 @@ new (class CInternalSettings {
 		this.cCamera.EntityCreated(entity)
 	}
 
+	protected updatesCount = 0
 	protected ScriptsUpdated() {
-		this.cNotifications.ScriptsUpdated()
 		console.info("Scripts Updated...")
+		this.cNotifications.ScriptsUpdated()
+
+		const el = this.key.assignedKey > 0 ? this.reloadTree : this.reloadButton
+		el.markColorCustom = this.updatesCount ? Color.Red : Color.Orange
+		el.InternalTooltipName = this.updatesCount++
+			? `+${this.updatesCount} updates`
+			: "Awaiting update"
+		el.Update(false)
 	}
 
 	protected HumanizerStateChanged() {

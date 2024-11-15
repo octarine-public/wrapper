@@ -120,10 +120,10 @@ export class InternalNotifications {
 		this.ScriptLatest = false
 		if (this.stateScripts.value) {
 			NotificationsSDK.Push(new ScriptsUpdated(this.clickState.value))
+		}
 
-			if (this.AutoReload) {
-				reload()
-			}
+		if (this.AutoReload) {
+			reload()
 		}
 	}
 }
@@ -182,7 +182,8 @@ class ScriptsUpdated extends Notification {
 			const waitingS = 0 | ((hrtime() - this.StartDisplayTime) / 1000)
 			const waitingM = 0 | (waitingS / 60)
 			text =
-				"Auto reload is ON.\nClick to disable.\nWaiting for " +
+				Menu.Localization.Localize("Auto reload is ON.\nClick to disable.") +
+				"\nWaiting for " +
 				(waitingM ? waitingM + " minutes" : waitingS + " seconds")
 		} else {
 			text = Menu.Localization.Localize("Scripts update is ready")

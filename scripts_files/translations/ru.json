@@ -64,6 +64,7 @@
 	"Claim tutorial rewards": "Получить награды за обучение",
 	"Emoticons chat": "Смайлики для чата",
 	"Disables camera zoom, scripts' orders [humanizer] and FoW Hacks.\nFor this to work properly use latest version of OBS,\nuse Game Capture, disable capturing third-party overlays\nand restart game after turning OBS Bypass on.": "Отключает отдаление камеры, действия скриптов [хуманайзер] и FoW Hacks.\nДля правильной работы используйте последнюю версию OBS, Game Capture,\nотключите захват сторонних оверлеев и перезапустите игру после включения\nOBS Bypass.",
+	"Auto reload is ON.\nClick to disable.": "Автообновление ВКЛ.\nНажмите чтобы отключить.",
 	"Scripts update is ready": "Обновление скриптов готово",
 	"Updates notifications": "Оповещения об обновлениях",
 	"Notifications if scripts updated": "Уведомления при обновлении скриптов",
