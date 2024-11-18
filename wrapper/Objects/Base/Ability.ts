@@ -131,6 +131,12 @@ export class Ability extends Entity {
 	public get Owner(): Nullable<Unit> {
 		return this.OwnerEntity as Nullable<Unit>
 	}
+	public get OwnerHasShard(): boolean {
+		return this.Owner?.HasShard ?? false
+	}
+	public get OwnerHasScepter(): boolean {
+		return this.Owner?.HasScepter ?? false
+	}
 	public get AbilityBehaviorMask(): DOTA_ABILITY_BEHAVIOR {
 		return this.AbilityData.AbilityBehavior
 	}
