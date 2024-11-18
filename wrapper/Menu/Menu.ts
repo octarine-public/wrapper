@@ -68,11 +68,11 @@ class CMenuManager {
 	}
 
 	public get ConfigValue() {
-		//this.config = Object.create(null)
 		this.config = Object.create(null)
 
 		this.entries.forEach(e => {
 			if (e?.SaveConfig) {
+				e.UpdateIsDefault()
 				this.config[e.InternalName] = e.ConfigValue
 			}
 		})
@@ -155,10 +155,33 @@ class CMenuManager {
 			this.Update(true)
 		}
 	}
+
+	private resetPeriod = 1000
+	private lastReset = 0
+	private savesPerSecond = 0
+	private savesPerSecond2 = 0
+
 	public Render(): void {
 		if (this.config === undefined) {
 			return
 		}
+		/*
+		if (this.lastReset < hrtime() - this.resetPeriod) {
+			this.lastReset = hrtime()
+			this.savesPerSecond2 = this.savesPerSecond
+			this.savesPerSecond = 0
+		}
+
+		if (this.savesPerSecond2 > 2) {
+			RendererSDK.Text(
+				this.savesPerSecond2.toString(),
+				this.header.Position.SubtractScalar(50),
+				undefined,
+				undefined,
+				32
+			)
+		}
+	*/
 		this.ForwardConfig()
 		if (Localization.wasChanged) {
 			const langDD = this.entries
@@ -202,6 +225,7 @@ class CMenuManager {
 			if (Base.NoWriteConfig) {
 				console.log("NoWriteConfig prevented from saving config", { ...config })
 			} else {
+				this.savesPerSecond++
 				writeConfig(JSON.stringify(config))
 			}
 

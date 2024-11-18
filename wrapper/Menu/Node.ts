@@ -72,7 +72,7 @@ export class Node extends Base {
 	private static DebugUntouchedStack: string[] = []
 
 	public entries: Base[] = []
-	public SaveUnusedConfigs = true
+	public SaveUnusedConfigs = false
 	public SortNodes = true
 	public EntriesSizeX = 0
 	public EntriesSizeY = 0
@@ -176,9 +176,12 @@ export class Node extends Base {
 	}
 	private cfgDefValue = null
 	public get ConfigValue() {
-		if (!this.SaveUnusedConfigs) {
-			this.configStorage = Object.create(null)
+		if (!this.SaveUnusedConfigs && this.IsDefaultValue) {
+			return this.cfgDefValue
 		}
+
+		this.configStorage = Object.create(null)
+		//const untouched = "untouched:"
 		const untouched = "untouched:"
 		if (Node.DebugUntouchedValues) {
 			Node.DebugUntouchedStack.push(this.InternalName)
@@ -195,7 +198,8 @@ export class Node extends Base {
 		this.entries.forEach(e => {
 			if (e?.SaveConfig) {
 				this.configStorage[e.InternalName] =
-					e.IsDefaultValue && !(e instanceof Node && e.SaveUnusedConfigs)
+					//e.IsDefaultValue && !(e instanceof Node && e.SaveUnusedConfigs)
+					e.IsDefaultValue && !e.IsNode //e.IsDefault()
 						? this.cfgDefValue
 						: e.ConfigValue
 			}
