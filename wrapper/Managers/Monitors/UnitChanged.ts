@@ -49,7 +49,7 @@ const Monitor = new (class CPreUnitChanged {
 				unit.AnimationTime += dt * unit.PlaybackRate
 			} else {
 				unit.NetworkActivityStartTime = GameState.RawGameTime
-				unit.AnimationTime = 0
+				unit.AnimationTime = unit.StartSequenceCycle
 				if (
 					unit.NetworkActivity !== unit.NetworkActivityPrev ||
 					unit.NetworkSequenceIndex !== unit.NetworkSequenceIndexPrev

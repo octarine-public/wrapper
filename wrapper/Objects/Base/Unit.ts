@@ -167,6 +167,8 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_nResetEventsParity")
 	public SequenceParity: number = 0
 	public SequenceParityPrev: number = 0
+	@NetworkedBasicField("m_flStartSequenceCycle")
+	public StartSequenceCycle: number = 0
 
 	public Parity: number = 0
 	public Level: number = 0
