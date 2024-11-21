@@ -1,4 +1,5 @@
 import { NetworkedParticle } from "../../Base/NetworkedParticle"
+import { EventPriority } from "../../Enums/EventPriority"
 import { Entity } from "../../Objects/Base/Entity"
 import { Unit } from "../../Objects/Base/Unit"
 import { GameState } from "../../Utils/GameState"
@@ -90,7 +91,7 @@ const Monitor = new (class CNetworkedParticleChanged {
 	}
 })()
 
-EventsSDK.on("PostDataUpdate", () => Monitor.PostDataUpdate())
+EventsSDK.on("PostDataUpdate", () => Monitor.PostDataUpdate(), EventPriority.HIGH)
 
 Events.on("NewConnection", () => Monitor.NewConnection())
 
