@@ -94,9 +94,9 @@ export class CGameRules extends Entity {
 		super(Index, serial)
 		this.IsGameRules = true
 	}
-
 	public get NetTimeOfDayNormilize(): number {
-		return this.NetTimeOfDay / 65535
+		// idk, ask valve why "Math.remapRange" is used
+		return Math.remapRange(this.NetTimeOfDay, 0, 65535, 0, 1)
 	}
 	public get GameTime(): number {
 		const time = this.RawGameTime,
@@ -126,14 +126,17 @@ export class CGameRules extends Entity {
 				GameState.IsConnected)
 		)
 	}
-	public get IsDayGameTime(): boolean {
-		return (
-			this.NetTimeOfDayNormilize >= this.DayTimeStart &&
-			this.NetTimeOfDayNormilize <= this.NightTimeStart
-		)
-	}
 	public get IsNightGameTime(): boolean {
-		return !this.IsDayGameTime || (this.GameTime / 60 / 5) % 2 >= 1
+		const dayStart = this.DayTimeStart,
+			nightStart = this.NightTimeStart,
+			currentTime = this.NetTimeOfDayNormilize
+		if (nightStart <= dayStart) {
+			return currentTime > nightStart && currentTime <= dayStart
+		}
+		return currentTime <= dayStart || currentTime > nightStart
+	}
+	public get IsDayGameTime(): boolean {
+		return !this.IsNightGameTime
 	}
 	public get IsNight(): boolean {
 		return (
