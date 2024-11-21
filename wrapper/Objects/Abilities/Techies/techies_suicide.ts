@@ -13,7 +13,7 @@ export class techies_suicide extends Ability {
 	public readonly StartPosition = new Vector3().Invalidate()
 	public readonly TargetPosition = new Vector3().Invalidate()
 	public readonly LastKnownOwnerPosition_ = new Vector3().Invalidate()
-	public LastKnownOwnerPositionTime_ = 0
+	public LastKnownOwnerPositionTick_ = 0
 
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
@@ -46,24 +46,18 @@ EventsSDK.on("PostDataUpdate", () => {
 		}
 
 		const buff = owner.GetBuffByName("modifier_techies_suicide_leap")
-		const buffEndTime = 0.72
-		if (
-			buff === undefined ||
-			buff.Duration !== -1 ||
-			buff.ElapsedTime > buffEndTime
-		) {
+		const duration = abil.GetSpecialValue("duration")
+		if (buff === undefined || buff.Duration !== -1 || buff.ElapsedTime >= duration) {
 			continue
 		}
 		if (abil.LastKnownOwnerPosition_.IsValid) {
-			if (
-				abil.LastKnownOwnerPositionTime_ >
-				GameState.RawGameTime - GameState.TickInterval * 1.1
-			) {
+			if (abil.LastKnownOwnerPositionTick_ === GameState.CurrentGameTick - 1) {
 				const velocity3D = owner.Position.Subtract(abil.LastKnownOwnerPosition_)
+				const velocity3DLen = velocity3D.Length
 				const velocity = Vector2.FromVector3(
-					velocity3D.Clone().Normalize()
-				).MultiplyScalarForThis(velocity3D.Length)
-				const timeMoved = buff.ElapsedTime - GameState.TickInterval
+					velocity3D.Normalize()
+				).MultiplyScalarForThis(velocity3DLen)
+				const timeMoved = buff.ElapsedTime + GameState.TickInterval
 
 				owner.Position.Subtract(
 					Vector3.FromVector2(
@@ -75,7 +69,7 @@ EventsSDK.on("PostDataUpdate", () => {
 				owner.Position.Add(
 					Vector3.FromVector2(
 						velocity.MultiplyScalar(
-							(buffEndTime - timeMoved) / GameState.TickInterval + 1
+							(duration - timeMoved) / GameState.TickInterval
 						)
 					)
 				).CopyTo(abil.TargetPosition)
@@ -84,7 +78,7 @@ EventsSDK.on("PostDataUpdate", () => {
 			abil.LastKnownOwnerPosition_.Invalidate()
 		} else {
 			owner.Position.CopyTo(abil.LastKnownOwnerPosition_)
-			abil.LastKnownOwnerPositionTime_ = GameState.RawGameTime
+			abil.LastKnownOwnerPositionTick_ = GameState.CurrentGameTick
 		}
 	}
 })
