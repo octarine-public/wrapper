@@ -87,8 +87,7 @@ const Monitor = new (class CPreUnitChanged {
 					unit.LastAnimationCasted = true
 					if (unit.LastAnimationIsAttack) {
 						const lastAnimServerCastPoint =
-							unit.LastAnimationServerStartTime +
-							unit.LastAnimationCastPoint
+							unit.LastAnimationStartTime + unit.LastAnimationCastPoint
 						if (
 							GameState.RawServerTime <= lastAnimServerCastPoint ||
 							Math.abs(GameState.RawServerTime - lastAnimServerCastPoint) <
@@ -97,7 +96,7 @@ const Monitor = new (class CPreUnitChanged {
 							unit.AttackTimeAtLastTick = GameState.RawServerTime
 							unit.AttackTimeLostToLastTick =
 								GameState.RawServerTime -
-								(unit.LastAnimationServerStartTime +
+								(unit.LastAnimationStartTime +
 									unit.LastAnimationRawCastPoint)
 						}
 					}
@@ -188,7 +187,6 @@ const Monitor = new (class CPreUnitChanged {
 			unit.LastAnimationIsAttack = type === 0
 			unit.LastActivity = activity
 			unit.LastActivitySequenceVariant = sequenceVariant
-			unit.LastAnimationServerStartTime = GameState.RawServerTime
 			unit.LastAnimationStartTime = GameState.RawGameTime
 		}
 		unit.LastAnimationRawCastPoint = rawCastPoint
@@ -230,7 +228,6 @@ const Monitor = new (class CPreUnitChanged {
 		unit.LastAnimationCasted = false
 		unit.LastActivity = 0 as GameActivity
 		unit.LastActivitySequenceVariant = 0
-		unit.LastAnimationServerStartTime = 0
 		unit.LastAnimationStartTime = 0
 		unit.LastAnimationEndTime = 0
 		unit.LastAnimationRawCastPoint = 0

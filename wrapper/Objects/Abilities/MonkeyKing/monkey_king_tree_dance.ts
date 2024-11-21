@@ -4,7 +4,6 @@ import { EntityManager } from "../../../Managers/EntityManager"
 import { EventsSDK } from "../../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../../Native/WASM"
 import { GameState } from "../../../Utils/GameState"
-import { DegreesToRadian } from "../../../Utils/Math"
 import { Ability } from "../../Base/Ability"
 import { TempTree, TempTrees } from "../../Base/TempTree"
 import { Tree, Trees } from "../../Base/Tree"
@@ -18,7 +17,7 @@ export class monkey_king_tree_dance extends Ability {
 	public StartedJumpingTime = 0
 	public EndedJumpingTime = 0
 	public IsJumping = false
-	public IsJumpingToTree = true
+	public IsJumpingToTree = false
 
 	public get SpringSpeed(): number {
 		return this.GetSpecialValue("spring_leap_speed")
@@ -75,13 +74,9 @@ EventsSDK.on("ParticleUpdated", par => {
 	abil.IsJumping = true
 	abil.IsJumpingToTree =
 		ent.LastActivity === abil.AbilityData.CastAnimation &&
-		Math.abs(
-			GameState.RawGameTime -
-				ent.LastAnimationStartTime -
-				ent.LastAnimationCastPoint -
-				GameState.TickInterval
-		) <
-			GameState.TickInterval * 1.1
+		(GameState.RawGameTime > ent.LastAnimationStartTime ||
+			Math.abs(GameState.RawGameTime - ent.LastAnimationStartTime) <
+				GameState.TickInterval / 10)
 	abil.TargetTree = undefined
 	const castRange = abil.CastRange
 	abil.PredictedPositionsPerTree = [
@@ -111,7 +106,7 @@ EventsSDK.on("ParticleDestroyed", par => {
 		return
 	}
 	abil.IsJumping = false
-	abil.EndedJumpingTime = GameState.RawGameTime + GameState.TickInterval
+	abil.EndedJumpingTime = GameState.RawGameTime
 })
 
 const abils = EntityManager.GetEntitiesByClass(monkey_king_tree_dance)
@@ -125,10 +120,16 @@ EventsSDK.on("PostDataUpdate", dt => {
 		}
 
 		if (
-			abil.TargetTree !== undefined ||
-			!abil.IsJumpingToTree ||
-			GameState.RawGameTime === abil.StartedJumpingTime
+			owner.IsVisible &&
+			owner.HasBuffByName("modifier_monkey_king_arc_to_ground")
 		) {
+			abil.TargetTree = undefined
+			abil.PredictedPositionsPerTree = []
+			abil.IsJumpingToTree = false
+			continue
+		}
+
+		if (abil.TargetTree !== undefined || !abil.IsJumpingToTree) {
 			continue
 		}
 
@@ -136,19 +137,13 @@ EventsSDK.on("PostDataUpdate", dt => {
 		if (!startPos.IsValid) {
 			continue
 		}
-		if (
-			owner.IsVisible &&
-			owner.HasBuffByName("modifier_monkey_king_arc_to_ground")
-		) {
-			abil.TargetTree = undefined
-			abil.PredictedPositionsPerTree = []
-			continue
-		}
 		const finishedJumping =
 				!abil.IsJumping &&
 				Math.abs(GameState.RawGameTime - abil.EndedJumpingTime) <
 					GameState.TickInterval / 10,
 			finishedJumpingTrees: (Tree | TempTree)[] = []
+		const leapSpeedBase = abil.GetSpecialValue("leap_speed"),
+			groundJumpDistance = abil.GetSpecialValue("ground_jump_distance")
 		for (let index = abil.PredictedPositionsPerTree.length - 1; index > -1; index--) {
 			const predictedAr = abil.PredictedPositionsPerTree[index]
 			const [currentPos, tree, timeFinished] = predictedAr
@@ -158,7 +153,9 @@ EventsSDK.on("PostDataUpdate", dt => {
 			const targetPos = tree.Position
 			{
 				// update horizontal motion
-				const leapSpeed = 700 + abil.StartPosition.Distance2D(targetPos) * 0.4
+				const leapSpeed =
+					leapSpeedBase +
+					(abil.StartPosition.Distance2D(targetPos) * 400) / groundJumpDistance
 				const distanceLeft = currentPos.Distance2D(targetPos)
 				const velocity = currentPos
 					.GetDirection2DTo(targetPos)
@@ -202,15 +199,20 @@ EventsSDK.on("PostDataUpdate", dt => {
 		if (!owner.IsVisible) {
 			continue
 		}
-		const heroAngle =
-			owner.NetworkedRotationRad - DegreesToRadian(owner.RotationDifference)
-		const bestPredictedPos = abil.PredictedPositionsPerTree.filter(
-			ar =>
-				ar[2] === 0 &&
-				Math.abs(
-					heroAngle - abil.StartPosition.GetDirectionTo(ar[1].Position).Angle
-				) < 0.05 // 0.05rad = 2.8deg
-		).orderByFirst(ar => owner.NetworkedPosition.Distance(ar[0]))
+		const heroAngle = owner.NetworkedRotationRad
+		const bestPredictedPos = abil.PredictedPositionsPerTree.filter(ar => {
+			if (ar[2] !== 0) {
+				return false
+			}
+			const diff =
+				((heroAngle -
+					abil.StartPosition.GetDirectionTo(ar[1].Position).Angle +
+					Math.PI) %
+					(Math.PI * 2)) -
+				Math.PI
+			const maxDiff = 0.05 // 0.05rad = 2.8deg
+			return Math.abs(diff < -Math.PI ? diff + 2 * Math.PI : diff) < maxDiff
+		}).orderByFirst(ar => owner.NetworkedPosition.Distance(ar[0]))
 
 		if (bestPredictedPos !== undefined) {
 			abil.TargetTree = bestPredictedPos[1]

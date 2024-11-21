@@ -187,7 +187,6 @@ export class Unit extends Entity {
 	public LastActivity: GameActivity = 0 as GameActivity
 	public LastActivitySequenceVariant: number = 0
 	public LastAnimationStartTime: number = 0
-	public LastAnimationServerStartTime: number = 0
 	public LastAnimationEndTime: number = 0
 	public LastAnimationRawCastPoint: number = 0
 	public LastAnimationCastPoint: number = 0
