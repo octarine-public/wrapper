@@ -16,24 +16,28 @@ declare interface BigInt {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/bigint"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 */
 	hasBit(bit: bigint): boolean
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/bigint"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 */
 	hasMask(mask: bigint): boolean
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/bigint"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 */
 	toMask: number[]
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/bigint"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 */
 	toInt16: bigint
@@ -44,18 +48,21 @@ declare interface Number {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/number"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 */
 	hasBit(bit: number): boolean
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/number"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 */
 	hasMask(mask: number): boolean
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/number"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 */
 	/** popcnt */
@@ -63,12 +70,14 @@ declare interface Number {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/number"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 */
 	toMask: number[]
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/number"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 */
 	toInt16: number
@@ -78,6 +87,7 @@ declare interface Array<T> {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/array"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description This method mutates the array and returns a reference to the same array.
 	 */
@@ -88,6 +98,7 @@ declare interface Array<T> {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/array"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description This method returns a copy of an array.
 	 */
@@ -98,6 +109,7 @@ declare interface Array<T> {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/array"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description This method mutates the array and returns a reference to the same array.
 	 */
@@ -108,6 +120,7 @@ declare interface Array<T> {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/array"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description This method returns a copy of an array.
 	 */
@@ -118,6 +131,7 @@ declare interface Array<T> {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/array"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description This method mutates the array and returns a reference to the same array. Similar to ar.orderBy(cb)[0]
 	 */
@@ -125,6 +139,7 @@ declare interface Array<T> {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/array"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description Removes the first occurrence of a specified element from the array.
 	 *  Returns true if the element was successfully removed,
@@ -134,6 +149,7 @@ declare interface Array<T> {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/array"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description Removes elements from the array that satisfy the provided callback function.
 	 * Returns true if the element was successfully removed,
@@ -146,6 +162,7 @@ declare interface Array<T> {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/array"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description Returns the number of elements in the array.
 	 */
@@ -153,6 +170,7 @@ declare interface Array<T> {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/array"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description Compares two arrays
 	 * @param {T[]} array - The array to compare.
@@ -161,6 +179,7 @@ declare interface Array<T> {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/array"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description Compares two arrays
 	 * @param {T[]} array - The array to compare.
@@ -170,6 +189,7 @@ declare interface Array<T> {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/array"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description Checks if two arrays have any common elements
 	 */
@@ -177,6 +197,7 @@ declare interface Array<T> {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/array"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description Filters the array to exclude elements that are present in the input array.
 	 * @param {T[]} array - The array to exclude elements from.
@@ -186,6 +207,7 @@ declare interface Array<T> {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/array"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description returns the elements that are present in both arrays
 	 */
@@ -194,6 +216,7 @@ declare interface Array<T> {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/array"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description Removes all elements from the array.
 	 */
@@ -204,6 +227,7 @@ declare interface Math {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/math"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description Converts degrees to radians.
 	 *
@@ -215,6 +239,7 @@ declare interface Math {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/math"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description Converts radians to degrees.
 	 *
@@ -226,6 +251,7 @@ declare interface Math {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/math"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description Linearly interpolates between two numbers.
 	 *
@@ -240,6 +266,7 @@ declare interface Math {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/math"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description SmoothStep function returns a smooth interpolation value between 0 and 1 based on the input amount.
 	 * If the amount is less than or equal to 0, it returns 0.
@@ -253,6 +280,7 @@ declare interface Math {
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/math"` or
 	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
 	 * @description Clamps a value between a minimum and maximum value.
 	 *
@@ -263,6 +291,28 @@ declare interface Math {
 	 * @return {number} the clamped value
 	 */
 	clamp(value: number, min: number, max: number): number
+	/**
+	 * @requires
+	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/math"` or
+	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
+	 * @description Performs linear interpolation of a value between specified boundaries
+	 *
+	 * @param {number} value - the value to clamp
+	 * @param {number} min - the minimum value
+	 * @param {number} max - the maximum value
+	 * @param {number} minResult - the minimum result value
+	 * @param {number} maxResult - the maximum result value
+	 *
+	 * @return {number} the clamped value
+	 */
+	remapRange(
+		value: number,
+		min: number,
+		max: number,
+		minResult: number,
+		maxResult: number
+	): number
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or

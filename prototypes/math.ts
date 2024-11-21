@@ -7,6 +7,15 @@ Math.randomRange = (min: number, max: number): number => Math.random() * (max - 
 Math.clamp = (value: number, min: number, max: number): number =>
 	Math.min(Math.max(value, min), max)
 
+Math.remapRange = (
+	value: number,
+	min: number,
+	max: number,
+	minResult: number,
+	maxResult: number
+): number =>
+	minResult + (maxResult - minResult) * Math.clamp((value - min) / (max - min), 0, 1)
+
 Math.lerp = (start: number, end: number, amount: number): number =>
 	(1 - amount) * start + amount * end
 
