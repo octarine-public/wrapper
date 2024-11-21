@@ -38,12 +38,7 @@ function FilterValidTrees(
 	castRange: number
 ): [Vector3, Tree | TempTree, number][] {
 	return ar
-		.filter(
-			tree =>
-				tree.IsAlive &&
-				tree.IsInRange(pos, castRange) &&
-				tree.Distance2D(pos) > 32
-		)
+		.filter(tree => tree.IsAlive && tree.IsInRange(pos, castRange))
 		.map(tree => [pos.Clone(), tree, 0])
 }
 
@@ -74,9 +69,8 @@ EventsSDK.on("ParticleUpdated", par => {
 	abil.IsJumping = true
 	abil.IsJumpingToTree =
 		ent.LastActivity === abil.AbilityData.CastAnimation &&
-		(GameState.RawGameTime > ent.LastAnimationStartTime ||
-			Math.abs(GameState.RawGameTime - ent.LastAnimationStartTime) <
-				GameState.TickInterval / 10)
+		Math.abs(GameState.RawGameTime - ent.LastAnimationStartTime) <
+			GameState.TickInterval / 10
 	abil.TargetTree = undefined
 	const castRange = abil.CastRange
 	abil.PredictedPositionsPerTree = [
