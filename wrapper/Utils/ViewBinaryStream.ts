@@ -25,10 +25,7 @@ export class ViewBinaryStream {
 		this.view.setUint8(this.pos++, val)
 	}
 	public WriteColor(val: Color): void {
-		this.WriteUint8(Math.max(Math.min(val.r, 255), 0))
-		this.WriteUint8(Math.max(Math.min(val.g, 255), 0))
-		this.WriteUint8(Math.max(Math.min(val.b, 255), 0))
-		this.WriteUint8(Math.max(Math.min(val.a, 255), 0))
+		this.WriteUint32(val.data32)
 	}
 	public ReadInt8(): number {
 		return this.view.getInt8(this.pos++)

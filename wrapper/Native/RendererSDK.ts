@@ -280,7 +280,7 @@ class CRendererSDK {
 	public FilledCircle(
 		vecPos: Vector2,
 		vecSize: Vector2,
-		color = Color.White,
+		color = Color.WhiteReadonly,
 		rotationDeg = 0,
 		customScissor?: Rectangle,
 		grayscale = false
@@ -298,7 +298,7 @@ class CRendererSDK {
 	public OutlinedCircle(
 		vecPos: Vector2,
 		vecSize: Vector2,
-		color = Color.White,
+		color = Color.WhiteReadonly,
 		width = 5,
 		rotationDeg = 0,
 		customScissor?: Rectangle,
@@ -319,7 +319,7 @@ class CRendererSDK {
 	public Line(
 		start: Vector2 = new Vector2(),
 		end = start.Add(this.DefaultShapeSize),
-		fillColor = Color.White,
+		fillColor = Color.WhiteReadonly,
 		width = 5,
 		rotationDeg = 0,
 		customScissor?: Rectangle,
@@ -343,7 +343,7 @@ class CRendererSDK {
 	public FilledRect(
 		vecPos = new Vector2(),
 		vecSize = this.DefaultShapeSize,
-		fillColor = Color.White,
+		fillColor = Color.WhiteReadonly,
 		rotationDeg = 0,
 		customScissor?: Rectangle,
 		grayscale = false,
@@ -377,7 +377,7 @@ class CRendererSDK {
 		vecPos = new Vector2(),
 		vecSize = this.DefaultShapeSize,
 		width = 1,
-		color = Color.White,
+		color = Color.WhiteReadonly,
 		rotationDeg = 0,
 		customScissor?: Rectangle,
 		grayscale = false,
@@ -400,7 +400,7 @@ class CRendererSDK {
 		vecPos: Vector2,
 		round = -1,
 		vecSize = new Vector2(-1, -1),
-		color = Color.White,
+		color = Color.WhiteReadonly,
 		rotationDeg = 0, // not currently working? // works, but not for svg's
 		customScissor?: Rectangle,
 		grayscale = false,
@@ -439,7 +439,7 @@ class CRendererSDK {
 					this.FilledCircle(
 						vecPos.AddScalar(halfRound),
 						vecSize.SubtractScalar(halfRound),
-						Color.White,
+						Color.WhiteReadonly,
 						0,
 						customScissor
 					)
@@ -496,20 +496,25 @@ class CRendererSDK {
 			this.commandStream.WriteFloat32(vecSize.y - halfRound)
 		}
 
-		let texOffset, texSize
+		let texOffset,
+			texSize = vecSize
 
 		if (subtexOffset === undefined || subtexSize === undefined) {
 			const ratio = vecSize.x / vecSize.y
 			const origRatio = origSize.x / origSize.y
-			const cut = new Vector2(
-				ratio >= origRatio ? 0 : (ratio - origRatio) / ratio,
-				ratio <= origRatio ? 0 : (origRatio - ratio) / origRatio
-			)
-			texOffset = vecSize.Multiply(cut).DivideScalar(-2)
-			texSize = new Vector2(1, 1).Subtract(cut).Multiply(vecSize)
+			if (ratio === origRatio) {
+				texOffset = new Vector2()
+			} else {
+				const cut = new Vector2(
+					ratio > origRatio ? 0 : (ratio - origRatio) / ratio,
+					ratio < origRatio ? 0 : (origRatio - ratio) / origRatio
+				)
+				texOffset = vecSize.Multiply(cut).DivideScalarForThis(-2)
+				texSize = new Vector2(1, 1).SubtractForThis(cut).MultiplyForThis(vecSize)
+			}
 		} else {
-			texOffset = vecSize.Divide(subtexSize).Multiply(subtexOffset)
-			texSize = origSize.Divide(subtexSize).Multiply(vecSize)
+			texOffset = vecSize.Divide(subtexSize).MultiplyForThis(subtexOffset)
+			texSize = origSize.Divide(subtexSize).MultiplyForThis(vecSize)
 		}
 
 		this.Path(
@@ -533,14 +538,14 @@ class CRendererSDK {
 	public Text(
 		text: string,
 		vecPos = new Vector2(),
-		color = Color.White,
+		color = Color.WhiteReadonly,
 		fontName = this.DefaultFontName,
 		fontSize = this.DefaultTextSize,
 		weight = 400,
 		italic = false,
 		outlined = true
 	): void {
-		if (text.length === 0) {
+		if (!text) {
 			return
 		}
 
@@ -580,7 +585,7 @@ class CRendererSDK {
 	public TextByFlags(
 		text: string,
 		position: Rectangle,
-		color = Color.White,
+		color = Color.WhiteReadonly,
 		division = 1.2,
 		flags = TextFlags.Center,
 		width = 400,
@@ -722,7 +727,7 @@ class CRendererSDK {
 		percent: number,
 		vecPos: Vector2,
 		vecSize: Vector2,
-		fillColor = Color.White,
+		fillColor = Color.WhiteReadonly,
 		rotationDeg = 0,
 		customScissor?: Rectangle,
 		strokeColor = fillColor,
@@ -805,8 +810,8 @@ class CRendererSDK {
 		}
 		this.Path(
 			1,
-			outlineWidth !== -1 ? Color.White : fillColor,
-			outlineWidth !== -1 ? Color.White : strokeColor,
+			outlineWidth !== -1 ? Color.WhiteReadonly : fillColor,
+			outlineWidth !== -1 ? Color.WhiteReadonly : strokeColor,
 			PathFlags.STROKE_AND_FILL | PathFlags.FILL_AA_ON,
 			grayscale,
 			cap,
@@ -837,7 +842,7 @@ class CRendererSDK {
 		vecSize: Vector2,
 		fill = false,
 		width = 5,
-		color = Color.White,
+		color = Color.WhiteReadonly,
 		rotationDeg = 0,
 		customScissor?: Rectangle,
 		grayscale = false,
