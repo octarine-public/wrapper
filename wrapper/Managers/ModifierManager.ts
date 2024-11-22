@@ -1,6 +1,7 @@
 import { Vector4 } from "../Base/Vector4"
 import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
 import { EventPriority } from "../Enums/EventPriority"
+import { Ability } from "../Objects/Base/Ability"
 import { Modifier } from "../Objects/Base/Modifier"
 import { Unit } from "../Objects/Base/Unit"
 import { AbilityData } from "../Objects/DataBook/AbilityData"
@@ -215,6 +216,39 @@ function ShardOrScepterChanged(source: Unit, isShard: boolean) {
 	})
 }
 
+function UnitLevelChanged(source: Unit) {
+	if (source.IsVisible) {
+		return
+	}
+	activeModifiers.forEach(modifier => {
+		if (
+			modifier.Parent === source ||
+			modifier.Caster === source ||
+			modifier.AuraOwner === source ||
+			modifier.Ability?.Owner === source
+		) {
+			modifier.OnAbilityLevelChanged()
+		}
+	})
+}
+
+function AbilityLevelChanged(abil: Ability) {
+	const owner = abil.Owner
+	if (owner === undefined || owner.IsVisible) {
+		return
+	}
+	activeModifiers.forEach(modifier => {
+		if (
+			modifier.Ability === abil ||
+			modifier.Parent === owner ||
+			modifier.Caster === owner ||
+			modifier.AuraOwner === owner
+		) {
+			modifier.OnAbilityLevelChanged()
+		}
+	})
+}
+
 function EmitModifierCreated(modKV: IModifier) {
 	if (
 		modKV.Index === undefined ||
@@ -341,6 +375,8 @@ EventsSDK.on("RemoveAllStringTables", () => {
 
 EventsSDK.on("PostDataUpdate", () => ModifierPostDataUpdate(), EventPriority.IMMEDIATE)
 
+EventsSDK.on("UnitLevelChanged", unit => UnitLevelChanged(unit), EventPriority.IMMEDIATE)
+
 EventsSDK.on(
 	"HasShardChanged",
 	unit => ShardOrScepterChanged(unit, true),
@@ -350,5 +386,11 @@ EventsSDK.on(
 EventsSDK.on(
 	"HasScepterChanged",
 	unit => ShardOrScepterChanged(unit, false),
+	EventPriority.IMMEDIATE
+)
+
+EventsSDK.on(
+	"AbilityLevelChanged",
+	abil => AbilityLevelChanged(abil),
 	EventPriority.IMMEDIATE
 )

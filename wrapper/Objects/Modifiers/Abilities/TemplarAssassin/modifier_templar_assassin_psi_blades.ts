@@ -3,7 +3,7 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_sniper_keen_scope extends Modifier {
+export class modifier_templar_assassin_psi_blades extends Modifier {
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
@@ -18,6 +18,9 @@ export class modifier_sniper_keen_scope extends Modifier {
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedRange = this.GetSpecialValue("bonus_range", "sniper_keen_scope")
+		this.cachedRange = this.GetSpecialValue(
+			"bonus_attack_range",
+			"templar_assassin_psi_blades"
+		)
 	}
 }

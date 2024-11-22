@@ -6,12 +6,20 @@ import { Modifier } from "../../../Base/Modifier"
 export class modifier_phantom_lancer_phantom_edge_boost extends Modifier {
 	protected readonly DeclaredFunction = new Map([
 		[
+			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
+			this.GetAttackRangeBonus.bind(this)
+		],
+		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_ABSOLUTE,
 			this.GetMoveSpeedAbsolute.bind(this)
 		]
 	])
 
 	private cachedSpeed = 0
+
+	protected GetAttackRangeBonus(): [number, boolean] {
+		return [-70, false] // no special values
+	}
 
 	protected GetMoveSpeedAbsolute(): [number, boolean] {
 		return [this.cachedSpeed, false]

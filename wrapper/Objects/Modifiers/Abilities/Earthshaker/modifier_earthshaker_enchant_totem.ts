@@ -3,32 +3,24 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_dragon_knight_dragon_form extends Modifier {
+export class modifier_earthshaker_enchant_totem extends Modifier {
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
 			this.GetAttackRangeBonus.bind(this)
-		],
-		[
-			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
-			this.GetMoveSpeedBonusConstant.bind(this)
 		]
 	])
 
-	private cachedSpeed = 0
 	private cachedRange = 0
 
 	protected GetAttackRangeBonus(): [number, boolean] {
 		return [this.cachedRange, false]
 	}
 
-	protected GetMoveSpeedBonusConstant(): [number, boolean] {
-		return [this.cachedSpeed, false]
-	}
-
 	protected UpdateSpecialValues(): void {
-		const name = "dragon_knight_elder_dragon_form"
-		this.cachedRange = this.GetSpecialValue("bonus_attack_range", name)
-		this.cachedSpeed = this.GetSpecialValue("bonus_movement_speed", name)
+		this.cachedRange = this.GetSpecialValue(
+			"bonus_attack_range",
+			"earthshaker_enchant_totem"
+		)
 	}
 }

@@ -3,15 +3,15 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_dragon_knight_dragon_form extends Modifier {
+export class modifier_sniper_take_aim_bonus extends Modifier {
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
 			this.GetAttackRangeBonus.bind(this)
 		],
 		[
-			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
-			this.GetMoveSpeedBonusConstant.bind(this)
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
 
@@ -22,13 +22,13 @@ export class modifier_dragon_knight_dragon_form extends Modifier {
 		return [this.cachedRange, false]
 	}
 
-	protected GetMoveSpeedBonusConstant(): [number, boolean] {
-		return [this.cachedSpeed, false]
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [-this.cachedSpeed, false]
 	}
 
 	protected UpdateSpecialValues(): void {
-		const name = "dragon_knight_elder_dragon_form"
-		this.cachedRange = this.GetSpecialValue("bonus_attack_range", name)
-		this.cachedSpeed = this.GetSpecialValue("bonus_movement_speed", name)
+		const name = "sniper_take_aim"
+		this.cachedSpeed = this.GetSpecialValue("slow", name)
+		this.cachedRange = this.GetSpecialValue("active_attack_range_bonus", name)
 	}
 }

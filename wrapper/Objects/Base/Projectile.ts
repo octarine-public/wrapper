@@ -8,6 +8,8 @@ import { Unit } from "./Unit"
 export class Projectile {
 	public IsValid = true
 	public ParticlePathNoEcon = ""
+	public readonly OriginalSpeed: number
+	// TODO: calcluate speed by modifier
 
 	constructor(
 		public readonly ID: number,
@@ -18,6 +20,7 @@ export class Projectile {
 		public Speed: number
 	) {
 		this.UpdateParticlePathNoEcon()
+		this.OriginalSpeed = this.Speed
 	}
 
 	public UpdateParticlePathNoEcon(): void {
@@ -58,6 +61,7 @@ export class LinearProjectile extends Projectile {
 		this.TargetLoc = Origin.Rotation(this.Forward, this.Distance)
 	}
 }
+
 export class TrackingProjectile extends Projectile {
 	public readonly Position: Vector3 = new Vector3()
 	public IsDodged = false

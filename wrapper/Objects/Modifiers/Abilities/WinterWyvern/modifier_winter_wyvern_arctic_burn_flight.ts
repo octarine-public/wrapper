@@ -6,21 +6,29 @@ import { Modifier } from "../../../Base/Modifier"
 export class modifier_winter_wyvern_arctic_burn_flight extends Modifier {
 	protected readonly DeclaredFunction = new Map([
 		[
+			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
+			this.GetAttackRangeBonus.bind(this)
+		],
+		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
 
 	private cachedSpeed = 0
+	private cachedRange = 0
+
+	protected GetAttackRangeBonus(): [number, boolean] {
+		return [this.cachedRange, false]
+	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedSpeed = this.GetSpecialValue(
-			"movement_scepter",
-			"winter_wyvern_arctic_burn"
-		)
+		const name = "winter_wyvern_arctic_burn"
+		this.cachedSpeed = this.GetSpecialValue("movement_scepter", name)
+		this.cachedRange = this.GetSpecialValue("attack_range_bonus", name)
 	}
 }

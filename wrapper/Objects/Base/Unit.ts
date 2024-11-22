@@ -132,6 +132,8 @@ export class Unit extends Entity {
 	public readonly LastDealtDamageTime: number = 0
 	@NetworkedBasicField("m_iMoveSpeed")
 	public readonly NetworkMoveSpeedBase: number = 0
+	@NetworkedBasicField("m_iAttackRange")
+	public readonly NetworkAttackRangeBase: number = 0
 	@NetworkedBasicField("m_bIsWaitingToSpawn")
 	public readonly IsWaitingToSpawn: boolean = false
 	public PredictedIsWaitingToSpawn = true
@@ -416,9 +418,6 @@ export class Unit extends Entity {
 		return this.AttackRate - this.AttackPoint
 	}
 	// ===================================== Move Speed ===================================== //
-	public get MoveSpeedBaseData(): number {
-		return this.UnitData.BaseMovementSpeed
-	}
 	/** @description The night-time movement speed bonus.*/
 	public get MoveSpeedNightBonus(): number {
 		if (GameRules === undefined || !GameRules.IsNight) {
@@ -437,10 +436,13 @@ export class Unit extends Entity {
 		return GameState.RawGameTime >= damageTime ? nightMoveSpeed : 0
 	}
 	public get MoveSpeedBase(): number {
-		const overrideSpeed = this.ModifierManager.GetConstantLowestInternal(
+		const overrideBaseSpeed = this.ModifierManager.GetConstantLowestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BASE_OVERRIDE
 		)
-		return overrideSpeed !== 0 ? overrideSpeed : this.NetworkMoveSpeedBase
+		if (overrideBaseSpeed !== 0) {
+			return overrideBaseSpeed
+		}
+		return this.NetworkMoveSpeedBase
 	}
 	public get MoveSpeed(): number {
 		return this.GetMoveSpeedModifier()
@@ -634,23 +636,14 @@ export class Unit extends Entity {
 	public get ArmorType(): ArmorType {
 		return this.UnitData.ArmorType
 	}
-	public get IsInfinityAttackRange() {
-		return false // this.Buffs.some(x => x.IsInfinityAttackRange)
-	}
-	public get BaseAttackRange(): number {
-		return this.UnitData.BaseAttackRange
-	}
-	public get BonusAttackRange(): number {
-		return 0 // this.CalcualteBonusAttackRange()
-	}
-	public get AttackRangeAmplifier(): number {
-		return 0 // this.CalcualteAmpAttackRange()
-	}
-	public get InfinityAttackRange(): number {
-		return 0 // this.CalcualteInfinityAttackRange()
-	}
-	public get FixedAttackRange(): number {
-		return 0 // this.CalcualteFixedAttackRange()
+	public get AttackRangeBase(): number {
+		const overrideBaseAttackRange = this.ModifierManager.GetConstantLowestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BASE_OVERRIDE
+		)
+		if (overrideBaseAttackRange !== 0) {
+			return overrideBaseAttackRange
+		}
+		return this.NetworkAttackRangeBase
 	}
 	public get AttackDamageAverage(): number {
 		return (this.AttackDamageMin + this.AttackDamageMax) / 2
@@ -778,9 +771,6 @@ export class Unit extends Entity {
 	public get BonusAOERadiusAmplifier(): number {
 		return 1 // this.CalcualteBonusAOERadiusAmplifier()
 	}
-	public get BonusManaCostAmplifier(): number {
-		return 1 // this.CalcualteBonusManaCostAmplifier()
-	}
 	public get BaseStatusResistance(): number {
 		// maybe valve add new future status resist
 		return 0
@@ -879,6 +869,11 @@ export class Unit extends Entity {
 		isUnslowable: boolean = false
 	): number {
 		return this.ModifierManager.GetMoveSpeed(baseSpeed, isUnslowable)
+	}
+	public GetAttackRangeModifier(
+		baseAttackRange: number = this.AttackRangeBase
+	): number {
+		return this.ModifierManager.GetAttackRange(baseAttackRange)
 	}
 	public GetTimeVisionModifier(
 		baseVision: number,
@@ -1025,18 +1020,13 @@ export class Unit extends Entity {
 		}
 		return screenPosition.SubtractForThis(this.HealthBarPositionCorrection)
 	}
-	public GetAttackRange(target?: Unit, additional?: number): number {
-		const addAndHull = this.HullRadius + (target?.HullRadius ?? 0) + (additional ?? 0)
-		if (this.FixedAttackRange !== 0) {
-			return this.FixedAttackRange + addAndHull
-		}
-		if (this.IsInfinityAttackRange) {
-			return this.InfinityAttackRange + addAndHull
-		}
-		const base = this.BaseAttackRange,
-			bonus = this.BonusAttackRange,
-			amp = this.AttackRangeAmplifier
-		return (base + bonus) * amp + addAndHull
+	public GetAttackRange(
+		target?: Unit,
+		additional: number = 0,
+		includeHull: boolean = true
+	): number {
+		const hullRadius = includeHull ? this.HullRadius + (target?.HullRadius ?? 0) : 0
+		return this.GetAttackRangeModifier() + hullRadius + additional
 	}
 	public IsVisibleForEnemies(method: number = 0, seconds: number = 2): boolean {
 		switch (method) {

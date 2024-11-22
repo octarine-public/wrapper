@@ -314,6 +314,10 @@ export class Modifier {
 		this.UpdateSpecialValues()
 	}
 
+	public OnAbilityLevelChanged(): void {
+		this.UpdateSpecialValues()
+	}
+
 	public PostDataUpdate(): void {
 		// child classes should override
 	}
