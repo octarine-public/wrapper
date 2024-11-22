@@ -15,8 +15,9 @@ export class modifier_item_phase_boots_active extends Modifier {
 	private cachedMeleeSpeed = 0
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		const isRanged = this.Parent?.IsRanged ?? false,
-			value = isRanged ? this.cachedRangeSpeed : this.cachedMeleeSpeed
+		const value = this.HasMeleeAttacksBonuses()
+			? this.cachedMeleeSpeed
+			: this.cachedRangeSpeed
 		return [value, false]
 	}
 

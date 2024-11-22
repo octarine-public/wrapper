@@ -15,10 +15,9 @@ export class modifier_life_stealer_infest_effect extends Modifier {
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const owner = this.Parent
-		if (owner === undefined || owner.IsCreep) {
-			return [0, false]
-		}
-		return [this.cachedSpeed, false]
+		return owner === undefined || owner.IsCreep || owner.IsEnemy(this.Caster)
+			? [0, false]
+			: [this.cachedSpeed, false]
 	}
 
 	protected UpdateSpecialValues(): void {

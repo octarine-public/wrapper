@@ -13,18 +13,13 @@ export class modifier_bristleback_viscous_nasal_goo extends Modifier {
 
 	private cachedSlow = 0
 	private cachedBaseSlow = 0
-	private cachedMaxStacks = 0
-
-	private get maxStackCount(): number {
-		return Math.min(this.StackCount, this.cachedMaxStacks)
-	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const owner = this.Parent
 		if (owner === undefined) {
 			return [0, false]
 		}
-		const slowPerStack = this.cachedSlow * this.maxStackCount
+		const slowPerStack = this.cachedSlow * this.StackCount
 		return [-(slowPerStack + this.cachedBaseSlow), this.IsMagicImmune()]
 	}
 
@@ -32,6 +27,5 @@ export class modifier_bristleback_viscous_nasal_goo extends Modifier {
 		const name = "bristleback_viscous_nasal_goo"
 		this.cachedSlow = this.GetSpecialValue("move_slow_per_stack", name)
 		this.cachedBaseSlow = this.GetSpecialValue("base_move_slow", name)
-		this.cachedMaxStacks = this.GetSpecialValue("stack_limit", name)
 	}
 }

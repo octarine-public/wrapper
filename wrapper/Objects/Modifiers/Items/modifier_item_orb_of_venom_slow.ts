@@ -19,7 +19,9 @@ export class modifier_item_orb_of_venom_slow extends Modifier {
 		if (caster === undefined) {
 			return [0, false]
 		}
-		const value = caster.IsRanged ? this.cachedSpeedRanged : this.cachedSpeedMelee
+		const value = this.HasMeleeAttacksBonuses(caster)
+			? this.cachedSpeedMelee
+			: this.cachedSpeedRanged
 		return [value, this.IsMagicImmune()]
 	}
 

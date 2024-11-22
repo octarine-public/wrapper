@@ -12,19 +12,15 @@ export class modifier_bristleback_warpath extends Modifier {
 	])
 
 	private cachedSpeed = 0
-	private cachedMaxStacks = 0
-
-	private get maxStackCount(): number {
-		return Math.min(this.StackCount, this.cachedMaxStacks)
-	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [this.cachedSpeed * this.maxStackCount, false]
+		return [this.cachedSpeed * this.StackCount, false]
 	}
 
 	protected UpdateSpecialValues(): void {
-		const name = "bristleback_warpath"
-		this.cachedSpeed = this.GetSpecialValue("move_speed_per_stack", name)
-		this.cachedMaxStacks = this.GetSpecialValue("max_stacks", name)
+		this.cachedSpeed = this.GetSpecialValue(
+			"move_speed_per_stack",
+			"bristleback_warpath"
+		)
 	}
 }

@@ -3,7 +3,7 @@ import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_item_skadi_slow extends Modifier {
+export class modifier_item_harpoon_slow extends Modifier {
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
@@ -11,19 +11,13 @@ export class modifier_item_skadi_slow extends Modifier {
 		]
 	])
 
-	private slowMelee = 0
-	private slowRanged = 0
+	private cachedSpeed = 0
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [
-			this.HasMeleeAttacksBonuses() ? this.slowMelee : this.slowRanged,
-			this.IsMagicImmune()
-		]
+		return [-this.cachedSpeed, this.IsMagicImmune()]
 	}
 
 	protected UpdateSpecialValues() {
-		const name = "item_skadi"
-		this.slowMelee = this.GetSpecialValue("cold_slow_melee", name)
-		this.slowRanged = this.GetSpecialValue("cold_slow_ranged", name)
+		this.cachedSpeed = this.GetSpecialValue("movement_slow", "item_harpoon")
 	}
 }
