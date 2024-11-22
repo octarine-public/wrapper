@@ -19,7 +19,9 @@ export class modifier_item_lance_of_pursuit_slow extends Modifier {
 		if (caster === undefined) {
 			return [0, false]
 		}
-		const value = caster.IsRanged ? this.slowRanged : this.slowMelee
+		const value = this.HasMeleeAttacksBonuses(caster)
+			? this.slowMelee
+			: this.slowRanged
 		return [-value, this.IsMagicImmune()]
 	}
 

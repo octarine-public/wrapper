@@ -356,9 +356,16 @@ export class Modifier {
 		)
 	}
 
-	public IsPassiveDisabled(unit?: Unit) {
-		const owner = unit ?? this.Ability?.Owner
-		return (owner?.IsPassiveDisabled ?? false) && this.IsBreakable
+	public IsPassiveDisabled(source?: Unit) {
+		source ??= this.Ability?.Owner
+		return source !== undefined && source.IsPassiveDisabled && this.IsBreakable
+	}
+
+	// Ability#vengefulspirit_soul_strike
+	// e.g HasMeleeAttacksBonuses modifier_vengefulspirit_soul_strike
+	protected HasMeleeAttacksBonuses(source?: Unit): boolean {
+		source ??= this.Parent
+		return source !== undefined && (source.IsAttacksAreMelee || !source.IsRanged)
 	}
 
 	protected AddModifier(): boolean {

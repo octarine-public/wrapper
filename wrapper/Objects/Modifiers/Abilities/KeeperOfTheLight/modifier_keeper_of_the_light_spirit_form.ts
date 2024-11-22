@@ -3,7 +3,7 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_alchemist_corrosive_weaponry_debuff extends Modifier {
+export class modifier_keeper_of_the_light_spirit_form extends Modifier {
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
@@ -14,13 +14,13 @@ export class modifier_alchemist_corrosive_weaponry_debuff extends Modifier {
 	private cachedSpeed = 0
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [-(this.cachedSpeed * this.StackCount), this.IsMagicImmune()]
+		return [this.cachedSpeed, false]
 	}
 
 	protected UpdateSpecialValues(): void {
 		this.cachedSpeed = this.GetSpecialValue(
-			"slow_per_stack",
-			"alchemist_corrosive_weaponry"
+			"movement_speed",
+			"keeper_of_the_light_spirit_form"
 		)
 	}
 }

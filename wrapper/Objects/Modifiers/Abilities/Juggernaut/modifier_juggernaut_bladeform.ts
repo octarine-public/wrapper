@@ -11,13 +11,7 @@ export class modifier_juggernaut_bladeform extends Modifier {
 		]
 	])
 
-	private cachedMaxStacks = 0
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [Math.min(this.StackCount, this.cachedMaxStacks), false]
-	}
-
-	protected UpdateSpecialValues(): void {
-		this.cachedMaxStacks = this.GetSpecialValue("max_stacks", "juggernaut_bladeform")
+		return [this.StackCount, false]
 	}
 }

@@ -15,8 +15,9 @@ export class modifier_item_power_treads extends Modifier {
 	private cachedSpeedRanged = 0
 
 	protected GetMoveSpeedBonusUnique(): [number, boolean] {
-		const isRanged = this.Parent?.IsRanged ?? false,
-			value = isRanged ? this.cachedSpeedRanged : this.cachedSpeedMelee
+		const value = this.HasMeleeAttacksBonuses()
+			? this.cachedSpeedMelee
+			: this.cachedSpeedRanged
 		return [value, false]
 	}
 

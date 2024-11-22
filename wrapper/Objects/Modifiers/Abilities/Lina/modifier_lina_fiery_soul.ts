@@ -12,19 +12,15 @@ export class modifier_lina_fiery_soul extends Modifier {
 	])
 
 	private cachedSpeed = 0
-	private cachedStacks = 0
-
-	public get MaxStacks(): number {
-		return Math.min(this.StackCount, this.cachedStacks)
-	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [this.cachedSpeed * this.MaxStacks, false]
+		return [this.cachedSpeed * this.StackCount, false]
 	}
 
 	protected UpdateSpecialValues(): void {
-		const name = "lina_fiery_soul"
-		this.cachedSpeed = this.GetSpecialValue("fiery_soul_move_speed_bonus", name)
-		this.cachedStacks = this.GetSpecialValue("fiery_soul_max_stacks", name)
+		this.cachedSpeed = this.GetSpecialValue(
+			"fiery_soul_move_speed_bonus",
+			"lina_fiery_soul"
+		)
 	}
 }

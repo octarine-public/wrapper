@@ -12,19 +12,15 @@ export class modifier_batrider_sticky_napalm extends Modifier {
 	])
 
 	private cachedSpeed = 0
-	private cachedMaxStacks = 0
-
-	private get maxStackCount(): number {
-		return Math.min(this.StackCount, this.cachedMaxStacks)
-	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [this.cachedSpeed * this.maxStackCount, this.IsMagicImmune()]
+		return [this.cachedSpeed * this.StackCount, this.IsMagicImmune()]
 	}
 
 	protected UpdateSpecialValues(): void {
-		const name = "batrider_sticky_napalm"
-		this.cachedSpeed = this.GetSpecialValue("movement_speed_pct", name)
-		this.cachedMaxStacks = this.GetSpecialValue("max_stacks", name)
+		this.cachedSpeed = this.GetSpecialValue(
+			"movement_speed_pct",
+			"batrider_sticky_napalm"
+		)
 	}
 }

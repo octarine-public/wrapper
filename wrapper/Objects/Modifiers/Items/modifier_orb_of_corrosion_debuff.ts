@@ -19,7 +19,9 @@ export class modifier_orb_of_corrosion_debuff extends Modifier {
 		if (caster === undefined) {
 			return [0, false]
 		}
-		const value = caster.IsRanged ? this.slowRanged : this.slowMelee
+		const value = this.HasMeleeAttacksBonuses(caster)
+			? this.slowMelee
+			: this.slowRanged
 		return [-value, this.IsMagicImmune()]
 	}
 

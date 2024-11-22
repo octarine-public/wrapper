@@ -14,7 +14,7 @@ export class modifier_troll_warlord_berserkers_rage extends Modifier {
 	private cachedSpeed = 0
 
 	protected GetMoveSpeedBonusConstant(): [number, boolean] {
-		return [this.Parent?.IsRanged ? 0 : this.cachedSpeed, false]
+		return [this.HasMeleeAttacksBonuses() ? this.cachedSpeed : 0, false]
 	}
 
 	protected UpdateSpecialValues(): void {

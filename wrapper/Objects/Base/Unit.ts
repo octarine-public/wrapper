@@ -291,26 +291,32 @@ export class Unit extends Entity {
 	public get Target() {
 		return EntityManager.EntityByIndex<Unit>(this.TargetIndex_)
 	}
-	public get DayVisionAmplify() {
-		return 0 // this.CalcualteAmpDayVision()
-	}
-	public get BonusDayVision() {
-		return 0 // this.CalcualteBonusDayVision()
-	}
-	public get BonusNightVision() {
-		return 0 // this.CalcualteBonusNightVision()
-	}
-	public get DayVisionBonus() {
-		return this.NetworkedDayVision + this.BonusDayVision
-	}
-	public get NightVision() {
-		return this.NetworkedNightVision + this.BonusNightVision
-	}
+	/** @deprecated Use DayVisionRange */
 	public get DayVision() {
-		return this.DayVisionBonus * this.DayVisionAmplify
+		return this.DayVisionRange
 	}
+	/** @deprecated Use NightVisionRange */
+	public get NightVision() {
+		return this.NightVisionRange
+	}
+	/** @deprecated Use VisionRange */
 	public get Vision(): number {
-		return GameRules?.IsNight ? this.NightVision : this.DayVision
+		return this.VisionRange
+	}
+	public get DayVisionRange() {
+		if (this.IsBlind || this.IsWaitingToSpawn) {
+			return 0
+		}
+		return this.GetTimeVisionModifier(this.NetworkedDayVision, false)
+	}
+	public get NightVisionRange() {
+		if (this.IsBlind || this.IsWaitingToSpawn) {
+			return 0
+		}
+		return this.GetTimeVisionModifier(this.NetworkedNightVision, true)
+	}
+	public get VisionRange(): number {
+		return GameRules?.IsNight ? this.NightVisionRange : this.DayVisionRange
 	}
 	public get Color(): Color {
 		return PlayerCustomData.get(this.PlayerID)?.Color ?? Color.Red
@@ -437,7 +443,7 @@ export class Unit extends Entity {
 		return overrideSpeed !== 0 ? overrideSpeed : this.NetworkMoveSpeedBase
 	}
 	public get MoveSpeed(): number {
-		return Math.floor(this.GetMoveSpeedModifier(this.MoveSpeedBase) * 100) / 100
+		return this.GetMoveSpeedModifier()
 	}
 	/** @deprecated Use MoveSpeed */
 	public get Speed(): number {
@@ -551,6 +557,9 @@ export class Unit extends Entity {
 	}
 	public get IsMuted(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MUTED)
+	}
+	public get IsAttacksAreMelee(): boolean {
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ATTACKS_ARE_MELEE)
 	}
 	public get IsStunned(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_STUNNED)
@@ -865,8 +874,20 @@ export class Unit extends Entity {
 	public TexturePath(small?: boolean, team = this.Team): Nullable<string> {
 		return GetUnitTexture(this.Name, small, team)
 	}
-	public GetMoveSpeedModifier(baseSpeed: number, isUnslowable = false): number {
+	public GetMoveSpeedModifier(
+		baseSpeed: number = this.MoveSpeedBase,
+		isUnslowable: boolean = false
+	): number {
 		return this.ModifierManager.GetMoveSpeed(baseSpeed, isUnslowable)
+	}
+	public GetTimeVisionModifier(
+		baseVision: number,
+		isNight: boolean,
+		ignoreFixedVision: boolean = false
+	): number {
+		return !isNight
+			? this.ModifierManager.GetDayTimeVisionRange(baseVision, ignoreFixedVision)
+			: this.ModifierManager.GetNightTimeVisionRange(baseVision, ignoreFixedVision)
 	}
 	public GetNextAttackPoint(delay: number, nth = 0): number {
 		const baseAttackPoint = this.AttackPoint
