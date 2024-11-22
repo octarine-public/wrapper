@@ -58,17 +58,13 @@ export class Hero extends Unit {
 	public get ReplicatingOtherHeroModel() {
 		return EntityManager.EntityByIndex<Unit>(this.replicatingOtherHeroModel)
 	}
-	public get BaseAttackSpeedData() {
-		// override this e.g. morphling
-		return this.UnitData.BaseAttackSpeed
-	}
 	public get MoveSpeedBase(): number {
 		// override this e.g. morphling
 		return this.ReplicatingOtherHeroModel?.MoveSpeedBase ?? super.MoveSpeedBase
 	}
-	public get BaseAttackRange(): number {
+	public get AttackRangeBase(): number {
 		// override this e.g. morphling
-		return this.ReplicatingOtherHeroModel?.BaseAttackRange ?? super.BaseAttackRange
+		return this.ReplicatingOtherHeroModel?.AttackRangeBase ?? super.AttackRangeBase
 	}
 	public get IsRealHero(): boolean {
 		return !this.IsClone && !this.IsIllusion && !this.IsStrongIllusion

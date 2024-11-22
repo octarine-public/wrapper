@@ -64,6 +64,7 @@ export class Ability extends Entity {
 	public IsSpellAmplify = true
 	public ChannelStartTime = 0
 	public AbilityChargeRestoreTimeRemaining = 0
+	/** @deprecated use by index */
 	public AbilitySlot = EAbilitySlot.DOTA_SPELL_SLOT_HIDDEN
 	public Prediction: Nullable<IPrediction>
 
@@ -374,7 +375,7 @@ export class Ability extends Entity {
 		return 1
 	}
 	public get ManaCostAmplifier(): number {
-		return this.Owner?.BonusManaCostAmplifier ?? 1
+		return 1 //this.Owner?.BonusManaCostAmplifier ?? 1
 	}
 	public get CastRangeAmplifier(): number {
 		return this.Owner?.CastRangeAmplifier ?? 1

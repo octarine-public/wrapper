@@ -357,6 +357,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 					new Uint8Array(buf_),
 					"CDOTAUserMsg_TE_ProjectileLoc"
 				)
+				// const source = GetPredictionTarget(msg.get("source") as number)
 				const target = GetPredictionTarget(msg.get("target") as number)
 				const handle = msg.get("handle") as number,
 					launchTick = msg.get("launch_tick") as number,

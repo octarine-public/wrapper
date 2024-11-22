@@ -10,6 +10,100 @@ export class UnitModifierManager {
 
 	constructor(public readonly Owner: Unit) {}
 
+	public GetNightTimeVisionRange(
+		baseVision: number,
+		ignoreFixedVision: boolean = false
+	): number {
+		const bonusNightVision = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_NIGHT_VISION
+		)
+		const bonusVisionPercentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_VISION_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		const fixedNightVision = !ignoreFixedVision
+			? this.GetConstantHighestInternal(
+					EModifierfunction.MODIFIER_PROPERTY_FIXED_NIGHT_VISION
+				)
+			: 0
+		const bonusNightVisionUnique = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_NIGHT_VISION_UNIQUE
+		)
+		const calcNightVision =
+			(baseVision + bonusNightVision) * bonusVisionPercentage +
+			bonusNightVisionUnique
+
+		const totalNightVision =
+			fixedNightVision <= 0 || calcNightVision <= fixedNightVision
+				? calcNightVision
+				: fixedNightVision
+
+		return Math.max(totalNightVision, 200)
+	}
+
+	public GetDayTimeVisionRange(
+		baseVision: number,
+		ignoreFixedVision: boolean = false
+	): number {
+		const bonusDayVision = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_DAY_VISION
+		)
+		const bonusVisionPercentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_VISION_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		const bonusDayVisionPercentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_DAY_VISION_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		const fixedDayVision = !ignoreFixedVision
+			? this.GetConstantHighestInternal(
+					EModifierfunction.MODIFIER_PROPERTY_FIXED_DAY_VISION
+				)
+			: 0
+
+		const calcDayVision =
+			(baseVision + bonusDayVision) *
+			bonusVisionPercentage *
+			bonusDayVisionPercentage
+
+		const totalDayVision =
+			fixedDayVision <= 0 || calcDayVision <= fixedDayVision
+				? calcDayVision
+				: fixedDayVision
+
+		return Math.max(totalDayVision, 200)
+	}
+
+	public GetAttackRange(baseRange: number): number {
+		const bonusUnique = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS_UNIQUE
+		)
+		const bonus = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
+			false,
+			1,
+			1
+		)
+		const bonusPercentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		const maxAttackRange = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_MAX_ATTACK_RANGE
+		)
+		const totalAttackRange = (baseRange + bonusUnique + bonus) * bonusPercentage
+		return maxAttackRange <= 0 ? totalAttackRange : maxAttackRange
+	}
+
 	public GetMoveSpeed(baseSpeed: number, isUnslowable: boolean = false): number {
 		const { Min, Max } = MoveSpeedData,
 			nightSpeed = this.Owner.MoveSpeedNightBonus
@@ -125,77 +219,6 @@ export class UnitModifierManager {
 		}
 
 		return Math.max(Math.min(speedLimit, calculatedSpeed), 0)
-	}
-
-	public GetNightTimeVisionRange(
-		baseVision: number,
-		ignoreFixedVision: boolean = false
-	): number {
-		const bonusNightVision = this.GetConditionalAdditiveInternal(
-			EModifierfunction.MODIFIER_PROPERTY_BONUS_NIGHT_VISION
-		)
-		const bonusVisionPercentage = this.GetConditionalPercentageInternal(
-			EModifierfunction.MODIFIER_PROPERTY_BONUS_VISION_PERCENTAGE,
-			false,
-			1,
-			1
-		)
-		const fixedNightVision = !ignoreFixedVision
-			? this.GetConstantHighestInternal(
-					EModifierfunction.MODIFIER_PROPERTY_FIXED_NIGHT_VISION
-				)
-			: 0
-		const bonusNightVisionUnique = this.GetConstantHighestInternal(
-			EModifierfunction.MODIFIER_PROPERTY_BONUS_NIGHT_VISION_UNIQUE
-		)
-		const calcNightVision =
-			(baseVision + bonusNightVision) * bonusVisionPercentage +
-			bonusNightVisionUnique
-
-		const totalNightVision =
-			fixedNightVision <= 0 || calcNightVision <= fixedNightVision
-				? calcNightVision
-				: fixedNightVision
-
-		return Math.max(totalNightVision, 200)
-	}
-
-	public GetDayTimeVisionRange(
-		baseVision: number,
-		ignoreFixedVision: boolean = false
-	): number {
-		const bonusDayVision = this.GetConditionalAdditiveInternal(
-			EModifierfunction.MODIFIER_PROPERTY_BONUS_DAY_VISION
-		)
-		const bonusVisionPercentage = this.GetConditionalPercentageInternal(
-			EModifierfunction.MODIFIER_PROPERTY_BONUS_VISION_PERCENTAGE,
-			false,
-			1,
-			1
-		)
-		const bonusDayVisionPercentage = this.GetConditionalPercentageInternal(
-			EModifierfunction.MODIFIER_PROPERTY_BONUS_DAY_VISION_PERCENTAGE,
-			false,
-			1,
-			1
-		)
-		const fixedDayVision = !ignoreFixedVision
-			? this.GetConstantHighestInternal(
-					EModifierfunction.MODIFIER_PROPERTY_FIXED_DAY_VISION
-				)
-			: 0
-
-		const calcDayVision =
-			(baseVision + bonusDayVision) *
-			bonusVisionPercentage *
-			bonusDayVisionPercentage
-
-		const totalDayVision =
-			fixedDayVision <= 0 || calcDayVision <= fixedDayVision
-				? calcDayVision
-				: fixedDayVision
-
-		return Math.max(totalDayVision, 200)
 	}
 
 	public GetConstantLowestInternal(

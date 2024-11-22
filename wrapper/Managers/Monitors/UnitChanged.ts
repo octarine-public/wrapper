@@ -388,7 +388,6 @@ const Monitor = new (class CPreUnitChanged {
 	}
 
 	// hack workaround owner abilities
-	// hack workaround owner abilities
 	private setNewProperty(entity: Item | Ability, unit: Unit, arrIndex: number) {
 		entity.Owner_ = unit.Handle
 		entity.OwnerEntity = unit

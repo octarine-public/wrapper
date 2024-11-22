@@ -379,10 +379,9 @@ export class PlayerCustomData {
 	 * @returns {number}
 	 */
 	public get NetWorth(): number {
-		if (this.DataTeamPlayer !== undefined) {
-			return this.DataTeamPlayer.NetWorth
-		}
-		return Math.floor(this.ItemsGold)
+		return this.DataTeamPlayer === undefined
+			? Math.floor(this.ItemsGold)
+			: this.DataTeamPlayer.NetWorth
 	}
 	/**
 	 * see: https://dota2.fandom.com/wiki/Gold#Buyback
