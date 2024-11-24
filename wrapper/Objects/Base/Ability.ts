@@ -310,6 +310,9 @@ export class Ability extends Entity {
 		)
 	}
 	public get Cooldown(): number {
+		if (this.IsCooldownFrozen) {
+			return this.CooldownLength
+		}
 		if (!this.CurrentCharges && this.CooldownRestore > 0) {
 			return this.CooldownRestore
 		}
