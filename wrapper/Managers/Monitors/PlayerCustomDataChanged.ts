@@ -9,7 +9,7 @@ import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { EntityManager } from "../EntityManager"
 import { EventsSDK } from "../EventsSDK"
 
-new (class CPlayerDataCustomChanged {
+new (class CPlayerCustomDataChanged {
 	private readonly playersItems = new Map<number, Map<number, number>>()
 
 	constructor() {
@@ -112,7 +112,7 @@ new (class CPlayerDataCustomChanged {
 			this.playersItems.delete(playerID)
 			return
 		}
-		const totalItems = this.getTotalItems(unit)
+		const totalItems = this.getTotalItems(unit, playerID)
 		const oldItems = this.playersItems.get(playerID)
 		if (oldItems === undefined) {
 			this.playersItems.set(playerID, totalItems)
@@ -169,15 +169,11 @@ new (class CPlayerDataCustomChanged {
 		if (!(owner instanceof Unit) || this.isIllusion(owner) || owner.IsClone) {
 			return
 		}
-		let playerID = owner.PlayerID
-		if (playerID === -1) {
-			playerID = owner.OwnerPlayerID // example: courier
-		}
-		const playerData = PlayerCustomData.get(owner.PlayerID)
+		const playerData = PlayerCustomData.get(item.PlayerOwnerID)
 		if (playerData === undefined || !playerData.IsValid) {
 			return
 		}
-		const oldItems = this.playersItems.get(playerID)
+		const oldItems = this.playersItems.get(item.PlayerOwnerID)
 		if (oldItems !== undefined) {
 			oldItems.delete(item.Index)
 			this.updateGoldByItems(playerData, oldItems)
@@ -190,19 +186,22 @@ new (class CPlayerDataCustomChanged {
 		playerData.ItemsGold = gold
 	}
 
-	private getTotalItems(unit: Unit) {
+	private getTotalItems(unit: Unit, playerID: number) {
 		const arr = unit.TotalItems
 		const newMap = new Map<number, number>()
 		for (let i = arr.length - 1; i > -1; i--) {
 			const item = arr[i]
-			if (item !== undefined && item.Cost > 0) {
+			if (!item?.IsValid || item.Cost <= 0) {
+				continue
+			}
+			if (item.PlayerOwnerID === playerID) {
 				newMap.set(item.Index, item.Cost)
 			}
 		}
 		return newMap
 	}
 
-	protected isIllusion(entity: Unit) {
+	private isIllusion(entity: Unit) {
 		return entity.IsIllusion || entity.IsStrongIllusion
 	}
 })()
