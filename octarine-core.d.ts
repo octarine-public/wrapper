@@ -346,3 +346,8 @@ declare function ToggleBanHeroes(bannedHeroIds: number[] | false): void
 declare function fread(path: string, binary: boolean): Nullable<ArrayBuffer | string>
 declare function fread(path: string, binary: true): Nullable<ArrayBuffer>
 declare function fread(path: string, binary: false): Nullable<string>
+
+declare function SetChangerEnabled(enabled: boolean): void
+declare function AddPrismaticGem(r: number, g: number, b: number): void
+declare function AddGreevil(quas: number, wex: number, exort: number, shadow: number, unusual: number): void
+declare function SetEmblemAttackEffectOverride(itemDefID: number): void

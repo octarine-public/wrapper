@@ -178,7 +178,11 @@ export class Base {
 	public OnValue(func: (caller: this) => any): this {
 		this.OnValueChangedCBs.push(func as any)
 		if (this.executeOnAdd) {
-			func(this)
+			try {
+				func(this)
+			} catch (ex) {
+				console.error("OnValue", ex)
+			}
 		}
 		return this
 	}
@@ -346,7 +350,11 @@ export class Base {
 
 	public TriggerOnValueChangedCBs(): void {
 		for (let i = this.OnValueChangedCBs.length - 1; i > -1; i--) {
-			this.OnValueChangedCBs[i](this)
+			try {
+				this.OnValueChangedCBs[i](this)
+			} catch (ex) {
+				console.error("TriggerOnValueChangedCBs", ex)
+			}
 		}
 		this.UpdateIsDefault()
 	}

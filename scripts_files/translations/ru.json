@@ -86,5 +86,15 @@
 	"Non defaults list": "Список измененных настроек",
 	"Hard reset config": "Полностью сбросить настройки",
 	"Reset to default": "Сбросить",
-	"[New]": "[Новое]"
+	"[New]": "[Новое]",
+	"Inventory": "Инвентарь",
+	"Emblem attack effect": "Эффект атаки эмблемы",
+	"None": "Никакой",
+	"Diretide - Red": "Diretide (красная)",
+	"Diretide - Green": "Diretide (зелёная)",
+	"Diretide - Blue": "Diretide (синяя)",
+	"Diretide - Yellow": "Diretide (жёлтая)",
+	"Prismatic Gems": "Призматические самоцветы",
+	"Obtain": "Получить",
+	"Greevils": "Гряволы"
 }

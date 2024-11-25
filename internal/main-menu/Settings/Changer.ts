@@ -2,12 +2,18 @@ import { Color, ConVarsSDK, GameState, ImageData, Menu } from "../../../wrapper/
 
 class TreeModelInfo {
 	constructor(
-		public nameUI: string,
+		public readonly nameUI: string,
 		public readonly modelPath = "",
 		public readonly maxScale = 1,
 		public readonly canChangeColor = false,
 		public readonly zeroRotation = false,
 		public readonly heightOffset = 0
+	) {}
+}
+class EmblemInfo {
+	constructor(
+		public readonly nameUI: string,
+		public readonly defID: number
 	) {}
 }
 export class InternalChanger {
@@ -81,6 +87,15 @@ export class InternalChanger {
 		new TreeModelInfo("New Bloom", "models/props_tree/newbloom_tree.vmdl", 0.7),
 		new TreeModelInfo("Mango", "models/props_tree/mango_tree.vmdl", 0.7)
 	]
+	private readonly emblemsData: EmblemInfo[] = [
+		new EmblemInfo("Default", 0),
+		new EmblemInfo("None", -1),
+
+		new EmblemInfo("Diretide - Red", 18393),
+		new EmblemInfo("Diretide - Green", 18394),
+		new EmblemInfo("Diretide - Blue", 18379),
+		new EmblemInfo("Diretide - Yellow", 13453)
+	]
 
 	private readonly weatherNames = [
 		"Default",
@@ -98,6 +113,54 @@ export class InternalChanger {
 	constructor(settings: Menu.Node) {
 		this.node = settings.AddNode("Changer", "menu/icons/changer.svg")
 		this.node.SortNodes = false
+
+		const inventoryChanger = this.node.AddNode("Inventory")
+		inventoryChanger.SortNodes = false
+
+		const inventoryState = inventoryChanger.AddToggle("State", true)
+		inventoryState.executeOnAdd = false
+		inventoryState.OnValue(c => {
+			SetChangerEnabled(c.value)
+		})
+		inventoryState.executeOnAdd = true
+
+		const inventoryEmblem = inventoryChanger.AddDropdown(
+			"Emblem attack effect",
+			this.emblemsData.map(data => {
+				return data.nameUI
+			})
+		)
+		inventoryEmblem.executeOnAdd = false
+		inventoryEmblem.OnValue(c => {
+			SetEmblemAttackEffectOverride(this.emblemsData[c.SelectedID].defID)
+		})
+		inventoryEmblem.executeOnAdd = true
+		inventoryEmblem.UseOneLine = false
+
+		const prismaticNode = inventoryChanger.AddNode("Prismatic Gems")
+		prismaticNode.SortNodes = false
+		const prismaticColor = prismaticNode.AddColorPicker("Color")
+		prismaticNode.AddButton("Obtain").OnValue(() => {
+			const color = prismaticColor.SelectedColor
+			AddPrismaticGem(color.r, color.g, color.b)
+		})
+
+		const greevilNode = inventoryChanger.AddNode("Greevils")
+		greevilNode.SortNodes = false
+		const quas = greevilNode.AddSlider("Quas", 0, 0, 3)
+		const wex = greevilNode.AddSlider("Wex", 0, 0, 3)
+		const exort = greevilNode.AddSlider("Exort", 0, 0, 3)
+		const unusual = greevilNode.AddSlider("Unusual", 0, 0, 3)
+		const shadow = greevilNode.AddToggle("Shadow")
+		greevilNode.AddButton("Obtain").OnValue(() => {
+			AddGreevil(
+				quas.value,
+				wex.value,
+				exort.value,
+				shadow.value ? 1 : 0,
+				unusual.value
+			)
+		})
 
 		this.treeChanger = this.node.AddNode(
 			"Trees",
