@@ -9,6 +9,7 @@ import { Tower } from "../../Objects/Buildings/Tower"
 import { GameState } from "../../Utils/GameState"
 import { EntityManager } from "../EntityManager"
 import { EventsSDK } from "../EventsSDK"
+import { TaskManager } from "../TaskManager"
 
 const Monitor = new (class CUnitAttackChanged {
 	protected get HasDebug(): boolean {
@@ -131,11 +132,11 @@ const Monitor = new (class CUnitAttackChanged {
 			EventsSDK.emit("AttackEnded", false, source)
 			this.attackSleeper.ResetKey(source.Index)
 		}
-		// TODO: use source.AtackRate?
 		const delay =
 			Math.ceil(attackPoint / GameState.TickInterval) * GameState.TickInterval
 		this.attackSleeper.Sleep(delay * 1000, source.Index)
 		EventsSDK.emit("AttackStarted", false, source, attackPoint, animationNames)
+		this.handlerErrorMessageAttack(source, attackPoint)
 	}
 
 	private attackStopped(source: Unit, stoppedByError = false) {
@@ -192,21 +193,57 @@ const Monitor = new (class CUnitAttackChanged {
 		if (!this.HasDebug) {
 			return
 		}
-		console.error(
-			`Failed to get ${name}\n`,
-			`ClassName: ${source.ClassName}\n`,
-			`IsAlive: ${source.IsAlive}\n`,
-			`Activity: ${activity}\n`,
-			`SequenceVariant: ${seqVar}\n`,
-			`ModelName: ${source.ModelName}\n`,
-			`PlaybackRate: ${source.PlaybackRate}\n`,
-			`AnimationTime: ${source.AnimationTime}\n`,
-			`NetworkSequenceIndex: ${source.NetworkSequenceIndex}\n`,
-			`TargetIndex: ${source.TargetIndex_}\n`,
-			`TargetName: ${source.Target?.Name}\n`
-		)
+		TaskManager.Begin(() => {
+			console.error(
+				`Failed to get ${name}\n`,
+				`ClassName: ${source.ClassName}\n`,
+				`IsAlive: ${source.IsAlive}\n`,
+				`Activity: ${activity}\n`,
+				`SequenceVariant: ${seqVar}\n`,
+				`ModelName: ${source.ModelName}\n`,
+				`PlaybackRate: ${source.PlaybackRate}\n`,
+				`AnimationTime: ${source.AnimationTime}\n`,
+				`NetworkSequenceIndex: ${source.NetworkSequenceIndex}\n`,
+				`TargetIndex: ${source.TargetIndex_}\n`,
+				`TargetName: ${source.Target?.Name}\n`
+			)
+		})
+	}
+
+	private handlerErrorMessageAttack(unit: Unit, rawCastPoint: number) {
+		if (!this.HasDebug) {
+			return
+		}
+		TaskManager.Begin(() => {
+			const digits = 1e4,
+				epsilon = 1e-4,
+				currValue = Math.ceil(unit.AttackPoint * digits) / digits,
+				networkedValue = Math.ceil(rawCastPoint * digits) / digits
+
+			if (Math.abs(currValue - networkedValue) > epsilon) {
+				console.error(
+					"Error: networked attack point doesn't match current attack point\n",
+					`Has EchoSabre: ${unit.HasBuffByName("modifier_item_echo_sabre")}\n`,
+					`Name: ${unit.Name}\n`,
+					`ClassName: ${unit.ClassName}\n`,
+					`AttackSpeed ${unit.AttackSpeed}\n`,
+					`AttackPoint ${currValue}\n`,
+					`UnitAnimation#CastPoint ${networkedValue}\n`
+				)
+			}
+		})
 	}
 })()
+
+EventsSDK.on("GameEnded", () => Monitor.GameEnded(), EventPriority.IMMEDIATE)
+
+EventsSDK.on("EntityDestroyed", entity => Monitor.EntityDestroyed(entity))
+
+EventsSDK.on(
+	"GameEvent",
+	(name, obj) => Monitor.GameEvent(name, obj),
+	EventPriority.IMMEDIATE
+)
 
 EventsSDK.on(
 	"PrepareUnitOrders",
@@ -217,13 +254,6 @@ EventsSDK.on(
 EventsSDK.on(
 	"UnitAnimationEnd",
 	(unit, _) => Monitor.UnitAnimation(unit),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"UnitAnimation",
-	(source, seqVar, _playbackrate, attackPoint, _type, activity, _lagCompensationTime) =>
-		Monitor.UnitAnimation(source, seqVar, activity, attackPoint),
 	EventPriority.IMMEDIATE
 )
 
@@ -239,12 +269,17 @@ EventsSDK.on(
 	EventPriority.IMMEDIATE
 )
 
-EventsSDK.on("EntityDestroyed", entity => Monitor.EntityDestroyed(entity))
-
-EventsSDK.on("GameEnded", () => Monitor.GameEnded(), EventPriority.IMMEDIATE)
-
 EventsSDK.on(
-	"GameEvent",
-	(name, obj) => Monitor.GameEvent(name, obj),
+	"UnitAnimation",
+	(
+		source,
+		seqVar,
+		_playbackrate,
+		_castPoint,
+		_type,
+		activity,
+		_lagCompensationTime,
+		rawCastPoint
+	) => Monitor.UnitAnimation(source, seqVar, activity, rawCastPoint),
 	EventPriority.IMMEDIATE
 )

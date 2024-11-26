@@ -52,19 +52,19 @@ export class Hero extends Unit {
 		super(Index, serial)
 		this.IsHero = true
 	}
+	public get BaseMoveSpeed(): number {
+		// override this e.g. morphling
+		return this.ReplicatingOtherHeroModel?.BaseMoveSpeed ?? super.BaseMoveSpeed
+	}
+	public get BaseAttackRange(): number {
+		// override this e.g. morphling
+		return this.ReplicatingOtherHeroModel?.BaseAttackRange ?? super.BaseAttackRange
+	}
 	public get FocusFireTarget() {
 		return EntityManager.EntityByIndex<Unit>(this.FocusFireTargetIndex_)
 	}
 	public get ReplicatingOtherHeroModel() {
 		return EntityManager.EntityByIndex<Unit>(this.replicatingOtherHeroModel)
-	}
-	public get MoveSpeedBase(): number {
-		// override this e.g. morphling
-		return this.ReplicatingOtherHeroModel?.MoveSpeedBase ?? super.MoveSpeedBase
-	}
-	public get AttackRangeBase(): number {
-		// override this e.g. morphling
-		return this.ReplicatingOtherHeroModel?.AttackRangeBase ?? super.AttackRangeBase
 	}
 	public get IsRealHero(): boolean {
 		return !this.IsClone && !this.IsIllusion && !this.IsStrongIllusion

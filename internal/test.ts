@@ -4,7 +4,7 @@ const units = EntityManager.GetEntitiesByClass(Unit)
 
 EventsSDK.on("Draw", () => {
 	for (const unit of units) {
-		if (unit.IsBuilding || unit.MoveSpeedBase === 0) {
+		if (unit.IsBuilding || unit.BaseMoveSpeed === 0) {
 			continue
 		}
 		const w2s = RendererSDK.WorldToScreen(unit.Position)
@@ -12,9 +12,8 @@ EventsSDK.on("Draw", () => {
 			continue
 		}
 		RendererSDK.Text(
-			`MoveSpeedBase:${unit.MoveSpeedBase}
-			MoveSpeed:${unit.MoveSpeed}
-			AttackRange:${unit.GetAttackRange(undefined, 0, false)}`,
+			`AS:${unit.AttackSpeed}(${unit.SecondsPerAttack}s)
+			MS:${unit.MoveSpeed}`,
 			w2s
 		)
 	}

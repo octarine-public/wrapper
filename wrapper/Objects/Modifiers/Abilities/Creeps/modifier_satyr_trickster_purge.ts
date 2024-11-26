@@ -32,10 +32,10 @@ export class modifier_satyr_trickster_purge extends Modifier {
 
 	private selfReduction(owner: Unit) {
 		const modifierManager = owner.ModifierManager
-		const slowResistanceStacking = modifierManager.GetPercentageEffectiveInternal(
+		const slowResistanceUnique = modifierManager.GetPercentageMultiplicativeInternal(
 			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE
 		)
-		return 2 - slowResistanceStacking
+		return 2 - slowResistanceUnique
 	}
 
 	private calculateValue(effectivePurge: number): number {

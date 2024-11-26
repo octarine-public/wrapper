@@ -14,7 +14,10 @@ Math.remapRange = (
 	minResult: number,
 	maxResult: number
 ): number =>
-	minResult + (maxResult - minResult) * Math.clamp((value - min) / (max - min), 0, 1)
+	min === max
+		? minResult
+		: minResult +
+			(maxResult - minResult) * Math.clamp((value - min) / (max - min), 0, 1)
 
 Math.lerp = (start: number, end: number, amount: number): number =>
 	(1 - amount) * start + amount * end

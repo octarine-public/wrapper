@@ -4,14 +4,14 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_terrorblade_metamorphosis_transform_aura_applier extends Modifier {
+	private cachedRange = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
 			this.GetAttackRangeBonus.bind(this)
 		]
 	])
-
-	private cachedRange = 0
 
 	protected GetAttackRangeBonus(): [number, boolean] {
 		// e.g rubick

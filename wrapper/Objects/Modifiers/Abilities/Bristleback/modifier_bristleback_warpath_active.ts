@@ -4,6 +4,8 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_bristleback_warpath_active extends Modifier {
+	private cachedSpeed = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -11,8 +13,6 @@ export class modifier_bristleback_warpath_active extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
 
 	public PostDataUpdate(): void {
 		const owner = this.Parent

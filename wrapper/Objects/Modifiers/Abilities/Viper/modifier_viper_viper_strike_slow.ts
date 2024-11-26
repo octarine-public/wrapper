@@ -4,24 +4,35 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_viper_viper_strike_slow extends Modifier {
+	private cachedSpeed = 0
+	private cachedAttackSpeed = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
+			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
 
-	private cachedSpeed = 0
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		const value = (this.RemainingTime / this.Duration) * this.cachedSpeed
-		return [value, this.IsMagicImmune()]
+		return [this.calculateSpeedEff(this.cachedSpeed), this.IsMagicImmune()]
+	}
+
+	protected GetAttackSpeedBonusConstant(): [number, boolean] {
+		return [this.calculateSpeedEff(this.cachedAttackSpeed), this.IsMagicImmune()]
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedSpeed = this.GetSpecialValue(
-			"bonus_movement_speed",
-			"viper_viper_strike"
-		)
+		const name = "viper_viper_strike"
+		this.cachedSpeed = this.GetSpecialValue("bonus_movement_speed", name)
+		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name)
+	}
+
+	private calculateSpeedEff(value: number): number {
+		return (this.RemainingTime / this.Duration) * value
 	}
 }

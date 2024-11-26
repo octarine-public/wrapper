@@ -34,11 +34,11 @@ export class modifier_necrolyte_ghost_shroud_active extends Modifier {
 			if (!hero.HasBuffByName("modifier_necrolyte_ghost_shroud_aura_effect")) {
 				continue
 			}
-			const speed = hero.GetMoveSpeedModifier(hero.MoveSpeedBase, true)
-			const slowResistance = hero.ModifierManager.GetPercentageEffectiveInternal(
+			const speed = hero.GetMoveSpeedModifier(hero.BaseMoveSpeed, true)
+			const slowStacking = hero.ModifierManager.GetPercentageMultiplicativeInternal(
 				EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING
 			)
-			const slow = 2 - slowResistance,
+			const slow = 2 - slowStacking,
 				multiplier = 0.000099999997,
 				transfer = this.cachedSpeedTransfer
 			result += this.cachedSpeed * multiplier * speed * transfer * slow

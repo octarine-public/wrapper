@@ -1,0 +1,31 @@
+import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
+import { GameState } from "../../../Utils/GameState"
+import { Modifier } from "../../Base/Modifier"
+
+@WrapperClassModifier()
+export class modifier_neutral_upgrade extends Modifier {
+	private cachedAttackSpeed = 0
+	private cachedIncreaseTime = 0
+
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
+			this.GetAttackSpeedBonusConstant.bind(this)
+		]
+	])
+
+	protected GetAttackSpeedBonusConstant(): [number, boolean] {
+		return [this.getIncreaseByTime(this.cachedAttackSpeed), false]
+	}
+
+	protected UpdateSpecialValues(): void {
+		const name = "neutral_upgrade"
+		this.cachedAttackSpeed = this.GetSpecialValue("increase_aspd", name)
+		this.cachedIncreaseTime = this.GetSpecialValue("increase_time", name)
+	}
+
+	private getIncreaseByTime(value: number): number {
+		return Math.floor(GameState.RawGameTime / this.cachedIncreaseTime) * value
+	}
+}

@@ -1,26 +1,11 @@
 import { WrapperClassModifier } from "../../../Decorators"
-import { EModifierfunction } from "../../../Enums/EModifierfunction"
-import { Modifier } from "../../Base/Modifier"
+import { modifier_item_moon_shard } from "./modifier_item_moon_shard"
 
 @WrapperClassModifier()
-export class modifier_item_moon_shard_consumed extends Modifier {
-	protected readonly DeclaredFunction = new Map([
-		[
-			EModifierfunction.MODIFIER_PROPERTY_BONUS_NIGHT_VISION_UNIQUE,
-			this.GetBonusNightVisionUnique.bind(this)
-		]
-	])
-
-	private cachedNightVision = 0
-
-	protected GetBonusNightVisionUnique(): [number, boolean] {
-		return [this.cachedNightVision, false]
-	}
-
+export class modifier_item_moon_shard_consumed extends modifier_item_moon_shard {
 	protected UpdateSpecialValues(): void {
-		this.cachedNightVision = this.GetSpecialValue(
-			"consumed_bonus_night_vision",
-			"item_moon_shard"
-		)
+		const name = "item_moon_shard"
+		this.CachedAttackSpeed = this.GetSpecialValue("consumed_bonus", name)
+		this.CachedNightVision = this.GetSpecialValue("consumed_bonus_night_vision", name)
 	}
 }

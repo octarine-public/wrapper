@@ -1,8 +1,6 @@
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
-import { invoker_ice_wall } from "../../../Abilities/Invoker/invoker_ice_wall"
-import { invoker_ice_wall_ad } from "../../../Abilities/Invoker/invoker_ice_wall_ad"
-import { Ability } from "../../../Base/Ability"
+import { invoker_spell_extends } from "../../../Abilities/Invoker/invoker_spell_extends"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
@@ -27,21 +25,12 @@ export class modifier_invoker_ice_wall_slow_debuff extends Modifier {
 	protected GetSpecialValue(
 		specialName = "slow",
 		abilityName = "invoker_ice_wall",
-		level = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
+		_level?: number
 	): number {
 		const ability = this.Ability
-		if (!this.shouldBeValidSpell(ability)) {
+		if (!(ability instanceof invoker_spell_extends)) {
 			return 0
 		}
-		level = Math.max(ability.QuasLevel + level, level)
-		return super.GetSpecialValue(specialName, abilityName, level)
-	}
-
-	private shouldBeValidSpell(
-		ability: Nullable<Ability>
-	): ability is invoker_ice_wall | invoker_ice_wall_ad {
-		return (
-			ability instanceof invoker_ice_wall || ability instanceof invoker_ice_wall_ad
-		)
+		return super.GetSpecialValue(specialName, abilityName, ability.QuasLevel)
 	}
 }

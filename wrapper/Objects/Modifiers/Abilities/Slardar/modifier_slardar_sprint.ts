@@ -4,6 +4,13 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_slardar_sprint extends Modifier {
+	private slowResist = 0
+	private bonusSpeed = 0
+	private bonusBurst = 0
+
+	private burstDuration = 0
+	private maxBurstDuration = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING,
@@ -14,13 +21,6 @@ export class modifier_slardar_sprint extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
-	private slowResist = 0
-	private bonusSpeed = 0
-	private bonusBurst = 0
-
-	private burstDuration = 0
-	private maxBurstDuration = 0
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const eff = Math.remapRange(

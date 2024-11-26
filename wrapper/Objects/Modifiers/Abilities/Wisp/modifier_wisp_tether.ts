@@ -45,8 +45,8 @@ export class modifier_wisp_tether extends Modifier {
 			this.cachedSpeed = 0
 			return
 		}
-		const baseSpeedOwner = owner.MoveSpeedBase,
-			baseSpeedTarget = targetTether.MoveSpeedBase,
+		const baseSpeedOwner = owner.BaseMoveSpeed,
+			baseSpeedTarget = targetTether.BaseMoveSpeed,
 			targetSpeed = targetTether.GetMoveSpeedModifier(baseSpeedTarget, true)
 
 		let finalMoveSpeed = MoveSpeedData.Min

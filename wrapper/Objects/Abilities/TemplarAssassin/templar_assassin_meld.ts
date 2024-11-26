@@ -12,6 +12,6 @@ export class templar_assassin_meld extends Ability {
 	}
 
 	public GetBaseSpeedForLevel(_level: number): number {
-		return this.Owner?.AttackProjectileSpeed ?? 0
+		return this.Owner?.BaseAttackProjectileSpeed ?? 0
 	}
 }

@@ -4,23 +4,31 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_brewmaster_thunder_clap extends Modifier {
+	private cachedSpeed = 0
+	private cachedAttackSpeed = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
+			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [-this.cachedSpeed, this.IsMagicImmune()]
 	}
 
+	protected GetAttackSpeedBonusConstant(): [number, boolean] {
+		return [-this.cachedAttackSpeed, this.IsMagicImmune()]
+	}
+
 	protected UpdateSpecialValues(): void {
-		this.cachedSpeed = this.GetSpecialValue(
-			"movement_slow",
-			"brewmaster_thunder_clap"
-		)
+		const name = "brewmaster_thunder_clap"
+		this.cachedSpeed = this.GetSpecialValue("movement_slow", name)
+		this.cachedAttackSpeed = this.GetSpecialValue("attack_speed_slow", name)
 	}
 }

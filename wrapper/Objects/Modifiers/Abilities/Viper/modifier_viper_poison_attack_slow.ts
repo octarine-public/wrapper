@@ -11,20 +11,14 @@ export class modifier_viper_poison_attack_slow extends Modifier {
 		]
 	])
 
-	private maxStacks = 0
 	private cachedSpeed = 0
 
-	private get MaxStackCount(): number {
-		return Math.min(this.StackCount, this.maxStacks)
-	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [-(this.cachedSpeed * this.MaxStackCount), this.IsMagicImmune()]
+		return [-(this.cachedSpeed * this.StackCount), this.IsMagicImmune()]
 	}
 
 	protected UpdateSpecialValues(): void {
 		const name = "viper_poison_attack"
-		this.maxStacks = this.GetSpecialValue("max_stacks", name)
 		this.cachedSpeed = this.GetSpecialValue("movement_speed", name)
 	}
 }

@@ -2,7 +2,7 @@ import { Color } from "../../Base/Color"
 import { QAngle } from "../../Base/QAngle"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
-import { ArmorPerAgility, AttackSpeedData } from "../../Data/GameData"
+import { ArmorPerAgility } from "../../Data/GameData"
 import { GetUnitTexture } from "../../Data/ImageData"
 import {
 	GetAngleToFacePath,
@@ -22,7 +22,6 @@ import { DOTAUnitAttackCapability } from "../../Enums/DOTAUnitAttackCapability"
 import { DOTAUnitMoveCapability } from "../../Enums/DOTAUnitMoveCapability"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
 import { EAbilitySlot } from "../../Enums/EAbilitySlot"
-import { EModifierfunction } from "../../Enums/EModifierfunction"
 import { GameActivity } from "../../Enums/GameActivity"
 import { GridNavCellFlags } from "../../Enums/GridNavCellFlags"
 import { modifierstate } from "../../Enums/modifierstate"
@@ -101,7 +100,7 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_iDamageBonus")
 	public readonly BonusDamage: number = 0
 	@NetworkedBasicField("m_iDayTimeVisionRange")
-	public readonly NetworkedDayVision: number = 0
+	public readonly NetworkedBaseDayVision: number = 0
 	@NetworkedBasicField("m_flDeathTime")
 	public readonly DeathTime: number = 0
 	@NetworkedBasicField("m_bStolenScepter")
@@ -131,9 +130,11 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_flLastDealtDamageTime")
 	public readonly LastDealtDamageTime: number = 0
 	@NetworkedBasicField("m_iMoveSpeed")
-	public readonly NetworkMoveSpeedBase: number = 0
+	public readonly NetworkBaseMoveSpeed: number = 0
 	@NetworkedBasicField("m_iAttackRange")
-	public readonly NetworkAttackRangeBase: number = 0
+	public readonly NetworkBaseAttackRange: number = 0
+	@NetworkedBasicField("m_flBaseAttackTime")
+	public readonly NetworkBaseAttackTime: number = 0
 	@NetworkedBasicField("m_bIsWaitingToSpawn")
 	public readonly IsWaitingToSpawn: boolean = false
 	public PredictedIsWaitingToSpawn = true
@@ -142,7 +143,7 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_flMaxMana")
 	public readonly MaxMana: number = 0
 	@NetworkedBasicField("m_iNightTimeVisionRange")
-	public readonly NetworkedNightVision: number = 0
+	public readonly NetworkedBaseNightVision: number = 0
 	@NetworkedBasicField("m_flTauntCooldown")
 	public readonly TauntCooldown: number = 0
 	@NetworkedBasicField("m_flTauntCooldown2")
@@ -282,72 +283,6 @@ export class Unit extends Entity {
 	 */
 	public readonly FogVisiblePosition = new Vector3().Invalidate()
 
-	public get TotalIntellect() {
-		return !this.HasBuffByName("modifier_ogre_magi_dumb_luck")
-			? this.BaseTotalIntellect
-			: 0
-	}
-	public get LastDamageTime() {
-		return this.LastDamageTime_
-	}
-	public get Target() {
-		return EntityManager.EntityByIndex<Unit>(this.TargetIndex_)
-	}
-	/** @deprecated Use DayVisionRange */
-	public get DayVision() {
-		return this.DayVisionRange
-	}
-	/** @deprecated Use NightVisionRange */
-	public get NightVision() {
-		return this.NightVisionRange
-	}
-	/** @deprecated Use VisionRange */
-	public get Vision(): number {
-		return this.VisionRange
-	}
-	public get DayVisionRange() {
-		if (this.IsBlind || this.IsWaitingToSpawn) {
-			return 0
-		}
-		return this.GetTimeVisionModifier(this.NetworkedDayVision, false)
-	}
-	public get NightVisionRange() {
-		if (this.IsBlind || this.IsWaitingToSpawn) {
-			return 0
-		}
-		return this.GetTimeVisionModifier(this.NetworkedNightVision, true)
-	}
-	public get VisionRange(): number {
-		return GameRules?.IsNight ? this.NightVisionRange : this.DayVisionRange
-	}
-	public get Color(): Color {
-		return PlayerCustomData.get(this.PlayerID)?.Color ?? Color.Red
-	}
-	// ===================================== Cast point ===================================== //
-	public get BonusCastPointAmplifier(): number {
-		return 0 // this.CalculateCastPointAmplifier()
-	}
-	// ===================================== Armor ===================================== //
-	public get BaseArmor(): number {
-		return this.BaseFixedArmor === 0 ? this.NetworkedBaseArmor : this.BaseFixedArmor
-	}
-
-	public get BaseFixedArmor(): number {
-		return 0 // this.CalculateBaseFixedArmor()
-	}
-
-	public get BaseBonusArmor(): number {
-		return 0 // this.CalculateBaseArmorBonus()
-	}
-
-	public get BaseBonusArmorAmplifier(): number {
-		return 1 // this.CalculateBaseBonusArmorAmplifier()
-	}
-
-	public get BonusArmor(): number {
-		return 0 // this.CalculateArmorBonus()
-	}
-
 	public get Armor() {
 		const perAgil = this.TotalAgility * ArmorPerAgility,
 			base = this.BaseArmor + perAgil
@@ -357,67 +292,79 @@ export class Unit extends Entity {
 		// Unit#BonusArmorAmplifier
 		return totalBase + this.BonusArmor
 	}
-	// ===================================== Attack Speed ===================================== //
-	public get AttackProjectileSpeed(): number {
-		return this.UnitData.ProjectileSpeed
-	}
-	public get IsAttackSpeedLimit(): boolean {
-		return false
-	}
-	public get BaseAttackTimeData(): number {
-		return this.UnitData.BaseAttackTime
-	}
-	public get BaseAttackSpeedData(): number {
-		return this.UnitData.BaseAttackSpeed
-	}
-	public get BaseAttackAnimationPointData(): number {
-		return this.UnitData.AttackAnimationPoint
-	}
-	public get BaseAttackSpeed(): number {
-		return 0 // this.CalculateBaseAttackSpeed()
-	}
-	public get BaseAttackSpeedBonus(): number {
-		return 0 // this.CalculateBaseAttackSpeedBonus()
-	}
-	public get BaseAttackSpeedAmplifier(): number {
-		return 1 // this.CalculateBaseAttackSpeedAmplifier()
-	}
-	public get BaseAttackTime(): number {
-		return 0 // this.CalculateBaseAttackTime()
-	}
-	public get BaseAttackAnimationPoint(): number {
-		return 0 // this.CalculateBaseAttackAnimationPoint()
-	}
-	public get AttackAnimationPoint(): number {
-		return 0 // this.CalculateAttackAnimationPoint()
-	}
-	public get AttackSpeedBonus(): number {
-		return 0 // this.CalculateAttackSpeedBonus()
-	}
-	public get AttackSpeedAmplifier(): number {
-		return 1 // this.CalculateAttackSpeedAmplifier()
+	public get ArmorType(): ArmorType {
+		return this.UnitData.ArmorType
 	}
 	public get AttacksPerSecond(): number {
-		return 1 / this.AttackRate
+		return this.ModifierManager.AttacksPerSecond
 	}
-	public get AttackRate() {
-		const isLimit = this.IsAttackSpeedLimit
-		const unlimitedHaste = isLimit
-			? AttackSpeedData.MaxHaste
-			: Number.MAX_SAFE_INTEGER / 100
-		const attackSpeed = Math.min(this.AttackSpeed / 100, unlimitedHaste)
-		return this.BaseAttackTime / Math.max(attackSpeed, AttackSpeedData.MinHaste)
+	public get AttackAnimationPoint(): number {
+		return this.ModifierManager.GetAttackAnimationPoint(this.BaseAttackAnimationPoint)
 	}
 	public get AttackHasteFactor(): number {
-		return this.BaseAttackTime / this.AttackRate
+		const baseTime = this.BaseAttackTime
+		return baseTime === 0 ? 1 : this.AttacksPerSecond / (1 / baseTime)
 	}
 	public get AttackPoint(): number {
-		return this.AttackAnimationPoint / this.AttackHasteFactor
+		return Math.max(this.AttackAnimationPoint / this.AttackHasteFactor, 0)
 	}
 	public get AttackBackswing(): number {
-		return this.AttackRate - this.AttackPoint
+		return this.SecondsPerAttack - this.AttackPoint
 	}
-	// ===================================== Move Speed ===================================== //
+	/** @deprecated Use SecondsPerAttack */
+	public get AttackRate() {
+		return this.SecondsPerAttack
+	}
+	public get AttackSpeed(): number {
+		return this.GetAttackSpeedModifier()
+	}
+	public get AttackDamageType(): AttackDamageType {
+		return this.UnitData.AttackDamageType
+	}
+	public get AttackDamageAverage(): number {
+		return (this.AttackDamageMin + this.AttackDamageMax) / 2
+	}
+	public get AttackProjectileSpeed(): number {
+		return this.BaseAttackProjectileSpeed
+	}
+	public get BaseAttackTime(): number {
+		return this.ModifierManager.GetBaseAttackTime(this.NetworkBaseAttackTime)
+	}
+	public get BaseAttackRange(): number {
+		return this.ModifierManager.GetBaseAttackRange(this.NetworkBaseAttackRange)
+	}
+	public get BaseAttackSpeed(): number {
+		return this.ModifierManager.GetBaseAttackSpeed(this.UnitData.BaseAttackSpeed)
+	}
+	public get BaseAttackSpeedIncrease(): number {
+		return this.BaseAttackSpeed + this.TotalAgility
+	}
+	public get BaseAttackProjectileSpeed(): number {
+		return this.UnitData.ProjectileSpeed
+	}
+	public get BaseAttackAnimationPoint(): number {
+		return this.UnitData.AttackAnimationPoint
+	}
+	public get BaseArmor(): number {
+		return this.NetworkedBaseArmor
+	}
+	public get BaseMovementTurnRate(): number {
+		return this.UnitData.MovementTurnRate
+	}
+	public get BaseMoveSpeed(): number {
+		return this.ModifierManager.GetBaseMoveSpeed(this.NetworkBaseMoveSpeed)
+	}
+	public get DayVisionRange() {
+		return !this.IsBlind && this.IsSpawned
+			? this.GetTimeVisionModifier(this.NetworkedBaseDayVision, false)
+			: 0
+	}
+	public get LastDamageTime() {
+		return this.LastDamageTime_
+	}
+	public get MoveSpeed(): number {
+		return this.GetMoveSpeedModifier()
+	}
 	/** @description The night-time movement speed bonus.*/
 	public get MoveSpeedNightBonus(): number {
 		if (GameRules === undefined || !GameRules.IsNight) {
@@ -435,27 +382,79 @@ export class Unit extends Entity {
 		const damageTime = Math.max(lastAttackTime, lastDamageTime, lastDealDamageTime)
 		return GameState.RawGameTime >= damageTime ? nightMoveSpeed : 0
 	}
-	public get MoveSpeedBase(): number {
-		const overrideBaseSpeed = this.ModifierManager.GetConstantLowestInternal(
-			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BASE_OVERRIDE
-		)
-		if (overrideBaseSpeed !== 0) {
-			return overrideBaseSpeed
-		}
-		return this.NetworkMoveSpeedBase
-	}
-	public get MoveSpeed(): number {
-		return this.GetMoveSpeedModifier()
-	}
 	/** @deprecated Use MoveSpeed */
 	public get Speed(): number {
 		return this.MoveSpeed
 	}
-	/** ============================== Turn Rate ======================================= */
-	public get BaseMovementTurnRateData(): number {
-		return this.UnitData.MovementTurnRate
+	public get SecondsPerAttack(): number {
+		return 1 / this.AttacksPerSecond
+	}
+	public get StatusResistance(): number {
+		return 0
+	}
+	public get StatusResistanceAmplifier(): number {
+		return 1
+	}
+	public get SpellAmplification(): number {
+		const itemsSpellAmp = this.Items.reduce(
+			(val, item) => val + item.SpellAmplification,
+			0
+		)
+		const spellsSpellAmp = this.Spells.reduce((val, spell) => {
+			if (spell !== undefined) {
+				val += spell.SpellAmplification
+			}
+			return val
+		}, 0)
+		return itemsSpellAmp + spellsSpellAmp
+	}
+	public get TotalIntellect() {
+		return !this.HasBuffByName("modifier_ogre_magi_dumb_luck")
+			? this.BaseTotalIntellect
+			: 0
+	}
+	public get Target() {
+		return EntityManager.EntityByIndex<Unit>(this.TargetIndex_)
+	}
+	public get NightVisionRange() {
+		return !this.IsBlind && this.IsSpawned
+			? this.GetTimeVisionModifier(this.NetworkedBaseNightVision, true)
+			: 0
+	}
+	public get VisionRange(): number {
+		return GameRules?.IsNight ? this.NightVisionRange : this.DayVisionRange
+	}
+	/** @deprecated Use DayVisionRange */
+	public get DayVision() {
+		return this.DayVisionRange
+	}
+	/** @deprecated Use NightVisionRange */
+	public get NightVision() {
+		return this.NightVisionRange
+	}
+	/** @deprecated Use VisionRange */
+	public get Vision(): number {
+		return this.VisionRange
+	}
+	public get Color(): Color {
+		return PlayerCustomData.get(this.PlayerID)?.Color ?? Color.Red
+	}
+	// ===================================== Cast point ===================================== //
+	public get BonusCastPointAmplifier(): number {
+		return 0 // this.CalculateCastPointAmplifier()
+	}
+	// ===================================== Armor ===================================== //
+	public get BaseBonusArmor(): number {
+		return 0 // this.CalculateBaseArmorBonus()
+	}
+	public get BaseBonusArmorAmplifier(): number {
+		return 1 // this.CalculateBaseBonusArmorAmplifier()
+	}
+	public get BonusArmor(): number {
+		return 0 // this.CalculateArmorBonus()
 	}
 
+	/** ============================== Turn Rate ======================================= */
 	public get BaseTurnRate(): number {
 		return 0 // this.CalcualteBaseTurnRate()
 	}
@@ -630,24 +629,6 @@ export class Unit extends Entity {
 	public get HasScepter(): boolean {
 		return this.HasScepterModifier || this.HasStolenScepter
 	}
-	public get AttackDamageType(): AttackDamageType {
-		return this.UnitData.AttackDamageType
-	}
-	public get ArmorType(): ArmorType {
-		return this.UnitData.ArmorType
-	}
-	public get AttackRangeBase(): number {
-		const overrideBaseAttackRange = this.ModifierManager.GetConstantLowestInternal(
-			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BASE_OVERRIDE
-		)
-		if (overrideBaseAttackRange !== 0) {
-			return overrideBaseAttackRange
-		}
-		return this.NetworkAttackRangeBase
-	}
-	public get AttackDamageAverage(): number {
-		return (this.AttackDamageMin + this.AttackDamageMax) / 2
-	}
 	public get HasInventory(): boolean {
 		return this.UnitData.HasInventory
 	}
@@ -740,8 +721,14 @@ export class Unit extends Entity {
 		}
 		return projectileCollisionSize
 	}
+	public get PrimaryAttribute(): Attributes {
+		return this.ModifierManager.GetBaseAttributePrimary(
+			this.UnitData.AttributePrimary
+		)
+	}
+	/** @deprecated use PrimaryAttribute */
 	public get PrimaryAtribute(): Attributes {
-		return this.UnitData.AttributePrimary
+		return this.PrimaryAttribute
 	}
 	public get IsRotating(): boolean {
 		return this.RotationDifference !== 0
@@ -783,25 +770,6 @@ export class Unit extends Entity {
 		const armor = this.Armor
 		return (0.06 * armor) / (1 + 0.06 * Math.abs(armor))
 	}
-	public get StatusResistance(): number {
-		return 0
-	}
-	public get StatusResistanceAmplifier(): number {
-		return 1
-	}
-	public get SpellAmplification(): number {
-		const itemsSpellAmp = this.Items.reduce(
-			(val, item) => val + item.SpellAmplification,
-			0
-		)
-		const spellsSpellAmp = this.Spells.reduce((val, spell) => {
-			if (spell !== undefined) {
-				val += spell.SpellAmplification
-			}
-			return val
-		}, 0)
-		return itemsSpellAmp + spellsSpellAmp
-	}
 	public get Name(): string {
 		return this.UnitName_
 	}
@@ -842,22 +810,6 @@ export class Unit extends Entity {
 	public get HeroFacet(): string {
 		return ""
 	}
-	public get AttackSpeed(): number {
-		const base = this.BaseAttackSpeed,
-			baseAs = this.BaseAttackSpeedAmplifier
-
-		const ampAs = this.AttackSpeedAmplifier,
-			isLimit = this.IsAttackSpeedLimit
-
-		const baseSpeed = base * baseAs + this.AttackSpeedBonus,
-			calculateSpeed = Math.max(baseSpeed * ampAs, AttackSpeedData.Min)
-
-		const totalSpeed = isLimit
-			? Math.min(AttackSpeedData.Max, Math.max(AttackSpeedData.Min, calculateSpeed))
-			: Math.max(AttackSpeedData.Min, calculateSpeed)
-
-		return totalSpeed
-	}
 	/**
 	 * @description example: panorama/images/heroes/npc_dota_hero_windrunner_png.vtex_c
 	 */
@@ -865,15 +817,20 @@ export class Unit extends Entity {
 		return GetUnitTexture(this.Name, small, team)
 	}
 	public GetMoveSpeedModifier(
-		baseSpeed: number = this.MoveSpeedBase,
+		baseSpeed: number = this.BaseMoveSpeed,
 		isUnslowable: boolean = false
 	): number {
 		return this.ModifierManager.GetMoveSpeed(baseSpeed, isUnslowable)
 	}
 	public GetAttackRangeModifier(
-		baseAttackRange: number = this.AttackRangeBase
+		baseAttackRange: number = this.BaseAttackRange
 	): number {
 		return this.ModifierManager.GetAttackRange(baseAttackRange)
+	}
+	public GetAttackSpeedModifier(
+		baseAttackSpeed: number = this.BaseAttackSpeedIncrease
+	): number {
+		return this.ModifierManager.GetAttackSpeed(baseAttackSpeed)
 	}
 	public GetTimeVisionModifier(
 		baseVision: number,

@@ -24,7 +24,7 @@ export class modifier_life_stealer_infest_creep extends Modifier {
 		if (caster === undefined) {
 			return
 		}
-		const moveSpeed = caster.GetMoveSpeedModifier(caster.MoveSpeedBase, true)
+		const moveSpeed = caster.GetMoveSpeedModifier(caster.BaseMoveSpeed, true)
 		this.cachedBaseSpeed = moveSpeed
 	}
 
