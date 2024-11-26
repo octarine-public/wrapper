@@ -10,25 +10,6 @@ import {
 } from "../../Resources/ParseUtils"
 import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
 
-function LoadUnitFile(path: string): RecursiveMap {
-	const kv = parseKV(path)
-	const ret =
-		(kv.get("DOTAUnits") as RecursiveMap) ??
-		(kv.get("DOTAHeroes") as RecursiveMap) ??
-		new Map()
-	if (ret.has("Version")) {
-		const version = ret.get("Version")
-		if (typeof version === "string" || typeof version === "number") {
-			if (version !== "1" && version !== 1) {
-				// unknown version, skip it
-				return new Map()
-			}
-		}
-		ret.delete("Version")
-	}
-	return ret
-}
-
 enum DOTA_COMBAT_CLASS_ATTACK {
 	DOTA_COMBAT_CLASS_ATTACK_BASIC,
 	DOTA_COMBAT_CLASS_ATTACK_HERO,
@@ -39,31 +20,6 @@ enum DOTA_COMBAT_CLASS_DEFEND {
 	DOTA_COMBAT_CLASS_DEFEND_BASIC,
 	DOTA_COMBAT_CLASS_DEFEND_HERO,
 	DOTA_COMBAT_CLASS_DEFEND_STRUCTURE
-}
-
-function FixCombatClassAttack(type: DOTA_COMBAT_CLASS_ATTACK): AttackDamageType {
-	switch (type) {
-		default:
-		case DOTA_COMBAT_CLASS_ATTACK.DOTA_COMBAT_CLASS_ATTACK_BASIC:
-			return AttackDamageType.Basic
-		case DOTA_COMBAT_CLASS_ATTACK.DOTA_COMBAT_CLASS_ATTACK_HERO:
-			return AttackDamageType.Hero
-		case DOTA_COMBAT_CLASS_ATTACK.DOTA_COMBAT_CLASS_ATTACK_PIERCE:
-			return AttackDamageType.Pierce
-		case DOTA_COMBAT_CLASS_ATTACK.DOTA_COMBAT_CLASS_ATTACK_SIEGE:
-			return AttackDamageType.Siege
-	}
-}
-function FixCombatClassDefend(type: DOTA_COMBAT_CLASS_DEFEND): ArmorType {
-	switch (type) {
-		default:
-		case DOTA_COMBAT_CLASS_DEFEND.DOTA_COMBAT_CLASS_DEFEND_BASIC:
-			return ArmorType.Basic
-		case DOTA_COMBAT_CLASS_DEFEND.DOTA_COMBAT_CLASS_DEFEND_HERO:
-			return ArmorType.Hero
-		case DOTA_COMBAT_CLASS_DEFEND.DOTA_COMBAT_CLASS_DEFEND_STRUCTURE:
-			return ArmorType.Structure
-	}
 }
 
 export interface IFacetAbilityData {
@@ -148,32 +104,32 @@ export class UnitData {
 	public readonly AttackRangeActivityModifiers: [number, string][] = []
 
 	constructor(name: string, kv: RecursiveMap) {
-		this.HeroID = kv.has("HeroID") ? parseInt(kv.get("HeroID") as string) : 0
+		this.HeroID = kv.has("HeroID") ? this.parseInt(kv.get("HeroID") as string) : 0
 		this.ModelName = (kv.get("Model") as string) ?? "models/dev/error.vmdl"
 
 		this.MovementTurnRate = kv.has("MovementTurnRate")
-			? parseFloat(kv.get("MovementTurnRate") as string)
+			? this.parseFloat(kv.get("MovementTurnRate") as string)
 			: 0
 		this.AttackAnimationPoint = kv.has("AttackAnimationPoint")
-			? parseFloat(kv.get("AttackAnimationPoint") as string)
+			? this.parseFloat(kv.get("AttackAnimationPoint") as string)
 			: 0
 		this.AttackAcquisitionRange = kv.has("AttackAcquisitionRange")
-			? parseInt(kv.get("AttackAcquisitionRange") as string)
+			? this.parseInt(kv.get("AttackAcquisitionRange") as string)
 			: 0
 		this.BaseAttackRange = kv.has("AttackRange")
-			? parseInt(kv.get("AttackRange") as string)
+			? this.parseInt(kv.get("AttackRange") as string)
 			: 0
 		this.ProjectileSpeed = kv.has("ProjectileSpeed")
-			? parseInt(kv.get("ProjectileSpeed") as string)
+			? this.parseInt(kv.get("ProjectileSpeed") as string)
 			: 0
 		this.BaseAttackTime = kv.has("AttackRate")
-			? parseFloat(kv.get("AttackRate") as string)
+			? this.parseFloat(kv.get("AttackRate") as string)
 			: 0
 		this.BaseMovementSpeed = kv.has("MovementSpeed")
-			? parseFloat(kv.get("MovementSpeed") as string)
+			? this.parseFloat(kv.get("MovementSpeed") as string)
 			: 0
 		this.BaseAttackSpeed = kv.has("BaseAttackSpeed")
-			? parseFloat(kv.get("BaseAttackSpeed") as string)
+			? this.parseFloat(kv.get("BaseAttackSpeed") as string)
 			: 0
 		this.MovementCapabilities = kv.has("MovementCapabilities")
 			? parseEnumString(
@@ -264,20 +220,20 @@ export class UnitData {
 			}
 		}
 		this.ProjectileCollisionSize = kv.has("ProjectileCollisionSize")
-			? parseInt(kv.get("ProjectileCollisionSize") as string)
+			? this.parseInt(kv.get("ProjectileCollisionSize") as string)
 			: 0
 		this.RingRadius = kv.has("RingRadius")
-			? parseInt(kv.get("RingRadius") as string)
+			? this.parseInt(kv.get("RingRadius") as string)
 			: 70
 		this.MinimapIcon = (kv.get("MinimapIcon") as string) ?? name
 		this.MinimapIconSize = kv.has("MinimapIconSize")
-			? parseInt(kv.get("MinimapIconSize") as string)
+			? this.parseInt(kv.get("MinimapIconSize") as string)
 			: -1
 		this.HasInventory = kv.has("HasInventory")
-			? parseInt(kv.get("HasInventory") as string) !== 0
+			? this.parseInt(kv.get("HasInventory") as string) !== 0
 			: true
 		this.HealthBarOffset = kv.has("HealthBarOffset")
-			? parseInt(kv.get("HealthBarOffset") as string)
+			? this.parseInt(kv.get("HealthBarOffset") as string)
 			: 200
 		if (!kv.has("workshop_guide_name")) {
 			if (name.startsWith("npc_")) {
@@ -300,17 +256,17 @@ export class UnitData {
 			? parseEnumString(Attributes, kv.get("AttributePrimary") as string, 0)
 			: Attributes.DOTA_ATTRIBUTE_STRENGTH
 		this.ArmorPhysical = kv.has("ArmorPhysical")
-			? parseFloat(kv.get("ArmorPhysical") as string)
+			? this.parseFloat(kv.get("ArmorPhysical") as string)
 			: 0
 		this.MagicalResistance = kv.has("MagicalResistance")
-			? parseFloat(kv.get("MagicalResistance") as string)
+			? this.parseFloat(kv.get("MagicalResistance") as string)
 			: 0
 		if (kv.has("AttackSpeedActivityModifiers")) {
 			const m = kv.get("AttackSpeedActivityModifiers")
 			if (m instanceof Map) {
 				m.forEach((v, k) => {
 					if (typeof v === "string") {
-						this.AttackSpeedActivityModifiers.push([parseFloat(v), k])
+						this.AttackSpeedActivityModifiers.push([this.parseFloat(v), k])
 					}
 				})
 			}
@@ -390,6 +346,95 @@ export class UnitData {
 			this.Abilities.set(kvName, true)
 		}
 	}
+
+	private parseFloat(str: string): number {
+		return str !== "" ? parseFloat(str) : 0
+	}
+
+	private parseInt(str: string): number {
+		return str !== "" ? parseInt(str) : 0
+	}
+}
+
+const uniqueBaseClassName = new Set([
+	"npc_dota_creep",
+	"npc_dota_creep_lane",
+	"npc_dota_creep_siege",
+	"npc_dota_creep_neutral",
+	"npc_dota_brewmaster_void",
+	"npc_dota_brewmaster_fire",
+	"npc_dota_brewmaster_earth",
+	"npc_dota_brewmaster_storm",
+	"npc_dota_lone_druid_bear",
+	"npc_dota_visage_familiar",
+	"npc_dota_venomancer_plagueward",
+	"npc_dota_broodmother_spiderling",
+	"npc_dota_shadowshaman_serpentward"
+])
+
+function LoadUnitFile(path: string): RecursiveMap {
+	const kv = parseKV(path)
+	const ret =
+		(kv.get("DOTAUnits") as RecursiveMap) ??
+		(kv.get("DOTAHeroes") as RecursiveMap) ??
+		new Map()
+	if (ret.has("Version")) {
+		const version = ret.get("Version")
+		if (typeof version === "string" || typeof version === "number") {
+			if (version !== "1" && version !== 1) {
+				// unknown version, skip it
+				return new Map()
+			}
+		}
+		ret.delete("Version")
+	}
+	return ret
+}
+
+const debugUniqueBaseClass = false
+function HasUniqueBaseClass(map: RecursiveMap, unitName: string): boolean {
+	if (!map.has("BaseClass")) {
+		return false
+	}
+	const className = map.get("BaseClass")
+	if (typeof className !== "string" || className === "") {
+		return false
+	}
+	if (unitName === className) {
+		return true
+	}
+	if (debugUniqueBaseClass) {
+		if (!uniqueBaseClassName.has(className) && className !== unitName) {
+			console.error(`Unit ${unitName} has unknown base class ${className}`)
+		}
+	}
+	return uniqueBaseClassName.has(className)
+}
+
+function FixCombatClassAttack(type: DOTA_COMBAT_CLASS_ATTACK): AttackDamageType {
+	switch (type) {
+		default:
+		case DOTA_COMBAT_CLASS_ATTACK.DOTA_COMBAT_CLASS_ATTACK_BASIC:
+			return AttackDamageType.Basic
+		case DOTA_COMBAT_CLASS_ATTACK.DOTA_COMBAT_CLASS_ATTACK_HERO:
+			return AttackDamageType.Hero
+		case DOTA_COMBAT_CLASS_ATTACK.DOTA_COMBAT_CLASS_ATTACK_PIERCE:
+			return AttackDamageType.Pierce
+		case DOTA_COMBAT_CLASS_ATTACK.DOTA_COMBAT_CLASS_ATTACK_SIEGE:
+			return AttackDamageType.Siege
+	}
+}
+
+function FixCombatClassDefend(type: DOTA_COMBAT_CLASS_DEFEND): ArmorType {
+	switch (type) {
+		default:
+		case DOTA_COMBAT_CLASS_DEFEND.DOTA_COMBAT_CLASS_DEFEND_BASIC:
+			return ArmorType.Basic
+		case DOTA_COMBAT_CLASS_DEFEND.DOTA_COMBAT_CLASS_DEFEND_HERO:
+			return ArmorType.Hero
+		case DOTA_COMBAT_CLASS_DEFEND.DOTA_COMBAT_CLASS_DEFEND_STRUCTURE:
+			return ArmorType.Structure
+	}
 }
 
 function FixUnitInheritance(
@@ -401,11 +446,11 @@ function FixUnitInheritance(
 	if (fixedCache.has(unitName)) {
 		return fixedCache.get(unitName) as RecursiveMap
 	}
-	if (unitName === "npc_dota_hero_base") {
+	if (unitName === "npc_dota_hero_base" || unitName === "npc_dota_warlock_golem") {
 		map.set("BaseClass", "npc_dota_units_base")
 	} else if (unitName.startsWith("npc_dota_hero_") && !map.has("BaseClass")) {
 		map.set("BaseClass", "npc_dota_hero_base")
-	} else if (map.get("BaseClass") === "npc_dota_creep_lane") {
+	} else if (HasUniqueBaseClass(map, unitName)) {
 		map.set("BaseClass", "npc_dota_units_base")
 	}
 	if (map.has("BaseClass") || map.has("include_keys_from")) {

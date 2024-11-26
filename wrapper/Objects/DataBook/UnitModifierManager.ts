@@ -1,4 +1,5 @@
-import { MoveSpeedData } from "../../Data/GameData"
+import { AttackSpeedData, MoveSpeedData } from "../../Data/GameData"
+import { Attributes } from "../../Enums/Attributes"
 import { EModifierfunction } from "../../Enums/EModifierfunction"
 import { ModifierHandlerValue, ModifierMapFieldHandler } from "../Base/Modifier"
 import { Unit } from "../Base/Unit"
@@ -10,77 +11,117 @@ export class UnitModifierManager {
 
 	constructor(public readonly Owner: Unit) {}
 
-	public GetNightTimeVisionRange(
-		baseVision: number,
-		ignoreFixedVision: boolean = false
-	): number {
-		const bonusNightVision = this.GetConditionalAdditiveInternal(
-			EModifierfunction.MODIFIER_PROPERTY_BONUS_NIGHT_VISION
+	public get AttacksPerSecond(): number {
+		const fixedAttackRate = this.GetConstantLowestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_FIXED_ATTACK_RATE
 		)
-		const bonusVisionPercentage = this.GetConditionalPercentageInternal(
-			EModifierfunction.MODIFIER_PROPERTY_BONUS_VISION_PERCENTAGE,
-			false,
-			1,
-			1
-		)
-		const fixedNightVision = !ignoreFixedVision
-			? this.GetConstantHighestInternal(
-					EModifierfunction.MODIFIER_PROPERTY_FIXED_NIGHT_VISION
-				)
-			: 0
-		const bonusNightVisionUnique = this.GetConstantHighestInternal(
-			EModifierfunction.MODIFIER_PROPERTY_BONUS_NIGHT_VISION_UNIQUE
-		)
-		const calcNightVision =
-			(baseVision + bonusNightVision) * bonusVisionPercentage +
-			bonusNightVisionUnique
-
-		const totalNightVision =
-			fixedNightVision <= 0 || calcNightVision <= fixedNightVision
-				? calcNightVision
-				: fixedNightVision
-
-		return Math.max(totalNightVision, 200)
+		if (fixedAttackRate !== 0) {
+			return 1 / fixedAttackRate
+		}
+		return this.Owner.AttackSpeed / 100 / this.Owner.BaseAttackTime
 	}
 
-	public GetDayTimeVisionRange(
-		baseVision: number,
-		ignoreFixedVision: boolean = false
-	): number {
-		const bonusDayVision = this.GetConditionalAdditiveInternal(
-			EModifierfunction.MODIFIER_PROPERTY_BONUS_DAY_VISION
+	public GetBaseAttackTime(baseAttackTime: number): number {
+		const attackTimeAdjust = this.GetConstantFirstInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BASE_ATTACK_TIME_CONSTANT_ADJUST
 		)
-		const bonusVisionPercentage = this.GetConditionalPercentageInternal(
-			EModifierfunction.MODIFIER_PROPERTY_BONUS_VISION_PERCENTAGE,
-			false,
-			1,
-			1
+		const attackTimePercentage = this.GetPercentageMultiplicativeInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BASE_ATTACK_TIME_PERCENTAGE
 		)
-		const bonusDayVisionPercentage = this.GetConditionalPercentageInternal(
-			EModifierfunction.MODIFIER_PROPERTY_BONUS_DAY_VISION_PERCENTAGE,
-			false,
-			1,
-			1
+		const attackTimeConstant = this.GetConstantFirstInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BASE_ATTACK_TIME_CONSTANT
 		)
-		const fixedDayVision = !ignoreFixedVision
-			? this.GetConstantHighestInternal(
-					EModifierfunction.MODIFIER_PROPERTY_FIXED_DAY_VISION
-				)
-			: 0
-
-		const calcDayVision =
-			(baseVision + bonusDayVision) *
-			bonusVisionPercentage *
-			bonusDayVisionPercentage
-
-		const totalDayVision =
-			fixedDayVision <= 0 || calcDayVision <= fixedDayVision
-				? calcDayVision
-				: fixedDayVision
-
-		return Math.max(totalDayVision, 200)
+		if (attackTimeConstant - attackTimeAdjust <= 0) {
+			return (baseAttackTime - attackTimeAdjust) * attackTimePercentage
+		}
+		return attackTimeConstant - attackTimeAdjust
 	}
-
+	public GetBaseAttackSpeed(baseAttackSpeed: number): number {
+		const overrideBaseSpeed = this.GetConstantLowestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BASE_OVERRIDE
+		)
+		return overrideBaseSpeed !== 0 ? overrideBaseSpeed : baseAttackSpeed
+	}
+	public GetBaseAttackRange(baseAttackRange: number): number {
+		const overrideBaseAttackRange = this.GetConstantLowestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BASE_OVERRIDE
+		)
+		return overrideBaseAttackRange !== 0 ? overrideBaseAttackRange : baseAttackRange
+	}
+	public GetBaseMoveSpeed(baseMoveSpeed: number): number {
+		const overrideBaseSpeed = this.GetConstantLowestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BASE_OVERRIDE
+		)
+		return overrideBaseSpeed !== 0 ? overrideBaseSpeed : baseMoveSpeed
+	}
+	public GetBaseAttributePrimary(basePrimary: Attributes): Attributes {
+		const primaryAttributeSrtength = this.GetConstantFirstInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BECOME_STRENGTH
+		)
+		if (primaryAttributeSrtength !== 0) {
+			return Attributes.DOTA_ATTRIBUTE_STRENGTH
+		}
+		const primaryAttributeAgility = this.GetConstantFirstInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BECOME_AGILITY
+		)
+		if (primaryAttributeAgility !== 0) {
+			return Attributes.DOTA_ATTRIBUTE_AGILITY
+		}
+		const primaryAttributeIntelligence = this.GetConstantFirstInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BECOME_INTELLIGENCE
+		)
+		if (primaryAttributeIntelligence !== 0) {
+			return Attributes.DOTA_ATTRIBUTE_INTELLECT
+		}
+		const primaryAttributeAll = this.GetConstantFirstInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BECOME_UNIVERSAL
+		)
+		return primaryAttributeAll !== 0 ? Attributes.DOTA_ATTRIBUTE_ALL : basePrimary
+	}
+	public GetAttackAnimationPoint(baseAnimationPoint: number): number {
+		const overridePoint = this.GetConstantFirstInternal(
+			EModifierfunction.MODIFIER_PROPERTY_ATTACK_POINT_CONSTANT
+		)
+		if (overridePoint !== 0) {
+			return overridePoint
+		}
+		const percentage = this.GetConstantFirstInternal(
+			EModifierfunction.MODIFIER_PROPERTY_ATTACK_ANIM_TIME_PERCENTAGE
+		)
+		const baseIncrease = baseAnimationPoint + AttackSpeedData.SpecialAttackDelay
+		return baseIncrease * ((100 - percentage) / 100)
+	}
+	public GetAttackSpeed(baseAttackSpeed: number): number {
+		const reduction = this.GetPercentageLowestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_REDUCTION_PERCENTAGE
+		)
+		const bonusConstant = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
+			false,
+			1,
+			reduction
+		)
+		const percentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		const ignoreLimit = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_IGNORE_ATTACKSPEED_LIMIT
+		)
+		let totalSpeed = (baseAttackSpeed + bonusConstant) * percentage
+		if (ignoreLimit === 0) {
+			totalSpeed = Math.clamp(totalSpeed, AttackSpeedData.Min, AttackSpeedData.Max)
+		}
+		const absoluteMax = this.GetConstantLowestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_ABSOLUTE_MAX
+		)
+		if (absoluteMax !== 0) {
+			totalSpeed = Math.min(totalSpeed, absoluteMax)
+		}
+		return totalSpeed
+	}
 	public GetAttackRange(baseRange: number): number {
 		const bonusUnique = this.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS_UNIQUE
@@ -103,7 +144,6 @@ export class UnitModifierManager {
 		const totalAttackRange = (baseRange + bonusUnique + bonus) * bonusPercentage
 		return maxAttackRange <= 0 ? totalAttackRange : maxAttackRange
 	}
-
 	public GetMoveSpeed(baseSpeed: number, isUnslowable: boolean = false): number {
 		const { Min, Max } = MoveSpeedData,
 			nightSpeed = this.Owner.MoveSpeedNightBonus
@@ -124,7 +164,7 @@ export class UnitModifierManager {
 			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE
 		)
 
-		const slowResistanceStacking = this.GetPercentageEffectiveInternal(
+		const slowResistanceStacking = this.GetPercentageMultiplicativeInternal(
 			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING
 		)
 
@@ -220,7 +260,95 @@ export class UnitModifierManager {
 
 		return Math.max(Math.min(speedLimit, calculatedSpeed), 0)
 	}
+	public GetNightTimeVisionRange(
+		baseVision: number,
+		ignoreFixedVision: boolean = false
+	): number {
+		const bonusNightVision = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_NIGHT_VISION
+		)
+		const bonusVisionPercentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_VISION_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		const fixedNightVision = !ignoreFixedVision
+			? this.GetConstantHighestInternal(
+					EModifierfunction.MODIFIER_PROPERTY_FIXED_NIGHT_VISION
+				)
+			: 0
+		const bonusNightVisionUnique = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_NIGHT_VISION_UNIQUE
+		)
+		const calcNightVision =
+			(baseVision + bonusNightVision) * bonusVisionPercentage +
+			bonusNightVisionUnique
 
+		const totalNightVision =
+			fixedNightVision <= 0 || calcNightVision <= fixedNightVision
+				? calcNightVision
+				: fixedNightVision
+
+		return Math.max(totalNightVision, 200)
+	}
+	public GetDayTimeVisionRange(
+		baseVision: number,
+		ignoreFixedVision: boolean = false
+	): number {
+		const bonusDayVision = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_DAY_VISION
+		)
+		const bonusVisionPercentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_VISION_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		const bonusDayVisionPercentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_DAY_VISION_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		const fixedDayVision = !ignoreFixedVision
+			? this.GetConstantHighestInternal(
+					EModifierfunction.MODIFIER_PROPERTY_FIXED_DAY_VISION
+				)
+			: 0
+
+		const calcDayVision =
+			(baseVision + bonusDayVision) *
+			bonusVisionPercentage *
+			bonusDayVisionPercentage
+
+		const totalDayVision =
+			fixedDayVision <= 0 || calcDayVision <= fixedDayVision
+				? calcDayVision
+				: fixedDayVision
+
+		return Math.max(totalDayVision, 200)
+	}
+	public GetConstantFirstInternal(
+		eModifierfunction: EModifierfunction,
+		ignoreFlags: boolean = false
+	) {
+		const handlers = this.eModifierfunctions.get(eModifierfunction)
+		if (handlers === undefined || handlers.length === 0) {
+			return 0
+		}
+		let highestValue = Number.MIN_SAFE_INTEGER
+		for (let i = handlers.length - 1; i > -1; i--) {
+			const [value, isFlagged] = handlers[i]()
+			if (isFlagged && !ignoreFlags) {
+				continue
+			}
+			if (value > highestValue) {
+				highestValue = value
+			}
+		}
+		return highestValue === Number.MIN_SAFE_INTEGER ? 0 : highestValue
+	}
 	public GetConstantLowestInternal(
 		eModifierfunction: EModifierfunction,
 		ignoreFlags: boolean = false
@@ -241,7 +369,6 @@ export class UnitModifierManager {
 		}
 		return lowestValue === Number.MAX_VALUE ? 0 : lowestValue
 	}
-
 	public GetConstantHighestInternal(
 		eModifierfunction: EModifierfunction,
 		ignoreFlags: boolean = false
@@ -260,7 +387,6 @@ export class UnitModifierManager {
 		}
 		return result
 	}
-
 	public GetConditionalAdditiveInternal(
 		eModifierfunction: EModifierfunction,
 		ignoreFlags: boolean = false,
@@ -281,7 +407,6 @@ export class UnitModifierManager {
 		}
 		return result
 	}
-
 	public GetConditionalPercentageInternal(
 		eModifierfunction: EModifierfunction,
 		ignoreFlags: boolean = false,
@@ -302,7 +427,6 @@ export class UnitModifierManager {
 		}
 		return totalResult / 100
 	}
-
 	public GetPercentageLowestInternal(
 		eModifierfunction: EModifierfunction,
 		ignoreFlags: boolean = false
@@ -323,8 +447,7 @@ export class UnitModifierManager {
 		}
 		return lowestValue / 100
 	}
-
-	public GetPercentageEffectiveInternal(
+	public GetPercentageMultiplicativeInternal(
 		eModifierfunction: EModifierfunction,
 		ignoreFlags: boolean = false,
 		isNegative: boolean = false,
@@ -358,7 +481,6 @@ export class UnitModifierManager {
 		}
 		return 1 - aggregateValue + 1
 	}
-
 	/** @private NOTE: this is internal method */
 	public AddOrRemoveInternal(
 		eModifierfunctions: Nullable<ModifierMapFieldHandler>,
@@ -378,7 +500,6 @@ export class UnitModifierManager {
 			)
 		}
 	}
-
 	private addModifierFunctions(
 		eModifierfunction: EModifierfunction,
 		handler: ModifierHandlerValue
@@ -390,7 +511,6 @@ export class UnitModifierManager {
 		}
 		this.eModifierfunctions.set(eModifierfunction, [handler])
 	}
-
 	private removeModifierFunctions(
 		eModifierfunction: EModifierfunction,
 		handler: ModifierHandlerValue

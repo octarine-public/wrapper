@@ -5,16 +5,23 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_dragon_knight_frost_breath_slow extends Modifier {
+	private cachedSpeed = 0
+	private cachedAttackSpeed = 0
+
+	private cachedResultMoveSpeed = 0
+	private cachedResultAttackSpeed = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
+			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
-	private cachedResultSpeed = 0
 
 	private get amplifierForm(): number {
 		if (this.Caster === undefined) {
@@ -22,10 +29,7 @@ export class modifier_dragon_knight_frost_breath_slow extends Modifier {
 		}
 		const modifier = this.Caster.GetBuffByName("modifier_dragon_knight_dragon_form")
 		const abil = modifier?.Ability
-		if (
-			modifier === undefined ||
-			!(abil instanceof dragon_knight_elder_dragon_form)
-		) {
+		if (!(abil instanceof dragon_knight_elder_dragon_form)) {
 			return 1
 		}
 		const level = !this.Caster.HasScepter
@@ -35,17 +39,21 @@ export class modifier_dragon_knight_frost_breath_slow extends Modifier {
 	}
 
 	public PostDataUpdate(): void {
-		this.cachedResultSpeed = this.cachedSpeed * this.amplifierForm
+		this.cachedResultMoveSpeed = this.cachedSpeed * this.amplifierForm
+		this.cachedResultAttackSpeed = this.cachedAttackSpeed * this.amplifierForm
 	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [this.cachedResultSpeed, this.IsMagicImmune()]
+		return [this.cachedResultMoveSpeed, this.IsMagicImmune()]
+	}
+
+	protected GetAttackSpeedBonusConstant(): [number, boolean] {
+		return [this.cachedResultAttackSpeed, this.IsMagicImmune()]
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedSpeed = this.GetSpecialValue(
-			"frost_bonus_movement_speed",
-			"dragon_knight_dragon_blood"
-		)
+		const name = "dragon_knight_dragon_blood"
+		this.cachedSpeed = this.GetSpecialValue("frost_bonus_movement_speed", name)
+		this.cachedAttackSpeed = this.GetSpecialValue("frost_bonus_attack_speed", name)
 	}
 }

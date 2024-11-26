@@ -40,7 +40,9 @@ export class modifier_kez_ravens_veil_blind extends Modifier {
 	}
 
 	private calculateVision(owner: Unit, isNight: boolean = false): number {
-		const baseVision = isNight ? owner.NetworkedNightVision : owner.NetworkedDayVision
+		const baseVision = isNight
+			? owner.NetworkedBaseNightVision
+			: owner.NetworkedBaseDayVision
 		const vision = owner.GetTimeVisionModifier(baseVision, isNight, true)
 		return Math.remapRange(this.ElapsedTime, 1, this.Duration, 50, vision)
 	}

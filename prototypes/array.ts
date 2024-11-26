@@ -2,8 +2,8 @@ Array.prototype.orderBy = function <T>(
 	callback: (obj: T) => number | boolean,
 	thenBy?: (obj: T) => number | boolean
 ): T[] {
-	if (this.length === 0) {
-		return []
+	if (this.length <= 1) {
+		return this
 	}
 	return this.sort((a: T, b: T) => {
 		const resultA = callback(a)
@@ -28,8 +28,8 @@ Array.prototype.toOrderBy = function <T>(
 	callback: (obj: T) => number | boolean,
 	thenBy?: (obj: T) => number | boolean
 ): T[] {
-	if (this.length === 0) {
-		return []
+	if (this.length <= 1) {
+		return this
 	}
 	return this.toSorted((a: T, b: T) => {
 		const resultA = callback(a)
@@ -54,8 +54,8 @@ Array.prototype.orderByDescending = function <T>(
 	callback: (obj: T, thenBy?: T) => number | boolean,
 	thenBy?: (obj: T) => number | boolean
 ): T[] {
-	if (this.length === 0) {
-		return []
+	if (this.length <= 1) {
+		return this
 	}
 	return this.sort((a, b) => {
 		const resultA = callback(a)
@@ -80,8 +80,8 @@ Array.prototype.toOrderByDescending = function <T>(
 	callback: (obj: T, thenBy?: T) => number | boolean,
 	thenBy?: (obj: T) => number | boolean
 ): T[] {
-	if (this.length === 0) {
-		return []
+	if (this.length <= 1) {
+		return this
 	}
 	return this.toSorted((a, b) => {
 		const resultA = callback(a)

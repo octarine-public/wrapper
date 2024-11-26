@@ -122,16 +122,18 @@ export class Ability extends Entity {
 		return this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES
 	}
 	public get CanHitSpellImmuneEnemy(): boolean {
+		const type = this.AbilityImmunityType
 		return (
-			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES ||
-			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
+			type === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES ||
+			type === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
 		)
 	}
 	public get CanHitSpellImmuneAlly(): boolean {
+		const type = this.AbilityImmunityType
 		return (
-			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE ||
-			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES ||
-			this.AbilityImmunityType === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
+			type === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE ||
+			type === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES_ENEMIES_NO ||
+			this.CanHitSpellImmuneEnemy
 		)
 	}
 	public get CanBeUsable(): boolean {

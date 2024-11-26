@@ -7,7 +7,10 @@ export class naga_siren_ensnare extends Ability {
 		return "attach_attack1"
 	}
 	public get CanHitSpellImmuneEnemy(): boolean {
-		return this.GetSpecialValue("can_target_magic_immune") === 1
+		return (
+			super.CanHitSpellImmuneEnemy ||
+			this.GetSpecialValue("can_target_magic_immune") !== 0
+		)
 	}
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("net_speed", level)

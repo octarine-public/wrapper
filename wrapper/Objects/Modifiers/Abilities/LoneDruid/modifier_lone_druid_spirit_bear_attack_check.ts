@@ -5,6 +5,8 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_lone_druid_spirit_bear_attack_check extends Modifier {
+	private cachedSpeed = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -12,8 +14,6 @@ export class modifier_lone_druid_spirit_bear_attack_check extends Modifier {
 			this.GetMoveSpeedBaseOverride.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
 
 	// modifier is not update
 	// force update cached special values because it's

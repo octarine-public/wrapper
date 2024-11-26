@@ -178,6 +178,7 @@ const Monitor = new (class CPreUnitChanged {
 		if (!unit.IsInAnimation && activity === -1) {
 			return
 		}
+
 		unit.IsInAnimation = true
 		unit.LastAnimationCasted = false
 		if (activity !== -1) {

@@ -1,12 +1,5 @@
-import { NetworkedBasicField, WrapperClass } from "../../../Decorators"
-import { Ability } from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
+import { invoker_spell_extends } from "./invoker_spell_extends"
 
 @WrapperClass("invoker_alacrity")
-export class invoker_alacrity extends Ability {
-	@NetworkedBasicField("m_nQuasLevel")
-	public QuasLevel = 0
-	@NetworkedBasicField("m_nWexLevel")
-	public WexLevel = 0
-	@NetworkedBasicField("m_nExortLevel")
-	public ExortLevel = 0
-}
+export class invoker_alacrity extends invoker_spell_extends {}

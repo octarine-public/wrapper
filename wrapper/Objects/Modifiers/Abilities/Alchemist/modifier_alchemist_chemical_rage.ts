@@ -4,23 +4,30 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_alchemist_chemical_rage extends Modifier {
+	private cachedBAT = 0
+	private cachedSpeed = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
 			this.GetMoveSpeedBonusConstant.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_BASE_ATTACK_TIME_CONSTANT,
+			this.GetBaseAttackTimeConstant.bind(this)
 		]
 	])
 
-	private cachedSpeed = 0
-
+	protected GetBaseAttackTimeConstant(): [number, boolean] {
+		return [this.cachedBAT, false]
+	}
 	protected GetMoveSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedSpeed = this.GetSpecialValue(
-			"bonus_movespeed",
-			"alchemist_chemical_rage"
-		)
+		const name = "alchemist_chemical_rage"
+		this.cachedBAT = this.GetSpecialValue("base_attack_time", name)
+		this.cachedSpeed = this.GetSpecialValue("bonus_movespeed", name)
 	}
 }

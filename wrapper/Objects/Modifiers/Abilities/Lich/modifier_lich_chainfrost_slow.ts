@@ -4,20 +4,31 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_lich_chainfrost_slow extends Modifier {
+	private cachedSpeed = 0
+	private cachedAttackSpeed = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
+			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
 
+	protected GetAttackSpeedBonusConstant(): [number, boolean] {
+		return [this.cachedAttackSpeed, this.IsMagicImmune()]
+	}
+
 	protected UpdateSpecialValues(): void {
-		this.cachedSpeed = this.GetSpecialValue("slow_movement_speed", "lich_chain_frost")
+		const name = "lich_chain_frost"
+		this.cachedSpeed = this.GetSpecialValue("slow_movement_speed", name)
+		this.cachedAttackSpeed = this.GetSpecialValue("slow_attack_speed", name)
 	}
 }

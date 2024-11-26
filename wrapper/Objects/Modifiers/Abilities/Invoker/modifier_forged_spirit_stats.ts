@@ -1,20 +1,18 @@
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
-import { invoker_forge_spirit } from "../../../Abilities/Invoker/invoker_forge_spirit"
-import { invoker_forge_spirit_ad } from "../../../Abilities/Invoker/invoker_forge_spirit_ad"
-import { Ability } from "../../../Base/Ability"
+import { invoker_spell_extends } from "../../../Abilities/Invoker/invoker_spell_extends"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_forged_spirit_stats extends Modifier {
+	private cachedRange = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
 			this.GetAttackRangeBonus.bind(this)
 		]
 	])
-
-	private cachedRange = 0
 
 	protected GetAttackRangeBonus(): [number, boolean] {
 		return [this.cachedRange, false]
@@ -27,25 +25,12 @@ export class modifier_forged_spirit_stats extends Modifier {
 	protected GetSpecialValue(
 		specialName = "spirit_attack_range",
 		abilityName = "invoker_forge_spirit",
-		level = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
+		_level?: number
 	): number {
 		const ability = this.Ability
-		if (!this.ShouldBeValidSpell(ability)) {
+		if (!(ability instanceof invoker_spell_extends)) {
 			return 0
 		}
-		return super.GetSpecialValue(
-			specialName,
-			abilityName,
-			Math.max(ability.QuasLevel + level, level) // quas level
-		)
-	}
-
-	protected ShouldBeValidSpell(
-		ability: Nullable<Ability>
-	): ability is invoker_forge_spirit | invoker_forge_spirit_ad {
-		return (
-			ability instanceof invoker_forge_spirit ||
-			ability instanceof invoker_forge_spirit_ad
-		)
+		return super.GetSpecialValue(specialName, abilityName, ability.QuasLevel)
 	}
 }

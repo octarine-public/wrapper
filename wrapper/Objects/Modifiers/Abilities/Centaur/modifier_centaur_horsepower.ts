@@ -12,6 +12,11 @@ export class modifier_centaur_horsepower extends Modifier {
 		"modifier_rune_haste"
 	]
 
+	private maxLimit = 0
+	private strengthSpeed = 0
+	private cachedMinSpeed = 0
+	private cachedBonusUnique = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -27,11 +32,6 @@ export class modifier_centaur_horsepower extends Modifier {
 			this.GetMoveSpeedIgnoreLimit.bind(this)
 		]
 	])
-
-	private maxLimit = 0
-	private strengthSpeed = 0
-	private cachedMinSpeed = 0
-	private cachedBonusUnique = 0
 
 	public PostDataUpdate(): void {
 		const owner = this.Parent

@@ -1,8 +1,6 @@
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
-import { invoker_ghost_walk } from "../../../Abilities/Invoker/invoker_ghost_walk"
-import { invoker_ghost_walk_ad } from "../../../Abilities/Invoker/invoker_ghost_walk_ad"
-import { Ability } from "../../../Base/Ability"
+import { invoker_spell_extends } from "../../../Abilities/Invoker/invoker_spell_extends"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
@@ -27,25 +25,12 @@ export class modifier_invoker_ghost_walk_self extends Modifier {
 	protected GetSpecialValue(
 		specialName = "self_slow",
 		abilityName = "invoker_ghost_walk",
-		level = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
+		_level?: number
 	): number {
 		const ability = this.Ability
-		if (!this.ShouldBeValidSpell(ability)) {
+		if (!(ability instanceof invoker_spell_extends)) {
 			return 0
 		}
-		return super.GetSpecialValue(
-			specialName,
-			abilityName,
-			Math.max(ability.WexLevel + level, level) // wex level
-		)
-	}
-
-	protected ShouldBeValidSpell(
-		ability: Nullable<Ability>
-	): ability is invoker_ghost_walk | invoker_ghost_walk_ad {
-		return (
-			ability instanceof invoker_ghost_walk ||
-			ability instanceof invoker_ghost_walk_ad
-		)
+		return super.GetSpecialValue(specialName, abilityName, ability.WexLevel)
 	}
 }

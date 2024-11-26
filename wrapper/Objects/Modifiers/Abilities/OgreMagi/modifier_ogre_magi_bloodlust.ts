@@ -4,23 +4,31 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_ogre_magi_bloodlust extends Modifier {
+	private cachedSpeed = 0
+	private cachedAttackSpeed = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
+			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
 
+	protected GetAttackSpeedBonusConstant(): [number, boolean] {
+		return [this.cachedAttackSpeed, false]
+	}
+
 	protected UpdateSpecialValues(): void {
-		this.cachedSpeed = this.GetSpecialValue(
-			"bonus_movement_speed",
-			"ogre_magi_bloodlust"
-		)
+		const name = "ogre_magi_bloodlust"
+		this.cachedSpeed = this.GetSpecialValue("bonus_movement_speed", name)
+		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name)
 	}
 }

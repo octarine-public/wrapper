@@ -92,12 +92,6 @@ export const AttackSpeedData = new (class CAttackSpeedData {
 	 */
 	public Max = this.MaxHaste * 100
 
-	/**
-	 * @readonly
-	 * @defaultvalue `100`
-	 */
-	public MinBase = 100
-
 	public _UpdateMinMax(min: number, max: number, special = 0) {
 		const minVal = Math.max(min, this.minHaste),
 			maxVal = Math.max(max, this.maxHaste)
