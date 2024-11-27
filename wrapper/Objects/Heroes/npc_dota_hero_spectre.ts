@@ -6,6 +6,13 @@ import { Hero } from "../Base/Hero"
 export class npc_dota_hero_spectre extends Hero {
 	public CalculateActivityModifiers(activity: GameActivity, ar: string[]): void {
 		super.CalculateActivityModifiers(activity, ar)
-		// TODO: probably arcana-related daggers_5, daggers_4 and daggers_3
+		if (this.MyWearables.some(wearable => wearable.ItemDefinitionIndex === 9662)) {
+			if (this.Level >= 22) { ar.push("daggers_5") }
+			} else if (this.Level >= 15) {
+				ar.push("daggers_4")
+			} else if (this.Level >= 8) {
+				ar.push("daggers_3")
+			}
+		}
 	}
 }
