@@ -260,6 +260,15 @@ export class UnitModifierManager {
 
 		return Math.max(Math.min(speedLimit, calculatedSpeed), 0)
 	}
+	public GetStatusResistance(): number {
+		const status = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_STATUS_RESISTANCE
+		)
+		const stacking = this.GetPercentageMultiplicativeInternal(
+			EModifierfunction.MODIFIER_PROPERTY_STATUS_RESISTANCE_STACKING
+		)
+		return Math.min(1 - (1 - (stacking - 1)) * (1 - status / 100), Number.MAX_VALUE)
+	}
 	public GetNightTimeVisionRange(
 		baseVision: number,
 		ignoreFixedVision: boolean = false

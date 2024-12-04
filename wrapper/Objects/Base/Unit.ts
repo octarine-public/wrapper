@@ -390,10 +390,7 @@ export class Unit extends Entity {
 		return 1 / this.AttacksPerSecond
 	}
 	public get StatusResistance(): number {
-		return 0
-	}
-	public get StatusResistanceAmplifier(): number {
-		return 1
+		return this.ModifierManager.GetStatusResistance()
 	}
 	public get SpellAmplification(): number {
 		const itemsSpellAmp = this.Items.reduce(

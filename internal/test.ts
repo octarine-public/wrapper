@@ -13,7 +13,8 @@ EventsSDK.on("Draw", () => {
 		}
 		RendererSDK.Text(
 			`AS:${unit.AttackSpeed}(${unit.SecondsPerAttack}s)
-			MS:${unit.MoveSpeed}`,
+			MS:${unit.MoveSpeed}
+			ST:${unit.StatusResistance}`,
 			w2s
 		)
 	}

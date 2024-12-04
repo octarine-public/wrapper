@@ -3,9 +3,8 @@ import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_item_sange_and_yasha extends Modifier {
+export class modifier_item_trident extends Modifier {
 	private cachedSpeed = 0
-	private cachedSpeedResist = 0
 	private cachedAttackSpeed = 0
 	private cachedStatusResist = 0
 
@@ -13,10 +12,6 @@ export class modifier_item_sange_and_yasha extends Modifier {
 		[
 			EModifierfunction.MODIFIER_PROPERTY_STATUS_RESISTANCE,
 			this.GetStatusResistance.bind(this)
-		],
-		[
-			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE,
-			this.GetSlowResistanceUnique.bind(this)
 		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
@@ -32,10 +27,6 @@ export class modifier_item_sange_and_yasha extends Modifier {
 		return [this.cachedStatusResist, false]
 	}
 
-	protected GetSlowResistanceUnique(): [number, boolean] {
-		return [this.cachedSpeedResist, false]
-	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]
 	}
@@ -45,9 +36,8 @@ export class modifier_item_sange_and_yasha extends Modifier {
 	}
 
 	protected UpdateSpecialValues() {
-		const name = "item_sange_and_yasha"
+		const name = "item_trident"
 		this.cachedSpeed = this.GetSpecialValue("movement_speed_percent_bonus", name)
-		this.cachedSpeedResist = this.GetSpecialValue("slow_resistance", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name)
 		this.cachedStatusResist = this.GetSpecialValue("status_resistance", name)
 	}
