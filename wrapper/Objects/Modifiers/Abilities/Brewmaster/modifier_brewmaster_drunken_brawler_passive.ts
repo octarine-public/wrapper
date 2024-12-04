@@ -8,10 +8,12 @@ import { Modifier } from "../../../Base/Modifier"
 export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 	private cachedMS = 0
 	private cachedAS = 0
+	private cachedST = 0
 
 	private cachedSpeed = 0
 	private cachedMultiplier = 0
 	private cachedAttackSpeed = 0
+	private cachedStatusResist = 0
 
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
@@ -22,6 +24,10 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
 			this.GetAttackSpeedBonusConstant.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_STATUS_RESISTANCE_STACKING,
+			this.GetStatusResistanceStacking.bind(this)
 		]
 	])
 
@@ -35,7 +41,7 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 		const ability = this.Ability,
 			owner = this.Parent
 		if (!(ability instanceof brewmaster_drunken_brawler) || owner === undefined) {
-			this.cachedMS = this.cachedAS = 0
+			this.cachedMS = this.cachedST = this.cachedAS = 0
 			return
 		}
 		switch (ability.BrawlActive) {
@@ -45,8 +51,11 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 			case BrawlActive.FIRE_FIGHTER:
 				this.cachedAS = this.cachedAttackSpeed * this.multiplier
 				break
+			case BrawlActive.VOID_FIGHTER:
+				this.cachedST = this.cachedStatusResist * this.multiplier
+				break
 			default:
-				this.cachedMS = this.cachedAS = 0
+				this.cachedMS = this.cachedST = this.cachedAS = 0
 				break
 		}
 	}
@@ -59,10 +68,15 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 		return [this.cachedAS, false]
 	}
 
+	protected GetStatusResistanceStacking(): [number, boolean] {
+		return [this.cachedST, false]
+	}
+
 	protected UpdateSpecialValues(): void {
 		const name = "brewmaster_drunken_brawler"
 		this.cachedSpeed = this.GetSpecialValue("bonus_move_speed", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("attack_speed", name)
 		this.cachedMultiplier = this.GetSpecialValue("active_multiplier", name)
+		this.cachedStatusResist = this.GetSpecialValue("bonus_status_resist", name)
 	}
 }
