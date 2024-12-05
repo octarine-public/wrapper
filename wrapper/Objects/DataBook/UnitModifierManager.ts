@@ -260,15 +260,6 @@ export class UnitModifierManager {
 
 		return Math.max(Math.min(speedLimit, calculatedSpeed), 0)
 	}
-	public GetStatusResistance(): number {
-		const status = this.GetConstantHighestInternal(
-			EModifierfunction.MODIFIER_PROPERTY_STATUS_RESISTANCE
-		)
-		const stacking = this.GetPercentageMultiplicativeInternal(
-			EModifierfunction.MODIFIER_PROPERTY_STATUS_RESISTANCE_STACKING
-		)
-		return Math.min(1 - (1 - (stacking - 1)) * (1 - status / 100), Number.MAX_VALUE)
-	}
 	public GetNightTimeVisionRange(
 		baseVision: number,
 		ignoreFixedVision: boolean = false
@@ -337,6 +328,15 @@ export class UnitModifierManager {
 				: fixedDayVision
 
 		return Math.max(totalDayVision, 200)
+	}
+	public GetStatusResistance(): number {
+		const status = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_STATUS_RESISTANCE
+		)
+		const stacking = this.GetPercentageMultiplicativeInternal(
+			EModifierfunction.MODIFIER_PROPERTY_STATUS_RESISTANCE_STACKING
+		)
+		return Math.min(1 - (1 - (stacking - 1)) * (1 - status / 100), Number.MAX_VALUE)
 	}
 	public GetConstantFirstInternal(
 		eModifierfunction: EModifierfunction,
@@ -455,6 +455,26 @@ export class UnitModifierManager {
 			}
 		}
 		return lowestValue / 100
+	}
+	public GetPercentageHighestInternal(
+		eModifierfunction: EModifierfunction,
+		ignoreFlags: boolean = false
+	) {
+		const handlers = this.eModifierfunctions.get(eModifierfunction)
+		if (handlers === undefined || handlers.length === 0) {
+			return 1
+		}
+		let result = 100
+		for (let i = handlers.length - 1; i > -1; i--) {
+			const [value, isFlagged] = handlers[i]()
+			if (isFlagged && !ignoreFlags) {
+				continue
+			}
+			if (value !== 0) {
+				result = Math.max(result, value)
+			}
+		}
+		return result / 100
 	}
 	public GetPercentageMultiplicativeInternal(
 		eModifierfunction: EModifierfunction,

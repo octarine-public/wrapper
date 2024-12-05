@@ -13,6 +13,6 @@ export class modifier_rune_haste extends Modifier {
 	])
 
 	protected GetMoveSpeedAbsoluteMin(): [number, boolean] {
-		return [MoveSpeedData.Max, false]
+		return [MoveSpeedData.Max, false] // harcoded: 550
 	}
 }
