@@ -1,4 +1,9 @@
-import { AttackSpeedData, MoveSpeedData } from "../../Data/GameData"
+import {
+	ArmorPerAgility,
+	AttackSpeedData,
+	MagicResistPerIntellect,
+	MoveSpeedData
+} from "../../Data/GameData"
 import { Attributes } from "../../Enums/Attributes"
 import { EModifierfunction } from "../../Enums/EModifierfunction"
 import { ModifierHandlerValue, ModifierMapFieldHandler } from "../Base/Modifier"
@@ -20,7 +25,49 @@ export class UnitModifierManager {
 		}
 		return this.Owner.AttackSpeed / 100 / this.Owner.BaseAttackTime
 	}
-
+	public get ArmorPerAgility(): number {
+		const percentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BASE_ARMOR_PER_AGI_BONUS_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		return this.Owner.TotalAgility * ArmorPerAgility * percentage
+	}
+	public get MagicResistPerIntellect(): number {
+		const percentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BASE_MRES_PER_INT_BONUS_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		return this.Owner.TotalIntellect * MagicResistPerIntellect * percentage
+	}
+	public GetBaseBonusPhysicalArmor(baseArmor: number): number {
+		const ignoreArmor = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_IGNORE_PHYSICAL_ARMOR
+		)
+		if (ignoreArmor !== 0) {
+			return 0
+		}
+		const basePercentage = this.GetPercentageLowestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BASE_PERCENTAGE
+		)
+		const totalPercentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_TOTAL_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		const totalBonus = totalPercentage * this.ArmorPerAgility
+		return (baseArmor + totalBonus) * basePercentage
+	}
+	public GetBaseTurnRate(baseTurnRate: number): number {
+		const overrideTurnRate = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_TURN_RATE_OVERRIDE
+		)
+		return overrideTurnRate !== 0 ? overrideTurnRate : baseTurnRate
+	}
 	public GetBaseAttackTime(baseAttackTime: number): number {
 		const attackTimeAdjust = this.GetConstantFirstInternal(
 			EModifierfunction.MODIFIER_PROPERTY_BASE_ATTACK_TIME_CONSTANT_ADJUST
@@ -144,73 +191,82 @@ export class UnitModifierManager {
 		const totalAttackRange = (baseRange + bonusUnique + bonus) * bonusPercentage
 		return maxAttackRange <= 0 ? totalAttackRange : maxAttackRange
 	}
+	public GetTurnRate(baseTurnRate: number): number {
+		const bonus = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_TURN_RATE_CONSTANT,
+			false,
+			1,
+			1
+		)
+		const percentage = this.GetPercentageMultiplicativeInternal(
+			EModifierfunction.MODIFIER_PROPERTY_TURN_RATE_PERCENTAGE
+		)
+		return percentage * (baseTurnRate + bonus)
+	}
 	public GetMoveSpeed(baseSpeed: number, isUnslowable: boolean = false): number {
 		const { Min, Max } = MoveSpeedData,
 			nightSpeed = this.Owner.MoveSpeedNightBonus
 
-		let slowValue = 1,
-			slowMultiplier = 100
-
+		let slowValue = 1
 		if (isUnslowable || this.Owner.IsUnslowable) {
 			slowValue = 0
-			slowMultiplier = 0
 		}
 
-		const moveSpeedReductionPercentage = this.GetPercentageLowestInternal(
+		const reductionPercentage = this.GetPercentageLowestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_REDUCTION_PERCENTAGE
 		)
 
-		const slowResistanceUnique = this.GetConstantHighestInternal(
-			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE
-		)
+		const slowResistUnique =
+			this.GetConstantHighestInternal(
+				EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE
+			) / 100
 
-		const slowResistanceStacking = this.GetPercentageMultiplicativeInternal(
+		const slowResistStacking = this.GetPercentageMultiplicativeInternal(
 			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING
 		)
 
-		const effectiveReduction =
-			(moveSpeedReductionPercentage * slowValue -
-				moveSpeedReductionPercentage * slowMultiplier * slowResistanceUnique) *
-			(1 - (slowResistanceStacking - 1))
+		const reductionValue = reductionPercentage * slowValue
+		const effSlowResist = (1 - (slowResistStacking - 1)) * (1 - slowResistUnique)
+		const effReduction = (1 - (1 - effSlowResist)) * reductionValue
 
-		const moveSpeedBonusConstant = this.GetConditionalAdditiveInternal(
+		const bonusConstant = this.GetConditionalAdditiveInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
 			isUnslowable,
 			1,
-			effectiveReduction
+			effReduction
 		)
 
-		const moveSpeedBonusConstantUnique = this.GetConstantHighestInternal(
+		const bonusConstantUnique = this.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT_UNIQUE
 		)
 
-		const moveSpeedBonusConstantUnique2 = this.GetConstantHighestInternal(
+		const bonusConstantUnique2 = this.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT_UNIQUE_2
 		)
 
-		const moveSpeedBonusPercentage = this.GetConditionalPercentageInternal(
+		const bonusPercentage = this.GetConditionalPercentageInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			isUnslowable,
 			1,
-			effectiveReduction
+			effReduction
 		)
 
-		const moveSpeedBonusPercentageUnique = this.GetConstantHighestInternal(
+		const bonusPercentageUnique = this.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE_UNIQUE
 		)
 
-		const moveSpeedBonusUnique = this.GetConstantHighestInternal(
+		const bonusUnique = this.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_UNIQUE
 		)
 
-		const effectiveBonusPercentage = moveSpeedBonusPercentageUnique / 100
+		const effBonusPercentage = bonusPercentageUnique / 100
 
 		let calculatedSpeed = Math.max(
-			(moveSpeedBonusUnique +
-				moveSpeedBonusConstantUnique2 +
-				moveSpeedBonusConstantUnique +
-				(moveSpeedBonusConstant + baseSpeed + nightSpeed)) *
-				(effectiveBonusPercentage + moveSpeedBonusPercentage),
+			(bonusUnique +
+				bonusConstantUnique2 +
+				bonusConstantUnique +
+				(bonusConstant + baseSpeed + nightSpeed)) *
+				(effBonusPercentage + bonusPercentage),
 			Min
 		)
 
@@ -260,6 +316,42 @@ export class UnitModifierManager {
 
 		return Math.max(Math.min(speedLimit, calculatedSpeed), 0)
 	}
+	public GetPhysicalArmor(baseArmor: number): number {
+		const ignoreArmor = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_IGNORE_PHYSICAL_ARMOR
+		)
+		if (ignoreArmor !== 0) {
+			return 0
+		}
+		const bonus = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
+			false,
+			1,
+			1
+		)
+		const bonusUnique = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS_UNIQUE
+		)
+		const bonusUniqueActive = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS_UNIQUE_ACTIVE
+		)
+		const baseBonusArmor = this.GetBaseBonusPhysicalArmor(baseArmor)
+		return baseBonusArmor + bonus + bonusUnique + bonusUniqueActive
+	}
+	// NOTE: It is necessary to study in more detail what this Valve is used
+	// public GetPostPhysicalArmor(baseArmor: number): number {
+	// 	const baseBonus = this.GetBaseBonusPhysicalArmor(baseArmor)
+	// 	const bonusPost = this.GetConditionalAdditiveInternal(
+	// 		EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS_POST,
+	// 		false,
+	// 		1,
+	// 		1
+	// 	)
+	// 	const minPhysical = this.GetConstantLowestInternal(
+	// 		EModifierfunction.MODIFIER_PROPERTY_MIN_PHYSICAL_ARMOR
+	// 	)
+	// 	const totalBonus = minPhysical - (baseBonus + bonusPost)
+	// }
 	public GetNightTimeVisionRange(
 		baseVision: number,
 		ignoreFixedVision: boolean = false
@@ -422,11 +514,11 @@ export class UnitModifierManager {
 		multiplier: number = 1,
 		reduction: number = 0
 	) {
-		let totalResult = 100
 		const handlers = this.eModifierfunctions.get(eModifierfunction)
 		if (handlers === undefined || handlers.length === 0) {
-			return totalResult / 100
+			return 1
 		}
+		let totalResult = 100
 		for (let i = handlers.length - 1; i > -1; i--) {
 			const [value, isFlagged] = handlers[i]()
 			if (isFlagged && !ignoreFlags) {
@@ -440,21 +532,21 @@ export class UnitModifierManager {
 		eModifierfunction: EModifierfunction,
 		ignoreFlags: boolean = false
 	) {
-		let lowestValue = 100
 		const handlers = this.eModifierfunctions.get(eModifierfunction)
 		if (handlers === undefined || handlers.length === 0) {
-			return lowestValue / 100
+			return 1
 		}
+		let highestValue = 100
 		for (let i = handlers.length - 1; i > -1; i--) {
 			const [value, isFlagged] = handlers[i]()
 			if (isFlagged && !ignoreFlags) {
 				continue
 			}
 			if (value !== 0) {
-				lowestValue = Math.min(lowestValue, value)
+				highestValue = Math.min(value, highestValue)
 			}
 		}
-		return lowestValue / 100
+		return highestValue / 100
 	}
 	public GetPercentageHighestInternal(
 		eModifierfunction: EModifierfunction,

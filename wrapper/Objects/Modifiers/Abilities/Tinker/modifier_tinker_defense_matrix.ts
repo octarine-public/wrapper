@@ -4,6 +4,8 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_tinker_defense_matrix extends Modifier {
+	public readonly HasVisualShield = true
+
 	private cachedStatusResist = 0
 
 	protected readonly DeclaredFunction = new Map([

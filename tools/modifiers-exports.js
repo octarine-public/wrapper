@@ -37,7 +37,7 @@ const existingExports = fs.readFileSync(targetFile, 'utf8').split('\n').map(line
 const newExports = exportLines.filter((exportLine) => !existingExports.includes(exportLine.trim()))
 if (newExports.length !== 0) {
   fs.appendFileSync(targetFile, newExports.join('\n') + '\n')
-  console.log('[+]', `Updated ${targetFile} with ${newExports.length} new exports`)
+  console.log('[+]', `Updated ${targetFile} with ${newExports.length} new exports`, '\n[x]', 'Total modifiers:', exportLines.length)
 } else {
-  console.log('[x]', 'No new exports')
+  console.log('[x]', 'No new exports', '\n[x]', 'Total modifiers:', exportLines.length)
 }

@@ -11,9 +11,9 @@ EventsSDK.on("PreEntityCreated", ent => {
 	if (!(ent instanceof World)) {
 		return
 	}
-	AttackSpeedData._UpdateMinMax(
-		ConVarsSDK.GetFloat("dota_min_haste", 0),
-		ConVarsSDK.GetFloat("dota_max_haste", 0),
+	AttackSpeedData.SetMinMaxFactorInternal(
+		ConVarsSDK.GetFloat("dota_min_haste", 0.1),
+		ConVarsSDK.GetFloat("dota_max_haste", 7),
 		ConVarsSDK.GetFloat("dota_special_attack_delay", 0)
 	)
 })

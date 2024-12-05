@@ -4,14 +4,14 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_heavens_halberd extends Modifier {
+	private cachedSpeedResist = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE,
 			this.GetSlowResistanceUnique.bind(this)
 		]
 	])
-
-	private cachedSpeedResist = 0
 
 	protected GetSlowResistanceUnique(): [number, boolean] {
 		return [this.cachedSpeedResist, false]

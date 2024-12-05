@@ -5,14 +5,14 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_invoker_ice_wall_slow_debuff extends Modifier {
+	private cachedSpeed = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, this.IsMagicImmune()]
@@ -27,10 +27,8 @@ export class modifier_invoker_ice_wall_slow_debuff extends Modifier {
 		abilityName = "invoker_ice_wall",
 		_level?: number
 	): number {
-		const ability = this.Ability
-		if (!(ability instanceof invoker_spell_extends)) {
-			return 0
-		}
-		return super.GetSpecialValue(specialName, abilityName, ability.QuasLevel)
+		return this.Ability instanceof invoker_spell_extends
+			? super.GetSpecialValue(specialName, abilityName, this.Ability.QuasLevel)
+			: 0
 	}
 }
