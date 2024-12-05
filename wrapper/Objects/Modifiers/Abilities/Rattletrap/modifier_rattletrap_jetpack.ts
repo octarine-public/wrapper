@@ -4,16 +4,20 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_rattletrap_jetpack extends Modifier {
+	private cachedSpeed = 0
+	private cachedSpeedValue = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_DISABLE_TURNING,
+			this.GetDisableTurning.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
-	private cachedSpeedValue = 0
 
 	public PostDataUpdate(): void {
 		const owner = this.Parent
@@ -32,6 +36,10 @@ export class modifier_rattletrap_jetpack extends Modifier {
 			return
 		}
 		this.cachedSpeed = ability.GetSpecialValue("jetpack_bonus_speed")
+	}
+
+	protected GetDisableTurning(): [number, boolean] {
+		return [1, false]
 	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {

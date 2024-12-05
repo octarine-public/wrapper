@@ -123,19 +123,22 @@ export class Ability extends Entity {
 		return this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES
 	}
 	public get CanHitSpellImmuneEnemy(): boolean {
-		const type = this.AbilityImmunityType
-		return (
-			type === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES ||
-			type === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
-		)
+		switch (this.AbilityImmunityType) {
+			case SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES:
+			case SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES:
+				return true
+			default:
+				return false
+		}
 	}
 	public get CanHitSpellImmuneAlly(): boolean {
-		const type = this.AbilityImmunityType
-		return (
-			type === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE ||
-			type === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES_ENEMIES_NO ||
-			this.CanHitSpellImmuneEnemy
-		)
+		switch (this.AbilityImmunityType) {
+			case SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE:
+			case SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES_ENEMIES_NO:
+				return true
+			default:
+				return this.CanHitSpellImmuneEnemy
+		}
 	}
 	public get CanBeUsable(): boolean {
 		return this.IsValid && !this.IsHidden && this.IsActivated
@@ -161,7 +164,7 @@ export class Ability extends Entity {
 	public get TargetFlagsMask(): DOTA_UNIT_TARGET_FLAGS {
 		return this.AbilityData.TargetFlags
 	}
-	public get SpellDispellableTypeMask(): SPELL_DISPELLABLE_TYPES {
+	public get SpellDispellableType(): SPELL_DISPELLABLE_TYPES {
 		return this.AbilityData.SpellDispellableType
 	}
 	public get BonusStatsMask(): EDOTASpecialBonusStats {
@@ -176,6 +179,18 @@ export class Ability extends Entity {
 	public get IsInnate(): boolean {
 		return this.AbilityData.IsInnate
 	}
+	public get IsDispellable(): boolean {
+		switch (this.SpellDispellableType) {
+			case SPELL_DISPELLABLE_TYPES.SPELL_DISPELLABLE_NONE:
+			case SPELL_DISPELLABLE_TYPES.SPELL_DISPELLABLE_YES:
+			case SPELL_DISPELLABLE_TYPES.SPELL_DISPELLABLE_YES_STRONG:
+				return true
+			case SPELL_DISPELLABLE_TYPES.SPELL_DISPELLABLE_NO:
+				return false
+			default:
+				return false
+		}
+	}
 	public get IsInnateHidden(): boolean {
 		return this.IsUIInnate || (this.IsInnate && this.DependentOnAbility.length !== 0)
 	}
@@ -186,8 +201,9 @@ export class Ability extends Entity {
 	public get CastPoint(): number {
 		let castPoint = this.OverrideCastPoint
 		if (castPoint === -1) {
-			const amp = this.CastPointAmplifier
-			castPoint = amp * this.GetBaseCastPointForLevel(this.Level)
+			castPoint = this.GetCastPointModifier(
+				this.GetBaseCastPointForLevel(this.Level)
+			)
 		}
 		return Math.ceil(castPoint / GameState.TickInterval) * GameState.TickInterval
 	}
@@ -664,11 +680,6 @@ export class Ability extends Entity {
 		// because it will be overridden by the child classes for TargetTypeMask
 		return this.TargetTypeMask.hasMask(flag)
 	}
-	public HasDispellableType(flag: SPELL_DISPELLABLE_TYPES): boolean {
-		// don't use AbilityData.HasSpellDispellableType() here
-		// because it will be overridden by the child classes for SpellDispellableTypeMask
-		return this.SpellDispellableTypeMask.hasMask(flag)
-	}
 	public CanHit(target: Unit): boolean {
 		if (this.Owner === undefined) {
 			return false
@@ -715,7 +726,6 @@ export class Ability extends Entity {
 			this.DamageType === DAMAGE_TYPES.DAMAGE_TYPE_PURE
 		)
 	}
-
 	protected GetManaCostModifier(baseManaCost: number): number {
 		const owner = this.Owner
 		if (owner === undefined) {
@@ -735,6 +745,16 @@ export class Ability extends Entity {
 			baseManaCost = baseManaCost - reductionConstant
 		}
 		return baseManaCost * (2 - stacking) * (2 - percentage)
+	}
+	protected GetCastPointModifier(baseCastPoint: number): number {
+		const owner = this.Owner
+		if (owner === undefined) {
+			return baseCastPoint
+		}
+		const percentage = owner.ModifierManager.GetPercentageMultiplicativeInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CASTTIME_PERCENTAGE
+		)
+		return baseCastPoint * (2 - percentage)
 	}
 }
 

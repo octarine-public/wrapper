@@ -4,23 +4,41 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_vindicators_axe extends Modifier {
+	private cachedArmor = 0
+	private cachedAttackSpeed = 0
+	private cachedSpeedResist = 0
+
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
+			this.GetPhysicalArmorBonus.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING,
 			this.GetSlowResistanceStacking.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
+			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
 
-	private cachedSpeedResist = 0
+	protected GetPhysicalArmorBonus(): [number, boolean] {
+		return [(this.Parent?.IsStunned ?? false) ? this.cachedArmor : 0, false]
+	}
 
 	protected GetSlowResistanceStacking(): [number, boolean] {
 		return [this.cachedSpeedResist, false]
 	}
 
+	protected GetAttackSpeedBonusConstant(): [number, boolean] {
+		return [this.cachedAttackSpeed, false]
+	}
+
 	protected UpdateSpecialValues() {
-		this.cachedSpeedResist = this.GetSpecialValue(
-			"bonus_slow_resist",
-			"item_vindicators_axe"
-		)
+		const name = "item_vindicators_axe"
+		this.cachedArmor = this.GetSpecialValue("bonus_armor", name)
+		this.cachedSpeedResist = this.GetSpecialValue("bonus_slow_resist", name)
+		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name)
 	}
 }

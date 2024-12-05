@@ -88,6 +88,7 @@ export class Modifier {
 	public AuraOwner: Nullable<Unit>
 
 	public IsValid = true
+	public HasVisualShield = false
 	public ShouldDoFlyHeightVisual = false
 
 	protected CanPostDataUpdate = false
@@ -156,6 +157,15 @@ export class Modifier {
 		}
 		const abilData = AbilityData.GetAbilityByName(this.CachedAbilityName ?? "")
 		return abilData?.IsBreakable ?? false
+	}
+
+	public get IsDispellable(): boolean {
+		const ability = this.Ability
+		if (ability !== undefined) {
+			return ability.IsDispellable
+		}
+		const abilData = AbilityData.GetAbilityByName(this.CachedAbilityName ?? "")
+		return abilData?.IsDispellable ?? false
 	}
 
 	public get CanHitSpellImmuneEnemy() {
@@ -362,7 +372,10 @@ export class Modifier {
 
 	public IsPassiveDisabled(source?: Unit) {
 		source ??= this.Ability?.Owner
-		return source !== undefined && source.IsPassiveDisabled && this.IsBreakable
+		if (source === undefined || !source.IsPassiveDisabled) {
+			return false
+		}
+		return this.IsBreakable && this.IsDispellable
 	}
 
 	// Ability#vengefulspirit_soul_strike

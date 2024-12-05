@@ -4,23 +4,31 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_troll_warlord_berserkers_rage extends Modifier {
+	private cachedSpeed = 0
+	private cachedArmor = 0
+
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
+			this.GetPhysicalArmorBonus.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
 			this.GetMoveSpeedBonusConstant.bind(this)
 		]
 	])
 
-	private cachedSpeed = 0
+	protected GetPhysicalArmorBonus(): [number, boolean] {
+		return [this.HasMeleeAttacksBonuses() ? this.cachedArmor : 0, false]
+	}
 
 	protected GetMoveSpeedBonusConstant(): [number, boolean] {
 		return [this.HasMeleeAttacksBonuses() ? this.cachedSpeed : 0, false]
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedSpeed = this.GetSpecialValue(
-			"bonus_move_speed",
-			"troll_warlord_berserkers_rage"
-		)
+		const name = "troll_warlord_berserkers_rage"
+		this.cachedArmor = this.GetSpecialValue("bonus_armor", name)
+		this.cachedSpeed = this.GetSpecialValue("bonus_move_speed", name)
 	}
 }

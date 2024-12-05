@@ -5,10 +5,15 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_lone_druid_spirit_bear_attack_check extends Modifier {
+	private cachedArmor = 0
 	private cachedSpeed = 0
 
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
+			this.GetPhysicalArmorBonus.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BASE_OVERRIDE,
 			this.GetMoveSpeedBaseOverride.bind(this)
@@ -22,6 +27,10 @@ export class modifier_lone_druid_spirit_bear_attack_check extends Modifier {
 		this.UpdateSpecialValues()
 	}
 
+	protected GetPhysicalArmorBonus(): [number, boolean] {
+		return [this.cachedArmor, false]
+	}
+
 	protected GetMoveSpeedBaseOverride(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
@@ -29,6 +38,7 @@ export class modifier_lone_druid_spirit_bear_attack_check extends Modifier {
 	protected UpdateSpecialValues(): void {
 		if (this.Ability instanceof lone_druid_spirit_bear) {
 			this.cachedSpeed = this.GetSpecialValue("bear_movespeed", this.Ability.Name)
+			this.cachedArmor = this.GetSpecialValue("bonus_bear_armor", this.Ability.Name)
 		}
 	}
 }

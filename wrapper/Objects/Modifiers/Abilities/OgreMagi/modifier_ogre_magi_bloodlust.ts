@@ -6,6 +6,7 @@ import { Modifier } from "../../../Base/Modifier"
 export class modifier_ogre_magi_bloodlust extends Modifier {
 	private cachedSpeed = 0
 	private cachedAttackSpeed = 0
+	private cachedAttackSpeedSelf = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -23,12 +24,15 @@ export class modifier_ogre_magi_bloodlust extends Modifier {
 	}
 
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
-		return [this.cachedAttackSpeed, false]
+		return this.Parent === this.Caster
+			? [this.cachedAttackSpeedSelf, false]
+			: [this.cachedAttackSpeed, false]
 	}
 
 	protected UpdateSpecialValues(): void {
 		const name = "ogre_magi_bloodlust"
 		this.cachedSpeed = this.GetSpecialValue("bonus_movement_speed", name)
+		this.cachedAttackSpeedSelf = this.GetSpecialValue("self_bonus", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name)
 	}
 }

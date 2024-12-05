@@ -4,7 +4,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_bristleback_warpath extends Modifier {
-	private cachedSpeed = 0
+	public CachedMoveSpeed = 0
 	private cachedAttackSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -23,12 +23,12 @@ export class modifier_bristleback_warpath extends Modifier {
 	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [this.cachedSpeed * this.StackCount, false]
+		return [this.CachedMoveSpeed * this.StackCount, false]
 	}
 
 	protected UpdateSpecialValues(): void {
 		const name = "bristleback_warpath"
-		this.cachedSpeed = this.GetSpecialValue("move_speed_per_stack", name)
+		this.CachedMoveSpeed = this.GetSpecialValue("move_speed_per_stack", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("aspd_per_stack", name)
 	}
 }

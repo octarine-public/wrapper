@@ -8,15 +8,21 @@ import { Modifier } from "../../../Base/Modifier"
 export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 	private cachedMS = 0
 	private cachedAS = 0
-	private cachedST = 0
+	private cachedSR = 0
+	private cachedAR = 0
 
 	private cachedSpeed = 0
+	private cachedArmor = 0
 	private cachedMultiplier = 0
 	private cachedAttackSpeed = 0
 	private cachedStatusResist = 0
 
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
+			this.GetPhysicalArmorBonus.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
@@ -38,26 +44,35 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 	}
 
 	public PostDataUpdate(): void {
-		const ability = this.Ability,
-			owner = this.Parent
-		if (!(ability instanceof brewmaster_drunken_brawler) || owner === undefined) {
-			this.cachedMS = this.cachedST = this.cachedAS = 0
+		const ability = this.Ability
+		if (!(ability instanceof brewmaster_drunken_brawler)) {
+			this.cachedMS = this.cachedSR = this.cachedAR = this.cachedAS = 0
 			return
 		}
-		switch (ability.BrawlActive) {
-			case BrawlActive.STORM_FIGHTER:
-				this.cachedMS = this.cachedSpeed * this.multiplier
-				break
-			case BrawlActive.FIRE_FIGHTER:
-				this.cachedAS = this.cachedAttackSpeed * this.multiplier
-				break
-			case BrawlActive.VOID_FIGHTER:
-				this.cachedST = this.cachedStatusResist * this.multiplier
-				break
-			default:
-				this.cachedMS = this.cachedST = this.cachedAS = 0
-				break
-		}
+
+		this.cachedAR =
+			ability.BrawlActive === BrawlActive.EARTH_FIGHTER
+				? this.cachedArmor * this.multiplier
+				: 0
+
+		this.cachedMS =
+			ability.BrawlActive === BrawlActive.STORM_FIGHTER
+				? this.cachedSpeed * this.multiplier
+				: 0
+
+		this.cachedAS =
+			ability.BrawlActive === BrawlActive.FIRE_FIGHTER
+				? this.cachedAttackSpeed * this.multiplier
+				: 0
+
+		this.cachedSR =
+			ability.BrawlActive === BrawlActive.VOID_FIGHTER
+				? this.cachedStatusResist * this.multiplier
+				: 0
+	}
+
+	protected GetPhysicalArmorBonus(): [number, boolean] {
+		return [this.cachedAR, false]
 	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
@@ -69,11 +84,12 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 	}
 
 	protected GetStatusResistanceStacking(): [number, boolean] {
-		return [this.cachedST, false]
+		return [this.cachedSR, false]
 	}
 
 	protected UpdateSpecialValues(): void {
 		const name = "brewmaster_drunken_brawler"
+		this.cachedArmor = this.GetSpecialValue("armor", name)
 		this.cachedSpeed = this.GetSpecialValue("bonus_move_speed", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("attack_speed", name)
 		this.cachedMultiplier = this.GetSpecialValue("active_multiplier", name)

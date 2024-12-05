@@ -14,7 +14,7 @@ export class modifier_obsidian_destroyer_astral_imprisonment_prison extends Modi
 	private cachedSpeed = 0
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [this.cachedSpeed - 100, false]
+		return [this.cachedSpeed - 100, false] // -100 hardcoded by Valve
 	}
 
 	protected UpdateSpecialValues(): void {

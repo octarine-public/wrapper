@@ -4,28 +4,38 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_bristleback_viscous_nasal_goo extends Modifier {
+	private cachedSpeed = 0
+	private cachedBaseSpeed = 0
+
+	private cachedArmor = 0
+	private cachedBaseArmor = 0
+
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
+			this.GetPhysicalArmorBonus.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
 
-	private cachedSlow = 0
-	private cachedBaseSlow = 0
+	protected GetPhysicalArmorBonus(): [number, boolean] {
+		const perStack = this.cachedArmor * this.StackCount
+		return [-(perStack + this.cachedBaseArmor), this.IsMagicImmune()]
+	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		const owner = this.Parent
-		if (owner === undefined) {
-			return [0, false]
-		}
-		const slowPerStack = this.cachedSlow * this.StackCount
-		return [-(slowPerStack + this.cachedBaseSlow), this.IsMagicImmune()]
+		const perStack = this.cachedSpeed * this.StackCount
+		return [-(perStack + this.cachedBaseSpeed), this.IsMagicImmune()]
 	}
 
 	protected UpdateSpecialValues(): void {
 		const name = "bristleback_viscous_nasal_goo"
-		this.cachedSlow = this.GetSpecialValue("move_slow_per_stack", name)
-		this.cachedBaseSlow = this.GetSpecialValue("base_move_slow", name)
+		this.cachedArmor = this.GetSpecialValue("armor_per_stack", name)
+		this.cachedSpeed = this.GetSpecialValue("move_slow_per_stack", name)
+		this.cachedBaseArmor = this.GetSpecialValue("base_armor", name)
+		this.cachedBaseSpeed = this.GetSpecialValue("base_move_slow", name)
 	}
 }

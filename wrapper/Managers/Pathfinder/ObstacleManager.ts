@@ -4,7 +4,6 @@ import { EObstacleType } from "../../Enums/EObstacleType"
 import { GridNavCellFlags } from "../../Enums/GridNavCellFlags"
 import { GetPositionHeight } from "../../Native/WASM"
 import { GridNav } from "../../Resources/ParseGNV"
-import { DegreesToRadian } from "../../Utils/Math"
 
 type MapObstacle = Map<number, [EObstacleType, Vector3, Vector3, number]>
 
@@ -52,7 +51,7 @@ export class ObstacleManager {
 			bestPosition: Nullable<Vector2>
 
 		for (let deg = 0; deg < 360; deg += angleStep) {
-			const rotatedDirection = direction.Rotated(DegreesToRadian(deg))
+			const rotatedDirection = direction.Rotated(Math.degreesToRadian(deg))
 
 			for (let offset = offsetStep; offset < 300; offset += offsetStep) {
 				const rotationPoint = position2D.Rotation(rotatedDirection, offset)

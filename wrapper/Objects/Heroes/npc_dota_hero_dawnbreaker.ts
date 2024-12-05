@@ -6,7 +6,7 @@ import { Hero } from "../Base/Hero"
 @WrapperClass("CDOTA_Unit_Hero_Dawnbreaker")
 export class npc_dota_hero_dawnbreaker extends Hero {
 	@NetworkedBasicField("m_nAttackState")
-	public AttackState = 0
+	public readonly AttackState: number = 0
 
 	public CalculateActivityModifiers(activity: GameActivity, ar: string[]): void {
 		super.CalculateActivityModifiers(activity, ar)

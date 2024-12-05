@@ -1,53 +1,26 @@
-/** @deprecated */
-export const AegisExpirationTime = 300
-
-/** @deprecated */
-export const BuybackCooldown = 480
-
-/** @deprecated */
-export const CreepSpeed = 325
-
-/** @deprecated */
-export const RoshanMaxRespawnTime = 660
-
-/** @deprecated */
-export const RoshanMinRespawnTime = 480
-
-/** @deprecated */
-export const RuneRespawnTime = 120
-
-/** @deprecated */
-export const ScanActiveTime = 8
-
-/** @deprecated */
-export const ScanRadius = 900
-
 /** @description use GameState.TickInterval */
 export const DefaultTickInterval = 1 / 30
 /**
  * https://dota2.gamepedia.com/Attributes
  */
-export const ArmorPerAgility = 1 / 6
 export const MaxManaPerIntellect = 12
 export const MaxManaRegenerationPerIntellect = 0.05
 export const DamageAmplifyPerIntellectPrecent = 0.07
 
+export let ArmorPerAgility = 1 / 6
+export function SetArmorPerAgilityInternal(value: number) {
+	ArmorPerAgility = value
+}
+
 export let HealthGainPerStrength = 22
-export function SetHealthGainPerStrength(value: number) {
+export function SetHealthGainPerStrengthInternal(value: number) {
 	HealthGainPerStrength = value
 }
 
-/** @deprecated */
-export const HurricanePikeBonusAttackSpeed = 100
-
-/** @deprecated */
-export const MaxAttackSpeed = 700
-
-/** @deprecated */
-export const MaxMovementSpeed = 550
-
-/** @deprecated */
-export const MinAttackSpeed = 20
+export let MagicResistPerIntellect = 1 / 10
+export function SetMagicResistPerIntellectInternal(value: number) {
+	MagicResistPerIntellect = value
+}
 
 export const MoveSpeedData = new (class CMoveSpeedData {
 	/**
@@ -92,7 +65,7 @@ export const AttackSpeedData = new (class CAttackSpeedData {
 	 */
 	public Max = this.MaxHaste * 100
 
-	public _UpdateMinMax(min: number, max: number, special = 0) {
+	public SetMinMaxFactorInternal(min: number, max: number, special = 0) {
 		const minVal = Math.max(min, this.minHaste),
 			maxVal = Math.max(max, this.maxHaste)
 		this.Min = minVal * 100

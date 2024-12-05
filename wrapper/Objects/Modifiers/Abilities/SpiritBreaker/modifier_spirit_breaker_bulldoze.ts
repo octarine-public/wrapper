@@ -27,6 +27,8 @@ export class modifier_spirit_breaker_bulldoze extends Modifier {
 	}
 
 	protected UpdateSpecialValues(): void {
+		this.HasVisualShield = this.NetworkFadeTime !== 0
+
 		const name = "spirit_breaker_bulldoze"
 		this.cachedSpeed = this.GetSpecialValue("movement_speed", name)
 		this.cachedStatusResist = this.GetSpecialValue("status_resistance", name)
