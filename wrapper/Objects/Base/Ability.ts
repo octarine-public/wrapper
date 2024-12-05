@@ -10,6 +10,7 @@ import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EAbilitySlot } from "../../Enums/EAbilitySlot"
 import { EDOTASpecialBonusStats } from "../../Enums/EDOTASpecialBonusStats"
+import { EModifierfunction } from "../../Enums/EModifierfunction"
 import { SPELL_DISPELLABLE_TYPES } from "../../Enums/SPELL_DISPELLABLE_TYPES"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { EventsSDK } from "../../Managers/EventsSDK"
@@ -235,11 +236,11 @@ export class Ability extends Entity {
 		return this.Cooldown === 0
 	}
 	public get ManaCost(): number {
-		const value = Math.max(
+		const baseManaCost = Math.max(
 			this.NetworkedManaCost,
 			this.GetBaseManaCostForLevel(this.Level)
 		)
-		return value * this.ManaCostAmplifier
+		return this.GetManaCostModifier(baseManaCost)
 	}
 	public get IsReady(): boolean {
 		if (!this.IsCooldownReady || this.Level === 0) {
@@ -375,9 +376,6 @@ export class Ability extends Entity {
 	}
 	public get CastPointAmplifier(): number {
 		return 1
-	}
-	public get ManaCostAmplifier(): number {
-		return 1 //this.Owner?.BonusManaCostAmplifier ?? 1
 	}
 	public get CastRangeAmplifier(): number {
 		return this.Owner?.CastRangeAmplifier ?? 1
@@ -716,6 +714,27 @@ export class Ability extends Entity {
 			(target?.IsDebuffImmune ?? false) &&
 			this.DamageType === DAMAGE_TYPES.DAMAGE_TYPE_PURE
 		)
+	}
+
+	protected GetManaCostModifier(baseManaCost: number): number {
+		const owner = this.Owner
+		if (owner === undefined) {
+			return baseManaCost
+		}
+		const modifierManager = owner.ModifierManager,
+			reductionConstant = modifierManager.GetConstantHighestInternal(
+				EModifierfunction.MODIFIER_PROPERTY_MANACOST_REDUCTION_CONSTANT
+			),
+			percentage = modifierManager.GetPercentageHighestInternal(
+				EModifierfunction.MODIFIER_PROPERTY_MANACOST_PERCENTAGE
+			),
+			stacking = modifierManager.GetPercentageMultiplicativeInternal(
+				EModifierfunction.MODIFIER_PROPERTY_MANACOST_PERCENTAGE_STACKING
+			)
+		if (reductionConstant !== 0) {
+			baseManaCost = baseManaCost - reductionConstant
+		}
+		return baseManaCost * (2 - stacking) * (2 - percentage)
 	}
 }
 

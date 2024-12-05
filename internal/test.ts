@@ -14,7 +14,8 @@ EventsSDK.on("Draw", () => {
 		RendererSDK.Text(
 			`AS:${unit.AttackSpeed}(${unit.SecondsPerAttack}s)
 			MS:${unit.MoveSpeed}
-			ST:${unit.StatusResistance}`,
+			ST:${unit.StatusResistance}
+			ManaCost:${unit.Spells[0]?.ManaCost ?? 0}`,
 			w2s
 		)
 	}
