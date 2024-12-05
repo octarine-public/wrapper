@@ -1,4 +1,9 @@
-import { AttackSpeedData, SetHealthGainPerStrength } from "../../Data/GameData"
+import {
+	AttackSpeedData,
+	SetArmorPerAgilityInternal,
+	SetHealthGainPerStrengthInternal,
+	SetMagicResistPerIntellectInternal
+} from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAHUDVisibility } from "../../Enums/DOTAHUDVisibility"
 import { EPropertyType } from "../../Enums/PropertyType"
@@ -18,6 +23,10 @@ export class DOTABaseGameMode extends Entity {
 	public readonly MinimumAttackSpeed: number = 0
 	@NetworkedBasicField("m_nCustomGameForceHeroSelectionId", EPropertyType.UINT32)
 	public readonly CustomGameForceHeroSelectionId: number = -1
+	@NetworkedBasicField("m_flAgilityArmor")
+	public readonly AgilityArmor: number = 0
+	@NetworkedBasicField("m_flIntelligenceMres")
+	public readonly IntelligenceMres: number = 0
 	public IsHUDVisible(elem: DOTAHUDVisibility): boolean {
 		return this.HUDVisibilityBits.hasBit(BigInt(elem))
 	}
@@ -29,8 +38,13 @@ EventsSDK.on("PreEntityCreated", ent => {
 		return
 	}
 	GameMode = ent
-	SetHealthGainPerStrength(ent.StrengthHP)
-	AttackSpeedData._UpdateMinMax(ent.MinimumAttackSpeed, ent.MaximumAttackSpeed)
+	SetArmorPerAgilityInternal(ent.AgilityArmor)
+	SetHealthGainPerStrengthInternal(ent.StrengthHP)
+	SetMagicResistPerIntellectInternal(ent.IntelligenceMres)
+	AttackSpeedData.SetMinMaxFactorInternal(
+		ent.MinimumAttackSpeed,
+		ent.MaximumAttackSpeed
+	)
 })
 
 EventsSDK.on("EntityDestroyed", ent => {

@@ -4,23 +4,31 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_nevermore_frenzy extends Modifier {
+	private cachedCastTime = 0
 	private cachedAttackSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_CASTTIME_PERCENTAGE,
+			this.GetCastTimePercentage.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
 
+	protected GetCastTimePercentage(): [number, boolean] {
+		return [this.cachedCastTime - 100, false] // - 100 hardcoded by Valve
+	}
+
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedAttackSpeed = this.GetSpecialValue(
-			"bonus_attack_speed",
-			"nevermore_frenzy"
-		)
+		const name = "nevermore_frenzy"
+		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name)
+		this.cachedCastTime = this.GetSpecialValue("cast_speed_pct", name)
 	}
 }

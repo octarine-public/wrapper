@@ -5,9 +5,14 @@ import { Modifier } from "../../Base/Modifier"
 @WrapperClassModifier()
 export class modifier_item_solar_crest_armor_addition extends Modifier {
 	private cachedSpeed = 0
+	private cachedArmor = 0
 	private cachedAttackSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
+			this.GetPhysicalArmorBonus.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
@@ -17,6 +22,10 @@ export class modifier_item_solar_crest_armor_addition extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
+
+	protected GetPhysicalArmorBonus(): [number, boolean] {
+		return this.Parent === this.Caster ? [0, false] : [this.cachedArmor, false]
+	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return this.Parent === this.Caster ? [0, false] : [this.cachedSpeed, false]
@@ -28,6 +37,7 @@ export class modifier_item_solar_crest_armor_addition extends Modifier {
 
 	protected UpdateSpecialValues() {
 		const name = "item_solar_crest"
+		this.cachedArmor = this.GetSpecialValue("target_armor", name)
 		this.cachedSpeed = this.GetSpecialValue("target_movement_speed", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("target_attack_speed", name)
 	}

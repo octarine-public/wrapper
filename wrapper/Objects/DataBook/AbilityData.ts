@@ -101,7 +101,7 @@ export class AbilityData {
 	public readonly TargetFlags: DOTA_UNIT_TARGET_FLAGS // bitmask
 	public readonly TargetTeam: DOTA_UNIT_TARGET_TEAM // bitmask
 	public readonly TargetType: DOTA_UNIT_TARGET_TYPE // bitmask
-	public readonly SpellDispellableType: SPELL_DISPELLABLE_TYPES // bitmask
+	public readonly SpellDispellableType: SPELL_DISPELLABLE_TYPES
 	public readonly SharedCooldownName: string
 	public readonly ModelName: string
 	public readonly AlternateModelName: string
@@ -233,7 +233,7 @@ export class AbilityData {
 					DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_NONE
 				)
 			: DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_NONE
-		this.SpellDispellableType = kv.has("AbilityUnitTargetType")
+		this.SpellDispellableType = kv.has("SpellDispellableType")
 			? parseEnumString(
 					SPELL_DISPELLABLE_TYPES,
 					kv.get("SpellDispellableType") as string,
@@ -407,27 +407,36 @@ export class AbilityData {
 	}
 
 	public get CanHitSpellImmuneEnemy(): boolean {
-		const type = this.AbilityImmunityType
-		return (
-			type === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES ||
-			type === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
-		)
+		switch (this.AbilityImmunityType) {
+			case SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES:
+			case SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES:
+				return true
+			default:
+				return false
+		}
 	}
 	public get CanHitSpellImmuneAlly(): boolean {
-		const type = this.AbilityImmunityType
-		return (
-			type === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE ||
-			type === SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES_ENEMIES_NO ||
-			this.CanHitSpellImmuneEnemy
-		)
+		switch (this.AbilityImmunityType) {
+			case SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE:
+			case SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES_ENEMIES_NO:
+				return true
+			default:
+				return this.CanHitSpellImmuneEnemy
+		}
 	}
-
+	public get IsDispellable(): boolean {
+		switch (this.SpellDispellableType) {
+			case SPELL_DISPELLABLE_TYPES.SPELL_DISPELLABLE_NONE:
+			case SPELL_DISPELLABLE_TYPES.SPELL_DISPELLABLE_YES_STRONG:
+			case SPELL_DISPELLABLE_TYPES.SPELL_DISPELLABLE_YES:
+				return true
+			case SPELL_DISPELLABLE_TYPES.SPELL_DISPELLABLE_NO:
+			default:
+				return false
+		}
+	}
 	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
 		return this.AbilityBehavior.hasMask(flag)
-	}
-
-	public HasSpellDispellableType(flag: SPELL_DISPELLABLE_TYPES): boolean {
-		return this.SpellDispellableType.hasMask(flag)
 	}
 
 	public HasTargetTeam(flag: DOTA_UNIT_TARGET_TEAM): boolean {

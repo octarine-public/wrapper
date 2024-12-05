@@ -4,15 +4,24 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_orb_of_destruction_debuff extends Modifier {
+	private cachedArmor = 0
+	private cachedSpeedMelee = 0
+	private cachedSpeedRanged = 0
+
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
+			this.GetPhysicalArmorBonus.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
 
-	private slowMelee = 0
-	private slowRanged = 0
+	protected GetPhysicalArmorBonus(): [number, boolean] {
+		return [-this.cachedArmor, this.IsMagicImmune()]
+	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const caster = this.Caster
@@ -20,14 +29,15 @@ export class modifier_orb_of_destruction_debuff extends Modifier {
 			return [0, false]
 		}
 		const value = this.HasMeleeAttacksBonuses(caster)
-			? this.slowMelee
-			: this.slowRanged
+			? this.cachedSpeedMelee
+			: this.cachedSpeedRanged
 		return [-value, this.IsMagicImmune()]
 	}
 
 	protected UpdateSpecialValues(): void {
 		const name = "item_orb_of_destruction"
-		this.slowMelee = this.GetSpecialValue("slow_melee", name)
-		this.slowRanged = this.GetSpecialValue("slow_range", name)
+		this.cachedArmor = this.GetSpecialValue("armor_reduction", name)
+		this.cachedSpeedMelee = this.GetSpecialValue("slow_melee", name)
+		this.cachedSpeedRanged = this.GetSpecialValue("slow_range", name)
 	}
 }

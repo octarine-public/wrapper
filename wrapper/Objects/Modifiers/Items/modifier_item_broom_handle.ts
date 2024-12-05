@@ -4,20 +4,31 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_broom_handle extends Modifier {
+	private cachedRange = 0
+	private cachedArmor = 0
+
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
+			this.GetPhysicalArmorBonus.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS_UNIQUE,
 			this.GetAttackRangeBonusUnique.bind(this)
 		]
 	])
 
-	private cachedRange = 0
+	protected GetPhysicalArmorBonus(): [number, boolean] {
+		return [this.cachedArmor, false]
+	}
 
 	protected GetAttackRangeBonusUnique(): [number, boolean] {
 		return this.HasMeleeAttacksBonuses() ? [this.cachedRange, false] : [0, false]
 	}
 
 	protected UpdateSpecialValues() {
-		this.cachedRange = this.GetSpecialValue("melee_attack_range", "item_broom_handle")
+		const name = "item_broom_handle"
+		this.cachedArmor = this.GetSpecialValue("bonus_armor", name)
+		this.cachedRange = this.GetSpecialValue("melee_attack_range", name)
 	}
 }

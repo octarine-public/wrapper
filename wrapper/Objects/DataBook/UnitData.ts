@@ -367,6 +367,7 @@ const uniqueBaseClassName = new Set([
 	"npc_dota_brewmaster_storm",
 	"npc_dota_lone_druid_bear",
 	"npc_dota_visage_familiar",
+	"npc_dota_unit_warlock_imp",
 	"npc_dota_venomancer_plagueward",
 	"npc_dota_broodmother_spiderling",
 	"npc_dota_shadowshaman_serpentward"

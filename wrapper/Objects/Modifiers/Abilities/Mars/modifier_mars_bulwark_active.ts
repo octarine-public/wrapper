@@ -4,14 +4,22 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_mars_bulwark_active extends Modifier {
+	private cachedSpeed = 0
+
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_DISABLE_TURNING,
+			this.GetDisableTurning.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
 
-	private cachedSpeed = 0
+	protected GetDisableTurning(): [number, boolean] {
+		return [1, false]
+	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [-this.cachedSpeed, false]

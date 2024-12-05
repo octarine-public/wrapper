@@ -9,6 +9,14 @@ export class modifier_lone_druid_spirit_link extends Modifier {
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
+			this.GetPhysicalArmorBonus.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS_POST,
+			this.GetPhysicalArmorBonusPost.bind(this)
+		],
+		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
@@ -16,6 +24,14 @@ export class modifier_lone_druid_spirit_link extends Modifier {
 
 	public PostDataUpdate(): void {
 		this.UpdateSpecialValues()
+	}
+
+	protected GetPhysicalArmorBonusPost(): [number, boolean] {
+		return [this.NetworkArmor, false]
+	}
+
+	protected GetPhysicalArmorBonus(): [number, boolean] {
+		return [this.NetworkArmor, false]
 	}
 
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {

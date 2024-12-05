@@ -2,7 +2,6 @@ import { Color } from "../../Base/Color"
 import { QAngle } from "../../Base/QAngle"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
-import { ArmorPerAgility } from "../../Data/GameData"
 import { GetUnitTexture } from "../../Data/ImageData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
@@ -81,6 +80,8 @@ export class Unit extends Entity {
 	public readonly IsAncient: boolean = false
 	@NetworkedBasicField("m_flPhysicalArmorValue")
 	public readonly NetworkedBaseArmor: number = 0
+	@NetworkedBasicField("m_flMagicalResistanceValue")
+	public readonly NetworkedBaseMagicResist: number = 0
 	@NetworkedBasicField("m_iCurShop", EPropertyType.UINT32)
 	public readonly CurrentShop: DOTA_SHOP_TYPE = DOTA_SHOP_TYPE.DOTA_SHOP_NONE
 	@NetworkedBasicField("m_iBKBChargesUsed")
@@ -276,13 +277,7 @@ export class Unit extends Entity {
 	public readonly FogVisiblePosition = new Vector3().Invalidate()
 
 	public get Armor() {
-		const perAgil = this.TotalAgility * ArmorPerAgility,
-			base = this.BaseArmor + perAgil
-		const ampBase = this.BaseBonusArmorAmplifier,
-			totalBase = base * ampBase + this.BaseBonusArmor
-		// we can get amplified bonus armor
-		// Unit#BonusArmorAmplifier
-		return totalBase + this.BonusArmor
+		return this.GetPhysicalArmorModifier()
 	}
 	public get ArmorType(): ArmorType {
 		return this.UnitData.ArmorType
@@ -337,14 +332,23 @@ export class Unit extends Entity {
 	public get BaseAttackAnimationPoint(): number {
 		return this.UnitData.AttackAnimationPoint
 	}
-	public get BaseArmor(): number {
-		return this.NetworkedBaseArmor
-	}
-	public get BaseMovementTurnRate(): number {
-		return this.UnitData.MovementTurnRate
+	public get BaseTurnRate(): number {
+		return this.ModifierManager.GetBaseTurnRate(this.UnitData.MovementTurnRate)
 	}
 	public get BaseMoveSpeed(): number {
 		return this.ModifierManager.GetBaseMoveSpeed(this.NetworkBaseMoveSpeed)
+	}
+	public get BaseArmor(): number {
+		return this.NetworkedBaseArmor
+	}
+	public get BaseBonusArmor(): number {
+		return this.ModifierManager.GetBaseBonusPhysicalArmor(this.BaseArmor)
+	}
+	public get BonusArmorPerAgility() {
+		return this.ModifierManager.ArmorPerAgility
+	}
+	public get BonusMagicResistPerIntellect() {
+		return this.ModifierManager.MagicResistPerIntellect
 	}
 	public get DayVisionRange() {
 		return !this.IsBlind && this.IsSpawned
@@ -428,47 +432,8 @@ export class Unit extends Entity {
 	public get Color(): Color {
 		return PlayerCustomData.get(this.PlayerID)?.Color ?? Color.Red
 	}
-	// ===================================== Cast point ===================================== //
-	public get BonusCastPointAmplifier(): number {
-		return 0 // this.CalculateCastPointAmplifier()
-	}
-	// ===================================== Armor ===================================== //
-	public get BaseBonusArmor(): number {
-		return 0 // this.CalculateBaseArmorBonus()
-	}
-	public get BaseBonusArmorAmplifier(): number {
-		return 1 // this.CalculateBaseBonusArmorAmplifier()
-	}
-	public get BonusArmor(): number {
-		return 0 // this.CalculateArmorBonus()
-	}
-
-	/** ============================== Turn Rate ======================================= */
-	public get BaseTurnRate(): number {
-		return 0 // this.CalcualteBaseTurnRate()
-	}
-
-	public get TurnRateAmplifier(): number {
-		return 0 // this.CalcualteAmpTurnRate()
-	}
-
-	public get BonusMovementTurnRate(): number {
-		return 0 // this.CalcualteBonusTurnRate()
-	}
-
-	public get FixedMovementTurnRate(): number {
-		return 0 //this.CalcualteFixedTurnRate()
-	}
-
 	public get MovementTurnRate(): number {
-		const fixedTurnRate = this.FixedMovementTurnRate
-		if (fixedTurnRate !== 0) {
-			return fixedTurnRate
-		}
-		const amp = this.TurnRateAmplifier,
-			bonusTurnRate = this.BonusMovementTurnRate,
-			baseTurnRate = this.BaseTurnRate
-		return Math.max(baseTurnRate + bonusTurnRate * amp, 0)
+		return this.ModifierManager.GetTurnRate(this.BaseTurnRate)
 	}
 	/**
 	 * Returns a boolean value indicating if the Unit is a clone.
@@ -483,6 +448,9 @@ export class Unit extends Entity {
 	 */
 	public get IsMyHero(): boolean {
 		return false
+	}
+	public get IsMovementImpaired(): boolean {
+		return this.IsRooted || this.IsStunned || this.IsNightmared
 	}
 	public get GoldBountyAverage(): number {
 		return (this.GoldBountyMin + this.GoldBountyMax) / 2
@@ -553,6 +521,9 @@ export class Unit extends Entity {
 	}
 	public get IsStunned(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_STUNNED)
+	}
+	public get IsNightmared(): boolean {
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NIGHTMARED)
 	}
 	public get IsHexed(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_HEXED)
@@ -747,13 +718,8 @@ export class Unit extends Entity {
 	public get BonusAOERadiusAmplifier(): number {
 		return 1 // this.CalcualteBonusAOERadiusAmplifier()
 	}
-	public get BaseStatusResistance(): number {
-		// maybe valve add new future status resist
-		return 0
-	}
 	public get MagicalDamageResist(): number {
-		const baseMagicResist = this.UnitData.MagicalResistance
-		return baseMagicResist + this.TotalIntellect * 0.1
+		return this.NetworkedBaseMagicResist + this.BonusMagicResistPerIntellect
 	}
 	public get PhysicalDamageResist(): number {
 		const armor = this.Armor
@@ -778,11 +744,18 @@ export class Unit extends Entity {
 				0 || this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FLYING)
 		)
 	}
+	public get HasVisualShield(): boolean {
+		return this.Buffs.some(buff => buff.HasVisualShield)
+	}
+	public get ShouldDoFlyHeightVisual(): boolean {
+		return this.Buffs.some(buff => buff.ShouldDoFlyHeightVisual)
+	}
+	/** @deprecated use HasVisualShield */
 	public get IsShield(): boolean {
-		return false // this.Buffs.some(buff => buff.IsShield)
+		return this.HasVisualShield
 	}
 	public get IsFlyingVisually(): boolean {
-		return this.Buffs.some(buff => buff.ShouldDoFlyHeightVisual)
+		return this.ShouldDoFlyHeightVisual
 	}
 	public get IsGloballyTargetable(): boolean {
 		return false
@@ -820,6 +793,9 @@ export class Unit extends Entity {
 		baseAttackSpeed: number = this.BaseAttackSpeedIncrease
 	): number {
 		return this.ModifierManager.GetAttackSpeed(baseAttackSpeed)
+	}
+	public GetPhysicalArmorModifier(baseArmor: number = this.BaseArmor): number {
+		return this.ModifierManager.GetPhysicalArmor(baseArmor)
 	}
 	public GetTimeVisionModifier(
 		baseVision: number,
@@ -961,7 +937,7 @@ export class Unit extends Entity {
 		if (screenPosition === undefined) {
 			return undefined
 		}
-		if (this.IsShield) {
+		if (this.HasVisualShield) {
 			screenPosition.AddScalarY(5)
 		}
 		return screenPosition.SubtractForThis(this.HealthBarPositionCorrection)
