@@ -28,11 +28,18 @@ export class SpiritBear extends Unit {
 		target?: Unit,
 		checkChanneling: boolean = true,
 		checkAbilityPhase: boolean = true,
-		additionalRange?: number
+		additionalRange?: number,
+		checkAttackRange?: boolean
 	): boolean {
 		return (
 			this.ShouldRespawn &&
-			super.CanAttack(target, checkChanneling, checkAbilityPhase, additionalRange)
+			super.CanAttack(
+				target,
+				checkChanneling,
+				checkAbilityPhase,
+				additionalRange,
+				checkAttackRange
+			)
 		)
 	}
 	public get HealthBarSize() {

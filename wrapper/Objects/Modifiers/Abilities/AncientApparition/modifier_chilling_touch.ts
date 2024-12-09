@@ -4,6 +4,8 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_chilling_touch extends Modifier {
+	private cachedRange = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
@@ -11,10 +13,10 @@ export class modifier_chilling_touch extends Modifier {
 		]
 	])
 
-	private cachedRange = 0
-
 	protected GetAttackRangeBonus(): [number, boolean] {
-		return this.Ability?.IsAutoCastEnabled ? [this.cachedRange, false] : [0, false]
+		const isEnabled = this.Ability?.IsAutoCastEnabled ?? false,
+			isCooldownReady = this.Ability?.IsCooldownReady ?? false
+		return isEnabled && isCooldownReady ? [this.cachedRange, false] : [0, false]
 	}
 
 	protected UpdateSpecialValues(): void {

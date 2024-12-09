@@ -214,6 +214,10 @@ const Monitor = new (class CUnitAttackChanged {
 		if (!this.HasDebug) {
 			return
 		}
+		const debug = false
+		if (!debug) {
+			return
+		}
 		TaskManager.Begin(() => {
 			const digits = 1e4,
 				epsilon = 1e-4,

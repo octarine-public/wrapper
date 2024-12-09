@@ -81,6 +81,7 @@ export class Modifier {
 	public StackCount = 0
 	public Duration = 0
 	public AbilityLevel = 0
+	public IsGhost = false
 
 	public Parent: Nullable<Unit>
 	public Ability: Nullable<Ability>

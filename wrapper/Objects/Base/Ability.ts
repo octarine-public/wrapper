@@ -204,6 +204,9 @@ export class Ability extends Entity {
 			castPoint = this.GetCastPointModifier(
 				this.GetBaseCastPointForLevel(this.Level)
 			)
+			if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_ATTACK)) {
+				castPoint = this.Owner?.AttackPoint ?? 0
+			}
 		}
 		return Math.ceil(castPoint / GameState.TickInterval) * GameState.TickInterval
 	}
@@ -373,7 +376,9 @@ export class Ability extends Entity {
 		return 0
 	}
 	public get Speed() {
-		return this.GetBaseSpeedForLevel(this.Level)
+		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_ATTACK)
+			? (this.Owner?.BaseAttackProjectileSpeed ?? 0)
+			: this.GetBaseSpeedForLevel(this.Level)
 	}
 	public get HasAffectedByAOEIncrease() {
 		return this.AbilityData.HasAffectedByAOEIncrease
@@ -387,46 +392,21 @@ export class Ability extends Entity {
 	public get BaseCastRange(): number {
 		return this.GetBaseCastRangeForLevel(this.Level)
 	}
-	public get BonusCastRange(): number {
-		return this.Owner?.BonusCastRange ?? 0
-	}
-	public get CastPointAmplifier(): number {
-		return 1
-	}
-	public get CastRangeAmplifier(): number {
-		return this.Owner?.CastRangeAmplifier ?? 1
-	}
 	public get CastRange(): number {
-		const amp = this.CastRangeAmplifier,
-			bonus = this.GetCastRangeForLevel(this.Level)
-		let calculateBonus = bonus * amp
-		if (
-			calculateBonus !== 0 &&
-			this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)
-		) {
-			calculateBonus += this.Owner?.HullRadius ?? 0
+		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_ATTACK)) {
+			return this.Owner?.GetAttackRange() ?? 0
 		}
-		return calculateBonus
-	}
-	public get BonusAOERadius(): number {
-		if (this.Owner === undefined || !this.HasAffectedByAOEIncrease) {
+		const baseCastRange = this.BaseCastRange
+		if (baseCastRange === 0 || baseCastRange === -1) {
 			return 0
 		}
-		return this.Owner.BonusAOERadius
-	}
-	public get BonusAOERadiusAmplifier(): number {
-		if (this.Owner === undefined || !this.HasAffectedByAOEIncrease) {
-			return 1
-		}
-		return this.Owner.BonusAOERadiusAmplifier
+		return this.GetCastRangeModifier(baseCastRange)
 	}
 	public get AOERadius(): number {
-		const base = this.GetBaseAOERadiusForLevel(this.Level)
-		return (base + this.BonusAOERadius) * this.BonusAOERadiusAmplifier
+		return this.GetAOERadiusModifier(this.GetBaseAOERadiusForLevel(this.Level))
 	}
 	public get MinAOERadius(): number {
-		const base = this.GetBaseMinAOERadiusForLevel(this.Level)
-		return (base + this.BonusAOERadius) * this.BonusAOERadiusAmplifier
+		return this.GetAOERadiusModifier(this.GetBaseMinAOERadiusForLevel(this.Level))
 	}
 	public get SkillshotRange(): number {
 		return this.CastRange
@@ -531,7 +511,7 @@ export class Ability extends Entity {
 		return this.AbilityData.GetHealthCost(level)
 	}
 	public GetCastRangeForLevel(level: number): number {
-		return this.GetBaseCastRangeForLevel(level) + this.BonusCastRange
+		return this.GetBaseCastRangeForLevel(level)
 	}
 	public GetBaseCastRangeForLevel(level: number): number {
 		if (this.AbilityData.HasCastRangeSpecial) {
@@ -680,6 +660,7 @@ export class Ability extends Entity {
 		// because it will be overridden by the child classes for TargetTypeMask
 		return this.TargetTypeMask.hasMask(flag)
 	}
+	// TODO: fix and improve me
 	public CanHit(target: Unit): boolean {
 		if (this.Owner === undefined) {
 			return false
@@ -701,12 +682,17 @@ export class Ability extends Entity {
 		}
 		return this.Owner.Distance2D(target) < range
 	}
+	// TODO: fix and improve me
 	public CanBeCasted(bonusMana: number = 0): boolean {
 		if (!this.CanBeUsable || !this.IsReady) {
 			return false
 		}
+		const canBeCasted = this.IsManaEnough(bonusMana)
+		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_ATTACK)) {
+			return canBeCasted && (this.Owner?.CanAttack() ?? false)
+		}
 		// TODO: Add other checks
-		return this.IsManaEnough(bonusMana)
+		return canBeCasted
 	}
 	public IsDoubleTap(_order: ExecuteOrder): boolean {
 		return false
@@ -755,6 +741,55 @@ export class Ability extends Entity {
 			EModifierfunction.MODIFIER_PROPERTY_CASTTIME_PERCENTAGE
 		)
 		return baseCastPoint * (2 - percentage)
+	}
+	protected GetCastRangeModifier(baseCastRange: number): number {
+		const owner = this.Owner
+		if (owner === undefined) {
+			return baseCastRange
+		}
+		const bonus = owner.ModifierManager.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS
+		)
+		const bonusTarget = owner.ModifierManager.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS_TARGET
+		)
+		const bonusStacking = owner.ModifierManager.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS_STACKING,
+			false,
+			1,
+			1
+		)
+		const bonusPercentage = owner.ModifierManager.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		const bonuses = baseCastRange + (bonus + bonusTarget) + bonusStacking
+		const totalResult = bonuses * bonusPercentage
+		if (totalResult < 150 && baseCastRange > 0) {
+			return 150 - baseCastRange
+		}
+		return totalResult
+	}
+	protected GetAOERadiusModifier(baseAOERadius: number): number {
+		const owner = this.Owner
+		if (owner === undefined || !this.HasAffectedByAOEIncrease) {
+			return baseAOERadius
+		}
+		const bonusConstant = owner.ModifierManager.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_CONSTANT
+		)
+		const bonusStacking = owner.ModifierManager.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_CONSTANT_STACKING,
+			false,
+			1,
+			1
+		)
+		const percentage = owner.ModifierManager.GetPercentageHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_PERCENTAGE
+		)
+		return (baseAOERadius + (bonusConstant + bonusStacking)) * percentage
 	}
 }
 

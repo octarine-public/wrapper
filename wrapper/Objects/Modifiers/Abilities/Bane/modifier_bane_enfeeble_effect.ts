@@ -3,18 +3,13 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_tinker_warp_grenade extends Modifier {
-	private cachedRange = 0
+export class modifier_bane_enfeeble_effect extends Modifier {
 	private cachedCastRange = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS_PERCENTAGE,
 			this.GetCastRangeBonusPercentage.bind(this)
-		],
-		[
-			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS_PERCENTAGE,
-			this.GetAttackRangeBonusPercentage.bind(this)
 		]
 	])
 
@@ -22,12 +17,7 @@ export class modifier_tinker_warp_grenade extends Modifier {
 		return [-this.cachedCastRange, this.IsMagicImmune()]
 	}
 
-	protected GetAttackRangeBonusPercentage(): [number, boolean] {
-		return [-this.cachedRange, this.IsMagicImmune()]
-	}
-
 	protected UpdateSpecialValues(): void {
-		this.cachedRange = this.GetSpecialValue("range_reduction", "tinker_warp_grenade")
-		this.cachedCastRange = this.cachedRange
+		this.cachedCastRange = this.GetSpecialValue("cast_reduction", "bane_enfeeble")
 	}
 }

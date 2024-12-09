@@ -658,7 +658,7 @@ export class Unit extends Entity {
 		return this.UnitStateMask.toMask
 	}
 	public get IsGhost(): boolean {
-		return false
+		return this.Buffs.some(buff => buff.IsGhost)
 	}
 	public get IsEthereal(): boolean {
 		return this.IsGhost
@@ -709,22 +709,6 @@ export class Unit extends Entity {
 	}
 	public get IsInAbilityPhase(): boolean {
 		return this.Spells.some(spell => spell !== undefined && spell.IsInAbilityPhase)
-	}
-	public get BonusCastRange(): number {
-		return 0 // this.CalcualteBonusCastRange()
-	}
-	/** @deprecated */
-	public get CastRangeBonus(): number {
-		return this.BonusCastRange
-	}
-	public get CastRangeAmplifier(): number {
-		return 1 // this.CalcualteAmpCastRange()
-	}
-	public get BonusAOERadius(): number {
-		return 0 // this.CalcualteBonusAOERadius()
-	}
-	public get BonusAOERadiusAmplifier(): number {
-		return 1 // this.CalcualteBonusAOERadiusAmplifier()
 	}
 	public get MagicalDamageResist(): number {
 		return this.NetworkedBaseMagicResist + this.BonusMagicResistPerIntellect
@@ -882,7 +866,8 @@ export class Unit extends Entity {
 		target?: Unit,
 		checkChanneling: boolean = true,
 		checkAbilityPhase: boolean = true,
-		additionalRange?: number
+		additionalRange?: number,
+		checkAttackRange?: boolean
 	): boolean {
 		if (this === target) {
 			return false
@@ -905,14 +890,16 @@ export class Unit extends Entity {
 		if (target === undefined) {
 			return canAttack
 		}
-		if (this.Distance2D(target) > this.GetAttackRange(target, additionalRange)) {
-			return false
-		}
 		if (!target.IsAlive || !target.IsVisible || target.IsInvulnerable) {
 			return false
 		}
 		const canHitAttackImmune = this.CanHitAttackImmune(target)
 		if (target.IsUntargetable || !canHitAttackImmune) {
+			return false
+		}
+		const distance = this.Distance2D(target),
+			attackRange = this.GetAttackRange(target, additionalRange)
+		if ((checkAttackRange ?? true) && distance > attackRange) {
 			return false
 		}
 		return canAttack

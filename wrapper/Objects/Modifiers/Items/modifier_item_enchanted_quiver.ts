@@ -4,15 +4,15 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_enchanted_quiver extends Modifier {
+	private cachedActiveRange = 0
+	private cachedPassiveRange = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
 			this.GetAttackRangeBonus.bind(this)
 		]
 	])
-
-	private cachedActiveRange = 0
-	private cachedPassiveRange = 0
 
 	protected GetAttackRangeBonus(): [number, boolean] {
 		const ability = this.Ability,

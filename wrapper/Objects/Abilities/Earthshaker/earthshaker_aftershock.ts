@@ -1,12 +1,16 @@
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
+import { Hero } from "../../Base/Hero"
 
 @WrapperClass("earthshaker_aftershock")
 export class earthshaker_aftershock extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		const owner = this.Owner
 		const baseRadius = this.GetSpecialValue("aftershock_range", level)
-		if (owner === undefined) {
+		if (!(owner instanceof Hero) || level === 0) {
+			return baseRadius
+		}
+		if (owner.HeroFacetID !== 1 || this.Level === 0) {
 			return baseRadius
 		}
 		const ownerLevel = owner.Level

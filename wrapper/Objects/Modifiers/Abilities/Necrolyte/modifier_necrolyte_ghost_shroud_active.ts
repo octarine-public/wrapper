@@ -5,6 +5,8 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_necrolyte_ghost_shroud_active extends Modifier {
+	public readonly IsGhost = true
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[

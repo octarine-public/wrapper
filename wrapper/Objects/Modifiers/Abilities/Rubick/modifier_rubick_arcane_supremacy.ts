@@ -3,9 +3,9 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_keeper_of_the_light_spirit_form extends Modifier {
-	private cachedSpeed = 0
+export class modifier_rubick_arcane_supremacy extends Modifier {
 	private cachedCastRange = 0
+	private cachedAOERadius = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -13,8 +13,8 @@ export class modifier_keeper_of_the_light_spirit_form extends Modifier {
 			this.GetCastRangeBonusStacking.bind(this)
 		],
 		[
-			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
-			this.GetMoveSpeedBonusPercentage.bind(this)
+			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_CONSTANT_STACKING,
+			this.GetAoeBonusConstantStacking.bind(this)
 		]
 	])
 
@@ -22,13 +22,13 @@ export class modifier_keeper_of_the_light_spirit_form extends Modifier {
 		return [this.cachedCastRange, false]
 	}
 
-	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [this.cachedSpeed, false]
+	protected GetAoeBonusConstantStacking(): [number, boolean] {
+		return [this.cachedAOERadius * this.StackCount, false]
 	}
 
 	protected UpdateSpecialValues(): void {
-		const name = "keeper_of_the_light_spirit_form"
-		this.cachedSpeed = this.GetSpecialValue("movement_speed", name)
+		const name = "rubick_arcane_supremacy"
+		this.cachedAOERadius = this.GetSpecialValue("aoe_bonus", name)
 		this.cachedCastRange = this.GetSpecialValue("cast_range", name)
 	}
 }

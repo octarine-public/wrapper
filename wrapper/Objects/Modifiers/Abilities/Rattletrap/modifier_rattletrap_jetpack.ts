@@ -19,6 +19,10 @@ export class modifier_rattletrap_jetpack extends Modifier {
 		]
 	])
 
+	public get DeltaZ(): number {
+		return 260
+	}
+
 	public PostDataUpdate(): void {
 		const owner = this.Parent
 		if (owner === undefined || !owner.HasScepter) {

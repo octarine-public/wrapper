@@ -9,13 +9,13 @@ import { Unit } from "./Unit"
 @WrapperClass("CDOTA_Unit_Courier")
 export class Courier extends Unit {
 	@NetworkedBasicField("m_bFlyingCourier")
-	public IsFlying = false
+	public readonly IsFlying: boolean = false
 	@NetworkedBasicField("m_flRespawnTime")
-	public RespawnTime = 0
+	public readonly RespawnTime: number = 0
 	@NetworkedBasicField("m_nCourierState")
-	public State = CourierState.COURIER_STATE_INIT
+	public readonly State: CourierState = CourierState.COURIER_STATE_INIT
 	@NetworkedBasicField("m_hCourierStateEntity")
-	public StateHero_ = 0
+	public readonly StateHero_: number = EntityManager.INVALID_HANDLE
 
 	/** @ignore */
 	constructor(
