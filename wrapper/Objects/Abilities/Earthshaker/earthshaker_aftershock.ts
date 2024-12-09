@@ -6,7 +6,7 @@ export class earthshaker_aftershock extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		const owner = this.Owner
 		const baseRadius = this.GetSpecialValue("aftershock_range", level)
-		if (owner === undefined) {
+		if (owner === undefined || level === 0 || this.Level === 0) {
 			return baseRadius
 		}
 		const ownerLevel = owner.Level

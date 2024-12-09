@@ -13,10 +13,8 @@ EventsSDK.on("Draw", () => {
 		}
 		RendererSDK.Text(
 			`AS:${unit.AttackSpeed}(${unit.SecondsPerAttack}s)
-			MS:${unit.MoveSpeed}
-			Armor:${unit.Armor}
-			BaseArmor:${unit.BaseArmor}
-			BaseBonusArmor:${unit.BaseBonusArmor}`,
+			MS:${unit.MoveSpeed} Armor:${unit.Armor}
+			AR:${unit.GetAttackRange(undefined, 0, false)} TR:${unit.TurnRate()}`,
 			w2s
 		)
 	}

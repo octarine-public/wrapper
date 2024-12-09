@@ -710,22 +710,6 @@ export class Unit extends Entity {
 	public get IsInAbilityPhase(): boolean {
 		return this.Spells.some(spell => spell !== undefined && spell.IsInAbilityPhase)
 	}
-	public get BonusCastRange(): number {
-		return 0 // this.CalcualteBonusCastRange()
-	}
-	/** @deprecated */
-	public get CastRangeBonus(): number {
-		return this.BonusCastRange
-	}
-	public get CastRangeAmplifier(): number {
-		return 1 // this.CalcualteAmpCastRange()
-	}
-	public get BonusAOERadius(): number {
-		return 0 // this.CalcualteBonusAOERadius()
-	}
-	public get BonusAOERadiusAmplifier(): number {
-		return 1 // this.CalcualteBonusAOERadiusAmplifier()
-	}
 	public get MagicalDamageResist(): number {
 		return this.NetworkedBaseMagicResist + this.BonusMagicResistPerIntellect
 	}
