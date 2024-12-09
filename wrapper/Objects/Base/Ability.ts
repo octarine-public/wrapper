@@ -387,46 +387,25 @@ export class Ability extends Entity {
 	public get BaseCastRange(): number {
 		return this.GetBaseCastRangeForLevel(this.Level)
 	}
-	public get BonusCastRange(): number {
-		return this.Owner?.BonusCastRange ?? 0
-	}
-	public get CastPointAmplifier(): number {
-		return 1
-	}
-	public get CastRangeAmplifier(): number {
-		return this.Owner?.CastRangeAmplifier ?? 1
-	}
 	public get CastRange(): number {
-		const amp = this.CastRangeAmplifier,
-			bonus = this.GetCastRangeForLevel(this.Level)
-		let calculateBonus = bonus * amp
+		const baseCastRange = this.BaseCastRange
+		if (baseCastRange === 0 || baseCastRange === -1) {
+			return 0
+		}
+		let calculateBonus = this.GetCastRangeModifier(baseCastRange)
 		if (
-			calculateBonus !== 0 &&
+			baseCastRange !== calculateBonus &&
 			this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)
 		) {
 			calculateBonus += this.Owner?.HullRadius ?? 0
 		}
 		return calculateBonus
 	}
-	public get BonusAOERadius(): number {
-		if (this.Owner === undefined || !this.HasAffectedByAOEIncrease) {
-			return 0
-		}
-		return this.Owner.BonusAOERadius
-	}
-	public get BonusAOERadiusAmplifier(): number {
-		if (this.Owner === undefined || !this.HasAffectedByAOEIncrease) {
-			return 1
-		}
-		return this.Owner.BonusAOERadiusAmplifier
-	}
 	public get AOERadius(): number {
-		const base = this.GetBaseAOERadiusForLevel(this.Level)
-		return (base + this.BonusAOERadius) * this.BonusAOERadiusAmplifier
+		return this.GetAOERadiusModifier(this.GetBaseAOERadiusForLevel(this.Level))
 	}
 	public get MinAOERadius(): number {
-		const base = this.GetBaseMinAOERadiusForLevel(this.Level)
-		return (base + this.BonusAOERadius) * this.BonusAOERadiusAmplifier
+		return this.GetAOERadiusModifier(this.GetBaseMinAOERadiusForLevel(this.Level))
 	}
 	public get SkillshotRange(): number {
 		return this.CastRange
@@ -531,7 +510,7 @@ export class Ability extends Entity {
 		return this.AbilityData.GetHealthCost(level)
 	}
 	public GetCastRangeForLevel(level: number): number {
-		return this.GetBaseCastRangeForLevel(level) + this.BonusCastRange
+		return this.GetBaseCastRangeForLevel(level)
 	}
 	public GetBaseCastRangeForLevel(level: number): number {
 		if (this.AbilityData.HasCastRangeSpecial) {
@@ -755,6 +734,56 @@ export class Ability extends Entity {
 			EModifierfunction.MODIFIER_PROPERTY_CASTTIME_PERCENTAGE
 		)
 		return baseCastPoint * (2 - percentage)
+	}
+	protected GetCastRangeModifier(baseCastRange: number): number {
+		const owner = this.Owner
+		if (owner === undefined) {
+			return baseCastRange
+		}
+		const manager = owner.ModifierManager
+		const bonus = manager.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS
+		)
+		const bonusTarget = manager.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS_TARGET
+		)
+		const bonusStacking = manager.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS_STACKING,
+			false,
+			1,
+			1
+		)
+		const bonusPercentage = manager.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		const bonuses = baseCastRange + (bonus + bonusTarget) + bonusStacking
+		const totalResult = bonuses * bonusPercentage
+		if (totalResult < 150 && baseCastRange > 0) {
+			return 150 - baseCastRange
+		}
+		return totalResult
+	}
+	protected GetAOERadiusModifier(baseAOERadius: number): number {
+		const owner = this.Owner
+		if (owner === undefined || !this.HasAffectedByAOEIncrease) {
+			return baseAOERadius
+		}
+		const bonusConstant = owner.ModifierManager.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_CONSTANT
+		)
+		const bonusStacking = owner.ModifierManager.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_CONSTANT_STACKING,
+			false,
+			1,
+			1
+		)
+		const percentage = owner.ModifierManager.GetPercentageHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_PERCENTAGE
+		)
+		return (baseAOERadius + (bonusConstant + bonusStacking)) * percentage
 	}
 }
 
