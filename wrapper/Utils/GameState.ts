@@ -60,6 +60,6 @@ export const GameState = new (class CGameState {
 		if (latency < 0.001 && !this.IsDedicatedServer) {
 			return tickDelta
 		}
-		return Math.max(Math.ceil(latency / tickDelta), 1) * tickDelta + tickDelta
+		return Math.max(Math.round(latency / tickDelta), 1) * tickDelta + tickDelta
 	}
 })()
