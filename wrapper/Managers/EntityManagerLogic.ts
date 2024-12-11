@@ -311,7 +311,7 @@ function ParseEntityUpdate(
 
 function ParseEntityPacket(stream: ViewBinaryStream): void {
 	EventsSDK.emit("PreDataUpdate", false)
-	const nativeChanges: [number, number, number][] = []
+	const nativeChanges: [number, number][] = []
 	while (!stream.Empty()) {
 		const entID = stream.ReadUint16()
 		if (entID === 0) {
@@ -319,9 +319,7 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 		}
 		nativeChanges.push([
 			entID,
-			stream.ReadInt32(), // m_iHealthBarOffset,
-			// m_flTotalMoveSpeed
-			stream.ReadFloat32() // delete this after cherry pick with commit "debug_modifiers"
+			stream.ReadInt32() // m_iHealthBarOffset
 		])
 	}
 	const createdEntities: Entity[] = [],
