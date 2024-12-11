@@ -1,6 +1,4 @@
-// import { MoveSpeedData } from "../../../../Data/GameData"
-import { MoveSpeedData } from "github.com/octarine-public/wrapper/wrapper/Data/GameData"
-
+import { MoveSpeedData } from "../../../../Data/GameData"
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
