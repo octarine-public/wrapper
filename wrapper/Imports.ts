@@ -2057,6 +2057,7 @@ export { modifier_enchantress_untouchable_slow } from "./Objects/Modifiers/Abili
 export { modifier_demonic_conversion } from "./Objects/Modifiers/Abilities/Enigma/modifier_demonic_conversion"
 export { modifier_enigma_event_horizon_aura_effect } from "./Objects/Modifiers/Abilities/Enigma/modifier_enigma_event_horizon_aura_effect"
 export { modifier_faceless_void_time_dilation_distortion } from "./Objects/Modifiers/Abilities/FacelessVoid/modifier_faceless_void_time_dilation_distortion"
+export { modifier_faceless_void_time_dilation_distortion_aura } from "./Objects/Modifiers/Abilities/FacelessVoid/modifier_faceless_void_time_dilation_distortion_aura"
 export { modifier_faceless_void_time_dilation_slow } from "./Objects/Modifiers/Abilities/FacelessVoid/modifier_faceless_void_time_dilation_slow"
 export { modifier_faceless_void_time_zone_effect } from "./Objects/Modifiers/Abilities/FacelessVoid/modifier_faceless_void_time_zone_effect"
 export { modifier_faceless_void_time_zone_projectile_effect } from "./Objects/Modifiers/Abilities/FacelessVoid/modifier_faceless_void_time_zone_projectile_effect"

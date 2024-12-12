@@ -3,6 +3,8 @@ import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
 import { Entity } from "./Entity"
 import { FakeUnit } from "./FakeUnit"
+import { Heroes } from "./Hero"
+import { Thinkers } from "./Thinker"
 import { Unit } from "./Unit"
 
 export class Projectile {
@@ -123,5 +125,85 @@ export class TrackingProjectile extends Projectile {
 		this.expireTime = expireTime
 		this.LaunchTick = launchTick
 		targetLoc.CopyTo(this.TargetLoc)
+	}
+
+	public UpdateProjectileSpeed() {
+		if (!(this.Source instanceof Unit) || !(this.Target instanceof Unit)) {
+			return
+		}
+
+		const baseSpeed = this.OriginalSpeed,
+			distortionAura = this.ModifierDistortionAura(this.Source),
+			magneticFieldAura = this.ModifierMagneticFieldAura(this.Source),
+			timeZoneAura = this.ModifierTimeZoneAura(this.Source)
+
+		this.Speed = baseSpeed * (1 - (distortionAura + magneticFieldAura + timeZoneAura))
+	}
+
+	// Passive distortion aura (faceless_void)
+	protected ModifierDistortionAura(source: Unit): number {
+		if (!this.IsAttack) {
+			return 0
+		}
+
+		const name = "modifier_faceless_void_time_dilation_distortion_aura"
+		const modifier = Heroes.find(
+			x =>
+				x.IsAlive &&
+				x !== source &&
+				!x.IsIllusion &&
+				x.Team !== source.Team &&
+				x.HasBuffByName(name) &&
+				this.Position.IsInRange(x.RealPosition, 2500)
+		)?.GetBuffByName(name)
+
+		const ability = modifier?.Ability,
+			caster = modifier?.Caster
+		if (modifier === undefined || ability === undefined || caster === undefined) {
+			return 0
+		}
+		const radius = ability.AOERadius + 24
+		if (!this.Position.IsInRange(caster.RealPosition, radius)) {
+			return 0
+		}
+		return ability.GetSpecialValue("attack_projectile_slow") / 100
+	}
+
+	// MagneticField (arc_warden)
+	protected ModifierMagneticFieldAura(source: Unit): number {
+		if (!this.IsAttack) {
+			return 0
+		}
+		const name = "modifier_arc_warden_magnetic_field_distortion_aura"
+		const modifier = Thinkers.find(x => x.HasBuffByName(name))?.GetBuffByName(name)
+
+		const ability = modifier?.Ability,
+			owner = modifier?.Parent
+		if (modifier === undefined || ability === undefined || owner === undefined) {
+			return 0
+		}
+		const radius = ability.AOERadius + 24
+		const value = ability.GetSpecialValue("projectile_slow") / 100
+		if (source === owner || owner.Team === source.Team) {
+			return -value
+		}
+		return owner.IsInRange(this.Position, radius) ? value : 0
+	}
+
+	// TimeZone (faceless_void)
+	protected ModifierTimeZoneAura(source: Unit): number {
+		const name = "modifier_faceless_void_time_zone"
+		const modifier = Thinkers.find(x => x.HasBuffByName(name))?.GetBuffByName(name)
+		const ability = modifier?.Ability,
+			owner = modifier?.Parent
+		if (modifier === undefined || ability === undefined || owner === undefined) {
+			return 0
+		}
+		const radius = ability.AOERadius + 24
+		if (!this.Position.IsInRange(owner.RealPosition, radius)) {
+			return 0
+		}
+		const value = ability.GetSpecialValue("bonus_projectile_speed") / 100
+		return source.Team === owner.Team ? -value : value
 	}
 }

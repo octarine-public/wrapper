@@ -100,6 +100,7 @@ EventsSDK.on("PostDataUpdate", dt => {
 		return
 	}
 	for (const proj of ProjectileManager.AllTrackingProjectiles) {
+		proj.UpdateProjectileSpeed()
 		if (!proj.IsDodged) {
 			const target = proj.Target
 			if (target instanceof Entity) {
