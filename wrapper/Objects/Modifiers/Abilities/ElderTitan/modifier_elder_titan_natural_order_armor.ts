@@ -5,7 +5,6 @@ import { Modifier } from "../../../Base/Modifier"
 @WrapperClassModifier()
 export class modifier_elder_titan_natural_order_armor extends Modifier {
 	private cachedArmorBase = 0
-	private cachedMaxStackCount = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -19,9 +18,7 @@ export class modifier_elder_titan_natural_order_armor extends Modifier {
 	])
 
 	protected GetPhysicalArmorBonus(): [number, boolean] {
-		return this.cachedMaxStackCount !== 0
-			? [-(this.StackCount + 1), this.IsMagicImmune()]
-			: [0, false]
+		return [-this.StackCount, this.IsMagicImmune()]
 	}
 
 	protected GetPhysicalArmorBasePercentage(): [number, boolean] {
@@ -29,8 +26,9 @@ export class modifier_elder_titan_natural_order_armor extends Modifier {
 	}
 
 	protected UpdateSpecialValues(): void {
-		const name = "elder_titan_natural_order"
-		this.cachedMaxStackCount = this.GetSpecialValue("max_stacks", name)
-		this.cachedArmorBase = this.GetSpecialValue("armor_reduction_pct", name)
+		this.cachedArmorBase = this.GetSpecialValue(
+			"armor_reduction_pct",
+			"elder_titan_natural_order"
+		)
 	}
 }

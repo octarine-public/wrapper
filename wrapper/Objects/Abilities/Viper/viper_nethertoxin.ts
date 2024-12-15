@@ -9,4 +9,7 @@ export class viper_nethertoxin extends Ability {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("projectile_speed", level)
 	}
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("max_duration", level)
+	}
 }

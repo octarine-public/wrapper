@@ -10,7 +10,9 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 	private cachedAS = 0
 	private cachedSR = 0
 	private cachedAR = 0
+	private cachedMR = 0
 
+	private cachedMres = 0
 	private cachedSpeed = 0
 	private cachedArmor = 0
 	private cachedMultiplier = 0
@@ -22,6 +24,10 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 		[
 			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
 			this.GetPhysicalArmorBonus.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS,
+			this.GetMagicalResistanceBonus.bind(this)
 		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
@@ -46,14 +52,21 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 	public PostDataUpdate(): void {
 		const ability = this.Ability
 		if (!(ability instanceof brewmaster_drunken_brawler)) {
-			this.cachedMS = this.cachedSR = this.cachedAR = this.cachedAS = 0
+			this.cachedMS =
+				this.cachedMR =
+				this.cachedSR =
+				this.cachedAR =
+				this.cachedAS =
+					0
 			return
 		}
 
-		this.cachedAR =
-			ability.BrawlActive === BrawlActive.EARTH_FIGHTER
-				? this.cachedArmor * this.multiplier
-				: 0
+		if (ability.BrawlActive === BrawlActive.EARTH_FIGHTER) {
+			this.cachedMR = this.cachedMres * this.multiplier
+			this.cachedAR = this.cachedArmor * this.multiplier
+		} else {
+			this.cachedAR = this.cachedMR = 0
+		}
 
 		this.cachedMS =
 			ability.BrawlActive === BrawlActive.STORM_FIGHTER
@@ -75,6 +88,10 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 		return [this.cachedAR, false]
 	}
 
+	protected GetMagicalResistanceBonus(): [number, boolean] {
+		return [this.cachedMR, false]
+	}
+
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedMS, false]
 	}
@@ -90,6 +107,7 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 	protected UpdateSpecialValues(): void {
 		const name = "brewmaster_drunken_brawler"
 		this.cachedArmor = this.GetSpecialValue("armor", name)
+		this.cachedMres = this.GetSpecialValue("magic_resist", name)
 		this.cachedSpeed = this.GetSpecialValue("bonus_move_speed", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("attack_speed", name)
 		this.cachedMultiplier = this.GetSpecialValue("active_multiplier", name)

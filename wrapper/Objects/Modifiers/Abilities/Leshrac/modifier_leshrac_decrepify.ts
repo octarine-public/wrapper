@@ -6,12 +6,17 @@ import { Modifier } from "../../../Base/Modifier"
 export class modifier_leshrac_decrepify extends Modifier {
 	public readonly IsGhost = true
 
+	private cachedMres = 0
 	private cachedSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_DECREPIFY_UNIQUE,
+			this.GetMagicalResistanceDecrepifyUnique.bind(this)
 		]
 	])
 
@@ -19,7 +24,13 @@ export class modifier_leshrac_decrepify extends Modifier {
 		return [-this.cachedSpeed, this.IsMagicImmune()]
 	}
 
+	protected GetMagicalResistanceDecrepifyUnique(): [number, boolean] {
+		return [-this.cachedMres, this.IsMagicImmune()]
+	}
+
 	protected UpdateSpecialValues(): void {
-		this.cachedSpeed = this.GetSpecialValue("slow", "leshrac_greater_lightning_storm")
+		const name = "leshrac_greater_lightning_storm"
+		this.cachedMres = this.GetSpecialValue("magic_amp", name)
+		this.cachedSpeed = this.GetSpecialValue("slow", name)
 	}
 }
