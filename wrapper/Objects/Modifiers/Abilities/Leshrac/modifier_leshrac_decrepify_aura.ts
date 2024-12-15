@@ -20,6 +20,7 @@ export class modifier_leshrac_decrepify_aura extends Modifier {
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedSpeed = this.GetSpecialValue("slow", "leshrac_greater_lightning_storm")
+		const name = "leshrac_greater_lightning_storm"
+		this.cachedSpeed = this.GetSpecialValue("slow", name)
 	}
 }

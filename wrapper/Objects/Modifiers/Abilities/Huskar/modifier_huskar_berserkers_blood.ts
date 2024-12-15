@@ -4,12 +4,19 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_huskar_berserkers_blood extends Modifier {
-	private cachedMaxAS = 0
+	private cachedMres = 0
 	private cachedAttackSpeed = 0
+
+	private cachedMaxAS = 0
+	private cachedMaxMres = 0
 	private cachedMaxHPTreshold = 0
 
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS,
+			this.GetMagicalResistanceBonus.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
 			this.GetAttackSpeedBonusConstant.bind(this)
@@ -19,11 +26,18 @@ export class modifier_huskar_berserkers_blood extends Modifier {
 	public PostDataUpdate(): void {
 		const owner = this.Parent
 		if (owner === undefined) {
+			this.cachedMres = 0
 			this.cachedAttackSpeed = 0
 			return
 		}
 		const calculate = this.healthEffect(owner.HP, owner.MaxHP)
+
+		this.cachedMres = calculate * this.cachedMaxMres
 		this.cachedAttackSpeed = calculate * this.cachedMaxAS
+	}
+
+	protected GetMagicalResistanceBonus(): [number, boolean] {
+		return [this.cachedMres, this.IsPassiveDisabled()]
 	}
 
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
@@ -33,6 +47,7 @@ export class modifier_huskar_berserkers_blood extends Modifier {
 	protected UpdateSpecialValues(): void {
 		const name = "huskar_berserkers_blood"
 		this.cachedMaxAS = this.GetSpecialValue("maximum_attack_speed", name)
+		this.cachedMaxMres = this.GetSpecialValue("maximum_magic_resist", name)
 		this.cachedMaxHPTreshold = this.GetSpecialValue("hp_threshold_max", name)
 	}
 
