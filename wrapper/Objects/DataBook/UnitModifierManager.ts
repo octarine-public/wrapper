@@ -125,6 +125,16 @@ export class UnitModifierManager {
 		)
 		return primaryAttributeAll !== 0 ? Attributes.DOTA_ATTRIBUTE_ALL : basePrimary
 	}
+	public GetBaseMagicResistance(baseResist: number): number {
+		const baseReduction = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BASE_REDUCTION,
+			false,
+			1,
+			1
+		)
+		const totalBaseBonus = baseResist + this.MagicResistPerIntellect
+		return (100 - baseReduction) * (totalBaseBonus / 100)
+	}
 	public GetAttackAnimationPoint(baseAnimationPoint: number): number {
 		const overridePoint = this.GetConstantFirstInternal(
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_POINT_CONSTANT
@@ -337,6 +347,26 @@ export class UnitModifierManager {
 		)
 		const baseBonusArmor = this.GetBaseBonusPhysicalArmor(baseArmor)
 		return baseBonusArmor + bonus + bonusUnique + bonusUniqueActive
+	}
+	public GetMagicResistance(baseResist: number): number {
+		const bonus = this.GetPercentageMultiplicativeInternal(
+			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS
+		)
+		const decrepify = this.GetConstantLowestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_DECREPIFY_UNIQUE
+		)
+		const bonusUnique = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS_UNIQUE
+		)
+		const directModification = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_DIRECT_MODIFICATION,
+			false,
+			1,
+			1
+		)
+		const direct = 1 - (directModification + 100) / 100
+		const totalMul = (2 - bonus) * (1 - decrepify / 100) * (1 - bonusUnique / 100)
+		return 1 - (direct + (1 - baseResist / 100)) * totalMul
 	}
 	// NOTE: It is necessary to study in more detail what this Valve is used
 	// public GetPostPhysicalArmor(baseArmor: number): number {

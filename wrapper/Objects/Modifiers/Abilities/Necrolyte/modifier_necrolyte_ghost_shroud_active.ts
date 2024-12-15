@@ -7,17 +7,22 @@ import { Modifier } from "../../../Base/Modifier"
 export class modifier_necrolyte_ghost_shroud_active extends Modifier {
 	public readonly IsGhost = true
 
+	private cachedSpeed = 0
+	private cachedMres = 0
+	private cachedSpeedTotal = 0
+	private cachedSpeedTransfer = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
 			this.GetMoveSpeedBonusConstant.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_DECREPIFY_UNIQUE,
+			this.GetMagicalResistanceDecrepifyUnique.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
-	private cachedSpeedTotal = 0
-	private cachedSpeedTransfer = 0
 
 	public PostDataUpdate() {
 		const owner = this.Parent
@@ -54,8 +59,13 @@ export class modifier_necrolyte_ghost_shroud_active extends Modifier {
 		return [this.cachedSpeedTotal, false]
 	}
 
+	protected GetMagicalResistanceDecrepifyUnique(): [number, boolean] {
+		return [this.cachedMres, false]
+	}
+
 	protected UpdateSpecialValues() {
 		const name = "necrolyte_ghost_shroud"
+		this.cachedMres = this.GetSpecialValue("bonus_damage", name)
 		this.cachedSpeed = this.GetSpecialValue("movement_speed", name)
 		this.cachedSpeedTransfer = this.GetSpecialValue("movement_transfer", name)
 	}

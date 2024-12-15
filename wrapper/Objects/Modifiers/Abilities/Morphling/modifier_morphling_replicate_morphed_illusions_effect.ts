@@ -11,6 +11,7 @@ export class modifier_morphling_replicate_morphed_illusions_effect extends Modif
 			return super.UnitPropertyChanged(changed)
 		}
 		owner.IsIllusion_ = state
+		owner.IsReflection_ = true
 		EventsSDK.emit("UnitPropertyChanged", false, owner)
 		return super.UnitPropertyChanged(changed)
 	}

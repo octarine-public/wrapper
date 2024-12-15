@@ -5,6 +5,7 @@ import { Modifier } from "../../../Base/Modifier"
 @WrapperClassModifier()
 export class modifier_viper_nethertoxin extends Modifier {
 	private cachedAttackSpeed = 0
+	private cachedMaxDuration = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -13,6 +14,11 @@ export class modifier_viper_nethertoxin extends Modifier {
 		]
 	])
 
+	public get EffMultiplier(): number {
+		const maxDuration = this.Ability?.MaxDuration ?? this.cachedMaxDuration
+		return Math.remapRange(this.ElapsedTime, 0, maxDuration, 0, 1)
+	}
+
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return this.Parent === this.Caster
 			? [0, false]
@@ -20,6 +26,8 @@ export class modifier_viper_nethertoxin extends Modifier {
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedAttackSpeed = this.GetSpecialValue("attack_slow", "viper_nethertoxin")
+		const name = "viper_nethertoxin"
+		this.cachedAttackSpeed = this.GetSpecialValue("attack_slow", name)
+		this.cachedMaxDuration = this.GetSpecialValue("max_duration", name)
 	}
 }

@@ -6,6 +6,7 @@ export const DefaultTickInterval = 1 / 30
 export const MaxManaPerIntellect = 12
 export const MaxManaRegenerationPerIntellect = 0.05
 export const DamageAmplifyPerIntellectPrecent = 0.07
+export const BaseMagicImmunityResist = 50
 
 export let ArmorPerAgility = 1 / 6
 export function SetArmorPerAgilityInternal(value: number) {

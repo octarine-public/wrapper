@@ -11,33 +11,33 @@ import { Unit } from "./Unit"
 @WrapperClass("CDOTA_BaseNPC_Hero")
 export class Hero extends Unit {
 	@NetworkedBasicField("m_iAbilityPoints")
-	public AbilityPoints = 0
+	public readonly AbilityPoints: number = 0
 	@NetworkedBasicField("m_iCurrentXP")
-	public CurrentXP = 0
+	public readonly CurrentXP: number = 0
 	@NetworkedBasicField("m_bReincarnating")
-	public IsReincarnating = false
+	public readonly IsReincarnating: boolean = false
 	@NetworkedBasicField("m_iRecentDamage")
-	public RecentDamage = 0
+	public readonly RecentDamage: number = 0
 	@NetworkedBasicField("m_flSpawnedAt")
-	public SpawnedAt = 0
+	public readonly SpawnedAt: number = 0
 	@NetworkedBasicField("m_flAgility")
-	public Agility = 0
+	public readonly Agility: number = 0
 	@NetworkedBasicField("m_flIntellect")
-	public Intellect = 0
+	public readonly Intellect: number = 0
 	@NetworkedBasicField("m_flStrength")
-	public Strength = 0
+	public readonly Strength: number = 0
 	@NetworkedBasicField("m_flAgilityTotal")
-	public TotalAgility = 0
+	public readonly TotalAgility: number = 0
 	@NetworkedBasicField("m_flIntellectTotal")
-	public BaseTotalIntellect = 0
+	public readonly BaseTotalIntellect: number = 0
 	@NetworkedBasicField("m_flStrengthTotal")
-	public TotalStrength = 0
+	public readonly TotalStrength: number = 0
 	@NetworkedBasicField("m_iHeroFacetID", EPropertyType.UINT32)
-	public HeroFacetID = 0
+	public readonly HeroFacetID: number = 0
 	@NetworkedBasicField("m_flRespawnTimePenalty")
-	public RespawnTimePenalty = 0
+	public readonly RespawnTimePenalty: number = 0
 	@NetworkedBasicField("m_flRespawnTime")
-	public RespawnTime = 0
+	public readonly RespawnTime: number = 0
 
 	public FocusFireActive = false
 	/** @internal (changed by CFocusFireChanged) */
@@ -71,6 +71,9 @@ export class Hero extends Unit {
 	}
 	public get HeroID(): number {
 		return this.UnitData.HeroID
+	}
+	public get MagicalDamageResist(): number {
+		return this.IsReflection ? this.BaseMagicalResist : super.MagicalDamageResist
 	}
 	public get IsIllusion(): boolean {
 		return (

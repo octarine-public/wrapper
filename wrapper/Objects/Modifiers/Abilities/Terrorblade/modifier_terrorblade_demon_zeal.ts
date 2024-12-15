@@ -32,10 +32,10 @@ export class modifier_terrorblade_demon_zeal extends Modifier {
 		}
 		let moveSpeed = this.cachedSpeed,
 			attackSpeed = this.cachedAttackSpeed
-		const isReflection = owner.HasBuffByName(
+		const isInvulReflection = owner.HasBuffByName(
 			"modifier_terrorblade_reflection_invulnerability"
 		)
-		if (owner.IsIllusion && isReflection) {
+		if (owner.IsIllusion && isInvulReflection) {
 			const half = (100 - this.cachedReflectionPct) / 100
 			moveSpeed *= half
 			attackSpeed *= half

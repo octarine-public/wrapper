@@ -260,6 +260,8 @@ export class Unit extends Entity {
 	public TargetIndex_: number = -1
 	/** @private NOTE: this is internal field use IsIllusion */
 	public IsIllusion_: boolean = false
+	/** @private NOTE: this is internal field use IsReflection */
+	public IsReflection_: boolean = false
 	/** @private NOTE: this is internal field use IsClone */
 	public IsClone_: boolean = false
 	/** @private NOTE: this is internal field use IsStrongIllusion */
@@ -355,8 +357,8 @@ export class Unit extends Entity {
 	public get BonusArmorPerAgility() {
 		return this.ModifierManager.ArmorPerAgility
 	}
-	public get BonusMagicResistPerIntellect() {
-		return this.ModifierManager.MagicResistPerIntellect
+	public get BaseMagicalResist(): number {
+		return this.ModifierManager.GetBaseMagicResistance(this.NetworkedBaseMagicResist)
 	}
 	public get DayVisionRange() {
 		return !this.IsBlind && this.IsSpawned
@@ -368,6 +370,9 @@ export class Unit extends Entity {
 	}
 	public get MoveSpeed(): number {
 		return this.GetMoveSpeedModifier()
+	}
+	public get MagicalDamageResist(): number {
+		return this.ModifierManager.GetMagicResistance(this.BaseMagicalResist)
 	}
 	/** @description The night-time movement speed bonus.*/
 	public get MoveSpeedNightBonus(): number {
@@ -464,7 +469,11 @@ export class Unit extends Entity {
 		return (this.GoldBountyMin + this.GoldBountyMax) / 2
 	}
 	public get IsIllusion(): boolean {
-		return this.IsIllusion_
+		return this.IsIllusion_ || this.IsReflection_
+	}
+	/** @description e.g: Terror Blade conjure image */
+	public get IsReflection(): boolean {
+		return this.IsReflection_
 	}
 	public get IsStrongIllusion(): boolean {
 		return this.IsStrongIllusion_
@@ -709,9 +718,6 @@ export class Unit extends Entity {
 	}
 	public get IsInAbilityPhase(): boolean {
 		return this.Spells.some(spell => spell !== undefined && spell.IsInAbilityPhase)
-	}
-	public get MagicalDamageResist(): number {
-		return this.NetworkedBaseMagicResist + this.BonusMagicResistPerIntellect
 	}
 	public get PhysicalDamageResist(): number {
 		const armor = this.Armor

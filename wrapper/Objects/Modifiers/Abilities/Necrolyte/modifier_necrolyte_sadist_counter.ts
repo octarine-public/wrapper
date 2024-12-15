@@ -18,9 +18,6 @@ export class modifier_necrolyte_sadist_counter extends Modifier {
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedAoeRadius = this.GetSpecialValue(
-			"bonus_aoe_pct_per_hit",
-			"primal_beast_pulverize"
-		)
+		this.cachedAoeRadius = this.GetSpecialValue("bonus_aoe", "necrolyte_sadist")
 	}
 }

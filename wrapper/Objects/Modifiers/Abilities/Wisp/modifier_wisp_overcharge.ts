@@ -4,11 +4,16 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_wisp_overcharge extends Modifier {
+	private cachedMres = 0
 	private cachedArmor = 0
 	private cachedSpeedResist = 0
 	private cachedAttackSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS,
+			this.GetMagicalResistanceBonus.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
 			this.GetPhysicalArmorBonus.bind(this)
@@ -22,6 +27,10 @@ export class modifier_wisp_overcharge extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
+
+	protected GetMagicalResistanceBonus(): [number, boolean] {
+		return [this.cachedMres, false]
+	}
 
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, false]
@@ -37,6 +46,7 @@ export class modifier_wisp_overcharge extends Modifier {
 
 	protected UpdateSpecialValues(): void {
 		const name = "wisp_overcharge"
+		this.cachedMres = this.GetSpecialValue("bonus_mres", name)
 		this.cachedArmor = this.GetSpecialValue("bonus_armor", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name)
 		this.cachedSpeedResist = this.GetSpecialValue("shard_bonus_slow_resistance", name)
