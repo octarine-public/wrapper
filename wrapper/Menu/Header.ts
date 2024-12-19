@@ -17,14 +17,17 @@ export class Header extends Base {
 		Header.TextOffset.y = GUIInfo.ScaleHeight(12)
 		Header.FontSize = GUIInfo.ScaleHeight(18)
 
-		Header.LogoSize.x = GUIInfo.ScaleWidth(Header.OriginalLogoSize.x)
-		Header.LogoSize.y = GUIInfo.ScaleHeight(Header.OriginalLogoSize.y)
+		const logoSize = RendererSDK.GetImageSize(this.logoPath)
+		Header.LogoSize.x = GUIInfo.ScaleWidth(logoSize.x)
+		Header.LogoSize.y = GUIInfo.ScaleHeight(logoSize.y)
 
-		Header.CapSize.x = GUIInfo.ScaleWidth(Header.OriginalCapSize.x)
-		Header.CapSize.y = GUIInfo.ScaleHeight(Header.OriginalCapSize.y)
+		const capSize = RendererSDK.GetImageSize(this.capPath)
+		Header.CapSize.x = GUIInfo.ScaleWidth(capSize.x)
+		Header.CapSize.y = GUIInfo.ScaleHeight(capSize.y)
 
-		Header.OriginalSize_.x = GUIInfo.ScaleWidth(Header.ActualOriginalSize_.x)
-		Header.OriginalSize_.y = GUIInfo.ScaleHeight(Header.ActualOriginalSize_.y)
+		const actualOriginalSize = RendererSDK.GetImageSize(this.imagePath)
+		Header.OriginalSize_.x = GUIInfo.ScaleWidth(actualOriginalSize.x)
+		Header.OriginalSize_.y = GUIInfo.ScaleHeight(actualOriginalSize.y)
 	}
 
 	private static readonly imagePath = "menu/header.svg"
@@ -32,16 +35,12 @@ export class Header extends Base {
 
 	private static readonly capPath = "menu/cap.png"
 	private static readonly CapOffset = new Vector2()
-	private static readonly OriginalCapSize = RendererSDK.GetImageSize(Header.capPath)
 	private static readonly CapSize = new Vector2()
 
 	private static readonly TextOffset = new Vector2()
 	private static readonly LogoOffset = new Vector2()
-	private static readonly OriginalLogoSize = RendererSDK.GetImageSize(Header.logoPath)
 	private static readonly LogoSize = new Vector2()
-	private static readonly ActualOriginalSize_ = RendererSDK.GetImageSize(
-		Header.imagePath
-	)
+
 	private static readonly OriginalSize_ = new Vector2()
 	private static FontSize = 0
 
