@@ -21,6 +21,7 @@ import { GameState } from "../../Utils/GameState"
 import { toPercentage } from "../../Utils/Math"
 import { QuantizePlaybackRate } from "../../Utils/QuantizeUtils"
 import { AbilityData } from "../DataBook/AbilityData"
+import { modifier_rubick_spell_steal } from "../Modifiers/Abilities/Rubick/modifier_rubick_spell_steal"
 import { Entity } from "./Entity"
 import { Unit } from "./Unit"
 
@@ -730,7 +731,8 @@ export class Ability extends Entity {
 		if (reductionConstant !== 0) {
 			baseManaCost = baseManaCost - reductionConstant
 		}
-		return baseManaCost * (2 - stacking) * (2 - percentage)
+		const spellStealReduction = this.GetManaCostModifierSpellSteal(owner)
+		return baseManaCost * (2 - stacking) * (2 - percentage) * spellStealReduction
 	}
 	protected GetCastPointModifier(baseCastPoint: number): number {
 		const owner = this.Owner
@@ -790,6 +792,13 @@ export class Ability extends Entity {
 			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_PERCENTAGE
 		)
 		return (baseAOERadius + (bonusConstant + bonusStacking)) * percentage
+	}
+	protected GetManaCostModifierSpellSteal(owner: Unit): number {
+		if (!this.IsStolen) {
+			return 1
+		}
+		const modifier = owner.GetBuffByClass(modifier_rubick_spell_steal)
+		return (100 - (modifier?.CachedManaCostReduction ?? 0)) / 100
 	}
 }
 

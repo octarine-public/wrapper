@@ -8,6 +8,7 @@ export class modifier_wisp_overcharge extends Modifier {
 	private cachedArmor = 0
 	private cachedSpeedResist = 0
 	private cachedAttackSpeed = 0
+	private cachedSpellAmplify = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -25,6 +26,10 @@ export class modifier_wisp_overcharge extends Modifier {
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
 			this.GetAttackSpeedBonusConstant.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE,
+			this.GetSpellAmplifyPercentage.bind(this)
 		]
 	])
 
@@ -44,11 +49,16 @@ export class modifier_wisp_overcharge extends Modifier {
 		return [this.cachedAttackSpeed, false]
 	}
 
+	protected GetSpellAmplifyPercentage(): [number, boolean] {
+		return [this.cachedSpellAmplify, false]
+	}
+
 	protected UpdateSpecialValues(): void {
 		const name = "wisp_overcharge"
 		this.cachedMres = this.GetSpecialValue("bonus_mres", name)
 		this.cachedArmor = this.GetSpecialValue("bonus_armor", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name)
 		this.cachedSpeedResist = this.GetSpecialValue("shard_bonus_slow_resistance", name)
+		this.cachedSpellAmplify = this.GetSpecialValue("bonus_spell_amp", name)
 	}
 }

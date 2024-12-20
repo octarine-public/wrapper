@@ -748,6 +748,9 @@ export class Unit extends Entity {
 	public get ShouldDoFlyHeightVisual(): boolean {
 		return this.Buffs.some(buff => buff.ShouldDoFlyHeightVisual)
 	}
+	public get SlowResistance(): number {
+		return this.ModifierManager.SlowResistance
+	}
 	/** @deprecated use HasVisualShield */
 	public get IsShield(): boolean {
 		return this.HasVisualShield
@@ -1145,8 +1148,8 @@ export class Unit extends Entity {
 	/** ================================ Turn Time ======================================= */
 	public GetTurnTime(
 		angle: number | Vector3,
-		currentTurnRate = true,
-		rotationDiff = false
+		currentTurnRate: boolean = true,
+		rotationDiff: boolean = false
 	): number {
 		if (angle instanceof Vector3) {
 			angle = this.GetAngle(angle, rotationDiff)
@@ -1158,25 +1161,26 @@ export class Unit extends Entity {
 		const ang = this.FindRotationAngle(vec)
 		return ang <= turnRad ? (30 * ang) / this.TurnRate(currentTurnRate) : 0
 	}
-	public TurnRate(currentTurnRate = true): number {
+	public TurnRate(currentTurnRate: boolean = true): number {
 		return currentTurnRate ? this.MovementTurnRate : this.BaseTurnRate || 0.5
 	}
-	public TurnTime(angle: number, currentTurnRate = true): number {
+	public TurnTime(angle: number, currentTurnRate: boolean = true): number {
 		return Math.max(angle / (30 * this.TurnRate(currentTurnRate)), 0)
 	}
 	public TurnTimeNew(
 		target: Vector3,
 		movement: boolean,
-		directionalMovement = false,
-		currentTurnRate = true
+		directionalMovement: boolean = false,
+		currentTurnRate: boolean = true
 	): number {
-		const turnData = GetTurnData(this.TurnRate(currentTurnRate))
+		let targetAng = 0
 		let angDiff = Math.radianToDegrees(this.GetAngle(target, false))
-		const targetAng = directionalMovement
-			? 0
-			: movement
+		const turnData = GetTurnData(this.TurnRate(currentTurnRate))
+		if (!directionalMovement) {
+			targetAng = movement
 				? GetAngleToFacePath(turnData, angDiff)
 				: GetCastAngle(turnData, angDiff, this.Position.DistanceSqr2D(target))
+		}
 		let time = 0,
 			yawVelocity = this.YawVelocity
 		while (angDiff > targetAng) {

@@ -4,6 +4,12 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_bloodseeker_thirst extends Modifier {
+	private minBonus = 0
+	private maxBonus = 0
+	private bonusSpeed = 0
+	private activeBonusSpeed = 0
+	private cachedTotalSpeed = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -15,12 +21,6 @@ export class modifier_bloodseeker_thirst extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
-	private minBonus = 0
-	private maxBonus = 0
-	private bonusSpeed = 0
-	private activeBonusSpeed = 0
-	private cachedTotalSpeed = 0
 
 	public PostDataUpdate(): void {
 		const owner = this.Parent,

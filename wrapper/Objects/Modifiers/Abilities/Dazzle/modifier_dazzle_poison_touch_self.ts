@@ -4,6 +4,9 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_dazzle_poison_touch_self extends Modifier {
+	private cachedRange = 0
+	private cachedRangeValue = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -11,9 +14,6 @@ export class modifier_dazzle_poison_touch_self extends Modifier {
 			this.GetAttackRangeBonus.bind(this)
 		]
 	])
-
-	private cachedRange = 0
-	private cachedRangeValue = 0
 
 	public PostDataUpdate(): void {
 		if (this.cachedRangeValue === 0) {

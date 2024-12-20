@@ -3,18 +3,13 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_batrider_displacement_buff extends Modifier {
-	private cachedSpeed = 0
+export class modifier_lion_to_hell_and_back_buff extends Modifier {
 	private cachedSpellAmplify = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE,
 			this.GetSpellAmplifyPercentage.bind(this)
-		],
-		[
-			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
-			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
 
@@ -22,13 +17,10 @@ export class modifier_batrider_displacement_buff extends Modifier {
 		return [this.cachedSpellAmplify, false]
 	}
 
-	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [this.cachedSpeed, false]
-	}
-
 	protected UpdateSpecialValues(): void {
-		const name = "batrider_stoked"
-		this.cachedSpeed = this.GetSpecialValue("movement_speed_pct", name)
-		this.cachedSpellAmplify = this.GetSpecialValue("spell_amplification", name)
+		this.cachedSpellAmplify = this.GetSpecialValue(
+			"spell_amp",
+			"lion_to_hell_and_back"
+		)
 	}
 }

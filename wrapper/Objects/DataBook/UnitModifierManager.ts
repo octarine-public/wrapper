@@ -43,6 +43,15 @@ export class UnitModifierManager {
 		)
 		return this.Owner.TotalIntellect * MagicResistPerIntellect * percentage
 	}
+	public get SlowResistance(): number {
+		const slowResistUnique = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE
+		)
+		const slowResistStacking = this.GetPercentageMultiplicativeInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING
+		)
+		return 1 - (1 - (slowResistStacking - 1)) * (1 - slowResistUnique / 100)
+	}
 	public GetBaseBonusPhysicalArmor(baseArmor: number): number {
 		const ignoreArmor = this.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_IGNORE_PHYSICAL_ARMOR
@@ -226,18 +235,8 @@ export class UnitModifierManager {
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_REDUCTION_PERCENTAGE
 		)
 
-		const slowResistUnique =
-			this.GetConstantHighestInternal(
-				EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE
-			) / 100
-
-		const slowResistStacking = this.GetPercentageMultiplicativeInternal(
-			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING
-		)
-
 		const reductionValue = reductionPercentage * slowValue
-		const effSlowResist = (1 - (slowResistStacking - 1)) * (1 - slowResistUnique)
-		const effReduction = (1 - (1 - effSlowResist)) * reductionValue
+		const effReduction = (1 - this.SlowResistance) * reductionValue
 
 		const bonusConstant = this.GetConditionalAdditiveInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
