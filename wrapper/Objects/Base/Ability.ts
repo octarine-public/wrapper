@@ -21,6 +21,7 @@ import { GameState } from "../../Utils/GameState"
 import { toPercentage } from "../../Utils/Math"
 import { QuantizePlaybackRate } from "../../Utils/QuantizeUtils"
 import { AbilityData } from "../DataBook/AbilityData"
+import { modifier_rubick_spell_steal } from "../Modifiers/Abilities/Rubick/modifier_rubick_spell_steal"
 import { Entity } from "./Entity"
 import { Unit } from "./Unit"
 
@@ -62,7 +63,6 @@ export class Ability extends Entity {
 	public IsEmpty = false
 	public IsAbility = true
 	public IsHidden = false
-	public IsSpellAmplify = true
 	public ChannelStartTime = 0
 	public AbilityChargeRestoreTimeRemaining = 0
 	/** @deprecated use by index */
@@ -80,6 +80,8 @@ export class Ability extends Entity {
 	/** @private NOTE: this is internal field, use CooldownRestore */
 	public CooldownRestore_ = 0
 	public CooldownRestoreTime = 0
+
+	protected IsSpellAmplify = true
 
 	/**@deprecated */
 	public readonly ProjectilePath: Nullable<string>
@@ -411,13 +413,6 @@ export class Ability extends Entity {
 	public get SkillshotRange(): number {
 		return this.CastRange
 	}
-	// TODO Fix me
-	public get SpellAmplification(): number {
-		if (this.Name.startsWith("special_bonus_spell_amplify")) {
-			return this.GetSpecialValue("value") / 100
-		}
-		return 0
-	}
 	public get IsCastRangeFake(): boolean {
 		return false
 	}
@@ -579,24 +574,29 @@ export class Ability extends Entity {
 	/**
 	 * @description Returns the raw damage of the ability without any amplification
 	 */
-	public GetRawDamage(target: Unit, _health?: number) {
-		return !this.IsDebuffImmune(target) ? this.AbilityDamage : 0
+	public GetRawDamage(target: Unit) {
+		return target.IsDebuffImmune && this.DamageType === DAMAGE_TYPES.DAMAGE_TYPE_PURE
+			? 0
+			: this.AbilityDamage
 	}
-	public GetDamage(target: Unit, _manaCost?: number) {
+	public GetDamage(target: Unit) {
 		const owner = this.Owner
 		if (owner === undefined) {
 			return 0
 		}
-		const rawDamage = this.GetRawDamage(target, target.HP),
-			amplification = target.GetAmplificationDamage(
-				owner,
-				this.DamageType,
-				this.IsSpellAmplify,
-				this.IsStolen,
-				rawDamage
-			)
+		let spellAmp = 1
+		let bonusAttack = 0
+		if (this.IsSpellAmplify || owner.IsMagicAttackDamage) {
+			spellAmp *= owner.EffSpellAmp
+			spellAmp *= target.EffSpellAmpTarget
+		}
+		if (!this.IsSpellAmplify) {
+			bonusAttack += owner.GetAttackBonusMagicWithResist(target)
+		}
+		const rawDamage = this.GetRawDamage(target)
+		const damageAmp = target.GetDamageAmplification(owner, this.DamageType)
 		// TODO: damage block, ex. rune shield etc
-		return rawDamage * amplification
+		return (rawDamage * damageAmp + bonusAttack) * spellAmp
 	}
 	public UseAbility(
 		target?: Vector3 | Entity,
@@ -697,6 +697,15 @@ export class Ability extends Entity {
 	public IsDoubleTap(_order: ExecuteOrder): boolean {
 		return false
 	}
+	public IsBuff(): this is IBuff {
+		return false
+	}
+	public IsShield(): this is IShield {
+		return false
+	}
+	public IsDebuff(): this is IDebuff {
+		return false
+	}
 	public IsHealthCost(): this is IHealthCost {
 		return false
 	}
@@ -706,13 +715,7 @@ export class Ability extends Entity {
 	public IsHealthRestore(): this is IHealthRestore<Unit> {
 		return false
 	}
-	protected IsDebuffImmune(target?: Unit): boolean {
-		return (
-			(target?.IsDebuffImmune ?? false) &&
-			this.DamageType === DAMAGE_TYPES.DAMAGE_TYPE_PURE
-		)
-	}
-	protected GetManaCostModifier(baseManaCost: number): number {
+	public GetManaCostModifier(baseManaCost: number): number {
 		const owner = this.Owner
 		if (owner === undefined) {
 			return baseManaCost
@@ -730,7 +733,8 @@ export class Ability extends Entity {
 		if (reductionConstant !== 0) {
 			baseManaCost = baseManaCost - reductionConstant
 		}
-		return baseManaCost * (2 - stacking) * (2 - percentage)
+		const spellStealReduction = this.GetManaCostModifierSpellSteal(owner)
+		return baseManaCost * (2 - stacking) * (2 - percentage) * spellStealReduction
 	}
 	protected GetCastPointModifier(baseCastPoint: number): number {
 		const owner = this.Owner
@@ -790,6 +794,21 @@ export class Ability extends Entity {
 			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_PERCENTAGE
 		)
 		return (baseAOERadius + (bonusConstant + bonusStacking)) * percentage
+	}
+	protected GetManaCostModifierSpellSteal(owner: Unit): number {
+		if (!this.IsStolen) {
+			return 1
+		}
+		const modifier = owner.GetBuffByClass(modifier_rubick_spell_steal)
+		return (100 - (modifier?.CachedManaCostReduction ?? 0)) / 100
+	}
+
+	protected GetSpellAmpModifierSpellSteal(owner: Unit): number {
+		if (!this.IsStolen) {
+			return 1
+		}
+		const modifier = owner.GetBuffByClass(modifier_rubick_spell_steal)
+		return 1 + (modifier?.CachedSpellAmpDamage ?? 0) / 100
 	}
 }
 

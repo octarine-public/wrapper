@@ -1,9 +1,14 @@
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
+import { EventsSDK } from "../../../../Managers/EventsSDK"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_spirit_breaker_charge_of_darkness extends Modifier {
+	private speedMin = 0
+	private speedMax = 0
+	private windupTime = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_IGNORE_MOVESPEED_LIMIT,
@@ -14,10 +19,6 @@ export class modifier_spirit_breaker_charge_of_darkness extends Modifier {
 			this.GetMoveSpeedBonusConstant.bind(this)
 		]
 	])
-
-	private speedMin = 0
-	private speedMax = 0
-	private windupTime = 0
 
 	protected GetIgnoreMoveSpeedLimit(): [number, boolean] {
 		return [1, false]
@@ -35,5 +36,16 @@ export class modifier_spirit_breaker_charge_of_darkness extends Modifier {
 		this.windupTime = this.GetSpecialValue("windup_time", name)
 		this.speedMax = this.GetSpecialValue("movement_speed", name)
 		this.speedMin = this.GetSpecialValue("min_movespeed_bonus_pct", name)
+	}
+
+	public UnitPropertyChanged(changed?: boolean): boolean {
+		const owner = this.Parent
+		const state = (changed ??= true)
+		if (owner === undefined) {
+			return super.UnitPropertyChanged(changed)
+		}
+		owner.ModifierManager.IsChargeOfDarkness_ = state
+		EventsSDK.emit("UnitPropertyChanged", false, owner)
+		return super.UnitPropertyChanged(changed)
 	}
 }

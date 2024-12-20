@@ -10,7 +10,7 @@ export class modifier_muerta_parting_shot_soul_clone extends Modifier {
 		if (owner === undefined) {
 			return false
 		}
-		owner.IsStrongIllusion_ = state
+		owner.ModifierManager.IsStrongIllusion_ = state
 		EventsSDK.emit("UnitPropertyChanged", false, owner)
 		return super.UnitPropertyChanged(changed)
 	}

@@ -1,3 +1,4 @@
+import { ModifierParams } from "../../Base/ModifierParams"
 import {
 	ArmorPerAgility,
 	AttackSpeedData,
@@ -5,6 +6,7 @@ import {
 	MoveSpeedData
 } from "../../Data/GameData"
 import { Attributes } from "../../Enums/Attributes"
+import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
 import { EModifierfunction } from "../../Enums/EModifierfunction"
 import { ModifierHandlerValue, ModifierMapFieldHandler } from "../Base/Modifier"
 import { Unit } from "../Base/Unit"
@@ -12,6 +14,27 @@ import { Unit } from "../Base/Unit"
 type ModifierfunctionMap = Map<EModifierfunction, ModifierHandlerValue[]>
 
 export class UnitModifierManager {
+	/** @private NOTE: this is internal field use Unit#NoIntellect */
+	public NoIntellect_: boolean = false
+	/** @private NOTE: this is internal field use Unit#HasAeigs */
+	public HasAeigs_: boolean = false
+	/** @private NOTE: this is internal field use Unit#IsTempestDouble */
+	public IsTempestDouble_: boolean = false
+	/** @private NOTE: this is internal field use Unit#IsChargeOfDarkness */
+	public IsChargeOfDarkness_: boolean = false
+	/** @private NOTE: this is internal field use Unit#IsClone */
+	public IsClone_: boolean = false
+	/** @private NOTE: this is internal field use Unit#IsIllusion */
+	public IsIllusion_: boolean = false
+	/** @private NOTE: this is internal field use Unit#IsReflection */
+	public IsReflection_: boolean = false
+	/** @private NOTE: this is internal field use Unit#IsStrongIllusion */
+	public IsStrongIllusion_: boolean = false
+	/** @private NOTE: this is internal field use Unit#IsFountainInvulnerable */
+	public IsFountainInvulnerable_: boolean = false
+	/** @private NOTE: this is internal */
+	public IsMorphlingReplicateIllusion_: boolean = false
+
 	private readonly eModifierfunctions: ModifierfunctionMap = new Map()
 
 	constructor(public readonly Owner: Unit) {}
@@ -42,6 +65,102 @@ export class UnitModifierManager {
 			1
 		)
 		return this.Owner.TotalIntellect * MagicResistPerIntellect * percentage
+	}
+	public get SlowResistance(): number {
+		const slowResistUnique = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE
+		)
+		const slowResistStacking = this.GetPercentageMultiplicativeInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING
+		)
+		return 1 - (1 - (slowResistStacking - 1)) * (1 - slowResistUnique / 100)
+	}
+	public get SpellAmplification(): number {
+		const percentage = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		const uniquePercentage = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE_UNIQUE
+		)
+		return uniquePercentage + percentage
+	}
+	public get SpellAmplificationTarget(): number {
+		const targetPercentage = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE_TARGET,
+			false,
+			1,
+			1
+		)
+		return targetPercentage
+	}
+	public get IsSuppressCrit(): boolean {
+		const suppressCrit = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SUPPRESS_CRIT
+		)
+		return suppressCrit !== 0
+	}
+	public get AttackDamageConvertPhysicalToMagical(): boolean {
+		const toMagical = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PROCATTACK_CONVERT_PHYSICAL_TO_MAGICAL
+		)
+		return toMagical !== 0
+	}
+	public get CritDamageBonus(): number {
+		return Math.max(
+			this.GetConstantHighestInternal(
+				EModifierfunction.MODIFIER_PROPERTY_CRITICAL_STRIKE_BONUS
+			) / 100,
+			1
+		)
+	}
+	public GetIncomingDamage(damageType: DAMAGE_TYPES): number {
+		const totalIncDamage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_INCOMING_DAMAGE_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		switch (damageType) {
+			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
+				break
+			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL:
+				break
+		}
+		return totalIncDamage
+	}
+	public GetOutgoingDamage(damageType: DAMAGE_TYPES, target: Unit): number {
+		const totalOutDamage = this.GetPercentageMultiplicativeInternal(
+			EModifierfunction.MODIFIER_PROPERTY_DAMAGEOUTGOING_PERCENTAGE_MULTIPLICATIVE,
+			false,
+			false,
+			false,
+			new ModifierParams(target.Index)
+		)
+		switch (damageType) {
+			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
+				break
+			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL:
+				break
+		}
+		return totalOutDamage
+	}
+	public GetPhysicalPreAttackDamageBonus(ignoreTarget = false): number {
+		const bonus = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE
+		)
+		const bonusTarget = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE_TARGET
+		)
+		return bonus + (ignoreTarget ? 0 : bonusTarget)
+	}
+	public GetMagicalPreAttackDamageBonus(_ignoreTarget = false): number {
+		const bonus = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PROCATTACK_BONUS_DAMAGE_MAGICAL
+		)
+		return bonus
 	}
 	public GetBaseBonusPhysicalArmor(baseArmor: number): number {
 		const ignoreArmor = this.GetConstantHighestInternal(
@@ -226,18 +345,8 @@ export class UnitModifierManager {
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_REDUCTION_PERCENTAGE
 		)
 
-		const slowResistUnique =
-			this.GetConstantHighestInternal(
-				EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE
-			) / 100
-
-		const slowResistStacking = this.GetPercentageMultiplicativeInternal(
-			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING
-		)
-
 		const reductionValue = reductionPercentage * slowValue
-		const effSlowResist = (1 - (slowResistStacking - 1)) * (1 - slowResistUnique)
-		const effReduction = (1 - (1 - effSlowResist)) * reductionValue
+		const effReduction = (1 - this.SlowResistance) * reductionValue
 
 		const bonusConstant = this.GetConditionalAdditiveInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
@@ -368,20 +477,15 @@ export class UnitModifierManager {
 		const totalMul = (2 - bonus) * (1 - decrepify / 100) * (1 - bonusUnique / 100)
 		return 1 - (direct + (1 - baseResist / 100)) * totalMul
 	}
-	// NOTE: It is necessary to study in more detail what this Valve is used
-	// public GetPostPhysicalArmor(baseArmor: number): number {
-	// 	const baseBonus = this.GetBaseBonusPhysicalArmor(baseArmor)
-	// 	const bonusPost = this.GetConditionalAdditiveInternal(
-	// 		EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS_POST,
-	// 		false,
-	// 		1,
-	// 		1
-	// 	)
-	// 	const minPhysical = this.GetConstantLowestInternal(
-	// 		EModifierfunction.MODIFIER_PROPERTY_MIN_PHYSICAL_ARMOR
-	// 	)
-	// 	const totalBonus = minPhysical - (baseBonus + bonusPost)
-	// }
+	public GetPredictiveArmor(target: Unit): number {
+		return this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_PREATTACK_BONUS_TARGET,
+			false,
+			1,
+			1,
+			new ModifierParams(target.Index)
+		)
+	}
 	public GetNightTimeVisionRange(
 		baseVision: number,
 		ignoreFixedVision: boolean = false
@@ -522,7 +626,8 @@ export class UnitModifierManager {
 		eModifierfunction: EModifierfunction,
 		ignoreFlags: boolean = false,
 		multiplier: number = 1,
-		incoming: number = 0
+		incoming: number = 0,
+		modifierParams?: ModifierParams
 	) {
 		const handlers = this.eModifierfunctions.get(eModifierfunction)
 		if (handlers === undefined || handlers.length === 0) {
@@ -530,7 +635,7 @@ export class UnitModifierManager {
 		}
 		let result = 0
 		for (let i = handlers.length - 1; i > -1; i--) {
-			const [value, isFlagged] = handlers[i]()
+			const [value, isFlagged] = handlers[i](modifierParams)
 			if (isFlagged && !ignoreFlags) {
 				continue
 			}
@@ -602,7 +707,8 @@ export class UnitModifierManager {
 		eModifierfunction: EModifierfunction,
 		ignoreFlags: boolean = false,
 		isNegative: boolean = false,
-		applyOnlyPositive: boolean = false
+		applyOnlyPositive: boolean = false,
+		modifierParams?: ModifierParams
 	) {
 		const handlers = this.eModifierfunctions.get(eModifierfunction)
 		if (handlers === undefined || handlers.length === 0) {
@@ -610,7 +716,7 @@ export class UnitModifierManager {
 		}
 		let aggregateValue = 1
 		for (let i = handlers.length - 1; i > -1; i--) {
-			const [handlerValue, isFlagged] = handlers[i]()
+			const [handlerValue, isFlagged] = handlers[i](modifierParams)
 			let value = handlerValue
 			if (isFlagged && !ignoreFlags) {
 				value = 0

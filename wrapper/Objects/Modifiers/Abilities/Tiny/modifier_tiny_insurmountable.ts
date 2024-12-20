@@ -5,6 +5,12 @@ import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
 export class modifier_tiny_insurmountable extends Modifier {
+	private cachedSlowResist = 0
+	private cachedStatusResist = 0
+
+	private slowResist = 0
+	private statusResist = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -16,12 +22,6 @@ export class modifier_tiny_insurmountable extends Modifier {
 			this.GetSlowResistanceStacking.bind(this)
 		]
 	])
-
-	private cachedSlowResist = 0
-	private cachedStatusResist = 0
-
-	private slowResist = 0
-	private statusResist = 0
 
 	public PostDataUpdate(): void {
 		const owner = this.Parent

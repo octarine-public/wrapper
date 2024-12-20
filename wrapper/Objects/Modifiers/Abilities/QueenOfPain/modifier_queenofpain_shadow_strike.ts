@@ -5,6 +5,13 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_queenofpain_shadow_strike extends Modifier {
+	private readonly slowInterval = 1
+	private readonly slowStep = 0.985
+	private readonly slowStepStep = 0.815
+
+	private cachedSpeed = 0
+	private cachedSpeedValue = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -12,13 +19,6 @@ export class modifier_queenofpain_shadow_strike extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
-	private readonly slowInterval = 1
-	private readonly slowStep = 0.985
-	private readonly slowStepStep = 0.815
-
-	private cachedSpeed = 0
-	private cachedSpeedValue = 0
 
 	public PostDataUpdate(): void {
 		const elapsed = this.ElapsedTime,

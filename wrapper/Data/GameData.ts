@@ -23,6 +23,11 @@ export function SetMagicResistPerIntellectInternal(value: number) {
 	MagicResistPerIntellect = value
 }
 
+export let MeleeDamageBlockAmount = 16
+export function SetMeleeDamageBlockAmountInternal(value: number) {
+	MeleeDamageBlockAmount = value
+}
+
 export const MoveSpeedData = new (class CMoveSpeedData {
 	/**
 	 * @readonly

@@ -2,6 +2,7 @@ import { Color } from "../../Base/Color"
 import { QAngle } from "../../Base/QAngle"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
+import { MeleeDamageBlockAmount } from "../../Data/GameData"
 import { GetUnitTexture } from "../../Data/ImageData"
 import {
 	GetAngleToFacePath,
@@ -14,6 +15,7 @@ import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { Attributes } from "../../Enums/Attributes"
 import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
+import { DamageValueType } from "../../Enums/DamageValue"
 import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
 import { DOTA_SHOP_TYPE } from "../../Enums/DOTA_SHOP_TYPE"
 import { DOTAScriptInventorySlot } from "../../Enums/DOTAScriptInventorySlot"
@@ -99,7 +101,7 @@ export class Unit extends Entity {
 	@NetworkedBasicField("m_flRefresherLastCooldown")
 	public readonly RefresherLastCooldown: number = 0
 	@NetworkedBasicField("m_iDamageBonus")
-	public readonly BonusDamage: number = 0
+	public readonly AttackDamageBonus: number = 0
 	@NetworkedBasicField("m_iDayTimeVisionRange")
 	public readonly NetworkedBaseDayVision: number = 0
 	@NetworkedBasicField("m_flDeathTime")
@@ -258,14 +260,6 @@ export class Unit extends Entity {
 	public OwnerNPC: Nullable<Unit> = undefined
 	/** @private NOTE: this is internal field use Target */
 	public TargetIndex_: number = -1
-	/** @private NOTE: this is internal field use IsIllusion */
-	public IsIllusion_: boolean = false
-	/** @private NOTE: this is internal field use IsReflection */
-	public IsReflection_: boolean = false
-	/** @private NOTE: this is internal field use IsClone */
-	public IsClone_: boolean = false
-	/** @private NOTE: this is internal field use IsStrongIllusion */
-	public IsStrongIllusion_: boolean = false
 	/** @private NOTE: this is internal field use IsVisibleForEnemies(...) */
 	public IsVisibleForEnemies_: boolean = false
 	public cellIsVisibleForEnemies_: boolean = false // TODO: calculate grid nav from enemies
@@ -401,23 +395,20 @@ export class Unit extends Entity {
 	public get StatusResistance(): number {
 		return this.ModifierManager.GetStatusResistance()
 	}
-	public get SpellAmplification(): number {
-		const itemsSpellAmp = this.Items.reduce(
-			(val, item) => val + item.SpellAmplification,
-			0
-		)
-		const spellsSpellAmp = this.Spells.reduce((val, spell) => {
-			if (spell !== undefined) {
-				val += spell.SpellAmplification
-			}
-			return val
-		}, 0)
-		return itemsSpellAmp + spellsSpellAmp
+	public get SpellAmp(): number {
+		return this.ModifierManager.SpellAmplification
+	}
+	public get SpellAmpTarget(): number {
+		return this.ModifierManager.SpellAmplificationTarget
+	}
+	public get EffSpellAmp(): number {
+		return 1 + this.ModifierManager.SpellAmplification / 100
+	}
+	public get EffSpellAmpTarget(): number {
+		return 1 + this.ModifierManager.SpellAmplificationTarget / 100
 	}
 	public get TotalIntellect() {
-		return !this.HasBuffByName("modifier_ogre_magi_dumb_luck")
-			? this.BaseTotalIntellect
-			: 0
+		return this.HasIntellect ? this.BaseTotalIntellect : 0
 	}
 	public get Target() {
 		return EntityManager.EntityByIndex<Unit>(this.TargetIndex_)
@@ -453,7 +444,7 @@ export class Unit extends Entity {
 	 * @returns {boolean}
 	 */
 	public get IsClone(): boolean {
-		return this.IsClone_
+		return this.ModifierManager.IsClone_
 	}
 	/**
 	 * @description Determines if the instance is the current player's hero.
@@ -469,38 +460,37 @@ export class Unit extends Entity {
 		return (this.GoldBountyMin + this.GoldBountyMax) / 2
 	}
 	public get IsIllusion(): boolean {
-		return this.IsIllusion_ || this.IsReflection_
+		return this.ModifierManager.IsIllusion_ || this.ModifierManager.IsReflection_
 	}
 	/** @description e.g: Terror Blade conjure image */
 	public get IsReflection(): boolean {
-		return this.IsReflection_
+		return this.ModifierManager.IsReflection_
+	}
+	public get IsSuppressCrit(): boolean {
+		return this.ModifierManager.IsSuppressCrit
 	}
 	public get IsStrongIllusion(): boolean {
-		return this.IsStrongIllusion_
+		return this.ModifierManager.IsStrongIllusion_
 	}
 	/** @deprecated use IsIllusion or IsStrongIllusion */
 	public get IsHiddenIllusion(): boolean {
 		return this.IsIllusion
 	}
-	// TODO: by classes
 	public get CanReincarnate() {
-		return this.HasBuffByName("modifier_item_aegis")
+		return this.HasAegis
 	}
-	// TODO: by classes
-	public get IsThirst(): boolean {
-		return this.HasBuffByName("modifier_bloodseeker_thirst")
+	public get IsFountainInvulnerable(): boolean {
+		return this.ModifierManager.IsFountainInvulnerable_
 	}
-	// TODO: by classes
-	public get FountainInvulnerability(): boolean {
-		return this.HasBuffByName("modifier_fountain_invulnerability")
-	}
-	// TODO: by classes
 	public get IsTempestDouble(): boolean {
-		return this.HasBuffByName("modifier_arc_warden_tempest_double")
+		return this.ModifierManager.IsTempestDouble_
 	}
-	// TODO: by classes
+	/** @deprecated use IsChargeOfDarkness */
 	public get IsCharge(): boolean {
-		return this.HasBuffByName("modifier_spirit_breaker_charge_of_darkness")
+		return this.ModifierManager.IsChargeOfDarkness_
+	}
+	public get IsChargeOfDarkness(): boolean {
+		return this.ModifierManager.IsChargeOfDarkness_
 	}
 	public get CanBeMainHero(): boolean {
 		return !this.IsIllusion && !this.IsTempestDouble
@@ -571,6 +561,12 @@ export class Unit extends Entity {
 	}
 	public get IsDeniable(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE)
+	}
+	public get HasAegis(): boolean {
+		return this.ModifierManager.HasAeigs_
+	}
+	public get HasIntellect(): boolean {
+		return !this.ModifierManager.NoIntellect_
 	}
 	public get HasModifierVisibleForEnemies(): boolean {
 		return false
@@ -748,6 +744,9 @@ export class Unit extends Entity {
 	public get ShouldDoFlyHeightVisual(): boolean {
 		return this.Buffs.some(buff => buff.ShouldDoFlyHeightVisual)
 	}
+	public get SlowResistance(): number {
+		return this.ModifierManager.SlowResistance
+	}
 	/** @deprecated use HasVisualShield */
 	public get IsShield(): boolean {
 		return this.HasVisualShield
@@ -769,6 +768,9 @@ export class Unit extends Entity {
 	}
 	public get HeroFacet(): string {
 		return ""
+	}
+	public get IsMagicAttackDamage(): boolean {
+		return this.ModifierManager.AttackDamageConvertPhysicalToMagical
 	}
 	/**
 	 * @description example: panorama/images/heroes/npc_dota_hero_windrunner_png.vtex_c
@@ -794,6 +796,23 @@ export class Unit extends Entity {
 	}
 	public GetPhysicalArmorModifier(baseArmor: number = this.BaseArmor): number {
 		return this.ModifierManager.GetPhysicalArmor(baseArmor)
+	}
+	public GetPredictiveArmorModifier(target: Unit): number {
+		return this.ModifierManager.GetPredictiveArmor(target)
+	}
+	public GetPhysicalDamageResist(predictiveArmor: number = 0): number {
+		const armor = this.Armor + predictiveArmor
+		return (0.06 * armor) / (1 + 0.06 * Math.abs(armor))
+	}
+	public GetAttackBonusMagicWithResist(target: Unit): number {
+		const damage = this.ModifierManager.GetMagicalPreAttackDamageBonus()
+		return damage * (1 - target.MagicalDamageResist)
+	}
+	public GetEffectiveIncomingDamage(damageType: DAMAGE_TYPES): number {
+		return this.ModifierManager.GetIncomingDamage(damageType)
+	}
+	public GetEffectiveOutgoingDamage(damageType: DAMAGE_TYPES, target: Unit): number {
+		return this.ModifierManager.GetOutgoingDamage(damageType, target)
 	}
 	public GetTimeVisionModifier(
 		baseVision: number,
@@ -854,7 +873,7 @@ export class Unit extends Entity {
 		if (this.IsRooted || this.IsStunned || !this.IsSpawned) {
 			return false
 		}
-		if (this.IsInvulnerable && !this.FountainInvulnerability) {
+		if (this.IsInvulnerable && !this.IsFountainInvulnerable) {
 			return false
 		}
 		if (checkChanneling && this.IsChanneling) {
@@ -890,7 +909,7 @@ export class Unit extends Entity {
 			!this.IsStunned &&
 			!this.IsDisarmed &&
 			!this.IgnoreMoveAndAttackOrders &&
-			(!this.IsInvulnerable || this.FountainInvulnerability) &&
+			(!this.IsInvulnerable || this.IsFountainInvulnerable) &&
 			!this.HasAttackCapability(DOTAUnitAttackCapability.DOTA_UNIT_CAP_NO_ATTACK)
 
 		if (target === undefined) {
@@ -973,49 +992,73 @@ export class Unit extends Entity {
 			}
 		}
 	}
-
-	public GetAmplificationDamage(
-		_source: Unit,
-		_damageType: DAMAGE_TYPES,
-		_spellAmplify: boolean,
-		_isStolen = false,
-		_raw?: number
-	): number {
-		// if (this.IsEthereal && damageType === DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL) {
-		// 	return 0
-		// }
-
-		// let amp = 1
-		// let outAmp = 1
-
-		// const sourceBuffs = source.Buffs
-		// for (let index = sourceBuffs.length - 1; index > -1; index--) {
-		// 	const modifier = sourceBuffs[index]
-		// 	if (!modifier.DamageType.hasMask(damageType)) {
-		// 		continue
-		// 	}
-		// 	if (modifier.AmplifyDamage.hasMask(DAMAGE_AMPLIFY.DAMAGE_AMPLIFY_OUTGOING)) {
-		// 		outAmp *= 1 //+ x.AmplifierValue(source, this, mod, spellAmplify, raw, x.AmplifierDamageType)
-		// 	}
-		// }
-
-		// switch (damageType) {
-		// 	case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL:
-		// 		amp *= 1 - this.PhysicalDamageResist
-		// 		break
-		// 	case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
-		// 		amp *= 1 - this.MagicalDamageResist / 100
-		// 		break
-		// }
-		return 0
+	public GetEffectiveDamageResist(target: Unit): number {
+		if (this.IsMagicAttackDamage) {
+			return 1 - target.MagicalDamageResist
+		}
+		if (target.IsEthereal) {
+			return 0
+		}
+		const predictive = this.GetPredictiveArmorModifier(target)
+		return 1 - target.GetPhysicalDamageResist(predictive)
 	}
-
-	// TODO: damage
-	public GetDamageBlockers(): Modifier[] {
-		// for (let i = this.Buffs.length - 1; i > -1; i--) {
-		// 	const buff = this.Buffs[i]
-		// }
-		return []
+	public GetRawAttackDamage(
+		target: Unit,
+		critMulDamage?: number,
+		damageValueType?: DamageValueType
+	): number {
+		critMulDamage ??= 1
+		let rawDamage = this.AttackDamageBonus
+		switch (damageValueType) {
+			default:
+			case DamageValueType.Minimum:
+				rawDamage += this.AttackDamageMin
+				break
+			case DamageValueType.Average:
+				rawDamage += this.AttackDamageAverage
+				break
+			case DamageValueType.Maximum:
+				rawDamage += this.AttackDamageMax
+				break
+		}
+		if (target.IsHero && !target.IsRanged) {
+			rawDamage -= MeleeDamageBlockAmount
+		}
+		const preAttackBonus = this.ModifierManager.GetPhysicalPreAttackDamageBonus(
+			target.IsHero || target.IsBuilding
+		)
+		let totalDamage = rawDamage + preAttackBonus
+		if (!this.IsSuppressCrit) {
+			totalDamage *= critMulDamage
+		}
+		return totalDamage
+	}
+	public GetAttackDamage(target: Unit, damageValueType?: DamageValueType): number {
+		let effSpellAmp = 1
+		if (this.IsMagicAttackDamage) {
+			effSpellAmp *= this.EffSpellAmp
+		}
+		const baseDmgType = DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL,
+			damageAmp = target.GetDamageAmplification(this, baseDmgType),
+			rawDamage = this.GetRawAttackDamage(target, damageValueType),
+			magicAttackBonus = this.GetAttackBonusMagicWithResist(target)
+		return (rawDamage * damageAmp + magicAttackBonus) * effSpellAmp
+	}
+	public GetDamageAmplification(source: Unit, damageType: DAMAGE_TYPES): number {
+		let totalAmp = 1
+		switch (damageType) {
+			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL: {
+				totalAmp *= source.GetEffectiveDamageResist(this)
+				totalAmp *= source.ModifierManager.CritDamageBonus
+				break
+			}
+			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
+				totalAmp *= 1 - this.MagicalDamageResist
+				break
+		}
+		totalAmp *= this.GetEffectiveIncomingDamage(damageType)
+		totalAmp *= source.GetEffectiveOutgoingDamage(damageType, this)
+		return totalAmp
 	}
 	public VelocityWaypoint(time: number, movespeed: number): Vector3 {
 		return this.InFront(movespeed * time)
@@ -1145,8 +1188,8 @@ export class Unit extends Entity {
 	/** ================================ Turn Time ======================================= */
 	public GetTurnTime(
 		angle: number | Vector3,
-		currentTurnRate = true,
-		rotationDiff = false
+		currentTurnRate: boolean = true,
+		rotationDiff: boolean = false
 	): number {
 		if (angle instanceof Vector3) {
 			angle = this.GetAngle(angle, rotationDiff)
@@ -1158,25 +1201,26 @@ export class Unit extends Entity {
 		const ang = this.FindRotationAngle(vec)
 		return ang <= turnRad ? (30 * ang) / this.TurnRate(currentTurnRate) : 0
 	}
-	public TurnRate(currentTurnRate = true): number {
+	public TurnRate(currentTurnRate: boolean = true): number {
 		return currentTurnRate ? this.MovementTurnRate : this.BaseTurnRate || 0.5
 	}
-	public TurnTime(angle: number, currentTurnRate = true): number {
+	public TurnTime(angle: number, currentTurnRate: boolean = true): number {
 		return Math.max(angle / (30 * this.TurnRate(currentTurnRate)), 0)
 	}
 	public TurnTimeNew(
 		target: Vector3,
 		movement: boolean,
-		directionalMovement = false,
-		currentTurnRate = true
+		directionalMovement: boolean = false,
+		currentTurnRate: boolean = true
 	): number {
-		const turnData = GetTurnData(this.TurnRate(currentTurnRate))
+		let targetAng = 0
 		let angDiff = Math.radianToDegrees(this.GetAngle(target, false))
-		const targetAng = directionalMovement
-			? 0
-			: movement
+		const turnData = GetTurnData(this.TurnRate(currentTurnRate))
+		if (!directionalMovement) {
+			targetAng = movement
 				? GetAngleToFacePath(turnData, angDiff)
 				: GetCastAngle(turnData, angDiff, this.Position.DistanceSqr2D(target))
+		}
 		let time = 0,
 			yawVelocity = this.YawVelocity
 		while (angDiff > targetAng) {
@@ -1982,9 +2026,9 @@ RegisterFieldHandler(Unit, "m_hOwnerNPC", (unit, newVal) => {
 	unit.OwnerNPC = EntityManager.EntityByIndex(unit.OwnerNPC_)
 })
 RegisterFieldHandler(Unit, "m_bIsIllusion", (unit, newVal) => {
-	const oldValue = unit.IsIllusion_
+	const oldValue = unit.ModifierManager.IsIllusion_
 	if (oldValue !== newVal) {
-		unit.IsIllusion_ = newVal as boolean
+		unit.ModifierManager.IsIllusion_ = newVal as boolean
 		EventsSDK.emit("UnitPropertyChanged", false, unit)
 	}
 })
@@ -2090,9 +2134,9 @@ RegisterFieldHandler(Unit, "m_iAttackCapabilities", (unit, newVal) => {
 	}
 })
 RegisterFieldHandler(Unit, "m_bIsClone", (unit, newVal) => {
-	const oldValue = unit.IsClone_
+	const oldValue = unit.ModifierManager.IsClone_
 	if (oldValue !== newVal) {
-		unit.IsClone_ = newVal as boolean
+		unit.ModifierManager.IsClone_ = newVal as boolean
 		EventsSDK.emit("UnitPropertyChanged", false, unit)
 	}
 })

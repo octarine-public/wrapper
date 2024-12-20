@@ -128,9 +128,6 @@ export class Item extends Ability {
 	public get ShouldDisplayCharges(): boolean {
 		return this.IsStackable || this.RequiresCharges || this.IsDisplayingCharges
 	}
-	public get SpellAmplification(): number {
-		return this.GetSpecialValue("spell_amp") / 100
-	}
 	public get CurrentCharges() {
 		return this.itemCurrentCharges
 	}

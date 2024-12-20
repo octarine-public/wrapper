@@ -1,3 +1,4 @@
+import { ModifierParams } from "../../Base/ModifierParams"
 import { Vector4 } from "../../Base/Vector4"
 import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
 import { EModifierfunction } from "../../Enums/EModifierfunction"
@@ -12,7 +13,7 @@ import { Unit } from "./Unit"
 
 const scepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
-export type ModifierHandlerValue = () => [number, boolean]
+export type ModifierHandlerValue = (modifierParams?: ModifierParams) => [number, boolean]
 export type ModifierMapFieldHandler = Map<EModifierfunction, ModifierHandlerValue>
 
 export class Modifier {
@@ -377,6 +378,11 @@ export class Modifier {
 			return false
 		}
 		return this.IsBreakable && this.IsDispellable
+	}
+
+	public IsSuppressCrit(source?: Unit) {
+		source ??= this.Parent
+		return source?.IsSuppressCrit ?? false
 	}
 
 	// Ability#vengefulspirit_soul_strike

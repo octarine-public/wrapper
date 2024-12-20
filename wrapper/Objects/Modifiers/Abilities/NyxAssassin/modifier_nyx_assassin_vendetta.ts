@@ -4,6 +4,11 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_nyx_assassin_vendetta extends Modifier {
+	private cachedSpeed = 0
+	private cachedRange = 0
+	private cachedSpeedValue = 0
+	private cachedSpeedBonusValue = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -15,11 +20,6 @@ export class modifier_nyx_assassin_vendetta extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
-	private cachedRange = 0
-	private cachedSpeedValue = 0
-	private cachedSpeedBonusValue = 0
 
 	public PostDataUpdate(): void {
 		if (this.cachedSpeedValue === 0) {

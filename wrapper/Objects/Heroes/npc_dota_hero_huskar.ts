@@ -14,7 +14,7 @@ export class npc_dota_hero_huskar extends Hero {
 				return position.SetY(GUIInfo.ScaleHeight(37))
 			case !this.IsEnemy():
 				return position.SetY(GUIInfo.ScaleHeight(32))
-			case this.HasBuffByName("modifier_morphling_replicate_illusion"):
+			case this.ModifierManager.IsMorphlingReplicateIllusion_:
 				return position.SetY(GUIInfo.ScaleHeight(11))
 			default:
 				return position.SetY(GUIInfo.ScaleHeight(30))

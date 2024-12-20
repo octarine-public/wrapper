@@ -1,5 +1,4 @@
 import { Vector2 } from "../../Base/Vector2"
-import { DamageAmplifyPerIntellectPrecent } from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { GUIInfo } from "../../GUI/GUIInfo"
@@ -101,17 +100,11 @@ export class Hero extends Unit {
 				return position.SetY(GUIInfo.ScaleHeight(37))
 			case !this.IsEnemy():
 				return position.SetY(GUIInfo.ScaleHeight(32))
-			case this.HasBuffByName("modifier_morphling_replicate_illusion"):
+			case this.ModifierManager.IsMorphlingReplicateIllusion_:
 				return position.SetY(GUIInfo.ScaleHeight(11))
 			default:
 				return position.SetY(GUIInfo.ScaleHeight(31))
 		}
-	}
-	public get SpellAmplification(): number {
-		return (
-			super.SpellAmplification +
-			(this.TotalIntellect * DamageAmplifyPerIntellectPrecent) / 100
-		)
 	}
 	public get HeroFacet(): string {
 		if (
