@@ -6,4 +6,7 @@ export class earthshaker_fissure extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("fissure_radius", level)
 	}
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("fissure_damage", level)
+	}
 }

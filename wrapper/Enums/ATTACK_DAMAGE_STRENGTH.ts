@@ -1,0 +1,5 @@
+export const enum ATTACK_DAMAGE_STRENGTH {
+	DAMAGE_MIN,
+	DAMAGE_AVG,
+	DAMAGE_MAX
+}

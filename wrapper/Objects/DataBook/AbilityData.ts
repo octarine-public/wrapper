@@ -9,6 +9,7 @@ import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EDOTASpecialBonusOperation } from "../../Enums/EDOTASpecialBonusOperation"
 import { EDOTASpecialBonusStats } from "../../Enums/EDOTASpecialBonusStats"
+import { EModifierfunction } from "../../Enums/EModifierfunction"
 import { GameActivity } from "../../Enums/GameActivity"
 import { SPELL_DISPELLABLE_TYPES } from "../../Enums/SPELL_DISPELLABLE_TYPES"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
@@ -149,7 +150,6 @@ export class AbilityData {
 	public readonly HasMaxCooldownSpecial: boolean
 	public readonly HasMaxDurationSpecial: boolean
 	public readonly HasHealthCostSpecial: boolean
-	public readonly HasAffectedByAOEIncrease: boolean
 	public readonly IsBreakable: boolean
 
 	private readonly SpecialValueCache = new Map<string, ISpecialValue>()
@@ -381,14 +381,6 @@ export class AbilityData {
 			? parseInt(kv.get("SpeciallyBannedFromNeutralSlot") as string) !== 0
 			: false
 
-		this.HasAffectedByAOEIncrease = false
-		for (const [, special] of this.SpecialValueCache) {
-			if (special.AffectedByAOEIncrease) {
-				this.HasAffectedByAOEIncrease = true
-				break
-			}
-		}
-
 		const hasSpecialValue = (values: string[]) =>
 			values.some(valueName => this.SpecialValueCache.has(valueName))
 
@@ -498,10 +490,10 @@ export class AbilityData {
 			baseVal = 0
 		}
 
-		const arr = specialValue.LinkedSpecialBonuses
+		const arr = specialValue.LinkedSpecialBonuses,
+			allSpecialBonuses: [EDOTASpecialBonusOperation, number, boolean][] = []
 		for (let i = arr.length - 1; i > -1; i--) {
 			const linkedSpecialBonus = arr[i]
-			let data: [EDOTASpecialBonusOperation, number, boolean]
 			if (!linkedSpecialBonus.IsOld) {
 				if (linkedSpecialBonus.Name.startsWith("special_bonus_facet_")) {
 					if (owner.HeroFacet !== linkedSpecialBonus.Name.substring(20)) {
@@ -526,10 +518,11 @@ export class AbilityData {
 						continue
 					}
 				}
-				data =
+				allSpecialBonuses.push(
 					linkedSpecialBonus.NewData![
 						Math.min(level, linkedSpecialBonus.NewData!.length) - 1
 					]
+				)
 			} else {
 				const linkedSpecialBonusAbil = owner.GetAbilityByName(
 					linkedSpecialBonus.Name
@@ -540,38 +533,42 @@ export class AbilityData {
 				) {
 					continue
 				}
-				data = [
+				allSpecialBonuses.push([
 					linkedSpecialBonus.OldData![0],
 					linkedSpecialBonusAbil.GetSpecialValue(
 						linkedSpecialBonus.OldData![1]
 					),
 					false
-				]
+				])
 			}
-
-			switch (data[0]) {
+		}
+		// calculate all special bonuses after validation
+		allSpecialBonuses.orderByDescending(cb => cb[0])
+		for (let i = allSpecialBonuses.length - 1; i > -1; i--) {
+			const [operationType, value, flag] = allSpecialBonuses[i]
+			switch (operationType) {
 				default:
 				case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
-					baseVal += baseVal < 0 && data[2] ? -data[1] : data[1]
+					baseVal += baseVal < 0 && flag ? -value : value
 					break
 				case EDOTASpecialBonusOperation.SPECIAL_BONUS_SUBTRACT:
-					baseVal -= data[1]
+					baseVal -= value
 					break
 				case EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY:
-					baseVal *= data[1]
+					baseVal *= value
 					break
 				case EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_ADD:
-					baseVal *= 1 + data[1] / 100
+					baseVal *= 1 + value / 100
 					break
 				case EDOTASpecialBonusOperation.SPECIAL_BONUS_PERCENTAGE_SUBTRACT:
-					baseVal *= 1 - data[1] / 100
+					baseVal *= 1 - value / 100
 					break
 				case EDOTASpecialBonusOperation.SPECIAL_BONUS_SET:
-					baseVal = data[1]
+					baseVal = value
 					break
 			}
 		}
-		return baseVal
+		return this.increaseAOERadius(owner, baseVal, specialValue.AffectedByAOEIncrease)
 	}
 
 	public GetCastRange(level: number): number {
@@ -646,6 +643,29 @@ export class AbilityData {
 		return this.ChargeRestoreTimeCache[
 			Math.min(level, this.ChargeRestoreTimeCache.length) - 1
 		]
+	}
+
+	private increaseAOERadius(
+		owner: Unit,
+		baseRadius: number,
+		isAffectedByAOEIncrease: boolean
+	): number {
+		if (!isAffectedByAOEIncrease) {
+			return baseRadius
+		}
+		const bonusConstant = owner.ModifierManager.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_CONSTANT
+		)
+		const bonusStacking = owner.ModifierManager.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_CONSTANT_STACKING,
+			false,
+			1,
+			1
+		)
+		const percentage = owner.ModifierManager.GetPercentageHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_PERCENTAGE
+		)
+		return (baseRadius + (bonusConstant + bonusStacking)) * percentage
 	}
 
 	private getCachedSpecialValue(specialName: string, abilityName?: string) {

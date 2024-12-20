@@ -9,4 +9,7 @@ export class chaos_knight_chaos_bolt extends Ability {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("chaos_bolt_speed", level)
 	}
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage_min", level)
+	}
 }

@@ -2,6 +2,7 @@ import { NetworkedParticle } from "../Base/NetworkedParticle"
 import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { DOTAGameState } from "../Enums/DOTAGameState"
+import { GameActivity } from "../Enums/GameActivity"
 import { SOType } from "../Enums/SOType"
 import { ExecuteOrder } from "../Native/ExecuteOrder"
 import { Ability } from "../Objects/Base/Ability"
@@ -236,7 +237,7 @@ interface EventsSDK extends EventEmitter {
 		name: "UnitAddGesture",
 		listener: (
 			npc: Nullable<Unit | FakeUnit>,
-			activity: number,
+			activity: GameActivity,
 			slot: number,
 			fade_in: number,
 			fade_out: number,
@@ -506,6 +507,11 @@ interface EventsSDK extends EventEmitter {
 	on(
 		name: "TaskCancelled",
 		listener: (handleID: bigint) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "EntityPositionChanged",
+		listener: (entity: Entity) => void,
 		priority?: number
 	): EventEmitter
 }

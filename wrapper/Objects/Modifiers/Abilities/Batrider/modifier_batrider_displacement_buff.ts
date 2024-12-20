@@ -4,20 +4,31 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_batrider_displacement_buff extends Modifier {
+	private cachedSpeed = 0
+	private cachedSpellAmplify = 0
+
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE,
+			this.GetSpellAmplifyPercentage.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
 
-	private cachedSpeed = 0
+	protected GetSpellAmplifyPercentage(): [number, boolean] {
+		return [this.cachedSpellAmplify, false]
+	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedSpeed = this.GetSpecialValue("movement_speed_pct", "batrider_stoked")
+		const name = "batrider_stoked"
+		this.cachedSpeed = this.GetSpecialValue("movement_speed_pct", name)
+		this.cachedSpellAmplify = this.GetSpecialValue("spell_amplification", name)
 	}
 }

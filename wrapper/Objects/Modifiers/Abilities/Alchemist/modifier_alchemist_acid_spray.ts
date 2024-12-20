@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_alchemist_acid_spray extends Modifier {
+export class modifier_alchemist_acid_spray extends Modifier implements IDebuff, IBuff {
+	public readonly BuffModifierName = this.Name
+	public readonly DebuffModifierName = this.Name
+
 	private cachedArmor = 0
 	private hasAllyArmor = 0
 
@@ -13,6 +16,14 @@ export class modifier_alchemist_acid_spray extends Modifier {
 			this.GetPhysicalArmorBonus.bind(this)
 		]
 	])
+
+	public IsDebuff(): this is IDebuff {
+		return this.IsEnemy(this.Caster)
+	}
+
+	public IsBuff(): this is IBuff {
+		return !this.IsDebuff()
+	}
 
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		const owner = this.Parent,

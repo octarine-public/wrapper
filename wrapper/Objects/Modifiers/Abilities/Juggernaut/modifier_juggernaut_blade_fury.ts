@@ -8,6 +8,10 @@ export class modifier_juggernaut_blade_fury extends Modifier {
 
 	protected readonly DeclaredFunction = new Map([
 		[
+			EModifierfunction.MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_PURE,
+			this.GetAbsoluteNoDamagePure.bind(this)
+		],
+		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
 			this.GetMoveSpeedBonusConstant.bind(this)
 		],
@@ -16,15 +20,16 @@ export class modifier_juggernaut_blade_fury extends Modifier {
 			this.GetMagicalResistanceBonus.bind(this)
 		]
 	])
-
-	protected GetMagicalResistanceBonus(): [number, boolean] {
-		return [80, false] // no special values
+	protected GetAbsoluteNoDamagePure(): [number, boolean] {
+		return [1, false]
 	}
-
+	protected GetMagicalResistanceBonus(params?: IModifierParams): [number, boolean] {
+		const ignoreMagicResist = params?.IgnoreMagicResist ?? false
+		return !ignoreMagicResist ? [80, false] : [0, false] // no special values
+	}
 	protected GetMoveSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "juggernaut_blade_fury"
 		this.cachedSpeed = this.GetSpecialValue("bonus_movespeed", name)

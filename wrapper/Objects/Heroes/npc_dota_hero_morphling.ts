@@ -7,7 +7,10 @@ export class npc_dota_hero_morphling extends Hero {
 	public IsGuaranteedReal_: boolean = false
 
 	public get IsIllusion(): boolean {
-		return this.IsIllusion_ || (!this.IsGuaranteedReal_ && super.IsIllusion)
+		return (
+			this.ModifierManager.IsIllusion_ ||
+			(!this.IsGuaranteedReal_ && super.IsIllusion)
+		)
 	}
 	public CalculateActivityModifiers(activity: GameActivity, ar: string[]): void {
 		super.CalculateActivityModifiers(activity, ar)

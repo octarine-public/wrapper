@@ -4,14 +4,14 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_weaver_rewoven extends Modifier {
+	private cachedRangePerStack = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
 			this.GetAttackRangeBonus.bind(this)
 		]
 	])
-
-	private cachedRangePerStack = 0
 
 	protected GetAttackRangeBonus(): [number, boolean] {
 		return [this.cachedRangePerStack * this.StackCount, false]

@@ -7,8 +7,13 @@ import { AbilityData } from "../../../DataBook/AbilityData"
 export class modifier_oracle_false_promise extends Modifier {
 	private cachedArmor = 0
 	private cachedBATTime = 0
+	private cachedSpellAmplify = 0
 
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE,
+			this.GetSpellAmplifyPercentage.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
 			this.GetPhysicalArmorBonus.bind(this)
@@ -18,6 +23,10 @@ export class modifier_oracle_false_promise extends Modifier {
 			this.GetBaseAttackTimeConstantAdjust.bind(this)
 		]
 	])
+
+	protected GetSpellAmplifyPercentage(): [number, boolean] {
+		return [this.cachedSpellAmplify, false]
+	}
 
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, false]
@@ -30,6 +39,7 @@ export class modifier_oracle_false_promise extends Modifier {
 	protected UpdateSpecialValues(): void {
 		this.cachedArmor = this.GetSpecialValue("bonus_armor")
 		this.cachedBATTime = this.GetSpecialValue("shard_bat_bonus")
+		this.cachedSpellAmplify = this.GetSpecialValue("shard_spell_amp_bonus")
 	}
 
 	// override because shard_bat_bonus
@@ -39,7 +49,7 @@ export class modifier_oracle_false_promise extends Modifier {
 		abilityName = "oracle_false_promise",
 		level = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
 	) {
-		if (specialName !== "shard_bat_bonus") {
+		if (specialName === "bonus_armor") {
 			return super.GetSpecialValue(specialName, abilityName, level)
 		}
 		const caster = this.Caster,

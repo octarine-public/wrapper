@@ -2,6 +2,7 @@ import { Color } from "../../Base/Color"
 import { QAngle } from "../../Base/QAngle"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
+import { GetArmorResistInternal } from "../../Data/GameData"
 import { GetUnitTexture } from "../../Data/ImageData"
 import {
 	GetAngleToFacePath,
@@ -11,6 +12,7 @@ import {
 } from "../../Data/TurnData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
+import { ATTACK_DAMAGE_STRENGTH } from "../../Enums/ATTACK_DAMAGE_STRENGTH"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { Attributes } from "../../Enums/Attributes"
 import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
@@ -40,6 +42,8 @@ import { Inventory } from "../DataBook/Inventory"
 import { PlayerCustomData } from "../DataBook/PlayerCustomData"
 import { UnitData } from "../DataBook/UnitData"
 import { UnitModifierManager } from "../DataBook/UnitModifierManager"
+import { modifier_item_angels_demise } from "../Modifiers/Items/modifier_item_angels_demise"
+import { modifier_item_phylactery } from "../Modifiers/Items/modifier_item_phylactery"
 import { Ability } from "./Ability"
 import { Entity, GameRules, LocalPlayer } from "./Entity"
 import { Item } from "./Item"
@@ -79,7 +83,7 @@ export class Unit extends Entity {
 		return false
 	}
 	@NetworkedBasicField("m_flHealthThinkRegen")
-	public readonly HPRegen: number = 0
+	public readonly BaseHPRegen: number = 0
 	@NetworkedBasicField("m_flManaThinkRegen")
 	public readonly ManaRegen: number = 0
 	@NetworkedBasicField("m_bIsAncient")
@@ -98,8 +102,6 @@ export class Unit extends Entity {
 	public readonly RefresherUseTime: number = 0
 	@NetworkedBasicField("m_flRefresherLastCooldown")
 	public readonly RefresherLastCooldown: number = 0
-	@NetworkedBasicField("m_iDamageBonus")
-	public readonly BonusDamage: number = 0
 	@NetworkedBasicField("m_iDayTimeVisionRange")
 	public readonly NetworkedBaseDayVision: number = 0
 	@NetworkedBasicField("m_flDeathTime")
@@ -178,6 +180,8 @@ export class Unit extends Entity {
 	public readonly OwnerPlayerID: number = -1
 	@NetworkedBasicField("m_iParity")
 	public readonly Parity: number = 0
+	@NetworkedBasicField("m_iDamageBonus")
+	public readonly NetworkAttackDamageBonus: number = 0
 	/** @private NOTE: this is internal field use LastDamageTime */
 	@NetworkedBasicField("m_flLastDamageTime")
 	public LastDamageTime_: number = 0
@@ -258,14 +262,6 @@ export class Unit extends Entity {
 	public OwnerNPC: Nullable<Unit> = undefined
 	/** @private NOTE: this is internal field use Target */
 	public TargetIndex_: number = -1
-	/** @private NOTE: this is internal field use IsIllusion */
-	public IsIllusion_: boolean = false
-	/** @private NOTE: this is internal field use IsReflection */
-	public IsReflection_: boolean = false
-	/** @private NOTE: this is internal field use IsClone */
-	public IsClone_: boolean = false
-	/** @private NOTE: this is internal field use IsStrongIllusion */
-	public IsStrongIllusion_: boolean = false
 	/** @private NOTE: this is internal field use IsVisibleForEnemies(...) */
 	public IsVisibleForEnemies_: boolean = false
 	public cellIsVisibleForEnemies_: boolean = false // TODO: calculate grid nav from enemies
@@ -292,6 +288,9 @@ export class Unit extends Entity {
 	public get ArmorType(): ArmorType {
 		return this.UnitData.ArmorType
 	}
+	public get HPRegen() {
+		return this.BaseHPRegen
+	}
 	public get AttacksPerSecond(): number {
 		return this.ModifierManager.AttacksPerSecond
 	}
@@ -315,7 +314,12 @@ export class Unit extends Entity {
 	public get AttackSpeed(): number {
 		return this.GetAttackSpeedModifier()
 	}
-	public get AttackDamageType(): AttackDamageType {
+	public AttackDamageType(target: Unit): DAMAGE_TYPES {
+		return this.IsMagicAttackDamage(target)
+			? DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL
+			: DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL
+	}
+	public get AttackDamageClassType(): AttackDamageType {
 		return this.UnitData.AttackDamageType
 	}
 	public get AttackDamageAverage(): number {
@@ -372,7 +376,7 @@ export class Unit extends Entity {
 		return this.GetMoveSpeedModifier()
 	}
 	public get MagicalDamageResist(): number {
-		return this.ModifierManager.GetMagicResistance(this.BaseMagicalResist)
+		return this.GetMagicalDamageResist()
 	}
 	/** @description The night-time movement speed bonus.*/
 	public get MoveSpeedNightBonus(): number {
@@ -399,25 +403,22 @@ export class Unit extends Entity {
 		return 1 / this.AttacksPerSecond
 	}
 	public get StatusResistance(): number {
-		return this.ModifierManager.GetStatusResistance()
+		return this.ModifierManager.StatusResistance
 	}
-	public get SpellAmplification(): number {
-		const itemsSpellAmp = this.Items.reduce(
-			(val, item) => val + item.SpellAmplification,
-			0
-		)
-		const spellsSpellAmp = this.Spells.reduce((val, spell) => {
-			if (spell !== undefined) {
-				val += spell.SpellAmplification
-			}
-			return val
-		}, 0)
-		return itemsSpellAmp + spellsSpellAmp
+	public get SpellAmp(): number {
+		return this.ModifierManager.SpellAmplification
+	}
+	public get SpellAmpTarget(): number {
+		return this.ModifierManager.SpellAmplificationTarget
+	}
+	public get EffSpellAmp(): number {
+		return 1 + this.ModifierManager.SpellAmplification / 100
+	}
+	public get EffSpellAmpTarget(): number {
+		return 1 + this.ModifierManager.SpellAmplificationTarget / 100
 	}
 	public get TotalIntellect() {
-		return !this.HasBuffByName("modifier_ogre_magi_dumb_luck")
-			? this.BaseTotalIntellect
-			: 0
+		return this.HasIntellect ? this.BaseTotalIntellect : 0
 	}
 	public get Target() {
 		return EntityManager.EntityByIndex<Unit>(this.TargetIndex_)
@@ -453,7 +454,7 @@ export class Unit extends Entity {
 	 * @returns {boolean}
 	 */
 	public get IsClone(): boolean {
-		return this.IsClone_
+		return this.ModifierManager.IsClone_
 	}
 	/**
 	 * @description Determines if the instance is the current player's hero.
@@ -469,38 +470,37 @@ export class Unit extends Entity {
 		return (this.GoldBountyMin + this.GoldBountyMax) / 2
 	}
 	public get IsIllusion(): boolean {
-		return this.IsIllusion_ || this.IsReflection_
+		return this.ModifierManager.IsIllusion_ || this.ModifierManager.IsReflection_
 	}
 	/** @description e.g: Terror Blade conjure image */
 	public get IsReflection(): boolean {
-		return this.IsReflection_
+		return this.ModifierManager.IsReflection_
+	}
+	public get IsSuppressCrit(): boolean {
+		return this.ModifierManager.IsSuppressCrit
 	}
 	public get IsStrongIllusion(): boolean {
-		return this.IsStrongIllusion_
+		return this.ModifierManager.IsStrongIllusion_
 	}
 	/** @deprecated use IsIllusion or IsStrongIllusion */
 	public get IsHiddenIllusion(): boolean {
 		return this.IsIllusion
 	}
-	// TODO: by classes
 	public get CanReincarnate() {
-		return this.HasBuffByName("modifier_item_aegis")
+		return this.HasAegis
 	}
-	// TODO: by classes
-	public get IsThirst(): boolean {
-		return this.HasBuffByName("modifier_bloodseeker_thirst")
+	public get IsFountainInvulnerable(): boolean {
+		return this.ModifierManager.IsFountainInvulnerable_
 	}
-	// TODO: by classes
-	public get FountainInvulnerability(): boolean {
-		return this.HasBuffByName("modifier_fountain_invulnerability")
-	}
-	// TODO: by classes
 	public get IsTempestDouble(): boolean {
-		return this.HasBuffByName("modifier_arc_warden_tempest_double")
+		return this.ModifierManager.IsTempestDouble_
 	}
-	// TODO: by classes
+	/** @deprecated use IsChargeOfDarkness */
 	public get IsCharge(): boolean {
-		return this.HasBuffByName("modifier_spirit_breaker_charge_of_darkness")
+		return this.ModifierManager.IsChargeOfDarkness_
+	}
+	public get IsChargeOfDarkness(): boolean {
+		return this.ModifierManager.IsChargeOfDarkness_
 	}
 	public get CanBeMainHero(): boolean {
 		return !this.IsIllusion && !this.IsTempestDouble
@@ -571,6 +571,27 @@ export class Unit extends Entity {
 	}
 	public get IsDeniable(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE)
+	}
+	public get IsAttackReady(): boolean {
+		const tick = GameState.TickInterval,
+			nextTime = Math.ceil(this.AttackBackswing / tick) * tick
+		return GameState.RawGameTime >= this.LastAttackTime + nextTime
+	}
+	public get IsAttackImpaired(): boolean {
+		if (this.IsInvulnerable && !this.IsFountainInvulnerable) {
+			return true
+		}
+		return (
+			this.IsDisarmed ||
+			this.IgnoreMoveAndAttackOrders ||
+			this.HasAttackCapability(DOTAUnitAttackCapability.DOTA_UNIT_CAP_NO_ATTACK)
+		)
+	}
+	public get HasAegis(): boolean {
+		return this.ModifierManager.HasAeigs_
+	}
+	public get HasIntellect(): boolean {
+		return !this.ModifierManager.NoIntellect_
 	}
 	public get HasModifierVisibleForEnemies(): boolean {
 		return false
@@ -720,8 +741,7 @@ export class Unit extends Entity {
 		return this.Spells.some(spell => spell !== undefined && spell.IsInAbilityPhase)
 	}
 	public get PhysicalDamageResist(): number {
-		const armor = this.Armor
-		return (0.06 * armor) / (1 + 0.06 * Math.abs(armor))
+		return GetArmorResistInternal(this.Armor)
 	}
 	public get Name(): string {
 		return this.UnitName_
@@ -748,6 +768,9 @@ export class Unit extends Entity {
 	public get ShouldDoFlyHeightVisual(): boolean {
 		return this.Buffs.some(buff => buff.ShouldDoFlyHeightVisual)
 	}
+	public get SlowResistance(): number {
+		return this.ModifierManager.SlowResistance
+	}
 	/** @deprecated use HasVisualShield */
 	public get IsShield(): boolean {
 		return this.HasVisualShield
@@ -770,11 +793,51 @@ export class Unit extends Entity {
 	public get HeroFacet(): string {
 		return ""
 	}
+	public get IsConvertManaCostToHPCost(): boolean {
+		return this.ModifierManager.IsConvertManaCostToHPCost
+	}
+	public IsMagicAttackDamage(target: Unit): boolean {
+		return this.ModifierManager.GetAttackDamageConvertPhysicalToMagical(target)
+	}
+	public get IsAvoidTotalDamage(): boolean {
+		return this.ModifierManager.IsAvoidTotalDamage
+	}
 	/**
 	 * @description example: panorama/images/heroes/npc_dota_hero_windrunner_png.vtex_c
 	 */
 	public TexturePath(small?: boolean, team = this.Team): Nullable<string> {
 		return GetUnitTexture(this.Name, small, team)
+	}
+	public IsAbsoluteNoDamage(damageType: DAMAGE_TYPES) {
+		return this.ModifierManager.GetAbsoluteNoDamage(damageType)
+	}
+	public IsVisibleForEnemies(method: number = 0, seconds: number = 2): boolean {
+		switch (method) {
+			default:
+			case 0: // old method
+				return this.IsVisibleForEnemies_
+			case 1: {
+				// new method
+				// predicted (buffs / cell / etc..) method
+				// Check if the Unit is visible for enemies in the current cell
+				// Check if the Unit has any buff that makes it visible for enemies
+				if (this.cellIsVisibleForEnemies_ || this.HasModifierVisibleForEnemies) {
+					return true
+				}
+				// Check if the current game time is less than the time when the Unit
+				// was last visible for enemies plus the given duration
+				if (this.IsVisibleForEnemiesLastTime + seconds > GameState.RawGameTime) {
+					return true
+				}
+				return false
+			}
+		}
+	}
+	public GetMagicalDamageResist(ignoreMagicResist: boolean = false): number {
+		return this.ModifierManager.GetMagicResistance(
+			this.BaseMagicalResist,
+			ignoreMagicResist
+		)
 	}
 	public GetMoveSpeedModifier(
 		baseSpeed: number = this.BaseMoveSpeed,
@@ -795,14 +858,42 @@ export class Unit extends Entity {
 	public GetPhysicalArmorModifier(baseArmor: number = this.BaseArmor): number {
 		return this.ModifierManager.GetPhysicalArmor(baseArmor)
 	}
+	public GetPredictiveArmorModifier(target: Unit): number {
+		return this.ModifierManager.GetPredictiveArmor(target)
+	}
+	public GetPhysicalDamageResist(predictiveArmor: number = 0): number {
+		return GetArmorResistInternal(this.Armor + predictiveArmor)
+	}
+	public GetAttackDamageBase(damageValue?: ATTACK_DAMAGE_STRENGTH): number {
+		switch (damageValue) {
+			default:
+			case ATTACK_DAMAGE_STRENGTH.DAMAGE_MIN:
+				return this.AttackDamageMin
+			case ATTACK_DAMAGE_STRENGTH.DAMAGE_AVG:
+				return this.AttackDamageAverage
+			case ATTACK_DAMAGE_STRENGTH.DAMAGE_MAX:
+				return this.AttackDamageMax
+		}
+	}
+	public GetAttackDamageBonus(baseDamage?: number, target?: Unit): number {
+		return this.ModifierManager.GetPreAttackDamageBonus(baseDamage, target)
+	}
+	public GetEffectiveIncomingDamage(target: Unit, damageType: DAMAGE_TYPES): number {
+		return this.ModifierManager.GetIncomingDamage(target, damageType)
+	}
+	public GetEffectiveOutgoingDamage(target: Unit, damageType: DAMAGE_TYPES): number {
+		return this.ModifierManager.GetOutgoingDamage(target, damageType)
+	}
 	public GetTimeVisionModifier(
 		baseVision: number,
 		isNight: boolean,
 		ignoreFixedVision: boolean = false
 	): number {
-		return !isNight
-			? this.ModifierManager.GetDayTimeVisionRange(baseVision, ignoreFixedVision)
-			: this.ModifierManager.GetNightTimeVisionRange(baseVision, ignoreFixedVision)
+		return this.ModifierManager.GetTimeVisionRange(
+			baseVision,
+			isNight,
+			ignoreFixedVision
+		)
 	}
 	public GetNextAttackPoint(delay: number, nth = 0): number {
 		const baseAttackPoint = this.AttackPoint
@@ -813,7 +904,8 @@ export class Unit extends Entity {
 		if (
 			!(this.IsInAnimation && this.LastAnimationIsAttack) &&
 			this.AttackTimeAtLastTick !== 0 &&
-			GameState.RawServerTime + delay - this.AttackTimeAtLastTick < this.AttackRate
+			GameState.RawServerTime + delay - this.AttackTimeAtLastTick <
+				this.SecondsPerAttack
 		) {
 			attackPoint -= this.AttackTimeLostToLastTick
 		}
@@ -854,7 +946,7 @@ export class Unit extends Entity {
 		if (this.IsRooted || this.IsStunned || !this.IsSpawned) {
 			return false
 		}
-		if (this.IsInvulnerable && !this.FountainInvulnerability) {
+		if (this.IsInvulnerable && !this.IsFountainInvulnerable) {
 			return false
 		}
 		if (checkChanneling && this.IsChanneling) {
@@ -875,32 +967,25 @@ export class Unit extends Entity {
 		additionalRange?: number,
 		checkAttackRange?: boolean
 	): boolean {
-		if (this === target) {
-			return false
-		}
 		if (checkChanneling && this.IsChanneling) {
 			return false
 		}
 		if (checkAbilityPhase && this.IsInAbilityPhase) {
 			return false
 		}
-		const canAttack =
-			this.IsAlive &&
-			this.IsSpawned &&
-			!this.IsStunned &&
-			!this.IsDisarmed &&
-			!this.IgnoreMoveAndAttackOrders &&
-			(!this.IsInvulnerable || this.FountainInvulnerability) &&
-			!this.HasAttackCapability(DOTAUnitAttackCapability.DOTA_UNIT_CAP_NO_ATTACK)
-
 		if (target === undefined) {
-			return canAttack
+			return this.IsAttackReady && !this.IsAttackImpaired
 		}
-		if (!target.IsAlive || !target.IsVisible || target.IsInvulnerable) {
+		if (this === target || !this.IsAlive || !this.IsSpawned || this.IsDisarmed) {
 			return false
 		}
-		const canHitAttackImmune = this.CanHitAttackImmune(target)
-		if (target.IsUntargetable || !canHitAttackImmune) {
+		if (!target.IsAlive || !target.IsSpawned || !target.IsVisible) {
+			return false
+		}
+		if (target.IsInvulnerable || target.IsUntargetable) {
+			return false
+		}
+		if (!this.CanHitAttackImmune(target)) {
 			return false
 		}
 		const distance = this.Distance2D(target),
@@ -908,13 +993,10 @@ export class Unit extends Entity {
 		if ((checkAttackRange ?? true) && distance > attackRange) {
 			return false
 		}
-		return canAttack
+		return this.IsAttackReady && !this.IsAttackImpaired
 	}
 	public CanHitAttackImmune(target: Unit): boolean {
-		return (
-			!target.IsAttackImmune ||
-			(target.IsEthereal && this.HasAnyBuffByNames(Modifier.AttackThroughImmunity))
-		)
+		return !target.IsAttackImmune || this.IsMagicAttackDamage(target)
 	}
 	public HealthBarPosition(
 		useHpBarOffset = true,
@@ -951,71 +1033,157 @@ export class Unit extends Entity {
 		const hullRadius = includeHull ? this.HullRadius + (target?.HullRadius ?? 0) : 0
 		return this.GetAttackRangeModifier() + hullRadius + additional
 	}
-	public IsVisibleForEnemies(method: number = 0, seconds: number = 2): boolean {
-		switch (method) {
-			default:
-			case 0: // old method
-				return this.IsVisibleForEnemies_
-			case 1: {
-				// new method
-				// predicted (buffs / cell / etc..) method
-				// Check if the Unit is visible for enemies in the current cell
-				// Check if the Unit has any buff that makes it visible for enemies
-				if (this.cellIsVisibleForEnemies_ || this.HasModifierVisibleForEnemies) {
-					return true
-				}
-				// Check if the current game time is less than the time when the Unit
-				// was last visible for enemies plus the given duration
-				if (this.IsVisibleForEnemiesLastTime + seconds > GameState.RawGameTime) {
-					return true
-				}
-				return false
+	public GetDamageBlock(
+		damage: number,
+		damageType: DAMAGE_TYPES,
+		isRaw: boolean = false
+	): number {
+		return this.ModifierManager.GetDamageBlock(damage, damageType, isRaw)
+	}
+	public GetPassiveDamageBlock(damageType: DAMAGE_TYPES): number {
+		return this.ModifierManager.GetPassiveDamageBlock(damageType)
+	}
+	public GetEffectiveDamageResist(
+		target: Unit,
+		ignoreMagicAttack: boolean = false,
+		predictiveArmor?: number
+	): number {
+		if (!ignoreMagicAttack && this.IsMagicAttackDamage(target)) {
+			return 1 - target.MagicalDamageResist
+		}
+		if (target.IsEthereal) {
+			return 0
+		}
+		const predictive = this.GetPredictiveArmorModifier(target)
+		return 1 - target.GetPhysicalDamageResist(predictive + (predictiveArmor ?? 0))
+	}
+	public GetIncomingAttackDamage(target: Unit, isRaw: boolean): number {
+		return this.ModifierManager.GetIncomingAttackDamage(target, isRaw)
+	}
+	public GetRawAttackDamage(
+		target: Unit,
+		damageValueType?: ATTACK_DAMAGE_STRENGTH,
+		critMulDamage?: number
+	): number {
+		let rawDamage = this.GetAttackDamageBonus(
+			this.GetAttackDamageBase(damageValueType),
+			target
+		)
+		if (!this.IsSuppressCrit) {
+			rawDamage *= critMulDamage || 1
+		}
+		return rawDamage
+	}
+	public GetAttackDamageTypeResist(target: Unit, damageType: DAMAGE_TYPES): number {
+		let resist = 1
+		let damage = this.ModifierManager.GetProcAttackDamageBonus(target, damageType)
+		switch (damageType) {
+			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
+				resist *= 1 - target.MagicalDamageResist
+				break
+		}
+		if (this.IsMagicAttackDamage(target)) {
+			damage *= this.EffSpellAmp
+		}
+		damage -= target.GetDamageBlock(damage, damageType, true)
+		damage *= target.GetEffectiveIncomingDamage(this, damageType)
+		return Math.max(damage * resist - target.GetDamageBlock(damage, damageType), 0)
+	}
+	public GetAttackDamagePure(target: Unit): number {
+		return this.GetAttackDamageTypeResist(target, DAMAGE_TYPES.DAMAGE_TYPE_PURE)
+	}
+	public GetAttackDamageMagic(target: Unit): number {
+		return this.GetAttackDamageTypeResist(target, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
+	}
+	public GetAttackDamage(
+		target: Unit,
+		damageValue?: ATTACK_DAMAGE_STRENGTH,
+		rawDamage?: number,
+		damageType?: DAMAGE_TYPES,
+		predictedArmor?: number,
+		canDamageBlockMelee?: boolean
+	): number {
+		damageType ??= this.AttackDamageType(target)
+		if (target.IsAvoidTotalDamage || target.IsAbsoluteNoDamage(damageType)) {
+			return 0
+		}
+		rawDamage ??= this.GetRawAttackDamage(target, damageValue)
+		if (rawDamage === 0) {
+			return 0
+		}
+		const isMagicAttack = this.IsMagicAttackDamage(target)
+		if ((canDamageBlockMelee ?? true) && !isMagicAttack) {
+			rawDamage -= target.GetPassiveDamageBlock(damageType)
+		}
+		if (!this.IsSuppressCrit) {
+			rawDamage *= target.ModifierManager.GetCritDamageBonusTarget(this)
+		}
+		rawDamage *= isMagicAttack
+			? this.EffSpellAmp
+			: target.GetIncomingAttackDamage(this, true)
+		rawDamage -= target.GetDamageBlock(rawDamage, damageType, true)
+
+		const damageAmpType = DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL,
+			amp = target.GetDamageAmplification(this, damageAmpType, predictedArmor)
+
+		const calculatedDamage = rawDamage * amp,
+			damageBlock = target.GetDamageBlock(calculatedDamage, damageType)
+
+		const pureDamage = this.GetAttackDamagePure(target),
+			magicDamage = this.GetAttackDamageMagic(target)
+
+		const totalDamage = calculatedDamage + magicDamage + pureDamage,
+			incomingDamage = target.GetIncomingAttackDamage(this, false)
+
+		return Math.max(totalDamage * incomingDamage - damageBlock, 0)
+	}
+	public GetDamageAmplification(
+		source: Unit,
+		damageType: DAMAGE_TYPES,
+		predictiveArmor: number = 0,
+		ignoreMagicResist: boolean = false,
+		ignoreMagicAttack: boolean = false
+	): number {
+		let totalAmp = 1
+		switch (damageType) {
+			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
+				totalAmp *= 1 - this.GetMagicalDamageResist(ignoreMagicResist)
+				break
+			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL: {
+				totalAmp *= source.ModifierManager.GetCritDamageBonus(this)
+				totalAmp *= source.GetEffectiveDamageResist(
+					this,
+					ignoreMagicAttack,
+					predictiveArmor
+				)
+				break
 			}
 		}
+		totalAmp *= this.GetEffectiveIncomingDamage(source, damageType)
+		totalAmp *= source.GetEffectiveOutgoingDamage(this, damageType)
+		return totalAmp
 	}
-
-	public GetAmplificationDamage(
-		_source: Unit,
-		_damageType: DAMAGE_TYPES,
-		_spellAmplify: boolean,
-		_isStolen = false,
-		_raw?: number
-	): number {
-		// if (this.IsEthereal && damageType === DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL) {
-		// 	return 0
-		// }
-
-		// let amp = 1
-		// let outAmp = 1
-
-		// const sourceBuffs = source.Buffs
-		// for (let index = sourceBuffs.length - 1; index > -1; index--) {
-		// 	const modifier = sourceBuffs[index]
-		// 	if (!modifier.DamageType.hasMask(damageType)) {
-		// 		continue
-		// 	}
-		// 	if (modifier.AmplifyDamage.hasMask(DAMAGE_AMPLIFY.DAMAGE_AMPLIFY_OUTGOING)) {
-		// 		outAmp *= 1 //+ x.AmplifierValue(source, this, mod, spellAmplify, raw, x.AmplifierDamageType)
-		// 	}
-		// }
-
-		// switch (damageType) {
-		// 	case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL:
-		// 		amp *= 1 - this.PhysicalDamageResist
-		// 		break
-		// 	case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
-		// 		amp *= 1 - this.MagicalDamageResist / 100
-		// 		break
-		// }
-		return 0
-	}
-
-	// TODO: damage
-	public GetDamageBlockers(): Modifier[] {
-		// for (let i = this.Buffs.length - 1; i > -1; i--) {
-		// 	const buff = this.Buffs[i]
-		// }
-		return []
+	public GetDamageSpellEmpower(target: Unit): number {
+		let modifier: Nullable<modifier_item_angels_demise | modifier_item_phylactery> =
+			this.GetBuffByClass(modifier_item_angels_demise)
+		if (modifier === undefined) {
+			modifier = this.GetBuffByClass(modifier_item_phylactery)
+		}
+		if (modifier === undefined || modifier.CachedTotalSpells === 0) {
+			return 0
+		}
+		const baseRaw = modifier.CachedBonusDamage
+		const attackRaw = this.GetRawAttackDamage(
+			target,
+			ATTACK_DAMAGE_STRENGTH.DAMAGE_MIN
+		)
+		const damage = baseRaw + (attackRaw * modifier.CachedMultiplier) / 100
+		return (
+			damage *
+			this.EffSpellAmp *
+			target.EffSpellAmpTarget *
+			target.GetDamageAmplification(this, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
+		)
 	}
 	public VelocityWaypoint(time: number, movespeed: number): Vector3 {
 		return this.InFront(movespeed * time)
@@ -1145,8 +1313,8 @@ export class Unit extends Entity {
 	/** ================================ Turn Time ======================================= */
 	public GetTurnTime(
 		angle: number | Vector3,
-		currentTurnRate = true,
-		rotationDiff = false
+		currentTurnRate: boolean = true,
+		rotationDiff: boolean = false
 	): number {
 		if (angle instanceof Vector3) {
 			angle = this.GetAngle(angle, rotationDiff)
@@ -1158,25 +1326,26 @@ export class Unit extends Entity {
 		const ang = this.FindRotationAngle(vec)
 		return ang <= turnRad ? (30 * ang) / this.TurnRate(currentTurnRate) : 0
 	}
-	public TurnRate(currentTurnRate = true): number {
+	public TurnRate(currentTurnRate: boolean = true): number {
 		return currentTurnRate ? this.MovementTurnRate : this.BaseTurnRate || 0.5
 	}
-	public TurnTime(angle: number, currentTurnRate = true): number {
+	public TurnTime(angle: number, currentTurnRate: boolean = true): number {
 		return Math.max(angle / (30 * this.TurnRate(currentTurnRate)), 0)
 	}
 	public TurnTimeNew(
 		target: Vector3,
 		movement: boolean,
-		directionalMovement = false,
-		currentTurnRate = true
+		directionalMovement: boolean = false,
+		currentTurnRate: boolean = true
 	): number {
-		const turnData = GetTurnData(this.TurnRate(currentTurnRate))
+		let targetAng = 0
 		let angDiff = Math.radianToDegrees(this.GetAngle(target, false))
-		const targetAng = directionalMovement
-			? 0
-			: movement
+		const turnData = GetTurnData(this.TurnRate(currentTurnRate))
+		if (!directionalMovement) {
+			targetAng = movement
 				? GetAngleToFacePath(turnData, angDiff)
 				: GetCastAngle(turnData, angDiff, this.Position.DistanceSqr2D(target))
+		}
 		let time = 0,
 			yawVelocity = this.YawVelocity
 		while (angDiff > targetAng) {
@@ -1982,9 +2151,9 @@ RegisterFieldHandler(Unit, "m_hOwnerNPC", (unit, newVal) => {
 	unit.OwnerNPC = EntityManager.EntityByIndex(unit.OwnerNPC_)
 })
 RegisterFieldHandler(Unit, "m_bIsIllusion", (unit, newVal) => {
-	const oldValue = unit.IsIllusion_
+	const oldValue = unit.ModifierManager.IsIllusion_
 	if (oldValue !== newVal) {
-		unit.IsIllusion_ = newVal as boolean
+		unit.ModifierManager.IsIllusion_ = newVal as boolean
 		EventsSDK.emit("UnitPropertyChanged", false, unit)
 	}
 })
@@ -2090,9 +2259,9 @@ RegisterFieldHandler(Unit, "m_iAttackCapabilities", (unit, newVal) => {
 	}
 })
 RegisterFieldHandler(Unit, "m_bIsClone", (unit, newVal) => {
-	const oldValue = unit.IsClone_
+	const oldValue = unit.ModifierManager.IsClone_
 	if (oldValue !== newVal) {
-		unit.IsClone_ = newVal as boolean
+		unit.ModifierManager.IsClone_ = newVal as boolean
 		EventsSDK.emit("UnitPropertyChanged", false, unit)
 	}
 })

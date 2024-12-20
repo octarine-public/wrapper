@@ -14,7 +14,7 @@ export class modifier_shredder_reactive_armor extends Modifier {
 	])
 
 	protected GetPhysicalArmorBonus(): [number, boolean] {
-		return [this.cachedArmor * this.StackCount, this.IsPassiveDisabled()]
+		return [this.cachedArmor * this.StackCount, false] // not breakable if passive disabled
 	}
 
 	protected UpdateSpecialValues(): void {

@@ -49,14 +49,11 @@ export class modifier_kez_sai extends Modifier {
 		if (this.Ability === undefined) {
 			return
 		}
-		this.cachedRange = this.GetSpecialValue("sai_attack_range", this.Ability.Name)
-		this.cachedBAT = this.GetSpecialValue("sai_base_attack_time", this.Ability.Name)
-		// Valve replace ability if there is a shard
+		const name = this.Ability.Name
+		this.cachedRange = this.GetSpecialValue("sai_attack_range", name)
+		this.cachedBAT = this.GetSpecialValue("sai_base_attack_time", name)
 		if (this.Ability instanceof kez_shodo_sai) {
-			this.cachedSpeed = this.GetSpecialValue(
-				"shard_base_movement_speed",
-				this.Ability.Name
-			)
+			this.cachedSpeed = this.GetSpecialValue("shard_base_movement_speed", name)
 		}
 	}
 }

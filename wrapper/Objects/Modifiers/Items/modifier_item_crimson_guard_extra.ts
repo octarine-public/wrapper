@@ -4,7 +4,7 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_crimson_guard_extra extends Modifier {
-	private cachedblockDamage = 0
+	private cachedBlockDamage = 0
 	private cachedMaxHPBlock = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -16,13 +16,12 @@ export class modifier_item_crimson_guard_extra extends Modifier {
 
 	protected GetPhysicalConstantBlock(): [number, boolean] {
 		const maxHP = this.Caster?.MaxHP ?? 0
-		const additionalBlock = maxHP * (this.cachedMaxHPBlock / 100)
-		return [this.cachedblockDamage + additionalBlock, false]
+		return [this.cachedBlockDamage + (maxHP * this.cachedMaxHPBlock) / 100, false]
 	}
 
 	protected UpdateSpecialValues() {
 		const name = "item_crimson_guard"
 		this.cachedMaxHPBlock = this.GetSpecialValue("max_hp_pct", name)
-		this.cachedblockDamage = this.GetSpecialValue("block_damage_active", name)
+		this.cachedBlockDamage = this.GetSpecialValue("block_damage_active", name)
 	}
 }

@@ -1,6 +1,8 @@
 import { WrapperClass } from "../../../Decorators"
 import { SPELL_IMMUNITY_TYPES } from "../../../Enums/SPELL_IMMUNITY_TYPES"
+import { modifier_hoodwink_sharpshooter_windup } from "../../../Objects/Modifiers/Abilities/Hoodwink/modifier_hoodwink_sharpshooter_windup"
 import { Ability } from "../../Base/Ability"
+import { Unit } from "../../Base/Unit"
 
 @WrapperClass("hoodwink_sharpshooter")
 export class hoodwink_sharpshooter extends Ability {
@@ -22,5 +24,18 @@ export class hoodwink_sharpshooter extends Ability {
 	}
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("arrow_speed", level)
+	}
+	public GetRawDamage(_target: Unit): number {
+		const owner = this.Owner
+		if (owner === undefined || this.Level === 0) {
+			return 0
+		}
+		const modifierDamage = this.modifierDamage(owner)
+		return modifierDamage || (this.GetSpecialValue("max_damage") * 20) / 100
+	}
+
+	private modifierDamage(owner: Unit): number {
+		const modifier = owner.GetBuffByClass(modifier_hoodwink_sharpshooter_windup)
+		return modifier?.RemainingDamage ?? 0
 	}
 }

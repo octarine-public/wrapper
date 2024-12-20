@@ -4,23 +4,31 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_visage_silent_as_the_grave extends Modifier {
+	private cachedSpeed = 0
+	private cachedDamage = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE_PERCENTAGE,
+			this.GetPreAttackBonusDamagePercentage.bind(this)
 		]
 	])
 
-	private cachedSpeed = 0
+	protected GetPreAttackBonusDamagePercentage(): [number, boolean] {
+		return [this.cachedDamage, false]
+	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedSpeed = this.GetSpecialValue(
-			"movespeed_bonus",
-			"visage_silent_as_the_grave"
-		)
+		const name = "visage_silent_as_the_grave"
+		this.cachedSpeed = this.GetSpecialValue("movespeed_bonus", name)
+		this.cachedDamage = this.GetSpecialValue("bonus_damage", name)
 	}
 }

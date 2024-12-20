@@ -5,6 +5,7 @@ import { Modifier } from "../../../Base/Modifier"
 @WrapperClassModifier()
 export class modifier_enchantress_enchant_intrinsic extends Modifier {
 	private cachedRange = 0
+	private cachedDamage = 0
 	private cachedRangeValue = 0
 	private cachedAttackSpeed = 0
 
@@ -13,6 +14,10 @@ export class modifier_enchantress_enchant_intrinsic extends Modifier {
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
 			this.GetAttackRangeBonus.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE,
+			this.GetPreAttackDamageBonus.bind(this)
 		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
@@ -38,12 +43,17 @@ export class modifier_enchantress_enchant_intrinsic extends Modifier {
 		return [this.cachedRange, false]
 	}
 
+	protected GetPreAttackDamageBonus(): [number, boolean] {
+		return [this.cachedDamage, false]
+	}
+
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]
 	}
 
 	protected UpdateSpecialValues(): void {
 		const name = "enchantress_enchant"
+		this.cachedDamage = this.GetSpecialValue("bonus_damage", name)
 		this.cachedRangeValue = this.GetSpecialValue("attack_range_bonus", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attackspeed", name)
 	}

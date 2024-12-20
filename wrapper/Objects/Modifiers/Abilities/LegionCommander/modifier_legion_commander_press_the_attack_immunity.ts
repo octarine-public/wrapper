@@ -1,4 +1,3 @@
-import { BaseMagicImmunityResist } from "../../../../Data/GameData"
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
@@ -9,15 +8,22 @@ export class modifier_legion_commander_press_the_attack_immunity extends Modifie
 
 	protected readonly DeclaredFunction = new Map([
 		[
+			EModifierfunction.MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_PURE,
+			this.GetAbsoluteNoDamagePure.bind(this)
+		],
+		[
 			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS,
 			this.GetMagicalResistanceBonus.bind(this)
 		]
 	])
 
-	protected GetMagicalResistanceBonus(): [number, boolean] {
-		return [this.cachedMres !== 0 ? BaseMagicImmunityResist : 0, false]
+	protected GetAbsoluteNoDamagePure(): [number, boolean] {
+		return [1, false]
 	}
-
+	protected GetMagicalResistanceBonus(params?: IModifierParams): [number, boolean] {
+		const ignoreMagicResist = params?.IgnoreMagicResist ?? false
+		return !ignoreMagicResist ? [this.cachedMres, false] : [0, false]
+	}
 	protected UpdateSpecialValues() {
 		const owner = this.Parent
 		if (owner === undefined) {

@@ -6,7 +6,6 @@ export class kunkka_tidebringer extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage_bonus", level)
 	}
-
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("cleave_distance", level)
 	}

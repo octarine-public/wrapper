@@ -648,6 +648,7 @@ export class Entity {
 
 		this.VisualPosition.CopyFrom(this.NetworkedPosition)
 		this.VisualAngles.CopyFrom(this.NetworkedAngles)
+		EventsSDK.emit("EntityPositionChanged", false, this)
 	}
 
 	public CannotUseItem(_item: Item): boolean {

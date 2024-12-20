@@ -9,4 +9,7 @@ export class skeleton_king_hellfire_blast extends Ability {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("blast_speed", level)
 	}
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage", level)
+	}
 }

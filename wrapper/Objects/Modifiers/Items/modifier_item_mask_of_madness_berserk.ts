@@ -37,8 +37,8 @@ export class modifier_item_mask_of_madness_berserk extends Modifier {
 
 	protected UpdateSpecialValues() {
 		const name = "item_mask_of_madness"
-		this.cachedArmor = this.GetSpecialValue("berserk_armor", name)
-		this.cachedSpeed = this.GetSpecialValue("berserk_armor_reduction", name)
+		this.cachedArmor = this.GetSpecialValue("berserk_armor_reduction", name)
+		this.cachedSpeed = this.GetSpecialValue("berserk_bonus_movement_speed", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("berserk_bonus_attack_speed", name)
 	}
 }

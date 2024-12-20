@@ -79,7 +79,7 @@ export class TrackingProjectile extends Projectile {
 		private dodgeable: boolean,
 		private isAttack: boolean,
 		private expireTime: number,
-		public readonly MaxImpactTime: number | undefined,
+		public readonly MaxImpactTime: Nullable<number>,
 		public LaunchTick: number,
 		public readonly TargetLoc = new Vector3().Invalidate(),
 		colorgemcolor: Color,
@@ -126,20 +126,17 @@ export class TrackingProjectile extends Projectile {
 		this.LaunchTick = launchTick
 		targetLoc.CopyTo(this.TargetLoc)
 	}
-
+	/** @internal */
 	public UpdateProjectileSpeed() {
 		if (!(this.Source instanceof Unit) || !(this.Target instanceof Unit)) {
 			return
 		}
-
 		const baseSpeed = this.OriginalSpeed,
 			distortionAura = this.ModifierDistortionAura(this.Source),
 			magneticFieldAura = this.ModifierMagneticFieldAura(this.Source),
 			timeZoneAura = this.ModifierTimeZoneAura(this.Source)
-
 		this.Speed = baseSpeed * (1 - (distortionAura + magneticFieldAura + timeZoneAura))
 	}
-
 	// Passive distortion aura (faceless_void)
 	protected ModifierDistortionAura(source: Unit): number {
 		if (!this.IsAttack) {

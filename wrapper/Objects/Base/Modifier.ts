@@ -12,17 +12,13 @@ import { Unit } from "./Unit"
 
 const scepterRegExp = /^modifier_(item_ultimate_scepter|wisp_tether_scepter)/
 
-export type ModifierHandlerValue = () => [number, boolean]
+export type ModifierHandlerValue = (modifierParams?: IModifierParams) => [number, boolean]
 export type ModifierMapFieldHandler = Map<EModifierfunction, ModifierHandlerValue>
 
 export class Modifier {
 	public static readonly DebuffHeal: string[] = [
 		"modifier_ice_blast",
 		"modifier_doom_bringer_doom"
-	]
-	public static readonly AttackThroughImmunity: string[] = [
-		"modifier_item_revenants_brooch_active",
-		"modifier_muerta_pierce_the_veil_buff"
 	]
 	// TODO: rework this after add ModifierManager
 	public static HasTrueSightBuff(buffs: Modifier[]): boolean {
@@ -32,6 +28,7 @@ export class Modifier {
 				case "modifier_item_dustofappearance":
 				case "modifier_bloodseeker_thirst_vision":
 				case "modifier_bounty_hunter_track":
+				case "modifier_nyx_assassin_nyxth_sense_effect":
 					return true
 				default:
 					return false
@@ -281,6 +278,7 @@ export class Modifier {
 		}
 		if (this.CreationTime !== newCreationTime) {
 			this.CreationTime = newCreationTime
+			this.UpdateSpecialValues()
 			updated = true
 		}
 		if (this.NetworkArmor !== newArmor) {
@@ -312,27 +310,33 @@ export class Modifier {
 	public GetTexturePath(): string {
 		return this.Ability?.TexturePath ?? ""
 	}
-
 	public IsEnemy(ent?: Entity): boolean {
 		return this.Parent?.IsEnemy(ent) ?? false
 	}
-
+	public IsBuff(): this is IBuff {
+		return false
+	}
+	public IsDebuff(): this is IDebuff {
+		return false
+	}
+	public IsShield(): this is IShield {
+		return false
+	}
 	public OnHasShardChanged(): void {
 		this.UpdateSpecialValues()
 	}
-
 	public OnHasScepterChanged(): void {
 		this.UpdateSpecialValues()
 	}
-
 	public OnAbilityLevelChanged(): void {
 		this.UpdateSpecialValues()
 	}
-
 	public PostDataUpdate(): void {
 		// child classes should override
 	}
-
+	public ForceUpdateSpecialValues(): void {
+		this.UpdateSpecialValues()
+	}
 	public Remove(): boolean {
 		const parent = this.Parent
 		if (parent === undefined || !parent.Buffs.includes(this)) {
@@ -349,7 +353,6 @@ export class Modifier {
 		parent.ChangeFieldsByEvents()
 		return true
 	}
-
 	public HasTargetFlags(flag: DOTA_UNIT_TARGET_FLAGS): boolean {
 		const ability = this.Ability
 		if (ability !== undefined) {
@@ -358,7 +361,6 @@ export class Modifier {
 		const abilData = AbilityData.GetAbilityByName(this.CachedAbilityName ?? "")
 		return abilData?.HasTargetFlags(flag) ?? false
 	}
-
 	public IsMagicImmune(unit?: Unit) {
 		const owner = unit ?? this.Parent
 		const caster = this.Ability?.Owner
@@ -370,22 +372,23 @@ export class Modifier {
 			((unit ?? this.Parent)?.IsDebuffImmune ?? false)
 		)
 	}
-
 	public IsPassiveDisabled(source?: Unit) {
 		source ??= this.Ability?.Owner
-		if (source === undefined || !source.IsPassiveDisabled) {
-			return false
-		}
-		return this.IsBreakable && this.IsDispellable
+		return (source?.IsPassiveDisabled ?? false) && this.IsBreakable
 	}
-
+	public IsSuppressCrit(source?: Unit) {
+		source ??= this.Parent
+		return source?.IsSuppressCrit ?? false
+	}
+	public TestSpecialValue() {
+		this.UpdateSpecialValues()
+	}
 	// Ability#vengefulspirit_soul_strike
 	// e.g HasMeleeAttacksBonuses modifier_vengefulspirit_soul_strike
 	protected HasMeleeAttacksBonuses(source?: Unit): boolean {
 		source ??= this.Parent
 		return source !== undefined && (source.IsAttacksAreMelee || !source.IsRanged)
 	}
-
 	protected AddModifier(): boolean {
 		const parent = this.Parent
 		if (parent === undefined || parent.Buffs.includes(this)) {
@@ -402,7 +405,6 @@ export class Modifier {
 		parent.ChangeFieldsByEvents()
 		return true
 	}
-
 	/**
 	 * @param specialName name of the special
 	 * @param abilityName (e.g. "item_smoke_of_deceit", "item_moon_shard")
@@ -425,24 +427,20 @@ export class Modifier {
 		this.CachedAbilityName = abilityName
 		return data?.GetSpecialValue(specialName, level) ?? 0
 	}
-
 	protected UnitModifierChanged(): void {
 		if (this.DeclaredFunction !== undefined) {
 			this.UpdateSpecialValues()
 		}
 		this.UnitPropertyChanged()
 	}
-
 	protected UpdateSpecialValues() {
 		// child classes should override this method to update special values
 		// e.g. this.cachedSpeed = this.GetSpecialValue("movespeed", "wisp_tether")
 	}
-
 	protected UnitPropertyChanged(_changed?: boolean): boolean {
 		// child classes should override
 		return true
 	}
-
 	private flagsMagicImmunity(unit?: Unit, caster?: Unit) {
 		const owner = unit ?? this.Parent
 		const source = caster ?? this.Ability?.Owner

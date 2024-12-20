@@ -4,6 +4,10 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_primal_beast_trample_haste extends Modifier {
+	private isActive = false
+	private cachedSpeed = 0
+	private cachedSpeedSelf = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -11,10 +15,6 @@ export class modifier_primal_beast_trample_haste extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
-	private isActive = false
-	private cachedSpeed = 0
-	private cachedSpeedSelf = 0
 
 	public PostDataUpdate(): void {
 		const name = "modifier_primal_beast_trample"

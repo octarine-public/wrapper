@@ -1,5 +1,5 @@
 import { Vector2 } from "../../Base/Vector2"
-import { WrapperClass } from "../../Decorators"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { MapArea } from "../../Enums/MapArea"
 import { Team } from "../../Enums/Team"
 import { GUIInfo } from "../../GUI/GUIInfo"
@@ -15,6 +15,8 @@ import { Unit } from "./Unit"
 export class Creep extends Unit {
 	public Lane = MapArea.Unknown
 	public PredictedIsWaitingToSpawn = true
+	@NetworkedBasicField("m_flHealthRegen")
+	public readonly BaseHPRegen: number = 0
 
 	constructor(
 		public readonly Index: number,
@@ -22,6 +24,12 @@ export class Creep extends Unit {
 	) {
 		super(Index, serial)
 		this.IsCreep = true
+	}
+
+	public get HPRegen(): number {
+		return this.IsLaneCreep
+			? this.ModifierManager.GetHealthRegen(this.BaseHPRegen)
+			: super.HPRegen
 	}
 
 	public get IsEidolon() {

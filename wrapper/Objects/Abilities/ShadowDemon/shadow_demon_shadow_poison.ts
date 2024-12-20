@@ -6,8 +6,10 @@ export class shadow_demon_shadow_poison extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
-
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)
+	}
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("hit_damage", level)
 	}
 }

@@ -7,6 +7,7 @@ import { GetPositionHeight } from "../../../Native/WASM"
 import { GameState } from "../../../Utils/GameState"
 import { Ability } from "../../Base/Ability"
 import { LocalPlayer } from "../../Base/Entity"
+import { Unit } from "../../Base/Unit"
 
 @WrapperClass("techies_suicide")
 export class techies_suicide extends Ability {
@@ -18,13 +19,23 @@ export class techies_suicide extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
-
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
-
 	public GetBaseActivationDelayForLevel(level: number): number {
 		return this.GetSpecialValue("duration", level)
+	}
+	public GetRawDamage(target: Unit): number {
+		const owner = this.Owner
+		if (owner === undefined || this.Level === 0) {
+			return 0
+		}
+		const multiplier = this.GetSpecialValue("hp_dmg")
+		let baseDamage = super.GetRawDamage(target)
+		if (multiplier !== 0) {
+			baseDamage += (owner.MaxHP * multiplier) / 100
+		}
+		return baseDamage
 	}
 }
 

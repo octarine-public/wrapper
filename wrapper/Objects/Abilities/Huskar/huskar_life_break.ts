@@ -5,6 +5,7 @@ import { ProjectileManager } from "../../../Managers/ProjectileManager"
 import { GameState } from "../../../Utils/GameState"
 import { Ability } from "../../Base/Ability"
 import { TrackingProjectile } from "../../Base/Projectile"
+import { Unit } from "../../Base/Unit"
 
 @WrapperClass("huskar_life_break")
 export class huskar_life_break extends Ability {
@@ -19,9 +20,16 @@ export class huskar_life_break extends Ability {
 				: 0)
 		)
 	}
-
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("charge_speed", level)
+	}
+	public GetRawDamage(target: Unit): number {
+		const owner = this.Owner
+		if (owner === undefined || this.Level === 0) {
+			return 0
+		}
+		const multiplier = this.GetSpecialValue("health_damage") * 100
+		return (target.HP * multiplier) / 100
 	}
 }
 
@@ -30,7 +38,6 @@ EventsSDK.on("ModifierCreated", mod => {
 	if (mod.Name !== "modifier_huskar_life_break_charge") {
 		return
 	}
-
 	const caster = mod.Caster,
 		abil = mod.Ability
 	if (

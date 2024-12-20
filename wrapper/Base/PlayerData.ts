@@ -1,4 +1,5 @@
 import { ConnectionState } from "../Enums/ConnectionState"
+import { EPropertyType } from "../Enums/PropertyType"
 import { Team } from "../Enums/Team"
 import { EntityPropertiesNode } from "./EntityProperties"
 
@@ -16,6 +17,9 @@ export class PlayerData {
 	}
 	public get Team(): Team {
 		return this.properties.get("m_iPlayerTeam") ?? Team.Invalid
+	}
+	public get Slot(): number {
+		return this.properties.get<number>("m_nPlayerSlot", EPropertyType.INT32) ?? 0
 	}
 	public get FullyJoinedServer(): boolean {
 		return this.properties.get("m_bFullyJoinedServer") ?? false

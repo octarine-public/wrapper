@@ -10,10 +10,18 @@ export class modifier_elder_titan_ancestral_spirit_buff extends Modifier {
 			this.GetPhysicalArmorBonus.bind(this)
 		],
 		[
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE,
+			this.GetPreAttackBonusDamage.bind(this)
+		],
+		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
+
+	protected GetPreAttackBonusDamage(): [number, boolean] {
+		return [this.NetworkDamage, false]
+	}
 
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.NetworkArmor, false]

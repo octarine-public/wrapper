@@ -12,4 +12,16 @@ export class dragon_knight_dragon_tail extends Ability {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("projectile_speed", level)
 	}
+	public GetBaseCastRangeForLevel(level: number): number {
+		const hasDragonForm = this.Owner?.HasBuffByName(
+			"modifier_dragon_knight_dragon_form"
+		)
+		if (!hasDragonForm) {
+			return super.GetBaseCastRangeForLevel(level)
+		}
+		return this.GetSpecialValue("dragon_cast_range", level)
+	}
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("aoe_radius", level)
+	}
 }

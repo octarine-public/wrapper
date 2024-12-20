@@ -9,4 +9,7 @@ export class ringmaster_impalement extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("dagger_vision", level)
 	}
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("damage_impact", level)
+	}
 }

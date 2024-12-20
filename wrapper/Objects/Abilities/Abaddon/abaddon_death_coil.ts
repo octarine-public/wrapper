@@ -28,10 +28,24 @@ export class abaddon_death_coil
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("missile_speed", level)
 	}
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("target_damage", level)
+	}
 	public IsHealthCost(): this is IHealthCost {
 		return true
 	}
 	public IsHealthRestore(): this is IHealthRestore<Unit> {
 		return true
+	}
+	public GetDamage(target: Unit): number {
+		const owner = this.Owner
+		if (owner === undefined || this.Level === 0) {
+			return 0
+		}
+		let baseDamage = super.GetDamage(target)
+		if (this.OwnerHasShard) {
+			baseDamage += owner.GetAttackDamage(target)
+		}
+		return baseDamage
 	}
 }

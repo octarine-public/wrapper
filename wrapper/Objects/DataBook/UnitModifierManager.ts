@@ -2,9 +2,11 @@ import {
 	ArmorPerAgility,
 	AttackSpeedData,
 	MagicResistPerIntellect,
+	MeleeDamageBlockAmount,
 	MoveSpeedData
 } from "../../Data/GameData"
 import { Attributes } from "../../Enums/Attributes"
+import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
 import { EModifierfunction } from "../../Enums/EModifierfunction"
 import { ModifierHandlerValue, ModifierMapFieldHandler } from "../Base/Modifier"
 import { Unit } from "../Base/Unit"
@@ -12,6 +14,27 @@ import { Unit } from "../Base/Unit"
 type ModifierfunctionMap = Map<EModifierfunction, ModifierHandlerValue[]>
 
 export class UnitModifierManager {
+	/** @private NOTE: this is internal field use Unit#NoIntellect */
+	public NoIntellect_: boolean = false
+	/** @private NOTE: this is internal field use Unit#HasAeigs */
+	public HasAeigs_: boolean = false
+	/** @private NOTE: this is internal field use Unit#IsTempestDouble */
+	public IsTempestDouble_: boolean = false
+	/** @private NOTE: this is internal field use Unit#IsChargeOfDarkness */
+	public IsChargeOfDarkness_: boolean = false
+	/** @private NOTE: this is internal field use Unit#IsClone */
+	public IsClone_: boolean = false
+	/** @private NOTE: this is internal field use Unit#IsIllusion */
+	public IsIllusion_: boolean = false
+	/** @private NOTE: this is internal field use Unit#IsReflection */
+	public IsReflection_: boolean = false
+	/** @private NOTE: this is internal field use Unit#IsStrongIllusion */
+	public IsStrongIllusion_: boolean = false
+	/** @private NOTE: this is internal field use Unit#IsFountainInvulnerable */
+	public IsFountainInvulnerable_: boolean = false
+	/** @private NOTE: this is internal */
+	public IsMorphlingReplicateIllusion_: boolean = false
+
 	private readonly eModifierfunctions: ModifierfunctionMap = new Map()
 
 	constructor(public readonly Owner: Unit) {}
@@ -42,6 +65,72 @@ export class UnitModifierManager {
 			1
 		)
 		return this.Owner.TotalIntellect * MagicResistPerIntellect * percentage
+	}
+	public get SlowResistance(): number {
+		const slowResistUnique = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE
+		)
+		const slowResistStacking = this.GetPercentageMultiplicativeInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING
+		)
+		return 1 - (1 - (slowResistStacking - 1)) * (1 - slowResistUnique / 100)
+	}
+	public get StatusResistance(): number {
+		const status = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_STATUS_RESISTANCE
+		)
+		const stacking = this.GetPercentageMultiplicativeInternal(
+			EModifierfunction.MODIFIER_PROPERTY_STATUS_RESISTANCE_STACKING
+		)
+		return Math.min(1 - (1 - (stacking - 1)) * (1 - status / 100), Number.MAX_VALUE)
+	}
+	public get SpellAmplification(): number {
+		const percentage = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		const uniquePercentage = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE_UNIQUE
+		)
+		return uniquePercentage + percentage
+	}
+	public get SpellAmplificationTarget(): number {
+		const targetPercentage = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE_TARGET,
+			false,
+			1,
+			1
+		)
+		return targetPercentage
+	}
+	public get IsSuppressCrit(): boolean {
+		const suppressCrit = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_SUPPRESS_CRIT
+		)
+		return suppressCrit !== 0
+	}
+	public get IsAvoidTotalDamage() {
+		return (
+			this.GetConstantFirstInternal(
+				EModifierfunction.MODIFIER_PROPERTY_AVOID_DAMAGE
+			) !== 0
+		)
+	}
+	public get IsConvertManaCostToHPCost(): boolean {
+		const manaCostToHP = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CONVERT_MANA_COST_TO_HEALTH_COST
+		)
+		return manaCostToHP !== 0
+	}
+	public GetAttackDamageConvertPhysicalToMagical(target: Unit): boolean {
+		const toMagical = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PROCATTACK_CONVERT_PHYSICAL_TO_MAGICAL,
+			false,
+			{ SourceIndex: target.Index }
+		)
+		return toMagical !== 0
 	}
 	public GetBaseBonusPhysicalArmor(baseArmor: number): number {
 		const ignoreArmor = this.GetConstantHighestInternal(
@@ -183,17 +272,14 @@ export class UnitModifierManager {
 		const bonusUnique = this.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS_UNIQUE
 		)
+		const args = [false, 1, 1] as const
 		const bonus = this.GetConditionalAdditiveInternal(
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
-			false,
-			1,
-			1
+			...args
 		)
 		const bonusPercentage = this.GetConditionalPercentageInternal(
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS_PERCENTAGE,
-			false,
-			1,
-			1
+			...args
 		)
 		const maxAttackRange = this.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MAX_ATTACK_RANGE
@@ -226,18 +312,8 @@ export class UnitModifierManager {
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_REDUCTION_PERCENTAGE
 		)
 
-		const slowResistUnique =
-			this.GetConstantHighestInternal(
-				EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE
-			) / 100
-
-		const slowResistStacking = this.GetPercentageMultiplicativeInternal(
-			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING
-		)
-
 		const reductionValue = reductionPercentage * slowValue
-		const effSlowResist = (1 - (slowResistStacking - 1)) * (1 - slowResistUnique)
-		const effReduction = (1 - (1 - effSlowResist)) * reductionValue
+		const effReduction = (1 - this.SlowResistance) * reductionValue
 
 		const bonusConstant = this.GetConditionalAdditiveInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
@@ -348,9 +424,13 @@ export class UnitModifierManager {
 		const baseBonusArmor = this.GetBaseBonusPhysicalArmor(baseArmor)
 		return baseBonusArmor + bonus + bonusUnique + bonusUniqueActive
 	}
-	public GetMagicResistance(baseResist: number): number {
+	public GetMagicResistance(baseResist: number, ignoreMagicResist?: boolean): number {
 		const bonus = this.GetPercentageMultiplicativeInternal(
-			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS
+			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS,
+			false,
+			false,
+			false,
+			{ IgnoreMagicResist: ignoreMagicResist ?? false }
 		)
 		const decrepify = this.GetConstantLowestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_DECREPIFY_UNIQUE
@@ -368,20 +448,24 @@ export class UnitModifierManager {
 		const totalMul = (2 - bonus) * (1 - decrepify / 100) * (1 - bonusUnique / 100)
 		return 1 - (direct + (1 - baseResist / 100)) * totalMul
 	}
-	// NOTE: It is necessary to study in more detail what this Valve is used
-	// public GetPostPhysicalArmor(baseArmor: number): number {
-	// 	const baseBonus = this.GetBaseBonusPhysicalArmor(baseArmor)
-	// 	const bonusPost = this.GetConditionalAdditiveInternal(
-	// 		EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS_POST,
-	// 		false,
-	// 		1,
-	// 		1
-	// 	)
-	// 	const minPhysical = this.GetConstantLowestInternal(
-	// 		EModifierfunction.MODIFIER_PROPERTY_MIN_PHYSICAL_ARMOR
-	// 	)
-	// 	const totalBonus = minPhysical - (baseBonus + bonusPost)
-	// }
+	public GetPredictiveArmor(target: Unit): number {
+		return this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_PHYSICAL_ARMOR_BONUS_TARGET,
+			false,
+			1,
+			1,
+			{ SourceIndex: target.Index }
+		)
+	}
+	public GetTimeVisionRange(
+		baseVision: number,
+		isNight: boolean,
+		ignoreFixedVision: boolean = false
+	) {
+		return !isNight
+			? this.GetDayTimeVisionRange(baseVision, ignoreFixedVision)
+			: this.GetNightTimeVisionRange(baseVision, ignoreFixedVision)
+	}
 	public GetNightTimeVisionRange(
 		baseVision: number,
 		ignoreFixedVision: boolean = false
@@ -421,17 +505,14 @@ export class UnitModifierManager {
 		const bonusDayVision = this.GetConditionalAdditiveInternal(
 			EModifierfunction.MODIFIER_PROPERTY_BONUS_DAY_VISION
 		)
+		const args = [false, 1, 1] as const
 		const bonusVisionPercentage = this.GetConditionalPercentageInternal(
 			EModifierfunction.MODIFIER_PROPERTY_BONUS_VISION_PERCENTAGE,
-			false,
-			1,
-			1
+			...args
 		)
 		const bonusDayVisionPercentage = this.GetConditionalPercentageInternal(
 			EModifierfunction.MODIFIER_PROPERTY_BONUS_DAY_VISION_PERCENTAGE,
-			false,
-			1,
-			1
+			...args
 		)
 		const fixedDayVision = !ignoreFixedVision
 			? this.GetConstantHighestInternal(
@@ -451,14 +532,245 @@ export class UnitModifierManager {
 
 		return Math.max(totalDayVision, 200)
 	}
-	public GetStatusResistance(): number {
-		const status = this.GetConstantHighestInternal(
-			EModifierfunction.MODIFIER_PROPERTY_STATUS_RESISTANCE
+	public GetDamageBlock(
+		damage: number,
+		damageType: DAMAGE_TYPES,
+		isRaw: boolean
+	): number {
+		if (isRaw) {
+			return this.GetRawDamageBlock(damage, damageType)
+		}
+		const params: IModifierParams = { RawDamage: damage }
+		const args = [false, params] as const
+		let damageBlock = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_TOTAL_CONSTANT_BLOCK,
+			...args
 		)
-		const stacking = this.GetPercentageMultiplicativeInternal(
-			EModifierfunction.MODIFIER_PROPERTY_STATUS_RESISTANCE_STACKING
+		switch (damageType) {
+			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL:
+				damageBlock += this.GetConstantHighestInternal(
+					EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_CONSTANT_BLOCK_SPECIAL,
+					...args
+				)
+				break
+			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
+				damageBlock += this.GetConstantHighestInternal(
+					EModifierfunction.MODIFIER_PROPERTY_MAGICAL_CONSTANT_BLOCK,
+					...args
+				)
+				break
+		}
+		return damageBlock
+	}
+	public GetRawDamageBlock(rawDamage: number, damageType: DAMAGE_TYPES): number {
+		const params: IModifierParams = { RawDamage: rawDamage }
+		const args = [false, params] as const
+		let damageBlock = 0
+		switch (damageType) {
+			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
+				damageBlock += this.GetConstantHighestInternal(
+					EModifierfunction.MODIFIER_PROPERTY_RAW_MAGICAL_CONSTANT_BLOCK,
+					...args
+				)
+				break
+		}
+		return damageBlock
+	}
+	public GetPassiveDamageBlock(damageType: DAMAGE_TYPES): number {
+		if (!this.Owner.IsHero) {
+			return 0
+		}
+		if (damageType !== DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL) {
+			return 0
+		}
+		const overrideBlock = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_CONSTANT_BLOCK
 		)
-		return Math.min(1 - (1 - (stacking - 1)) * (1 - status / 100), Number.MAX_VALUE)
+		return Math.max(overrideBlock, !this.Owner.IsRanged ? MeleeDamageBlockAmount : 0)
+	}
+	public GetCritDamageBonus(target: Unit): number {
+		const critDamage = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CRITICAL_STRIKE_BONUS,
+			false,
+			1,
+			1,
+			{ SourceIndex: target.Index }
+		)
+		return Math.max(critDamage / 100, 1)
+	}
+	public GetCritDamageBonusTarget(target: Unit): number {
+		const critDamage = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_TARGET_CRITICALSTRIKE,
+			false,
+			1,
+			1,
+			{ SourceIndex: target.Index }
+		)
+		return Math.max(critDamage / 100, 1)
+	}
+	public GetIncomingRawAttackDamage(target: Unit): number {
+		const percentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_RAW_INCOMING_DAMAGE_PERCENTAGE,
+			false,
+			1,
+			1,
+			{ SourceIndex: target.Index }
+		)
+		return percentage
+	}
+	public GetIncomingAttackDamage(target: Unit, isRaw: boolean): number {
+		const args = [false, 1, 1, { SourceIndex: target.Index }] as const
+		if (isRaw) {
+			return this.GetConditionalPercentageInternal(
+				EModifierfunction.MODIFIER_PROPERTY_PREATTACK_RAW_INCOMING_DAMAGE_PERCENTAGE,
+				...args
+			)
+		}
+		const pre = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_INCOMING_DAMAGE_PERCENTAGE,
+			...args
+		)
+		const proc = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PROCATTACK_INCOMING_DAMAGE_PERCENTAGE,
+			...args
+		)
+		return pre * proc
+	}
+	public GetIncomingDamage(target: Unit, damageType: DAMAGE_TYPES): number {
+		const params: IModifierParams = { SourceIndex: target.Index }
+		const args = [false, 1, 1, params] as const
+		let totalIncDamage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_INCOMING_DAMAGE_PERCENTAGE,
+			...args
+		)
+		switch (damageType) {
+			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
+				break
+			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL: {
+				totalIncDamage *= this.GetConditionalPercentageInternal(
+					EModifierfunction.MODIFIER_PROPERTY_INCOMING_PHYSICAL_DAMAGE_PERCENTAGE,
+					...args
+				)
+				break
+			}
+		}
+		return totalIncDamage
+	}
+	public GetOutgoingDamage(target: Unit, damageType: DAMAGE_TYPES): number {
+		const params: IModifierParams = { SourceIndex: target.Index }
+		const args = [false, 1, 1, params] as const
+		const total = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_DAMAGEOUTGOING_PERCENTAGE,
+			...args
+		)
+		const illusion = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_DAMAGEOUTGOING_PERCENTAGE_ILLUSION,
+			...args
+		)
+		switch (damageType) {
+			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
+				break
+			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL:
+				break
+		}
+		return total * illusion
+	}
+	public GetProcAttackDamageBonus(target: Unit, damageType: DAMAGE_TYPES): number {
+		const paramsTarget: IModifierParams = {
+			SourceIndex: target.Index
+		}
+		const args = [false, 1, 1, paramsTarget] as const
+		switch (damageType) {
+			case DAMAGE_TYPES.DAMAGE_TYPE_PURE:
+				return this.GetConditionalAdditiveInternal(
+					EModifierfunction.MODIFIER_PROPERTY_PROCATTACK_BONUS_DAMAGE_PURE,
+					...args
+				)
+			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL: {
+				const bonusCaster = this.GetConditionalAdditiveInternal(
+					EModifierfunction.MODIFIER_PROPERTY_PROCATTACK_BONUS_DAMAGE_MAGICAL,
+					...args
+				)
+				const bonusTarget = target.ModifierManager.GetConditionalAdditiveInternal(
+					EModifierfunction.MODIFIER_PROPERTY_PROCATTACK_BONUS_DAMAGE_MAGICAL_TARGET,
+					false,
+					1,
+					1,
+					{ SourceIndex: this.Owner.Index }
+				)
+				return bonusCaster + bonusTarget
+			}
+			default:
+				return 0
+		}
+	}
+	public GetPreAttackDamageBonus(baseDamage?: number, target?: Unit): number {
+		const ignoreBonusDamage = this.GetConstantFirstInternal(
+			EModifierfunction.MODIFIER_PROPERTY_IGNORE_PREATTACK_BONUS_DAMAGE
+		)
+		if (ignoreBonusDamage !== 0) {
+			return baseDamage ?? 0
+		}
+		const minDamage = this.Owner.AttackDamageMin
+		const params: IModifierParams = {
+			SourceIndex: target?.Index ?? -1,
+			RawDamageBase: baseDamage || minDamage
+		}
+		const paramsTarget: IModifierParams = {
+			SourceIndex: this.Owner.Index,
+			RawDamageBase: params.RawDamageBase
+		}
+		const args = [false, 1, 1, params] as const,
+			argsTarget = [false, 1, 1, paramsTarget] as const
+		const bonus = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE,
+			...args
+		)
+		const bonusTarget = target?.ModifierManager.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE_TARGET,
+			...argsTarget
+		)
+		const percentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE_PERCENTAGE,
+			...args
+		)
+		if (baseDamage !== undefined && baseDamage !== 0) {
+			return Math.max((baseDamage + bonus + (bonusTarget ?? 0)) * percentage, 0)
+		}
+		return Math.max((minDamage + bonus + (bonusTarget ?? 0)) * percentage - minDamage)
+	}
+	public GetAbsoluteNoDamage(damageType: DAMAGE_TYPES): boolean {
+		switch (damageType) {
+			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
+				return (
+					this.GetConstantFirstInternal(
+						EModifierfunction.MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_MAGICAL
+					) !== 0
+				)
+			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL:
+				return (
+					this.GetConstantFirstInternal(
+						EModifierfunction.MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_PHYSICAL
+					) !== 0
+				)
+			case DAMAGE_TYPES.DAMAGE_TYPE_PURE:
+				return (
+					this.GetConstantFirstInternal(
+						EModifierfunction.MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_PURE
+					) !== 0
+				)
+			default:
+				return true
+		}
+	}
+	public GetHealthRegen(baseRegen: number): number {
+		const bonus = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT,
+			false,
+			1,
+			1
+		)
+		return baseRegen + bonus
 	}
 	public GetConstantFirstInternal(
 		eModifierfunction: EModifierfunction,
@@ -502,7 +814,8 @@ export class UnitModifierManager {
 	}
 	public GetConstantHighestInternal(
 		eModifierfunction: EModifierfunction,
-		ignoreFlags: boolean = false
+		ignoreFlags: boolean = false,
+		params?: IModifierParams
 	) {
 		const handlers = this.eModifierfunctions.get(eModifierfunction)
 		if (handlers === undefined || handlers.length === 0) {
@@ -510,7 +823,7 @@ export class UnitModifierManager {
 		}
 		let result = 0
 		for (let i = handlers.length - 1; i > -1; i--) {
-			const [value, isFlagged] = handlers[i]()
+			const [value, isFlagged] = handlers[i](params)
 			if (isFlagged && !ignoreFlags) {
 				continue
 			}
@@ -522,7 +835,8 @@ export class UnitModifierManager {
 		eModifierfunction: EModifierfunction,
 		ignoreFlags: boolean = false,
 		multiplier: number = 1,
-		incoming: number = 0
+		incoming: number = 0,
+		params?: IModifierParams
 	) {
 		const handlers = this.eModifierfunctions.get(eModifierfunction)
 		if (handlers === undefined || handlers.length === 0) {
@@ -530,7 +844,7 @@ export class UnitModifierManager {
 		}
 		let result = 0
 		for (let i = handlers.length - 1; i > -1; i--) {
-			const [value, isFlagged] = handlers[i]()
+			const [value, isFlagged] = handlers[i](params)
 			if (isFlagged && !ignoreFlags) {
 				continue
 			}
@@ -542,7 +856,8 @@ export class UnitModifierManager {
 		eModifierfunction: EModifierfunction,
 		ignoreFlags: boolean = false,
 		multiplier: number = 1,
-		reduction: number = 0
+		reduction: number = 0,
+		params?: IModifierParams
 	) {
 		const handlers = this.eModifierfunctions.get(eModifierfunction)
 		if (handlers === undefined || handlers.length === 0) {
@@ -550,7 +865,7 @@ export class UnitModifierManager {
 		}
 		let totalResult = 100
 		for (let i = handlers.length - 1; i > -1; i--) {
-			const [value, isFlagged] = handlers[i]()
+			const [value, isFlagged] = handlers[i](params)
 			if (isFlagged && !ignoreFlags) {
 				continue
 			}
@@ -572,9 +887,7 @@ export class UnitModifierManager {
 			if (isFlagged && !ignoreFlags) {
 				continue
 			}
-			if (value !== 0) {
-				highestValue = Math.min(value, highestValue)
-			}
+			highestValue = Math.min(value, highestValue)
 		}
 		return highestValue / 100
 	}
@@ -592,9 +905,7 @@ export class UnitModifierManager {
 			if (isFlagged && !ignoreFlags) {
 				continue
 			}
-			if (value !== 0) {
-				result = Math.max(result, value)
-			}
+			result = Math.max(result, value)
 		}
 		return result / 100
 	}
@@ -602,7 +913,8 @@ export class UnitModifierManager {
 		eModifierfunction: EModifierfunction,
 		ignoreFlags: boolean = false,
 		isNegative: boolean = false,
-		applyOnlyPositive: boolean = false
+		applyOnlyPositive: boolean = false,
+		params?: IModifierParams
 	) {
 		const handlers = this.eModifierfunctions.get(eModifierfunction)
 		if (handlers === undefined || handlers.length === 0) {
@@ -610,7 +922,7 @@ export class UnitModifierManager {
 		}
 		let aggregateValue = 1
 		for (let i = handlers.length - 1; i > -1; i--) {
-			const [handlerValue, isFlagged] = handlers[i]()
+			const [handlerValue, isFlagged] = handlers[i](params)
 			let value = handlerValue
 			if (isFlagged && !ignoreFlags) {
 				value = 0

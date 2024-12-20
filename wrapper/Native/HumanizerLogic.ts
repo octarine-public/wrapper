@@ -24,9 +24,8 @@ import { Item } from "../Objects/Base/Item"
 import { TempTree } from "../Objects/Base/TempTree"
 import { Tree } from "../Objects/Base/Tree"
 import { Unit, Units } from "../Objects/Base/Unit"
-import { WorldLayers } from "../Objects/Base/WorldLayer"
+import { GetWorldBounds } from "../Objects/Base/WorldLayer"
 import { Shop } from "../Objects/Buildings/Shop"
-import { EntityDataLumps } from "../Resources/ParseEntityLump"
 import { GameState } from "../Utils/GameState"
 import { ConVarsSDK } from "./ConVarsSDK"
 import { ExecuteOrder } from "./ExecuteOrder"
@@ -34,48 +33,6 @@ import { SetProcessUserCmd } from "./HumanizerGlue"
 import { RendererSDK } from "./RendererSDK"
 import { UserCmd } from "./UserCmd"
 import * as WASM from "./WASM"
-
-let worldBounds: Nullable<[Vector2, Vector2]>
-
-function ProcessWorldBoundsData(layerName: string): boolean {
-	const worldBoundsData = EntityDataLumps.get(layerName)?.find(
-		data => data.get("classname") === "world_bounds"
-	)
-	if (worldBoundsData === undefined) {
-		return false
-	}
-	try {
-		const min = worldBoundsData.get("min"),
-			max = worldBoundsData.get("max")
-		worldBounds =
-			typeof min === "string" && typeof max === "string"
-				? [Vector2.FromString(min), Vector2.FromString(max)]
-				: undefined
-	} catch (e) {
-		console.error("Error in worldBoundsData init", e)
-		return false
-	}
-	return true
-}
-
-EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
-	if (state) {
-		ProcessWorldBoundsData(layerName)
-		return
-	}
-	for (let index = WorldLayers.length - 1; index > -1; index--) {
-		const worldLayer = WorldLayers[index]
-		if (
-			worldLayer.WorldLayerVisible &&
-			ProcessWorldBoundsData(worldLayer.LayerName)
-		) {
-			return
-		}
-	}
-	if (!ProcessWorldBoundsData("world_layer_base")) {
-		worldBounds = undefined
-	}
-})
 
 class Polygon2D {
 	public Points: Vector2[] = []
@@ -757,7 +714,8 @@ const cameraMoveLingerDuration = 100,
 	yellowZoneMaxDuration = 700,
 	greenZoneMaxDuration = yellowZoneMaxDuration * 2,
 	cameraDirection = new Vector2(),
-	debugCursor = new Vector3()
+	debugCursor = new Vector3(),
+	worldBounds = GetWorldBounds()
 let lastOrderFinish = 0,
 	lastOrderUsedMinimap = false,
 	latestCameraX = 0,

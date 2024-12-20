@@ -18,17 +18,9 @@ export class modifier_invoker_wex_intrinsic extends Modifier {
 	}
 
 	protected UpdateSpecialValues(): void {
-		const owner = this.Parent
-		if (owner === undefined) {
-			this.cachedAttackSpeed = 0
-			return
-		}
-		const name = "invoker_wex"
-		this.cachedAttackSpeed = this.GetSpecialValue("intrinsic_attack_speed", name)
-
-		const multiplier = owner.GetAbilityByName("special_bonus_unique_invoker_13")
-		if ((multiplier?.Level ?? 0) !== 0) {
-			this.cachedAttackSpeed *= 2
-		}
+		this.cachedAttackSpeed = this.GetSpecialValue(
+			"intrinsic_attack_speed",
+			"invoker_wex"
+		)
 	}
 }

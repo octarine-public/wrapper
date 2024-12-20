@@ -17,4 +17,7 @@ export class omniknight_purification extends Ability implements IHealthRestore<U
 	public IsHealthRestore(): this is IHealthRestore<Unit> {
 		return true
 	}
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("heal", level) // heal or damage
+	}
 }

@@ -18,17 +18,6 @@ export class modifier_invoker_wex_instance extends Modifier {
 	}
 
 	protected UpdateSpecialValues(): void {
-		const owner = this.Parent
-		if (owner === undefined) {
-			this.cachedSpeed = 0
-			return
-		}
-		const name = "invoker_wex"
-		this.cachedSpeed = this.GetSpecialValue("move_speed_per_instance", name)
-
-		const multiplier = owner.GetAbilityByName("special_bonus_unique_invoker_13")
-		if ((multiplier?.Level ?? 0) !== 0) {
-			this.cachedSpeed *= 2
-		}
+		this.cachedSpeed = this.GetSpecialValue("move_speed_per_instance", "invoker_wex")
 	}
 }

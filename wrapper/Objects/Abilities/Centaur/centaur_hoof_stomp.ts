@@ -6,4 +6,7 @@ export class centaur_hoof_stomp extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("stomp_damage", level)
+	}
 }

@@ -18,6 +18,6 @@ export class modifier_item_arcane_ring extends Modifier {
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedArmor = this.GetSpecialValue("bonus_armor", "item_blight_stone")
+		this.cachedArmor = this.GetSpecialValue("bonus_armor", "item_arcane_ring")
 	}
 }

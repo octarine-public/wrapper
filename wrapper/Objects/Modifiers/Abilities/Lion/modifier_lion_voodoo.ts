@@ -4,14 +4,14 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_lion_voodoo extends Modifier {
+	private cachedSpeed = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BASE_OVERRIDE,
 			this.GetMoveSpeedBaseOverride.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
 
 	protected GetMoveSpeedBaseOverride(): [number, boolean] {
 		return [this.cachedSpeed, this.IsMagicImmune()]

@@ -4,6 +4,9 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_life_stealer_infest_creep extends Modifier {
+	private cachedSpeed = 0
+	private cachedBaseSpeed = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -15,9 +18,6 @@ export class modifier_life_stealer_infest_creep extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
-	private cachedBaseSpeed = 0
 
 	public PostDataUpdate(): void {
 		const caster = this.Caster

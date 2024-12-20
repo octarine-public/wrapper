@@ -1,4 +1,5 @@
 import { WrapperClass } from "../../Decorators"
+import { EModifierfunction } from "../../Enums/EModifierfunction"
 import { Item } from "../Base/Item"
 import { Unit } from "../Base/Unit"
 
@@ -18,9 +19,28 @@ export class item_famango
 		return true
 	}
 	public GetManaRestore(_target: Unit): number {
-		return this.GetSpecialValue("replenish_amount")
+		return this.GetRestoreModifier(
+			this.Owner,
+			this.GetSpecialValue("replenish_amount")
+		)
 	}
 	public GetHealthRestore(_target: Unit): number {
-		return this.GetSpecialValue("replenish_amount")
+		return this.GetRestoreModifier(
+			this.Owner,
+			this.GetSpecialValue("replenish_amount")
+		)
+	}
+
+	protected GetRestoreModifier(owner: Nullable<Unit>, baseValue: number): number {
+		if (owner === undefined) {
+			return baseValue
+		}
+		const percentage = owner.ModifierManager.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_LOTUS_HEAL,
+			false,
+			1,
+			1
+		)
+		return baseValue * (1 + percentage / 100)
 	}
 }

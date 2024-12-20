@@ -8,6 +8,11 @@ export const MaxManaRegenerationPerIntellect = 0.05
 export const DamageAmplifyPerIntellectPrecent = 0.07
 export const BaseMagicImmunityResist = 50
 
+const armorAmount = 0.06
+export function GetArmorResistInternal(armor: number) {
+	return (armorAmount * armor) / (1 + armorAmount * Math.abs(armor))
+}
+
 export let ArmorPerAgility = 1 / 6
 export function SetArmorPerAgilityInternal(value: number) {
 	ArmorPerAgility = value
@@ -21,6 +26,11 @@ export function SetHealthGainPerStrengthInternal(value: number) {
 export let MagicResistPerIntellect = 1 / 10
 export function SetMagicResistPerIntellectInternal(value: number) {
 	MagicResistPerIntellect = value
+}
+
+export let MeleeDamageBlockAmount = 16
+export function SetMeleeDamageBlockAmountInternal(value: number) {
+	MeleeDamageBlockAmount = value
 }
 
 export const MoveSpeedData = new (class CMoveSpeedData {

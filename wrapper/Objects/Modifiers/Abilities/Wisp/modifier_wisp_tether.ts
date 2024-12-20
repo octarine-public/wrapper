@@ -6,6 +6,9 @@ import { Unit, Units } from "../../../Base/Unit"
 
 @WrapperClassModifier()
 export class modifier_wisp_tether extends Modifier {
+	private cachedSpeed = 0
+	private selfBonusSpeed = 0
+
 	protected static readonly IgnoreBuffs = [
 		"modifier_wisp_tether",
 		"modifier_life_stealer_infest_creep",
@@ -19,9 +22,6 @@ export class modifier_wisp_tether extends Modifier {
 			this.GetMoveSpeedAbsolute.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
-	private selfBonusSpeed = 0
 
 	public PostDataUpdate() {
 		const owner = this.Parent

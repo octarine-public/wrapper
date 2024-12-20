@@ -5,6 +5,7 @@ import { Modifier } from "../../Base/Modifier"
 @WrapperClassModifier()
 export class modifier_item_kaya_and_sange extends Modifier {
 	private cachedSpeedResist = 0
+	private cachedSpellAmplify = 0
 	private cachedManaCostReduction = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -15,6 +16,10 @@ export class modifier_item_kaya_and_sange extends Modifier {
 		[
 			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE,
 			this.GetSlowResistanceUnique.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE_UNIQUE,
+			this.GetSpellAmplifyPercentageUnique.bind(this)
 		]
 	])
 
@@ -26,8 +31,13 @@ export class modifier_item_kaya_and_sange extends Modifier {
 		return [this.cachedSpeedResist, false]
 	}
 
+	protected GetSpellAmplifyPercentageUnique(): [number, boolean] {
+		return [this.cachedSpellAmplify, false]
+	}
+
 	protected UpdateSpecialValues() {
 		const name = "item_kaya_and_sange"
+		this.cachedSpellAmplify = this.GetSpecialValue("spell_amp", name)
 		this.cachedSpeedResist = this.GetSpecialValue("slow_resistance", name)
 		this.cachedManaCostReduction = this.GetSpecialValue("manacost_reduction", name)
 	}

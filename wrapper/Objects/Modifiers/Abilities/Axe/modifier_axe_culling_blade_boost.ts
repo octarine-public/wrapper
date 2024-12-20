@@ -3,7 +3,9 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_axe_culling_blade_boost extends Modifier {
+export class modifier_axe_culling_blade_boost extends Modifier implements IBuff {
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedArmor = 0
 
@@ -17,6 +19,10 @@ export class modifier_axe_culling_blade_boost extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
+
+	public IsBuff(): this is IBuff {
+		return true
+	}
 
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, false]

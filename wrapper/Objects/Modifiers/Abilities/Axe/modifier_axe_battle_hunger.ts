@@ -3,7 +3,12 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_axe_battle_hunger extends Modifier {
+export class modifier_axe_battle_hunger extends Modifier implements IDebuff {
+	public readonly DebuffModifierName = this.Name
+
+	private cachedSpeed = 0
+	private cachedSpeedValue = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -12,8 +17,9 @@ export class modifier_axe_battle_hunger extends Modifier {
 		]
 	])
 
-	private cachedSpeed = 0
-	private cachedSpeedValue = 0
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 
 	public PostDataUpdate(): void {
 		const owner = this.Parent

@@ -4,14 +4,23 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_butterfly extends Modifier {
+	private cachedDamage = 0
+	private cachedAttackSpeed = 0
+
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE,
+			this.GetPreAttackBonusDamage.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
 
-	private cachedAttackSpeed = 0
+	protected GetPreAttackBonusDamage(): [number, boolean] {
+		return [this.cachedDamage, false]
+	}
 
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		const owner = this.Parent
@@ -24,9 +33,8 @@ export class modifier_item_butterfly extends Modifier {
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedAttackSpeed = this.GetSpecialValue(
-			"bonus_attack_speed_pct",
-			"item_butterfly"
-		)
+		const name = "item_butterfly"
+		this.cachedDamage = this.GetSpecialValue("bonus_damage", name)
+		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed_pct", name)
 	}
 }

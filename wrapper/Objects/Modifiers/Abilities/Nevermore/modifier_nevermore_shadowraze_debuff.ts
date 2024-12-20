@@ -6,6 +6,7 @@ import { Modifier } from "../../../Base/Modifier"
 export class modifier_nevermore_shadowraze_debuff extends Modifier {
 	private cachedSpeed = 0
 	private cachedAttackSpeed = 0
+	private cachedBonusDamage = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -18,6 +19,10 @@ export class modifier_nevermore_shadowraze_debuff extends Modifier {
 		]
 	])
 
+	public get BonusDamagePerStack(): number {
+		return this.cachedBonusDamage * this.StackCount
+	}
+
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [-(this.cachedAttackSpeed * this.StackCount), this.IsMagicImmune()]
 	}
@@ -27,8 +32,9 @@ export class modifier_nevermore_shadowraze_debuff extends Modifier {
 	}
 
 	protected UpdateSpecialValues(): void {
-		const name = this.Ability?.Name ?? this.CachedAbilityName ?? ""
+		const name = this.CachedAbilityName ?? ""
 		this.cachedSpeed = this.GetSpecialValue("movement_speed_debuff", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("attack_speed_debuff", name)
+		this.cachedBonusDamage = this.GetSpecialValue("stack_bonus_damage", name)
 	}
 }

@@ -4,6 +4,12 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_nyx_assassin_vendetta extends Modifier {
+	private cachedSpeed = 0
+	private cachedRange = 0
+	private cachedDamage = 0
+	private cachedSpeedValue = 0
+	private cachedSpeedBonusValue = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -11,15 +17,14 @@ export class modifier_nyx_assassin_vendetta extends Modifier {
 			this.GetBonusAttackRange.bind(this)
 		],
 		[
+			EModifierfunction.MODIFIER_PROPERTY_PROCATTACK_BONUS_DAMAGE_PURE,
+			this.GetPreAttackBonusDamagePure.bind(this)
+		],
+		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
-	private cachedRange = 0
-	private cachedSpeedValue = 0
-	private cachedSpeedBonusValue = 0
 
 	public PostDataUpdate(): void {
 		if (this.cachedSpeedValue === 0) {
@@ -41,12 +46,17 @@ export class modifier_nyx_assassin_vendetta extends Modifier {
 		return [this.cachedRange, false]
 	}
 
+	protected GetPreAttackBonusDamagePure(): [number, boolean] {
+		return [this.cachedDamage, false]
+	}
+
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
 
 	protected UpdateSpecialValues(): void {
 		const name = "nyx_assassin_vendetta"
+		this.cachedDamage = this.GetSpecialValue("bonus_damage", name)
 		this.cachedRange = this.GetSpecialValue("attack_range_bonus", name)
 		this.cachedSpeedValue = this.GetSpecialValue("movement_speed", name)
 		this.cachedSpeedBonusValue = this.GetSpecialValue(

@@ -8,10 +8,11 @@ export class modifier_arc_warden_tempest_double extends Modifier {
 		const owner = this.Parent
 		const state = (changed ??= true)
 		if (owner === undefined) {
-			return false
+			return super.UnitPropertyChanged(changed)
 		}
-		owner.IsClone_ = state
-		owner.IsStrongIllusion_ = state
+		owner.ModifierManager.IsClone_ = state
+		owner.ModifierManager.IsTempestDouble_ = state
+		owner.ModifierManager.IsStrongIllusion_ = state
 		EventsSDK.emit("UnitPropertyChanged", false, owner)
 		return super.UnitPropertyChanged(changed)
 	}

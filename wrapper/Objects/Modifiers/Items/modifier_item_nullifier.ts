@@ -5,19 +5,30 @@ import { Modifier } from "../../Base/Modifier"
 @WrapperClassModifier()
 export class modifier_item_nullifier extends Modifier {
 	private cachedArmor = 0
+	private cachedDamage = 0
 
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE,
+			this.GetPreAttackBonusDamage.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
 			this.GetPhysicalArmorBonus.bind(this)
 		]
 	])
 
+	protected GetPreAttackBonusDamage(): [number, boolean] {
+		return [this.cachedDamage, false]
+	}
+
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, false]
 	}
 
 	protected UpdateSpecialValues() {
-		this.cachedArmor = this.GetSpecialValue("bonus_armor", "item_nullifier")
+		const name = "item_nullifier"
+		this.cachedArmor = this.GetSpecialValue("bonus_armor", name)
+		this.cachedDamage = this.GetSpecialValue("bonus_damage", name)
 	}
 }

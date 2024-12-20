@@ -1,28 +1,32 @@
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
+import { Unit } from "../../Base/Unit"
 
 @WrapperClass("arc_warden_spark_wraith")
 export class arc_warden_spark_wraith extends Ability {
+	public GetRawDamage(target: Unit): number {
+		let baseDamage = super.GetRawDamage(target)
+		if (target.IsCreep) {
+			baseDamage *= 1 + this.GetSpecialValue("creep_damage_bonus_pct") / 100
+		}
+		return baseDamage
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
 	public GetMaxDurationForLevel(level: number): number {
 		return this.GetSpecialValue("duration", level)
 	}
-	public GetBaseActivationDelayForLevel(level: number): number {
-		const owner = this.Owner
-		if (owner === undefined) {
-			return 0
-		}
-		const specialName = `${owner.IsClone ? "tempest" : "base"}_activation_delay`
-		return this.GetSpecialValue(specialName, level)
-	}
 	public GetBaseDamageForLevel(level: number): number {
-		const owner = this.Owner
-		if (owner === undefined) {
-			return 0
-		}
-		const specialName = `spark_damage_${owner.IsClone ? "tempest" : "base"}`
-		return this.GetSpecialValue(specialName, level)
+		return (
+			this.GetSpecialValue("spark_damage_base", level) ||
+			this.GetSpecialValue("spark_damage_tempest", level)
+		)
+	}
+	public GetBaseActivationDelayForLevel(level: number): number {
+		return (
+			this.GetSpecialValue("base_activation_delay", level) ||
+			this.GetSpecialValue("tempest_activation_delay", level)
+		)
 	}
 }

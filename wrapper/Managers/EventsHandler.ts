@@ -1086,7 +1086,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 			// we have custom parsing for CSVCMsg_CreateStringTable & CSVCMsg_UpdateStringTable
 			const stream = new ViewBinaryStream(new DataView(buf_))
 			const tableName = stream.ReadVarString(),
-				update = new Map<number, [string, ArrayBuffer]>()
+				update = new Map<number, [string, ArrayBufferLike]>()
 			while (!stream.Empty()) {
 				update.set(stream.ReadVarUintAsNumber(), [
 					stream.ReadVarString(),

@@ -4,15 +4,15 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_lance_of_pursuit_slow extends Modifier {
+	private slowMelee = 0
+	private slowRanged = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
-	private slowMelee = 0
-	private slowRanged = 0
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const caster = this.Caster

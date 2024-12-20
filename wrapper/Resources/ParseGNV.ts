@@ -49,7 +49,6 @@ class CGridNav {
 		this.SetCellFlag(gridPos.x - 0, gridPos.y - 1, GridNavCellFlags.Tree, isAlive)
 		this.SetCellFlag(gridPos.x - 1, gridPos.y - 1, GridNavCellFlags.Tree, isAlive)
 	}
-
 	private SetCellFlag(
 		gridPosX: number,
 		gridPosY: number,

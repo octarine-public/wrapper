@@ -4,8 +4,8 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_queenofpain_shadow_strike_buff extends Modifier {
-	private cachedAttackSpeed = 0
 	private cachedAS = 0
+	private cachedAttackSpeed = 0
 
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([

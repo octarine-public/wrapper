@@ -1,6 +1,7 @@
 import { WrapperClassModifier } from "../../../../Decorators"
 import { BrawlActive } from "../../../../Enums/BrawlActive"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
+import { GameActivity } from "../../../../Enums/GameActivity"
 import { brewmaster_drunken_brawler } from "../../../Abilities/Brewmaster/brewmaster_drunken_brawler"
 import { Modifier } from "../../../Base/Modifier"
 
@@ -18,12 +19,17 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 	private cachedMultiplier = 0
 	private cachedAttackSpeed = 0
 	private cachedStatusResist = 0
+	private cachedCritDamage = 0
 
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
 			this.GetPhysicalArmorBonus.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_CRITICAL_STRIKE_BONUS,
+			this.GetCriticalStrikeBonus.bind(this)
 		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS,
@@ -104,13 +110,26 @@ export class modifier_brewmaster_drunken_brawler_passive extends Modifier {
 		return [this.cachedSR, false]
 	}
 
+	protected GetCriticalStrikeBonus(): [number, boolean] {
+		const owner = this.Parent
+		if (owner === undefined || this.IsSuppressCrit()) {
+			return [0, false]
+		}
+		// Attack_Critical_anim
+		if (owner.NetworkActivity !== GameActivity.ACT_DOTA_ATTACK_EVENT) {
+			return [0, false]
+		}
+		return [this.cachedCritDamage, false]
+	}
+
 	protected UpdateSpecialValues(): void {
 		const name = "brewmaster_drunken_brawler"
 		this.cachedArmor = this.GetSpecialValue("armor", name)
+		this.cachedMultiplier = this.GetSpecialValue("active_multiplier", name)
 		this.cachedMres = this.GetSpecialValue("magic_resist", name)
+		this.cachedStatusResist = this.GetSpecialValue("bonus_status_resist", name)
 		this.cachedSpeed = this.GetSpecialValue("bonus_move_speed", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("attack_speed", name)
-		this.cachedMultiplier = this.GetSpecialValue("active_multiplier", name)
-		this.cachedStatusResist = this.GetSpecialValue("bonus_status_resist", name)
+		this.cachedCritDamage = this.GetSpecialValue("crit_multiplier", name)
 	}
 }

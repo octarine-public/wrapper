@@ -3,7 +3,9 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_venomancer_noxious_plague_slow extends Modifier {
+export class modifier_venomancer_noxious_plague_slow extends Modifier implements IDebuff {
+	public readonly DebuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedRadius = 0
 	private cachedSpeedMin = 0
@@ -21,6 +23,10 @@ export class modifier_venomancer_noxious_plague_slow extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
+
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 
 	public PostDataUpdate(): void {
 		const owner = this.Parent,

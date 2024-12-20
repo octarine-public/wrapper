@@ -6,8 +6,15 @@ export class shredder_chakram extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
-
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)
+	}
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("pass_damage", level)
+	}
+	public GetBaseCastPointForLevel(level: number): number {
+		return this.OwnerHasScepter
+			? this.GetSpecialValue("castpoint_scepter", level)
+			: super.GetBaseCastPointForLevel(level)
 	}
 }

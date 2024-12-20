@@ -1,24 +1,17 @@
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
-import { Hero } from "../../Base/Hero"
+import { modifier_earthshaker_aftershock } from "../../Modifiers/Abilities/Earthshaker/modifier_earthshaker_aftershock"
 
 @WrapperClass("earthshaker_aftershock")
 export class earthshaker_aftershock extends Ability {
+	public get AOERadius(): number {
+		return this.GetBaseAOERadiusForLevel(this.Level) + this.bonusAOERadius
+	}
+	private get bonusAOERadius() {
+		const aftershock = this.Owner?.GetBuffByClass(modifier_earthshaker_aftershock)
+		return aftershock?.AOERadiusBonus ?? 0
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
-		const owner = this.Owner
-		const baseRadius = this.GetSpecialValue("aftershock_range", level)
-		if (!(owner instanceof Hero) || level === 0) {
-			return baseRadius
-		}
-		if (owner.HeroFacetID !== 1 || this.Level === 0) {
-			return baseRadius
-		}
-		const ownerLevel = owner.Level
-		const intervalLevel = this.GetSpecialValue("aftershock_range_level_interval")
-		const radiusPerInterval = this.GetSpecialValue(
-			"aftershock_range_increase_per_level_interval"
-		)
-		const radiusPerLevel = Math.floor(ownerLevel / intervalLevel) * radiusPerInterval
-		return baseRadius + radiusPerLevel
+		return this.GetSpecialValue("aftershock_range", level)
 	}
 }

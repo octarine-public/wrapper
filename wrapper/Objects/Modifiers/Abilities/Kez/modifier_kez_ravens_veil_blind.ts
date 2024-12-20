@@ -5,6 +5,9 @@ import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
 export class modifier_kez_ravens_veil_blind extends Modifier {
+	private cachedDayVision = 0
+	private cachedNightVision = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -16,9 +19,6 @@ export class modifier_kez_ravens_veil_blind extends Modifier {
 			this.GetFixedNightVision.bind(this)
 		]
 	])
-
-	private cachedDayVision = 0
-	private cachedNightVision = 0
 
 	public PostDataUpdate(): void {
 		const owner = this.Parent

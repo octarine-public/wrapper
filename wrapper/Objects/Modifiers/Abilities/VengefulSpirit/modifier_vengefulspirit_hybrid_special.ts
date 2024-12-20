@@ -8,10 +8,10 @@ export class modifier_vengefulspirit_hybrid_special extends Modifier {
 		const owner = this.Parent
 		const state = (changed ??= true)
 		if (owner === undefined) {
-			return false
+			return super.UnitPropertyChanged(changed)
 		}
-		owner.IsReflection_ = true
-		owner.IsStrongIllusion_ = state && owner.IsAlive
+		owner.ModifierManager.IsReflection_ = state
+		owner.ModifierManager.IsStrongIllusion_ = state
 		EventsSDK.emit("UnitPropertyChanged", false, owner)
 		return super.UnitPropertyChanged(changed)
 	}

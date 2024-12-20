@@ -6,4 +6,7 @@ export class tiny_avalanche extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("avalanche_damage", level)
+	}
 }

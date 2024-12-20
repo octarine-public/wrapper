@@ -7,7 +7,8 @@ export class skywrath_mage_mystic_flare extends Ability {
 		return this.GetSpecialValue("radius", level)
 	}
 
-	public GetBaseDamageForLevel(level: number): number {
-		return this.GetSpecialValue("damage", level)
-	}
+	// TODO: remaining damage
+	// public GetBaseDamageForLevel(level: number): number {
+	// 	return this.GetSpecialValue("damage", level)
+	// }
 }

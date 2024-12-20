@@ -8,9 +8,10 @@ export class modifier_morphling_replicate_illusion extends Modifier {
 		const owner = this.Parent
 		const state = (changed ??= true)
 		if (owner === undefined) {
-			return false
+			return super.UnitPropertyChanged(changed)
 		}
-		owner.IsStrongIllusion_ = state
+		owner.ModifierManager.IsStrongIllusion_ = state
+		owner.ModifierManager.IsMorphlingReplicateIllusion_ = state
 		EventsSDK.emit("UnitPropertyChanged", false, owner)
 		return super.UnitPropertyChanged(changed)
 	}

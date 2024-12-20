@@ -9,6 +9,10 @@ export class modifier_spirit_breaker_bulldoze extends Modifier {
 
 	protected readonly DeclaredFunction = new Map([
 		[
+			EModifierfunction.MODIFIER_PROPERTY_TOTAL_CONSTANT_BLOCK,
+			this.GetTotalConstantBlock.bind(this)
+		],
+		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		],
@@ -17,6 +21,10 @@ export class modifier_spirit_breaker_bulldoze extends Modifier {
 			this.GetStatusResistanceStacking.bind(this)
 		]
 	])
+
+	protected GetTotalConstantBlock(): [number, boolean] {
+		return [this.NetworkFadeTime, false]
+	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
@@ -27,9 +35,9 @@ export class modifier_spirit_breaker_bulldoze extends Modifier {
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.HasVisualShield = this.NetworkFadeTime !== 0
-
 		const name = "spirit_breaker_bulldoze"
+		this.HasVisualShield = this.GetSpecialValue("damage_barrier", name) !== 0
+
 		this.cachedSpeed = this.GetSpecialValue("movement_speed", name)
 		this.cachedStatusResist = this.GetSpecialValue("status_resistance", name)
 	}

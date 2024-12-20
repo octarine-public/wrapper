@@ -17,4 +17,7 @@ export class storm_spirit_static_remnant extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("static_remnant_radius", level)
 	}
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("static_remnant_damage", level)
+	}
 }

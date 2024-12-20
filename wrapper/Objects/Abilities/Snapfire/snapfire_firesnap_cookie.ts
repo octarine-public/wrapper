@@ -11,11 +11,12 @@ export class snapfire_firesnap_cookie extends Ability {
 	public get CookieSpeed(): number {
 		return this.GetSpecialValue("projectile_speed")
 	}
-
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("impact_radius", level)
 	}
-
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("impact_damage", level)
+	}
 	public GetCastDelay(
 		unit?: Unit | Vector3,
 		currentTurnRate: boolean = true,
