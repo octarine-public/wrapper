@@ -8,11 +8,10 @@ import { RuneSpawner } from "./RuneSpawner"
 @WrapperClass("CDOTA_Item_RuneSpawner_Powerup")
 export class RuneSpawnerPowerup extends RuneSpawner {
 	@NetworkedBasicField("m_bNextRuneIsWater")
-	public readonly NextRuneIsWater = false // TODO: check
+	public readonly NextRuneIsWater = false
 	@NetworkedBasicField("m_bWillSpawnNextPowerRune")
-	public readonly WillSpawnNextPowerRune = false // TODO: check
-
-	public readonly Type = RuneSpawnerType.Pwowerup
+	public readonly WillSpawnNextPowerRune = false
+	public readonly Type = RuneSpawnerType.Powerup
 
 	protected get SpawnsTime(): [number, number] {
 		if (GameRules === undefined) {
