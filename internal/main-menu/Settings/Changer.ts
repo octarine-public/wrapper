@@ -115,51 +115,59 @@ export class InternalChanger {
 		this.node.SortNodes = false
 
 		const inventoryChanger = this.node.AddNode("Inventory")
+		inventoryChanger.IsHidden = true
 		inventoryChanger.SortNodes = false
 
 		const inventoryState = inventoryChanger.AddToggle("State", true)
 		inventoryState.executeOnAdd = false
-		inventoryState.OnValue(c => {
-			SetChangerEnabled(c.value)
-		})
+		// inventoryState.OnValue(_c => {
+		// 	SetChangerEnabled(c.value)
+		// })
 		inventoryState.executeOnAdd = true
 
 		const inventoryEmblem = inventoryChanger.AddDropdown(
 			"Emblem attack effect",
-			this.emblemsData.map(data => {
-				return data.nameUI
-			})
+			this.emblemsData.map(data => data.nameUI)
 		)
 		inventoryEmblem.executeOnAdd = false
-		inventoryEmblem.OnValue(c => {
-			SetEmblemAttackEffectOverride(this.emblemsData[c.SelectedID].defID)
-		})
+		// inventoryEmblem.OnValue(c => {
+		// 	SetEmblemAttackEffectOverride(this.emblemsData[c.SelectedID].defID)
+		// })
 		inventoryEmblem.executeOnAdd = true
 		inventoryEmblem.UseOneLine = false
 
 		const prismaticNode = inventoryChanger.AddNode("Prismatic Gems")
 		prismaticNode.SortNodes = false
-		const prismaticColor = prismaticNode.AddColorPicker("Color")
-		prismaticNode.AddButton("Obtain").OnValue(() => {
-			const color = prismaticColor.SelectedColor
-			AddPrismaticGem(color.r, color.g, color.b)
-		})
+		// save settings
+		prismaticNode.AddColorPicker("Color")
+		// const prismaticColor = prismaticNode.AddColorPicker("Color")
+		// prismaticNode.AddButton("Obtain").OnValue(() => {
+		// 	const color = prismaticColor.SelectedColor
+		// 	AddPrismaticGem(color.r, color.g, color.b)
+		// })
 
 		const greevilNode = inventoryChanger.AddNode("Greevils")
+		// save settings
 		greevilNode.SortNodes = false
-		const quas = greevilNode.AddSlider("Quas", 0, 0, 3)
-		const wex = greevilNode.AddSlider("Wex", 0, 0, 3)
-		const exort = greevilNode.AddSlider("Exort", 0, 0, 3)
-		const unusual = greevilNode.AddSlider("Unusual", 0, 0, 3)
-		const shadow = greevilNode.AddToggle("Shadow")
+		greevilNode.AddSlider("Quas", 0, 0, 3)
+		greevilNode.AddSlider("Wex", 0, 0, 3)
+		greevilNode.AddSlider("Exort", 0, 0, 3)
+		greevilNode.AddSlider("Unusual", 0, 0, 3)
+		greevilNode.AddToggle("Shadow")
+
+		// const quas = greevilNode.AddSlider("Quas", 0, 0, 3)
+		// const wex = greevilNode.AddSlider("Wex", 0, 0, 3)
+		// const exort = greevilNode.AddSlider("Exort", 0, 0, 3)
+		// const unusual = greevilNode.AddSlider("Unusual", 0, 0, 3)
+		// const shadow = greevilNode.AddToggle("Shadow")
 		greevilNode.AddButton("Obtain").OnValue(() => {
-			AddGreevil(
-				quas.value,
-				wex.value,
-				exort.value,
-				shadow.value ? 1 : 0,
-				unusual.value
-			)
+			// AddGreevil(
+			// 	quas.value,
+			// 	wex.value,
+			// 	exort.value,
+			// 	shadow.value ? 1 : 0,
+			// 	unusual.value
+			// )
 		})
 
 		this.treeChanger = this.node.AddNode(
