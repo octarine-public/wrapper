@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_life_stealer_infest_creep extends Modifier {
+export class modifier_life_stealer_infest_creep extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedBaseSpeed = 0
 
@@ -18,7 +21,9 @@ export class modifier_life_stealer_infest_creep extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	public PostDataUpdate(): void {
 		const caster = this.Caster
 		if (caster === undefined) {
@@ -27,15 +32,12 @@ export class modifier_life_stealer_infest_creep extends Modifier {
 		const moveSpeed = caster.GetMoveSpeedModifier(caster.BaseMoveSpeed, true)
 		this.cachedBaseSpeed = moveSpeed
 	}
-
 	protected GetMoveSpeedBaseOverride(): [number, boolean] {
 		return [this.cachedBaseSpeed, false]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedSpeed = this.GetSpecialValue(
 			"bonus_movement_speed",

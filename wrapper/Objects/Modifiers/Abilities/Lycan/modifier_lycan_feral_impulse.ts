@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_lycan_feral_impulse extends Modifier {
+export class modifier_lycan_feral_impulse extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedDamage = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -12,7 +15,9 @@ export class modifier_lycan_feral_impulse extends Modifier {
 			this.GetPreAttackBonusDamage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetPreAttackBonusDamage(params?: IModifierParams): [number, boolean] {
 		if (params === undefined) {
 			return [0, false]
@@ -20,7 +25,6 @@ export class modifier_lycan_feral_impulse extends Modifier {
 		const damage = ((params.RawDamageBase ?? 0) * this.cachedDamage) / 100
 		return [damage, this.IsPassiveDisabled(this.Caster)]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedDamage = this.GetSpecialValue("bonus_damage", "lycan_feral_impulse")
 	}

@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_ogre_magi_bloodlust extends Modifier {
+export class modifier_ogre_magi_bloodlust extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedAttackSpeed = 0
 	private cachedAttackSpeedSelf = 0
@@ -18,17 +21,17 @@ export class modifier_ogre_magi_bloodlust extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return this.Parent === this.Caster
 			? [this.cachedAttackSpeedSelf, false]
 			: [this.cachedAttackSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "ogre_magi_bloodlust"
 		this.cachedSpeed = this.GetSpecialValue("bonus_movement_speed", name)

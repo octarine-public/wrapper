@@ -7,6 +7,7 @@ export class modifier_alchemist_corrosive_weaponry_debuff
 	extends Modifier
 	implements IDebuff
 {
+	public readonly IsHidden = false
 	public readonly DebuffModifierName = this.Name
 
 	private cachedSpeed = 0

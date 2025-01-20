@@ -5,7 +5,10 @@ import { Modifier } from "../../../Base/Modifier"
 import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_beastmaster_axe_stack_counter extends Modifier {
+export class modifier_beastmaster_axe_stack_counter extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedIncDamage = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -14,7 +17,9 @@ export class modifier_beastmaster_axe_stack_counter extends Modifier {
 			this.GetIncomingDamagePercentage.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetIncomingDamagePercentage(params?: IModifierParams): [number, boolean] {
 		const caster = this.Caster,
 			target = this.Parent
@@ -30,7 +35,6 @@ export class modifier_beastmaster_axe_stack_counter extends Modifier {
 		}
 		return [this.cachedIncDamage * this.StackCount, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues() {
 		this.cachedIncDamage = this.GetSpecialValue("damage_amp", "beastmaster_wild_axes")
 	}

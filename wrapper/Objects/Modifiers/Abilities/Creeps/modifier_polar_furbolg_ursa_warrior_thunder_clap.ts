@@ -3,7 +3,13 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_polar_furbolg_ursa_warrior_thunder_clap extends Modifier {
+export class modifier_polar_furbolg_ursa_warrior_thunder_clap
+	extends Modifier
+	implements IDebuff
+{
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedAttackSpeed = 0
 
@@ -17,15 +23,15 @@ export class modifier_polar_furbolg_ursa_warrior_thunder_clap extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "polar_furbolg_ursa_warrior_thunder_clap"
 		this.cachedSpeed = this.GetSpecialValue("movespeed_slow", name)

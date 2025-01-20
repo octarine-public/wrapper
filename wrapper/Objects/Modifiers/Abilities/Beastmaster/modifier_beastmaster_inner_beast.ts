@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_beastmaster_inner_beast extends Modifier {
+export class modifier_beastmaster_inner_beast extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedMres = 0
 	private cachedDamage = 0
 	private cachedASPerUnit = 0
@@ -23,15 +26,18 @@ export class modifier_beastmaster_inner_beast extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public get ForceVisible(): boolean {
+		return !(this.Caster?.IsVisible ?? false)
+	}
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetPreAttackBonusDamage(): [number, boolean] {
 		return [this.cachedDamage, false]
 	}
-
 	protected GetMagicalResistanceBonus(): [number, boolean] {
 		return [this.cachedMres, this.IsPassiveDisabled(this.Caster)]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		let value = this.cachedAttackSpeed
 		if (this.NetworkDamage !== 0) {
@@ -39,7 +45,6 @@ export class modifier_beastmaster_inner_beast extends Modifier {
 		}
 		return [value, this.IsPassiveDisabled(this.Caster)]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "beastmaster_inner_beast"
 		this.cachedMres = this.GetSpecialValue("magic_resist", name)

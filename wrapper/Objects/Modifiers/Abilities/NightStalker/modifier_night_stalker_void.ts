@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_night_stalker_void extends Modifier {
+export class modifier_night_stalker_void extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedAttackSpeed = 0
 	private cachedReductionVision = 0
@@ -26,19 +29,18 @@ export class modifier_night_stalker_void extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetReductionVision(): [number, boolean] {
 		return [-this.cachedReductionVision, this.IsMagicImmune()]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "night_stalker_void"
 		this.cachedSpeed = this.GetSpecialValue("movespeed_slow", name)

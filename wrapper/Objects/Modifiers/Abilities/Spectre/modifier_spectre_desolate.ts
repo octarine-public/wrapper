@@ -64,6 +64,7 @@ export class modifier_spectre_desolate extends Modifier {
 		if (isNearCreep) {
 			return [(this.cachedBonus * this.cachedBonusPct) / 100, false]
 		}
+
 		return [this.cachedBonus, false]
 	}
 

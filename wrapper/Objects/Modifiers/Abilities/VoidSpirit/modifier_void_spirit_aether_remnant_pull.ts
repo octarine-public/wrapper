@@ -5,20 +5,30 @@ import { Modifier } from "../../../Base/Modifier"
 import { Thinker } from "../../../Base/Thinker"
 
 @WrapperClassModifier()
-export class modifier_void_spirit_aether_remnant_pull extends Modifier {
+export class modifier_void_spirit_aether_remnant_pull
+	extends Modifier
+	implements IDebuff, IDisable
+{
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
+	private cachedSpeed = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_ABSOLUTE_MAX,
 			this.GetMoveSpeedAbsoluteMax.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
+	public IsDisable(): this is IDisable {
+		return true
+	}
 	protected GetMoveSpeedAbsoluteMax(): [number, boolean] {
 		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const caster = this.Caster,
 			owner = this.Parent

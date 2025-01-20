@@ -1,9 +1,13 @@
+import { ImagePath } from "../../../../Data/PathData"
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_winter_wyvern_dragon_sight extends Modifier {
+export class modifier_winter_wyvern_dragon_sight extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedDamage = 0
 	private cachedMinRange = 0
 	private cachedDamageValue = 0
@@ -15,7 +19,12 @@ export class modifier_winter_wyvern_dragon_sight extends Modifier {
 			this.GetPreAttackBonusDamage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return this.cachedDamage !== 0
+	}
+	public GetTexturePath(): string {
+		return ImagePath + "/hud/facets/icons/damage_png.vtex_c"
+	}
 	public PostDataUpdate(): void {
 		const owner = this.Parent
 		if (owner === undefined) {
@@ -29,11 +38,9 @@ export class modifier_winter_wyvern_dragon_sight extends Modifier {
 		}
 		this.cachedDamage = (attackRange - this.cachedMinRange) / this.cachedDamageValue
 	}
-
 	protected GetPreAttackBonusDamage(): [number, boolean] {
 		return [this.cachedDamage, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "winter_wyvern_dragon_sight"
 		this.cachedMinRange = this.GetSpecialValue("attack_range_min", name)

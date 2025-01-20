@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_life_stealer_open_wounds extends Modifier {
+export class modifier_life_stealer_open_wounds extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedSpeed = 0
 
 	protected readonly CanPostDataUpdate = true
@@ -13,6 +16,10 @@ export class modifier_life_stealer_open_wounds extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
+
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 
 	public PostDataUpdate(): void {
 		// https://dota2.fandom.com/ru/wiki/Lifestealer#Open_Wounds

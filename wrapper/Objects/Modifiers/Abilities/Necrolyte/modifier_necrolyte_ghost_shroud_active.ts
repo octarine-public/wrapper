@@ -4,8 +4,14 @@ import { Heroes } from "../../../Base/Hero"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_necrolyte_ghost_shroud_active extends Modifier {
+export class modifier_necrolyte_ghost_shroud_active
+	extends Modifier
+	implements IBuff, IShield
+{
 	public readonly IsGhost = true
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+	public readonly ShieldModifierName = this.Name
 
 	private cachedSpeed = 0
 	private cachedMres = 0
@@ -23,7 +29,12 @@ export class modifier_necrolyte_ghost_shroud_active extends Modifier {
 			this.GetMagicalResistanceDecrepifyUnique.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
+	public IsShield(): this is IShield {
+		return true
+	}
 	public PostDataUpdate() {
 		const owner = this.Parent
 		if (owner === undefined) {
@@ -54,15 +65,12 @@ export class modifier_necrolyte_ghost_shroud_active extends Modifier {
 			this.cachedSpeedTotal = Math.round(result * 100) / 100
 		}
 	}
-
 	protected GetMoveSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedSpeedTotal, false]
 	}
-
 	protected GetMagicalResistanceDecrepifyUnique(): [number, boolean] {
 		return [this.cachedMres, false]
 	}
-
 	protected UpdateSpecialValues() {
 		const name = "necrolyte_ghost_shroud"
 		this.cachedMres = this.GetSpecialValue("bonus_damage", name)

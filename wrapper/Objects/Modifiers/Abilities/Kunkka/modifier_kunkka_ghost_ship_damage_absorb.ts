@@ -3,7 +3,14 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_kunkka_ghost_ship_damage_absorb extends Modifier {
+export class modifier_kunkka_ghost_ship_damage_absorb
+	extends Modifier
+	implements IBuff, IShield
+{
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+	public readonly ShieldModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedIncomingDamage = 0
 
@@ -17,15 +24,18 @@ export class modifier_kunkka_ghost_ship_damage_absorb extends Modifier {
 			this.GetIncomingDamagePercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
+	public IsShield(): this is IShield {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected GetIncomingDamagePercentage(): [number, boolean] {
 		return [-this.cachedIncomingDamage, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "kunkka_ghostship"
 		this.cachedSpeed = this.GetSpecialValue("movespeed_bonus", name)

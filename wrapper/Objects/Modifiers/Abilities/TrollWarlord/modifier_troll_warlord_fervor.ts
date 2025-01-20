@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_troll_warlord_fervor extends Modifier {
+export class modifier_troll_warlord_fervor extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedAttackSpeed = 0
 	private cachedArmorPerStack = 0
 
@@ -17,17 +20,17 @@ export class modifier_troll_warlord_fervor extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return this.StackCount !== 0
+	}
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return this.cachedArmorPerStack !== 0
 			? [this.StackCount, this.IsPassiveDisabled()]
 			: [0, false]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed * this.StackCount, this.IsPassiveDisabled()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "troll_warlord_fervor"
 		this.cachedAttackSpeed = this.GetSpecialValue("attack_speed", name)

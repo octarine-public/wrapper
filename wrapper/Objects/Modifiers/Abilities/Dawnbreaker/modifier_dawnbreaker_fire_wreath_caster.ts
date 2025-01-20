@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_dawnbreaker_fire_wreath_caster extends Modifier {
+export class modifier_dawnbreaker_fire_wreath_caster extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeedMin = 0
 	private cachedSpeedPenalty = 0
 
@@ -21,6 +24,10 @@ export class modifier_dawnbreaker_fire_wreath_caster extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
+
+	public IsBuff(): this is IBuff {
+		return true
+	}
 
 	protected GetDisableTurning(): [number, boolean] {
 		return [1, false]

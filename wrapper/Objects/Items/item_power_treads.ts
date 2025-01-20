@@ -1,4 +1,4 @@
-import { Paths } from "../../Data/ImageData"
+import { ItemImagePath } from "../../Data/PathData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { PowerTreadsAttribute } from "../../Enums/PowerTreadsAttribute"
 import { Item } from "../Base/Item"
@@ -9,14 +9,13 @@ export class item_power_treads extends Item {
 	public ActiveAttribute = PowerTreadsAttribute.STRENGTH
 
 	public get TexturePath(): string {
-		const path = Paths.ItemIcons
 		switch (this.ActiveAttribute) {
 			case PowerTreadsAttribute.STRENGTH:
-				return path + "/power_treads_str_png.vtex_c"
+				return ItemImagePath + "/power_treads_str_png.vtex_c"
 			case PowerTreadsAttribute.INTELLIGENCE:
-				return path + "/power_treads_int_png.vtex_c"
+				return ItemImagePath + "/power_treads_int_png.vtex_c"
 			case PowerTreadsAttribute.AGILITY:
-				return path + "/power_treads_agi_png.vtex_c"
+				return ItemImagePath + "/power_treads_agi_png.vtex_c"
 			default:
 				return super.TexturePath
 		}

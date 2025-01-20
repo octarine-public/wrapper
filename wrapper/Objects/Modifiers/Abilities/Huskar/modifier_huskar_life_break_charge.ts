@@ -1,9 +1,16 @@
+import { AbilityImagePath } from "../../../../Data/PathData"
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_huskar_life_break_charge extends Modifier {
+export class modifier_huskar_life_break_charge
+	extends Modifier
+	implements IBuff, IShield
+{
+	public readonly BuffModifierName = this.Name
+	public readonly ShieldModifierName = this.Name
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_PURE,
@@ -14,6 +21,9 @@ export class modifier_huskar_life_break_charge extends Modifier {
 			this.GetMagicalResistanceBonus.bind(this)
 		]
 	])
+	public GetTexturePath(): string {
+		return AbilityImagePath + "/modifier_magicimmune_png.vtex_c"
+	}
 	protected GetAbsoluteNoDamagePure(): [number, boolean] {
 		return [1, false]
 	}

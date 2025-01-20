@@ -4,7 +4,10 @@ import { invoker_spell_extends } from "../../../Abilities/Invoker/invoker_spell_
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_invoker_ice_wall_slow_debuff extends Modifier {
+export class modifier_invoker_ice_wall_slow_debuff extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -13,15 +16,15 @@ export class modifier_invoker_ice_wall_slow_debuff extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedSpeed = this.GetSpecialValue()
 	}
-
 	protected GetSpecialValue(
 		specialName = "slow",
 		abilityName = "invoker_ice_wall",

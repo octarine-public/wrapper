@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_item_ascetic_cap_buff extends Modifier {
+export class modifier_item_ascetic_cap_buff extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSlowResist = 0
 	private cachedStatusResist = 0
 
@@ -17,15 +20,15 @@ export class modifier_item_ascetic_cap_buff extends Modifier {
 			this.GetSlowResistanceStacking.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetStatusResistance(): [number, boolean] {
 		return [this.cachedStatusResist, false]
 	}
-
 	protected GetSlowResistanceStacking(): [number, boolean] {
 		return [this.cachedSlowResist, false]
 	}
-
 	protected UpdateSpecialValues() {
 		const name = "item_ascetic_cap"
 		this.cachedSlowResist = this.GetSpecialValue("slow_resistance", name)

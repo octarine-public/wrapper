@@ -3,8 +3,14 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_shredder_chakram_debuff extends Modifier {
+export class modifier_shredder_chakram_debuff extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
+	private cachedSpeed = 0
+
 	protected cachedSlow = 0
+
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -12,9 +18,9 @@ export class modifier_shredder_chakram_debuff extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	public PostDataUpdate(): void {
 		const owner = this.Parent
 		if (owner === undefined) {
@@ -23,11 +29,9 @@ export class modifier_shredder_chakram_debuff extends Modifier {
 		}
 		this.cachedSpeed = this.cachedSlow * ~((100 - owner.HPPercent) / 5)
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedSlow = this.GetSpecialValue("slow", "shredder_chakram")
 	}

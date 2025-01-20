@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_slardar_seaborn_sentinel_river extends Modifier {
+export class modifier_slardar_seaborn_sentinel_river extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedArmor = 0
 	private cachedBonusDamage = 0
@@ -27,23 +30,21 @@ export class modifier_slardar_seaborn_sentinel_river extends Modifier {
 			this.GetStatusResistanceStacking.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, this.IsPassiveDisabled()]
 	}
-
 	protected GetPreAttackBonusDamage(): [number, boolean] {
 		return [this.cachedBonusDamage, this.IsPassiveDisabled()]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, this.IsPassiveDisabled()]
 	}
-
 	protected GetStatusResistanceStacking(): [number, boolean] {
 		return [this.cachedStatusResist, this.IsPassiveDisabled()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "slardar_seaborn_sentinel"
 		this.cachedSpeed = this.GetSpecialValue("river_speed", name)

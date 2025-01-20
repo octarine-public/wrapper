@@ -3,7 +3,15 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_earth_spirit_rolling_boulder_allied_hero extends Modifier {
+export class modifier_earth_spirit_rolling_boulder_allied_hero
+	extends Modifier
+	implements IBuff
+{
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
+	private cachedSpeed = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
@@ -11,7 +19,9 @@ export class modifier_earth_spirit_rolling_boulder_allied_hero extends Modifier 
 		]
 	])
 
-	private cachedSpeed = 0
+	public IsBuff(): this is IBuff {
+		return true
+	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]

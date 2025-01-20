@@ -548,6 +548,9 @@ export class Unit extends Entity {
 	public get IsPassiveDisabled(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_PASSIVES_DISABLED)
 	}
+	public get IsTethered(): boolean {
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_TETHERED)
+	}
 	public get IsInvisible(): boolean {
 		return (
 			this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVISIBLE) ||

@@ -4,6 +4,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_venomancer_venomous_gale extends Modifier implements IDebuff {
+	public readonly IsHidden = false
 	public readonly DebuffModifierName = this.Name
 
 	private cachedSlow = 0
@@ -14,16 +15,13 @@ export class modifier_venomancer_venomous_gale extends Modifier implements IDebu
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
 	public IsDebuff(): this is IDebuff {
 		return true
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const value = (this.RemainingTime / this.Duration) * this.cachedSlow
 		return [value, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedSlow = this.GetSpecialValue(
 			"movement_slow",

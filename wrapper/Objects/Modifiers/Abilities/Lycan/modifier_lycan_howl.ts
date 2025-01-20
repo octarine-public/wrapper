@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_lycan_howl extends Modifier {
+export class modifier_lycan_howl extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedArmor = 0
 	private cachedDamage = 0
 
@@ -17,15 +20,15 @@ export class modifier_lycan_howl extends Modifier {
 			this.GetPreAttackBonusDamagePercentage.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [-this.cachedArmor, this.IsMagicImmune()]
 	}
-
 	protected GetPreAttackBonusDamagePercentage(): [number, boolean] {
 		return [-this.cachedDamage, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "lycan_howl"
 		this.cachedArmor = this.GetSpecialValue("armor", name)

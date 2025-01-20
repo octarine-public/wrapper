@@ -4,6 +4,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_venomancer_noxious_plague_slow extends Modifier implements IDebuff {
+	public readonly IsHidden = false
 	public readonly DebuffModifierName = this.Name
 
 	private cachedSpeed = 0

@@ -5,7 +5,10 @@ import { Modifier } from "../../Base/Modifier"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_bloodthorn_debuff extends Modifier {
+export class modifier_bloodthorn_debuff extends Modifier implements IDebuff, IDisable {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedDamageHero = 0
 	private cachedDamageCreep = 0
 
@@ -15,7 +18,12 @@ export class modifier_bloodthorn_debuff extends Modifier {
 			this.GetPreAttackBonusDamageMagicalTarget.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
+	public IsDisable(): this is IDisable {
+		return true
+	}
 	protected GetPreAttackBonusDamageMagicalTarget(
 		params?: IModifierParams
 	): [number, boolean] {

@@ -1,4 +1,4 @@
-// import { Paths } from "../../../Data/ImageData"
+// import { Paths } from "../../../Data/Paths"
 import { WrapperClass } from "../../../Decorators"
 // import { BrawlActive } from "../../../Enums/BrawlActive"
 import { Ability } from "../../Base/Ability"

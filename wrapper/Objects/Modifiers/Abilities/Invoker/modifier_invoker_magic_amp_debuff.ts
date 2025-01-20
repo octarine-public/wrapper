@@ -5,6 +5,9 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_invoker_magic_amp_debuff extends Modifier {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedSpellAmplify = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -13,16 +16,16 @@ export class modifier_invoker_magic_amp_debuff extends Modifier {
 			this.GetSpellAmplifyPercentageTarget.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetSpellAmplifyPercentageTarget(): [number, boolean] {
 		return [this.cachedSpellAmplify, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues() {
 		const amplification = this.GetSpecialValue("magic_amp", "invoker_exort")
 		this.updateByInstanceActive(amplification)
 	}
-
 	private updateByInstanceActive(value: number): void {
 		const caster = this.Caster,
 			ability = this.Ability as Nullable<invoker_exort>

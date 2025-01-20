@@ -3,8 +3,8 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_earthshaker_aftershock extends Modifier {
-	private cachedInterval = 0
 	private cachedDamage = 0
+	private cachedInterval = 0
 	private cachedIntervalPerLevel = 0
 
 	public get AOEDamage() {

@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_item_assault_positive extends Modifier {
+export class modifier_item_assault_positive extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedArmor = 0
 	private cachedAttackSpeed = 0
 
@@ -17,15 +20,15 @@ export class modifier_item_assault_positive extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, false]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]
 	}
-
 	protected UpdateSpecialValues() {
 		const name = "item_assault"
 		this.cachedArmor = this.GetSpecialValue("aura_positive_armor", name)

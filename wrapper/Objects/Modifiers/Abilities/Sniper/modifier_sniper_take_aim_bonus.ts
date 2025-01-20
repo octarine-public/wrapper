@@ -6,7 +6,10 @@ import { Unit } from "../../../Base/Unit"
 import { modifier_sniper_headshot } from "./modifier_sniper_headshot"
 
 @WrapperClassModifier()
-export class modifier_sniper_take_aim_bonus extends Modifier {
+export class modifier_sniper_take_aim_bonus extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedRange = 0
 	private cachedArmor = 0
@@ -30,11 +33,12 @@ export class modifier_sniper_take_aim_bonus extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, false]
 	}
-
 	protected GetPreAttackBonusDamage(params?: IModifierParams): [number, boolean] {
 		if (params === undefined || this.cachedChance !== 100) {
 			return [0, false]
@@ -50,15 +54,12 @@ export class modifier_sniper_take_aim_bonus extends Modifier {
 		const modifier = owner.GetBuffByClass(modifier_sniper_headshot)
 		return [modifier?.AttackDamageBonus ?? 0, false]
 	}
-
 	protected GetAttackRangeBonus(): [number, boolean] {
 		return [this.cachedRange, false]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [-this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "sniper_take_aim"
 		this.cachedSpeed = this.GetSpecialValue("slow", name)

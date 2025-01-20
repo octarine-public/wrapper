@@ -5,7 +5,10 @@ import { Modifier } from "../../../Base/Modifier"
 import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_slardar_bash_active extends Modifier {
+export class modifier_slardar_bash_active extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedBonusDamage = 0
 	private cachedAttackCount = 0
 
@@ -15,7 +18,9 @@ export class modifier_slardar_bash_active extends Modifier {
 			this.GetPreAttackBonusDamage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetPreAttackBonusDamage(params?: IModifierParams): [number, boolean] {
 		if (params === undefined || this.StackCount < this.cachedAttackCount) {
 			return [0, false]
@@ -30,7 +35,6 @@ export class modifier_slardar_bash_active extends Modifier {
 		}
 		return [damage, this.IsPassiveDisabled()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "slardar_bash"
 		this.cachedBonusDamage = this.GetSpecialValue("bonus_damage", name)

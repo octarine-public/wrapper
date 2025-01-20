@@ -7,7 +7,10 @@ import { Modifier } from "../../../Base/Modifier"
 import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_kez_shodo_sai_mark extends Modifier {
+export class modifier_kez_shodo_sai_mark extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedBaseCrit = 0
 	private cachedBonusCrit = 0
@@ -26,11 +29,12 @@ export class modifier_kez_shodo_sai_mark extends Modifier {
 	public get CritDamageBonus() {
 		return (this.cachedBaseCrit + this.cachedBonusCrit) / 100
 	}
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [-this.cachedSpeed, this.IsMagicImmune()]
 	}
-
 	protected GetPreAttackTargetCriticalStrike(
 		params?: IModifierParams
 	): [number, boolean] {
@@ -43,7 +47,6 @@ export class modifier_kez_shodo_sai_mark extends Modifier {
 		}
 		return [this.cachedBaseCrit + this.cachedBonusCrit, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		if (this.Ability instanceof kez_shodo_sai) {
 			// if used parry

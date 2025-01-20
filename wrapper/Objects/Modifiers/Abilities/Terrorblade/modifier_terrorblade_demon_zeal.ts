@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_terrorblade_demon_zeal extends Modifier {
+export class modifier_terrorblade_demon_zeal extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedAttackSpeed = 0
 	private cachedReflectionPct = 0
@@ -22,7 +25,9 @@ export class modifier_terrorblade_demon_zeal extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	public PostDataUpdate(): void {
 		const owner = this.Parent
 		if (owner === undefined) {
@@ -43,15 +48,12 @@ export class modifier_terrorblade_demon_zeal extends Modifier {
 		this.cachedMS = moveSpeed
 		this.cachedAS = attackSpeed
 	}
-
 	protected GetMoveSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedMS, false]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAS, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "terrorblade_demon_zeal"
 		this.cachedReflectionPct = this.GetSpecialValue("reflection_pct", name)

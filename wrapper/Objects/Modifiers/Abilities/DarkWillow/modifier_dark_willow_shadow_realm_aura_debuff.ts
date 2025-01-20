@@ -3,7 +3,13 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_dark_willow_shadow_realm_aura_debuff extends Modifier {
+export class modifier_dark_willow_shadow_realm_aura_debuff
+	extends Modifier
+	implements IDebuff
+{
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedDamage = 0
 	private cachedMaxDamageTime = 0
 
@@ -18,7 +24,9 @@ export class modifier_dark_willow_shadow_realm_aura_debuff extends Modifier {
 		const multiplier = this.ElapsedTime / this.cachedMaxDamageTime
 		return Math.min(this.cachedDamage * multiplier, this.cachedDamage)
 	}
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetIncomingDamagePercentage(params?: IModifierParams): [number, boolean] {
 		const caster = this.Caster
 		if (params === undefined || caster === undefined || this.cachedDamage === 0) {
@@ -31,7 +39,6 @@ export class modifier_dark_willow_shadow_realm_aura_debuff extends Modifier {
 			? [this.remainingDamage, false]
 			: [0, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "dark_willow_shadow_realm"
 		this.cachedDamage = this.GetSpecialValue("aura_damage_pct", name)

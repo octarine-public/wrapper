@@ -4,7 +4,9 @@ import { Modifier } from "../../../Base/Modifier"
 import { AbilityData } from "../../../DataBook/AbilityData"
 
 @WrapperClassModifier()
-export class modifier_oracle_false_promise extends Modifier {
+export class modifier_oracle_false_promise extends Modifier implements IBuff {
+	public readonly BuffModifierName = this.Name
+
 	private cachedArmor = 0
 	private cachedBATTime = 0
 	private cachedSpellAmplify = 0
@@ -23,19 +25,18 @@ export class modifier_oracle_false_promise extends Modifier {
 			this.GetBaseAttackTimeConstantAdjust.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetSpellAmplifyPercentage(): [number, boolean] {
 		return [this.cachedSpellAmplify, false]
 	}
-
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, false]
 	}
-
 	protected GetBaseAttackTimeConstantAdjust(): [number, boolean] {
 		return [this.cachedBATTime, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedArmor = this.GetSpecialValue("bonus_armor")
 		this.cachedBATTime = this.GetSpecialValue("shard_bat_bonus")

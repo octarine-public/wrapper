@@ -1,5 +1,6 @@
 import "../../../prototypes/array"
 
+import { AbilityImagePath, ItemImagePath } from "../../Data/PathData"
 import { ABILITY_TYPES } from "../../Enums/ABILITY_TYPES"
 import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
 import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
@@ -430,23 +431,25 @@ export class AbilityData {
 	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
 		return this.AbilityBehavior.hasMask(flag)
 	}
-
 	public HasTargetTeam(flag: DOTA_UNIT_TARGET_TEAM): boolean {
 		return this.TargetTeam.hasMask(flag)
 	}
-
 	public HasBonusStats(flag: EDOTASpecialBonusStats): boolean {
 		return this.BonusStats.hasMask(flag)
 	}
-
 	public HasTargetFlags(flag: DOTA_UNIT_TARGET_FLAGS): boolean {
 		return this.TargetFlags.hasMask(flag)
 	}
-
 	public HasTargetType(flag: DOTA_UNIT_TARGET_TYPE): boolean {
 		return this.TargetType.hasMask(flag)
 	}
-
+	public GetTexturePath(altCastState: boolean, abilName?: string): string {
+		if (!altCastState || abilName === undefined) {
+			return this.TexturePath
+		}
+		const imagePath = "/" + abilName + "_secondary_png.vtex_c"
+		return this.IsItem ? ItemImagePath + imagePath : AbilityImagePath + imagePath
+	}
 	public GetSpecialValue(
 		specialName: string,
 		level: number,

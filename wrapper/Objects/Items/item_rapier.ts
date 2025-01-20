@@ -1,4 +1,4 @@
-import { Paths } from "../../Data/ImageData"
+import { ItemImagePath } from "../../Data/PathData"
 import { WrapperClass } from "../../Decorators"
 import { Item } from "../Base/Item"
 
@@ -6,7 +6,7 @@ import { Item } from "../Base/Item"
 export class item_rapier extends Item {
 	public get TexturePath(): string {
 		return this.IsToggled
-			? Paths.ItemIcons + "/rapier_alt_png.vtex_c"
+			? ItemImagePath + "/rapier_alt_png.vtex_c"
 			: super.TexturePath
 	}
 }

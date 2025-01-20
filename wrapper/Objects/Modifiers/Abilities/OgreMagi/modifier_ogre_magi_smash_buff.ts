@@ -5,7 +5,11 @@ import { Modifier } from "../../../Base/Modifier"
 import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_ogre_magi_smash_buff extends Modifier {
+export class modifier_ogre_magi_smash_buff extends Modifier implements IBuff, IShield {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+	public readonly ShieldModifierName = this.Name
+
 	private cachedPreAttackDamage = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -14,7 +18,12 @@ export class modifier_ogre_magi_smash_buff extends Modifier {
 			this.GetProcAttackIncomingDamagePercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
+	public IsShield(): this is IShield {
+		return true
+	}
 	protected GetProcAttackIncomingDamagePercentage(
 		params?: IModifierParams
 	): [number, boolean] {

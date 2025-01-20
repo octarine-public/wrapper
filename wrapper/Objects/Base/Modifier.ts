@@ -75,10 +75,13 @@ export class Modifier {
 
 	public CreationTime = 0
 	public CustomEntity: Nullable<Unit>
-	public StackCount = 0
-	public Duration = 0
+	public InternalStackCount = 0
+	public InternalDuration = 0
+
 	public AbilityLevel = 0
 	public IsGhost = false
+	public IsHidden = true
+	public IsGlobally = false
 
 	public Parent: Nullable<Unit>
 	public Ability: Nullable<Ability>
@@ -101,6 +104,15 @@ export class Modifier {
 		this.DDAbilityName = this.kv.InternalDDAbilityName
 	}
 
+	public get StackCount(): number {
+		return this.InternalStackCount
+	}
+	public get ForceVisible(): boolean {
+		return false
+	}
+	public get Duration(): number {
+		return this.InternalDuration
+	}
 	public get InvisibilityLevel(): number {
 		const fadeTime = this.kv.FadeTime
 		if (fadeTime === undefined) {
@@ -111,27 +123,21 @@ export class Modifier {
 		}
 		return Math.min(this.ElapsedTime / (fadeTime * 2), 1)
 	}
-
 	public get DeltaZ(): number {
 		return 0
 	}
-
 	public get DieTime(): number {
 		return this.CreationTime + this.Duration
 	}
-
 	public get ElapsedTime(): number {
 		return Math.max(GameState.RawGameTime - this.CreationTime, 0)
 	}
-
 	public get RemainingTime(): number {
 		return Math.max(this.DieTime - GameState.RawGameTime, 0)
 	}
-
 	public get DDModifierID(): Nullable<number> {
 		return this.kv.DDModifierID
 	}
-
 	public get vStart(): Vector4 {
 		const vec = this.kv.vStart
 		if (vec === undefined) {
@@ -139,7 +145,6 @@ export class Modifier {
 		}
 		return new Vector4(vec.x, vec.y, vec.z, vec.w)
 	}
-
 	public get vEnd(): Vector4 {
 		const vec = this.kv.vEnd
 		if (vec === undefined) {
@@ -147,7 +152,6 @@ export class Modifier {
 		}
 		return new Vector4(vec.x, vec.y, vec.z, vec.w)
 	}
-
 	public get IsBreakable(): boolean {
 		const ability = this.Ability
 		if (ability !== undefined) {
@@ -156,7 +160,6 @@ export class Modifier {
 		const abilData = AbilityData.GetAbilityByName(this.CachedAbilityName ?? "")
 		return abilData?.IsBreakable ?? false
 	}
-
 	public get IsDispellable(): boolean {
 		const ability = this.Ability
 		if (ability !== undefined) {
@@ -165,7 +168,6 @@ export class Modifier {
 		const abilData = AbilityData.GetAbilityByName(this.CachedAbilityName ?? "")
 		return abilData?.IsDispellable ?? false
 	}
-
 	public get CanHitSpellImmuneEnemy() {
 		const ability = this.Ability
 		if (ability !== undefined) {
@@ -174,8 +176,7 @@ export class Modifier {
 		const abilData = AbilityData.GetAbilityByName(this.CachedAbilityName ?? "")
 		return abilData?.CanHitSpellImmuneEnemy ?? false
 	}
-
-	public Update(): void {
+	public Update(force?: boolean): void {
 		let newParent = EntityManager.EntityByIndex<Unit>(this.kv.Parent),
 			newCaster = EntityManager.EntityByIndex<Unit>(this.kv.Caster),
 			newAbility = EntityManager.EntityByIndex<Ability>(this.kv.Ability),
@@ -214,7 +215,7 @@ export class Modifier {
 		if (this.Parent !== newParent) {
 			this.Remove()
 		}
-		let updated = false
+		let updated = force ?? false
 		if (this.Caster !== newCaster) {
 			this.Caster = newCaster
 			this.UpdateSpecialValues()
@@ -235,8 +236,8 @@ export class Modifier {
 			this.UpdateSpecialValues()
 			updated = true
 		}
-		if (this.StackCount !== newStackCount) {
-			this.StackCount = newStackCount
+		if (this.InternalStackCount !== newStackCount) {
+			this.InternalStackCount = newStackCount
 			this.UpdateSpecialValues()
 			updated = true
 		}
@@ -272,8 +273,8 @@ export class Modifier {
 			this.NetworkDamage = newDamage
 			updated = true
 		}
-		if (this.Duration !== newDuration) {
-			this.Duration = newDuration
+		if (this.InternalDuration !== newDuration) {
+			this.InternalDuration = newDuration
 			updated = true
 		}
 		if (this.CreationTime !== newCreationTime) {
@@ -319,7 +320,13 @@ export class Modifier {
 	public IsDebuff(): this is IDebuff {
 		return false
 	}
+	public IsDisable(): this is IDisable {
+		return false
+	}
 	public IsShield(): this is IShield {
+		return false
+	}
+	public IsChannel(): this is IChannel {
 		return false
 	}
 	public OnHasShardChanged(): void {

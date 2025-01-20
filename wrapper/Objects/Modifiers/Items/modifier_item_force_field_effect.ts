@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_item_force_field_effect extends Modifier {
+export class modifier_item_force_field_effect extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedMres = 0
 	private cachedArmor = 0
 
@@ -17,15 +20,15 @@ export class modifier_item_force_field_effect extends Modifier {
 			this.GetPhysicalArmorBonus.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetMagicalResistanceBonus(): [number, boolean] {
 		return [this.cachedMres, false]
 	}
-
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, false]
 	}
-
 	protected UpdateSpecialValues() {
 		const name = "item_force_field"
 		this.cachedMres = this.GetSpecialValue("bonus_aoe_mres", name)

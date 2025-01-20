@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_lone_druid_spirit_link extends Modifier {
+export class modifier_lone_druid_spirit_link extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedAttackSpeed = 0
 
 	protected readonly CanPostDataUpdate = true
@@ -17,19 +20,18 @@ export class modifier_lone_druid_spirit_link extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	public PostDataUpdate(): void {
 		this.UpdateSpecialValues()
 	}
-
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.NetworkArmor, false]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedAttackSpeed = this.GetSpecialValue(
 			"bonus_attack_speed",

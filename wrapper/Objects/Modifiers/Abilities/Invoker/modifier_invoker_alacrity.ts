@@ -4,7 +4,10 @@ import { invoker_spell_extends } from "../../../Abilities/Invoker/invoker_spell_
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_invoker_alacrity extends Modifier {
+export class modifier_invoker_alacrity extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedDamage = 0
 	private cachedAttackSpeed = 0
 
@@ -18,20 +21,19 @@ export class modifier_invoker_alacrity extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetPreAttackBonusDamage(): [number, boolean] {
 		return [this.cachedDamage, false]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedDamage = this.GetSpecialValue("bonus_damage")
 		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed")
 	}
-
 	protected GetSpecialValue(
 		specialName: string,
 		abilityName = "invoker_alacrity",

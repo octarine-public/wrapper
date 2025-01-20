@@ -22,12 +22,10 @@ export class WorldPolygon {
 			return
 		}
 		const arr = polygon.Points
-		for (let index = 0; index < arr.length; index++) {
-			const point = arr[index]
-			this.AddPoint(point)
+		for (let i = 0; i < arr.length; i++) {
+			this.AddPoint(arr[i])
 		}
 	}
-
 	public Draw(
 		key: string,
 		ent: Entity,
@@ -60,7 +58,6 @@ export class WorldPolygon {
 			particleManager.DestroyByKey(`${key}_${i}`)
 		}
 	}
-
 	public IsInside(point: Vector3): boolean {
 		return !this.IsOutside(point)
 	}
@@ -76,7 +73,6 @@ export class WorldPolygon {
 		if (cnt < 3) {
 			return 0
 		}
-
 		let ip = this.Points[0]
 		for (let i = 1; i <= cnt; i++) {
 			const ipNext = i === cnt ? this.Points[0] : this.Points[i]

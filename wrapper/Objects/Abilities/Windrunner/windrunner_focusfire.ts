@@ -1,4 +1,4 @@
-import { Paths } from "../../../Data/ImageData"
+import { AbilityImagePath } from "../../../Data/PathData"
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
@@ -10,7 +10,7 @@ export class windrunner_focusfire extends Ability {
 
 	public get TexturePath() {
 		return this.IsUnFocused
-			? `${Paths.AbilityIcons}/windrunner_whirlwind_png.vtex_c`
+			? AbilityImagePath + "/windrunner_whirlwind_png.vtex_c"
 			: super.TexturePath
 	}
 }

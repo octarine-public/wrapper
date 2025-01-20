@@ -1,6 +1,5 @@
 import { QAngle } from "../../Base/QAngle"
 import { Vector3 } from "../../Base/Vector3"
-import { GetSpellTexture, GetUnitTexture } from "../../Data/ImageData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { ABILITY_TYPES } from "../../Enums/ABILITY_TYPES"
 import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
@@ -309,15 +308,7 @@ export class Ability extends Entity {
 		return this.AbilityData.TargetType.toMask
 	}
 	public get TexturePath(): string {
-		const owner = this.Owner
-		const abilityTexture = GetSpellTexture(this.Name)
-		if (owner === undefined) {
-			return abilityTexture
-		}
-		const unitTexture = GetUnitTexture(owner.Name)
-		return this.IsInnate && this.IsHidden
-			? (unitTexture ?? abilityTexture)
-			: abilityTexture
+		return this.AbilityData.GetTexturePath(this.AltCastState, this.Name)
 	}
 	public get IsPassive(): boolean {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)

@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_slardar_sprint extends Modifier {
+export class modifier_slardar_sprint extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private slowResist = 0
 	private bonusSpeed = 0
 	private bonusBurst = 0
@@ -21,7 +24,9 @@ export class modifier_slardar_sprint extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const eff = Math.remapRange(
 			this.ElapsedTime,
@@ -32,7 +37,6 @@ export class modifier_slardar_sprint extends Modifier {
 		)
 		return [this.bonusSpeed + this.bonusBurst * eff, false]
 	}
-
 	protected GetSlowResistanceStacking(): [number, boolean] {
 		const eff = Math.remapRange(
 			this.ElapsedTime,
@@ -43,7 +47,6 @@ export class modifier_slardar_sprint extends Modifier {
 		)
 		return [this.slowResist * eff, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "slardar_sprint"
 		this.bonusSpeed = this.GetSpecialValue("bonus_speed", name)

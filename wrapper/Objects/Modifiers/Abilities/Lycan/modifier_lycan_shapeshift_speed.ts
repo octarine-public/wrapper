@@ -4,14 +4,14 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_lycan_shapeshift_speed extends Modifier {
+	private cachedSpeed = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_ABSOLUTE_MIN,
 			this.GetMoveSpeedAbsoluteMin.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
 
 	protected GetMoveSpeedAbsoluteMin(): [number, boolean] {
 		return [this.cachedSpeed, false]

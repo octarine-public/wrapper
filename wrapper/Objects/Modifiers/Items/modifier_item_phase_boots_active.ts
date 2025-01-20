@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_item_phase_boots_active extends Modifier {
+export class modifier_item_phase_boots_active extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedRangeSpeed = 0
 	private cachedMeleeSpeed = 0
 
@@ -17,18 +20,18 @@ export class modifier_item_phase_boots_active extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetTurnRatePercentage(): [number, boolean] {
 		return [this.HasMeleeAttacksBonuses() ? 1 : 0, false]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const value = this.HasMeleeAttacksBonuses()
 			? this.cachedMeleeSpeed
 			: this.cachedRangeSpeed
 		return [value, false]
 	}
-
 	protected UpdateSpecialValues() {
 		const name = "item_phase_boots"
 		this.cachedMeleeSpeed = this.GetSpecialValue("phase_movement_speed", name)

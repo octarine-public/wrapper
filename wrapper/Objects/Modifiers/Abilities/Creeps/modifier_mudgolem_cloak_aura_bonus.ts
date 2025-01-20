@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_mudgolem_cloak_aura_bonus extends Modifier {
+export class modifier_mudgolem_cloak_aura_bonus extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedMresHero = 0
 	private cachedMresCreep = 0
 
@@ -13,7 +16,9 @@ export class modifier_mudgolem_cloak_aura_bonus extends Modifier {
 			this.GetMagicalResistanceBonus.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetMagicalResistanceBonus(): [number, boolean] {
 		const owner = this.Parent
 		if (owner === undefined || this.IsPassiveDisabled(this.Caster)) {
@@ -27,7 +32,6 @@ export class modifier_mudgolem_cloak_aura_bonus extends Modifier {
 		}
 		return [0, false]
 	}
-
 	protected UpdateSpecialValues() {
 		const name = "mudgolem_cloak_aura"
 		this.cachedMresHero = this.GetSpecialValue("bonus_magical_armor", name)

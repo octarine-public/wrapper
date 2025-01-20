@@ -3,7 +3,9 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_razor_eye_of_the_storm_armor extends Modifier {
+export class modifier_razor_eye_of_the_storm_armor extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
 	// private cachedArmor = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -12,7 +14,9 @@ export class modifier_razor_eye_of_the_storm_armor extends Modifier {
 			this.GetPhysicalArmorBonus.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return this.StackCount !== 0
+	}
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [-this.StackCount, this.IsMagicImmune()]
 	}

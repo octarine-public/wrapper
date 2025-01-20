@@ -5,7 +5,10 @@ import { Modifier } from "../../../Base/Modifier"
 import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_storm_spirit_electric_rave extends Modifier {
+export class modifier_storm_spirit_electric_rave extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedDamage = 0
 	private cachedAttackSpeed = 0
 
@@ -19,11 +22,12 @@ export class modifier_storm_spirit_electric_rave extends Modifier {
 			this.GetProcAttackBonusDamageMagical.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]
 	}
-
 	protected GetProcAttackBonusDamageMagical(
 		params?: IModifierParams
 	): [number, boolean] {

@@ -4,6 +4,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_abaddon_aphotic_shield extends Modifier implements IBuff, IShield {
+	public readonly IsHidden = false
 	public readonly HasVisualShield = true
 	public readonly BuffModifierName = this.Name
 	public readonly ShieldModifierName = this.Name
@@ -15,6 +16,9 @@ export class modifier_abaddon_aphotic_shield extends Modifier implements IBuff, 
 			this.GetTotalConstantBlock.bind(this)
 		]
 	])
+	public get StackCount(): number {
+		return this.cachedShield - this.NetworkDamage || super.StackCount
+	}
 	public IsBuff(): this is IBuff {
 		return true
 	}

@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_ursa_overpower extends Modifier {
+export class modifier_ursa_overpower extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedAttackSpeed = 0
 
@@ -17,15 +20,15 @@ export class modifier_ursa_overpower extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return this.StackCount !== 0
+	}
 	protected GetSlowResistanceStacking(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "ursa_overpower"
 		this.cachedSpeed = this.GetSpecialValue("slow_resist", name)

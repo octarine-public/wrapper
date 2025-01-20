@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_orb_of_destruction_debuff extends Modifier {
+export class modifier_orb_of_destruction_debuff extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedArmor = 0
 	private cachedSpeedMelee = 0
 	private cachedSpeedRanged = 0
@@ -18,11 +21,12 @@ export class modifier_orb_of_destruction_debuff extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [-this.cachedArmor, this.IsMagicImmune()]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const caster = this.Caster
 		if (caster === undefined) {
@@ -33,7 +37,6 @@ export class modifier_orb_of_destruction_debuff extends Modifier {
 			: this.cachedSpeedRanged
 		return [-value, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "item_orb_of_destruction"
 		this.cachedArmor = this.GetSpecialValue("armor_reduction", name)

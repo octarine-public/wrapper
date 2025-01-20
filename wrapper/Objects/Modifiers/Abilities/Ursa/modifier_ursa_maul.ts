@@ -5,7 +5,9 @@ import { Modifier } from "../../../Base/Modifier"
 import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_ursa_maul extends Modifier {
+export class modifier_ursa_maul extends Modifier implements IBuff {
+	public readonly BuffModifierName = this.Name
+
 	/**@private */
 	public HasFurrySwipes: boolean = false
 	private cachedBonusDamage = 0
@@ -17,7 +19,9 @@ export class modifier_ursa_maul extends Modifier {
 			this.GetPreAttackBonusDamage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetPreAttackBonusDamage(params?: IModifierParams): [number, boolean] {
 		const owner = this.Parent
 		if (owner === undefined || this.IsPassiveDisabled()) {
@@ -26,13 +30,11 @@ export class modifier_ursa_maul extends Modifier {
 		const damage = (owner.HP * this.cachedBonusDamage) / 100
 		return [damage + this.bonusSwipeDamage(params), false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedBonusDamage = this.GetSpecialValue("health_as_damage_pct", "ursa_maul")
 		const furySwipes = this.Parent?.GetAbilityByName("ursa_fury_swipes")
 		this.cachedBonusDamageSwipe = furySwipes?.GetSpecialValue("damage_per_stack") ?? 0
 	}
-
 	private bonusSwipeDamage(params?: IModifierParams): number {
 		const owner = this.Parent
 		if (params === undefined || this.HasFurrySwipes) {

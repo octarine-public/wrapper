@@ -4,7 +4,10 @@ import { earthshaker_enchant_totem } from "../../../../Objects/Abilities/Earthsh
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_earthshaker_enchant_totem extends Modifier {
+export class modifier_earthshaker_enchant_totem extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedRange = 0
 	private cachedAttackDamage = 0
 
@@ -18,6 +21,10 @@ export class modifier_earthshaker_enchant_totem extends Modifier {
 			this.GetPreAttackBonusDamagePercentage.bind(this)
 		]
 	])
+
+	public IsBuff(): this is IBuff {
+		return true
+	}
 
 	public Remove(): boolean {
 		if (!super.Remove()) {

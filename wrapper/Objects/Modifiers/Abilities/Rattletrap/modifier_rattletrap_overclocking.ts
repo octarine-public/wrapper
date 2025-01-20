@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_rattletrap_overclocking extends Modifier {
+export class modifier_rattletrap_overclocking extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedAS = 0
 	private cachedAttackSpeed = 0
 
@@ -14,7 +17,9 @@ export class modifier_rattletrap_overclocking extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	public PostDataUpdate(): void {
 		const owner = this.Parent
 		if (owner === undefined || !owner.HasScepter) {
@@ -25,11 +30,9 @@ export class modifier_rattletrap_overclocking extends Modifier {
 			? this.cachedAttackSpeed
 			: 0
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAS, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedAttackSpeed = this.GetSpecialValue(
 			"bonus_attack_speed",

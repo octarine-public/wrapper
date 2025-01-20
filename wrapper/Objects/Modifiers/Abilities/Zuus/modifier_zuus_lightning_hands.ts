@@ -21,7 +21,9 @@ export class modifier_zuus_lightning_hands extends Modifier {
 			this.GetProcAttackBonusDamageMagical.bind(this)
 		]
 	])
-
+	public get ForceVisible() {
+		return true
+	}
 	public PostDataUpdate(): void {
 		const owner = this.Parent
 		if (owner === undefined) {
@@ -35,11 +37,9 @@ export class modifier_zuus_lightning_hands extends Modifier {
 		}
 		this.cachedDamage = (arc.AbilityDamage * this.cachedDamagePct) / 100
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]
 	}
-
 	protected GetProcAttackBonusDamageMagical(
 		params?: IModifierParams
 	): [number, boolean] {
@@ -52,7 +52,6 @@ export class modifier_zuus_lightning_hands extends Modifier {
 		}
 		return [this.cachedDamage, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "zuus_lightning_hands"
 		this.cachedAttackSpeed = this.GetSpecialValue("attack_speed_bonus", name)

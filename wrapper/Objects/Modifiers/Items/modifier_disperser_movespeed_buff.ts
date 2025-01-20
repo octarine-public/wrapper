@@ -3,7 +3,13 @@ import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_disperser_movespeed_buff extends Modifier {
+export class modifier_disperser_movespeed_buff extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
+	private cachedPurge = 0
+	private cachedResist = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING,
@@ -15,9 +21,9 @@ export class modifier_disperser_movespeed_buff extends Modifier {
 		]
 	])
 
-	private cachedPurge = 0
-	private cachedResist = 0
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const owner = this.Parent
 		if (owner === undefined) {

@@ -3,7 +3,13 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_keeper_of_the_light_recall_movespeed extends Modifier {
+export class modifier_keeper_of_the_light_recall_movespeed
+	extends Modifier
+	implements IBuff
+{
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -12,11 +18,12 @@ export class modifier_keeper_of_the_light_recall_movespeed extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedSpeed = this.GetSpecialValue(
 			"ally_movespeed_pct",

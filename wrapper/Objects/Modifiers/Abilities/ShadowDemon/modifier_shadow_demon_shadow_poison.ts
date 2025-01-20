@@ -2,7 +2,10 @@ import { WrapperClassModifier } from "../../../../Decorators"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_shadow_demon_shadow_poison extends Modifier {
+export class modifier_shadow_demon_shadow_poison extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedStackDamage = 0
 	private cachedMaxMulStacks = 0
 	private cachedBonusStackDamage = 0
@@ -16,7 +19,9 @@ export class modifier_shadow_demon_shadow_poison extends Modifier {
 		}
 		return damage
 	}
-
+	public IsDebuff(): this is IDebuff {
+		return this.StackCount !== 0
+	}
 	protected UpdateSpecialValues(): void {
 		const name = "shadow_demon_shadow_poison"
 		this.cachedStackDamage = this.GetSpecialValue("stack_damage", name)

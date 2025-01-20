@@ -4,7 +4,10 @@ import { GameActivity } from "../../../../Enums/GameActivity"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_muerta_gunslinger extends Modifier {
+export class modifier_muerta_gunslinger extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedBonusDamage = 0
 	private cachedBonusDamageValue = 0
 
@@ -15,7 +18,9 @@ export class modifier_muerta_gunslinger extends Modifier {
 			this.GetPreAttackBonusDamage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	public PostDataUpdate(): void {
 		const owner = this.Parent
 		if (
@@ -39,11 +44,9 @@ export class modifier_muerta_gunslinger extends Modifier {
 			this.cachedBonusDamage = this.cachedBonusDamageValue
 		}
 	}
-
 	protected GetPreAttackBonusDamage(): [number, boolean] {
 		return [this.cachedBonusDamage, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedBonusDamageValue = this.GetSpecialValue(
 			"bonus_damage",

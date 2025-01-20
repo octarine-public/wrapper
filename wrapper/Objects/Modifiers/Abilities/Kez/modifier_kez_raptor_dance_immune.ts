@@ -3,7 +3,15 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_kez_raptor_dance_immune extends Modifier {
+export class modifier_kez_raptor_dance_immune
+	extends Modifier
+	implements IBuff, IShield, IChannel
+{
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+	public readonly ShieldModifierName = this.Name
+	public readonly ChannelModifierName = this.Name
+
 	private cachedMres = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -16,7 +24,15 @@ export class modifier_kez_raptor_dance_immune extends Modifier {
 			this.GetMagicalResistanceBonus.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
+	public IsShield(): this is IShield {
+		return true
+	}
+	public IsChannel(): this is IChannel {
+		return true
+	}
 	protected GetAbsoluteNoDamagePure(): [number, boolean] {
 		return [1, false]
 	}

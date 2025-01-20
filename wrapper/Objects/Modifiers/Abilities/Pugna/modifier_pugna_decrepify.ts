@@ -3,8 +3,15 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_pugna_decrepify extends Modifier {
+export class modifier_pugna_decrepify
+	extends Modifier
+	implements IDebuff, IBuff, IShield
+{
 	public readonly IsGhost = true
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+	public readonly ShieldModifierName = this.Name
+	public readonly DebuffModifierName = this.Name
 
 	private cachedMres = 0
 	private cachedSpeed = 0
@@ -21,18 +28,24 @@ export class modifier_pugna_decrepify extends Modifier {
 		]
 	])
 
-	protected GetMagicalResistanceDecrepifyUnique(): [number, boolean] {
-		const isEnemy = this.Parent?.IsEnemy(this.Caster) ?? false
-		return isEnemy ? [this.cachedMres, this.IsMagicImmune()] : [0, false]
+	public IsBuff(): this is IBuff {
+		return !(this.Parent?.IsEnemy(this.Caster) ?? false)
 	}
-
+	public IsDebuff(): this is IDebuff {
+		return !this.IsBuff()
+	}
+	public IsShield(): this is IShield {
+		return true
+	}
+	protected GetMagicalResistanceDecrepifyUnique(): [number, boolean] {
+		return this.IsDebuff() ? [this.cachedMres, this.IsMagicImmune()] : [0, false]
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const isEnemy = this.Parent?.IsEnemy(this.Caster) ?? false
 		return !isEnemy
 			? [this.cachedSpeedAlly, false]
 			: [this.cachedSpeed, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "pugna_decrepify"
 		this.cachedMres = this.GetSpecialValue("bonus_spell_damage_pct", name)

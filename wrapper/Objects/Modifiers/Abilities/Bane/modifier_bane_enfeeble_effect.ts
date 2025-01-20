@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_bane_enfeeble_effect extends Modifier {
+export class modifier_bane_enfeeble_effect extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedDamage = 0
 	private cachedCastRange = 0
 
@@ -17,17 +20,17 @@ export class modifier_bane_enfeeble_effect extends Modifier {
 			this.GetPreAttackBonusDamagePercentage.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetCastRangeBonusPercentage(): [number, boolean] {
 		return [-this.cachedCastRange, this.IsMagicImmune()]
 	}
-
 	protected GetPreAttackBonusDamagePercentage(
 		_params?: IModifierParams
 	): [number, boolean] {
 		return [-this.cachedDamage, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "bane_enfeeble"
 		this.cachedDamage = this.GetSpecialValue("damage_reduction", name)

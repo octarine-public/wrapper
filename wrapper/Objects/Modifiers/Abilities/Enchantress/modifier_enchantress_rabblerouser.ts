@@ -6,6 +6,9 @@ import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
 export class modifier_enchantress_rabblerouser extends Modifier {
+	public readonly IsHidden = false
+	public readonly IsGlobally = true
+
 	private cachedOutBaseDamage = 0
 	private cachedOutDamagePerLvl = 0
 

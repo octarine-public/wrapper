@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_rattletrap_jetpack extends Modifier {
+export class modifier_rattletrap_jetpack extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedSpeedValue = 0
 
@@ -18,11 +21,12 @@ export class modifier_rattletrap_jetpack extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
 	public get DeltaZ(): number {
 		return 260
 	}
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	public PostDataUpdate(): void {
 		const owner = this.Parent
 		if (owner === undefined || !owner.HasScepter) {
@@ -41,15 +45,12 @@ export class modifier_rattletrap_jetpack extends Modifier {
 		}
 		this.cachedSpeed = ability.GetSpecialValue("jetpack_bonus_speed")
 	}
-
 	protected GetDisableTurning(): [number, boolean] {
 		return [1, false]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedSpeedValue = this.GetSpecialValue("bonus_speed", "rattletrap_jetpack")
 	}

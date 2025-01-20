@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_phantom_assassin_blur_active extends Modifier {
+export class modifier_phantom_assassin_blur_active extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedManaCostStacking = 0
 
@@ -17,15 +20,15 @@ export class modifier_phantom_assassin_blur_active extends Modifier {
 			this.GetManaCostPercentageStacking.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected GetManaCostPercentageStacking(): [number, boolean] {
 		return [this.cachedManaCostStacking, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "phantom_assassin_blur"
 		this.cachedSpeed = this.GetSpecialValue("active_movespeed_bonus", name)

@@ -5,7 +5,10 @@ import { Modifier } from "../../../Base/Modifier"
 import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_storm_spirit_overload extends Modifier {
+export class modifier_storm_spirit_overload extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedDamage = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -14,7 +17,9 @@ export class modifier_storm_spirit_overload extends Modifier {
 			this.GetProcAttackBonusDamageMagical.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetProcAttackBonusDamageMagical(
 		params?: IModifierParams
 	): [number, boolean] {
@@ -27,7 +32,6 @@ export class modifier_storm_spirit_overload extends Modifier {
 		}
 		return [this.cachedDamage, false]
 	}
-
 	protected UpdateSpecialValues() {
 		this.cachedDamage = this.GetSpecialValue(
 			"overload_damage",

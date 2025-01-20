@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_sven_gods_strength extends Modifier {
+export class modifier_sven_gods_strength extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedBonusDamage = 0
 	private cachedSpeedResist = 0
 
@@ -17,15 +20,15 @@ export class modifier_sven_gods_strength extends Modifier {
 			this.GetSlowResistanceStacking.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetSlowResistanceStacking(): [number, boolean] {
 		return [this.cachedSpeedResist, false]
 	}
-
 	protected GetPreAttackBonusDamage(params?: IModifierParams): [number, boolean] {
 		return [((params?.RawDamageBase ?? 0) * this.cachedBonusDamage) / 100, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "sven_gods_strength"
 		this.cachedBonusDamage = this.GetSpecialValue("gods_strength_damage", name)

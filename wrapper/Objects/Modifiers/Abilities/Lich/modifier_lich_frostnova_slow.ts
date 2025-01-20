@@ -3,7 +3,13 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_lich_frostnova_slow extends Modifier {
+export class modifier_lich_frostnova_slow extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
+	private cachedSpeed = 0
+	private cachedAttackSpeed = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
@@ -14,18 +20,15 @@ export class modifier_lich_frostnova_slow extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
-	private cachedAttackSpeed = 0
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "lich_frost_nova"
 		this.cachedSpeed = this.GetSpecialValue("slow_movement_speed", name)

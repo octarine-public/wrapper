@@ -4,7 +4,10 @@ import { HeightMap } from "../../../Native/WASM"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_item_hurricane_pike_range extends Modifier {
+export class modifier_item_hurricane_pike_range extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedRange = 0
 	private cachedAttackSpeed = 0
 
@@ -18,15 +21,15 @@ export class modifier_item_hurricane_pike_range extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return this.StackCount !== 0
+	}
 	protected GetMaxAttackRange(): [number, boolean] {
 		return [(this.Parent?.IsRanged ?? false) ? this.cachedRange : 0, false]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedRange = HeightMap?.MapSize.LengthSqr ?? Number.MAX_SAFE_INTEGER
 		this.cachedAttackSpeed = this.GetSpecialValue(

@@ -3,7 +3,9 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_life_stealer_unfettered extends Modifier {
+export class modifier_life_stealer_unfettered extends Modifier implements IBuff {
+	public readonly BuffModifierName = this.Name
+
 	private cachedMres = 0
 	private cachedStatusResist = 0
 
@@ -17,15 +19,15 @@ export class modifier_life_stealer_unfettered extends Modifier {
 			this.GetStatusResistanceStacking.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetMagicalResistanceBonus(): [number, boolean] {
 		return [this.cachedMres, false]
 	}
-
 	protected GetStatusResistanceStacking(): [number, boolean] {
 		return [this.cachedStatusResist, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "life_stealer_unfettered"
 		this.cachedMres = this.GetSpecialValue("magic_resist", name)

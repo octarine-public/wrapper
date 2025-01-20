@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_item_pipe_aura extends Modifier {
+export class modifier_item_pipe_aura extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedMres = 0
 	private cachedHPRegen = 0
 
@@ -17,15 +20,15 @@ export class modifier_item_pipe_aura extends Modifier {
 			this.GetMagicalResistanceBonus.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetHealthRegenConstant(): [number, boolean] {
 		return [this.cachedHPRegen, false]
 	}
-
 	protected GetMagicalResistanceBonus(): [number, boolean] {
 		return [this.cachedMres, false]
 	}
-
 	protected UpdateSpecialValues() {
 		const name = "item_pipe"
 		this.cachedMres = this.GetSpecialValue("magic_resistance_aura", name)

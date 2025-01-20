@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_keeper_of_the_light_spirit_form extends Modifier {
+export class modifier_keeper_of_the_light_spirit_form extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedCastRange = 0
 
@@ -17,15 +20,15 @@ export class modifier_keeper_of_the_light_spirit_form extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetCastRangeBonusStacking(): [number, boolean] {
 		return [this.cachedCastRange, false]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "keeper_of_the_light_spirit_form"
 		this.cachedSpeed = this.GetSpecialValue("movement_speed", name)

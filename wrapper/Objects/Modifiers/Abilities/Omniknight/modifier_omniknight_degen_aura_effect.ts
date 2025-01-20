@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_omniknight_degen_aura_effect extends Modifier {
+export class modifier_omniknight_degen_aura_effect extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -16,7 +19,9 @@ export class modifier_omniknight_degen_aura_effect extends Modifier {
 			this.GetIncomingDamagePercentage.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const caster = this.Caster
 		if (caster === undefined || !this.NetworkAuraWithInRange) {
@@ -24,11 +29,9 @@ export class modifier_omniknight_degen_aura_effect extends Modifier {
 		}
 		return [-this.cachedSpeed, this.IsPassiveDisabled(caster) || this.IsMagicImmune()]
 	}
-
 	protected GetIncomingDamagePercentage(): [number, boolean] {
 		return [this.StackCount, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "omniknight_degen_aura"
 		this.cachedSpeed = this.GetSpecialValue("speed_bonus", name)

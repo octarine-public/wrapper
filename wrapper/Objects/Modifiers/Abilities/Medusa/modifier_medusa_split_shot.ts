@@ -12,11 +12,12 @@ export class modifier_medusa_split_shot extends Modifier {
 			this.GetPreAttackDamagePercentage.bind(this)
 		]
 	])
-
+	public get ForceVisible(): boolean {
+		return true
+	}
 	protected GetPreAttackDamagePercentage(): [number, boolean] {
 		return [this.cachedDamage, this.IsPassiveDisabled()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedDamage = this.GetSpecialValue("damage_modifier", "medusa_split_shot")
 	}

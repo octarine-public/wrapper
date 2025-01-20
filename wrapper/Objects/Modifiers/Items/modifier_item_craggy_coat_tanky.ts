@@ -17,15 +17,12 @@ export class modifier_item_craggy_coat_tanky extends Modifier {
 			this.GetMoveSpeedBonusConstant.bind(this)
 		]
 	])
-
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, false]
 	}
-
 	protected GetMoveSpeedBonusConstant(): [number, boolean] {
 		return [-this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues() {
 		const name = "item_craggy_coat"
 		this.cachedSpeed = this.GetSpecialValue("move_speed", name)

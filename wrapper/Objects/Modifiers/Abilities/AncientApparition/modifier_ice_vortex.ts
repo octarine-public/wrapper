@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_ice_vortex extends Modifier {
+export class modifier_ice_vortex extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedMres = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -12,11 +15,12 @@ export class modifier_ice_vortex extends Modifier {
 			this.GetMagicalResistanceBonus.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetMagicalResistanceBonus(): [number, boolean] {
 		return [this.cachedMres, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedMres = this.GetSpecialValue(
 			"spell_resist_pct",

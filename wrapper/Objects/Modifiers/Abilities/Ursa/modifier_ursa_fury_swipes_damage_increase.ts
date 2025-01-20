@@ -6,7 +6,13 @@ import { Unit } from "../../../Base/Unit"
 import { modifier_ursa_maul } from "./modifier_ursa_maul"
 
 @WrapperClassModifier()
-export class modifier_ursa_fury_swipes_damage_increase extends Modifier {
+export class modifier_ursa_fury_swipes_damage_increase
+	extends Modifier
+	implements IDebuff
+{
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedDamagePerStack = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -15,7 +21,9 @@ export class modifier_ursa_fury_swipes_damage_increase extends Modifier {
 			this.GetPreAttackIncomingDamageBonus.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return this.StackCount !== 0
+	}
 	public Remove(): boolean {
 		if (!super.Remove()) {
 			return false
@@ -23,7 +31,6 @@ export class modifier_ursa_fury_swipes_damage_increase extends Modifier {
 		this.UpdateMaulDamage(false)
 		return true
 	}
-
 	protected AddModifier(): boolean {
 		if (!super.AddModifier()) {
 			return false
@@ -31,7 +38,6 @@ export class modifier_ursa_fury_swipes_damage_increase extends Modifier {
 		this.UpdateMaulDamage(true)
 		return true
 	}
-
 	protected GetPreAttackIncomingDamageBonus(
 		params?: IModifierParams
 	): [number, boolean] {
@@ -49,14 +55,12 @@ export class modifier_ursa_fury_swipes_damage_increase extends Modifier {
 		}
 		return [this.cachedDamagePerStack * stackCount, false]
 	}
-
 	protected UpdateSpecialValues() {
 		this.cachedDamagePerStack = this.GetSpecialValue(
 			"damage_per_stack",
 			"ursa_fury_swipes"
 		)
 	}
-
 	protected UpdateMaulDamage(state: boolean) {
 		const modifier = this.Caster?.GetBuffByClass(modifier_ursa_maul)
 		if (modifier !== undefined) {

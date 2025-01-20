@@ -3,20 +3,24 @@ import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_item_boots_of_bearing_aura extends Modifier {
+export class modifier_item_boots_of_bearing_aura extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
+	private cachedSpeed = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
 			this.GetMoveSpeedBonusConstant.bind(this)
 		]
 	])
-
-	private cachedSpeed = 0
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetMoveSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues() {
 		this.cachedSpeed = this.GetSpecialValue(
 			"aura_movement_speed",

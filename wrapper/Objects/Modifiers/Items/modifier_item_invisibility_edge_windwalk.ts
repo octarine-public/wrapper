@@ -5,9 +5,13 @@ import { Modifier } from "../../Base/Modifier"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_item_invisibility_edge_windwalk extends Modifier {
+export class modifier_item_invisibility_edge_windwalk extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedPreAttackDamage = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE,
@@ -18,7 +22,9 @@ export class modifier_item_invisibility_edge_windwalk extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetPreAttackBonusDamage(params?: IModifierParams): [number, boolean] {
 		if (params === undefined) {
 			return [0, false]
@@ -29,11 +35,9 @@ export class modifier_item_invisibility_edge_windwalk extends Modifier {
 		}
 		return [this.cachedPreAttackDamage, false]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues() {
 		const name = "item_invis_sword"
 		this.cachedSpeed = this.GetSpecialValue("windwalk_movement_speed", name)

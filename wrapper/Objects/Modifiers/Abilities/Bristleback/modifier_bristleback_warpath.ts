@@ -4,9 +4,11 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_bristleback_warpath extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	public CachedMoveSpeed = 0
 	public CachedBonusDamage = 0
-	public readonly BuffModifierName = this.Name
 
 	private cachedAttackSpeed = 0
 
@@ -24,23 +26,18 @@ export class modifier_bristleback_warpath extends Modifier implements IBuff {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
 	public IsBuff(): this is IBuff {
-		return true
+		return this.StackCount !== 0
 	}
-
 	protected GetPreAttackBonusDamage(): [number, boolean] {
 		return [this.CachedBonusDamage * this.StackCount, false]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed * this.StackCount, false]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.CachedMoveSpeed * this.StackCount, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "bristleback_warpath"
 		this.CachedMoveSpeed = this.GetSpecialValue("move_speed_per_stack", name)

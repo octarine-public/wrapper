@@ -6,7 +6,10 @@ import { Modifier } from "../../Base/Modifier"
 import { item_glimmer_cape } from "../../Items/item_glimmer_cape"
 
 @WrapperClassModifier()
-export class modifier_invisible extends Modifier {
+export class modifier_invisible extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeedConstant = 0
 	private cachedSpeedPercentage = 0
 
@@ -20,15 +23,15 @@ export class modifier_invisible extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetMoveSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedSpeedConstant, false]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeedPercentage, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		if (this.Ability instanceof riki_backstab) {
 			const talent = this.Parent?.GetAbilityByName(
@@ -37,6 +40,7 @@ export class modifier_invisible extends Modifier {
 			this.cachedSpeedPercentage = talent ?? 0
 		}
 		if (this.Ability instanceof mirana_invis) {
+			this.IsGlobally = true
 			this.cachedSpeedPercentage = this.GetSpecialValue(
 				"bonus_movement_speed",
 				this.Ability.Name

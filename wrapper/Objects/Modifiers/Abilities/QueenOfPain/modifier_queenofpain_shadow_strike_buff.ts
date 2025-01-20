@@ -32,11 +32,9 @@ export class modifier_queenofpain_shadow_strike_buff extends Modifier {
 		}
 		this.cachedAS = this.cachedAttackSpeed
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAS, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedAttackSpeed = this.GetSpecialValue(
 			"attack_speed",

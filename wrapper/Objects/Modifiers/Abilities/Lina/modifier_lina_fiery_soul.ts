@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_lina_fiery_soul extends Modifier {
+export class modifier_lina_fiery_soul extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedAS = 0
 	private cachedMres = 0
 	private cachedSpeed = 0
@@ -23,23 +26,21 @@ export class modifier_lina_fiery_soul extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return this.StackCount !== 0
+	}
 	public GetSpellBonusDamage(rawDamage: number): number {
 		return rawDamage + this.cachedSpellAmpDamage * this.StackCount
 	}
-
 	protected GetMagicalResistanceBonus(): [number, boolean] {
 		return [this.cachedMres * this.StackCount, false]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed * this.StackCount, false]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAS * this.StackCount, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "lina_fiery_soul"
 		this.cachedMres = this.GetSpecialValue("fiery_soul_magic_resist", name)

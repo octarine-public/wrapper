@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_alpha_wolf_command_aura_bonus extends Modifier {
+export class modifier_alpha_wolf_command_aura_bonus extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedDamage = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -12,7 +15,9 @@ export class modifier_alpha_wolf_command_aura_bonus extends Modifier {
 			this.GetPreAttackBonusDamage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetPreAttackBonusDamage(params?: IModifierParams): [number, boolean] {
 		const owner = this.Parent
 		if (params === undefined || owner === undefined) {
@@ -21,7 +26,6 @@ export class modifier_alpha_wolf_command_aura_bonus extends Modifier {
 		const damage = (this.cachedDamage * (params.RawDamageBase ?? 0)) / 100
 		return [damage, this.IsPassiveDisabled(this.Caster)]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedDamage = this.GetSpecialValue(
 			"bonus_damage_pct",

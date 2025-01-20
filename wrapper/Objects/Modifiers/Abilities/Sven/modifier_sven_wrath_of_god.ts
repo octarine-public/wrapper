@@ -12,11 +12,9 @@ export class modifier_sven_wrath_of_god extends Modifier {
 			this.GetPreAttackBonusDamage.bind(this)
 		]
 	])
-
 	protected GetPreAttackBonusDamage(): [number, boolean] {
 		return [this.cachedBonusDamagePerStr * (this.Parent?.TotalStrength ?? 0), false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedBonusDamagePerStr = this.GetSpecialValue(
 			"bonus_damage_per_str",

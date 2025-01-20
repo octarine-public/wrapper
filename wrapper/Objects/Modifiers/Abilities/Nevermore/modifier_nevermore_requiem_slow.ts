@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_nevermore_requiem_slow extends Modifier {
+export class modifier_nevermore_requiem_slow extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedMres = 0
 	private cachedSpeed = 0
 
@@ -17,15 +20,15 @@ export class modifier_nevermore_requiem_slow extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetMagicalResistanceBonus(): [number, boolean] {
 		return [this.cachedMres, this.IsMagicImmune()]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "nevermore_requiem"
 		this.cachedSpeed = this.GetSpecialValue("requiem_reduction_ms", name)

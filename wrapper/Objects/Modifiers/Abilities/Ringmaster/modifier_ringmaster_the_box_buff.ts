@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_ringmaster_the_box_buff extends Modifier {
+export class modifier_ringmaster_the_box_buff extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedMres = 0
 	private cachedSpeed = 0
 	private cachedSlowResist = 0
@@ -22,19 +25,18 @@ export class modifier_ringmaster_the_box_buff extends Modifier {
 			this.GetMagicalResistanceBonus.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected GetSlowResistanceStacking(): [number, boolean] {
 		return [this.cachedSlowResist, false]
 	}
-
 	protected GetMagicalResistanceBonus(): [number, boolean] {
 		return [this.cachedMres, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "ringmaster_the_box"
 		this.cachedMres = this.GetSpecialValue("magic_resist", name)

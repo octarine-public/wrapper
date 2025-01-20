@@ -7,6 +7,8 @@ import { item_helm_of_the_overlord } from "../../Items/item_helm_of_the_overlord
 
 @WrapperClassModifier()
 export class modifier_dominated extends Modifier {
+	public readonly IsHidden = false
+
 	private cachedArmor = 0
 	private cachedDamage = 0
 	private cachedHPRegen = 0

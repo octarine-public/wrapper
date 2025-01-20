@@ -3,7 +3,9 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_bloodseeker_thirst extends Modifier {
+export class modifier_bloodseeker_thirst extends Modifier implements IBuff {
+	public readonly BuffModifierName = this.Name
+
 	private minBonus = 0
 	private maxBonus = 0
 	private bonusSpeed = 0
@@ -21,7 +23,9 @@ export class modifier_bloodseeker_thirst extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return this.StackCount !== 0
+	}
 	public PostDataUpdate(): void {
 		const owner = this.Parent,
 			min = this.minBonus,
@@ -34,17 +38,14 @@ export class modifier_bloodseeker_thirst extends Modifier {
 		if (owner.HasBuffByName("modifier_bloodseeker_thirst_active")) {
 			value += this.activeBonusSpeed
 		}
-		this.cachedTotalSpeed = (this.StackCount * value) / (min - max)
+		this.cachedTotalSpeed = (this.InternalStackCount * value) / (min - max)
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedTotalSpeed, false]
 	}
-
 	protected GetIgnoreMoveSpeedLimit(): [number, boolean] {
 		return [1, this.IsPassiveDisabled()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "bloodseeker_thirst"
 		this.minBonus = this.GetSpecialValue("min_bonus_pct", name)

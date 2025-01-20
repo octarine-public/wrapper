@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_hoodwink_scurry_active extends Modifier {
+export class modifier_hoodwink_scurry_active extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedRange = 0
 	private cachedCastRange = 0
@@ -22,19 +25,18 @@ export class modifier_hoodwink_scurry_active extends Modifier {
 			this.GetCastRangeBonusStacking.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetAttackRangeBonus(): [number, boolean] {
 		return [this.cachedRange, false]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected GetCastRangeBonusStacking(): [number, boolean] {
 		return [this.cachedCastRange, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "hoodwink_scurry"
 		this.cachedRange = this.GetSpecialValue("attack_range", name)

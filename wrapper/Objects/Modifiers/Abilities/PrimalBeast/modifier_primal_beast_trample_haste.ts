@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_primal_beast_trample_haste extends Modifier {
+export class modifier_primal_beast_trample_haste extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private isActive = false
 	private cachedSpeed = 0
 	private cachedSpeedSelf = 0
@@ -15,12 +18,13 @@ export class modifier_primal_beast_trample_haste extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	public PostDataUpdate(): void {
 		const name = "modifier_primal_beast_trample"
 		this.isActive = this.Caster?.HasBuffByName(name) ?? false
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		if (!this.isActive) {
 			return [0, false]
@@ -29,7 +33,6 @@ export class modifier_primal_beast_trample_haste extends Modifier {
 			? [this.cachedSpeed, false]
 			: [this.cachedSpeedSelf, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "primal_beast_trample"
 		this.cachedSpeed = this.GetSpecialValue("bonus_movespeed_pct_allies", name)

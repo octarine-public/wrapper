@@ -4,6 +4,9 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_magnataur_empower extends Modifier {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedDamage = 0
 	private cachedMultiplier = 0
 
@@ -13,7 +16,9 @@ export class modifier_magnataur_empower extends Modifier {
 			this.GetPreAttackBonusDamagePercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetPreAttackBonusDamagePercentage(
 		_params?: IModifierParams
 	): [number, boolean] {
@@ -27,7 +32,6 @@ export class modifier_magnataur_empower extends Modifier {
 		}
 		return [this.cachedDamage * (1 + this.cachedMultiplier / 100), false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "magnataur_empower"
 		this.cachedDamage = this.GetSpecialValue("bonus_damage_pct", name)

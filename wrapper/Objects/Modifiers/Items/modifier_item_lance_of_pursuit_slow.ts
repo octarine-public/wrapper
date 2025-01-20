@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_item_lance_of_pursuit_slow extends Modifier {
+export class modifier_item_lance_of_pursuit_slow extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private slowMelee = 0
 	private slowRanged = 0
 
@@ -13,7 +16,9 @@ export class modifier_item_lance_of_pursuit_slow extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const caster = this.Caster
 		if (caster === undefined) {
@@ -24,7 +29,6 @@ export class modifier_item_lance_of_pursuit_slow extends Modifier {
 			: this.slowRanged
 		return [-value, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues() {
 		const name = "item_lance_of_pursuit"
 		this.slowMelee = this.GetSpecialValue("slow_pct_melee", name)

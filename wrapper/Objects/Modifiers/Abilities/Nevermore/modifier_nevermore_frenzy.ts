@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_nevermore_frenzy extends Modifier {
+export class modifier_nevermore_frenzy extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedCastTime = 0
 	private cachedAttackSpeed = 0
 
@@ -17,15 +20,15 @@ export class modifier_nevermore_frenzy extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetCastTimePercentage(): [number, boolean] {
 		return [this.cachedCastTime - 100, false] // - 100 hardcoded by Valve
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "nevermore_frenzy"
 		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name)

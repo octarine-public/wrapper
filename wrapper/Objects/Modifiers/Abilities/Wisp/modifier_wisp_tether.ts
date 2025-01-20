@@ -5,15 +5,18 @@ import { Modifier } from "../../../Base/Modifier"
 import { Unit, Units } from "../../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_wisp_tether extends Modifier {
-	private cachedSpeed = 0
-	private selfBonusSpeed = 0
+export class modifier_wisp_tether extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
 
 	protected static readonly IgnoreBuffs = [
 		"modifier_wisp_tether",
 		"modifier_life_stealer_infest_creep",
 		"modifier_life_stealer_infest_effect"
 	]
+
+	private cachedSpeed = 0
+	private selfBonusSpeed = 0
 
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
@@ -22,7 +25,9 @@ export class modifier_wisp_tether extends Modifier {
 			this.GetMoveSpeedAbsolute.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	public PostDataUpdate() {
 		const owner = this.Parent
 		if (owner === undefined) {
@@ -61,15 +66,12 @@ export class modifier_wisp_tether extends Modifier {
 
 		this.cachedSpeed = finalMoveSpeed
 	}
-
 	protected GetMoveSpeedAbsolute(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues() {
 		this.selfBonusSpeed = this.GetSpecialValue("self_bonus", "wisp_tether")
 	}
-
 	private selfReduction(owner: Unit) {
 		if (owner.IsUnslowable) {
 			return 1

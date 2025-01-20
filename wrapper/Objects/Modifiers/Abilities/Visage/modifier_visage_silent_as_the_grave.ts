@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_visage_silent_as_the_grave extends Modifier {
+export class modifier_visage_silent_as_the_grave extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedDamage = 0
 
@@ -17,15 +20,15 @@ export class modifier_visage_silent_as_the_grave extends Modifier {
 			this.GetPreAttackBonusDamagePercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetPreAttackBonusDamagePercentage(): [number, boolean] {
 		return [this.cachedDamage, false]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "visage_silent_as_the_grave"
 		this.cachedSpeed = this.GetSpecialValue("movespeed_bonus", name)

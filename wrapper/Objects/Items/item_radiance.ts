@@ -1,4 +1,4 @@
-import { Paths } from "../../Data/ImageData"
+import { ItemImagePath } from "../../Data/PathData"
 import { WrapperClass } from "../../Decorators"
 import { Item } from "../Base/Item"
 
@@ -7,7 +7,7 @@ export class item_radiance extends Item {
 	public get TexturePath(): string {
 		return !this.IsToggled
 			? super.TexturePath
-			: Paths.ItemIcons + "/radiance_inactive_png.vtex_c"
+			: ItemImagePath + "/radiance_inactive_png.vtex_c"
 	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("aura_radius", level)

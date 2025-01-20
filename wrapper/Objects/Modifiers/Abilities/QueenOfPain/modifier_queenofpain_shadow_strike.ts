@@ -4,7 +4,10 @@ import { GameState } from "../../../../Utils/GameState"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_queenofpain_shadow_strike extends Modifier {
+export class modifier_queenofpain_shadow_strike extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private readonly slowInterval = 1
 	private readonly slowStep = 0.985
 	private readonly slowStepStep = 0.815
@@ -19,7 +22,9 @@ export class modifier_queenofpain_shadow_strike extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	public PostDataUpdate(): void {
 		const elapsed = this.ElapsedTime,
 			dt = GameState.TickInterval
@@ -31,11 +36,9 @@ export class modifier_queenofpain_shadow_strike extends Modifier {
 
 		this.cachedSpeed = this.cachedSpeedValue * eff
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues() {
 		this.cachedSpeedValue = this.GetSpecialValue(
 			"movement_slow",

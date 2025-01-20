@@ -3,7 +3,14 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_faceless_void_time_zone_effect extends Modifier {
+export class modifier_faceless_void_time_zone_effect
+	extends Modifier
+	implements IBuff, IDebuff
+{
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+	public readonly DebuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedTurnRate = 0
 	private cachedCastTime = 0
@@ -27,23 +34,24 @@ export class modifier_faceless_void_time_zone_effect extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return this.Parent?.IsEnemy(this.Caster) ?? false
+	}
+	public IsBuff(): this is IBuff {
+		return !this.IsDebuff()
+	}
 	protected GetCastTimePercentage(): [number, boolean] {
 		return [this.getValueByTeam(this.cachedCastTime), this.IsMagicImmune()]
 	}
-
 	protected GetTurnRatePercentage(): [number, boolean] {
 		return [this.getValueByTeam(this.cachedTurnRate), this.IsMagicImmune()]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.getValueByTeam(this.cachedSpeed), this.IsMagicImmune()]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.getValueByTeam(this.cachedAttackSpeed), this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "faceless_void_time_zone"
 		this.cachedSpeed = this.GetSpecialValue("bonus_move_speed", name)
@@ -51,7 +59,6 @@ export class modifier_faceless_void_time_zone_effect extends Modifier {
 		this.cachedTurnRate = this.GetSpecialValue("bonus_turn_speed", name)
 		this.cachedCastTime = this.GetSpecialValue("bonus_cast_speed", name)
 	}
-
 	private getValueByTeam(currValue: number) {
 		const owner = this.Parent,
 			caster = this.Caster

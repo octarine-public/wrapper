@@ -5,7 +5,10 @@ import { Modifier } from "../../../Base/Modifier"
 import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_tiny_tree_grab extends Modifier {
+export class modifier_tiny_tree_grab extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	public CachedDamage = 0
 	private cachedRange = 0
 	private cachedDamageBuilding = 0
@@ -24,15 +27,15 @@ export class modifier_tiny_tree_grab extends Modifier {
 			this.GetPreAttackBonusDamagePercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetAttackRangeBonus(): [number, boolean] {
 		return [this.cachedRange, false]
 	}
-
 	protected GetPreAttackBonusDamage(): [number, boolean] {
 		return [this.CachedDamage, false]
 	}
-
 	protected GetPreAttackBonusDamagePercentage(
 		params?: IModifierParams
 	): [number, boolean] {
@@ -45,7 +48,6 @@ export class modifier_tiny_tree_grab extends Modifier {
 		}
 		return [this.cachedDamageBuilding, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		// idk why Valve used splash_width as attack range (maybe bug?)
 		// existing attack_range is not used (maybe "attack_range" is full attack range)

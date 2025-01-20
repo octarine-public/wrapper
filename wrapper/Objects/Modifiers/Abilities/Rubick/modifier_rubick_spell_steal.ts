@@ -2,10 +2,25 @@ import { WrapperClassModifier } from "../../../../Decorators"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_rubick_spell_steal extends Modifier {
+export class modifier_rubick_spell_steal extends Modifier implements IBuff {
 	public CachedSpellAmpDamage = 0
 	public CachedManaCostReduction = 0
+	public StealAbilityName: Nullable<string>
 
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
+	public get ForceVisible(): boolean {
+		return true
+	}
+
+	// public GetTexturePath(): string {
+	// 	const abilName = this.kv.PortalLoopAppear
+	// 	return abilName === undefined ? super.GetTexturePath() : GetSpellTexture(abilName)
+	// }
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected UpdateSpecialValues(): void {
 		const owner = this.Parent
 		if (owner === undefined) {

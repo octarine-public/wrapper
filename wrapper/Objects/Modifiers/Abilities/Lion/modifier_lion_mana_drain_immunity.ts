@@ -1,9 +1,17 @@
+import { AbilityImagePath } from "../../../../Data/PathData"
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_lion_mana_drain_immunity extends Modifier {
+export class modifier_lion_mana_drain_immunity
+	extends Modifier
+	implements IShield, IBuff
+{
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+	public readonly ShieldModifierName = this.Name
+
 	private cachedMres = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -16,6 +24,15 @@ export class modifier_lion_mana_drain_immunity extends Modifier {
 			this.GetMagicalResistanceBonus.bind(this)
 		]
 	])
+	public GetTexturePath(): string {
+		return AbilityImagePath + "/modifier_magicimmune_png.vtex_c"
+	}
+	public IsBuff(): this is IBuff {
+		return true
+	}
+	public IsShield(): this is IShield {
+		return true
+	}
 	protected GetAbsoluteNoDamagePure(): [number, boolean] {
 		return [1, false]
 	}

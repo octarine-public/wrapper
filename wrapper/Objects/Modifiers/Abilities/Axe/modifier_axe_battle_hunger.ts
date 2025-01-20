@@ -4,6 +4,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_axe_battle_hunger extends Modifier implements IDebuff {
+	public readonly IsHidden = false
 	public readonly DebuffModifierName = this.Name
 
 	private cachedSpeed = 0
@@ -16,11 +17,9 @@ export class modifier_axe_battle_hunger extends Modifier implements IDebuff {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
 	public IsDebuff(): this is IDebuff {
 		return true
 	}
-
 	public PostDataUpdate(): void {
 		const owner = this.Parent
 		const caster = this.Caster
@@ -31,11 +30,9 @@ export class modifier_axe_battle_hunger extends Modifier implements IDebuff {
 		const isFace = owner.GetAngle(caster.Position) <= Math.PI / 2
 		this.cachedSpeed = isFace || this.IsMagicImmune() ? 0 : this.cachedSpeedValue
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedSpeedValue = this.GetSpecialValue("slow", "axe_battle_hunger")
 	}

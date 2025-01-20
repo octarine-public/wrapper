@@ -540,7 +540,7 @@ export class UnitModifierManager {
 		if (isRaw) {
 			return this.GetRawDamageBlock(damage, damageType)
 		}
-		const params: IModifierParams = { RawDamage: damage }
+		const params: IModifierParams = { Damage: damage }
 		const args = [false, params] as const
 		let damageBlock = this.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_TOTAL_CONSTANT_BLOCK,

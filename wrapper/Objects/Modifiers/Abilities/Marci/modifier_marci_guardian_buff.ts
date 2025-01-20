@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_marci_guardian_buff extends Modifier {
+export class modifier_marci_guardian_buff extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedDamage = 0
 	private cachedDamagePenalty = 0
 
@@ -13,7 +16,9 @@ export class modifier_marci_guardian_buff extends Modifier {
 			this.GetPreAttackBonusDamagePercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetPreAttackBonusDamagePercentage(
 		params?: IModifierParams
 	): [number, boolean] {
@@ -29,7 +34,6 @@ export class modifier_marci_guardian_buff extends Modifier {
 			? [this.cachedDamage, false]
 			: [this.cachedDamage * (1 - this.cachedDamagePenalty / 100), false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "marci_guardian"
 		this.cachedDamage = this.GetSpecialValue("bonus_damage", name)

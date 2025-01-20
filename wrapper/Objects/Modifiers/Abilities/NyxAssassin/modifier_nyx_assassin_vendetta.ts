@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_nyx_assassin_vendetta extends Modifier {
+export class modifier_nyx_assassin_vendetta extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedRange = 0
 	private cachedDamage = 0
@@ -25,7 +28,9 @@ export class modifier_nyx_assassin_vendetta extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	public PostDataUpdate(): void {
 		if (this.cachedSpeedValue === 0) {
 			return
@@ -41,19 +46,15 @@ export class modifier_nyx_assassin_vendetta extends Modifier {
 		}
 		this.cachedSpeed = this.cachedSpeedValue + this.cachedSpeedBonusValue
 	}
-
 	protected GetBonusAttackRange(): [number, boolean] {
 		return [this.cachedRange, false]
 	}
-
 	protected GetPreAttackBonusDamagePure(): [number, boolean] {
 		return [this.cachedDamage, false]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "nyx_assassin_vendetta"
 		this.cachedDamage = this.GetSpecialValue("bonus_damage", name)

@@ -3,7 +3,12 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_spirit_breaker_planar_pocket_aura extends Modifier {
+export class modifier_spirit_breaker_planar_pocket_aura
+	extends Modifier
+	implements IBuff
+{
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
 	private cachedMres = 0
 
 	protected readonly DeclaredFunction = new Map([

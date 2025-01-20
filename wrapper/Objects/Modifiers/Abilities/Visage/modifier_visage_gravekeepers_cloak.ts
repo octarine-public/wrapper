@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_visage_gravekeepers_cloak extends Modifier {
+export class modifier_visage_gravekeepers_cloak extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedArmor = 0
 	private cachedDamage = 0
 
@@ -17,15 +20,15 @@ export class modifier_visage_gravekeepers_cloak extends Modifier {
 			this.GetIncomingDamagePercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return this.StackCount !== 0
+	}
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, false]
 	}
-
 	protected GetIncomingDamagePercentage(): [number, boolean] {
 		return [-(this.cachedDamage * this.StackCount), false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedDamage = this.GetSpecialValue(
 			"damage_reduction",

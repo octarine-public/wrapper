@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_tusk_tag_team_attack_slow extends Modifier {
+export class modifier_tusk_tag_team_attack_slow extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedAttackSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -12,7 +15,9 @@ export class modifier_tusk_tag_team_attack_slow extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [-this.cachedAttackSpeed, this.IsMagicImmune()]
 	}

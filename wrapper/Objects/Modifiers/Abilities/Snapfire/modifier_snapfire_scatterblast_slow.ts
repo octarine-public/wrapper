@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_snapfire_scatterblast_slow extends Modifier {
+export class modifier_snapfire_scatterblast_slow extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedBonus = 0
 	private cachedAttackSpeed = 0
@@ -19,6 +22,9 @@ export class modifier_snapfire_scatterblast_slow extends Modifier {
 		]
 	])
 
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		let value = this.cachedSpeed
 		if (this.NetworkIsActive) {

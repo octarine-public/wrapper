@@ -1,4 +1,11 @@
-import { Color, ConVarsSDK, GameState, ImageData, Menu } from "../../../wrapper/Imports"
+import {
+	Color,
+	ConVarsSDK,
+	GameState,
+	ImageData,
+	Menu,
+	PathData
+} from "../../../wrapper/Imports"
 
 class TreeModelInfo {
 	constructor(
@@ -47,7 +54,7 @@ export class InternalChanger {
 		new TreeModelInfo("Default"),
 		new TreeModelInfo(
 			"Simple Cube",
-			ImageData.Paths.Wrapper + "/scripts_files/models/cube.vmdl",
+			PathData.WrapperPath + "/scripts_files/models/cube.vmdl",
 			1.0,
 			true,
 			true,
@@ -55,7 +62,7 @@ export class InternalChanger {
 		),
 		new TreeModelInfo(
 			"Minecraft Cube",
-			ImageData.Paths.Wrapper + "/scripts_files/models/minecraft_cube.vmdl",
+			PathData.WrapperPath + "/scripts_files/models/minecraft_cube.vmdl",
 			1.0,
 			false,
 			true,
@@ -169,10 +176,7 @@ export class InternalChanger {
 			// )
 		})
 
-		this.treeChanger = this.node.AddNode(
-			"Trees",
-			ImageData.Paths.Icons.icon_svg_tree_alt
-		)
+		this.treeChanger = this.node.AddNode("Trees", ImageData.Icons.icon_svg_tree_alt)
 
 		this.emoticons = this.node
 			.AddToggle("Emoticons chat", true)

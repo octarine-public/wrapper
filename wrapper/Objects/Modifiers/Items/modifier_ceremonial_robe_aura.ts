@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_ceremonial_robe_aura extends Modifier {
+export class modifier_ceremonial_robe_aura extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedMres = 0
 	private cachedStatusResist = 0
 
@@ -17,15 +20,15 @@ export class modifier_ceremonial_robe_aura extends Modifier {
 			this.GetStatusResistanceStacking.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetMagicalResistanceBonus(): [number, boolean] {
 		return [-this.cachedMres, this.IsMagicImmune()]
 	}
-
 	protected GetStatusResistanceStacking(): [number, boolean] {
 		return [-this.cachedStatusResist, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "item_ceremonial_robe"
 		this.cachedMres = this.GetSpecialValue("magic_resistance", name)

@@ -4,7 +4,10 @@ import { Modifier } from "../../../Base/Modifier"
 import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_kez_ravens_veil_blind extends Modifier {
+export class modifier_kez_ravens_veil_blind extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedDayVision = 0
 	private cachedNightVision = 0
 
@@ -19,7 +22,9 @@ export class modifier_kez_ravens_veil_blind extends Modifier {
 			this.GetFixedNightVision.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	public PostDataUpdate(): void {
 		const owner = this.Parent
 		if (owner === undefined) {
@@ -30,15 +35,12 @@ export class modifier_kez_ravens_veil_blind extends Modifier {
 		this.cachedDayVision = this.calculateVision(owner)
 		this.cachedNightVision = this.calculateVision(owner, true)
 	}
-
 	protected GetFixedDayVision(): [number, boolean] {
 		return [this.cachedDayVision, this.IsMagicImmune()]
 	}
-
 	protected GetFixedNightVision(): [number, boolean] {
 		return [this.cachedNightVision, this.IsMagicImmune()]
 	}
-
 	private calculateVision(owner: Unit, isNight: boolean = false): number {
 		const baseVision = isNight
 			? owner.NetworkedBaseNightVision

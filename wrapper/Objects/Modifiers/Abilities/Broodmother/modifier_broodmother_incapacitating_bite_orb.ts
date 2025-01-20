@@ -3,7 +3,13 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_broodmother_incapacitating_bite_orb extends Modifier {
+export class modifier_broodmother_incapacitating_bite_orb
+	extends Modifier
+	implements IDebuff
+{
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedDamage = 0
 
@@ -17,7 +23,9 @@ export class modifier_broodmother_incapacitating_bite_orb extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetPreAttackBonusDamagePercentage(): [number, boolean] {
 		const target = this.Parent
 		if (target === undefined || !target.IsEnemy(this.Caster)) {
@@ -25,11 +33,9 @@ export class modifier_broodmother_incapacitating_bite_orb extends Modifier {
 		}
 		return [this.cachedDamage, this.IsMagicImmune()]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "broodmother_incapacitating_bite"
 		this.cachedSpeed = this.GetSpecialValue("bonus_movespeed", name)

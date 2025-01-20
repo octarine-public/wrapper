@@ -9,6 +9,7 @@ export class modifier_skeleton_king_mortal_strike extends Modifier {
 	private cachedCritDamage = 0
 	private cachedCritDamageValue = 0
 	private cachedCritDamageBonus = 0
+	private cachedCanCrit = false
 
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
@@ -18,16 +19,26 @@ export class modifier_skeleton_king_mortal_strike extends Modifier {
 		]
 	])
 
+	public get ForceVisible(): boolean {
+		return this.cachedCanCrit
+	}
 	public PostDataUpdate(): void {
-		const owner = this.Parent
-		if (owner === undefined) {
+		const owner = this.Parent,
+			abil = this.Ability
+		if (owner === undefined || abil === undefined) {
 			this.cachedCritDamageBonus = 0
 			return
 		}
-		const hasBuff = owner.HasBuffByName(
+		const isDisabled = this.IsPassiveDisabled() || this.IsSuppressCrit(),
+			canCrit = abil.IsReady && !isDisabled
+		if (this.cachedCanCrit !== canCrit) {
+			this.cachedCanCrit = canCrit
+			this.Update(true)
+		}
+		const hasScepterBuff = owner.HasBuffByName(
 			"modifier_skeleton_king_reincarnation_scepter_active"
 		)
-		this.cachedCritDamageBonus = hasBuff ? this.cachedCritDamageValue : 0
+		this.cachedCritDamageBonus = hasScepterBuff ? this.cachedCritDamageValue : 0
 	}
 
 	protected GetCriticalStrikeBonus(params?: IModifierParams): [number, boolean] {
@@ -42,7 +53,10 @@ export class modifier_skeleton_king_mortal_strike extends Modifier {
 		if (target === undefined || ability === undefined || !ability.IsReady) {
 			return [0, false]
 		}
-		return [this.cachedCritDamage + this.cachedCritDamageBonus, target.IsBuilding]
+		if (target.IsBuilding || !target.IsEnemy(this.Caster)) {
+			return [0, false]
+		}
+		return [this.cachedCritDamage + this.cachedCritDamageBonus, false]
 	}
 
 	protected UpdateSpecialValues(): void {

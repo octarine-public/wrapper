@@ -3,7 +3,11 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_juggernaut_blade_fury extends Modifier {
+export class modifier_juggernaut_blade_fury extends Modifier implements IBuff, IShield {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+	public readonly ShieldModifierName = this.Name
+
 	private cachedSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -20,6 +24,12 @@ export class modifier_juggernaut_blade_fury extends Modifier {
 			this.GetMagicalResistanceBonus.bind(this)
 		]
 	])
+	public IsBuff(): this is IBuff {
+		return true
+	}
+	public IsShield(): this is IShield {
+		return true
+	}
 	protected GetAbsoluteNoDamagePure(): [number, boolean] {
 		return [1, false]
 	}

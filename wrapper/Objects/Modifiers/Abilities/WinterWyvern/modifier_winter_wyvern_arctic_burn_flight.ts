@@ -3,7 +3,9 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_winter_wyvern_arctic_burn_flight extends Modifier {
+export class modifier_winter_wyvern_arctic_burn_flight extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
 	public readonly ShouldDoFlyHeightVisual = true
 
 	private cachedSpeed = 0
@@ -24,19 +26,18 @@ export class modifier_winter_wyvern_arctic_burn_flight extends Modifier {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetAttackRangeBonus(): [number, boolean] {
 		return [this.cachedRange, false]
 	}
-
 	protected GetAttackPointConstant(): [number, boolean] {
 		return [this.cachedAttackPoint, false]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "winter_wyvern_arctic_burn"
 		this.cachedSpeed = this.GetSpecialValue("movement_scepter", name)

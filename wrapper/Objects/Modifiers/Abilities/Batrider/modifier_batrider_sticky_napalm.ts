@@ -4,7 +4,10 @@ import { Modifier } from "../../../Base/Modifier"
 import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_batrider_sticky_napalm extends Modifier {
+export class modifier_batrider_sticky_napalm extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedTurnRate = 0
 
@@ -36,15 +39,15 @@ export class modifier_batrider_sticky_napalm extends Modifier {
 		}
 		return this.cachedDamage * this.StackCount
 	}
-
+	public IsDebuff(): this is IDebuff {
+		return this.StackCount !== 0
+	}
 	protected GetTurnRatePercentage(): [number, boolean] {
 		return [this.cachedTurnRate, this.IsMagicImmune()]
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed * this.StackCount, this.IsMagicImmune()]
 	}
-
 	protected GetProcAttackBonusDamageMagicalTarget(
 		params?: IModifierParams
 	): [number, boolean] {
@@ -66,7 +69,6 @@ export class modifier_batrider_sticky_napalm extends Modifier {
 		const damage = (this.cachedDamage * this.cachedBuildingDamage) / 100
 		return [damage * this.StackCount, this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "batrider_sticky_napalm"
 		this.cachedSpeed = this.GetSpecialValue("movement_speed_pct", name)

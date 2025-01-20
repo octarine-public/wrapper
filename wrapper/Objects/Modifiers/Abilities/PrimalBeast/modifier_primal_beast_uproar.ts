@@ -3,7 +3,10 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_primal_beast_uproar extends Modifier {
+export class modifier_primal_beast_uproar extends Modifier implements IBuff {
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedArmor = 0
 	private cachedArmorValue = 0
 
@@ -22,7 +25,9 @@ export class modifier_primal_beast_uproar extends Modifier {
 			this.GetPreAttackBonusDamage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return this.StackCount !== 0
+	}
 	public PostDataUpdate(): void {
 		const owner = this.Parent,
 			modifierName = "modifier_primal_beast_roared_self"
@@ -34,11 +39,9 @@ export class modifier_primal_beast_uproar extends Modifier {
 		this.cachedArmor = this.cachedArmorValue * this.StackCount
 		this.cachedBonusDamageRoared = this.cachedBonusDamageStack * this.StackCount
 	}
-
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, false]
 	}
-
 	protected GetPreAttackBonusDamage(): [number, boolean] {
 		let damage = this.cachedBonusDamageRoared
 		if (!this.IsPassiveDisabled()) {
@@ -46,7 +49,6 @@ export class modifier_primal_beast_uproar extends Modifier {
 		}
 		return [damage, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "primal_beast_uproar"
 		this.cachedBonusDamage = this.GetSpecialValue("bonus_damage", name)

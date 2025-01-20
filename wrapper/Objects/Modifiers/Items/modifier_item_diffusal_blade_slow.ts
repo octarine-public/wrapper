@@ -4,16 +4,21 @@ import { Modifier } from "../../Base/Modifier"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_item_diffusal_blade_slow extends Modifier {
+export class modifier_item_diffusal_blade_slow extends Modifier implements IDebuff {
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
+	private cachedPurge = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
-	private cachedPurge = 0
-
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const owner = this.Parent
 		if (owner === undefined) {
@@ -25,11 +30,9 @@ export class modifier_item_diffusal_blade_slow extends Modifier {
 		const value = this.calculateValue(effectivePurge)
 		return [-(100 - value / this.cachedPurge), this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues() {
 		this.cachedPurge = this.GetSpecialValue("purge_rate", "item_diffusal_blade")
 	}
-
 	private selfReduction(owner: Unit) {
 		const modifierManager = owner.ModifierManager
 		const slowResistanceUnique = modifierManager.GetPercentageMultiplicativeInternal(
@@ -37,7 +40,6 @@ export class modifier_item_diffusal_blade_slow extends Modifier {
 		)
 		return 2 - slowResistanceUnique
 	}
-
 	private calculateValue(effectivePurge: number): number {
 		if (effectivePurge > 80) {
 			return 0

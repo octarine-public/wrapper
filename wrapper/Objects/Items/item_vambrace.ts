@@ -1,4 +1,4 @@
-import { Paths } from "../../Data/ImageData"
+import { ItemImagePath } from "../../Data/PathData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { VambraceAttribute } from "../../Enums/VambraceAttribute"
 import { Item } from "../Base/Item"
@@ -9,14 +9,13 @@ export class item_vambrace extends Item {
 	public readonly ActiveAttribute: VambraceAttribute = VambraceAttribute.STRENGTH
 
 	public get TexturePath(): string {
-		const path = Paths.ItemIcons
 		switch (this.ActiveAttribute) {
 			case VambraceAttribute.STRENGTH:
-				return path + "/vambrace_str_png.vtex_c"
+				return ItemImagePath + "/vambrace_str_png.vtex_c"
 			case VambraceAttribute.INTELLIGENCE:
-				return path + "/vambrace_int_png.vtex_c"
+				return ItemImagePath + "/vambrace_int_png.vtex_c"
 			case VambraceAttribute.AGILITY:
-				return path + "/vambrace_agi_png.vtex_c"
+				return ItemImagePath + "/vambrace_agi_png.vtex_c"
 			default:
 				return super.TexturePath
 		}
