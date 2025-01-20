@@ -4,7 +4,9 @@ import { EntityManager } from "../../../../Managers/EntityManager"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_mars_bulwark extends Modifier {
+export class modifier_mars_bulwark extends Modifier implements IBuff {
+	public readonly BuffModifierName = this.Name
+
 	private cachedSideAng = 0
 	private cachedForwardAng = 0
 
@@ -17,7 +19,9 @@ export class modifier_mars_bulwark extends Modifier {
 			this.GetIncomingPhysicalDamagePercentage.bind(this)
 		]
 	])
-
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	protected GetIncomingPhysicalDamagePercentage(
 		params?: IModifierParams
 	): [number, boolean] {
@@ -38,7 +42,6 @@ export class modifier_mars_bulwark extends Modifier {
 		}
 		return [0, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "mars_bulwark"
 		this.cachedSideIncomingDmg = this.GetSpecialValue(

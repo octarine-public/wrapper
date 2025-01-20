@@ -3,7 +3,12 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_earth_spirit_magnetize_hero_self_buff extends Modifier {
+export class modifier_earth_spirit_magnetize_hero_self_buff
+	extends Modifier
+	implements IBuff
+{
+	public readonly BuffModifierName = this.Name
+
 	private cachedAttackDamage = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -12,6 +17,10 @@ export class modifier_earth_spirit_magnetize_hero_self_buff extends Modifier {
 			this.GetPreAttackBonusDamage.bind(this)
 		]
 	])
+
+	public IsBuff(): this is IBuff {
+		return true
+	}
 
 	protected GetPreAttackBonusDamage(): [number, boolean] {
 		return [this.cachedAttackDamage, false]

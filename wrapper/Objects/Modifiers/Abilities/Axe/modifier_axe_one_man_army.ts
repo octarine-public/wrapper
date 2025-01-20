@@ -4,6 +4,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_axe_one_man_army extends Modifier implements IBuff {
+	public readonly IsHidden = false
 	public readonly BuffModifierName = this.Name
 
 	public GetTexturePath(): string {

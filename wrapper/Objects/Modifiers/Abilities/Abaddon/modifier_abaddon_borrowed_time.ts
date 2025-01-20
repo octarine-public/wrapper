@@ -3,6 +3,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_abaddon_borrowed_time extends Modifier implements IBuff, IShield {
+	public readonly IsHidden = false
 	public readonly BuffModifierName = this.Name
 	public readonly ShieldModifierName = this.Name
 

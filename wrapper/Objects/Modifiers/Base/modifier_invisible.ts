@@ -7,6 +7,8 @@ import { item_glimmer_cape } from "../../Items/item_glimmer_cape"
 
 @WrapperClassModifier()
 export class modifier_invisible extends Modifier {
+	public readonly IsHidden = false
+
 	private cachedSpeedConstant = 0
 	private cachedSpeedPercentage = 0
 

@@ -4,6 +4,7 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier() // stamina statue bonus
 export class modifier_bonus_armor extends Modifier {
+	public readonly IsHidden = false
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,

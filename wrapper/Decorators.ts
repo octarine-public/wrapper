@@ -15,7 +15,7 @@ export function WrapperClass(networkedClassName: string) {
 		RegisterClass(networkedClassName, constructor)
 }
 
-export function WrapperClassModifier(name?: string): any {
+export function WrapperClassModifier(name?: string) {
 	return (constructor: Constructor<Modifier>) => {
 		// Called as @WrapperClassModifier("modifier_class_name") or @WrapperClassModifier()
 		RegisterClassModifier(name ?? constructor.name, constructor)

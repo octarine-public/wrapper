@@ -3,7 +3,13 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_chaos_knight_reality_rift_debuff extends Modifier {
+export class modifier_chaos_knight_reality_rift_debuff
+	extends Modifier
+	implements IDebuff
+{
+	public readonly IsHidden = false
+	public readonly DebuffModifierName = this.Name
+
 	private cachedArmor = 0
 
 	protected readonly DeclaredFunction = new Map([

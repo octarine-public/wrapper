@@ -4,6 +4,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_alchemist_scepter_bonus_damage extends Modifier implements IBuff {
+	public readonly IsHidden = false
 	public readonly BuffModifierName = this.Name
 
 	private cachedBonusDamage = 0

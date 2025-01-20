@@ -75,10 +75,11 @@ export class Modifier {
 
 	public CreationTime = 0
 	public CustomEntity: Nullable<Unit>
-	public StackCount = 0
+	public InternalStackCount = 0
 	public Duration = 0
 	public AbilityLevel = 0
 	public IsGhost = false
+	public IsHidden = true
 
 	public Parent: Nullable<Unit>
 	public Ability: Nullable<Ability>
@@ -99,6 +100,10 @@ export class Modifier {
 		this.IsAura = this.kv.IsAura ?? false
 		this.Name = this.kv.InternalName
 		this.DDAbilityName = this.kv.InternalDDAbilityName
+	}
+
+	public get StackCount(): number {
+		return this.InternalStackCount
 	}
 
 	public get InvisibilityLevel(): number {
@@ -235,8 +240,8 @@ export class Modifier {
 			this.UpdateSpecialValues()
 			updated = true
 		}
-		if (this.StackCount !== newStackCount) {
-			this.StackCount = newStackCount
+		if (this.InternalStackCount !== newStackCount) {
+			this.InternalStackCount = newStackCount
 			this.UpdateSpecialValues()
 			updated = true
 		}
@@ -319,7 +324,13 @@ export class Modifier {
 	public IsDebuff(): this is IDebuff {
 		return false
 	}
+	public IsDisable(): this is IDisable {
+		return false
+	}
 	public IsShield(): this is IShield {
+		return false
+	}
+	public IsChannel(): this is IChannel {
 		return false
 	}
 	public OnHasShardChanged(): void {

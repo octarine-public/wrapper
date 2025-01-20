@@ -4,6 +4,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_axe_berserkers_call_armor extends Modifier implements IBuff {
+	public readonly IsHidden = false
 	public readonly BuffModifierName = this.Name
 
 	private cachedArmor = 0
@@ -14,15 +15,12 @@ export class modifier_axe_berserkers_call_armor extends Modifier implements IBuf
 			this.GetPhysicalArmorBonus.bind(this)
 		]
 	])
-
 	public IsBuff(): this is IBuff {
 		return true
 	}
-
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedArmor = this.GetSpecialValue("bonus_armor", "axe_berserkers_call")
 	}

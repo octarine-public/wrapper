@@ -4,6 +4,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_alchemist_acid_spray extends Modifier implements IDebuff, IBuff {
+	public readonly IsHidden = false
 	public readonly BuffModifierName = this.Name
 	public readonly DebuffModifierName = this.Name
 

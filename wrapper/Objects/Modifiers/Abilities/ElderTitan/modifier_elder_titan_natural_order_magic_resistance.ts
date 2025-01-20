@@ -3,7 +3,12 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_elder_titan_natural_order_magic_resistance extends Modifier {
+export class modifier_elder_titan_natural_order_magic_resistance
+	extends Modifier
+	implements IDebuff
+{
+	public readonly DebuffModifierName = this.Name
+
 	private cachedMres = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -16,6 +21,10 @@ export class modifier_elder_titan_natural_order_magic_resistance extends Modifie
 			this.GetMagicalResistanceBaseReduction.bind(this)
 		]
 	])
+
+	public IsDebuff(): this is IDebuff {
+		return true
+	}
 
 	protected GetMagicalResistanceBonus(): [number, boolean] {
 		return [-this.StackCount, this.IsMagicImmune()]

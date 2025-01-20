@@ -3,7 +3,9 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_night_stalker_void extends Modifier {
+export class modifier_night_stalker_void extends Modifier implements IDebuff {
+	public readonly DebuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedAttackSpeed = 0
 	private cachedReductionVision = 0

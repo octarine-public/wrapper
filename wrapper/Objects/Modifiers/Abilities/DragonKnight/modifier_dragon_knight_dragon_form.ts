@@ -3,7 +3,9 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_dragon_knight_dragon_form extends Modifier {
+export class modifier_dragon_knight_dragon_form extends Modifier implements IBuff {
+	public readonly BuffModifierName = this.Name
+
 	private cachedSpeed = 0
 	private cachedRange = 0
 	private cachedBonusDamage = 0
@@ -22,6 +24,10 @@ export class modifier_dragon_knight_dragon_form extends Modifier {
 			this.GetMoveSpeedBonusConstant.bind(this)
 		]
 	])
+
+	public IsBuff(): this is IBuff {
+		return true
+	}
 
 	public OnHasScepterChanged(): void {
 		// not needed

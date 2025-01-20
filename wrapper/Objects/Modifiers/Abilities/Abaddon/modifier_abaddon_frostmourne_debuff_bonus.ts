@@ -7,6 +7,7 @@ export class modifier_abaddon_frostmourne_debuff_bonus
 	extends Modifier
 	implements IDebuff
 {
+	public readonly IsHidden = false
 	public readonly DebuffModifierName = this.Name
 
 	private cachedSpeed = 0

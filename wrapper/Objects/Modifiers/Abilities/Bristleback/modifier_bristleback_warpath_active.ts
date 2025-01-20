@@ -5,6 +5,7 @@ import { modifier_bristleback_warpath } from "./modifier_bristleback_warpath"
 
 @WrapperClassModifier()
 export class modifier_bristleback_warpath_active extends Modifier implements IDebuff {
+	public readonly IsHidden = false
 	public readonly DebuffModifierName = this.Name
 
 	private cachedSpeed = 0

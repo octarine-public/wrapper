@@ -7,6 +7,7 @@ export class modifier_bristleback_active_conical_quill_spray
 	extends Modifier
 	implements IBuff
 {
+	public readonly IsHidden = false
 	public readonly BuffModifierName = this.Name
 
 	private cachedSpeed = 0

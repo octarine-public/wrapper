@@ -4,6 +4,7 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_abaddon_frostmourne_buff extends Modifier implements IBuff {
+	public readonly IsHidden = false
 	public readonly BuffModifierName = this.Name
 
 	private cachedAttackSpeed = 0

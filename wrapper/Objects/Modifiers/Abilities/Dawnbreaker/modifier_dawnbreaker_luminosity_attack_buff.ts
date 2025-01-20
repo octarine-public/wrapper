@@ -5,7 +5,13 @@ import { Modifier } from "../../../Base/Modifier"
 import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
-export class modifier_dawnbreaker_luminosity_attack_buff extends Modifier {
+export class modifier_dawnbreaker_luminosity_attack_buff
+	extends Modifier
+	implements IBuff
+{
+	public readonly IsHidden = false
+	public readonly BuffModifierName = this.Name
+
 	private cachedOutgoingDamage = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -14,6 +20,10 @@ export class modifier_dawnbreaker_luminosity_attack_buff extends Modifier {
 			this.GetCriticalStrikeBonus.bind(this)
 		]
 	])
+
+	public IsBuff(): this is IBuff {
+		return this.StackCount !== 0
+	}
 
 	protected GetCriticalStrikeBonus(params?: IModifierParams): [number, boolean] {
 		if (params === undefined || this.IsPassiveDisabled() || this.IsSuppressCrit()) {

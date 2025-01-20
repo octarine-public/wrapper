@@ -4,6 +4,7 @@ import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
 export class modifier_bristleback_quill_spray extends Modifier implements IDebuff {
+	public readonly IsHidden = false
 	public readonly DebuffModifierName = this.Name
 
 	private cachedBonusDamage = 0
