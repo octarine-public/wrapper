@@ -10,8 +10,8 @@ export class Header extends Base {
 		Header.LogoOffset.x = GUIInfo.ScaleWidth(14)
 		Header.LogoOffset.y = GUIInfo.ScaleHeight(7)
 
-		Header.CapOffset.x = GUIInfo.ScaleWidth(4)
-		Header.CapOffset.y = GUIInfo.ScaleHeight(2)
+		// Header.CapOffset.x = GUIInfo.ScaleWidth(4)
+		// Header.CapOffset.y = GUIInfo.ScaleHeight(2)
 
 		Header.TextOffset.x = GUIInfo.ScaleWidth(49)
 		Header.TextOffset.y = GUIInfo.ScaleHeight(12)
@@ -21,9 +21,9 @@ export class Header extends Base {
 		Header.LogoSize.x = GUIInfo.ScaleWidth(logoSize.x)
 		Header.LogoSize.y = GUIInfo.ScaleHeight(logoSize.y)
 
-		const capSize = RendererSDK.GetImageSize(this.capPath)
-		Header.CapSize.x = GUIInfo.ScaleWidth(capSize.x)
-		Header.CapSize.y = GUIInfo.ScaleHeight(capSize.y)
+		// const capSize = RendererSDK.GetImageSize(this.capPath)
+		// Header.CapSize.x = GUIInfo.ScaleWidth(capSize.x)
+		// Header.CapSize.y = GUIInfo.ScaleHeight(capSize.y)
 
 		const actualOriginalSize = RendererSDK.GetImageSize(this.imagePath)
 		Header.OriginalSize_.x = GUIInfo.ScaleWidth(actualOriginalSize.x)
@@ -33,9 +33,9 @@ export class Header extends Base {
 	private static readonly imagePath = "menu/header.svg"
 	private static readonly logoPath = "menu/logo.svg"
 
-	private static readonly capPath = "menu/cap.png"
-	private static readonly CapOffset = new Vector2()
-	private static readonly CapSize = new Vector2()
+	// private static readonly capPath = "menu/cap.png"
+	// private static readonly CapOffset = new Vector2()
+	// private static readonly CapSize = new Vector2()
 
 	private static readonly TextOffset = new Vector2()
 	private static readonly LogoOffset = new Vector2()
@@ -89,10 +89,10 @@ export class Header extends Base {
 			-1,
 			Header.LogoSize
 		)
-		const capPos = this.Position.Add(Header.LogoOffset.Add(Header.CapOffset))
-			.Subtract(Header.LogoSize.DivideScalar(2))
-			.SubtractScalarX(Header.CapOffset.x)
-		RendererSDK.Image(Header.capPath, capPos, -1, Header.CapSize)
+		// const capPos = this.Position.Add(Header.LogoOffset.Add(Header.CapOffset))
+		// 	.Subtract(Header.LogoSize.DivideScalar(2))
+		// 	.SubtractScalarX(Header.CapOffset.x)
+		// RendererSDK.Image(Header.capPath, capPos, -1, Header.CapSize)
 		RendererSDK.Text(
 			"octarine",
 			this.Position.Add(Header.TextOffset),
