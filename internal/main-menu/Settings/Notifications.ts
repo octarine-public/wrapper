@@ -1,5 +1,6 @@
 import {
 	Color,
+	GameState,
 	GUIInfo,
 	Menu,
 	Notification,
@@ -13,11 +14,10 @@ export class InternalNotifications {
 	private pressStart = 0
 	private ScriptLatest = true
 	private AutoReload: Nullable<ScriptsUpdated>
-
 	private readonly holdMs = 1000
 
 	private readonly tree: Menu.Node
-	private readonly stateScripts: Menu.Toggle
+	private readonly NotifyState: Menu.Toggle
 	private readonly clickState: Menu.Toggle
 	private readonly autoReloadState: Menu.Toggle
 
@@ -29,7 +29,7 @@ export class InternalNotifications {
 
 		const treeScripts = this.tree.AddNode("Updates notifications", icon)
 
-		this.stateScripts = treeScripts.AddToggle(
+		this.NotifyState = treeScripts.AddToggle(
 			"State",
 			false,
 			"Notifications if scripts updated"
@@ -70,6 +70,15 @@ export class InternalNotifications {
 	public Draw(): void {
 		NotificationsSDK.debug = this.tree.IsOpen
 
+		if (
+			!this.ScriptLatest &&
+			!GameState.IsConnected &&
+			this.AutoReload === undefined
+		) {
+			this.ScriptLatest = true
+			this.callAutoReloadCondition(true)
+		}
+
 		if (!this.pressStart) {
 			return
 		}
@@ -108,22 +117,27 @@ export class InternalNotifications {
 			this.pressStart = hrtime()
 			return
 		}
-		reload()
+		this.callAutoReloadCondition(true)
 	}
 	public OnBindRelease() {
 		if (hrtime() - this.pressStart < this.holdMs) {
-			reload()
+			this.callAutoReloadCondition(true)
 		}
 		this.pressStart = 0
 	}
 	public ScriptsUpdated(): void {
 		this.ScriptLatest = false
-		if (this.stateScripts.value) {
+		if (this.NotifyState.value) {
 			NotificationsSDK.Push(new ScriptsUpdated(this.clickState.value))
+		}
+		if (GameState.IsConnected) {
+			this.callAutoReloadCondition()
+		}
+	}
 
-			if (this.AutoReload) {
-				reload()
-			}
+	private callAutoReloadCondition(force?: boolean) {
+		if (force || this.AutoReload !== undefined) {
+			reload()
 		}
 	}
 }
