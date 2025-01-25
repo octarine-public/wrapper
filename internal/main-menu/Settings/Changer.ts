@@ -120,9 +120,9 @@ export class InternalChanger {
 
 		const inventoryState = inventoryChanger.AddToggle("State", true)
 		inventoryState.executeOnAdd = false
-		inventoryState.OnValue(_c => {
-			SetChangerEnabled(false)
-		})
+		// inventoryState.OnValue(_c => {
+		// 	SetChangerEnabled(c.value)
+		// })
 		inventoryState.executeOnAdd = true
 
 		const inventoryEmblem = inventoryChanger.AddDropdown(
