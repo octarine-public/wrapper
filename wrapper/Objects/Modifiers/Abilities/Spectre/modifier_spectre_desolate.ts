@@ -62,8 +62,7 @@ export class modifier_spectre_desolate extends Modifier {
 			return [0, false]
 		}
 		if (isNearCreep) {
-			const half = 1 - this.cachedBonusPct / 100 // 60%
-			return [this.cachedBonus * half, false]
+			return [(this.cachedBonus * this.cachedBonusPct) / 100, false]
 		}
 		return [this.cachedBonus, false]
 	}
@@ -80,6 +79,7 @@ export class modifier_spectre_desolate extends Modifier {
 			(unit.IsCreep || unit.IsHero || unit.IsSpiritBear) &&
 			unit.IsEnemy(caster) &&
 			unit.IsVisible &&
+			unit.IsSpawned &&
 			unit.IsAlive
 		)
 	}
