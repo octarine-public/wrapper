@@ -490,8 +490,18 @@ export function ReloadGlobalUnitStorage() {
 		{
 			// Ask Valve about this, not me. It's used for building unit names indexes
 			const elem = parsedHeroes.get("npc_dota_hero_base")
-			if (elem !== undefined) {
+			if (elem instanceof Map) {
 				parsedHeroes.delete("npc_dota_hero_base")
+				parsedHeroes.forEach(hero => {
+					if (hero instanceof Map) {
+						// TODO: copy sub-maps?
+						elem.forEach((v, k) => {
+							if (!hero.has(k)) {
+								hero.set(k, v)
+							}
+						})
+					}
+				})
 				parsedHeroes.set("npc_dota_hero_base", elem)
 				parsedHeroes.set("UnitSchemaFixedUp", 1)
 			}
