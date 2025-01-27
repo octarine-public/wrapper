@@ -115,14 +115,13 @@ export class InternalChanger {
 		this.node.SortNodes = false
 
 		const inventoryChanger = this.node.AddNode("Inventory")
-		inventoryChanger.IsHidden = true
 		inventoryChanger.SortNodes = false
 
 		const inventoryState = inventoryChanger.AddToggle("State", true)
 		inventoryState.executeOnAdd = false
-		// inventoryState.OnValue(_c => {
-		// 	SetChangerEnabled(c.value)
-		// })
+		inventoryState.OnValue(c => {
+			SetChangerEnabled(c.value)
+		})
 		inventoryState.executeOnAdd = true
 
 		const inventoryEmblem = inventoryChanger.AddDropdown(
