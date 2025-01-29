@@ -1,3 +1,4 @@
+import { GetItemTexture } from "../../../Data/ImageData"
 import { WrapperClassModifier } from "../../../Decorators"
 import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
@@ -17,6 +18,12 @@ export class modifier_item_blood_grenade_debuff extends Modifier implements IDeb
 	])
 	public IsDebuff(): this is IDebuff {
 		return true
+	}
+	public GetTexturePath(): string {
+		const itemName = this.CachedAbilityName
+		return itemName !== undefined
+			? super.GetTexturePath()
+			: GetItemTexture("item_blood_grenade")
 	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		const value = this.NetworkDamage !== 0 ? this.NetworkDamage : this.cachedSpeed

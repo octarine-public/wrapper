@@ -1,3 +1,4 @@
+import { GetItemTexture } from "../../../Data/ImageData"
 import { WrapperClassModifier } from "../../../Decorators"
 import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
@@ -18,6 +19,12 @@ export class modifier_item_dustofappearance extends Modifier implements IDebuff 
 	}
 	public IsDebuff(): this is IDebuff {
 		return true
+	}
+	public GetTexturePath(): string {
+		const itemName = this.CachedAbilityName
+		return itemName !== undefined
+			? super.GetTexturePath()
+			: GetItemTexture("item_dust_of_appearance")
 	}
 	protected CalculateModifierMoveSpeedPercentage(): [number, boolean] {
 		const owner = this.Parent

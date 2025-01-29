@@ -1,3 +1,4 @@
+import { GetItemTexture } from "../../../Data/ImageData"
 import { WrapperClassModifier } from "../../../Decorators"
 import { Modifier } from "../../Base/Modifier"
 
@@ -11,5 +12,11 @@ export class modifier_teleporting extends Modifier implements IChannel {
 	}
 	public IsChannel(): this is IChannel {
 		return true
+	}
+	public GetTexturePath(): string {
+		const itemName = this.CachedAbilityName
+		return itemName !== undefined
+			? super.GetTexturePath()
+			: GetItemTexture("item_tpscroll")
 	}
 }

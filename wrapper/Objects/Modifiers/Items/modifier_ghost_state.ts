@@ -20,6 +20,9 @@ export class modifier_ghost_state extends Modifier implements IBuff, IShield {
 	public IsBuff(): this is IBuff {
 		return true
 	}
+	public IsShield(): this is IShield {
+		return true
+	}
 	protected GetMagicalResistanceDecrepifyUnique(): [number, boolean] {
 		return [this.cachedMres, this.IsMagicImmune()]
 	}

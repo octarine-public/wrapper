@@ -1,3 +1,4 @@
+import { GetItemTexture } from "../../../Data/ImageData"
 import { WrapperClassModifier } from "../../../Decorators"
 import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
@@ -20,6 +21,9 @@ export class modifier_smoke_of_deceit extends Modifier implements IBuff {
 	}
 	public IsBuff(): this is IBuff {
 		return true
+	}
+	public GetTexturePath(): string {
+		return GetItemTexture("item_smoke_of_deceit")
 	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]

@@ -26,12 +26,13 @@ export class modifier_enchantress_enchant_intrinsic extends Modifier {
 	])
 
 	public PostDataUpdate(): void {
-		const caster = this.Caster
-		if (caster === undefined || caster.Target === undefined) {
+		const caster = this.Caster,
+			target = caster?.Target
+		if (caster === undefined || target === undefined || !target.IsUnit) {
 			this.cachedRange = 0
 			return
 		}
-		const hasSlow = caster.Target.HasBuffByName("modifier_enchantress_enchant_slow")
+		const hasSlow = target.HasBuffByName("modifier_enchantress_enchant_slow")
 		if (!caster.IsAttacking || !hasSlow) {
 			this.cachedRange = 0
 			return
@@ -42,15 +43,12 @@ export class modifier_enchantress_enchant_intrinsic extends Modifier {
 	protected GetAttackRangeBonus(): [number, boolean] {
 		return [this.cachedRange, false]
 	}
-
 	protected GetPreAttackDamageBonus(): [number, boolean] {
 		return [this.cachedDamage, false]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "enchantress_enchant"
 		this.cachedDamage = this.GetSpecialValue("bonus_damage", name)
