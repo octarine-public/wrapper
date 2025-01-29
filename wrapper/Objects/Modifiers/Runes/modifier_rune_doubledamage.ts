@@ -18,6 +18,9 @@ export class modifier_rune_doubledamage extends Modifier implements IBuff {
 			this.GetSpellAmplifyPercentage.bind(this)
 		]
 	])
+	public get ForceVisible() {
+		return this.Parent?.IsEnemy(this.Caster) ?? false
+	}
 	public GetTexturePath(small = false) {
 		return GetRuneTexture("doubledamage", small)
 	}

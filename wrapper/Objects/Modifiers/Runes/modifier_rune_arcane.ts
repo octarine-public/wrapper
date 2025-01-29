@@ -14,6 +14,9 @@ export class modifier_rune_arcane extends Modifier implements IBuff {
 			this.GetManaCostPercentageStacking.bind(this)
 		]
 	])
+	public get ForceVisible() {
+		return this.Parent?.IsEnemy(this.Caster) ?? false
+	}
 	public IsBuff(): this is IBuff {
 		return true
 	}
