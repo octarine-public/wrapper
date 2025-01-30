@@ -89,7 +89,7 @@ export class Dropdown extends Base {
 		public InternalValuesNames: string[],
 		public readonly defaultValue = 0,
 		tooltip = "",
-		private iconPath_ = ""
+		private iconPath_ = "menu/icons/drop-down.svg"
 	) {
 		super(parent, name, tooltip)
 		this.ValuesNames = InternalValuesNames
