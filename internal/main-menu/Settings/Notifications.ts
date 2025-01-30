@@ -164,7 +164,7 @@ class ScriptsUpdated extends Notification {
 		const opacityWhite = Color.White.SetA(opacity)
 
 		RendererSDK.Image(
-			"menu/background_inactive.svg",
+			this.BackgroundCover,
 			position.pos1,
 			-1,
 			position.Size,

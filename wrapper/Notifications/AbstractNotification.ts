@@ -1,5 +1,6 @@
 import { Rectangle } from "../Base/Rectangle"
 import { Vector3 } from "../Base/Vector3"
+import { ImagePath, WrapperPath } from "../Data/PathData"
 import { BackgroundCover } from "../Enums/BackgroundCover"
 import { SoundSDK } from "../Native/SoundSDK"
 import { Entity } from "../Objects/Base/Entity"
@@ -38,9 +39,9 @@ export abstract class Notification {
 	public get BackgroundCover() {
 		switch (this.Cover) {
 			case BackgroundCover.Dota2:
-				return "panorama/images/hud/reborn/item_purchase_bg_psd.vtex_c"
+				return ImagePath + "/hud/reborn/item_purchase_bg_psd.vtex_c"
 			default:
-				return "github.com/octarine-public/wrapper/scripts_files/menu/header.svg"
+				return WrapperPath + "/scripts_files/menu/background_inactive.svg"
 		}
 	}
 

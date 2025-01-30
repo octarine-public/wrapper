@@ -30,19 +30,19 @@ function UpdateGameData(ent: RuneSpawnerBounty) {
 	Runes.BountySpawnEveryMinutes = ent.MaxDuration()
 	Runes.BountySpawnEverySeconds = ent.MaxDuration("seconds")
 }
-
 RegisterFieldHandler(RuneSpawnerBounty, "m_flLastSpawnTime", (ent, newVal) => {
-	const oldState = ent.LastSpawnTime
-	ent.LastSpawnTime = newVal as number
-	if (ent.IsValid && oldState !== ent.LastSpawnTime) {
+	const oldValue = ent.LastSpawnTime,
+		newValue = newVal as number
+	if (oldValue !== newValue) {
+		ent.LastSpawnTime = newValue
 		UpdateGameData(ent)
 	}
 })
-
 RegisterFieldHandler(RuneSpawnerBounty, "m_flNextSpawnTime", (ent, newVal) => {
-	const oldState = ent.NextSpawnTime
-	ent.NextSpawnTime = newVal as number
-	if (ent.IsValid && oldState !== ent.LastSpawnTime) {
+	const oldValue = ent.NextSpawnTime,
+		newValue = newVal as number
+	if (oldValue !== newValue) {
+		ent.NextSpawnTime = newValue
 		UpdateGameData(ent)
 	}
 })
