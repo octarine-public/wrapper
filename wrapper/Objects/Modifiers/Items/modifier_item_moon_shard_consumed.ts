@@ -7,7 +7,7 @@ export class modifier_item_moon_shard_consumed extends modifier_item_moon_shard 
 	public readonly IsHidden = false
 
 	public get ForceVisible(): boolean {
-		return true
+		return this.Parent?.IsEnemy(this.Caster) ?? false
 	}
 	public GetTexturePath(): string {
 		return GetItemTexture("item_moon_shard")
