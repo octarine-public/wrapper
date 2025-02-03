@@ -10,7 +10,7 @@ import {
 	GetTurnData,
 	UpdateFacing
 } from "../../Data/TurnData"
-import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { NetworkedBasicField, ReencodeProperty, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
 import { ATTACK_DAMAGE_STRENGTH } from "../../Enums/ATTACK_DAMAGE_STRENGTH"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
@@ -174,8 +174,6 @@ export class Unit extends Entity {
 	public SequenceParityPrev: number = 0
 	@NetworkedBasicField("m_flStartSequenceCycle")
 	public StartSequenceCycle: number = 0
-	@NetworkedBasicField("m_nUnitState64", EPropertyType.UINT64)
-	public readonly UnitStateNetworked: bigint = 0n
 	@NetworkedBasicField("m_nPlayerOwnerID")
 	public readonly OwnerPlayerID: number = -1
 	@NetworkedBasicField("m_iParity")
@@ -194,6 +192,7 @@ export class Unit extends Entity {
 	public BaseTotalIntellect: number = 0
 	public TotalStrength: number = 0
 	public AttackCapabilities: number = 0
+	public UnitStateNetworked: bigint = 0n
 
 	/** @private NOTE: this is internal field, use Spawner */
 	public Spawner_: number = 0
@@ -2273,6 +2272,14 @@ RegisterFieldHandler(Unit, "m_iCurrentLevel", (unit, newVal) => {
 	if (oldValue !== newVal) {
 		unit.Level = newVal as number
 		EventsSDK.emit("UnitLevelChanged", false, unit)
+	}
+})
+RegisterFieldHandler(Unit, "m_nUnitState64", (unit, newVal) => {
+	const oldValue = unit.UnitStateNetworked,
+		newValue = ReencodeProperty(newVal, EPropertyType.UINT64)
+	if (oldValue !== newValue) {
+		unit.UnitStateNetworked = newVal as bigint
+		EventsSDK.emit("UnitStateChanged", false, unit)
 	}
 })
 export const Units = EntityManager.GetEntitiesByClass(Unit)

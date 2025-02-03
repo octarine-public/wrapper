@@ -514,6 +514,11 @@ interface EventsSDK extends EventEmitter {
 		listener: (entity: Entity) => void,
 		priority?: number
 	): EventEmitter
+	on(
+		name: "UnitStateChanged",
+		listener: (entity: Unit) => void,
+		priority?: number
+	): EventEmitter
 }
 
 export const EventsSDK: EventsSDK = new EventEmitter()
