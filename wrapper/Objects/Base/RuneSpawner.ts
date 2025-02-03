@@ -1,4 +1,5 @@
 import { DOTAGameState } from "../../Enums/DOTAGameState"
+import { GameState } from "../../Utils/GameState"
 import { Entity, GameRules } from "./Entity"
 
 export class RuneSpawner extends Entity {
@@ -36,5 +37,14 @@ export class RuneSpawner extends Entity {
 		const timeFormat = timeType === "seconds" ? 1 : 60
 		// Calculate the appearance time based on the last spawn time and next spawn time
 		return Math.max(nextSpawnTime - lastSpawnTime / timeFormat, 0)
+	}
+	// used in SpawnsTime (don't use MaxDuration this in the function)
+	protected CalculateNextSpawnTime(spawnTimeSec: number): number {
+		const rawGameTime = GameState.RawGameTime
+		if (GameRules === undefined) {
+			return rawGameTime
+		}
+		const gameTime = GameRules.GameTime
+		return gameTime >= 0 ? gameTime + spawnTimeSec : rawGameTime
 	}
 }
