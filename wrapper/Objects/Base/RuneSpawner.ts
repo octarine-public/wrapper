@@ -1,22 +1,14 @@
-import { QAngle } from "../../Base/QAngle"
-import { Vector3 } from "../../Base/Vector3"
 import { DOTAGameState } from "../../Enums/DOTAGameState"
 import { GameState } from "../../Utils/GameState"
 import { Entity, GameRules } from "./Entity"
 
 export class RuneSpawner extends Entity {
 	/** @readonly */
-	public LastSpawnTime = -1 // game time (seconds)
+	public LastSpawnTime: number = -1 // game time (seconds)
 	/** @readonly */
-	public NextSpawnTime = -1 // game time (seconds)
+	public NextSpawnTime: number = -1 // game time (seconds)
 
-	public get Angles(): QAngle {
-		return this.NetworkedAngles
-	}
-	public get RealPosition(): Vector3 {
-		return this.NetworkedPosition
-	}
-	public get ModuleTime() {
+	public get ModuleTime(): number {
 		return this.GameTime % this.MaxDuration("seconds")
 	}
 	public get Remaining() {

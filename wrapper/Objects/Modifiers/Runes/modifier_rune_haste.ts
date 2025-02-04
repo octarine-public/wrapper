@@ -1,4 +1,5 @@
 import { MoveSpeedData } from "../../../Data/GameData"
+import { GetRuneTexture } from "../../../Data/ImageData"
 import { WrapperClassModifier } from "../../../Decorators"
 import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
@@ -19,6 +20,9 @@ export class modifier_rune_haste extends Modifier implements IBuff {
 	}
 	public IsBuff(): this is IBuff {
 		return true
+	}
+	public GetTexturePath(small = false) {
+		return GetRuneTexture("haste", small)
 	}
 	protected GetMoveSpeedAbsoluteMin(): [number, boolean] {
 		return [MoveSpeedData.Max, false] // harcoded: 550

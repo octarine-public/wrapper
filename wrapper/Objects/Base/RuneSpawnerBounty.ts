@@ -1,6 +1,7 @@
 import { Runes } from "../../Data/GameData"
 import { WrapperClass } from "../../Decorators"
 import { RuneSpawnerType } from "../../Enums/RuneSpawnerType"
+import { GameState } from "../../Utils/GameState"
 import { RegisterFieldHandler } from "../NativeToSDK"
 import { RuneSpawner } from "./RuneSpawner"
 
@@ -33,7 +34,7 @@ RegisterFieldHandler(RuneSpawnerBounty, "m_flLastSpawnTime", (ent, newVal) => {
 })
 RegisterFieldHandler(RuneSpawnerBounty, "m_flNextSpawnTime", (ent, newVal) => {
 	const oldValue = ent.NextSpawnTime,
-		newValue = newVal as number
+		newValue = (newVal as number) + GameState.TickInterval
 	if (oldValue !== newValue) {
 		ent.NextSpawnTime = newValue
 		UpdateGameData(ent)
