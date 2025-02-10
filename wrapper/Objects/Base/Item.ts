@@ -134,6 +134,9 @@ export class Item extends Ability {
 	public set CurrentCharges(newVal: number) {
 		this.itemCurrentCharges = newVal
 	}
+	public get CanMoveInBackpack(): boolean {
+		return this.AbilityData.AllowedInBackpack
+	}
 	public DisassembleItem(queue?: boolean) {
 		return this.Owner?.DisassembleItem(this, queue)
 	}

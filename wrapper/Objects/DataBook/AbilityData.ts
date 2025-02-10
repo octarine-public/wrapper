@@ -152,6 +152,7 @@ export class AbilityData {
 	public readonly HasMaxDurationSpecial: boolean
 	public readonly HasHealthCostSpecial: boolean
 	public readonly IsBreakable: boolean
+	public readonly AllowedInBackpack: boolean
 
 	private readonly SpecialValueCache = new Map<string, ISpecialValue>()
 	private readonly CastRangeCache: number[]
@@ -200,9 +201,9 @@ export class AbilityData {
 			? parseInt(kv.get("HasScepterUpgrade") as string) === 1
 			: false
 
-		this.ShouldBeSuggested = kv.has("ShouldBeSuggested")
-			? parseInt(kv.get("ShouldBeSuggested") as string)
-			: -1
+		this.AllowedInBackpack = kv.has("AllowedInBackpack")
+			? parseInt(kv.get("AllowedInBackpack") as string) === 1
+			: true
 
 		this.IsInnate = kv.has("Innate")
 			? parseInt(kv.get("Innate") as string) === 1
@@ -211,6 +212,10 @@ export class AbilityData {
 		this.ItemIsNeutralDrop = kv.has("ItemIsNeutralDrop")
 			? parseInt(kv.get("ItemIsNeutralDrop") as string) === 1
 			: false
+
+		this.ShouldBeSuggested = kv.has("ShouldBeSuggested")
+			? parseInt(kv.get("ShouldBeSuggested") as string)
+			: -1
 
 		this.TexturePath = (kv.get("AbilityTexturePath") as string) ?? ""
 		this.TargetFlags = kv.has("AbilityUnitTargetFlags")
