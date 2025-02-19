@@ -235,7 +235,7 @@ message CMsgLobbyPlayerPlusSubscriptionData {
 }
 message CExtraMsgBlock {
 	optional uint32 msg_type = 1;
-	optional bytes contents = 2;
+	optional bytes contents = 2 [(debugprint_visibility) = k_EProtoDebugVisibility_Never];
 	optional uint64 msg_key = 3;
 	optional bool is_compressed = 4;
 }
@@ -349,6 +349,7 @@ enum EEvent {
 	EVENT_ID_CROWNFALL = 47;
 	EVENT_ID_FROSTIVUS_2023 = 48;
 	EVENT_ID_INTERNATIONAL_2024 = 49;
+	EVENT_ID_FROSTIVUS_2024 = 50;
 }
 message CLobbyGuildChallenge {
 	optional uint32 guild_id = 1;
@@ -664,6 +665,7 @@ message CSODOTALobby {
 	optional uint32 lobby_creation_time = 128;
 	optional string event_game_definition = 129;
 	optional .CDOTALobbyMatchQualityData match_quality_data = 131;
+	repeated int32 requested_hero_teams = 132;
 }
 message CSODOTAPlayerChallenge {
 	optional uint32 account_id = 1 [(key_field) = true];

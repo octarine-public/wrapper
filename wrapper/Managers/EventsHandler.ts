@@ -72,7 +72,10 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_CREATE_PHYSICS_SIM = 32,
 	GAME_PARTICLE_MANAGER_EVENT_DESTROY_PHYSICS_SIM = 33,
 	GAME_PARTICLE_MANAGER_EVENT_SET_VDATA = 34,
-	GAME_PARTICLE_MANAGER_EVENT_SET_MATERIAL_OVERRIDE = 35
+	GAME_PARTICLE_MANAGER_EVENT_SET_MATERIAL_OVERRIDE = 35,
+	GAME_PARTICLE_MANAGER_EVENT_ADD_FAN = 36,
+	GAME_PARTICLE_MANAGER_EVENT_UPDATE_FAN = 37,
+	GAME_PARTICLE_MANAGER_EVENT_SET_CLUSTER_GROWTH = 38
 }
 enum EDotaEntityMessages {
 	DOTA_UNIT_SPEECH = 0,
@@ -175,6 +178,9 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_DESTROY_PHYSICS_SIM = 33;
 	GAME_PARTICLE_MANAGER_EVENT_SET_VDATA = 34;
 	GAME_PARTICLE_MANAGER_EVENT_SET_MATERIAL_OVERRIDE = 35;
+	GAME_PARTICLE_MANAGER_EVENT_ADD_FAN = 36;
+	GAME_PARTICLE_MANAGER_EVENT_UPDATE_FAN = 37;
+	GAME_PARTICLE_MANAGER_EVENT_SET_CLUSTER_GROWTH = 38;
 }
 
 enum DOTA_CHAT_MESSAGE {
@@ -289,6 +295,9 @@ enum DOTA_CHAT_MESSAGE {
 	CHAT_MESSAGE_MINIBOSS_KILL = 117;
 	CHAT_MESSAGE_PLAYER_IN_GAME_BAN_TEXT = 118;
 	CHAT_MESSAGE_BANNER_PLANTED = 119;
+	CHAT_MESSAGE_ALCHEMIST_GRANTED_SCEPTER = 120;
+	CHAT_MESSAGE_PROTECTOR_SPAWNED = 121;
+	CHAT_MESSAGE_CRAFTING_XP = 122;
 }
 
 message CUserMsg_ParticleManager {
@@ -503,6 +512,36 @@ message CUserMsg_ParticleManager {
 		optional bool include_children = 2;
 	}
 
+	message AddFan {
+		optional bool active = 1;
+		optional .CMsgVector bounds_mins = 2;
+		optional .CMsgVector bounds_maxs = 3;
+		optional .CMsgVector fan_origin = 4;
+		optional .CMsgVector fan_origin_offset = 5;
+		optional .CMsgVector fan_direction = 6;
+		optional float force = 7;
+		optional string fan_force_curve = 8;
+		optional bool falloff = 9;
+		optional bool pull_towards_point = 10;
+		optional float curve_min_dist = 11;
+		optional float curve_max_dist = 12;
+	}
+
+	message UpdateFan {
+		optional bool active = 1;
+		optional .CMsgVector fan_origin = 2;
+		optional .CMsgVector fan_origin_offset = 3;
+		optional .CMsgVector fan_direction = 4;
+		optional float fan_ramp_ratio = 7;
+		optional .CMsgVector bounds_mins = 5;
+		optional .CMsgVector bounds_maxs = 6;
+	}
+
+	message SetParticleClusterGrowth {
+		optional float duration = 1;
+		optional .CMsgVector origin = 2;
+	}
+
 	required .PARTICLE_MESSAGE type = 1 [default = GAME_PARTICLE_MANAGER_EVENT_CREATE];
 	required uint32 index = 2;
 	optional .CUserMsg_ParticleManager.ReleaseParticleIndex release_particle_index = 3;
@@ -540,6 +579,9 @@ message CUserMsg_ParticleManager {
 	optional .CUserMsg_ParticleManager.DestroyPhysicsSim destroy_physics_sim = 36;
 	optional .CUserMsg_ParticleManager.SetVData set_vdata = 37;
 	optional .CUserMsg_ParticleManager.SetMaterialOverride set_material_override = 38;
+	optional .CUserMsg_ParticleManager.AddFan add_fan = 39;
+	optional .CUserMsg_ParticleManager.UpdateFan update_fan = 40;
+	optional .CUserMsg_ParticleManager.SetParticleClusterGrowth set_particle_cluster_growth = 41;
 }
 
 enum EDotaEntityMessages {
@@ -1039,6 +1081,18 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_MATERIAL_OVERRIDE: {
+			// const submsg = msg.get("") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_ADD_FAN: {
+			// const submsg = msg.get("") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_FAN: {
+			// const submsg = msg.get("") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_CLUSTER_GROWTH: {
 			// const submsg = msg.get("") as RecursiveProtobuf
 			break
 		}
