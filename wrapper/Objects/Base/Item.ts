@@ -55,16 +55,21 @@ export class Item extends Ability {
 	public readonly SecondaryCharges: number = 0
 	@NetworkedBasicField("m_iStackableMax")
 	public readonly StackableMax: number = 0
-	@NetworkedBasicField("m_bIsNeutralDrop")
-	public readonly IsNeutralDrop: boolean = false
+	@NetworkedBasicField("m_bIsNeutralActiveDrop")
+	public readonly IsNeutralActiveDrop: boolean = false
+	@NetworkedBasicField("m_bIsNeutralPassiveDrop")
+	public readonly IsNeutralPassiveDrop: boolean = false
 	@NetworkedBasicField("m_nNeutralDropTeam")
 	public readonly NeutralDropTeam: Team = Team.None
 	/** @readonly */
 	public ItemSlot = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1
-
 	@NetworkedBasicField("m_iCurrentCharges")
 	private itemCurrentCharges: number = 0
 
+	/** @deprecated use IsNeutralActiveDrop */
+	public get IsNeutralDrop() {
+		return this.IsNeutralActiveDrop
+	}
 	public get Purchaser() {
 		return PlayerCustomData.get(this.PlayerOwnerID)?.Hero
 	}

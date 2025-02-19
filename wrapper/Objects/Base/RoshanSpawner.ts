@@ -1,17 +1,39 @@
 import { Color } from "../../Base/Color"
-import { Vector3 } from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { ERoshanLocation } from "../../Enums/ERoshanLocation"
 import { RenderMode } from "../../Enums/RenderMode"
+import { Team } from "../../Enums/Team"
+import { EntityManager } from "../../Managers/EntityManager"
+import { GameState } from "../../Utils/GameState"
 import { Entity, GameRules } from "./Entity"
+import { Unit } from "./Unit"
 
 @WrapperClass("CDOTA_RoshanSpawner")
 export class RoshanSpawner extends Entity {
 	@NetworkedBasicField("m_iKillCount")
 	public readonly KillCount = 0
-	@NetworkedBasicField("m_vRoshanAltLocation")
-	public readonly AltLocation = new Vector3().Invalidate()
+	@NetworkedBasicField("m_iLastKillerTeam")
+	public readonly LastKillerTeam: Team = Team.None
+	public TOPSpawner_: number = EntityManager.INVALID_HANDLE
+	public BOTSpawner_: number = EntityManager.INVALID_HANDLE
+	@NetworkedBasicField("m_hRoshan")
+	private readonly roshan_: number = EntityManager.INVALID_HANDLE
 
+	public get Roshan() {
+		return EntityManager.EntityByIndex<Unit>(this.roshan_)
+	}
+	public get TOPLocation() {
+		return (
+			EntityManager.EntityByIndex<Entity>(this.TOPSpawner_)?.Position ??
+			super.Position
+		)
+	}
+	public get BOTLocation() {
+		return (
+			EntityManager.EntityByIndex<Entity>(this.BOTSpawner_)?.Position ??
+			super.Position
+		)
+	}
 	public set CustomGlowColor(_: Nullable<Color>) {
 		// N/A for non-networked entities
 	}
@@ -19,25 +41,16 @@ export class RoshanSpawner extends Entity {
 		// N/A for non-networked entities
 	}
 	public get LocationType() {
-		return !this.AltLocation.IsValid || (GameRules?.IsNightGameTime ?? false)
-			? ERoshanLocation.TOP
-			: ERoshanLocation.BOT
+		return !(GameRules?.IsNight ?? false) || GameState.RawGameTime < 15 * 60
+			? ERoshanLocation.BOT
+			: ERoshanLocation.TOP
 	}
 	public get Position() {
 		switch (this.LocationType) {
 			case ERoshanLocation.TOP:
-				return this.AltLocation
+				return this.TOPLocation
 			default:
-				return super.Position
-		}
-	}
-	public get RoshanPosition() {
-		const position = this.Position.Clone()
-		switch (this.LocationType) {
-			case ERoshanLocation.TOP:
-				return position.SubtractScalarZ(114)
-			default:
-				return position.SubtractScalarZ(50)
+				return this.BOTLocation
 		}
 	}
 }

@@ -3,6 +3,7 @@ import { EntityPropertiesNode } from "../../Base/EntityProperties"
 import { TreeModelReplacement } from "../../Base/TreeModelReplacement"
 import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { ERoshanSpawnPhase } from "../../Enums/ERoshanSpawnPhase"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { Events } from "../../Managers/Events"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
@@ -15,29 +16,34 @@ export class TeamData extends Entity {
 	public DataTeam: DataTeamPlayer[] = []
 	public WorldTreeModelReplacements: TreeModelReplacement[] = []
 	@NetworkedBasicField("m_vDesiredWardPlacement")
-	public DesiredWardPlacement: Vector2[] = []
+	public readonly DesiredWardPlacement: Vector2[] = []
 	@NetworkedBasicField("m_vPossibleWardPlacement")
-	public PossibleWardPlacement: Vector2[] = []
+	public readonly PossibleWardPlacement: Vector2[] = []
 	@NetworkedBasicField("m_nEnemyStartingPosition")
-	public EnemyStartingPosition: number[] = []
+	public readonly EnemyStartingPosition: number[] = []
 	@NetworkedBasicField("m_nCaptainInspectedHeroID", EPropertyType.UINT32)
-	public CaptainInspectedHeroID = 0
+	public readonly CaptainInspectedHeroID = 0
 	@NetworkedBasicField("m_flSuggestedWardWeights")
-	public SuggestedWardWeights: number[] = []
+	public readonly SuggestedWardWeights: number[] = []
 	@NetworkedBasicField("m_nSuggestedWardIndexes")
-	public SuggestedWardIndexes: number[] = []
+	public readonly SuggestedWardIndexes: number[] = []
 	@NetworkedBasicField("m_iSuggestedLanes")
-	public SuggestedLanes: number[] = []
+	public readonly SuggestedLanes: number[] = []
 	@NetworkedBasicField("m_iSuggestedLaneWeights")
-	public SuggestedLaneWeights: number[] = []
+	public readonly SuggestedLaneWeights: number[] = []
 	@NetworkedBasicField("m_bSuggestedLaneRoam")
-	public SuggestedLaneRoam: boolean[] = []
+	public readonly SuggestedLaneRoam: boolean[] = []
 	@NetworkedBasicField("m_bSuggestedLaneJungle")
-	public SuggestedLaneJungle: boolean[] = []
+	public readonly SuggestedLaneJungle: boolean[] = []
 	@NetworkedBasicField("m_vecNeutralItemsConsumed")
-	public NeutralItemsConsumed: number[] = []
+	public readonly NeutralItemsConsumed: number[] = []
 	@NetworkedBasicField("m_vecKnownClearCamps")
-	public KnownClearCamps: number[] = []
+	public readonly KnownClearCamps: number[] = []
+	@NetworkedBasicField("m_flRoshanPhaseEndTime")
+	public readonly RoshanPhaseEndTime: number = 0
+	@NetworkedBasicField("m_flRoshanPhaseStartTime")
+	public readonly RoshanPhaseStartTime: number = 0
+	public RoshanPhase: ERoshanSpawnPhase = ERoshanSpawnPhase.ROSHAN_SPAWN_PHASE_ALIVE
 
 	public toJSON() {
 		return {
@@ -57,11 +63,12 @@ export class TeamData extends Entity {
 		}
 	}
 }
-
+RegisterFieldHandler(TeamData, "m_eRoshanPhase", (data, newVal) => {
+	data.RoshanPhase = Number(newVal as bigint)
+})
 RegisterFieldHandler(TeamData, "m_vecDataTeam", (data, newVal) => {
 	data.DataTeam = (newVal as EntityPropertiesNode[]).map(map => new DataTeamPlayer(map))
 })
-
 RegisterFieldHandler(TeamData, "m_vecWorldTreeModelReplacements", (data, newVal) => {
 	data.WorldTreeModelReplacements = (newVal as EntityPropertiesNode[]).map(
 		map => new TreeModelReplacement(map)
@@ -75,5 +82,4 @@ RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, newValue) => {
 		}
 	}
 })
-
 Events.on("NewConnection", () => Tree.TreeActiveMask.clear())

@@ -40,7 +40,7 @@ const Monitor = new (class CUnitVBEModifierChanged {
 		}
 
 		if (
-			ability.IsNeutralDrop &&
+			ability.IsNeutralActiveDrop &&
 			ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
 		) {
 			return

@@ -38,7 +38,7 @@ export class Roshan extends Unit {
 	public get Position() {
 		return this.IsVisible || Roshan.Spawner === undefined
 			? super.Position
-			: Roshan.Spawner.RoshanPosition
+			: Roshan.Spawner.Position
 	}
 	public get HealthBarSize() {
 		return new Vector2(GUIInfo.ScaleHeight(225), GUIInfo.ScaleHeight(5))
