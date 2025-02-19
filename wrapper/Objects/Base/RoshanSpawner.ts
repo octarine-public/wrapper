@@ -41,7 +41,7 @@ export class RoshanSpawner extends Entity {
 		// N/A for non-networked entities
 	}
 	public get LocationType() {
-		return !(GameRules?.IsNight ?? false) || GameState.RawGameTime < 15 * 60
+		return !(GameRules?.IsNightGameTime ?? false) || GameState.RawGameTime < 15 * 60
 			? ERoshanLocation.BOT
 			: ERoshanLocation.TOP
 	}
