@@ -5,4 +5,4 @@ import { Building } from "../Base/Building"
 @WrapperClass("CDOTA_BaseNPC_LotusPool")
 export class LotusPool extends Building {}
 
-export const Fountains = EntityManager.GetEntitiesByClass(LotusPool)
+export const LotusPools = EntityManager.GetEntitiesByClass(LotusPool)

@@ -5,4 +5,4 @@ import { Building } from "../Base/Building"
 @WrapperClass("CDOTA_BaseNPC_XP_Fountain")
 export class XPFountain extends Building {}
 
-export const Fountains = EntityManager.GetEntitiesByClass(XPFountain)
+export const XPFountains = EntityManager.GetEntitiesByClass(XPFountain)
