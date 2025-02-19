@@ -2165,7 +2165,7 @@ RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", (unit, newVal) => {
 		EventsSDK.emit("ControllableByPlayerMaskChanged", false, unit)
 	}
 })
-RegisterFieldHandler(Unit, "m_hAbilities", (unit, newVal) => {
+RegisterFieldHandler(Unit, "m_vecAbilities", (unit, newVal) => {
 	const prevSpells = [...unit.Spells]
 	const ar = newVal as number[]
 	for (let i = 0; i < ar.length; i++) {
