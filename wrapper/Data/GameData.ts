@@ -98,11 +98,11 @@ export const Runes = new (class CDataRune {
 
 	/**
 	 * @readonly
-	 * @defaultvalue `3` default value may be changed in progress game
+	 * @defaultvalue `4` default value may be changed in progress game
 	 * @description Represents the number of minutes between each spawn of bounty runes.
 	 * @description spawn bounty runes every x minutes
 	 */
-	public BountySpawnEveryMinutes: number = 3
+	public BountySpawnEveryMinutes: number = 4
 
 	/**
 	 * @readonly
