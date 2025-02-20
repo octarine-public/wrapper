@@ -4,7 +4,6 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_phylactery extends Modifier {
-	public CachedMultiplier = 0
 	public CachedTotalSpells = 0
 	public CachedBonusDamage = 0
 	protected readonly CanPostDataUpdate = true

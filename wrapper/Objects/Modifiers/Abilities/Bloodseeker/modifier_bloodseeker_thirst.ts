@@ -11,6 +11,7 @@ export class modifier_bloodseeker_thirst extends Modifier implements IBuff {
 	private bonusSpeed = 0
 	private activeBonusSpeed = 0
 	private cachedTotalSpeed = 0
+	private cachedInactivePenalty = 0
 
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
@@ -29,14 +30,22 @@ export class modifier_bloodseeker_thirst extends Modifier implements IBuff {
 	public PostDataUpdate(): void {
 		const owner = this.Parent,
 			min = this.minBonus,
-			max = this.maxBonus
-		if (owner === undefined || min === max || owner.IsPassiveDisabled) {
+			max = this.maxBonus,
+			abil = this.Ability
+		if (owner === undefined || abil === undefined) {
+			this.cachedTotalSpeed = 0
+			return
+		}
+		if (min === max || owner.IsPassiveDisabled) {
 			this.cachedTotalSpeed = 0
 			return
 		}
 		let value = this.bonusSpeed
-		if (owner.HasBuffByName("modifier_bloodseeker_thirst_active")) {
+		const hasBonus = owner.HasBuffByName("modifier_bloodseeker_thirst_active")
+		if (hasBonus) {
 			value += this.activeBonusSpeed
+		} else if (this.cachedInactivePenalty !== 0 && !abil.IsCooldownReady) {
+			value = value * ((100 - this.cachedInactivePenalty) / 100)
 		}
 		this.cachedTotalSpeed = (this.InternalStackCount * value) / (min - max)
 	}
@@ -52,5 +61,6 @@ export class modifier_bloodseeker_thirst extends Modifier implements IBuff {
 		this.maxBonus = this.GetSpecialValue("max_bonus_pct", name)
 		this.bonusSpeed = this.GetSpecialValue("bonus_movement_speed", name)
 		this.activeBonusSpeed = this.GetSpecialValue("active_movement_speed", name)
+		this.cachedInactivePenalty = this.GetSpecialValue("inactive_penalty_pct", name)
 	}
 }

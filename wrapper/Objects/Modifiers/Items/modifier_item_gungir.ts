@@ -4,31 +4,20 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_gungir extends Modifier {
-	private cachedDamage = 0
-	private cachedAttackSpeed = 0
+	private cachedAOERadius = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
-			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE,
-			this.GetPreAttackBonusDamage.bind(this)
-		],
-		[
-			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
-			this.GetAttackSpeedBonusConstant.bind(this)
+			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_CONSTANT_STACKING,
+			this.GetAoeBonusConstantStacking.bind(this)
 		]
 	])
 
-	protected GetPreAttackBonusDamage(): [number, boolean] {
-		return [this.cachedDamage, false]
+	protected GetAoeBonusConstantStacking(): [number, boolean] {
+		return [this.cachedAOERadius, false]
 	}
 
-	protected GetAttackSpeedBonusConstant(): [number, boolean] {
-		return [this.cachedAttackSpeed, false]
-	}
-
-	protected UpdateSpecialValues() {
-		const name = "item_gungir"
-		this.cachedDamage = this.GetSpecialValue("bonus_damage", name)
-		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name)
+	protected UpdateSpecialValues(): void {
+		this.cachedAOERadius = this.GetSpecialValue("bonus_aoe", "item_gungir")
 	}
 }

@@ -41,9 +41,9 @@ new (class CInvokerSpellLevelChanged {
 			return
 		}
 		if (abil instanceof invoker_spell_extends) {
-			abil.QuasLevel = this.level(quas)
-			abil.WexLevel = this.level(wex)
-			abil.ExortLevel = this.level(exort)
+			abil.QuasLevel = quas.Level
+			abil.WexLevel = wex.Level
+			abil.ExortLevel = exort.Level
 			return
 		}
 		this.UnitAbilitiesChanged(owner)
@@ -63,18 +63,10 @@ new (class CInvokerSpellLevelChanged {
 		for (let i = arr.length - 1; i > -1; i--) {
 			const abil = arr[i]
 			if (abil instanceof invoker_spell_extends) {
-				abil.QuasLevel = this.level(quas)
-				abil.WexLevel = this.level(wex)
-				abil.ExortLevel = this.level(exort)
+				abil.QuasLevel = quas.Level
+				abil.WexLevel = wex.Level
+				abil.ExortLevel = exort.Level
 			}
 		}
-	}
-
-	private level(ability: Ability) {
-		let level = ability.Level
-		if (ability.Owner?.HasScepter) {
-			level++
-		}
-		return level
 	}
 })()

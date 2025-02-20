@@ -30,7 +30,7 @@ export class modifier_alchemist_scepter_bonus_damage extends Modifier implements
 		return [this.cachedSpellAmplify * this.StackCount, false]
 	}
 	protected UpdateSpecialValues(): void {
-		const name = "alchemist_chemical_rage"
+		const name = "alchemist_goblins_greed"
 		this.cachedSpellAmplify = this.GetSpecialValue("scepter_spell_amp", name)
 		this.cachedBonusDamage = this.GetSpecialValue("scepter_bonus_damage", name)
 	}

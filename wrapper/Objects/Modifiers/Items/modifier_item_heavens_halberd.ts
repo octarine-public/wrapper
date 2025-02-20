@@ -4,23 +4,24 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_heavens_halberd extends Modifier {
-	private cachedSpeedResist = 0
+	private blockDamageMelee = 0
+	private blockDamageRanged = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
-			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_UNIQUE,
-			this.GetSlowResistanceUnique.bind(this)
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_CONSTANT_BLOCK,
+			this.GetPhysicalConstantBlock.bind(this)
 		]
 	])
 
-	protected GetSlowResistanceUnique(): [number, boolean] {
-		return [this.cachedSpeedResist, false]
+	protected GetPhysicalConstantBlock(): [number, boolean] {
+		const isRanged = this.Parent?.IsRanged ?? false
+		return [isRanged ? this.blockDamageRanged : this.blockDamageMelee, false]
 	}
 
 	protected UpdateSpecialValues() {
-		this.cachedSpeedResist = this.GetSpecialValue(
-			"slow_resistance",
-			"item_heavens_halberd"
-		)
+		const name = "item_vanguard"
+		this.blockDamageMelee = this.GetSpecialValue("block_damage_melee", name)
+		this.blockDamageRanged = this.GetSpecialValue("block_damage_ranged", name)
 	}
 }

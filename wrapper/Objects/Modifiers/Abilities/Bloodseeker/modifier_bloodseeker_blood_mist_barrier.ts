@@ -1,3 +1,4 @@
+import { GetHeroTexture } from "../../../../Data/ImageData"
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
@@ -20,6 +21,9 @@ export class modifier_bloodseeker_blood_mist_barrier extends Modifier implements
 	}
 	public IsShield(): this is IShield {
 		return true
+	}
+	public GetTexturePath(): string {
+		return GetHeroTexture(this.Caster?.Name ?? "")
 	}
 	protected GetTotalConstantBlock(): [number, boolean] {
 		return [this.CreationTime, false] // wtf

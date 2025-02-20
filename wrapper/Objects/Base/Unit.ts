@@ -1174,14 +1174,8 @@ export class Unit extends Entity {
 		if (modifier === undefined || modifier.CachedTotalSpells === 0) {
 			return 0
 		}
-		const baseRaw = modifier.CachedBonusDamage
-		const attackRaw = this.GetRawAttackDamage(
-			target,
-			ATTACK_DAMAGE_STRENGTH.DAMAGE_MIN
-		)
-		const damage = baseRaw + (attackRaw * modifier.CachedMultiplier) / 100
 		return (
-			damage *
+			modifier.CachedBonusDamage *
 			this.EffSpellAmp *
 			target.EffSpellAmpTarget *
 			target.GetDamageAmplification(this, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)

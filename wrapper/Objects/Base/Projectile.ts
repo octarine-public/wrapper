@@ -133,9 +133,8 @@ export class TrackingProjectile extends Projectile {
 		}
 		const baseSpeed = this.OriginalSpeed,
 			distortionAura = this.ModifierDistortionAura(this.Source),
-			magneticFieldAura = this.ModifierMagneticFieldAura(this.Source),
 			timeZoneAura = this.ModifierTimeZoneAura(this.Source)
-		this.Speed = baseSpeed * (1 - (distortionAura + magneticFieldAura + timeZoneAura))
+		this.Speed = baseSpeed * (1 - (distortionAura + timeZoneAura))
 	}
 	// Passive distortion aura (faceless_void)
 	protected ModifierDistortionAura(source: Unit): number {
@@ -164,27 +163,6 @@ export class TrackingProjectile extends Projectile {
 			return 0
 		}
 		return ability.GetSpecialValue("attack_projectile_slow") / 100
-	}
-
-	// MagneticField (arc_warden)
-	protected ModifierMagneticFieldAura(source: Unit): number {
-		if (!this.IsAttack) {
-			return 0
-		}
-		const name = "modifier_arc_warden_magnetic_field_distortion_aura"
-		const modifier = Thinkers.find(x => x.HasBuffByName(name))?.GetBuffByName(name)
-
-		const ability = modifier?.Ability,
-			owner = modifier?.Parent
-		if (modifier === undefined || ability === undefined || owner === undefined) {
-			return 0
-		}
-		const radius = ability.AOERadius + 24
-		const value = ability.GetSpecialValue("projectile_slow") / 100
-		if (source === owner || owner.Team === source.Team) {
-			return -value
-		}
-		return owner.IsInRange(this.Position, radius) ? value : 0
 	}
 
 	// TimeZone (faceless_void)

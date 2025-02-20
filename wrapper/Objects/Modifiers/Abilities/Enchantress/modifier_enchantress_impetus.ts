@@ -34,7 +34,7 @@ export class modifier_enchantress_impetus extends Modifier {
 		const distanceCap = this.cachedDistanceCap,
 			distance2D = Math.min(owner.Distance2D(target), distanceCap)
 		let damage = (distance2D * this.cachedDistanceDamage) / 100
-		if (target.IsCreep || target.IsIllusion) {
+		if (target.IsIllusion) {
 			damage *= this.cachedMultiplier
 		}
 		return [damage, false]
@@ -42,8 +42,8 @@ export class modifier_enchantress_impetus extends Modifier {
 
 	protected UpdateSpecialValues(): void {
 		const name = "enchantress_impetus"
-		this.cachedMultiplier = this.GetSpecialValue("creep_multiplier", name)
 		this.cachedDistanceCap = this.GetSpecialValue("distance_cap", name)
 		this.cachedDistanceDamage = this.GetSpecialValue("distance_damage_pct", name)
+		this.cachedMultiplier = this.GetSpecialValue("illusion_damage_multiplier", name)
 	}
 }

@@ -8,7 +8,6 @@ export class modifier_arc_warden_flux extends Modifier implements IDebuff {
 	public readonly DebuffModifierName = this.Name
 
 	private cachedSpeed = 0
-	private cachedTempestSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -20,14 +19,9 @@ export class modifier_arc_warden_flux extends Modifier implements IDebuff {
 		return true
 	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		const value = this.cachedSpeed || this.cachedTempestSpeed
-		return [-value, this.IsMagicImmune()]
+		return [-this.cachedSpeed, this.IsMagicImmune()]
 	}
 	protected UpdateSpecialValues(): void {
 		this.cachedSpeed = this.GetSpecialValue("move_speed_slow_pct", "arc_warden_flux")
-		this.cachedTempestSpeed = this.GetSpecialValue(
-			"tempest_move_speed_slow_pct",
-			"arc_warden_flux"
-		)
 	}
 }

@@ -10,9 +10,8 @@ export class modifier_primal_beast_uproar extends Modifier implements IBuff {
 	private cachedArmor = 0
 	private cachedArmorValue = 0
 
-	private cachedBonusDamage = 0 // passive damage
 	private cachedBonusDamageStack = 0
-	private cachedBonusDamageRoared = 0 // active damage
+	private cachedBonusDamageRoared = 0
 
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
@@ -43,15 +42,10 @@ export class modifier_primal_beast_uproar extends Modifier implements IBuff {
 		return [this.cachedArmor, false]
 	}
 	protected GetPreAttackBonusDamage(): [number, boolean] {
-		let damage = this.cachedBonusDamageRoared
-		if (!this.IsPassiveDisabled()) {
-			damage += this.cachedBonusDamage
-		}
-		return [damage, false]
+		return [this.cachedBonusDamageRoared, false]
 	}
 	protected UpdateSpecialValues(): void {
 		const name = "primal_beast_uproar"
-		this.cachedBonusDamage = this.GetSpecialValue("bonus_damage", name)
 		this.cachedArmorValue = this.GetSpecialValue("roared_bonus_armor", name)
 		this.cachedBonusDamageStack = this.GetSpecialValue("bonus_damage_per_stack", name)
 	}
