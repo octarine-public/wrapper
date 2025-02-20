@@ -57,6 +57,7 @@ export class CTopBar {
 			this.TimeOfDay.Size,
 			Color.Aqua.SetA(128)
 		)
+		RendererSDK.FilledRect(this.TopBar.pos1, this.TopBar.Size, Color.Yellow.SetA(128))
 		RendererSDK.FilledRect(
 			this.TimeOfDayTimeUntil.pos1,
 			this.TimeOfDayTimeUntil.Size,
@@ -174,7 +175,7 @@ export class CTopBar {
 			Math.round((this.TopBar.Width - this.TimeOfDayTimeUntil.Width) / 2)
 		this.TimeOfDayTimeUntil.y =
 			this.TopBar.Height -
-			ScaleHeight(64, screenSize) -
+			ScaleHeight(38, screenSize) -
 			this.TimeOfDayTimeUntil.Height
 	}
 	private CalculateSpectatorGoldDisplay(screenSize: Vector2): void {
