@@ -10,6 +10,7 @@ import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EAbilitySlot } from "../../Enums/EAbilitySlot"
 import { EDOTASpecialBonusStats } from "../../Enums/EDOTASpecialBonusStats"
 import { EModifierfunction } from "../../Enums/EModifierfunction"
+import { EPropertyType } from "../../Enums/PropertyType"
 import { SPELL_DISPELLABLE_TYPES } from "../../Enums/SPELL_DISPELLABLE_TYPES"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { EventsSDK } from "../../Managers/EventsSDK"
@@ -20,6 +21,7 @@ import { GameState } from "../../Utils/GameState"
 import { toPercentage } from "../../Utils/Math"
 import { QuantizePlaybackRate } from "../../Utils/QuantizeUtils"
 import { AbilityData } from "../DataBook/AbilityData"
+import { modifier_crystal_maiden_arcane_overflow_active } from "../Modifiers/Abilities/CrystalMaiden/modifier_crystal_maiden_arcane_overflow_active"
 import { modifier_rubick_spell_steal } from "../Modifiers/Abilities/Rubick/modifier_rubick_spell_steal"
 import { Entity } from "./Entity"
 import { Unit } from "./Unit"
@@ -57,6 +59,8 @@ export class Ability extends Entity {
 	public readonly GrantedByFacet: boolean = false
 	@NetworkedBasicField("m_bStealable")
 	public readonly IsStealable: boolean = false
+	@NetworkedBasicField("m_nHeroFacetKey", EPropertyType.UINT32)
+	public readonly HeroFacetKey: number = -1
 
 	public Level = 0
 	public IsEmpty = false
@@ -414,7 +418,14 @@ export class Ability extends Entity {
 		this.abilityCurrentCharges = newVal
 	}
 	public get SpellAmplify(): number {
-		return this.GetSpellAmpModifierSpellSteal(this.Owner)
+		const owner = this.Owner
+		if (owner === undefined) {
+			return 1
+		}
+		return (
+			this.GetSpellAmpModifierSpellSteal(owner) *
+			this.GetSpellAmpModifierBrillianceAura(owner)
+		)
 	}
 	protected get CanBeCastedWhileRooted() {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_ROOT_DISABLES)
@@ -611,15 +622,23 @@ export class Ability extends Entity {
 	public PingAbility() {
 		return this.Owner?.PingAbility(this)
 	}
-	public GetSpecialValue(specialName: string, level: number = this.Level): number {
+	public GetSpecialValue(
+		specialName: string,
+		level: number = this.Level,
+		includeFacet = !(this.IsStolen || this.IsReplicated)
+	): number {
 		const owner = this.Owner,
 			abilityData = this.AbilityData
 		if (owner === undefined) {
 			return abilityData.GetSpecialValue(specialName, level, this.Name)
 		}
-		return owner === undefined
-			? abilityData.GetSpecialValue(specialName, level, this.Name)
-			: abilityData.GetSpecialValueWithTalent(owner, specialName, level, this.Name)
+		return abilityData.GetSpecialValueWithTalent(
+			owner,
+			specialName,
+			level,
+			this.Name,
+			includeFacet
+		)
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {
 		const owner = this.Owner
@@ -797,12 +816,24 @@ export class Ability extends Entity {
 		}
 		return baseSpellAmp + (1 + modifier.CachedSpellAmpDamage / 100)
 	}
+	protected GetSpellAmpModifierBrillianceAura(owner: Nullable<Unit>): number {
+		if (owner === undefined || this.IsItem) {
+			return 1
+		}
+		const modifier = owner.GetBuffByClass(
+			modifier_crystal_maiden_arcane_overflow_active
+		)
+		if (modifier === undefined) {
+			return 1
+		}
+		return 1 + modifier.CachedSpellAmplify / 100
+	}
 	protected IsAbsoluteNoDamage(
 		source: Unit,
 		target: Unit,
 		damageType: DAMAGE_TYPES
 	): boolean {
-		if (!target.IsAbsoluteNoDamage(damageType)) {
+		if (!target.IsAbsoluteNoDamage(damageType, source)) {
 			return false
 		}
 		if (target.IsEnemy(source)) {

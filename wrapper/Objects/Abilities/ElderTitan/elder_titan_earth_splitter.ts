@@ -26,7 +26,7 @@ export class elder_titan_earth_splitter extends Ability {
 			return 0
 		}
 		const damageType = this.DamageType
-		if (target.IsAbsoluteNoDamage(damageType)) {
+		if (target.IsAbsoluteNoDamage(damageType, owner)) {
 			return 0
 		}
 		let rawDamageBlock = 0,

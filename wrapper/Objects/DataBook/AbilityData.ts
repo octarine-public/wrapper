@@ -130,6 +130,7 @@ export class AbilityData {
 	public readonly HasShardUpgrade: boolean
 	public readonly HasScepterUpgrade: boolean
 	public readonly ItemIsNeutralDrop: boolean
+	public readonly ItemIsNeutralActiveDrop: boolean
 	public readonly ShouldBeSuggested: number
 	public readonly IsTempestDoubleClonable: boolean
 	public readonly SuggestPregame: boolean
@@ -211,6 +212,10 @@ export class AbilityData {
 
 		this.ItemIsNeutralDrop = kv.has("ItemIsNeutralDrop")
 			? parseInt(kv.get("ItemIsNeutralDrop") as string) === 1
+			: false
+
+		this.ItemIsNeutralActiveDrop = kv.has("ItemIsNeutralActiveDrop")
+			? parseInt(kv.get("ItemIsNeutralActiveDrop") as string) === 1
 			: false
 
 		this.ShouldBeSuggested = kv.has("ShouldBeSuggested")
@@ -474,7 +479,8 @@ export class AbilityData {
 		owner: Unit,
 		specialName: string,
 		level: number,
-		abilityName: string
+		abilityName: string,
+		includeFacet: boolean = true
 	): number {
 		if (level <= 0) {
 			return 0
@@ -504,7 +510,10 @@ export class AbilityData {
 			const linkedSpecialBonus = arr[i]
 			if (!linkedSpecialBonus.IsOld) {
 				if (linkedSpecialBonus.Name.startsWith("special_bonus_facet_")) {
-					if (owner.HeroFacet !== linkedSpecialBonus.Name.substring(20)) {
+					if (
+						includeFacet &&
+						owner.HeroFacet !== linkedSpecialBonus.Name.substring(20)
+					) {
 						continue
 					}
 				} else if (linkedSpecialBonus.Name === "special_bonus_shard") {
@@ -551,7 +560,11 @@ export class AbilityData {
 			}
 		}
 		// calculate all special bonuses after validation
-		allSpecialBonuses.orderByDescending(cb => cb[0])
+		allSpecialBonuses.orderByDescending(
+			cb =>
+				cb[0] === EDOTASpecialBonusOperation.SPECIAL_BONUS_SET ||
+				cb[0] === EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+		)
 		for (let i = allSpecialBonuses.length - 1; i > -1; i--) {
 			const [operationType, value, flag] = allSpecialBonuses[i]
 			switch (operationType) {

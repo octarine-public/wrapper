@@ -1,10 +1,16 @@
 import { WrapperClass } from "../../../Decorators"
+import { DAMAGE_TYPES } from "../../../Enums/DAMAGE_TYPES"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("dragon_knight_dragon_tail")
 export class dragon_knight_dragon_tail extends Ability {
 	public get ProjectileAttachment(): string {
 		return "attach_attack2"
+	}
+	public get DamageType(): DAMAGE_TYPES {
+		return this.HeroFacetKey === 1
+			? DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL
+			: super.DamageType
 	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)

@@ -4,13 +4,20 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_orb_of_corrosion_debuff extends Modifier implements IDebuff {
+	private static readonly modifiers = [
+		"modifier_desolator_buff",
+		"modifier_desolator_2_buff"
+	]
+
 	public readonly IsHidden = false
 	public readonly DebuffModifierName = this.Name
 
 	private slowMelee = 0
 	private slowRanged = 0
 	private cachedArmor = 0
+	private isDesolator = false
 
+	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
@@ -24,18 +31,21 @@ export class modifier_orb_of_corrosion_debuff extends Modifier implements IDebuf
 	public IsDebuff(): this is IDebuff {
 		return true
 	}
+	public PostDataUpdate(): void {
+		this.isDesolator =
+			this.Parent?.HasAnyBuffByNames(modifier_orb_of_corrosion_debuff.modifiers) ??
+			false
+	}
 	protected GetPhysicalArmorBonus(): [number, boolean] {
-		return !this.IsMagicImmune() ? [this.cachedArmor, false] : [0, false]
+		return !this.isDesolator && !this.IsMagicImmune()
+			? [this.cachedArmor, false]
+			: [0, false]
 	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		const caster = this.Caster
-		if (caster === undefined) {
-			return [0, false]
-		}
-		const value = this.HasMeleeAttacksBonuses(caster)
-			? this.slowMelee
-			: this.slowRanged
-		return [value, this.IsMagicImmune()]
+		return [
+			this.HasMeleeAttacksBonuses() ? this.slowMelee : this.slowRanged,
+			this.IsMagicImmune()
+		]
 	}
 	protected UpdateSpecialValues(): void {
 		const name = "item_orb_of_corrosion"

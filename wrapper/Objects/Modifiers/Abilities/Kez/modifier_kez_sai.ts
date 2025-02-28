@@ -1,12 +1,10 @@
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
-import { kez_shodo_sai } from "../../../Abilities/Kez/kez_shodo_sai"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_kez_sai extends Modifier {
 	private cachedBAT = 0
-	private cachedSpeed = 0
 	private cachedRange = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -38,11 +36,7 @@ export class modifier_kez_sai extends Modifier {
 		if (owner === undefined || ability?.IsHidden) {
 			return [0, false]
 		}
-		let value = this.NetworkMovementSpeed
-		if (owner.HasShard) {
-			value += this.cachedSpeed
-		}
-		return [value, false]
+		return [this.NetworkMovementSpeed, false]
 	}
 
 	protected UpdateSpecialValues(): void {
@@ -52,8 +46,5 @@ export class modifier_kez_sai extends Modifier {
 		const name = this.Ability.Name
 		this.cachedRange = this.GetSpecialValue("sai_attack_range", name)
 		this.cachedBAT = this.GetSpecialValue("sai_base_attack_time", name)
-		if (this.Ability instanceof kez_shodo_sai) {
-			this.cachedSpeed = this.GetSpecialValue("shard_base_movement_speed", name)
-		}
 	}
 }

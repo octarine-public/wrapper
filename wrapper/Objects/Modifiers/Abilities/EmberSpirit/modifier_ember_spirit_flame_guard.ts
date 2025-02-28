@@ -16,7 +16,7 @@ export class modifier_ember_spirit_flame_guard
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_CONSTANT_BLOCK,
-			this.GetTotalConstantBlock.bind(this)
+			this.GetMagicalConstantBlock.bind(this)
 		]
 	])
 	public get StackCount(): number {
@@ -28,7 +28,7 @@ export class modifier_ember_spirit_flame_guard
 	public IsShield(): this is IShield {
 		return true
 	}
-	protected GetTotalConstantBlock(params?: IModifierParams): [number, boolean] {
+	protected GetMagicalConstantBlock(params?: IModifierParams): [number, boolean] {
 		if (params === undefined || params.Damage === undefined) {
 			return [0, false]
 		}

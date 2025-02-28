@@ -19,7 +19,7 @@ export class modifier_tiny_grow extends Modifier {
 		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_PERCENTAGE,
-			this.GetAttackSpeedPercenage.bind(this)
+			this.GeAttackSpeedPercentage.bind(this)
 		]
 	])
 
@@ -27,7 +27,7 @@ export class modifier_tiny_grow extends Modifier {
 		return [this.cachedArmor, false]
 	}
 
-	protected GetAttackSpeedPercenage(): [number, boolean] {
+	protected GeAttackSpeedPercentage(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]
 	}
 

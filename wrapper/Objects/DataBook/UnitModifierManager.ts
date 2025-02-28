@@ -300,9 +300,6 @@ export class UnitModifierManager {
 		return percentage * (baseTurnRate + bonus)
 	}
 	public GetMoveSpeed(baseSpeed: number, isUnslowable: boolean = false): number {
-		const { Min, Max } = MoveSpeedData,
-			nightSpeed = this.Owner.MoveSpeedNightBonus
-
 		let slowValue = 1
 		if (isUnslowable || this.Owner.IsUnslowable) {
 			slowValue = 0
@@ -345,24 +342,52 @@ export class UnitModifierManager {
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_UNIQUE
 		)
 
-		const effBonusPercentage = bonusPercentageUnique / 100
-
-		let calculatedSpeed = Math.max(
-			(bonusUnique +
-				bonusConstantUnique2 +
-				bonusConstantUnique +
-				(bonusConstant + baseSpeed + nightSpeed)) *
-				(effBonusPercentage + bonusPercentage),
-			Min
+		const postMultiplier = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_POST_MULTIPLIER_BONUS_CONSTANT,
+			isUnslowable,
+			1,
+			effReduction
 		)
 
 		const ignoreSpeedLimit = this.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_IGNORE_MOVESPEED_LIMIT
 		)
 
-		if (ignoreSpeedLimit === 0 && calculatedSpeed >= Max) {
-			calculatedSpeed = Max
+		const calculateBonuses =
+			baseSpeed +
+			bonusConstant +
+			bonusUnique +
+			bonusConstantUnique +
+			bonusConstantUnique2
+
+		const { Min, Max } = MoveSpeedData
+		const effBonusPercentage = bonusPercentageUnique / 100
+
+		let calculatedSpeed =
+			calculateBonuses * (effBonusPercentage + bonusPercentage) + postMultiplier
+
+		if (ignoreSpeedLimit === 0) {
+			let maxOverride = this.GetConstantLowestInternal(
+				EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_MAX_OVERRIDE
+			)
+			const maxBonusConstant = this.GetConditionalAdditiveInternal(
+				EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_MAX_BONUS_CONSTANT
+			)
+			if (maxOverride === 0) {
+				maxOverride = Max
+			}
+			baseSpeed = maxOverride + maxBonusConstant
+			calculatedSpeed = Math.min(calculatedSpeed, baseSpeed)
 		}
+
+		const minOverride = this.GetConstantLowestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_MIN_OVERRIDE
+		)
+
+		calculatedSpeed = Math.max(
+			calculatedSpeed,
+			minOverride || Min + this.SlowResistance * 100
+		)
 
 		const absoluteSpeed = this.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_ABSOLUTE
@@ -739,24 +764,31 @@ export class UnitModifierManager {
 		}
 		return Math.max((minDamage + bonus + (bonusTarget ?? 0)) * percentage - minDamage)
 	}
-	public GetAbsoluteNoDamage(damageType: DAMAGE_TYPES): boolean {
+	public GetAbsoluteNoDamage(damageType: DAMAGE_TYPES, target: Unit): boolean {
+		const params: IModifierParams = {
+			SourceIndex: target.Index
+		}
+		const args = [false, params] as const
 		switch (damageType) {
 			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
 				return (
 					this.GetConstantFirstInternal(
-						EModifierfunction.MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_MAGICAL
+						EModifierfunction.MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_MAGICAL,
+						...args
 					) !== 0
 				)
 			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL:
 				return (
 					this.GetConstantFirstInternal(
-						EModifierfunction.MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_PHYSICAL
+						EModifierfunction.MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_PHYSICAL,
+						...args
 					) !== 0
 				)
 			case DAMAGE_TYPES.DAMAGE_TYPE_PURE:
 				return (
 					this.GetConstantFirstInternal(
-						EModifierfunction.MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_PURE
+						EModifierfunction.MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_PURE,
+						...args
 					) !== 0
 				)
 			default:
@@ -774,7 +806,8 @@ export class UnitModifierManager {
 	}
 	public GetConstantFirstInternal(
 		eModifierfunction: EModifierfunction,
-		ignoreFlags: boolean = false
+		ignoreFlags: boolean = false,
+		params?: IModifierParams
 	) {
 		const handlers = this.eModifierfunctions.get(eModifierfunction)
 		if (handlers === undefined || handlers.length === 0) {
@@ -782,7 +815,7 @@ export class UnitModifierManager {
 		}
 		let highestValue = Number.MIN_SAFE_INTEGER
 		for (let i = handlers.length - 1; i > -1; i--) {
-			const [value, isFlagged] = handlers[i]()
+			const [value, isFlagged] = handlers[i](params)
 			if (isFlagged && !ignoreFlags) {
 				continue
 			}

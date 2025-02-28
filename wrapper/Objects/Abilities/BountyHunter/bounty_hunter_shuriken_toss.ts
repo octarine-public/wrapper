@@ -17,12 +17,6 @@ export class bounty_hunter_shuriken_toss extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("bonus_damage", level)
 	}
-	public GetBaseCastRangeForLevel(level: number): number {
-		return (
-			this.GetSpecialValue("scepter_cast_range", level) ||
-			super.GetBaseCastRangeForLevel(level)
-		)
-	}
 	private bonusDamage(target: Unit): number {
 		const owner = this.Owner
 		if (!this.OwnerHasScepter || owner === undefined || target.IsAvoidTotalDamage) {
@@ -33,7 +27,7 @@ export class bounty_hunter_shuriken_toss extends Ability {
 			return 0
 		}
 		const damageType = modifier.Ability.DamageType
-		if (modifier.CachedDamage === 0 || target.IsAbsoluteNoDamage(damageType)) {
+		if (modifier.CachedDamage === 0 || target.IsAbsoluteNoDamage(damageType, owner)) {
 			return 0
 		}
 		const damage = modifier.CachedDamage,

@@ -14,6 +14,7 @@ export class modifier_sniper_take_aim_bonus extends Modifier implements IBuff {
 	private cachedRange = 0
 	private cachedArmor = 0
 	private cachedChance = 0
+	private cachedAttackSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -27,6 +28,10 @@ export class modifier_sniper_take_aim_bonus extends Modifier implements IBuff {
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
 			this.GetAttackRangeBonus.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
+			this.GetAttackSpeedBonusConstant.bind(this)
 		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
@@ -57,6 +62,9 @@ export class modifier_sniper_take_aim_bonus extends Modifier implements IBuff {
 	protected GetAttackRangeBonus(): [number, boolean] {
 		return [this.cachedRange, false]
 	}
+	protected GetAttackSpeedBonusConstant(): [number, boolean] {
+		return [this.cachedAttackSpeed, false]
+	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [-this.cachedSpeed, false]
 	}
@@ -66,5 +74,6 @@ export class modifier_sniper_take_aim_bonus extends Modifier implements IBuff {
 		this.cachedArmor = this.GetSpecialValue("bonus_armor", name)
 		this.cachedChance = this.GetSpecialValue("headshot_chance", name)
 		this.cachedRange = this.GetSpecialValue("active_attack_range_bonus", name)
+		this.cachedAttackSpeed = this.GetSpecialValue("attack_speed", name)
 	}
 }

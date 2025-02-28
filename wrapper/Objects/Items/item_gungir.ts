@@ -20,10 +20,6 @@ export class item_gungir extends Item {
 		// https://dota2.fandom.com/wiki/Rod_of_Atos
 		return this.CurrectionSpeed_
 	}
-
-	public GetBaseDamageForLevel(level: number): number {
-		return this.GetSpecialValue("active_damage", level)
-	}
 }
 
 // TODO: fix me, move to event obstacle types

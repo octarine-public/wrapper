@@ -13,12 +13,19 @@ export class modifier_templar_assassin_meld extends Modifier implements IBuff {
 
 	protected readonly DeclaredFunction = new Map([
 		[
+			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
+			this.GetAttackRangeBonus.bind(this)
+		],
+		[
 			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_PHYSICAL_ARMOR_BONUS_TARGET,
 			this.GetPreAttackPhysicalArmorBonusTarget.bind(this)
 		]
 	])
 	public IsBuff(): this is IBuff {
 		return true
+	}
+	protected GetAttackRangeBonus(): [number, boolean] {
+		return [this.StackCount, false]
 	}
 	protected GetPreAttackPhysicalArmorBonusTarget(
 		params?: IModifierParams
@@ -34,6 +41,9 @@ export class modifier_templar_assassin_meld extends Modifier implements IBuff {
 		return [this.cachedPreArmor, false]
 	}
 	protected UpdateSpecialValues() {
-		this.cachedPreArmor = this.GetSpecialValue("bonus_armor", "templar_assassin_meld")
+		const name = "templar_assassin_meld"
+		this.cachedPreArmor = this.GetSpecialValue("bonus_armor", name)
+		this.GetSpecialValue("attack_range_increase_max", name) // only debug
+		this.GetSpecialValue("attack_range_increase_time", name) // only debug
 	}
 }
