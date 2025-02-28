@@ -50,7 +50,7 @@ export class modifier_faceless_void_time_zone_effect
 		return [this.getValueByTeam(this.cachedSpeed), this.IsMagicImmune()]
 	}
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
-		return [this.getValueByTeam(this.cachedAttackSpeed), this.IsMagicImmune()]
+		return this.Caster === this.Parent ? [this.cachedAttackSpeed, false] : [0, false]
 	}
 	protected UpdateSpecialValues(): void {
 		const name = "faceless_void_time_zone"

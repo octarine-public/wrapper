@@ -22,6 +22,9 @@ export class modifier_dawnbreaker_fire_wreath_magic_immunity_tooltip
 			this.GetMagicalResistanceBonus.bind(this)
 		]
 	])
+	public IsBuff(): this is IBuff {
+		return true
+	}
 	public IsShield(): this is IShield {
 		return true
 	}

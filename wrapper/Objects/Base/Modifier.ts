@@ -368,15 +368,17 @@ export class Modifier {
 		const abilData = AbilityData.GetAbilityByName(this.CachedAbilityName ?? "")
 		return abilData?.HasTargetFlags(flag) ?? false
 	}
-	public IsMagicImmune(unit?: Unit) {
-		const owner = unit ?? this.Parent
+	public IsMagicImmune(
+		owner: Nullable<Unit> = this.Parent,
+		ignoreFlags: boolean = false
+	) {
 		const caster = this.Ability?.Owner
-		if (this.flagsMagicImmunity(owner, caster)) {
+		if (this.flagsMagicImmunity(owner, caster) && !ignoreFlags) {
 			return false
 		}
 		return (
-			((unit ?? this.Parent)?.IsMagicImmune ?? false) ||
-			((unit ?? this.Parent)?.IsDebuffImmune ?? false)
+			((owner ?? this.Parent)?.IsMagicImmune ?? false) ||
+			((owner ?? this.Parent)?.IsDebuffImmune ?? false)
 		)
 	}
 	public IsPassiveDisabled(source?: Unit) {

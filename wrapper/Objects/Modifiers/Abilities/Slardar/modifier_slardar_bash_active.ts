@@ -19,21 +19,17 @@ export class modifier_slardar_bash_active extends Modifier implements IBuff {
 		]
 	])
 	public IsBuff(): this is IBuff {
-		return true
+		return this.StackCount !== 0
 	}
 	protected GetPreAttackBonusDamage(params?: IModifierParams): [number, boolean] {
 		if (params === undefined || this.StackCount < this.cachedAttackCount) {
 			return [0, false]
 		}
 		const target = EntityManager.EntityByIndex<Unit>(params.SourceIndex)
-		if (target === undefined || target.IsBuilding) {
+		if (target === undefined || target.IsBuilding || target.IsCreep) {
 			return [0, false]
 		}
-		let damage = this.cachedBonusDamage
-		if (target.IsCreep) {
-			damage *= 2 // no special value (harcoded by Valve)
-		}
-		return [damage, this.IsPassiveDisabled()]
+		return [this.cachedBonusDamage, this.IsPassiveDisabled()]
 	}
 	protected UpdateSpecialValues(): void {
 		const name = "slardar_bash"

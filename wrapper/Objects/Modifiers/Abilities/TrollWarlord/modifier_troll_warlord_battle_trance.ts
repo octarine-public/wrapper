@@ -16,6 +16,10 @@ export class modifier_troll_warlord_battle_trance extends Modifier implements IB
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		],
 		[
+			EModifierfunction.MODIFIER_PROPERTY_IGNORE_ATTACKSPEED_LIMIT,
+			this.GetIgnoreAttackspeedLimit.bind(this)
+		],
+		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
@@ -25,6 +29,9 @@ export class modifier_troll_warlord_battle_trance extends Modifier implements IB
 	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
+	}
+	protected GetIgnoreAttackspeedLimit(): [number, boolean] {
+		return [1, false]
 	}
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]

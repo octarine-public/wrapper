@@ -19,6 +19,7 @@ export class modifier_medusa_stone_gaze extends Modifier implements IBuff {
 	public IsBuff(): this is IBuff {
 		return true
 	}
+
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}

@@ -377,23 +377,6 @@ export class Unit extends Entity {
 	public get MagicalDamageResist(): number {
 		return this.GetMagicalDamageResist()
 	}
-	/** @description The night-time movement speed bonus.*/
-	public get MoveSpeedNightBonus(): number {
-		if (GameRules === undefined || !GameRules.IsNight) {
-			return 0
-		}
-		// see: https://dota2.fandom.com/wiki/Movement_Speed
-		const cooldown = 5 // hardcoded by valve
-		const nightMoveSpeed = 15 * 2 // hardcoded by valve
-		// All units now gain 15 movement speed during the night.
-		// The effect is doubled for heroes, but it can be broken for seconds upon
-		// attacking or taking damage from player-controlled sources.
-		const lastDamageTime = this.LastDamageTime + cooldown,
-			lastAttackTime = this.LastAttackTime + cooldown,
-			lastDealDamageTime = this.LastDealtDamageTime + cooldown
-		const damageTime = Math.max(lastAttackTime, lastDamageTime, lastDealDamageTime)
-		return GameState.RawGameTime >= damageTime ? nightMoveSpeed : 0
-	}
 	/** @deprecated Use MoveSpeed */
 	public get Speed(): number {
 		return this.MoveSpeed
@@ -810,8 +793,8 @@ export class Unit extends Entity {
 	public TexturePath(small?: boolean, team = this.Team): Nullable<string> {
 		return GetUnitTexture(this.Name, small, team)
 	}
-	public IsAbsoluteNoDamage(damageType: DAMAGE_TYPES) {
-		return this.ModifierManager.GetAbsoluteNoDamage(damageType)
+	public IsAbsoluteNoDamage(damageType: DAMAGE_TYPES, target: Unit): boolean {
+		return this.ModifierManager.GetAbsoluteNoDamage(damageType, target)
 	}
 	public IsVisibleForEnemies(method: number = 0, seconds: number = 2): boolean {
 		switch (method) {
@@ -1106,7 +1089,7 @@ export class Unit extends Entity {
 		canDamageBlockMelee?: boolean
 	): number {
 		damageType ??= this.AttackDamageType(target)
-		if (target.IsAvoidTotalDamage || target.IsAbsoluteNoDamage(damageType)) {
+		if (target.IsAvoidTotalDamage || target.IsAbsoluteNoDamage(damageType, this)) {
 			return 0
 		}
 		rawDamage ??= this.GetRawAttackDamage(target, damageValue)

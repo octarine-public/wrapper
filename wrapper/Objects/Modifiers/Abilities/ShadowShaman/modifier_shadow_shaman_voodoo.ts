@@ -27,6 +27,7 @@ export class modifier_shadow_shaman_voodoo extends Modifier implements IDebuff, 
 			: [0, false]
 	}
 	protected UpdateSpecialValues() {
-		this.cachedSpeed = this.GetSpecialValue("movespeed", "shadow_shaman_voodoo")
+		const name = this.Ability?.Name ?? "shadow_shaman_voodoo"
+		this.cachedSpeed = this.GetSpecialValue("movespeed", name)
 	}
 }

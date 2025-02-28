@@ -3,10 +3,8 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_sven_warcry_barrier extends Modifier implements IShield {
-	public readonly IsHidden = false
+export class modifier_sven_warcry_barrier extends Modifier {
 	public readonly HasVisualShield = true
-	public readonly ShieldModifierName = this.Name
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -19,5 +17,10 @@ export class modifier_sven_warcry_barrier extends Modifier implements IShield {
 	}
 	protected GetPhysicalConstantBlockSpecial(): [number, boolean] {
 		return [this.NetworkDamage, false]
+	}
+	protected UpdateSpecialValues(): void {
+		const name = "sven_warcry"
+		this.GetSpecialValue("base_barrier_amount", name) // only debug
+		this.GetSpecialValue("barrier_per_strength", name) // only debug
 	}
 }

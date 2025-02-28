@@ -20,6 +20,7 @@ export class CMinimap {
 	public readonly MinimapRenderBounds = new Rectangle()
 	public readonly Glyph = new Rectangle()
 	public readonly Scan = new Rectangle()
+	public readonly Roshan = new Rectangle()
 
 	constructor(screenSize = new Vector2(), hudFlipped = false) {
 		CMinimap.UpdateExtraLargeMinimapSetting()
@@ -56,6 +57,7 @@ export class CMinimap {
 		)
 		RendererSDK.FilledRect(this.Glyph.pos1, this.Glyph.Size, Color.Yellow.SetA(128))
 		RendererSDK.FilledRect(this.Scan.pos1, this.Scan.Size, Color.Gray.SetA(128))
+		RendererSDK.FilledRect(this.Roshan.pos1, this.Roshan.Size, Color.Red.SetA(128))
 	}
 	public HasChanged(): boolean {
 		return CMinimap.UpdateExtraLargeMinimapSetting()
@@ -104,12 +106,24 @@ export class CMinimap {
 			ScaleHeight(50, screenSize) -
 			this.Scan.Height
 
+		const roshanOffsetX = ScaleWidth(24, screenSize)
+		this.Roshan.Width = ScaleWidth(44, screenSize)
+		this.Roshan.Height = ScaleHeight(44, screenSize)
+		this.Roshan.y =
+			this.Scan.y +
+			this.Scan.Height -
+			ScaleHeight(65, screenSize) -
+			this.Roshan.Height
+
 		if (hudFlip) {
 			this.Glyph.x = GlyphScan.x + glyphOffsetX
 			this.Scan.x = GlyphScan.x + scanOffsetX
+			this.Roshan.x = GlyphScan.x + roshanOffsetX
 		} else {
 			this.Glyph.x = GlyphScan.x + GlyphScan.Width - glyphOffsetX - this.Glyph.Width
 			this.Scan.x = GlyphScan.x + GlyphScan.Width - scanOffsetX - this.Scan.Width
+			this.Roshan.x =
+				GlyphScan.x + GlyphScan.Width - roshanOffsetX - this.Roshan.Width
 		}
 	}
 }

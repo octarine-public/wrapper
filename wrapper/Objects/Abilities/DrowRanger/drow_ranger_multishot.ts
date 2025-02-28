@@ -29,7 +29,7 @@ export class drow_ranger_multishot extends Ability {
 			return 0
 		}
 		const damageType = this.DamageType
-		if (target.IsAbsoluteNoDamage(damageType)) {
+		if (target.IsAbsoluteNoDamage(damageType, owner)) {
 			return 0
 		}
 		const rawDamage = this.GetRawDamage(target),

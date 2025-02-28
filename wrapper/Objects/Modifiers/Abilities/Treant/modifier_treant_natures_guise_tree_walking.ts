@@ -4,6 +4,9 @@ import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_treant_natures_guise_tree_walking extends Modifier {
+	private cachedSpeed = 0
+
+	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
@@ -11,7 +14,9 @@ export class modifier_treant_natures_guise_tree_walking extends Modifier {
 		]
 	])
 
-	private cachedSpeed = 0
+	public PostDataUpdate(): void {
+		this.UpdateSpecialValues()
+	}
 
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, this.StackCount !== 2 || this.IsPassiveDisabled()]

@@ -113,7 +113,7 @@ export class NeutralSpawnBox {
 	protected SetAngleEvil() {
 		switch (this.CampName) {
 			case "neutralcamp_evil_1":
-				this.Angles.SetY(240)
+				this.Angles.SetY(-40)
 				break
 			case "neutralcamp_evil_2":
 				this.Angles.SetY(439)
@@ -122,16 +122,16 @@ export class NeutralSpawnBox {
 				this.Angles.SetY(410)
 				break
 			case "neutralcamp_evil_4":
-				this.Angles.SetY(225)
+				this.Angles.SetY(-80)
 				break
 			case "neutralcamp_evil_5":
-				this.Angles.SetY(300)
+				this.Angles.SetY(63)
 				break
 			case "neutralcamp_evil_6":
 				this.Angles.SetY(-80)
 				break
 			case "neutralcamp_evil_7":
-				this.Angles.SetY(-110)
+				this.Angles.SetY(-62)
 				break
 			case "neutralcamp_evil_8":
 				this.Angles.SetY(180)
@@ -140,22 +140,22 @@ export class NeutralSpawnBox {
 				this.Angles.SetY(116)
 				break
 			case "neutralcamp_evil_10":
-				this.Angles.SetY(355)
+				this.Angles.SetY(-132)
 				break
 			case "neutralcamp_evil_11":
-				this.Angles.SetY(193)
+				this.Angles.SetY(170)
 				break
 			case "neutralcamp_evil_12":
-				this.Angles.SetY(183)
+				this.Angles.SetY(180)
 				break
 			case "neutralcamp_evil_13":
-				this.Angles.SetY(-60)
+				this.Angles.SetY(-147)
 				break
 			case "neutralcamp_evil_14":
 				this.Angles.SetY(-105)
 				break
 			case "neutralcamp_evil_15":
-				this.Angles.SetY(-180)
+				this.Angles.SetY(90)
 				break
 		}
 	}
@@ -163,19 +163,19 @@ export class NeutralSpawnBox {
 	protected SetAngleGood() {
 		switch (this.CampName) {
 			case "neutralcamp_good_1":
-				this.Angles.SetY(109)
+				this.Angles.SetY(90)
 				break
 			case "neutralcamp_good_2":
-				this.Angles.SetY(-180)
+				this.Angles.SetY(-145)
 				break
 			case "neutralcamp_good_3":
 				this.Angles.SetY(260)
 				break
 			case "neutralcamp_good_4":
-				this.Angles.SetY(139)
+				this.Angles.SetY(80)
 				break
 			case "neutralcamp_good_5":
-				this.Angles.SetY(250)
+				this.Angles.SetY(265)
 				break
 			case "neutralcamp_good_7":
 				this.Angles.SetY(267)
@@ -187,22 +187,25 @@ export class NeutralSpawnBox {
 				this.Angles.SetY(361)
 				break
 			case "neutralcamp_good_10":
-				this.Angles.SetY(537)
+				this.Angles.SetY(110)
 				break
 			case "neutralcamp_good_11":
-				this.Angles.SetY(173)
+				this.Angles.SetY(-55)
 				break
 			case "neutralcamp_good_12":
-				this.Angles.SetY(5)
+				this.Angles.SetY(105)
 				break
 			case "neutralcamp_good_13":
-				this.Angles.SetY(90)
+				this.Angles.SetY(36)
 				break
 			case "neutralcamp_good_14":
-				this.Angles.SetY(-10)
+				this.Angles.SetY(20)
 				break
 			case "neutralcamp_good_15":
-				this.Angles.SetY(-60)
+				this.Angles.SetY(275)
+				break
+			case "neutralcamp_good_16":
+				this.Angles.SetY(35)
 				break
 		}
 	}

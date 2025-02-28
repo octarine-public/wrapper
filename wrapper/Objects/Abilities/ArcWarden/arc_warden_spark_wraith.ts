@@ -18,15 +18,9 @@ export class arc_warden_spark_wraith extends Ability {
 		return this.GetSpecialValue("duration", level)
 	}
 	public GetBaseDamageForLevel(level: number): number {
-		return (
-			this.GetSpecialValue("spark_damage_base", level) ||
-			this.GetSpecialValue("spark_damage_tempest", level)
-		)
+		return this.GetSpecialValue("spark_damage_base", level)
 	}
 	public GetBaseActivationDelayForLevel(level: number): number {
-		return (
-			this.GetSpecialValue("base_activation_delay", level) ||
-			this.GetSpecialValue("tempest_activation_delay", level)
-		)
+		return this.GetSpecialValue("base_activation_delay", level)
 	}
 }
