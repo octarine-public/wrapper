@@ -2163,6 +2163,7 @@ export { modifier_dawnbreaker_solar_guardian_landing_stun } from "./Objects/Modi
 export { modifier_dazzle_bad_juju_manacost } from "./Objects/Modifiers/Abilities/Dazzle/modifier_dazzle_bad_juju_manacost"
 export { modifier_dazzle_innate_weave_armor_counter } from "./Objects/Modifiers/Abilities/Dazzle/modifier_dazzle_innate_weave_armor_counter"
 export { modifier_dazzle_nothl_boon_shield } from "./Objects/Modifiers/Abilities/Dazzle/modifier_dazzle_nothl_boon_shield"
+export { modifier_dazzle_nothl_projection_soul_debuff } from "./Objects/Modifiers/Abilities/Dazzle/modifier_dazzle_nothl_projection_soul_debuff"
 export { modifier_dazzle_poison_touch } from "./Objects/Modifiers/Abilities/Dazzle/modifier_dazzle_poison_touch"
 export { modifier_dazzle_poison_touch_self } from "./Objects/Modifiers/Abilities/Dazzle/modifier_dazzle_poison_touch_self"
 export { modifier_dazzle_shallow_grave } from "./Objects/Modifiers/Abilities/Dazzle/modifier_dazzle_shallow_grave"

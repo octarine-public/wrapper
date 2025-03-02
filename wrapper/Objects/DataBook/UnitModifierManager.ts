@@ -14,6 +14,8 @@ import { Unit } from "../Base/Unit"
 type ModifierfunctionMap = Map<EModifierfunction, ModifierHandlerValue[]>
 
 export class UnitModifierManager {
+	/** @private NOTE: this is internal field use Unit#CanUseItems */
+	public CanUseAllItems_: boolean = true
 	/** @private NOTE: this is internal field use Unit#NoIntellect */
 	public NoIntellect_: boolean = false
 	/** @private NOTE: this is internal field use Unit#HasAeigs */

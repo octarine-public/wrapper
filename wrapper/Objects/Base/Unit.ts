@@ -471,6 +471,9 @@ export class Unit extends Entity {
 	public get CanReincarnate() {
 		return this.HasAegis
 	}
+	public get CanUseAllItems(): boolean {
+		return this.ModifierManager.CanUseAllItems_
+	}
 	public get IsFountainInvulnerable(): boolean {
 		return this.ModifierManager.IsFountainInvulnerable_
 	}

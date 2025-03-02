@@ -21,6 +21,7 @@ export class modifier_chaos_knight_phantasm_illusion extends Modifier {
 			return super.UnitPropertyChanged(changed)
 		}
 		owner.ModifierManager.IsIllusion_ = state
+		owner.ModifierManager.CanUseAllItems_ = false
 		EventsSDK.emit("UnitPropertyChanged", false, owner)
 		return super.UnitPropertyChanged(changed)
 	}

@@ -59,6 +59,8 @@ export class Item extends Ability {
 	public readonly IsNeutralActiveDrop: boolean = false
 	@NetworkedBasicField("m_bIsNeutralPassiveDrop")
 	public readonly IsNeutralPassiveDrop: boolean = false
+	@NetworkedBasicField("m_bMarkForSell")
+	public readonly MarkForSell: boolean = false
 	@NetworkedBasicField("m_nNeutralDropTeam")
 	public readonly NeutralDropTeam: Team = Team.None
 	/** @readonly */
