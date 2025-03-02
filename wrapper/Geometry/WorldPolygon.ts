@@ -18,12 +18,12 @@ export class WorldPolygon {
 	}
 	public Add(polygon: WorldPolygon | Vector3): void {
 		if (!(polygon instanceof WorldPolygon)) {
-			this.AddPoint(polygon)
+			this.addPoint(polygon)
 			return
 		}
 		const arr = polygon.Points
 		for (let i = 0; i < arr.length; i++) {
-			this.AddPoint(arr[i])
+			this.addPoint(arr[i])
 		}
 	}
 	public Draw(
@@ -64,7 +64,7 @@ export class WorldPolygon {
 	public IsOutside(point: Vector3): boolean {
 		return this.PointInPolygon(point) === 0
 	}
-	private AddPoint(point: Vector3): void {
+	private addPoint(point: Vector3): void {
 		this.Points.push(point)
 	}
 	private PointInPolygon(point: Vector3): number {

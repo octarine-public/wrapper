@@ -27,6 +27,7 @@ import { Unit, Units } from "../Objects/Base/Unit"
 import { GetWorldBounds } from "../Objects/Base/WorldLayer"
 import { Shop } from "../Objects/Buildings/Shop"
 import { GameState } from "../Utils/GameState"
+import { CameraSDK } from "./CameraSDK"
 import { ConVarsSDK } from "./ConVarsSDK"
 import { ExecuteOrder } from "./ExecuteOrder"
 import { SetProcessUserCmd } from "./HumanizerGlue"
@@ -92,16 +93,16 @@ class Polygon2D {
 }
 
 const latestCursor = new Vector2(),
+	cameraPoly = new WorldPolygon(),
 	latestCameraPoly = new WorldPolygon(),
-	debugCameraPoly = new WorldPolygon(),
 	latestCameraGreenZonePolyScreen = new Polygon2D(),
 	latestCameraYellowZonePolyScreen = new Polygon2D(),
 	latestCameraRedZonePolyScreen = new Polygon2D(),
 	latestCameraGreenZonePolyWorld = new WorldPolygon(),
 	latestCameraYellowZonePolyWorld = new WorldPolygon(),
 	latestCameraRedZonePolyWorld = new WorldPolygon(),
-	defaultCameraDist = 1200, // default camera distance
-	defaultCameraAngles = new QAngle(60, 90, 0)
+	defaultCameraDist = CameraSDK.DefaultDistance, // default camera distance
+	defaultCameraAngles = CameraSDK.DefaultAngles
 function UpdateCameraBounds(cameraVec2D: Vector2) {
 	const cameraVec = WASM.GetCameraPosition(
 		cameraVec2D,
@@ -113,7 +114,7 @@ function UpdateCameraBounds(cameraVec2D: Vector2) {
 		cameraVec,
 		defaultCameraDist
 	)
-	debugCameraPoly.Points = [
+	cameraPoly.Points = [
 		latestCameraPoly.Points[0],
 		cameraVec,
 		latestCameraPoly.Points[1],
@@ -127,6 +128,7 @@ function UpdateCameraBounds(cameraVec2D: Vector2) {
 		latestCameraPoly.Points[2],
 		latestCameraPoly.Points[3]
 	]
+	CameraSDK.Polygon.Points = cameraPoly.Points
 	const screenSize = RendererSDK.WindowSize,
 		minimap = GUIInfo.Minimap.Minimap
 	const cameraLimitX1 =
@@ -1370,7 +1372,7 @@ EventsSDK.on("Draw", () => {
 	}
 	const hero = LocalPlayer?.Hero
 	if (hero !== undefined) {
-		debugCameraPoly.Draw("1", hero, debugParticles, Color.Aqua, 40, 40, false)
+		cameraPoly.Draw("1", hero, debugParticles, Color.Aqua, 40, 40, false)
 		latestCameraGreenZonePolyWorld.Draw(
 			"2",
 			hero,
@@ -1572,6 +1574,7 @@ function ClearHumanizerState() {
 	InputManager.CursorOnWorld = new Vector3()
 	paramsX = getParams()
 	paramsY = getParams()
+	CameraSDK.Polygon.Points.clear()
 }
 
 function RestartHumanizerState() {
@@ -1579,6 +1582,7 @@ function RestartHumanizerState() {
 	ExecuteOrder.lastMove = undefined
 	ExecuteOrder.HoldOrders = 0
 	ExecuteOrder.HoldOrdersTarget = undefined
+	CameraSDK.Polygon.Points.clear()
 	lastOrderTarget = undefined
 	lastOrderFinish = 0
 	latestCameraX = 0

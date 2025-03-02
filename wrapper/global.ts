@@ -19,6 +19,7 @@ import { ParticlesSDK as _ParticlesSDK } from "./Managers/ParticleManager"
 import { PathfinderSDK as _PathfinderSDK } from "./Managers/Pathfinder/PathfinderSDK"
 import { TaskManager as _TaskManager } from "./Managers/TaskManager"
 import { MenuManager as _Menu } from "./Menu/Menu"
+import { CameraSDK as _CameraSDK } from "./Native/CameraSDK"
 import { RendererSDK as _RendererSDK } from "./Native/RendererSDK"
 import { SoundSDK as _SoundSDK } from "./Native/SoundSDK"
 import * as _WASM from "./Native/WASM"
@@ -49,6 +50,7 @@ globalThis.NetworkedParticle = _NetworkedParticle
 globalThis.FakeUnits = _FakeUnits
 globalThis.SoundSDK = _SoundSDK
 globalThis.PathfinderSDK = _PathfinderSDK
+globalThis.CameraSDK = _CameraSDK
 
 Object.defineProperty(globalThis, "LocalPlayer", {
 	get: () => {

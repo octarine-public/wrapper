@@ -2,7 +2,6 @@ import { AABB } from "../Base/AABB"
 import { QAngle } from "../Base/QAngle"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
-import { DegreesToRadian } from "../Utils/Math"
 
 export class CHeightMap {
 	constructor(
@@ -35,8 +34,8 @@ export let HeightMap: Nullable<CHeightMap>
 
 export function GetEyeVector(cameraAngles: QAngle): Vector3 {
 	// TODO: should we use Math.cos(DegreesToRadian(cameraAngles.y))?
-	const pitch = DegreesToRadian(cameraAngles.x)
-	const yaw = DegreesToRadian(cameraAngles.y)
+	const pitch = Math.degreesToRadian(cameraAngles.x)
+	const yaw = Math.degreesToRadian(cameraAngles.y)
 	// Math.cos(pitch - Math.cos(yaw)) // correctly?
 	return new Vector3(0, Math.cos(pitch - Math.cos(yaw)), -Math.sin(pitch))
 }
