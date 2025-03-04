@@ -90,6 +90,9 @@ export class item_bottle
 	public get IsCooldownReady(): boolean {
 		return this.RuneExpireTime !== 0 ? true : super.IsCooldownReady
 	}
+	public get CanMoveInBackpack(): boolean {
+		return super.CanMoveInBackpack && this.StoredRune === DOTA_RUNES.DOTA_RUNE_INVALID
+	}
 	public CanBeCasted(bonusMana: number = 0): boolean {
 		return this.CurrentCharges > 0 && super.CanBeCasted(bonusMana)
 	}
