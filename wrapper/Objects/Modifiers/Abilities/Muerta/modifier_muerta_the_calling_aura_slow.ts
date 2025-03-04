@@ -8,16 +8,11 @@ export class modifier_muerta_the_calling_aura_slow extends Modifier implements I
 	public readonly DebuffModifierName = this.Name
 
 	private cachedSpeed = 0
-	private cachedAttackSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
-		],
-		[
-			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
-			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
 	public IsDebuff(): this is IDebuff {
@@ -26,12 +21,10 @@ export class modifier_muerta_the_calling_aura_slow extends Modifier implements I
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, this.IsMagicImmune()]
 	}
-	protected GetAttackSpeedBonusConstant(): [number, boolean] {
-		return [this.cachedAttackSpeed, this.IsMagicImmune()]
-	}
 	protected UpdateSpecialValues(): void {
-		const name = "muerta_the_calling"
-		this.cachedSpeed = this.GetSpecialValue("aura_movespeed_slow", name)
-		this.cachedAttackSpeed = this.GetSpecialValue("aura_attackspeed_slow", name)
+		this.cachedSpeed = this.GetSpecialValue(
+			"aura_movespeed_slow",
+			"muerta_the_calling"
+		)
 	}
 }

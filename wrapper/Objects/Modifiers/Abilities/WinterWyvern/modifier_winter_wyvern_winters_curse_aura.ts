@@ -12,13 +12,7 @@ export class modifier_winter_wyvern_winters_curse_aura
 	public readonly IsHidden = false
 	public readonly DebuffModifierName = this.Name
 
-	private cachedIncDamage = 0
-
 	protected readonly DeclaredFunction = new Map([
-		[
-			EModifierfunction.MODIFIER_PROPERTY_INCOMING_DAMAGE_PERCENTAGE,
-			this.GetIncomingDamagePercentage.bind(this)
-		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_PURE,
 			this.GetAbsoluteNoDamagePure.bind(this)
@@ -44,10 +38,7 @@ export class modifier_winter_wyvern_winters_curse_aura
 		if (source === undefined || source.IsEnemy(this.Caster)) {
 			return [0, false]
 		}
-		if (this.cachedIncDamage !== 0) {
-			return [this.Caster !== source ? 1 : 0, false]
-		}
-		return [0, false]
+		return [this.Caster !== source ? 1 : 0, false]
 	}
 	protected GetAbsoluteNoDamageMagical(params?: IModifierParams): [number, boolean] {
 		if (params === undefined || this.Caster === undefined) {
@@ -67,28 +58,6 @@ export class modifier_winter_wyvern_winters_curse_aura
 		if (source === undefined || source.IsEnemy(this.Caster)) {
 			return [0, false]
 		}
-		if (this.cachedIncDamage !== 0) {
-			return [this.Caster !== source ? 1 : 0, false]
-		}
-		return [1, false]
-	}
-	protected GetIncomingDamagePercentage(params?: IModifierParams): [number, boolean] {
-		if (params === undefined || this.Caster === undefined) {
-			return [0, false]
-		}
-		const source = EntityManager.EntityByIndex<Unit>(params.SourceIndex)
-		if (source === undefined || source.IsEnemy(this.Caster)) {
-			return [0, false]
-		}
-		if (this.Caster !== source) {
-			return [0, false]
-		}
-		return [this.cachedIncDamage, false]
-	}
-	protected UpdateSpecialValues() {
-		this.cachedIncDamage = this.GetSpecialValue(
-			"damage_amplification_for_all_damage_types",
-			"winter_wyvern_winters_curse"
-		)
+		return [this.Caster !== source ? 1 : 0, false]
 	}
 }
