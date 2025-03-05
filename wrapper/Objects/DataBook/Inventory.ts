@@ -19,10 +19,11 @@ export class Inventory {
 		return this.GetItem(DOTAScriptInventorySlot.DOTA_ITEM_NEUTRAL_SLOT)
 	}
 	public get Items(): Item[] {
-		const ar = this.GetItems(
-				DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1,
-				DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6
-			),
+		let end = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6
+		if (this.Owner.HeroFacet === "lone_druid_bear_necessities") {
+			end = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_3
+		}
+		const ar = this.GetItems(DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1, end),
 			tp = this.TPScroll,
 			neutral = this.NeutralItem
 		if (tp !== undefined) {
@@ -34,10 +35,11 @@ export class Inventory {
 		return ar
 	}
 	public get Backpack(): Item[] {
-		return this.GetItems(
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_7,
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_9
-		)
+		let start = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_7
+		if (this.Owner.HeroFacet === "lone_druid_bear_necessities") {
+			start = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_4
+		}
+		return this.GetItems(start, DOTAScriptInventorySlot.DOTA_ITEM_SLOT_9)
 	}
 	public get Stash(): Item[] {
 		return this.GetItems(
@@ -46,16 +48,18 @@ export class Inventory {
 		)
 	}
 	public get FreeSlotsInventory(): DOTAScriptInventorySlot[] {
-		return this.GetFreeSlots(
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1,
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6
-		)
+		let end = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6
+		if (this.Owner.HeroFacet === "lone_druid_bear_necessities") {
+			end = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_3
+		}
+		return this.GetFreeSlots(DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1, end)
 	}
 	public get FreeSlotsBackpack(): DOTAScriptInventorySlot[] {
-		return this.GetFreeSlots(
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_7,
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_9
-		)
+		let start = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_7
+		if (this.Owner.HeroFacet === "lone_druid_bear_necessities") {
+			start = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_4
+		}
+		return this.GetFreeSlots(start, DOTAScriptInventorySlot.DOTA_ITEM_SLOT_9)
 	}
 	public get FreeSlotsStash(): DOTAScriptInventorySlot[] {
 		return this.GetFreeSlots(
@@ -64,16 +68,18 @@ export class Inventory {
 		)
 	}
 	public get HasAnyItemInventory(): boolean {
-		return this.HasAnyItem(
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1,
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6
-		)
+		let end = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6
+		if (this.Owner.HeroFacet === "lone_druid_bear_necessities") {
+			end = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_3
+		}
+		return this.HasAnyItem(DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1, end)
 	}
 	public get HasAnyItemBackpack(): boolean {
-		return this.HasAnyItem(
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_7,
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_9
-		)
+		let start = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_7
+		if (this.Owner.HeroFacet === "lone_druid_bear_necessities") {
+			start = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_4
+		}
+		return this.HasAnyItem(start, DOTAScriptInventorySlot.DOTA_ITEM_SLOT_9)
 	}
 	public get HasAnyItemStash(): boolean {
 		return this.HasAnyItem(
@@ -82,16 +88,18 @@ export class Inventory {
 		)
 	}
 	public get HasFreeSlotsInventory(): boolean {
-		return this.HasFreeSlot(
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1,
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6
-		)
+		let end = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6
+		if (this.Owner.HeroFacet === "lone_druid_bear_necessities") {
+			end = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_3
+		}
+		return this.HasFreeSlot(DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1, end)
 	}
 	public get HasFreeSlotsBackpack(): boolean {
-		return this.HasFreeSlot(
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_7,
-			DOTAScriptInventorySlot.DOTA_ITEM_SLOT_9
-		)
+		let start = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_7
+		if (this.Owner.HeroFacet === "lone_druid_bear_necessities") {
+			start = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_4
+		}
+		return this.HasFreeSlot(start, DOTAScriptInventorySlot.DOTA_ITEM_SLOT_9)
 	}
 	public get HasFreeSlotsStash(): boolean {
 		return this.HasFreeSlot(
@@ -99,7 +107,6 @@ export class Inventory {
 			DOTAScriptInventorySlot.DOTA_STASH_SLOT_6
 		)
 	}
-
 	public GetItem(slot: DOTAScriptInventorySlot): Nullable<Item> {
 		return this.Owner.TotalItems[slot]
 	}
