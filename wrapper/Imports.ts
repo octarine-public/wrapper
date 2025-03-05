@@ -3183,6 +3183,7 @@ export { modifier_item_radiance_debuff } from "./Objects/Modifiers/Items/modifie
 export { modifier_item_rattlecage } from "./Objects/Modifiers/Items/modifier_item_rattlecage"
 export { modifier_item_rattlecage_slow } from "./Objects/Modifiers/Items/modifier_item_rattlecage_slow"
 export { modifier_item_refresherorb } from "./Objects/Modifiers/Items/modifier_item_refresherorb"
+export { modifier_item_refreshershard } from "./Objects/Modifiers/Items/modifier_item_refreshershard"
 export { modifier_item_revenants_brooch } from "./Objects/Modifiers/Items/modifier_item_revenants_brooch"
 export { modifier_item_revenants_brooch_active } from "./Objects/Modifiers/Items/modifier_item_revenants_brooch_active"
 export { modifier_item_ring_of_basilius_effect } from "./Objects/Modifiers/Items/modifier_item_ring_of_basilius_effect"
