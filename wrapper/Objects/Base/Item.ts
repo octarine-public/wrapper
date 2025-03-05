@@ -102,7 +102,7 @@ export class Item extends Ability {
 		if (owner.CannotUseItem(this)) {
 			return false
 		}
-		return this.CanUseByInventory(owner.CanUseBackpack)
+		return this.canUseByInventory(owner.CanUseBackpack)
 	}
 	public get SaleRemainingTime(): number {
 		// Maximum duration of the sale in seconds
@@ -191,14 +191,24 @@ export class Item extends Ability {
 		)
 	}
 
-	private CanUseByInventory(includeBackpack = false): boolean {
+	private canUseByInventory(includeBackpack: boolean = false): boolean {
+		const owner = this.Owner
+		if (owner === undefined || !owner.IsValid) {
+			return false
+		}
+		let end = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6,
+			startBackpack = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_7
+		if (owner.HeroFacet === "lone_druid_bear_necessities") {
+			end = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_3
+			startBackpack = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_4
+		}
 		return (
 			(this.ItemSlot >= DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1 &&
-				this.ItemSlot <= DOTAScriptInventorySlot.DOTA_ITEM_SLOT_6) ||
+				this.ItemSlot <= end) ||
 			this.ItemSlot === DOTAScriptInventorySlot.DOTA_ITEM_TP_SCROLL ||
 			this.ItemSlot === DOTAScriptInventorySlot.DOTA_ITEM_NEUTRAL_SLOT ||
 			(includeBackpack &&
-				this.ItemSlot >= DOTAScriptInventorySlot.DOTA_ITEM_SLOT_7 &&
+				this.ItemSlot >= startBackpack &&
 				this.ItemSlot <= DOTAScriptInventorySlot.DOTA_ITEM_SLOT_9)
 		)
 	}
