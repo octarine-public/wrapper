@@ -11,7 +11,6 @@ export class monkey_king_boundless_strike extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("strike_flat_damage", level)
 	}
-
 	public GetRawDamage(target: Unit): number {
 		const owner = this.Owner
 		if (owner === undefined || this.Level === 0) {

@@ -14,8 +14,9 @@ export class item_glimmer_cape extends Item {
 	 */
 	public GetCastDelay(
 		_unit?: Unit | Vector3,
-		_currentTurnRate: boolean = true,
-		_rotationDiff: boolean = false
+		_movement: boolean = false,
+		_directionalMovement: boolean = false,
+		_currentTurnRate: boolean = true
 	): number {
 		return this.CastDelay
 	}

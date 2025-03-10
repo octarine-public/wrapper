@@ -90,14 +90,14 @@ export function GetCreepCurrentTarget(
 	).orderBy(corner => corner.Distance2D(position))[0]
 
 	if (nearestCorner === undefined || nearestCorner.Referencing.size === 0) {
-		return nearestCorner?.Target
+		return nearestCorner?.TargetPath
 	}
 
-	if (nearestCorner.Target === undefined) {
+	if (nearestCorner.TargetPath === undefined) {
 		return nearestCorner
 	}
 
-	const nextCorner = nearestCorner.Target,
+	const nextCorner = nearestCorner.TargetPath,
 		nextDelta = Math.abs(
 			nearestCorner.Distance2D(position) +
 				nextCorner.Distance2D(position) -

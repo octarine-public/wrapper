@@ -10,7 +10,7 @@ import { Entity } from "./Entity"
 @WrapperClass("LaneCreepSpawner")
 export class LaneCreepSpawner extends Entity {
 	public OriginPosition = new Vector3().Invalidate()
-	public Target: Nullable<CreepPathCorner>
+	public TargetPath: Nullable<CreepPathCorner>
 	public Lane = MapArea.Middle
 	public SelfTargetName = ""
 	public TargetName: Nullable<string>

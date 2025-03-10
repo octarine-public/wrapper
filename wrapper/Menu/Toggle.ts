@@ -1,6 +1,7 @@
 import { Color } from "../Base/Color"
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
+import { EventPriority } from "../Enums/EventPriority"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
@@ -224,4 +225,8 @@ export class Toggle extends Base {
 	}
 }
 
-EventsSDK.on("WindowSizeChanged", () => Toggle.OnWindowSizeChanged())
+EventsSDK.on(
+	"WindowSizeChanged",
+	() => Toggle.OnWindowSizeChanged(),
+	EventPriority.IMMEDIATE
+)

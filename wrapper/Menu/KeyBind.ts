@@ -1,5 +1,6 @@
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
+import { EventPriority } from "../Enums/EventPriority"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputEventSDK, VKeys, VMouseKeys } from "../Managers/InputManager"
@@ -245,4 +246,8 @@ InputEventSDK.on("KeyUp", key => KeyHandler(key, false))
 InputEventSDK.on("MouseKeyDown", key => MouseKeyHandler(key, true))
 InputEventSDK.on("MouseKeyUp", key => MouseKeyHandler(key, false))
 
-EventsSDK.on("WindowSizeChanged", () => KeyBind.OnWindowSizeChanged())
+EventsSDK.on(
+	"WindowSizeChanged",
+	() => KeyBind.OnWindowSizeChanged(),
+	EventPriority.IMMEDIATE
+)

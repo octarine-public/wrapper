@@ -7,6 +7,7 @@ import {
 	GetRuneTexture,
 	GetSpellTexture
 } from "../Data/ImageData"
+import { EventPriority } from "../Enums/EventPriority"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputEventSDK, InputManager, VKeys } from "../Managers/InputManager"
@@ -621,7 +622,11 @@ export class DynamicImageSelector extends Base {
 	}
 }
 
-EventsSDK.on("WindowSizeChanged", () => DynamicImageSelector.OnWindowSizeChanged())
+EventsSDK.on(
+	"WindowSizeChanged",
+	() => DynamicImageSelector.OnWindowSizeChanged(),
+	EventPriority.IMMEDIATE
+)
 
 InputEventSDK.on("KeyDown", key => {
 	if (

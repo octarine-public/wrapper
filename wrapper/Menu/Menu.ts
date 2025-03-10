@@ -1,5 +1,6 @@
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
+import { EventPriority } from "../Enums/EventPriority"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { Events } from "../Managers/Events"
 import { EventsSDK } from "../Managers/EventsSDK"
@@ -68,15 +69,12 @@ class CMenuManager {
 	}
 
 	public get ConfigValue() {
-		//this.config = Object.create(null)
 		this.config = Object.create(null)
-
 		this.entries.forEach(e => {
 			if (e?.SaveConfig) {
 				this.config[e.InternalName] = e.ConfigValue
 			}
 		})
-
 		this.config.Header = this.header.ConfigValue
 		this.config.SelectedLocalization = Localization.SelectedUnitName
 		return this.config
@@ -85,7 +83,6 @@ class CMenuManager {
 		this.config = obj
 		this.ForwardConfig()
 	}
-
 	public get ScrollVisible() {
 		let remaining = -this.VisibleEntries
 		const entries = this.entries
@@ -506,7 +503,8 @@ Events.after("Draw", () => {
 	RendererSDK.EmitDraw()
 })
 
-EventsSDK.on("WindowSizeChanged", () => MenuManager.Update(true))
+EventsSDK.on("WindowSizeChanged", () => MenuManager.Update(true), EventPriority.IMMEDIATE)
+
 EventsSDK.on("UnitAbilityDataUpdated", () => MenuManager.Update(true))
 
 InputEventSDK.on("MouseKeyDown", key => {
@@ -533,4 +531,8 @@ InputEventSDK.on("MouseWheel", up => {
 	return !MenuManager.OnMouseWheel(up)
 })
 
-EventsSDK.on("WindowSizeChanged", () => CMenuManager.OnWindowSizeChanged())
+EventsSDK.on(
+	"WindowSizeChanged",
+	() => CMenuManager.OnWindowSizeChanged(),
+	EventPriority.IMMEDIATE
+)

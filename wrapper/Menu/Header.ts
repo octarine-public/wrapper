@@ -1,5 +1,6 @@
 import { Color } from "../Base/Color"
 import { Vector2 } from "../Base/Vector2"
+import { EventPriority } from "../Enums/EventPriority"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
@@ -122,4 +123,8 @@ export class Header extends Base {
 	}
 }
 
-EventsSDK.on("WindowSizeChanged", () => Header.OnWindowSizeChanged())
+EventsSDK.on(
+	"WindowSizeChanged",
+	() => Header.OnWindowSizeChanged(),
+	EventPriority.IMMEDIATE
+)

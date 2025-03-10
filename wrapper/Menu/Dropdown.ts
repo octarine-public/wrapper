@@ -2,6 +2,7 @@ import { Color } from "../Base/Color"
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
+import { EventPriority } from "../Enums/EventPriority"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
@@ -434,4 +435,8 @@ export class Dropdown extends Base {
 	}
 }
 
-EventsSDK.on("WindowSizeChanged", () => Dropdown.OnWindowSizeChanged())
+EventsSDK.on(
+	"WindowSizeChanged",
+	() => Dropdown.OnWindowSizeChanged(),
+	EventPriority.IMMEDIATE
+)

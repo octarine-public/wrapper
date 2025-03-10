@@ -535,8 +535,9 @@ export class Ability extends Entity {
 	}
 	public GetCastDelay(
 		unit?: Unit | Vector3,
-		currentTurnRate: boolean = true,
-		rotationDiff: boolean = false
+		movement: boolean = false,
+		directionalMovement: boolean = false,
+		currentTurnRate: boolean = true
 	): number {
 		const owner = this.Owner
 		if (owner === undefined) {
@@ -552,12 +553,19 @@ export class Ability extends Entity {
 		if (unit instanceof Entity) {
 			unit = unit.Position
 		}
-		return owner.GetTurnTime(unit, currentTurnRate, rotationDiff) + delay
+		const turnTime = owner.TurnTimeNew(
+			unit,
+			movement,
+			directionalMovement,
+			currentTurnRate
+		)
+		return turnTime + delay
 	}
 	public GetHitTime(
 		unit: Unit | Vector3,
-		currentTurnRate: boolean = true,
-		rotationDiff: boolean = false
+		movement: boolean = false,
+		directionalMovement: boolean = false,
+		currentTurnRate: boolean = true
 	): number {
 		const owner = this.Owner
 		if (owner === undefined) {
@@ -568,9 +576,14 @@ export class Ability extends Entity {
 			return this.CastDelay + activationDelay
 		}
 		const speed = this.Speed
-		const castDelay = this.GetCastDelay(unit, currentTurnRate, rotationDiff)
+		const castDelay = this.GetCastDelay(
+			unit,
+			movement,
+			directionalMovement,
+			currentTurnRate
+		)
 		const delay = castDelay + activationDelay
-		return speed > 0 ? owner.Distance2D(unit) / speed + delay : delay
+		return speed !== 0 ? owner.Distance2D(unit) / speed + delay : delay
 	}
 	/**
 	 * @description Returns the raw damage of the ability without any amplification
@@ -672,8 +685,8 @@ export class Ability extends Entity {
 		// because it will be overridden by the child classes for TargetTypeMask
 		return this.TargetTypeMask.hasMask(flag)
 	}
-	// TODO: fix and improve me
-	public CanHit(target: Unit): boolean {
+
+	public CanHit(target: Unit | Vector3): boolean {
 		if (this.Owner === undefined) {
 			return false
 		}
@@ -689,7 +702,7 @@ export class Ability extends Entity {
 		} else {
 			range += this.SkillshotRange + this.Owner.HullRadius
 		}
-		if (range > 0) {
+		if (range > 0 && !(target instanceof Vector3)) {
 			range += target.HullRadius
 		}
 		return this.Owner.Distance2D(target) < range

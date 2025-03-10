@@ -257,18 +257,29 @@ export class ParticlesSDK {
 	}
 
 	public SetConstrolPointByKey(key: any, id: number, point: ControlPoint) {
-		this.AllParticles.get(key)?.SetControlPoint(id, point)
+		if (this.AllParticles.has(key)) {
+			this.AllParticles.get(key)!.SetControlPoint(id, point)
+		}
 	}
 	public SetInFogVisibleByKey(key: any, state: boolean) {
-		this.AllParticles.get(key)?.SetInFogVisible(state)
+		if (this.AllParticles.has(key)) {
+			this.AllParticles.get(key)!.SetInFogVisible(state)
+		}
 	}
 	public SetConstrolPointsByKey(key: any, ...points: ControlPointParam[]) {
-		this.AllParticles.get(key)?.SetControlPoints(...points)
+		if (this.AllParticles.has(key)) {
+			this.AllParticles.get(key)!.SetControlPoints(...points)
+		}
 	}
 	public RestartByKey(key: any) {
-		this.AllParticles.get(key)?.Restart()
+		if (this.AllParticles.has(key)) {
+			this.AllParticles.get(key)!.Restart()
+		}
 	}
 	public DestroyByKey(key: any, immediate = true) {
+		if (!this.AllParticles.has(key)) {
+			return
+		}
 		const particle = this.AllParticles.get(key)?.Destroy(immediate)
 		if (particle !== undefined) {
 			this.AllParticlesRange.delete(particle)
@@ -283,10 +294,10 @@ export class ParticlesSDK {
 	}
 
 	public CheckChangedRange(key: any, range: number) {
-		const particle = this.AllParticles.get(key)
-		if (particle === undefined) {
+		if (!this.AllParticles.has(key)) {
 			return
 		}
+		const particle = this.AllParticles.get(key)!
 		const particleRange = this.AllParticlesRange.get(particle)
 		if (particleRange !== undefined && particleRange !== range) {
 			this.RestartByKey(key)

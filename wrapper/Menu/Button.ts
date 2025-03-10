@@ -1,5 +1,6 @@
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
+import { EventPriority } from "../Enums/EventPriority"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
@@ -82,4 +83,8 @@ export class Button extends Base {
 	}
 }
 
-EventsSDK.on("WindowSizeChanged", () => Button.OnWindowSizeChanged())
+EventsSDK.on(
+	"WindowSizeChanged",
+	() => Button.OnWindowSizeChanged(),
+	EventPriority.IMMEDIATE
+)

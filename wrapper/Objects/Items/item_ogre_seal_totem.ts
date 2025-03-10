@@ -26,21 +26,15 @@ export class item_ogre_seal_totem extends Item {
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue("leap_distance", level)
 	}
-	/**
-	 * @description Returns the cast delay of the ability. Time in seconds until the cast.
-	 * @param {Unit | Vector3} unit - The unit or position to calculate hit time for
-	 * @param {boolean} currentTurnRate -  Flag to indicate if current turn rate is considered
-	 * @param {boolean} rotationDiff - Flag to indicate if rotation difference is considered
-	 * @return {number}
-	 */
 	public GetHitTime(
 		unit: Unit | Vector3,
-		currentTurnRate: boolean = true,
-		rotationDiff: boolean = false
+		movement: boolean = false,
+		directionalMovement: boolean = false,
+		currentTurnRate: boolean = true
 	): number {
 		return (
 			this.ActivationDelay +
-			this.GetCastDelay(unit, currentTurnRate, rotationDiff) +
+			this.GetCastDelay(unit, movement, directionalMovement, currentTurnRate) +
 			this.Range / this.Speed
 		)
 	}

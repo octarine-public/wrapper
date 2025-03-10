@@ -125,7 +125,10 @@ const Monitor = new (class CUnitAttackChanged {
 		} else {
 			source.IsAttacking = true
 		}
-		if (source.IsControllable && source.TargetIndex_ === -1) {
+		if (
+			source.IsControllable &&
+			source.TargetIndex_ === EntityManager.INVALID_HANDLE
+		) {
 			source.TargetIndex_ = this.findTarget(source)
 		}
 		if (this.attackSleeper.Sleeping(source.Index)) {
@@ -143,15 +146,18 @@ const Monitor = new (class CUnitAttackChanged {
 		if (!this.attackSleeper.Sleeping(source.Index) && !stoppedByError) {
 			return
 		}
-		source.TargetIndex_ = -1
 		source.IsAttacking = false
+		source.TargetIndex_ = EntityManager.INVALID_HANDLE
 		this.attackSleeper.ResetKey(source.Index)
 		this.heroGainAggroTargetIndex.delete(source)
 		EventsSDK.emit("AttackEnded", false, source)
 	}
 
 	private setTarget(issuers: Unit[], entity: Nullable<number | Entity>) {
-		const index = (entity instanceof Entity ? entity.Index : entity) ?? -1
+		let index = EntityManager.INVALID_HANDLE
+		if (entity instanceof Entity || typeof entity === "number") {
+			index = typeof entity === "number" ? entity : entity.Index
+		}
 		for (let i = issuers.length - 1; i > -1; i--) {
 			const source = issuers[i]
 			source.TargetIndex_ = index
@@ -162,8 +168,8 @@ const Monitor = new (class CUnitAttackChanged {
 	private dropTarget(issuers: Unit[]) {
 		for (let i = issuers.length - 1; i > -1; i--) {
 			const source = issuers[i]
-			source.TargetIndex_ = -1
 			source.IsAttacking = false
+			source.TargetIndex_ = EntityManager.INVALID_HANDLE
 		}
 	}
 
@@ -180,7 +186,8 @@ const Monitor = new (class CUnitAttackChanged {
 					(x.Team !== source.Team || x.IsDeniable) &&
 					x.Distance2D(source) <= source.GetAttackRange(x, 25) &&
 					source.GetAngle(x, true) < 1.5
-			).orderByFirst(x => source.GetAngle(x, true))?.Index ?? -1
+			).orderByFirst(x => source.GetAngle(x, true))?.Index ??
+			EntityManager.INVALID_HANDLE
 		)
 	}
 

@@ -7,6 +7,7 @@ import {
 	GetRuneTexture,
 	GetSpellTexture
 } from "../Data/ImageData"
+import { EventPriority } from "../Enums/EventPriority"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
@@ -38,7 +39,7 @@ export class ImageSelectorArray extends Base {
 		public values: string[],
 		public readonly defaultValues: [string, boolean][] = [],
 		tooltip = "",
-		private defaultValuesString = JSON.stringify(defaultValues)
+		private readonly defaultValuesString = JSON.stringify(defaultValues)
 	) {
 		super(parent, name, tooltip)
 		this.ResetToDefault()
@@ -54,7 +55,6 @@ export class ImageSelectorArray extends Base {
 		}
 		return true
 	}
-
 	public get IconsRect() {
 		const basePos = this.Position.Add(this.textOffset).AddScalarY(this.nameSize.y + 3)
 		return new Rectangle(
@@ -101,20 +101,16 @@ export class ImageSelectorArray extends Base {
 		this.UpdateEnabledValues()
 		this.UpdateIsDefault()
 	}
-
 	public get ClassPriority(): number {
 		return 6
 	}
-
 	public Update(): boolean {
 		if (!super.Update()) {
 			return false
 		}
-
 		const values = this.values
 		this.imageSize.x = this.imageSize.y = ImageSelectorArray.baseImageHeight
 		this.renderedPaths = []
-
 		for (let index = 0, end = values.length; index < end; index++) {
 			let path = values[index]
 			if (path.startsWith("npc_dota_hero_")) {
@@ -152,15 +148,12 @@ export class ImageSelectorArray extends Base {
 			ImageSelectorArray.randomHeightValue
 		return true
 	}
-
 	public IsEnabled(value: string): boolean {
 		return this.enabledValues.some(([name, state]) => name === value && state)
 	}
-
 	public IsEnabledID(id: number): boolean {
 		return this.IsEnabled(this.values[id])
 	}
-
 	public Render(): void {
 		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
@@ -204,11 +197,9 @@ export class ImageSelectorArray extends Base {
 			}
 		}
 	}
-
 	public OnMouseLeftDown(): boolean {
 		return !this.IconsRect.Contains(this.MousePosition)
 	}
-
 	public OnMouseLeftUp(): boolean {
 		const rect = this.IconsRect
 		if (!rect.Contains(this.MousePosition)) {
@@ -233,7 +224,10 @@ export class ImageSelectorArray extends Base {
 		}
 		return false
 	}
-
+	// public OnConfigLoaded(): void {
+	// 	super.OnConfigLoaded()
+	// 	console.log(this.ConfigValue)
+	// }
 	protected UpdateEnabledValues() {
 		for (let i = 0, end = this.values.length; i < end; i++) {
 			const name = this.values[i]
@@ -246,4 +240,8 @@ export class ImageSelectorArray extends Base {
 	}
 }
 
-EventsSDK.on("WindowSizeChanged", () => ImageSelectorArray.OnWindowSizeChanged())
+EventsSDK.on(
+	"WindowSizeChanged",
+	() => ImageSelectorArray.OnWindowSizeChanged(),
+	EventPriority.IMMEDIATE
+)

@@ -259,8 +259,6 @@ export class Unit extends Entity {
 	public OwnerNPC_: number = 0
 	/** @description The owner of the Unit. (example: Spirit Bear) */
 	public OwnerNPC: Nullable<Unit> = undefined
-	/** @private NOTE: this is internal field use Target */
-	public TargetIndex_: number = -1
 	/** @private NOTE: this is internal field use IsVisibleForEnemies(...) */
 	public IsVisibleForEnemies_: boolean = false
 	public cellIsVisibleForEnemies_: boolean = false // TODO: calculate grid nav from enemies
@@ -401,9 +399,6 @@ export class Unit extends Entity {
 	}
 	public get TotalIntellect() {
 		return this.HasIntellect ? this.BaseTotalIntellect : 0
-	}
-	public get Target() {
-		return EntityManager.EntityByIndex<Unit>(this.TargetIndex_)
 	}
 	public get NightVisionRange() {
 		return !this.IsBlind && this.IsSpawned
@@ -1014,11 +1009,15 @@ export class Unit extends Entity {
 		return screenPosition.SubtractForThis(this.HealthBarPositionCorrection)
 	}
 	public GetAttackRange(
-		target?: Unit,
+		target?: Entity,
 		additional: number = 0,
 		includeHull: boolean = true
 	): number {
-		const hullRadius = includeHull ? this.HullRadius + (target?.HullRadius ?? 0) : 0
+		let tRadius = target?.RingRadius ?? 0
+		if (target instanceof Unit) {
+			tRadius = target.HullRadius
+		}
+		const hullRadius = includeHull ? this.HullRadius + tRadius : 0
 		return this.GetAttackRangeModifier() + hullRadius + additional
 	}
 	public GetDamageBlock(

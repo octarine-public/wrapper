@@ -19,8 +19,9 @@ export class snapfire_firesnap_cookie extends Ability {
 	}
 	public GetCastDelay(
 		unit?: Unit | Vector3,
-		currentTurnRate: boolean = true,
-		rotationDiff: boolean = false
+		movement: boolean = false,
+		directionalMovement: boolean = false,
+		currentTurnRate: boolean = true
 	): number {
 		const owner = this.Owner,
 			delay = this.CastDelay
@@ -31,7 +32,12 @@ export class snapfire_firesnap_cookie extends Ability {
 			unit = unit.Position
 		}
 		const disntance = owner.Distance2D(unit) / this.CookieSpeed,
-			turnTime = owner.GetTurnTime(unit, currentTurnRate, rotationDiff)
+			turnTime = owner.TurnTimeNew(
+				unit,
+				movement,
+				directionalMovement,
+				currentTurnRate
+			)
 		return delay + disntance + turnTime
 	}
 }

@@ -13,9 +13,14 @@ export class item_hurricane_pike extends Item {
 		// https://dota2.fandom.com/ru/wiki/Hurricane_Pike
 		return 1200
 	}
-	public GetHitTime(unit: Unit | Vector3, rotationDiff?: boolean) {
+	public GetHitTime(
+		unit: Unit | Vector3,
+		movement: boolean = false,
+		directionalMovement: boolean = false,
+		currentTurnRate: boolean = true
+	) {
 		return (
-			this.GetCastDelay(unit, rotationDiff) +
+			this.GetCastDelay(unit, movement, directionalMovement, currentTurnRate) +
 			this.ActivationDelay +
 			this.Range / this.Speed
 		)

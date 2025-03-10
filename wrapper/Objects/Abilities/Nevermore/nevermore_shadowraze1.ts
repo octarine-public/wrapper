@@ -6,7 +6,7 @@ import { Unit } from "../../Base/Unit"
 @WrapperClass("nevermore_shadowraze1")
 export class nevermore_shadowraze1 extends Ability {
 	public get UsesRotation() {
-		return true
+		return this.NoTarget
 	}
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue("shadowraze_range", level)

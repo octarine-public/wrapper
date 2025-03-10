@@ -1,6 +1,7 @@
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
+import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
 export class modifier_queenofpain_shadow_strike_buff extends Modifier {
@@ -21,7 +22,7 @@ export class modifier_queenofpain_shadow_strike_buff extends Modifier {
 			return
 		}
 		const caster = this.Caster
-		if (caster === undefined || caster.Target === undefined) {
+		if (caster === undefined || !(caster.Target instanceof Unit)) {
 			this.cachedAS = 0
 			return
 		}

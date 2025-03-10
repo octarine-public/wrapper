@@ -7,6 +7,7 @@ import {
 	GetRuneTexture,
 	GetSpellTexture
 } from "../Data/ImageData"
+import { EventPriority } from "../Enums/EventPriority"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
@@ -246,4 +247,8 @@ export class ImageSelector extends Base {
 	}
 }
 
-EventsSDK.on("WindowSizeChanged", () => ImageSelector.OnWindowSizeChanged())
+EventsSDK.on(
+	"WindowSizeChanged",
+	() => ImageSelector.OnWindowSizeChanged(),
+	EventPriority.IMMEDIATE
+)

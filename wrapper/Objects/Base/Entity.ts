@@ -175,7 +175,8 @@ export class Entity {
 	/** @private NOTE: this is internal field, use ParentEntity */
 	public Parent_: number = 0
 	public ParentEntity: Nullable<Entity> = undefined
-
+	/** @private NOTE: this is internal field use Target */
+	public TargetIndex_: number = EntityManager.INVALID_HANDLE
 	public AttachmentsHashMap: Nullable<Map<number, number>>
 	/** @private NOTE: this is internal field */
 	public FieldHandlers_: Nullable<Map<number, FieldHandler>>
@@ -223,6 +224,9 @@ export class Entity {
 		}
 		return owner
 	}
+	public get Target() {
+		return EntityManager.EntityByIndex(this.TargetIndex_)
+	}
 	public get Position(): Vector3 {
 		return this.RealPosition
 	}
@@ -264,7 +268,6 @@ export class Entity {
 	public get IsNeutral(): boolean {
 		return this.Team === Team.Neutral || this.Team === Team.Shop
 	}
-
 	public get MoveSpeed(): number {
 		return 0
 	}

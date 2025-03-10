@@ -1,6 +1,7 @@
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
+import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
 export class modifier_enchantress_enchant_intrinsic extends Modifier {
@@ -28,7 +29,7 @@ export class modifier_enchantress_enchant_intrinsic extends Modifier {
 	public PostDataUpdate(): void {
 		const caster = this.Caster,
 			target = caster?.Target
-		if (caster === undefined || target === undefined || !target.IsUnit) {
+		if (caster === undefined || !(target instanceof Unit)) {
 			this.cachedRange = 0
 			return
 		}

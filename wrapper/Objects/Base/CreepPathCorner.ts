@@ -19,7 +19,7 @@ export class CreepPathCorner extends Entity {
 	public OriginPosition = new Vector3().Invalidate()
 	public Spawner: Nullable<LaneCreepSpawner>
 	public Referencing = new Set<CreepPathCorner>()
-	public Target: Nullable<CreepPathCorner>
+	public TargetPath: Nullable<CreepPathCorner>
 	public SelfTargetName = ""
 	public TargetName: Nullable<string>
 
@@ -108,8 +108,8 @@ function DeleteSpawnersAndCorners(lump: EntityDataMap[]): void {
 		DeleteEntity(lumpCorners[index].Index)
 	}
 	for (const ent of CreepPathCorners) {
-		if (ent.Target !== undefined && lumpCorners.includes(ent.Target)) {
-			ent.Target = undefined
+		if (ent.TargetPath !== undefined && lumpCorners.includes(ent.TargetPath)) {
+			ent.TargetPath = undefined
 		}
 		for (let index = lumpCorners.length - 1; index > -1; index--) {
 			const ent2 = lumpCorners[index]
@@ -119,8 +119,8 @@ function DeleteSpawnersAndCorners(lump: EntityDataMap[]): void {
 		}
 	}
 	for (const ent of LaneCreepSpawners) {
-		if (ent.Target !== undefined && lumpCorners.includes(ent.Target)) {
-			ent.Target = undefined
+		if (ent.TargetPath !== undefined && lumpCorners.includes(ent.TargetPath)) {
+			ent.TargetPath = undefined
 		}
 	}
 }
@@ -194,12 +194,12 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 				ent => ent.SelfTargetName === npcfirstwaypoint
 			)
 			if (firstWaypoint !== undefined) {
-				entity.Target = firstWaypoint
+				entity.TargetPath = firstWaypoint
 				let currentCorner: Nullable<CreepPathCorner> = firstWaypoint
 				while (currentCorner !== undefined) {
 					currentCorner.Spawner = entity
 					currentCorner.Team = entity.Team
-					currentCorner = currentCorner.Target
+					currentCorner = currentCorner.TargetPath
 				}
 			}
 		}
@@ -259,7 +259,7 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 		for (let j = LaneCreepSpawners.length - 1; j > -1; j--) {
 			const spawner = LaneCreepSpawners[j]
 			if (spawner.TargetName === entity.SelfTargetName) {
-				spawner.Target = entity
+				spawner.TargetPath = entity
 				entity.Spawner = spawner
 			}
 		}
@@ -271,13 +271,13 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 				prev.TargetName !== undefined &&
 				entity.SelfTargetName === prev.TargetName
 			) {
-				prev.Target = entity
+				prev.TargetPath = entity
 				entity.Spawner = prev.Spawner
 				entity.Team = prev.Spawner?.Team ?? Team.Neutral
 				entity.Referencing.add(prev)
 			}
 			if (prev.SelfTargetName === entity.TargetName) {
-				entity.Target = prev
+				entity.TargetPath = prev
 				prev.Spawner = entity.Spawner
 				prev.Team = entity.Spawner?.Team ?? Team.Neutral
 				prev.Referencing.add(entity)

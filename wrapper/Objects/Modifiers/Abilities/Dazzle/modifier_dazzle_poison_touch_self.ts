@@ -1,6 +1,7 @@
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
+import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
 export class modifier_dazzle_poison_touch_self extends Modifier {
@@ -20,7 +21,7 @@ export class modifier_dazzle_poison_touch_self extends Modifier {
 			return
 		}
 		const owner = this.Parent
-		if (owner === undefined || owner.Target === undefined) {
+		if (owner === undefined || !(owner.Target instanceof Unit)) {
 			this.cachedRange = 0
 			return
 		}

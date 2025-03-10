@@ -220,7 +220,6 @@ export class ExecuteOrder {
 			isPlayerInput: false
 		})
 	}
-
 	public static fromObject(order: {
 		orderType: dotaunitorder_t
 		isPlayerInput: boolean
@@ -246,7 +245,6 @@ export class ExecuteOrder {
 		}
 		return executeOrder
 	}
-
 	/**
 	 * pass Position: Vector3 at IOBuffer offset 0
 	 */
@@ -280,7 +278,6 @@ export class ExecuteOrder {
 			this.Execute()
 			return
 		}
-
 		switch (this.OrderType) {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH:
@@ -309,7 +306,6 @@ export class ExecuteOrder {
 				}
 				break
 		}
-
 		let setZ = false
 		switch (this.OrderType) {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
@@ -325,11 +321,9 @@ export class ExecuteOrder {
 			default:
 				break
 		}
-
 		if (setZ && !this.CanBeClickHeightMapPosition()) {
 			return
 		}
-
 		const currentTime = hrtime()
 		if (this.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION) {
 			if (
@@ -342,40 +336,38 @@ export class ExecuteOrder {
 			ExecuteOrder.lastMove = [this.Position, currentTime]
 		}
 
-		if (!this.Queue) {
-			let interrupt = WillInterruptOrderQueue(this)
-			if (interrupt) {
-				while (
-					ExecuteOrder.orderQueue.removeCallback(
-						([order, _orderStartTime, _orderUsedMinimap, executed], i) =>
-							i !== 0 &&
-							!executed &&
-							(order.Issuers.every(unit => this.Issuers.includes(unit)) ||
-								(order.Issuers.length === 1 &&
-									this.Issuers.includes(order.Issuers[0]))) &&
-							CanBeIgnored(order)
-					)
-				) {
-					continue
-				}
-
-				switch (this.OrderType as dotaunitorder_t) {
-					case dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION:
-					case dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE:
-					case dotaunitorder_t.DOTA_UNIT_ORDER_STOP:
-						interrupt = false
-				}
+		if (!this.Queue && WillInterruptOrderQueue(this)) {
+			while (
+				ExecuteOrder.orderQueue.removeCallback(
+					([order, _orderStartTime, _orderUsedMinimap, executed], i) =>
+						i !== 0 &&
+						!executed &&
+						(order.Issuers.every(unit => this.Issuers.includes(unit)) ||
+							(order.Issuers.length === 1 &&
+								this.Issuers.includes(order.Issuers[0]))) &&
+						CanBeIgnored(order)
+				)
+			) {
+				continue
 			}
-
-			if (!interrupt) {
-				this.Execute()
-				return
+			switch (this.OrderType as dotaunitorder_t) {
+				case dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_STOP:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_ALT:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET:
+					this.Execute()
+					return
+				default:
+					break
 			}
 		}
 		ExecuteOrder.orderQueue.push([this, hrtime(), false, false])
 		ProcessUserCmd()
 	}
-
 	protected CanBeClickHeightMapPosition() {
 		const edgeSize = (GridNav?.EdgeSize ?? 64) * 2
 		const height = WASM.GetPositionHeight(this.Position) / edgeSize
@@ -395,7 +387,6 @@ export class ExecuteOrder {
 
 		return true
 	}
-
 	private IsEntityTree(entity: Entity): entity is Tree | TempTree {
 		return entity.IsTree
 	}

@@ -2,6 +2,7 @@ import { Color } from "../Base/Color"
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
+import { EventPriority } from "../Enums/EventPriority"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputManager } from "../Managers/InputManager"
@@ -392,4 +393,8 @@ export class Base {
 	}
 }
 
-EventsSDK.on("WindowSizeChanged", () => Base.OnWindowSizeChanged())
+EventsSDK.on(
+	"WindowSizeChanged",
+	() => Base.OnWindowSizeChanged(),
+	EventPriority.IMMEDIATE
+)

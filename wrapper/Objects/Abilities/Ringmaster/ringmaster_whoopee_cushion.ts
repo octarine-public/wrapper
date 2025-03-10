@@ -7,12 +7,13 @@ import { Unit } from "../../Base/Unit"
 export class ringmaster_whoopee_cushion extends Ability {
 	public GetHitTime(
 		unit: Unit | Vector3,
-		currentTurnRate: boolean = true,
-		rotationDiff: boolean = false
+		movement: boolean = false,
+		directionalMovement: boolean = false,
+		currentTurnRate: boolean = true
 	): number {
 		return (
 			this.ActivationDelay +
-			this.GetCastDelay(unit, currentTurnRate, rotationDiff) +
+			this.GetCastDelay(unit, movement, directionalMovement, currentTurnRate) +
 			this.CastRange / this.Speed
 		)
 	}

@@ -13,21 +13,15 @@ export class item_force_staff extends Item {
 		// https://dota2.fandom.com/wiki/Force_Staff
 		return 1200
 	}
-	/**
-	 * @description Returns the cast delay of the ability. Time in seconds until the cast.
-	 * @param {Unit | Vector3} unit - The unit or position to calculate hit time for
-	 * @param {boolean} currentTurnRate -  Flag to indicate if current turn rate is considered
-	 * @param {boolean} rotationDiff - Flag to indicate if rotation difference is considered
-	 * @return {number}
-	 */
 	public GetHitTime(
 		unit: Unit | Vector3,
-		currentTurnRate: boolean = true,
-		rotationDiff: boolean = false
+		movement: boolean = false,
+		directionalMovement: boolean = false,
+		currentTurnRate: boolean = true
 	) {
 		return (
 			this.ActivationDelay +
-			this.GetCastDelay(unit, currentTurnRate, rotationDiff) +
+			this.GetCastDelay(unit, movement, directionalMovement, currentTurnRate) +
 			this.Range / this.Speed
 		)
 	}

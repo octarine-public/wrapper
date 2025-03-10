@@ -117,7 +117,7 @@ function UpdateCameraBounds(cameraVec2D: Vector2) {
 		latestCameraPoly.Points[2],
 		latestCameraPoly.Points[3]
 	]
-	CameraSDK.Polygon.Points = cameraPoly.Points
+	CameraSDK.Polygon.Points = latestCameraPoly.Points
 	const screenSize = RendererSDK.WindowSize,
 		minimap = GUIInfo.Minimap.Minimap
 	const cameraLimitX1 =
@@ -439,7 +439,9 @@ function ComputeTargetPos(
 				? (lastOrderTarget.dst as DOTAScriptInventorySlot)
 				: lastOrderTarget.src
 		)
-
+		if (ExecuteOrder.DebugDraw) {
+			RendererSDK.FilledRect(currentRect.pos1, currentRect.Size)
+		}
 		if (currentRect.Contains(currentPos.Multiply(RendererSDK.WindowSize))) {
 			if (!lastOrderTarget.finishedSrc) {
 				lastOrderTarget.finishedSrc = true
