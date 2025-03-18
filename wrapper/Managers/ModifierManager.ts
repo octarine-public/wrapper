@@ -36,7 +36,7 @@ export class IModifier {
 		}
 		let name = ""
 		if (this.LuaName === undefined || this.LuaName === "") {
-			name = StringTables.GetString("ModifierNames", this.ModifierClass as number)
+			name = StringTables.GetString("ModifierNames", this.ModifierClass)
 		}
 		this.InternalName = name
 	}
@@ -54,7 +54,7 @@ export class IModifier {
 		return this.GetProperty<number>("serial_num")
 	}
 	public get ModifierClass() {
-		return this.GetProperty<number>("modifier_class")
+		return this.GetProperty<number>("modifier_class") ?? 0
 	}
 	public get AbilityLevel() {
 		return this.GetProperty<number>("ability_level")
