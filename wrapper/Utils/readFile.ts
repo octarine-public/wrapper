@@ -1,3 +1,6 @@
+import { EventPriority } from "../Enums/EventPriority"
+import { EventsSDK } from "../Managers/EventsSDK"
+
 const fexistsCache = new Set<string>(),
 	fexistsCacheInv = new Set<string>()
 export function tryFindFile(path: string, callstackDepth = 0): Nullable<string> {
@@ -48,3 +51,12 @@ export function readFile(path: string, callstackDepth = 0): Nullable<string> {
 
 	return fread(realPath, false)
 }
+
+EventsSDK.on(
+	"ServerInfo",
+	() => {
+		fexistsCache.clear()
+		fexistsCacheInv.clear()
+	},
+	EventPriority.IMMEDIATE
+)

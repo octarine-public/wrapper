@@ -12,7 +12,7 @@ import {
 } from "./PathData"
 
 const getTexturePath = (name: string, isItem = false): string => {
-	if (name.length === 0) {
+	if (name === "") {
 		return ""
 	}
 	const abilityData = AbilityData.GetAbilityByName(name)
@@ -63,8 +63,8 @@ export const Icons = {
 	icon_send_message: `${ImagePath}/profile/icon_send_message_psd.vtex_c`,
 	icon_scan: `${reborn}/icon_scan_on_psd.vtex_c`,
 	icon_ward: `${ImagePath}/icon_ward_psd.vtex_c`,
-	icon_ward_observer: `${ImagePath}/ward_observer_png.vtex_c`,
-	icon_ward_sentry: `${ImagePath}/items/ward_sentry_png.vtex_c`,
+	icon_ward_observer: `${ItemImagePath}/ward_observer_png.vtex_c`,
+	icon_ward_sentry: `${ItemImagePath}/ward_sentry_png.vtex_c`,
 	icon_settings: `${ImagePath}/control_icons/gear_png.vtex_c`,
 	check_png: `${ImagePath}/control_icons/check_png.vtex_c`,
 	icon_brackets: `${ImagePath}/control_icons/brackets_png.vtex_c`,
@@ -87,11 +87,11 @@ export const Icons = {
 	offlane: `${ImagePath}/rank_tier_icons/handicap/offlaneicon_psd.vtex_c`,
 	midlane: `${ImagePath}/rank_tier_icons/handicap/midlaneicon_psd.vtex_c`,
 	safelane: `${ImagePath}/rank_tier_icons/handicap/safelaneicon_psd.vtex_c`,
-	roshan_slam: `${ImagePath}/spellicons/roshan_slam_png.vtex_c`,
-	roshan_bash: `${ImagePath}/spellicons/roshan_bash_png.vtex_c`,
+	roshan_slam: `${AbilityImagePath}/roshan_slam_png.vtex_c`,
+	roshan_bash: `${AbilityImagePath}/roshan_bash_png.vtex_c`,
 	roshans_gift: `${ImagePath}/econ/tools/roshans_gift_png.vtex_c`,
-	roshan_halloween_levels: `${ImagePath}/spellicons/roshan_halloween_levels_png.vtex_c`,
-	roshan_halloween_angry: `${ImagePath}/spellicons/roshan_halloween_angry_png.vtex_c`,
+	roshan_halloween_levels: `${AbilityImagePath}/roshan_halloween_levels_png.vtex_c`,
+	roshan_halloween_angry: `${AbilityImagePath}/roshan_halloween_angry_png.vtex_c`,
 	gradient_leftright: `${mask}/gradient_leftright_png.vtex_c`,
 	primary_attribute_strength: `${ImagePath}/primary_attribute_icons/primary_attribute_icon_strength_psd.vtex_c`,
 	primary_attribute_agility: `${ImagePath}/primary_attribute_icons/primary_attribute_icon_agility_psd.vtex_c`,
@@ -135,14 +135,14 @@ export const Icons = {
 }
 
 export function GetItemTexture(name: string): string {
-	if (name.length === 0) {
+	if (name === "") {
 		return ""
 	}
 	return getTexturePath(name, true)
 }
 
 export function GetSpellTexture(name: string): string {
-	if (name.length === 0) {
+	if (name === "") {
 		return ""
 	}
 	return getTexturePath(name)

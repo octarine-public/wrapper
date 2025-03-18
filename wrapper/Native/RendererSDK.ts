@@ -392,7 +392,7 @@ class CRendererSDK {
 		this.Rect(vecSize, width, PathFlags.STROKE, color, color, grayscale, cap, join)
 	}
 	/**
-	 * @param path must end with "_c" (without double-quotes), if that's vtexC
+	 * @param path must end with "_c" (without double-quotes), if that's vtex_c
 	 * @param round < 0 no rounding, 0 = circle, > 0 = rounded corners
 	 */
 	public Image(

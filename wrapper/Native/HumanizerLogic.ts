@@ -47,13 +47,6 @@ class Polygon2D {
 			new Vector2()
 		).DivideScalarForThis(this.Points.length)
 	}
-	public Add(polygon: Polygon2D | Vector2): void {
-		if (polygon instanceof Polygon2D) {
-			polygon.Points.forEach(point => this.AddPoint(point))
-		} else {
-			this.AddPoint(polygon)
-		}
-	}
 
 	public Draw(color: Color, width = 10): void {
 		for (let i = 0; i < this.Points.length; i++) {
@@ -85,10 +78,6 @@ class Polygon2D {
 			}
 		}
 		return isOutside
-	}
-
-	private AddPoint(point: Vector2): void {
-		this.Points.push(point)
 	}
 }
 

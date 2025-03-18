@@ -918,7 +918,7 @@ export class AbilityData {
 	}
 }
 
-function AbilityNameToPath(name: string, strip = false): string {
+function AbilityNameToPath(name: string, flash3: boolean, strip = false): string {
 	const isItem = name.startsWith("item_")
 	let texName = isItem && strip ? name.substring(5) : name
 	if (texName.startsWith("frostivus")) {
@@ -927,9 +927,49 @@ function AbilityNameToPath(name: string, strip = false): string {
 	if (isItem && name.startsWith("item_recipe_")) {
 		texName = "recipe"
 	}
+	if (flash3) {
+		return isItem
+			? `resource/flash3/images/items/${texName}.png`
+			: `resource/flash3/images/spellicons/${texName}.png`
+	}
 	return isItem
 		? `panorama/images/items/${texName}_png.vtex_c`
 		: `panorama/images/spellicons/${texName}_png.vtex_c`
+}
+
+function TryGetAbilityTexturePath(texName: string, flash3: boolean): Nullable<string> {
+	let path = AbilityNameToPath(texName, flash3)
+	if (fexists(path)) {
+		return path
+	}
+	path = AbilityNameToPath(texName, flash3, true)
+	if (fexists(path)) {
+		return path
+	}
+	return undefined
+}
+
+function TryGetAbilityTexturePath2(texName: string, flash3: boolean): Nullable<string> {
+	const path = TryGetAbilityTexturePath(texName, flash3)
+	if (path !== undefined) {
+		return path
+	}
+	if (texName.startsWith("frostivus")) {
+		texName = texName.split("_").slice(1).join("_")
+	} else if (texName.startsWith("special_")) {
+		texName = "attribute_bonus"
+	} else {
+		return undefined
+	}
+	return TryGetAbilityTexturePath(texName, flash3)
+}
+
+function TryGetAbilityTexturePath3(texName: string): Nullable<string> {
+	const path = TryGetAbilityTexturePath2(texName, false)
+	if (path !== undefined) {
+		return path
+	}
+	return TryGetAbilityTexturePath2(texName, true)
 }
 
 function FixAbilityInheritance(
@@ -964,21 +1004,10 @@ function FixAbilityInheritance(
 		}
 	}
 	{
-		let texName = (map.get("AbilityTextureName") as string) ?? abilName
-		let path = AbilityNameToPath(texName)
-		if (!fexists(path)) {
-			path = AbilityNameToPath(texName, true)
-			if (!fexists(path)) {
-				if (texName.startsWith("frostivus")) {
-					texName = texName.split("_").slice(1).join("_")
-				} else if (texName.startsWith("special_")) {
-					texName = "attribute_bonus"
-				} else {
-					texName = texName
-				}
-				path = AbilityNameToPath(texName)
-			}
-		}
+		const texName = (map.get("AbilityTextureName") as string) ?? abilName
+		const path =
+			TryGetAbilityTexturePath3(texName) ??
+			"panorama/images/spellicons/empty_png.vtex_c"
 		map.set("AbilityTexturePath", path)
 	}
 	fixedCache.set(abilName, map)

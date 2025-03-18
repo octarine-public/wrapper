@@ -199,4 +199,4 @@ declare interface Events extends EventEmitter {
 }
 
 export const Events: Events = new EventEmitter()
-setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args))
+setFireEvent(Events.emit.bind(Events))
