@@ -258,14 +258,7 @@ export class Ability extends Entity {
 		return this.Cooldown === 0
 	}
 	public get IsReady(): boolean {
-		if (!this.IsCooldownReady || this.Level === 0) {
-			return false
-		}
-		const owner = this.Owner
-		if (owner === undefined) {
-			return false
-		}
-		return (owner.IsConvertManaCostToHPCost ? owner.HP : owner.Mana) >= this.ManaCost
+		return this.Level !== 0 && this.IsCooldownReady && this.IsManaEnough()
 	}
 	public get BaseManaCost(): number {
 		return Math.max(this.NetworkedManaCost, this.GetBaseManaCostForLevel(this.Level))
