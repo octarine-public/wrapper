@@ -1,6 +1,7 @@
 import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
+import { EventPriority } from "../../Enums/EventPriority"
 import { GUIInfo } from "../../GUI/GUIInfo"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { ConVarsSDK } from "../../Native/ConVarsSDK"
@@ -48,14 +49,6 @@ export class Roshan extends Unit {
 	}
 }
 
-function GetHPChangedByMinute(minute: number): number {
-	let hpChanged = 130
-	if (GameRules?.GameMode === DOTAGameMode.DOTA_GAMEMODE_TURBO) {
-		hpChanged *= 2
-	}
-	return minute * hpChanged
-}
-
 let lastMinute = 0
 function GetLastMinute() {
 	return Math.max(
@@ -66,6 +59,36 @@ function GetLastMinute() {
 		)
 	)
 }
+function GetHPChangedByMinute(minute: number): number {
+	let hpChanged = 130
+	if (GameRules?.GameMode === DOTAGameMode.DOTA_GAMEMODE_TURBO) {
+		hpChanged *= 2
+	}
+	return minute * hpChanged
+}
+
+function PostDataUpdate(dt: number) {
+	if (Roshan.HP === 0 || dt === 0) {
+		return
+	}
+	Roshan.HPRegenCounter += Roshan.HPRegen * Math.min(dt, 0.1)
+	const regenAmountFloor = Math.floor(Roshan.HPRegenCounter)
+	Roshan.HP =
+		Roshan.Instance instanceof Entity && Roshan.Instance.IsVisible
+			? Roshan.Instance.HP
+			: Math.min(Roshan.HP + regenAmountFloor, Roshan.MaxHP)
+	Roshan.HPRegenCounter -= regenAmountFloor
+
+	const min = GetLastMinute()
+	if (min === lastMinute) {
+		return
+	}
+	Roshan.MaxHP = 6000 + GetHPChangedByMinute(min)
+	Roshan.HP *= Roshan.MaxHP / (6000 + GetHPChangedByMinute(lastMinute))
+	lastMinute = min
+}
+
+EventsSDK.on("PostDataUpdate", dt => PostDataUpdate(dt), EventPriority.IMMEDIATE)
 EventsSDK.on("ParticleCreated", par => {
 	if (par.PathNoEcon !== "particles/neutral_fx/roshan_spawn.vpcf") {
 		return
@@ -88,7 +111,6 @@ EventsSDK.on("LifeStateChanged", ent => {
 		Roshan.HP = 0
 	}
 })
-
 EventsSDK.on("PreEntityCreated", ent => {
 	if (ent === GameRules && lastMinute === 0) {
 		lastMinute = GetLastMinute()
@@ -107,7 +129,6 @@ EventsSDK.on("PreEntityCreated", ent => {
 	Roshan.HP = ent.HP
 	Roshan.MaxHP = ent.MaxHP
 })
-
 EventsSDK.on("EntityDestroyed", ent => {
 	if (Roshan.Instance === ent) {
 		Roshan.HP = 0
@@ -118,29 +139,6 @@ EventsSDK.on("EntityDestroyed", ent => {
 		Roshan.Spawner = undefined
 	}
 })
-
-EventsSDK.on("PostDataUpdate", dt => {
-	if (Roshan.HP === 0 || dt === 0) {
-		return
-	}
-
-	Roshan.HPRegenCounter += Roshan.HPRegen * Math.min(dt, 0.1)
-	const regenAmountFloor = Math.floor(Roshan.HPRegenCounter)
-	Roshan.HP =
-		Roshan.Instance instanceof Entity && Roshan.Instance.IsVisible
-			? Roshan.Instance.HP
-			: Math.min(Roshan.HP + regenAmountFloor, Roshan.MaxHP)
-	Roshan.HPRegenCounter -= regenAmountFloor
-
-	const min = GetLastMinute()
-	if (min === lastMinute) {
-		return
-	}
-	Roshan.MaxHP = 6000 + GetHPChangedByMinute(min)
-	Roshan.HP *= Roshan.MaxHP / (6000 + GetHPChangedByMinute(lastMinute))
-	lastMinute = min
-})
-
 EventsSDK.on("GameEnded", () => {
 	Roshan.HP = 0
 	lastMinute = 0

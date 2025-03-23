@@ -257,24 +257,24 @@ export class Ability extends Entity {
 	public get IsCooldownReady(): boolean {
 		return this.Cooldown === 0
 	}
-	public get BaseManaCost(): number {
-		return Math.max(this.NetworkedManaCost, this.GetBaseManaCostForLevel(this.Level))
-	}
-	public get ManaCost(): number {
-		return this.GetManaCostModifier(this.BaseManaCost)
-	}
-	public get HealthCost(): number {
-		return this.GetManaCostModifier(this.GetHealthCost(this.BaseManaCost))
-	}
 	public get IsReady(): boolean {
 		if (!this.IsCooldownReady || this.Level === 0) {
 			return false
 		}
 		const owner = this.Owner
-		if (owner === undefined || owner.Mana < this.ManaCost) {
+		if (owner === undefined) {
 			return false
 		}
-		return true
+		return (owner.IsConvertManaCostToHPCost ? owner.HP : owner.Mana) >= this.ManaCost
+	}
+	public get BaseManaCost(): number {
+		return Math.max(this.NetworkedManaCost, this.GetBaseManaCostForLevel(this.Level))
+	}
+	public get ManaCost(): number {
+		return this.GetManaCostModifier(this.GetHealthCost(this.BaseManaCost))
+	}
+	public get HealthCost(): number {
+		return this.ManaCost
 	}
 	public get IsGrantedByScepter(): boolean {
 		return this.AbilityData.IsGrantedByScepter
@@ -658,7 +658,11 @@ export class Ability extends Entity {
 		if (owner === undefined) {
 			return true
 		}
-		return owner.Mana + bonusMana >= this.ManaCost
+		let mana = owner.IsConvertManaCostToHPCost ? owner.HP : owner.Mana
+		if (!owner.IsConvertManaCostToHPCost && bonusMana !== 0) {
+			mana += bonusMana
+		}
+		return mana >= this.ManaCost
 	}
 	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
 		// don't use AbilityData.HasBehavior() here
@@ -742,7 +746,7 @@ export class Ability extends Entity {
 	}
 	public GetHealthCost(baseManaCost: number): number {
 		const owner = this.Owner
-		if (owner === undefined || owner.IsConvertManaCostToHPCost) {
+		if (owner === undefined || !owner.IsConvertManaCostToHPCost) {
 			return baseManaCost
 		}
 		return baseManaCost * (1 - owner.MagicalDamageResist)
