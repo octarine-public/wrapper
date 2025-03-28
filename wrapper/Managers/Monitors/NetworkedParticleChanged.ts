@@ -18,8 +18,8 @@ const Monitor = new (class CNetworkedParticleChanged {
 				destroyedParticles.push(par)
 			}
 		}
-		for (let index = 0, end = destroyedParticles.length; index < end; index++) {
-			destroyedParticles[index].Destroy()
+		for (let i = 0, end = destroyedParticles.length; i < end; i++) {
+			destroyedParticles[i].Destroy()
 		}
 	}
 

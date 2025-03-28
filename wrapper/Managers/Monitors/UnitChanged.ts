@@ -4,6 +4,7 @@ import { EventPriority } from "../../Enums/EventPriority"
 import { GameActivity } from "../../Enums/GameActivity"
 import { Ability } from "../../Objects/Base/Ability"
 import { Entity } from "../../Objects/Base/Entity"
+import { FakeUnit } from "../../Objects/Base/FakeUnit"
 import { Item } from "../../Objects/Base/Item"
 import { NeutralSpawner, NeutralSpawners } from "../../Objects/Base/NeutralSpawner"
 import { Unit, Units } from "../../Objects/Base/Unit"
@@ -209,7 +210,7 @@ const Monitor = new (class CPreUnitChanged {
 	}
 
 	public UnitAnimation(
-		unit: Unit,
+		unit: Unit | FakeUnit,
 		sequenceVariant: number,
 		playbackRate: number,
 		castpoint: number,
@@ -217,10 +218,9 @@ const Monitor = new (class CPreUnitChanged {
 		type: number,
 		rawCastPoint: number
 	) {
-		if (!unit.IsInAnimation && activity === -1) {
+		if (unit instanceof FakeUnit || (!unit.IsInAnimation && activity === -1)) {
 			return
 		}
-
 		unit.IsInAnimation = true
 		unit.LastAnimationCasted = false
 		if (activity !== -1) {
@@ -247,8 +247,8 @@ const Monitor = new (class CPreUnitChanged {
 				: 0
 	}
 
-	public UnitAnimationEnd(unit: Unit) {
-		if (!unit.IsInAnimation) {
+	public UnitAnimationEnd(unit: Unit | FakeUnit) {
+		if (unit instanceof FakeUnit || !unit.IsInAnimation) {
 			return
 		}
 		if (unit.LastAnimationIsAttack) {

@@ -745,7 +745,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 					submsg.get("position") as RecursiveProtobuf
 				),
 				entID = submsg.get("entity_handle") as number
-			const ent = GetPredictionTarget(entID)
+			const ent = GetPredictionTarget(entID, false, par?.PathNoEcon ?? "")
 			if (ent !== undefined) {
 				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				ent.LastPredictedPositionUpdate = GameState.RawGameTime
@@ -761,7 +761,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 				position = CMsgVectorToVector3(
 					submsg.get("fallback_position") as RecursiveProtobuf
 				)
-			const ent = GetPredictionTarget(entID)
+			const ent = GetPredictionTarget(entID, false, par?.PathNoEcon ?? "")
 			if (ent !== undefined) {
 				ent.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				ent.LastPredictedPositionUpdate = GameState.RawGameTime
@@ -783,7 +783,6 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 		const particleSystemHandle = submsg.get("particle_name_index") as bigint,
 			entID = submsg.get("entity_handle") as number,
 			modifiersEntID = submsg.get("entity_handle_for_modifiers") as number
-
 		const path =
 			particleSystemHandle !== undefined
 				? GetPathByHash(particleSystemHandle)
@@ -797,8 +796,8 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 					path,
 					particleSystemHandle,
 					submsg.get("attach_type") as number,
-					GetPredictionTarget(entID),
-					GetPredictionTarget(modifiersEntID)
+					GetPredictionTarget(entID, false, path),
+					GetPredictionTarget(modifiersEntID, false, path)
 				)
 			)
 		} else {
@@ -898,7 +897,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 				position = CMsgVectorToVector3(
 					submsg.get("fallback_position") as RecursiveProtobuf
 				)
-			const ent = GetPredictionTarget(entID)
+			const ent = GetPredictionTarget(entID, false, par.PathNoEcon)
 			if (ent !== undefined) {
 				par.ControlPointsEnt.set(cp, [
 					ent,
@@ -1316,10 +1315,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 					new Uint8Array(buf_),
 					"CDOTAUserMsg_TE_UnitAnimation"
 				)
-				const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
-				if (!(ent instanceof Unit)) {
-					return
-				}
+				const ent = GetPredictionTarget(msg.get("entity") as number)
 				const type = msg.get("type") as number
 				let rawCastPoint = msg.get("castpoint") as number,
 					castPoint =
@@ -1327,6 +1323,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 						GameState.TickInterval
 				if (
 					type === 0 &&
+					ent instanceof Unit &&
 					!ConVarsSDK.GetBoolean(
 						"dota_disable_add_fractional_attack_time",
 						false
@@ -1360,15 +1357,11 @@ Events.on("ServerMessage", (msgID, buf_) => {
 					new Uint8Array(buf_),
 					"CDOTAUserMsg_TE_UnitAnimationEnd"
 				)
-				const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
-				if (ent instanceof Unit) {
-					EventsSDK.emit(
-						"UnitAnimationEnd",
-						false,
-						ent,
-						msg.get("snap") as boolean
-					)
+				const ent = GetPredictionTarget(msg.get("entity") as number, true)
+				if (ent === undefined) {
+					return
 				}
+				EventsSDK.emit("UnitAnimationEnd", false, ent, msg.get("snap") as boolean)
 			})
 			break
 		}

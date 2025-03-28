@@ -4,6 +4,7 @@ import { GameActivity } from "../../Enums/GameActivity"
 import { GameSleeper } from "../../Helpers/Sleeper"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { Entity } from "../../Objects/Base/Entity"
+import { FakeUnit } from "../../Objects/Base/FakeUnit"
 import { Unit, Units } from "../../Objects/Base/Unit"
 import { Tower } from "../../Objects/Buildings/Tower"
 import { GameState } from "../../Utils/GameState"
@@ -74,11 +75,14 @@ const Monitor = new (class CUnitAttackChanged {
 	}
 
 	public UnitAnimation(
-		source: Unit,
+		source: Unit | FakeUnit,
 		seqVar?: number,
 		activity?: GameActivity,
 		attackPoint = 0
 	) {
+		if (!(source instanceof Unit)) {
+			return
+		}
 		if (
 			seqVar === undefined ||
 			activity === undefined ||

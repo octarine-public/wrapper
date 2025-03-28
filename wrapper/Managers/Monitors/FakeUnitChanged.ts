@@ -16,7 +16,7 @@ new (class CMonitorFakeUnit {
 		if (entity.PlayerCustomData === undefined) {
 			const player = this.findPlayerCustomData(entity)
 			entity.Level = player !== undefined ? 1 : 0
-			entity.PlayerCustomData = player
+			entity.PlayerID = player?.PlayerID ?? -1
 		}
 	}
 

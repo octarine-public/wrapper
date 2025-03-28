@@ -103,6 +103,7 @@ function UpdateCameraBounds(cameraVec2D: Vector2) {
 		cameraVec,
 		defaultCameraDist
 	)
+	CameraSDK.Polygon.Points = latestCameraPoly.Points
 	cameraPoly.Points = [
 		latestCameraPoly.Points[0],
 		cameraVec,
@@ -117,7 +118,6 @@ function UpdateCameraBounds(cameraVec2D: Vector2) {
 		latestCameraPoly.Points[2],
 		latestCameraPoly.Points[3]
 	]
-	CameraSDK.Polygon.Points = latestCameraPoly.Points
 	const screenSize = RendererSDK.WindowSize,
 		minimap = GUIInfo.Minimap.Minimap
 	const cameraLimitX1 =
