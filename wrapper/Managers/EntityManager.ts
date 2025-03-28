@@ -12,7 +12,7 @@ export const EntityManager = new (class CEntityManager {
 	public readonly AllEntities: Entity[] = []
 
 	public EntityByIndex<T extends Entity>(handle: Nullable<number>): Nullable<T> {
-		if (handle === 0 || handle === undefined || handle === this.INVALID_HANDLE) {
+		if (handle === undefined || handle === 0 || handle === this.INVALID_HANDLE) {
 			return undefined
 		}
 		const index = handle & this.INDEX_MASK,

@@ -1,4 +1,6 @@
+import { QAngle } from "../../Base/QAngle"
 import { Vector3 } from "../../Base/Vector3"
+import { EventPriority } from "../../Enums/EventPriority"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { PlayerCustomData } from "../DataBook/PlayerCustomData"
@@ -8,23 +10,38 @@ import { PlayerResource } from "./PlayerResource"
 import { Unit } from "./Unit"
 
 export class FakeUnit {
+	public readonly PredictionAngles = new QAngle().Invalidate()
 	public readonly PredictedPosition = new Vector3().Invalidate()
-	public Name = ""
-	public Level = 0
-	// NOTE: PlayerCustomData set in -> Managers -> Monitors -> FakeUnitChanged
-	/** @readonly */
-	public PlayerCustomData: Nullable<PlayerCustomData>
-	public LastPredictedPositionUpdate = 0
-	public LastRealPredictedPositionUpdate = 0
+
+	public Name: string = ""
+	public Level: number = 0
+	public ModelName: string = ""
+	public ParticlePath: string = ""
+	public PlayerID: number = -1
+	public PredictionMoveSpeed = 0
+	public LastPredictedPositionUpdate: number = 0
+	public LastRealPredictedPositionUpdate: number = 0
 
 	constructor(
 		public readonly Index: number,
 		private serial: number
 	) {}
-
+	public get Angles() {
+		return this.PredictionAngles
+	}
+	public get PlayerCustomData() {
+		return PlayerCustomData.get(this.PlayerID)
+	}
+	// TODO(?): handle fake modifiers
 	public get BaseAttackRange(): number {
 		return this.Name.includes("npc_dota_")
 			? (UnitData.GetUnitDataByName(this.Name)?.BaseAttackRange ?? 0)
+			: 0
+	}
+	// TODO(?): handle fake modifiers
+	public get MoveSpeed(): number {
+		return this.Name.includes("npc_dota_")
+			? (UnitData.GetUnitDataByName(this.Name)?.BaseMovementSpeed ?? 0)
 			: 0
 	}
 	public SerialMatches(serial: number): boolean {
@@ -62,8 +79,21 @@ export class FakeUnit {
 const fakeUnitsMap = new Map<number, FakeUnit>()
 export const FakeUnits: FakeUnit[] = []
 
+function DeleteFakeUnit(index: number): void {
+	const fakeUnit = fakeUnitsMap.get(index)
+	if (fakeUnit === undefined) {
+		return
+	}
+	fakeUnit.PlayerID = -1
+	FakeUnits.remove(fakeUnit)
+	fakeUnitsMap.delete(index)
+	EventsSDK.emit("FakeUnitDestroyed", false, fakeUnit)
+}
+
 export function GetPredictionTarget(
-	handle: Nullable<Entity | number>
+	handle: Nullable<Entity | number>,
+	skipCreateFakeUnit: boolean = false,
+	particlePath?: string
 ): Nullable<Unit | FakeUnit> {
 	if (handle === undefined || handle === EntityManager.INVALID_HANDLE) {
 		return undefined
@@ -81,36 +111,34 @@ export function GetPredictionTarget(
 		return ent instanceof Unit ? ent : undefined
 	}
 	let fakeUnit = fakeUnitsMap.get(index)
-	if (fakeUnit === undefined) {
-		fakeUnit = new FakeUnit(index, serial)
-		fakeUnitsMap.set(index, fakeUnit)
-		FakeUnits.push(fakeUnit)
-		fakeUnit.UpdateName()
-		EventsSDK.emit("FakeUnitCreated", false, fakeUnit)
+	if (fakeUnit !== undefined || skipCreateFakeUnit) {
+		return fakeUnit
 	}
+	fakeUnit = new FakeUnit(index, serial)
+	fakeUnit.ParticlePath = particlePath ?? ""
+	fakeUnitsMap.set(index, fakeUnit)
+	FakeUnits.push(fakeUnit)
+	fakeUnit.UpdateName()
+	EventsSDK.emit("FakeUnitCreated", false, fakeUnit)
 	return fakeUnit
 }
 
-EventsSDK.on("EntityCreated", ent => {
-	const fakeUnit = fakeUnitsMap.get(ent.Index)
-	if (fakeUnit === undefined) {
-		return
+EventsSDK.on("PostDataUpdate", () => {
+	for (let i = FakeUnits.length - 1; i > -1; i--) {
+		const unit = FakeUnits[i]
+		unit.UpdateName()
 	}
-	if (fakeUnitsMap.delete(ent.Index)) {
-		fakeUnit.PlayerCustomData = undefined
+})
+
+EventsSDK.on("GameEvent", (name, obj) => {
+	if (name === "entity_killed") {
+		DeleteFakeUnit(obj.entindex_killed)
 	}
-	FakeUnits.remove(fakeUnit)
-	EventsSDK.emit("FakeUnitDestroyed", false, fakeUnit)
 })
 
 EventsSDK.on("GameEnded", () => {
-	fakeUnitsMap.clear()
 	FakeUnits.clear()
+	fakeUnitsMap.clear()
 })
 
-EventsSDK.on("PostDataUpdate", () => {
-	for (let index = FakeUnits.length - 1; index > -1; index--) {
-		const fakeUnit = FakeUnits[index]
-		fakeUnit.UpdateName()
-	}
-})
+EventsSDK.on("EntityCreated", ent => DeleteFakeUnit(ent.Index), EventPriority.IMMEDIATE)

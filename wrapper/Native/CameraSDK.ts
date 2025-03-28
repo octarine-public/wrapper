@@ -9,10 +9,17 @@ export const CameraSDK = new (class CCameraSDK {
 	/** @readonly */
 	public DefaultDistance = 1200
 	public readonly DefaultAngles = new QAngle(60, 90, 0)
+	/** @description Camera polygon update only with humanizer */
 	public readonly Polygon = new WorldPolygon()
 
 	public get Angles() {
 		return Camera.Angles ? QAngle.fromIOBuffer() : this.DefaultAngles
+	}
+	public set Angles(value: QAngle) {
+		IOBuffer[0] = value.x
+		IOBuffer[1] = value.y
+		IOBuffer[2] = 0
+		Camera.Angles = true
 	}
 	public get FoV(): number {
 		return Camera.FoV

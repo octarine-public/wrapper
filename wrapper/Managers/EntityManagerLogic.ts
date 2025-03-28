@@ -73,7 +73,6 @@ export function DeleteEntity(entID: number): void {
 	if (entity === undefined) {
 		return
 	}
-
 	entity.IsValid = false
 	entity.BecameDormantTime = GameState.RawGameTime
 	EntityManager.AllEntities.remove(entity)

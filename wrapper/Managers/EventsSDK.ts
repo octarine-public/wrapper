@@ -191,7 +191,7 @@ interface EventsSDK extends EventEmitter {
 	on(
 		name: "UnitAnimation",
 		callback: (
-			npc: Unit,
+			npc: Unit | FakeUnit,
 			sequenceVariant: number,
 			playbackrate: number,
 			castpoint: number,
@@ -204,7 +204,7 @@ interface EventsSDK extends EventEmitter {
 	): EventEmitter
 	on(
 		name: "UnitAnimationEnd",
-		callback: (npc: Unit, snap: boolean) => void,
+		callback: (npc: Unit | FakeUnit, snap: boolean) => void,
 		priority?: number
 	): EventEmitter
 	on(
