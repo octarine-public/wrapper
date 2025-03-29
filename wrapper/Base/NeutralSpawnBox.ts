@@ -113,10 +113,10 @@ export class NeutralSpawnBox {
 	protected SetAngleEvil() {
 		switch (this.CampName) {
 			case "neutralcamp_evil_1":
-				this.Angles.SetY(-40)
+				this.Angles.SetY(70)
 				break
 			case "neutralcamp_evil_2":
-				this.Angles.SetY(439)
+				this.Angles.SetY(-225)
 				break
 			case "neutralcamp_evil_3":
 				this.Angles.SetY(410)

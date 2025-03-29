@@ -82,23 +82,26 @@ export class Color {
 	 */
 	public data32 = -1
 
-	constructor(r = 0, g = 0, b = 0, a = 255, u32: undefined | number = undefined) {
+	constructor(r = 0, g = 0, b = 0, a = 255, u32?: number) {
 		this.data32 = u32 ?? (
-			((0xff & r) << 0x00) |
-			((0xff & g) << 0x08) |
-			((0xff & b) << 0x10) |
-			((0xff & a) << 0x18)
-		)
+			((r & 0xff) << 0x00) |
+			((g & 0xff) << 0x08) |
+			((b & 0xff) << 0x10) |
+			((a & 0xff) << 0x18)
+		);
 	}
 
-	public get r(): number { return 0xff & this.data32 >> 0x00 }
-	public set r(v: number) { this.data32 = this.data32 & ~(0xff << 0x00) | v << 0x00 }
-	public get g(): number { return 0xff & this.data32 >> 0x08 }
-	public set g(v: number) { this.data32 = this.data32 & ~(0xff << 0x08) | v << 0x08 }
-	public get b(): number { return 0xff & this.data32 >> 0x10 }
-	public set b(v: number) { this.data32 = this.data32 & ~(0xff << 0x10) | v << 0x10 }
-	public get a(): number { return 0xff & this.data32 >> 0x18 }
-	public set a(v: number) { this.data32 = this.data32 & ~(0xff << 0x18) | v << 0x18 }
+	public get r(): number { return (0xff & (this.data32 >> 0x00)) }
+	public set r(v: number) { this.data32 = (this.data32 & ~(0xff << 0x00)) | ((v & 0xff) << 0x00) }
+
+	public get g(): number { return (0xff & (this.data32 >> 0x08)) }
+	public set g(v: number) { this.data32 = (this.data32 & ~(0xff << 0x08)) | ((v & 0xff) << 0x08) }
+
+	public get b(): number { return (0xff & (this.data32 >> 0x10)) }
+	public set b(v: number) { this.data32 = (this.data32 & ~(0xff << 0x10)) | ((v & 0xff) << 0x10) }
+
+	public get a(): number { return (0xff & (this.data32 >> 0x18)) }
+	public set a(v: number) { this.data32 = (this.data32 & ~(0xff << 0x18)) | ((v & 0xff) << 0x18) }
 
 	public Set32(int32: number): Color {
 		this.data32 = int32
@@ -110,13 +113,12 @@ export class Color {
 	 */
 	public SetColor(r: number = 0, g: number = 0, b: number = 0, a: number = 255): Color {
 		this.data32 =
-			((0xff & r) << 0x00) |
-			((0xff & g) << 0x08) |
-			((0xff & b) << 0x10) |
-			((0xff & a) << 0x18)
+			((r & 0xff) << 0x00) |
+			((g & 0xff) << 0x08) |
+			((b & 0xff) << 0x10) |
+			((a & 0xff) << 0x18)
 		return this
 	}
-
 	/**
 	 * Set R of color by number
 	 */

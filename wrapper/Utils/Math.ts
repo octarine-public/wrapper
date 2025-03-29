@@ -156,18 +156,35 @@ export function RGBToHSV(r: number, g: number, b: number): [number, number, numb
  * @param h The hue
  * @param s The saturation
  * @param v The value
+ * @param isHueDegrees If the hue is in degrees
+ * @param isRound If the values should be rounded
  * @return The RGB representation
  */
-export function HSVToRGB(h: number, s: number, v: number): [number, number, number] {
-	let r: number, g: number, b: number
+export function HSVToRGB(
+	h: number,
+	s: number,
+	v: number,
+	isHueDegrees: boolean = false,
+	isRound: boolean = false
+): [number, number, number] {
+	// if saturation = 0, then the color is a shade of gray
+	if (s === 0) {
+		const gray = isRound ? Math.round(v * 255) : v * 255
+		return [gray, gray, gray]
+	}
+	// h must be 0 to 1 or 0 to 360 (normalized)
+	h = isHueDegrees ? (((h % 360) + 360) % 360) / 360 : ((h % 1) + 1) % 1
 
-	const i = Math.floor(h * 6),
-		p = v * (1 - s)
-	const f = h * 6 - i
-	const q = v * (1 - f * s),
+	const h6 = h * 6,
+		i = Math.floor(h6) % 6,
+		f = h6 % 1
+
+	const p = v * (1 - s),
+		q = v * (1 - f * s),
 		t = v * (1 - (1 - f) * s)
 
-	switch (i % 6) {
+	let r: number, g: number, b: number
+	switch (i) {
 		case 0:
 			r = v
 			g = t
@@ -193,14 +210,15 @@ export function HSVToRGB(h: number, s: number, v: number): [number, number, numb
 			g = p
 			b = v
 			break
-		default:
+		default: // 5
 			r = v
 			g = p
 			b = q
 			break
 	}
-
-	return [r * 255, g * 255, b * 255]
+	return isRound
+		? [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)]
+		: [r * 255, g * 255, b * 255]
 }
 
 /**
