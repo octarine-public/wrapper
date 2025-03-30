@@ -5,6 +5,7 @@ import {
 	EventsSDK,
 	GameRules,
 	GameState,
+	GUIInfo,
 	InputManager,
 	MathSDK,
 	Menu,
@@ -24,12 +25,14 @@ const enum CSODOTALobbyState {
 }
 
 class RGBTrailMenu {
-	public readonly Type: Menu.Dropdown
+	// public readonly Type: Menu.Dropdown
 	public readonly Smoothing: Menu.Toggle
 
 	public readonly Color: Menu.ColorPicker
 	public readonly Animate: Menu.Toggle
-	public readonly MaxLength: Menu.Slider
+	public readonly MaxDuration: Menu.Slider
+	public readonly ColorChangeSpeed: Menu.Slider
+	public readonly Size: Menu.Slider
 
 	private readonly state: Menu.Toggle
 	private readonly whereToUse: Menu.Dropdown
@@ -46,9 +49,11 @@ class RGBTrailMenu {
 		this.Smoothing = this.tree.AddToggle("Smoothing", true)
 		this.Animate = this.tree.AddToggle("RGB animate", true)
 		this.Color = this.tree.AddColorPicker("Color", Color.Aqua.SetA(255))
-		this.Type = this.tree.AddDropdown("Shape", ["Circle", "Line"])
+		// this.Type = this.tree.AddDropdown("Shape", ["Circle", "Line"])
 		this.whereToUse = this.tree.AddDropdown("Use", this.arrUse)
-		this.MaxLength = this.tree.AddSlider("Max length", 50, 15, 50)
+		this.MaxDuration = this.tree.AddSlider("Max duration", 0.2, 0.1, 5, 1)
+		this.ColorChangeSpeed = this.tree.AddSlider("Color change speed", 10, 2, 20)
+		this.Size = this.tree.AddSlider("Size", 12, 4, 16)
 		this.Animate.OnValue(toggle => (this.Color.IsHidden = toggle.value))
 	}
 
@@ -68,9 +73,12 @@ class RGBTrailMenu {
 }
 
 new (class CInternalMainMenu {
-	private trailHue = 0
 	private acceptTime = -1
-	private readonly trailPositions: Vector2[] = []
+	private readonly trailPositions: {
+		position: Vector2
+		hue: number
+		time: number
+	}[] = []
 
 	private readonly tree = Menu.AddEntry("Main")
 	private readonly rgbTrail = new RGBTrailMenu(this.tree)
@@ -88,8 +96,6 @@ new (class CInternalMainMenu {
 		this.tree
 			.AddToggle("Trigger keybinds in chat", false)
 			.OnValue(toggle => (Menu.Base.triggerOnChat = toggle.value))
-
-		this.rgbTrail.MaxLength.OnValue(_ => this.trailPositions.clear())
 
 		EventsSDK.on("Draw", this.Draw.bind(this))
 		EventsSDK.on("SharedObjectChanged", this.SharedObjectChanged.bind(this))
@@ -136,52 +142,115 @@ new (class CInternalMainMenu {
 
 	private trailMouse() {
 		if (!this.rgbTrail.State) {
-			this.trailHue = 0
 			this.trailPositions.clear()
 			return
 		}
 
 		const cursor = InputManager.CursorOnScreen
-		this.trailHue = (this.trailHue + 1) % 360
-		this.trailPositions.push(cursor)
+		const time = hrtime()
+		if (
+			this.trailPositions.length === 0 ||
+			this.trailPositions[this.trailPositions.length - 1].position.Distance(
+				cursor
+			) >
+				1 / 2
+		) {
+			this.trailPositions.push({
+				position: cursor,
+				hue: (time * (this.rgbTrail.ColorChangeSpeed.value / 100)) % 360,
+				time
+			})
+		}
 
-		if (this.trailPositions.length >= this.rgbTrail.MaxLength.value) {
+		const maxDurationMS = this.rgbTrail.MaxDuration.value * 1000
+		while (
+			this.trailPositions.length > 2 &&
+			time - this.trailPositions[0].time > maxDurationMS
+		) {
 			this.trailPositions.shift()
 		}
 
-		const trailLength = this.trailPositions.length,
-			color = this.rgbTrail.Animate.value
-				? new Color(...MathSDK.HSVToRGB(this.trailHue, 1, 1, true, true))
-				: this.rgbTrail.Color.SelectedColor.Clone()
+		const trailLength = this.trailPositions.length
 
+		const scaledWidth = GUIInfo.ScaleWidth(this.rgbTrail.Size.value)
 		for (let i = 1; i < trailLength; i++) {
 			const start = this.trailPositions[i - 1],
-				end = this.trailPositions[i],
-				alpha = (i / trailLength) * 255,
-				width = Math.max(12 * Math.pow(1 - (trailLength - i) / trailLength, 2), 2)
-			if (start.Distance(cursor) <= 1 / 2) {
-				break
-			}
-			const vecWidth = new Vector2(width, width)
+				end = this.trailPositions[i]
 			if (!this.rgbTrail.Smoothing.value) {
-				this.trailType(start, end, vecWidth, color.SetA(alpha))
+				const alpha = 255
+				const color = this.rgbTrail.Animate.value
+					? new Color(
+							...MathSDK.HSVToRGB(
+								this.trailPositions[i].hue,
+								1,
+								1,
+								true,
+								true
+							),
+							alpha
+						)
+					: this.rgbTrail.Color.SelectedColor.Clone().SetA(alpha)
+				if (time - end.time >= maxDurationMS) {
+					continue
+				}
+				const width = Math.max(
+						scaledWidth * Math.pow(1 - (time - end.time) / maxDurationMS, 2),
+						2
+					),
+					vecWidth = new Vector2(width, width)
+				this.trailType(start.position, end.position, vecWidth, color)
 				continue
 			}
 			// smoothing out gaps
-			const steps = Math.ceil(start.Distance(end) / 2)
-			for (let j = 0; j <= steps; j++) {
+			const step = Math.min(
+				(scaledWidth * Math.smoothStep(1 - (time - start.time) / maxDurationMS)) /
+					2,
+				2
+			)
+			if (step < 1) {
+				continue
+			}
+			const steps = Math.ceil(start.position.Distance(end.position) / step)
+			const shortestAngle = ((end.hue - start.hue + 540) % 360) - 180
+			for (let j = 0; j < steps; j++) {
 				const lerpFactor = j / steps
-				const startPoint = start.Lerp(end, lerpFactor)
-				const endPoint = start.Lerp(end, (lerpFactor + 1 / steps) % 1)
-				this.trailType(startPoint, endPoint, vecWidth, color.SetA(alpha))
+				const lerpFactorNext = ((j + 1) / steps) % 1
+				const lerpFactorTime = Math.smoothStep(
+					1 -
+						(time - Math.lerp(start.time, end.time, lerpFactor)) /
+							maxDurationMS
+				)
+				const width = scaledWidth * lerpFactorTime * lerpFactorTime
+				if (width < 2) {
+					continue
+				}
+				const alpha = 255
+				const color = this.rgbTrail.Animate.value
+					? new Color(
+							...MathSDK.HSVToRGB(
+								(360 +
+									start.hue +
+									shortestAngle * Math.smoothStep(lerpFactor)) %
+									360,
+								1,
+								1,
+								true,
+								true
+							),
+							alpha
+						)
+					: this.rgbTrail.Color.SelectedColor.Clone().SetA(alpha)
+				const startPoint = start.position.Lerp(end.position, lerpFactor)
+				const endPoint = start.position.Lerp(end.position, lerpFactorNext)
+				this.trailType(startPoint, endPoint, new Vector2(width, width), color)
 			}
 		}
 	}
 	private trailType(start: Vector2, end: Vector2, vecWidth: Vector2, color: Color) {
-		if (this.rgbTrail.Type.SelectedID === 1) {
-			RendererSDK.Line(start, end, color, vecWidth.x)
-			return
-		}
+		// if (this.rgbTrail.Type.SelectedID === 1) {
+		// 	RendererSDK.Line(start, end, color, vecWidth.x * 2)
+		// 	return
+		// }
 		const position = start.Subtract(vecWidth.DivideScalar(2))
 		RendererSDK.FilledCircle(position, vecWidth, color)
 	}
