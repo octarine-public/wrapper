@@ -98,5 +98,15 @@
 	"Obtain": "Получить",
 	"Greevils": "Гряволы",
 	"RGB mouse trail": "RGB-след мыши",
-	"RGB trail": "RGB-след"
+	"RGB trail": "RGB-след",
+	"Line": "Линия",
+	"Circle": "Круг",
+	"Shape": "Форма",
+	"Max length": "Макс. длина",
+	"Smoothing": "Сглаживание",
+	"RGB animate": "RGB Анимация",
+	"Only in game": "Только в игре",
+	"Only in menu": "Только в меню",
+	"Always": "Всегда",
+	"Use": "Использовать"
 }

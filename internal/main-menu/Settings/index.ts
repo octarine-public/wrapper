@@ -4,7 +4,8 @@ import {
 	EventsSDK,
 	ExecuteOrder,
 	InputEventSDK,
-	Menu
+	Menu,
+	MenuLanguageID
 } from "../../../wrapper/Imports"
 import { InternalCamera } from "./Camera"
 import { InternalChanger } from "./Changer"
@@ -12,6 +13,7 @@ import { InternalConfig } from "./Config"
 import { InternalNotifications } from "./Notifications"
 
 new (class CInternalSettings {
+	private setLanguageCounter = 0
 	private readonly tree = Menu.AddEntry("Settings")
 	private readonly cCamera = new InternalCamera(this.tree)
 	private readonly cChanger = new InternalChanger(this.tree)
@@ -27,12 +29,16 @@ new (class CInternalSettings {
 	private readonly key = this.reloadTree.AddKeybind("Key Bind")
 
 	constructor() {
+		Events.on("SetLanguage", this.SetLanguage.bind(this))
+		Events.on("ScriptsUpdated", this.ScriptsUpdated.bind(this))
+
 		EventsSDK.on("Draw", this.Draw.bind(this))
 		EventsSDK.on("GameStarted", this.GameStarted.bind(this))
-		Events.on("ScriptsUpdated", this.ScriptsUpdated.bind(this))
-		InputEventSDK.on("MouseWheel", this.MouseWheel.bind(this))
+
 		EventsSDK.on("EntityCreated", this.EntityCreated.bind(this))
 		EventsSDK.on("HumanizerStateChanged", this.HumanizerStateChanged.bind(this))
+
+		InputEventSDK.on("MouseWheel", this.MouseWheel.bind(this))
 
 		this.tree
 			.AddToggle(
@@ -89,5 +95,12 @@ new (class CInternalSettings {
 
 	protected HumanizerStateChanged() {
 		this.cCamera.HumanizerStateChanged()
+	}
+
+	protected SetLanguage(language: MenuLanguageID): void {
+		if (this.setLanguageCounter++ || !Menu.Localization.SelectedUnitName) {
+			Menu.Localization.SetLang(language)
+			// console.info("SetLanguage: ", Menu.Localization.SelectedUnitName)
+		}
 	}
 })()
