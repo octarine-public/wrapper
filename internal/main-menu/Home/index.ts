@@ -184,15 +184,7 @@ new (class CInternalMainMenu {
 				continue
 			}
 			// smoothing out gaps
-			const step = Math.min(
-				(scaledWidth * Math.smoothStep(1 - (time - start.time) / maxDurationMS)) /
-					2,
-				2
-			)
-			if (step < 1) {
-				continue
-			}
-			const steps = Math.ceil(start.position.Distance(end.position) / step)
+			const steps = Math.ceil(start.position.Distance(end.position) / 2)
 			const shortestAngle = ((end.hue - start.hue + 540) % 360) - 180
 			for (let j = 0; j < steps; j++) {
 				const lerpFactor = j / steps
