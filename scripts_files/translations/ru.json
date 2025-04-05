@@ -110,5 +110,8 @@
 	"Always": "Всегда",
 	"Use": "Использовать",
 	"Max duration": "Максимальная длительность",
-	"Color change speed": "Скорость смены цвета"
+	"Color change speed": "Скорость смены цвета",
+	"Disable smoke": "Отключить дымку",
+	"Fow particles": "Частицы в тумане",
+	"Show fog of war particles\n(example teleports)": "Показывать частицы в тумане\n(например телепорты)"
 }

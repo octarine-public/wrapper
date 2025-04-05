@@ -95,6 +95,20 @@ new (class CInternalMainMenu {
 			.AddToggle("Trigger keybinds in chat", false)
 			.OnValue(toggle => (Menu.Base.triggerOnChat = toggle.value))
 
+		this.tree.AddToggle("Disable smoke", true).OnValue(toggle => {
+			ConVarsSDK.Set("fog_enable", !toggle.value)
+			ConVarsSDK.Set("fog_override", !toggle.value)
+			ConVarsSDK.Set("fow_client_visibility", !toggle.value)
+		})
+
+		this.tree
+			.AddToggle(
+				"Fow particles",
+				true,
+				"Show fog of war particles\n(example teleports)"
+			)
+			.OnValue(toggle => ToggleFowParticles(toggle.value))
+
 		EventsSDK.on("Draw", this.Draw.bind(this))
 		EventsSDK.on("SharedObjectChanged", this.SharedObjectChanged.bind(this))
 	}
@@ -102,9 +116,6 @@ new (class CInternalMainMenu {
 	protected Draw(): void {
 		this.trailMouse()
 		this.autoAccept()
-		ConVarsSDK.Set("fog_override", 0)
-		ConVarsSDK.Set("fog_enable", false)
-		ConVarsSDK.Set("fow_client_visibility", 0)
 	}
 
 	protected SharedObjectChanged(
