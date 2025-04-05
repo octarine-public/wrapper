@@ -121,6 +121,18 @@ export class InternalChanger {
 		this.node = settings.AddNode("Changer", "menu/icons/changer.svg")
 		this.node.SortNodes = false
 
+		this.emoticons = this.node
+			.AddToggle("Emoticons chat", false, "Use own risk!")
+			.OnValue(t => ConVarsSDK.Set("dota_hud_chat_enable_all_emoticons", t.value))
+
+		this.weather = this.node
+			.AddDropdown("Weather", this.weatherNames, 0, "Use own risk!")
+			.OnValue(t => ConVarsSDK.Set("cl_weather", t.SelectedID))
+
+		this.riverPaint = this.node
+			.AddDropdown("River", this.riverNames, 0, "Use own risk!")
+			.OnValue(t => ConVarsSDK.Set("dota_river_type", t.SelectedID))
+
 		const inventoryChanger = this.node.AddNode("Inventory")
 		inventoryChanger.SortNodes = false
 
@@ -177,17 +189,6 @@ export class InternalChanger {
 		})
 
 		this.treeChanger = this.node.AddNode("Trees", ImageData.Icons.icon_svg_tree_alt)
-
-		this.emoticons = this.node
-			.AddToggle("Emoticons chat", true)
-			.OnValue(t => ConVarsSDK.Set("dota_hud_chat_enable_all_emoticons", t.value))
-		this.weather = this.node
-			.AddDropdown("Weather", this.weatherNames, 0)
-			.OnValue(t => ConVarsSDK.Set("cl_weather", t.SelectedID))
-		this.riverPaint = this.node
-			.AddDropdown("River", this.riverNames, 0)
-			.OnValue(t => ConVarsSDK.Set("dota_river_type", t.SelectedID))
-
 		this.treeChanger.SortNodes = false
 		this.treeMenuNames = this.treeChanger.AddDropdown(
 			"Tree models",
