@@ -80,6 +80,7 @@ new (class CInternalMainMenu {
 
 	private readonly tree = Menu.AddEntry("Main")
 	private readonly rgbTrail = new RGBTrailMenu(this.tree)
+	private readonly disableSmoke: Menu.Toggle
 
 	private readonly acceptDelay = this.tree.AddSlider(
 		"AutoAccept delay",
@@ -95,11 +96,9 @@ new (class CInternalMainMenu {
 			.AddToggle("Trigger keybinds in chat", false)
 			.OnValue(toggle => (Menu.Base.triggerOnChat = toggle.value))
 
-		this.tree.AddToggle("Disable smoke", false, "Use own risk!").OnValue(toggle => {
-			ConVarsSDK.Set("fog_enable", !toggle.value)
-			ConVarsSDK.Set("fog_override", !toggle.value)
-			ConVarsSDK.Set("fow_client_visibility", !toggle.value)
-		})
+		this.disableSmoke = this.tree
+			.AddToggle("Disable smoke", false, "Use own risk!")
+			.OnValue(toggle => this.updateConvars(toggle.value))
 
 		this.tree
 			.AddToggle(
@@ -110,6 +109,8 @@ new (class CInternalMainMenu {
 			.OnValue(toggle => ToggleFowParticles(toggle.value))
 
 		EventsSDK.on("Draw", this.Draw.bind(this))
+		EventsSDK.on("GameEnded", this.GameChanged.bind(this))
+		EventsSDK.on("GameStarted", this.GameChanged.bind(this))
 		EventsSDK.on("SharedObjectChanged", this.SharedObjectChanged.bind(this))
 	}
 
@@ -132,7 +133,9 @@ new (class CInternalMainMenu {
 			this.acceptTime = -1
 		}
 	}
-
+	protected GameChanged(): void {
+		this.updateConvars(this.disableSmoke.value)
+	}
 	private autoAccept() {
 		if (this.acceptTime === -1) {
 			return
@@ -148,7 +151,6 @@ new (class CInternalMainMenu {
 		AcceptMatch()
 		this.acceptTime = -1
 	}
-
 	private trailMouse() {
 		if (!this.rgbTrail.State) {
 			this.trailPositions.clear()
@@ -227,5 +229,10 @@ new (class CInternalMainMenu {
 		return this.rgbTrail.Animate.value
 			? new Color(...MathSDK.HSVToRGB(hue, 1, 1, true, true), alpha)
 			: this.rgbTrail.Color.SelectedColor.Clone().SetA(alpha)
+	}
+	private updateConvars(state: boolean): void {
+		ConVarsSDK.Set("fog_enable", !state)
+		ConVarsSDK.Set("fog_override", !state)
+		ConVarsSDK.Set("fow_client_visibility", !state)
 	}
 })()
