@@ -95,7 +95,7 @@ new (class CInternalMainMenu {
 			.AddToggle("Trigger keybinds in chat", false)
 			.OnValue(toggle => (Menu.Base.triggerOnChat = toggle.value))
 
-		this.tree.AddToggle("Disable smoke", true).OnValue(toggle => {
+		this.tree.AddToggle("Disable smoke", false, "Use own risk!").OnValue(toggle => {
 			ConVarsSDK.Set("fog_enable", !toggle.value)
 			ConVarsSDK.Set("fog_override", !toggle.value)
 			ConVarsSDK.Set("fow_client_visibility", !toggle.value)
@@ -104,8 +104,8 @@ new (class CInternalMainMenu {
 		this.tree
 			.AddToggle(
 				"Fow particles",
-				true,
-				"Show fog of war particles\n(example teleports)"
+				false,
+				"Show fog of war particles\n(example teleports)\nUse own risk!"
 			)
 			.OnValue(toggle => ToggleFowParticles(toggle.value))
 
