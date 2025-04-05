@@ -105,7 +105,7 @@ new (class CInternalMainMenu {
 			.AddToggle(
 				"Fow particles",
 				false,
-				"Show fog of war particles\n(example teleports)\nUse own risk!"
+				"Show fog of war particles\n(example teleports)\nNot recommended if you have low fps"
 			)
 			.OnValue(toggle => ToggleFowParticles(toggle.value))
 
