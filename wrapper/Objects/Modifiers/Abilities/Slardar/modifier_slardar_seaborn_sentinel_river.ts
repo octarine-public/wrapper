@@ -1,3 +1,4 @@
+import { GetHeroTexture } from "../../../../Data/ImageData"
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
@@ -32,6 +33,9 @@ export class modifier_slardar_seaborn_sentinel_river extends Modifier implements
 	])
 	public IsBuff(): this is IBuff {
 		return true
+	}
+	public GetTexturePath(): string {
+		return GetHeroTexture(this.Caster?.Name ?? "")
 	}
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, this.IsPassiveDisabled()]
