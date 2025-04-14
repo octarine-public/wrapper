@@ -1,19 +1,21 @@
 import { NetworkedParticle } from "../../Base/NetworkedParticle"
 import { QAngle } from "../../Base/QAngle"
 import { Vector3 } from "../../Base/Vector3"
+import { DOTA_CHAT_MESSAGE } from "../../Enums/DOTA_CHAT_MESSAGE"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
 import { ERoshanLocation } from "../../Enums/ERoshanLocation"
 import { EventPriority } from "../../Enums/EventPriority"
-import { Unit } from "../../Imports"
 import { ConVarsSDK } from "../../Native/ConVarsSDK"
 import { Entity, GameRules } from "../../Objects/Base/Entity"
 import { FakeUnit } from "../../Objects/Base/FakeUnit"
 import { RoshanSpawner } from "../../Objects/Base/RoshanSpawner"
+import { Unit } from "../../Objects/Base/Unit"
 import { Roshan } from "../../Objects/Units/Roshan"
 import { GameState } from "../../Utils/GameState"
 import { EventsSDK } from "../EventsSDK"
 
 class MovePrediction {
+	public IsAlive = false
 	private positions: Vector3[] = []
 	private position = new Vector3().Invalidate()
 	private lastLocation: ERoshanLocation | -1 | 2 = -1 // middle(2), invalidate(-1)
@@ -49,16 +51,17 @@ class MovePrediction {
 		if (spawner === undefined) {
 			return
 		}
+		const position = this.getPosition(spawner)
+		if (!this.IsAlive) {
+			this.setBasePosition(spawner, position, roshan)
+			return
+		}
 		const tick = GameState.TickInterval
 		if (RoshanSpawner.TimeUntilNextMove <= tick) {
 			spawner.IsMovingRoshan = true
 		}
-		const position = this.getPosition(spawner)
 		if (!this.position.IsValid) {
-			spawner.IsMovingRoshan = false
-			this.position.CopyFrom(position)
-			spawner.RoshanPrediction.CopyFrom(position)
-			roshan?.PredictedPosition.CopyFrom(position)
+			this.setBasePosition(spawner, position, roshan)
 		}
 		if (this.lastLocation === -1 && RoshanSpawner.TimeUntilNextMove <= 10) {
 			this.lastLocation = 2 // middle
@@ -126,6 +129,16 @@ class MovePrediction {
 			? spawner.BOTLocation
 			: spawner.TOPLocation
 	}
+	private setBasePosition(
+		spawner: RoshanSpawner,
+		position: Vector3,
+		roshan: Nullable<Unit | FakeUnit>
+	) {
+		spawner.IsMovingRoshan = false
+		this.position.CopyFrom(position)
+		spawner.RoshanPrediction.CopyFrom(position)
+		roshan?.PredictedPosition.CopyFrom(position)
+	}
 }
 
 new (class CRoshanChanged {
@@ -134,6 +147,7 @@ new (class CRoshanChanged {
 
 	constructor() {
 		EventsSDK.on("EntityDestroyed", this.EntityDestroyed.bind(this))
+		EventsSDK.on("ChatEvent", this.ChatEvent.bind(this), EventPriority.IMMEDIATE)
 		EventsSDK.on("GameEvent", this.GameEvent.bind(this), EventPriority.IMMEDIATE)
 		EventsSDK.on("GameEnded", this.GameEnded.bind(this), EventPriority.IMMEDIATE)
 		EventsSDK.on(
@@ -198,9 +212,15 @@ new (class CRoshanChanged {
 		this.lastUpdateMinute = this.lastMinute
 		Roshan.HP = Roshan.BaseHP + this.hpChangedByMinute(this.lastUpdateMinute)
 		Roshan.MaxHP = Roshan.HP
+		this.prediction.IsAlive = true
 		this.prediction.Update()
 	}
 	protected GameEvent(name: string, obj: any) {
+		if (name === "entity_killed") {
+			if (Roshan.Instance?.HandleMatches(obj.entindex_killed)) {
+				this.prediction.IsAlive = false
+			}
+		}
 		if (name !== "entity_hurt") {
 			return
 		}
@@ -208,8 +228,14 @@ new (class CRoshanChanged {
 			Roshan.HP = Math.max(Math.round(Roshan.HP - obj.damage), 0)
 		}
 	}
+	public ChatEvent(msgType: DOTA_CHAT_MESSAGE) {
+		if (msgType === DOTA_CHAT_MESSAGE.CHAT_MESSAGE_ROSHAN_KILL) {
+			this.prediction.IsAlive = false
+		}
+	}
 	protected LifeStateChanged(entity: Entity) {
 		if (Roshan.Instance === entity) {
+			this.prediction.IsAlive = entity.IsAlive
 			Roshan.HP = 0
 		}
 	}
@@ -231,6 +257,7 @@ new (class CRoshanChanged {
 		Roshan.Instance = entity
 		Roshan.MaxHP = entity.MaxHP
 		this.lastUpdateMinute = this.lastMinute
+		this.prediction.IsAlive = true
 		this.prediction.Update()
 	}
 	protected EntityDestroyed(entity: Entity) {
@@ -238,6 +265,7 @@ new (class CRoshanChanged {
 			Roshan.HP = 0
 			Roshan.MaxHP = 0
 			Roshan.Instance = undefined
+			this.prediction.IsAlive = false
 		}
 		if (entity instanceof RoshanSpawner) {
 			Roshan.Spawner = undefined
@@ -250,6 +278,7 @@ new (class CRoshanChanged {
 		Roshan.Spawner = undefined
 		Roshan.Instance = undefined
 		this.lastUpdateMinute = 0
+		this.prediction.IsAlive = false
 	}
 	private hpChangedByMinute(minute: number): number {
 		let hpChanged = Roshan.HPChangedPerMinute
