@@ -12,6 +12,14 @@ export const CameraSDK = new (class CCameraSDK {
 	/** @description Camera polygon update only with humanizer */
 	public readonly Polygon = new WorldPolygon()
 
+	constructor() {
+		EventsSDK.on(
+			"PreDraw",
+			this.UpdateDefaultValues.bind(this),
+			EventPriority.IMMEDIATE
+		)
+	}
+
 	public get Angles() {
 		return Camera.Angles ? QAngle.fromIOBuffer() : this.DefaultAngles
 	}
@@ -40,5 +48,3 @@ export const CameraSDK = new (class CCameraSDK {
 		this.DefaultDistance = ConVarsSDK.GetFloat("dota_camera_distance", 1200)
 	}
 })()
-
-EventsSDK.on("PreDraw", () => CameraSDK.UpdateDefaultValues(), EventPriority.IMMEDIATE)

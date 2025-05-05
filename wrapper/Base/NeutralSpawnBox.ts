@@ -4,12 +4,12 @@ import { QAngle } from "./QAngle"
 import { Vector2 } from "./Vector2"
 import { Vector3 } from "./Vector3"
 
+type LoadFileType = Map<string, Map<string, string>>
 const cacheTimingData = new Map<string, Map<string, string | Map<string, string>>>()
 
-const loadFile = (): Map<string, Map<string, string>> => {
-	const res = parseKV("scripts/creep_pull_timings.txt").get("CREEP_PULL_TIMINGS")
-	return res instanceof Map ? res : new Map()
-}
+const loadFile = () =>
+	parseKV<LoadFileType>("scripts/creep_pull_timings.txt").get("CREEP_PULL_TIMINGS") ??
+	new Map()
 
 function UpdateTimingData(): void {
 	loadFile().forEach((map, name) => cacheTimingData.set(name, map))

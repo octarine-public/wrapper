@@ -242,7 +242,7 @@ export class NeutralSpawnerBox {
 		if (!this.Attackers.includes(unit)) {
 			this.Attackers.push(unit)
 		}
-		this.MaxHits++
+		++this.MaxHits
 		this.LastAttackTime = GameState.RawGameTime
 	}
 
@@ -266,10 +266,10 @@ export class NeutralSpawnerBox {
 		if (box === undefined) {
 			return true
 		}
-		const distance = attacker.Distance2D(this.Position)
-		const attackRange = attacker.GetAttackRange(undefined, 100)
 		return (
-			(!attacker.IsVisible && distance <= attackRange) ||
+			(!attacker.IsVisible &&
+				attacker.Distance2D(this.Position) <=
+					attacker.GetAttackRange(undefined, 100)) ||
 			box.Includes2D(Vector2.FromVector3(attacker.Position))
 		)
 	}
@@ -295,11 +295,36 @@ export class NeutralSpawnerBox {
 	}
 }
 
-const Monitor = new (class CCampManager {
+new (class CCampManager {
 	private readonly pSDK = new ParticlesSDK()
 	private readonly units: Unit[] = []
 
-	public Draw() {
+	constructor() {
+		EventsSDK.on("Draw", this.Draw.bind(this))
+		EventsSDK.on("PostDataUpdate", this.PostDataUpdate.bind(this))
+		EventsSDK.on(
+			"EntityCreated",
+			this.EntityCreated.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"AttackStarted",
+			this.AttackStarted.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"LifeStateChanged",
+			this.LifeStateChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"EntityDestroyed",
+			this.EntityDestroyed.bind(this),
+			EventPriority.IMMEDIATE
+		)
+	}
+
+	protected Draw() {
 		if (!GameState.IsConnected) {
 			return
 		}
@@ -311,8 +336,7 @@ const Monitor = new (class CCampManager {
 			NeutralSpawners[index].DrawDebug(this.pSDK)
 		}
 	}
-
-	public PostDataUpdate() {
+	protected PostDataUpdate(_delta: number) {
 		if (!GameState.IsConnected) {
 			return
 		}
@@ -320,8 +344,7 @@ const Monitor = new (class CCampManager {
 			NeutralSpawners[index].PostDataUpdate(this.units)
 		}
 	}
-
-	public EntityCreated(entity: Entity) {
+	protected EntityCreated(entity: Entity) {
 		if (entity instanceof NeutralSpawner) {
 			NeutralSpawners.push(new NeutralSpawnerBox(entity))
 			this.RestartCreeps()
@@ -333,8 +356,7 @@ const Monitor = new (class CCampManager {
 			this.GetSpawnerBySpawner(entity.Spawner)?.EntityCreated(entity)
 		}
 	}
-
-	public EntityDestroyed(entity: Entity) {
+	protected EntityDestroyed(entity: Entity) {
 		if (entity instanceof NeutralSpawner) {
 			this.GetSpawnerBySpawner(entity)?.EntityDestroyed(entity)
 		}
@@ -345,8 +367,7 @@ const Monitor = new (class CCampManager {
 			this.units.remove(entity)
 		}
 	}
-
-	public LifeStateChanged(entity: Entity) {
+	protected LifeStateChanged(entity: Entity) {
 		if (entity.IsAlive) {
 			return
 		}
@@ -357,8 +378,7 @@ const Monitor = new (class CCampManager {
 			this.GetSpawnerBySpawner(entity.Spawner)?.LifeStateChanged(entity)
 		}
 	}
-
-	public AttackStarted(unit: Unit) {
+	protected AttackStarted(unit: Unit) {
 		if (!unit.IsHero && !unit.IsSpiritBear) {
 			return
 		}
@@ -372,15 +392,12 @@ const Monitor = new (class CCampManager {
 			spawner.AttackStarted(unit)
 		}
 	}
-
 	protected GetSpawnerByName(name: string) {
 		return NeutralSpawners.find(x => x.Spawner.Name === name)
 	}
-
 	protected GetSpawnerBySpawner(spawner: Nullable<NeutralSpawner>) {
 		return NeutralSpawners.find(x => x.Spawner === spawner)
 	}
-
 	protected RestartCreeps() {
 		for (let index = Creeps.length - 1; index > -1; index--) {
 			const creep = Creeps[index]
@@ -390,7 +407,6 @@ const Monitor = new (class CCampManager {
 			this.GetSpawnerBySpawner(creep.Spawner)?.EntityCreated(creep)
 		}
 	}
-
 	protected ShouldUnit(unit: Unit) {
 		if (unit.IsBuilding) {
 			return false
@@ -407,27 +423,3 @@ const Monitor = new (class CCampManager {
 		)
 	}
 })()
-
-EventsSDK.on("Draw", () => Monitor.Draw())
-
-EventsSDK.on("PostDataUpdate", () => Monitor.PostDataUpdate())
-
-EventsSDK.on("EntityCreated", ent => Monitor.EntityCreated(ent), EventPriority.IMMEDIATE)
-
-EventsSDK.on(
-	"AttackStarted",
-	unit => Monitor.AttackStarted(unit),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"LifeStateChanged",
-	entity => Monitor.LifeStateChanged(entity),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"EntityDestroyed",
-	ent => Monitor.EntityDestroyed(ent),
-	EventPriority.IMMEDIATE
-)

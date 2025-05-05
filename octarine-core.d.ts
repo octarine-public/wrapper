@@ -313,6 +313,7 @@ declare function LoadFont(
 ): boolean
 
 declare function parseKV(path: string, block?: string | number): RecursiveMap
+declare function parseKV<T>(path: string, block?: string | number): T 
 declare function parseKV(
 	data: Uint8Array,
 	block?: string | number

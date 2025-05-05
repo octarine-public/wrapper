@@ -1,5 +1,6 @@
 import { EntityPropertiesNode } from "../../Base/EntityProperties"
 import { NeutralSpawnBox } from "../../Base/NeutralSpawnBox"
+import { StockInfo } from "../../Base/StockInfo"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTACustomHeroPickRulesPhase } from "../../Enums/DOTACustomHeroPickRulesPhase"
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
@@ -11,7 +12,6 @@ import { EventsSDK } from "../../Managers/EventsSDK"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GameState } from "../../Utils/GameState"
 import { Entity } from "../Base/Entity"
-import { StockInfo } from "./../../Base/StockInfo"
 import { TurboHeroPickRules } from "./TurboPickRules"
 
 @WrapperClass("CDOTAGamerulesProxy")
