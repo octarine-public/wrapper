@@ -104,8 +104,7 @@ export function GetCreepCurrentTarget(
 				nearestCorner.Distance2D(nextCorner)
 		)
 
-	let found = false
-	nearestCorner.Referencing.forEach(prevCorner => {
+	for (const prevCorner of nearestCorner.Referencing) {
 		if (
 			Math.abs(
 				nearestCorner.Distance2D(position) +
@@ -113,12 +112,8 @@ export function GetCreepCurrentTarget(
 					nearestCorner.Distance2D(prevCorner)
 			) < nextDelta
 		) {
-			found = true
+			return nearestCorner
 		}
-	})
-
-	if (found) {
-		return nearestCorner
 	}
 
 	return nextCorner

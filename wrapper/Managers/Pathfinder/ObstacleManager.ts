@@ -11,6 +11,7 @@ export class ObstacleManager {
 	public readonly Obstacles: MapObstacle = new Map()
 
 	private obstacleId = 1
+	private readonly maxDistance = 300
 	private readonly invalid = new Vector3().Invalidate()
 
 	public AddObstacle(
@@ -42,20 +43,17 @@ export class ObstacleManager {
 			return this.invalid
 		}
 
-		const angleStep = 45,
-			offsetStep = 24,
-			position2D = Vector2.FromVector3(position),
+		const position2D = Vector2.FromVector3(position),
 			direction = Vector2.FromAngle(rotationRad)
 
 		let maxTime = Infinity,
 			bestPosition: Nullable<Vector2>
 
-		for (let deg = 0; deg < 360; deg += angleStep) {
+		for (let deg = 0; deg < 360; deg += 45) {
 			const rotatedDirection = direction.Rotated(Math.degreesToRadian(deg))
-
-			for (let offset = offsetStep; offset < 300; offset += offsetStep) {
-				const rotationPoint = position2D.Rotation(rotatedDirection, offset)
-				const flags = GridNav.GetCellFlagsForPos(rotationPoint)
+			for (let offset = 24; offset < this.maxDistance; offset += 24) {
+				const rotationPoint = position2D.Rotation(rotatedDirection, offset),
+					flags = GridNav.GetCellFlagsForPos(rotationPoint)
 				if (this.shouldBreak(flying, flags)) {
 					break
 				}
@@ -78,8 +76,7 @@ export class ObstacleManager {
 		if (bestPosition === undefined) {
 			return this.invalid
 		}
-		const bestPosition2D = Vector3.FromVector2(bestPosition)
-		return bestPosition2D.SetZ(GetPositionHeight(bestPosition))
+		return Vector3.FromVector2(bestPosition).SetZ(GetPositionHeight(bestPosition))
 	}
 
 	public DeleteObstacle(obstacleId: number) {
@@ -115,13 +112,11 @@ export class ObstacleManager {
 	}
 
 	private shouldBreak(flying: boolean, flags: number): boolean {
-		if (flying) {
-			return false
-		}
 		return (
-			flags.hasBit(GridNavCellFlags.Tree) ||
-			!flags.hasBit(GridNavCellFlags.Walkable) ||
-			flags.hasBit(GridNavCellFlags.MovementBlocker)
+			!flying &&
+			(flags.hasBit(GridNavCellFlags.Tree) ||
+				!flags.hasBit(GridNavCellFlags.Walkable) ||
+				flags.hasBit(GridNavCellFlags.MovementBlocker))
 		)
 	}
 

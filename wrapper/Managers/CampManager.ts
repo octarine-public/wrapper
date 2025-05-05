@@ -37,17 +37,14 @@ export class NeutralSpawnerBox {
 	constructor(public readonly Spawner: NeutralSpawner) {
 		this.Type = Spawner.Type
 	}
-
 	public get IsAlly() {
 		return (this.Spawner.SpawnerTeam ?? Team.Invalid) === GameState.LocalTeam
 	}
-
 	public get Position() {
 		return this.Spawner.Position
 	}
-
 	public get EndPosition() {
-		switch (this.Spawner.Type) {
+		switch (this.Type) {
 			case NeutralSpawnerType.Large:
 				return this.Spawner.InFront(1400)
 			case NeutralSpawnerType.Ancient:
@@ -56,47 +53,36 @@ export class NeutralSpawnerBox {
 				return this.Spawner.InFront(1300)
 		}
 	}
-
 	public get StackEndTime() {
 		return this.Spawner.SpawnBox?.StackEnd ?? 0
 	}
-
 	public get Team() {
 		return this.Spawner.SpawnerTeam
 	}
-
 	public get StackStartTime() {
 		return this.Spawner.SpawnBox?.StackStart ?? 0
 	}
-
 	public get IsValidSpawner() {
 		if (!this.IsValidGame) {
 			return false
 		}
-		if (!this.Creeps.length) {
+		if (this.Creeps.length === 0) {
 			return this.IsInitialSpawn
 		}
 		return true
 	}
-
 	public get IsValidGame() {
 		if (GameRules === undefined || GameRules.GameTime < 61) {
 			return false
 		}
 		return GameRules.GameState === DOTAGameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS
 	}
-
 	protected get TimeLeft() {
-		if (GameRules === undefined) {
-			return 0
-		}
-		return Math.floor((GameRules.GameTime % 60) * 10) / 10
+		return Math.floor(((GameRules?.GameTime ?? 0) % 60) * 10) / 10
 	}
-
 	protected get IsSpawnTime() {
 		return !(this.TimeLeft > 0)
 	}
-
 	protected get SpawnerTypeString() {
 		switch (this.Type) {
 			case NeutralSpawnerType.Small:
@@ -111,11 +97,9 @@ export class NeutralSpawnerBox {
 				return "Unknown"
 		}
 	}
-
 	public CanBeStack(unit: Unit) {
 		return unit.CanMove() && !this.IsStack && !this.Sleeper.Sleeping(unit.Index)
 	}
-
 	public Stack(unit: Unit, creeps: Creep[], endPosition: Vector3) {
 		if (!unit.CanAttack() || !unit.CanMove()) {
 			return false
@@ -137,24 +121,20 @@ export class NeutralSpawnerBox {
 		this.Sleeper.Sleep(delay, unit.Index)
 		return true
 	}
-
 	public PostDataUpdate(units: Unit[]) {
 		this.UpdateSpawnerByTime()
 
-		if (GameRules === undefined || this.IsEmpty) {
+		if (this.IsEmpty) {
 			return
 		}
-
 		const time = this.TimeLeft,
 			box = this.Spawner.SpawnBox,
 			creeps = this.Creeps.filter(x => x.IsAlive && x.IsSpawned)
-
 		if (time >= this.StackEndTime || this.MaxHits >= 5) {
 			this.IsEmpty =
 				!creeps.some(x => box?.Includes2D(Vector2.FromVector3(x.Position))) &&
 				creeps.length < 2
 		}
-
 		for (let index = units.length - 1; index > -1; index--) {
 			const unit = units[index]
 			if (!unit.IsAlive) {
@@ -172,13 +152,11 @@ export class NeutralSpawnerBox {
 			}
 		}
 	}
-
 	public EntityCreated(entity: Creep) {
 		if (!this.Creeps.includes(entity)) {
 			this.Creeps.push(entity)
 		}
 	}
-
 	public EntityDestroyed(entity: NeutralSpawner | Unit) {
 		if (entity instanceof Creep) {
 			this.Creeps.remove(entity)
@@ -193,16 +171,9 @@ export class NeutralSpawnerBox {
 			NeutralSpawners.remove(this)
 		}
 	}
-
-	public LifeStateChanged(unit: Unit) {
-		if (unit instanceof Creep) {
-			this.Creeps.remove(unit)
-		}
-		if (unit instanceof Unit) {
-			this.Attackers.remove(unit)
-		}
+	public LifeStateChanged(unit: Creep) {
+		this.Creeps.remove(unit)
 	}
-
 	public DrawDebug(pSDK: ParticlesSDK) {
 		if (LocalPlayer === undefined || LocalPlayer.Hero === undefined) {
 			return
@@ -237,7 +208,6 @@ export class NeutralSpawnerBox {
 			Width: 50
 		})
 	}
-
 	public AttackStarted(unit: Unit) {
 		if (!this.Attackers.includes(unit)) {
 			this.Attackers.push(unit)
@@ -245,13 +215,11 @@ export class NeutralSpawnerBox {
 		++this.MaxHits
 		this.LastAttackTime = GameState.RawGameTime
 	}
-
 	protected UpdateSpawnerByTime() {
 		if (this.IsSpawnTime && this.LastAttackTime + 7 < GameState.RawGameTime) {
 			this.setEmpty()
 		}
 	}
-
 	private setEmpty() {
 		this.MaxHits = 0
 		this.IsEmpty = false
@@ -260,7 +228,6 @@ export class NeutralSpawnerBox {
 		this.Attackers.clear()
 		this.IsStackMoveAttack = false
 	}
-
 	private checkPosition(attacker: Unit) {
 		const box = this.Spawner.SpawnBox
 		if (box === undefined) {
@@ -273,7 +240,6 @@ export class NeutralSpawnerBox {
 			box.Includes2D(Vector2.FromVector3(attacker.Position))
 		)
 	}
-
 	private isProjectileAttack(unit: Unit, creeps: Creep[]) {
 		return (
 			unit.IsRanged &&
@@ -285,7 +251,6 @@ export class NeutralSpawnerBox {
 			)
 		)
 	}
-
 	private attackMovePosition(unit: Unit, position: Vector3) {
 		if (this.IsStackMoveAttack || unit.Distance2D(position) > 101) {
 			return
@@ -324,16 +289,19 @@ new (class CCampManager {
 		)
 	}
 
+	private get isDebug() {
+		return (
+			((globalThis as any)?.DEBUG ?? false) &&
+			((globalThis as any)?.DEBUGGER_INSTALLED ?? false)
+		)
+	}
+
 	protected Draw() {
-		if (!GameState.IsConnected) {
+		if (!GameState.IsConnected || !this.isDebug) {
 			return
 		}
-		const global = globalThis as any
-		if (!(global?.DEBUG ?? false) || !(global?.DEBUGGER_INSTALLED ?? false)) {
-			return
-		}
-		for (let index = NeutralSpawners.length - 1; index > -1; index--) {
-			NeutralSpawners[index].DrawDebug(this.pSDK)
+		for (let i = NeutralSpawners.length - 1; i > -1; i--) {
+			NeutralSpawners[i].DrawDebug(this.pSDK)
 		}
 	}
 	protected PostDataUpdate(_delta: number) {
@@ -353,15 +321,15 @@ new (class CCampManager {
 			this.units.push(entity)
 		}
 		if (entity instanceof Creep && entity.IsNeutral) {
-			this.GetSpawnerBySpawner(entity.Spawner)?.EntityCreated(entity)
+			this.FindNeutralSpawner(entity.Spawner)?.EntityCreated(entity)
 		}
 	}
 	protected EntityDestroyed(entity: Entity) {
 		if (entity instanceof NeutralSpawner) {
-			this.GetSpawnerBySpawner(entity)?.EntityDestroyed(entity)
+			this.FindNeutralSpawner(entity)?.EntityDestroyed(entity)
 		}
 		if (entity instanceof Creep && entity.IsNeutral) {
-			this.GetSpawnerBySpawner(entity.Spawner)?.EntityDestroyed(entity)
+			this.FindNeutralSpawner(entity.Spawner)?.EntityDestroyed(entity)
 		}
 		if (entity instanceof Unit && this.ShouldUnit(entity)) {
 			this.units.remove(entity)
@@ -375,7 +343,7 @@ new (class CCampManager {
 			this.units.remove(entity)
 		}
 		if (entity instanceof Creep && entity.IsNeutral) {
-			this.GetSpawnerBySpawner(entity.Spawner)?.LifeStateChanged(entity)
+			this.FindNeutralSpawner(entity.Spawner)?.LifeStateChanged(entity)
 		}
 	}
 	protected AttackStarted(unit: Unit) {
@@ -395,7 +363,7 @@ new (class CCampManager {
 	protected GetSpawnerByName(name: string) {
 		return NeutralSpawners.find(x => x.Spawner.Name === name)
 	}
-	protected GetSpawnerBySpawner(spawner: Nullable<NeutralSpawner>) {
+	protected FindNeutralSpawner(spawner: Nullable<NeutralSpawner>) {
 		return NeutralSpawners.find(x => x.Spawner === spawner)
 	}
 	protected RestartCreeps() {
@@ -404,7 +372,7 @@ new (class CCampManager {
 			if (!creep.IsNeutral) {
 				continue
 			}
-			this.GetSpawnerBySpawner(creep.Spawner)?.EntityCreated(creep)
+			this.FindNeutralSpawner(creep.Spawner)?.EntityCreated(creep)
 		}
 	}
 	protected ShouldUnit(unit: Unit) {

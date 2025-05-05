@@ -5,11 +5,10 @@ export function GetValue(tableName: string, key: string): Nullable<RecursiveMap>
 	if (table === undefined) {
 		return undefined
 	}
-	let value: Nullable<RecursiveMap>
-	table.forEach(ar => {
-		if (ar[0] === key) {
-			value = parseKVBlock(new Uint8Array(ar[1]))
+	for (const [entryKey, entryData] of table) {
+		if (entryKey === key) {
+			return parseKVBlock(new Uint8Array(entryData))
 		}
-	})
-	return value
+	}
+	return undefined
 }
