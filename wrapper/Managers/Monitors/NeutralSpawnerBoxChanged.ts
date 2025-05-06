@@ -59,8 +59,14 @@ new (class CNeutralSpawnerBoxChanged {
 		if (!(entity instanceof Unit) || !this.ShouldUnit(entity)) {
 			return
 		}
-		for (let i = NeutralSpawners.length - 1; i > -1; i--) {
-			NeutralSpawners[i].EntityPositionChanged(entity)
+		const spawner = NeutralSpawners.find(
+			x =>
+				!x.IsEmpty &&
+				(x.Spawner.SpawnBox?.Includes(entity.Position) ||
+					entity.Distance2D(x.Position) <= 1000)
+		)
+		if (spawner !== undefined) {
+			spawner.EntityPositionChanged(entity)
 		}
 	}
 	protected PostDataUpdate(_delta: number) {
@@ -110,7 +116,7 @@ new (class CNeutralSpawnerBoxChanged {
 			x =>
 				!x.IsEmpty &&
 				(x.Spawner.SpawnBox?.Includes(unit.Position) ||
-					unit.Distance2D(x.Spawner.Position) <= 600)
+					unit.Distance2D(x.Position) <= 600)
 		)
 		if (spawner !== undefined) {
 			spawner.AttackStarted(unit)

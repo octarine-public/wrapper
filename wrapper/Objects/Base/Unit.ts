@@ -695,6 +695,12 @@ export class Unit extends Entity {
 	public get HullRadius(): number {
 		return this.UnitData.HullRadius
 	}
+	public get CollisionPadding(): number {
+		return this.UnitData.CollisionPadding
+	}
+	public get PaddedCollisionRadius(): number {
+		return this.HullRadius + this.CollisionPadding
+	}
 	public get ProjectileCollisionSize(): number {
 		let projectileCollisionSize = this.UnitData.ProjectileCollisionSize
 		if (projectileCollisionSize === 0) {

@@ -8,6 +8,7 @@ import { Team } from "../Enums/Team"
 import { GameSleeper } from "../Helpers/Sleeper"
 import { ParticlesSDK } from "../Managers/ParticleManager"
 import { ProjectileManager } from "../Managers/ProjectileManager"
+import { ConVarsSDK } from "../Native/ConVarsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import { Creep } from "../Objects/Base/Creep"
 import { GameRules, LocalPlayer } from "../Objects/Base/Entity"
@@ -22,18 +23,22 @@ export const NeutralSpawners: NeutralSpawnerBox[] = []
 export class NeutralSpawnerBox {
 	public static readonly Sleeper = new GameSleeper()
 
+	protected static get TimeLeft() {
+		return Math.floor(((GameRules?.GameTime ?? 0) % this.SpawnInterval) * 10) / 10
+	}
+	protected static get SpawnInterval() {
+		return ConVarsSDK.GetFloat("dota_neutral_spawn_interval", 60)
+	}
 	protected get IsValidGame() {
 		if (GameRules === undefined || GameRules.GameTime < 61) {
 			return false
 		}
 		return GameRules.GameState === DOTAGameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS
 	}
-	protected static get TimeLeft() {
-		return Math.floor(((GameRules?.GameTime ?? 0) % 60) * 10) / 10
-	}
 	protected static get IsSpawnTime() {
 		return !(this.TimeLeft > 0)
 	}
+
 	public readonly Creeps: Creep[] = []
 	public readonly Attackers: Unit[] = []
 	public readonly Type: NeutralSpawnerType
@@ -58,8 +63,11 @@ export class NeutralSpawnerBox {
 		}
 		return true
 	}
+	public get Team() {
+		return this.Spawner.SpawnerTeam
+	}
 	public get IsAlly() {
-		return (this.Spawner.SpawnerTeam ?? Team.Invalid) === GameState.LocalTeam
+		return (this.Team ?? Team.Invalid) === GameState.LocalTeam
 	}
 	public get Position() {
 		return this.Spawner.Position
@@ -76,9 +84,6 @@ export class NeutralSpawnerBox {
 	}
 	public get StackEndTime() {
 		return this.Spawner.SpawnBox?.StackEnd ?? 0
-	}
-	public get Team() {
-		return this.Spawner.SpawnerTeam
 	}
 	public get StackStartTime() {
 		return this.Spawner.SpawnBox?.StackStart ?? 0
@@ -135,9 +140,6 @@ export class NeutralSpawnerBox {
 		}
 	}
 	public EntityPositionChanged(entity: Unit) {
-		if (this.IsEmpty) {
-			return
-		}
 		const time = NeutralSpawnerBox.TimeLeft,
 			box = this.Spawner.SpawnBox,
 			creeps = this.Creeps.filter(x => x.IsAlive && x.IsSpawned)
@@ -182,13 +184,11 @@ export class NeutralSpawnerBox {
 		if (LocalPlayer === undefined || LocalPlayer.Hero === undefined) {
 			return
 		}
-
 		const spawner = this.Spawner
 		const w2s = RendererSDK.WorldToScreen(this.Position)
 		if (w2s === undefined) {
 			return
 		}
-
 		RendererSDK.Text(
 			`Name: ${spawner.Name}
 			Hits: ${this.Hits}
@@ -202,11 +202,9 @@ export class NeutralSpawnerBox {
 			RendererSDK.DefaultFontName,
 			11
 		)
-
 		pSDK.DrawCircle(spawner.Name + "radius", LocalPlayer.Hero, 50, {
 			Position: this.Position
 		})
-
 		pSDK.DrawLine(spawner.Name + "line", LocalPlayer.Hero, this.EndPosition, {
 			Position: this.Position,
 			Width: 50
