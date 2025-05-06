@@ -1,13 +1,12 @@
-import { DegreesToRadian } from "../Utils/Math"
 import { QAngle } from "./QAngle"
 import { Vector3 } from "./Vector3"
 
 export class Matrix3x4 {
 	public static AngleMatrix(ang: QAngle, pos: Vector3, scale: number): Matrix3x4 {
 		const matrix = new Matrix3x4()
-		const yaw = DegreesToRadian(ang.y),
-			pitch = DegreesToRadian(ang.x),
-			roll = DegreesToRadian(ang.z)
+		const yaw = Math.degreesToRadian(ang.y),
+			pitch = Math.degreesToRadian(ang.x),
+			roll = Math.degreesToRadian(ang.z)
 		const sr = Math.sin(roll),
 			sp = Math.sin(pitch),
 			sy = Math.sin(yaw),

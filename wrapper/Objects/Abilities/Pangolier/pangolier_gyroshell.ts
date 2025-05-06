@@ -1,11 +1,10 @@
 import { WrapperClass } from "../../../Decorators"
-import { DegreesToRadian } from "../../../Utils/Math"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("pangolier_gyroshell")
 export class pangolier_gyroshell extends Ability {
 	public get TurnRate() {
-		return DegreesToRadian(this.GetSpecialValue("turn_rate"))
+		return Math.degreesToRadian(this.GetSpecialValue("turn_rate"))
 	}
 	public get HitRadius() {
 		return this.GetSpecialValue("hit_radius")

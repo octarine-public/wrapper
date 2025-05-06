@@ -70,11 +70,7 @@ export class InternalNotifications {
 	public Draw(): void {
 		NotificationsSDK.debug = this.tree.IsOpen
 
-		if (
-			!this.ScriptLatest &&
-			!GameState.IsConnected &&
-			this.AutoReload === undefined
-		) {
+		if (!this.ScriptLatest && !GameState.IsConnected) {
 			this.ScriptLatest = true
 			this.callAutoReloadCondition(true)
 		}

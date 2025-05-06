@@ -8,8 +8,6 @@ import { EventsSDK } from "../Managers/EventsSDK"
 import { InputManager } from "../Managers/InputManager"
 import { ParseMaterial } from "../Resources/ParseMaterial"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
-import { HasMask } from "../Utils/BitsExtensions"
-import { DegreesToRadian } from "../Utils/Math"
 import { tryFindFile } from "../Utils/readFile"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { ConVarsSDK } from "./ConVarsSDK"
@@ -411,7 +409,7 @@ class CRendererSDK {
 		// const vecPos = vecPos_.Clone()
 		// if (rotationDeg !== 0) {
 		// 	//rotate around the center instead of top left corner
-		// 	const angle = DegreesToRadian(rotationDeg),
+		// 	const angle = Math.degreesToRadian(rotationDeg),
 		// 		s = Math.sin(angle),
 		// 		c = Math.cos(angle)
 		// 	const centerOffset = vecSize.DivideScalar(2)
@@ -777,9 +775,9 @@ class CRendererSDK {
 		this.Translate(vecPos)
 		this.Rotate(rotationDeg)
 
-		let angle = this.NormalizedAngle(DegreesToRadian(360 * percent))
+		let angle = this.NormalizedAngle(Math.degreesToRadian(360 * percent))
 		const startAngleSign = Math.sign(startAngle)
-		startAngle = DegreesToRadian(startAngle)
+		startAngle = Math.degreesToRadian(startAngle)
 		if (startAngleSign < 0) {
 			startAngle -= angle
 		}
@@ -890,8 +888,8 @@ class CRendererSDK {
 		}
 		this.Rotate(rotationDeg)
 
-		baseAngle = DegreesToRadian(baseAngle)
-		const sweepAngle = DegreesToRadian(360 * percent * Math.sign(baseAngle))
+		baseAngle = Math.degreesToRadian(baseAngle)
+		const sweepAngle = Math.degreesToRadian(360 * percent * Math.sign(baseAngle))
 
 		this.AllocateCommandSpace(CommandID.PATH_ADD_ARC, 6 * 4 + 1)
 		this.commandStream.WriteFloat32(0)
@@ -1160,7 +1158,7 @@ class CRendererSDK {
 		flags |=
 			Math.max(Math.min(join, LineJoin.Bevel), LineJoin.Miter) <<
 			PathFlags.LINE_JOIN_OFFSET
-		const hasImage = HasMask(flags, PathFlags.IMAGESHADER)
+		const hasImage = flags.hasMask(PathFlags.IMAGESHADER)
 		this.AllocateCommandSpace(CommandID.PATH, 3 * 4 + 2 + (hasImage ? 5 * 4 : 0))
 		this.commandStream.WriteColor(fillColor)
 		this.commandStream.WriteColor(strokeColor)
@@ -1182,7 +1180,7 @@ class CRendererSDK {
 			return
 		}
 		this.AllocateCommandSpace(CommandID.ROTATE, 4)
-		this.commandStream.WriteFloat32(DegreesToRadian(ang))
+		this.commandStream.WriteFloat32(Math.degreesToRadian(ang))
 	}
 	private Translate(vecPos: Vector2): void {
 		if (vecPos.IsZero()) {

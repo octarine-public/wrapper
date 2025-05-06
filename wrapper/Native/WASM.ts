@@ -33,7 +33,7 @@ export class CHeightMap {
 export let HeightMap: Nullable<CHeightMap>
 
 export function GetEyeVector(cameraAngles: QAngle): Vector3 {
-	// TODO: should we use Math.cos(DegreesToRadian(cameraAngles.y))?
+	// TODO: should we use Math.cos(Math.degreesToRadian(cameraAngles.y))?
 	const pitch = Math.degreesToRadian(cameraAngles.x)
 	const yaw = Math.degreesToRadian(cameraAngles.y)
 	// Math.cos(pitch - Math.cos(yaw)) // correctly?

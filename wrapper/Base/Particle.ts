@@ -6,6 +6,7 @@ import { Color } from "./Color"
 import { Vector2 } from "./Vector2"
 import { Vector3 } from "./Vector3"
 
+export type ControlPointParam = [number, ControlPoint]
 export type ControlPoint =
 	| boolean
 	| number
@@ -14,7 +15,6 @@ export type ControlPoint =
 	| Vector2
 	| Color
 	| number[]
-export type ControlPointParam = [number, ControlPoint]
 
 export class Particle {
 	public IsValid = false

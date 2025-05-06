@@ -15,7 +15,6 @@ function UpdateTimingData(): void {
 	loadFile().forEach((map, name) => cacheTimingData.set(name, map))
 }
 
-// TODO: TeamData -> m_vecKnownClearCamps
 export class NeutralSpawnBox {
 	public readonly Angles = new QAngle()
 	public readonly StackEnd: number = -1
@@ -32,29 +31,23 @@ export class NeutralSpawnBox {
 	public get MinBounds(): Vector3 {
 		return this.properties.get("m_vMinBounds") as Vector3
 	}
-
 	public get MaxBounds(): Vector3 {
 		return this.properties.get("m_vMaxBounds") as Vector3
 	}
-
 	public get Center(): Vector3 {
 		const vec = this.MinBounds.Add(this.MaxBounds).DivideScalarForThis(2)
 		vec.SetZ(GetPositionHeight(vec))
 		return vec
 	}
-
 	public get SpawnBoxOrigin(): Vector3 {
 		return this.properties.get("vSpawnBoxOrigin") as Vector3
 	}
-
 	public get CampType(): number {
 		return this.properties.get("nCampType") as number
 	}
-
 	public get CampName(): string {
 		return this.properties.get("strCampName") as string
 	}
-
 	public Includes(vec: Vector3): boolean {
 		const min = this.MinBounds
 		const max = this.MaxBounds
@@ -73,7 +66,6 @@ export class NeutralSpawnBox {
 			vec.z <= maxZ
 		)
 	}
-
 	public Includes2D(vec: Vector2): boolean {
 		const min = this.MinBounds
 		const max = this.MaxBounds
@@ -83,7 +75,6 @@ export class NeutralSpawnBox {
 		const maxY = Math.max(min.y, max.y)
 		return vec.x >= minX && vec.x <= maxX && vec.y >= minY && vec.y <= maxY
 	}
-
 	public toJSON(): any {
 		return {
 			MinBounds: this.MinBounds,
@@ -92,7 +83,6 @@ export class NeutralSpawnBox {
 			CampName: this.CampName
 		}
 	}
-
 	protected ParseStackData(stackName: string) {
 		const stack = cacheTimingData.get(this.CampName)?.get(stackName)
 		if (stack === undefined || stack instanceof Map) {
@@ -109,7 +99,6 @@ export class NeutralSpawnBox {
 		}
 		return stack
 	}
-
 	protected SetAngleEvil() {
 		switch (this.CampName) {
 			case "neutralcamp_evil_1":
@@ -159,7 +148,6 @@ export class NeutralSpawnBox {
 				break
 		}
 	}
-
 	protected SetAngleGood() {
 		switch (this.CampName) {
 			case "neutralcamp_good_1":

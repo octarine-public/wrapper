@@ -15,7 +15,7 @@ export const NotificationsSDK = new (class CNotificationsSDK {
 
 	/**
 	 * @param notification abstract class
-	 * @param extendTime
+	 * @param uniqCheck check on unique key
 	 * @description add in Queue notification
 	 * @example
 	 *
@@ -48,13 +48,12 @@ export const NotificationsSDK = new (class CNotificationsSDK {
 		backgroundCover = this.backgroundCover
 	) {
 		notification.Cover = backgroundCover
-
-		if (uniqCheck) {
-			Notifications.removeCallback(x => x.UniqueKey === x.UniqueKey && !x.IsExpired)
-			if (!Queue.some(x => x.UniqueKey === notification.UniqueKey)) {
-				Queue.push(notification)
-			}
-		} else {
+		if (!uniqCheck) {
+			Queue.push(notification)
+			return
+		}
+		Notifications.removeCallback(x => x.UniqueKey === x.UniqueKey && !x.IsExpired)
+		if (!Queue.some(x => x.UniqueKey === notification.UniqueKey)) {
 			Queue.push(notification)
 		}
 	}

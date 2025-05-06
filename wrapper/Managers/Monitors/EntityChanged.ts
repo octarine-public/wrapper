@@ -56,13 +56,14 @@ new (class CEntityChanged {
 	}
 
 	private handleDotaBuyback(entity: Nullable<Entity>) {
-		if (entity === undefined) {
+		if (entity === undefined || entity.LifeState !== LifeState.LIFE_DEAD) {
 			return
 		}
-		if (entity.LifeState === LifeState.LIFE_DEAD) {
-			entity.LifeState = LifeState.LIFE_ALIVE
-			entity.HP = entity.MaxHP
-			EventsSDK.emit("LifeStateChanged", false, entity)
+		entity.HP = entity.MaxHP
+		entity.LifeState = LifeState.LIFE_ALIVE
+		if (entity instanceof Unit) {
+			entity.Mana = entity.MaxMana
 		}
+		EventsSDK.emit("LifeStateChanged", false, entity)
 	}
 })()
