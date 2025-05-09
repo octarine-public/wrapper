@@ -1172,8 +1172,8 @@ export class Unit extends Entity {
 			target.GetDamageAmplification(this, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
 		)
 	}
-	public VelocityWaypoint(time: number, movespeed: number): Vector3 {
-		return this.InFront(movespeed * time)
+	public VelocityWaypoint(delay: number, movespeed: number = this.MoveSpeed): Vector3 {
+		return this.InFront(movespeed * delay)
 	}
 	public GetItemByName(name: string | RegExp, includeBackpack = false): Nullable<Item> {
 		return this.Inventory.GetItemByName(name, includeBackpack)
