@@ -302,7 +302,8 @@ export class Unit extends Entity {
 		return Math.max(this.AttackAnimationPoint / this.AttackHasteFactor, 0)
 	}
 	public get AttackBackswing(): number {
-		return this.SecondsPerAttack - this.AttackPoint
+		const tick = GameState.TickInterval
+		return Math.floor((this.SecondsPerAttack - this.AttackPoint - tick) / tick) * tick
 	}
 	/** @deprecated Use SecondsPerAttack */
 	public get AttackRate() {
@@ -488,6 +489,9 @@ export class Unit extends Entity {
 	public get IsRooted(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ROOTED)
 	}
+	public get IsCommandRestricted(): boolean {
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_COMMAND_RESTRICTED)
+	}
 	public get CanUseBackpack(): boolean {
 		return this.IsUnitStateFlagSet(
 			modifierstate.MODIFIER_STATE_CAN_USE_BACKPACK_ITEMS
@@ -556,9 +560,7 @@ export class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE)
 	}
 	public get IsAttackReady(): boolean {
-		const tick = GameState.TickInterval,
-			nextTime = Math.ceil(this.AttackBackswing / tick) * tick
-		return GameState.RawGameTime >= this.LastAttackTime + nextTime
+		return GameState.RawGameTime >= this.LastAttackTime + this.AttackBackswing
 	}
 	public get IsAttackImpaired(): boolean {
 		if (this.IsInvulnerable && !this.IsFountainInvulnerable) {

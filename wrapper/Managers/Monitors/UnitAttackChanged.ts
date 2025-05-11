@@ -1,7 +1,6 @@
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
 import { EventPriority } from "../../Enums/EventPriority"
 import { GameActivity } from "../../Enums/GameActivity"
-import { GameSleeper } from "../../Helpers/Sleeper"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { Entity } from "../../Objects/Base/Entity"
 import { FakeUnit } from "../../Objects/Base/FakeUnit"
@@ -12,10 +11,13 @@ import { EntityManager } from "../EntityManager"
 import { EventsSDK } from "../EventsSDK"
 import { TaskManager } from "../TaskManager"
 
-const Monitor = new (class CUnitAttackChanged {
+new (class CUnitAttackChanged {
 	protected get HasDebug(): boolean {
 		return (globalThis as any)?.DEBUGGER_INSTALLED ?? false
 	}
+
+	private readonly attackLockUntil = new Map<Unit, number>()
+	private readonly heroGainAggroTargetIndex = new Map<Unit, number>()
 
 	private readonly attackActivities = [
 		GameActivity.ACT_DOTA_ATTACK,
@@ -23,34 +25,77 @@ const Monitor = new (class CUnitAttackChanged {
 		GameActivity.ACT_DOTA_ATTACK_EVENT
 	]
 
-	private readonly attackSleeper = new GameSleeper()
-	private readonly heroGainAggroTargetIndex = new Map<Unit, number>()
-
-	public GameEnded() {
-		this.attackSleeper.FullReset()
+	constructor() {
+		EventsSDK.on("GameEvent", this.GameEvent.bind(this), EventPriority.IMMEDIATE)
+		EventsSDK.on(
+			"PostDataUpdate",
+			this.PostDataUpdate.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"PrepareUnitOrders",
+			this.PrepareUnitOrders.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"UnitAnimationEnd",
+			this.UnitAnimationEnd.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"UnitAnimation",
+			this.UnitAnimation.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"NetworkActivityChanged",
+			this.NetworkActivityChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"LifeStateChanged",
+			this.LifeStateChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"EntityDestroyed",
+			this.EntityDestroyed.bind(this),
+			EventPriority.IMMEDIATE
+		)
 	}
-
-	public LifeStateChanged(entity: Entity) {
+	protected PostDataUpdate(deltaTime: number) {
+		if (deltaTime === 0) {
+			return
+		}
+		this.attackLockUntil.forEach((delay, attacker) => {
+			if (GameState.RawGameTime > delay - deltaTime) {
+				this.attackStopped(attacker, false)
+			}
+		})
+	}
+	protected LifeStateChanged(entity: Entity) {
+		if (!(entity instanceof Unit) || entity.IsAlive) {
+			return
+		}
+		this.attackCancelled(entity)
+		this.attackStopped(entity, true)
+		this.heroGainAggroTargetIndex.delete(entity)
+		this.attackLockUntil.delete(entity)
+	}
+	protected EntityDestroyed(entity: Entity) {
 		if (entity instanceof Unit) {
-			this.attackStopped(entity)
+			this.attackCancelled(entity, false)
+			this.attackStopped(entity, true, false)
+			this.attackLockUntil.delete(entity)
 			this.heroGainAggroTargetIndex.delete(entity)
 		}
 	}
-
-	public EntityDestroyed(entity: Entity) {
-		if (entity instanceof Unit) {
-			this.attackStopped(entity)
-			this.heroGainAggroTargetIndex.delete(entity)
-		}
-	}
-
-	public NetworkActivityChanged(source: Unit) {
+	protected NetworkActivityChanged(source: Unit) {
 		if (!this.attackActivities.includes(source.NetworkActivity)) {
-			this.attackStopped(source)
+			this.attackStopped(source, true)
 		}
 	}
-
-	public PrepareUnitOrders(order: ExecuteOrder) {
+	protected PrepareUnitOrders(order: ExecuteOrder) {
 		if (order.Queue) {
 			return
 		}
@@ -73,25 +118,25 @@ const Monitor = new (class CUnitAttackChanged {
 			}
 		}
 	}
-
-	public UnitAnimation(
+	protected UnitAnimationEnd(source: Unit | FakeUnit, _snap: boolean) {
+		if (source instanceof Unit) {
+			this.attackStopped(source, this.isCancelledAttack(source))
+		}
+	}
+	protected UnitAnimation(
 		source: Unit | FakeUnit,
-		seqVar?: number,
-		activity?: GameActivity,
-		attackPoint = 0
+		seqVar: number,
+		_playBackRate: number,
+		_castPoint: number,
+		_type: number,
+		activity: number,
+		_lagCompensationTime: number,
+		rawCastPoint: number
 	) {
 		if (!(source instanceof Unit)) {
 			return
 		}
-		if (
-			seqVar === undefined ||
-			activity === undefined ||
-			!this.attackActivities.includes(activity)
-		) {
-			this.attackStopped(source)
-			return
-		}
-		const animation = source.GetAnimation(activity, seqVar, false)
+		const animation = source.GetAnimation(activity, seqVar)
 		if (animation === undefined) {
 			this.handlerErrorMessage("animation AnimationsData", source, activity, seqVar)
 			this.attackStopped(source, true)
@@ -99,12 +144,11 @@ const Monitor = new (class CUnitAttackChanged {
 		}
 		this.attackStarted(
 			source,
-			attackPoint,
+			rawCastPoint,
 			animation.activities.map(activityData => activityData.name)
 		)
 	}
-
-	public GameEvent(name: string, obj: any) {
+	protected GameEvent(name: string, obj: any) {
 		if (name !== "dota_hero_on_gain_aggro") {
 			return
 		}
@@ -116,13 +160,12 @@ const Monitor = new (class CUnitAttackChanged {
 			this.heroGainAggroTargetIndex.set(attacker, obj.entindex_hero)
 		}
 	}
-
-	private attackStarted(source: Unit, attackPoint: number, animationNames: string[]) {
+	private attackStarted(source: Unit, rawCastPoint: number, animationNames: string[]) {
 		if (!source.IsAlive) {
 			return
 		}
 		if (!source.IsControllable && !source.IsTower) {
-			source.TargetIndex_ = this.findTarget(source)
+			source.TargetIndex_ = this.findTargetByAngle(source)
 		}
 		if (source instanceof Tower) {
 			source.TargetIndex_ = source.TowerAttackTarget_
@@ -131,53 +174,42 @@ const Monitor = new (class CUnitAttackChanged {
 		}
 		if (
 			source.IsControllable &&
-			source.TargetIndex_ === EntityManager.INVALID_HANDLE
+			source.TargetIndex_ === EntityManager.INVALID_INDEX
 		) {
-			source.TargetIndex_ = this.findTarget(source)
+			source.TargetIndex_ = this.findTargetByAngle(source)
 		}
-		if (this.attackSleeper.Sleeping(source.Index)) {
-			EventsSDK.emit("AttackEnded", false, source)
-			this.attackSleeper.ResetKey(source.Index)
-		}
-		const delay =
-			Math.ceil(attackPoint / GameState.TickInterval) * GameState.TickInterval
-		this.attackSleeper.Sleep(delay * 1000, source.Index)
-		EventsSDK.emit("AttackStarted", false, source, attackPoint, animationNames)
-		this.handlerErrorMessageAttack(source, attackPoint)
+		const tick = GameState.TickInterval
+		const time = Math.ceil(rawCastPoint / tick) * tick
+		this.attackLockUntil.set(source, GameState.RawGameTime + time)
+		EventsSDK.emit("AttackStarted", false, source, time, animationNames)
 	}
-
-	private attackStopped(source: Unit, stoppedByError = false) {
-		if (!this.attackSleeper.Sleeping(source.Index) && !stoppedByError) {
+	private attackStopped(source: Unit, isCancelled: boolean, emitEvent = true) {
+		if (!this.attackLockUntil.has(source)) {
 			return
 		}
 		source.IsAttacking = false
-		source.TargetIndex_ = EntityManager.INVALID_HANDLE
-		this.attackSleeper.ResetKey(source.Index)
+		source.TargetIndex_ = EntityManager.INVALID_INDEX
+		this.attackLockUntil.delete(source)
 		this.heroGainAggroTargetIndex.delete(source)
-		EventsSDK.emit("AttackEnded", false, source)
+		if (emitEvent) {
+			EventsSDK.emit("AttackEnded", false, source, isCancelled)
+		}
 	}
-
 	private setTarget(issuers: Unit[], entity: Nullable<number | Entity>) {
-		let index = EntityManager.INVALID_HANDLE
+		let index = EntityManager.INVALID_INDEX
 		if (entity instanceof Entity || typeof entity === "number") {
 			index = typeof entity === "number" ? entity : entity.Index
 		}
 		for (let i = issuers.length - 1; i > -1; i--) {
-			const source = issuers[i]
-			source.TargetIndex_ = index
-			source.IsAttacking = true
+			issuers[i].TargetIndex_ = index
 		}
 	}
-
 	private dropTarget(issuers: Unit[]) {
 		for (let i = issuers.length - 1; i > -1; i--) {
-			const source = issuers[i]
-			source.IsAttacking = false
-			source.TargetIndex_ = EntityManager.INVALID_HANDLE
+			issuers[i].TargetIndex_ = EntityManager.INVALID_INDEX
 		}
 	}
-
-	private findTarget(source: Unit) {
+	private findTargetByAngle(source: Unit) {
 		const targetIndex = this.heroGainAggroTargetIndex.get(source)
 		if (targetIndex !== undefined) {
 			return targetIndex
@@ -188,13 +220,12 @@ const Monitor = new (class CUnitAttackChanged {
 					x.IsAlive &&
 					x !== source &&
 					(x.Team !== source.Team || x.IsDeniable) &&
-					x.Distance2D(source) <= source.GetAttackRange(x, 25) &&
-					source.GetAngle(x, true) < 1.5
+					x.Distance2D(source) <= source.GetAttackRange(x) &&
+					source.GetAngle(x, true) < 0.2
 			).orderByFirst(x => source.GetAngle(x, true))?.Index ??
-			EntityManager.INVALID_HANDLE
+			EntityManager.INVALID_INDEX
 		)
 	}
-
 	private handlerErrorMessage(
 		name: string,
 		source: Unit,
@@ -220,81 +251,21 @@ const Monitor = new (class CUnitAttackChanged {
 			)
 		})
 	}
-
-	private handlerErrorMessageAttack(unit: Unit, rawCastPoint: number) {
-		if (!this.HasDebug) {
-			return
-		}
-		const debug = false
-		if (!debug) {
-			return
-		}
-		TaskManager.Begin(() => {
-			const digits = 1e4,
-				epsilon = 1e-4,
-				currValue = Math.ceil(unit.AttackPoint * digits) / digits,
-				networkedValue = Math.ceil(rawCastPoint * digits) / digits
-
-			if (Math.abs(currValue - networkedValue) > epsilon) {
-				console.error(
-					"Error: networked attack point doesn't match current attack point\n",
-					`Has EchoSabre: ${unit.HasBuffByName("modifier_item_echo_sabre")}\n`,
-					`Name: ${unit.Name}\n`,
-					`ClassName: ${unit.ClassName}\n`,
-					`AttackSpeed ${unit.AttackSpeed}\n`,
-					`AttackPoint ${currValue}\n`,
-					`UnitAnimation#CastPoint ${networkedValue}\n`
-				)
+	private attackCancelled(entity: Unit, emitEvent = true) {
+		this.attackLockUntil.forEach((_delay, attacker) => {
+			if (!attacker.IsAttackReady) {
+				return
+			}
+			if (attacker.Target === entity) {
+				this.attackStopped(attacker, true, emitEvent)
 			}
 		})
 	}
+	private isCancelledAttack(source: Unit) {
+		if (source.IsTower) {
+			return false
+		}
+		const delay = this.attackLockUntil.get(source) ?? 0
+		return delay !== 0 && delay > GameState.RawGameTime
+	}
 })()
-
-EventsSDK.on("GameEnded", () => Monitor.GameEnded(), EventPriority.IMMEDIATE)
-
-EventsSDK.on("EntityDestroyed", entity => Monitor.EntityDestroyed(entity))
-
-EventsSDK.on(
-	"GameEvent",
-	(name, obj) => Monitor.GameEvent(name, obj),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"PrepareUnitOrders",
-	order => Monitor.PrepareUnitOrders(order),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"UnitAnimationEnd",
-	(unit, _) => Monitor.UnitAnimation(unit),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"NetworkActivityChanged",
-	unit => Monitor.NetworkActivityChanged(unit),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"LifeStateChanged",
-	entity => Monitor.LifeStateChanged(entity),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"UnitAnimation",
-	(
-		source,
-		seqVar,
-		_playbackrate,
-		_castPoint,
-		_type,
-		activity,
-		_lagCompensationTime,
-		rawCastPoint
-	) => Monitor.UnitAnimation(source, seqVar, activity, rawCastPoint),
-	EventPriority.IMMEDIATE
-)

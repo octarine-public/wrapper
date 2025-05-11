@@ -445,12 +445,12 @@ interface EventsSDK extends EventEmitter {
 	): EventEmitter
 	on(
 		name: "AttackStarted",
-		callback: (unit: Unit, castpoint: number, names: string[]) => void,
+		callback: (unit: Unit, castPoint: number, animationNames: string[]) => void,
 		priority?: number
 	): EventEmitter
 	on(
 		name: "AttackEnded",
-		listener: (unit: Unit) => void,
+		listener: (unit: Unit, isCancelled: boolean) => void,
 		priority?: number
 	): EventEmitter
 	on(
