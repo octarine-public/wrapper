@@ -1,21 +1,21 @@
 import { Color } from "../Base/Color"
 import { Vector2 } from "../Base/Vector2"
 import { EventPriority } from "../Enums/EventPriority"
-import { GUIInfo } from "../GUI/GUIInfo"
+import { ScaleHeight, ScaleVector, ScaleWidth } from "../GUI/Helpers"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import { Base, IMenu } from "./Base"
 
 export class ShortDescription extends Base {
 	public static OnWindowSizeChanged(): void {
-		ShortDescription.iconSize.CopyFrom(GUIInfo.ScaleVector(24, 24))
-		ShortDescription.iconOffset.x = GUIInfo.ScaleWidth(12)
-		ShortDescription.iconOffset.y = GUIInfo.ScaleHeight(8)
+		ShortDescription.iconSize.CopyFrom(ScaleVector(24, 24))
+		ShortDescription.iconOffset.x = ScaleWidth(12)
+		ShortDescription.iconOffset.y = ScaleHeight(8)
 
-		ShortDescription.textOffsetNode.x = GUIInfo.ScaleWidth(15)
-		ShortDescription.textOffsetNode.y = GUIInfo.ScaleHeight(13)
+		ShortDescription.textOffsetNode.x = ScaleWidth(15)
+		ShortDescription.textOffsetNode.y = ScaleHeight(13)
 
-		ShortDescription.textOffsetWithIcon.x = GUIInfo.ScaleWidth(48)
+		ShortDescription.textOffsetWithIcon.x = ScaleWidth(48)
 		ShortDescription.textOffsetWithIcon.y = ShortDescription.textOffsetNode.y
 	}
 

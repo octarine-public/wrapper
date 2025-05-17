@@ -4,9 +4,12 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("lina_dragon_slave")
-export class lina_dragon_slave extends Ability {
+export class lina_dragon_slave extends Ability implements INuke {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("dragon_slave_width_end")
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("dragon_slave_damage", level)

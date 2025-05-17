@@ -3,7 +3,10 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("silencer_glaives_of_wisdom")
-export class silencer_glaives_of_wisdom extends Ability {
+export class silencer_glaives_of_wisdom extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetRawDamage(_target: Unit): number {
 		const owner = this.Owner
 		if (owner === undefined || owner.Mana < this.ManaCost) {

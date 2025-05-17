@@ -6,12 +6,15 @@ import { Unit } from "../../Base/Unit"
 import { modifier_drow_ranger_frost_arrows } from "../../Modifiers/Abilities/DrowRanger/modifier_drow_ranger_frost_arrows"
 
 @WrapperClass("drow_ranger_multishot")
-export class drow_ranger_multishot extends Ability {
+export class drow_ranger_multishot extends Ability implements INuke {
 	// public GetCastRangeForLevel(level: number): number {
 	// 	return (this.Owner?.AttackRange ?? 0) * this.GetSpecialValue("arrow_range_multiplier", level)
 	// }
 	public get DamageBlockType() {
 		return DAMAGE_TYPES.DAMAGE_TYPE_NONE
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetRawDamage(_target: Unit): number {
 		const owner = this.Owner
@@ -49,7 +52,6 @@ export class drow_ranger_multishot extends Ability {
 		return this.GetSpecialValue("arrow_damage_pct", level)
 	}
 	private frostArrowBonusDamage(owner: Unit): number {
-		const modifier = owner.GetBuffByClass(modifier_drow_ranger_frost_arrows)
-		return modifier?.CachedDamage ?? 0
+		return owner.GetBuffByClass(modifier_drow_ranger_frost_arrows)?.CachedDamage ?? 0
 	}
 }

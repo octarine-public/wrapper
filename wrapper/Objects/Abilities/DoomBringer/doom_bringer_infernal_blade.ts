@@ -4,7 +4,10 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("doom_bringer_infernal_blade")
-export class doom_bringer_infernal_blade extends Ability {
+export class doom_bringer_infernal_blade extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetRawDamage(target: Unit): number {
 		const owner = this.Owner
 		if (owner === undefined || this.Level === 0) {

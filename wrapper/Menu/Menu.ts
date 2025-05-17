@@ -1,7 +1,7 @@
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { EventPriority } from "../Enums/EventPriority"
-import { GUIInfo } from "../GUI/GUIInfo"
+import { ScaleHeight, ScaleWidth } from "../GUI/Helpers"
 import { Events } from "../Managers/Events"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputEventSDK, InputManager, VMouseKeys } from "../Managers/InputManager"
@@ -24,9 +24,9 @@ const hardcodedIcons = new Map<string, string>(
 	)
 class CMenuManager {
 	public static OnWindowSizeChanged(): void {
-		CMenuManager.scrollbarWidth = GUIInfo.ScaleWidth(3)
-		CMenuManager.scrollbarOffset.x = GUIInfo.ScaleWidth(2)
-		CMenuManager.scrollbarOffset.y = GUIInfo.ScaleHeight(2)
+		CMenuManager.scrollbarWidth = ScaleWidth(3)
+		CMenuManager.scrollbarOffset.x = ScaleWidth(2)
+		CMenuManager.scrollbarOffset.y = ScaleHeight(2)
 	}
 	private static readonly scrollbarPath = "menu/scrollbar.svg"
 	private static scrollbarWidth = 0

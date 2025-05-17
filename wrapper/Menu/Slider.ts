@@ -1,20 +1,18 @@
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { EventPriority } from "../Enums/EventPriority"
-import { GUIInfo } from "../GUI/GUIInfo"
+import { ScaleHeight, ScaleWidth } from "../GUI/Helpers"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import { Base, IMenu } from "./Base"
 
 export class Slider extends Base {
 	public static OnWindowSizeChanged(): void {
-		Slider.sliderBackgroundHeight = GUIInfo.ScaleHeight(
-			Slider.origSliderBackgroundHeight
-		)
-		Slider.sliderBackgroundOffset.x = GUIInfo.ScaleWidth(13)
-		Slider.sliderBackgroundOffset.y = GUIInfo.ScaleHeight(12)
-		Slider.textValueGap = GUIInfo.ScaleWidth(20)
-		Slider.textSliderVerticalGap = GUIInfo.ScaleHeight(10)
+		Slider.sliderBackgroundHeight = ScaleHeight(Slider.origSliderBackgroundHeight)
+		Slider.sliderBackgroundOffset.x = ScaleWidth(13)
+		Slider.sliderBackgroundOffset.y = ScaleHeight(12)
+		Slider.textValueGap = ScaleWidth(20)
+		Slider.textSliderVerticalGap = ScaleHeight(10)
 	}
 
 	private static readonly sliderBackgroundPath = "menu/slider_background.svg"

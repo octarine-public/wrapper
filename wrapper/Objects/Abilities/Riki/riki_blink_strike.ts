@@ -5,7 +5,10 @@ import { Unit } from "../../Base/Unit"
 import { modifier_innate_riki_backstab } from "../../Modifiers/Abilities/Riki/modifier_innate_riki_backstab"
 
 @WrapperClass("riki_blink_strike")
-export class riki_blink_strike extends Ability {
+export class riki_blink_strike extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("bonus_damage", level)
 	}

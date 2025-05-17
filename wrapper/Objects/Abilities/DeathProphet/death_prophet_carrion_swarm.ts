@@ -2,10 +2,13 @@ import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("death_prophet_carrion_swarm")
-export class death_prophet_carrion_swarm extends Ability {
+export class death_prophet_carrion_swarm extends Ability implements INuke {
 	public get EndRadius(): number {
 		// TODO: move to BaseAOEEndRadius
 		return this.GetSpecialValue("end_radius")
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("start_radius", level)

@@ -5,6 +5,7 @@ import { Vector3 } from "../Base/Vector3"
 import { DOTAGameUIState } from "../Enums/DOTAGameUIState"
 import { PingType } from "../Enums/PingType"
 import { GUIInfo } from "../GUI/GUIInfo"
+import { ScaleHeight, ScaleWidth } from "../GUI/Helpers"
 import { ConVarsSDK } from "../Native/ConVarsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import { GetPositionHeight } from "../Native/WASM"
@@ -76,8 +77,8 @@ class MinimapIconRenderer {
 			minimapIconSize.MultiplyScalarForThis(heroIconScale)
 		}
 		const screenSize = RendererSDK.WindowSize
-		minimapIconSize.x = GUIInfo.ScaleWidth(minimapIconSize.x, screenSize)
-		minimapIconSize.y = GUIInfo.ScaleHeight(minimapIconSize.y, screenSize)
+		minimapIconSize.x = ScaleWidth(minimapIconSize.x, screenSize)
+		minimapIconSize.y = ScaleHeight(minimapIconSize.y, screenSize)
 		const minimapIconPos = MinimapSDK.WorldToMinimap(this.worldPos).SubtractForThis(
 			minimapIconSize.DivideScalar(2).RoundForThis()
 		)

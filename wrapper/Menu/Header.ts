@@ -1,34 +1,34 @@
 import { Color } from "../Base/Color"
 import { Vector2 } from "../Base/Vector2"
 import { EventPriority } from "../Enums/EventPriority"
-import { GUIInfo } from "../GUI/GUIInfo"
+import { ScaleHeight, ScaleWidth } from "../GUI/Helpers"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import { Base, IMenu } from "./Base"
 
 export class Header extends Base {
 	public static OnWindowSizeChanged(): void {
-		Header.LogoOffset.x = GUIInfo.ScaleWidth(14)
-		Header.LogoOffset.y = GUIInfo.ScaleHeight(7)
+		Header.LogoOffset.x = ScaleWidth(14)
+		Header.LogoOffset.y = ScaleHeight(7)
 
-		// Header.CapOffset.x = GUIInfo.ScaleWidth(4)
-		// Header.CapOffset.y = GUIInfo.ScaleHeight(2)
+		// Header.CapOffset.x = ScaleWidth(4)
+		// Header.CapOffset.y = ScaleHeight(2)
 
-		Header.TextOffset.x = GUIInfo.ScaleWidth(49)
-		Header.TextOffset.y = GUIInfo.ScaleHeight(12)
-		Header.FontSize = GUIInfo.ScaleHeight(18)
+		Header.TextOffset.x = ScaleWidth(49)
+		Header.TextOffset.y = ScaleHeight(12)
+		Header.FontSize = ScaleHeight(18)
 
 		const logoSize = RendererSDK.GetImageSize(this.logoPath)
-		Header.LogoSize.x = GUIInfo.ScaleWidth(logoSize.x)
-		Header.LogoSize.y = GUIInfo.ScaleHeight(logoSize.y)
+		Header.LogoSize.x = ScaleWidth(logoSize.x)
+		Header.LogoSize.y = ScaleHeight(logoSize.y)
 
 		// const capSize = RendererSDK.GetImageSize(this.capPath)
-		// Header.CapSize.x = GUIInfo.ScaleWidth(capSize.x)
-		// Header.CapSize.y = GUIInfo.ScaleHeight(capSize.y)
+		// Header.CapSize.x = ScaleWidth(capSize.x)
+		// Header.CapSize.y = ScaleHeight(capSize.y)
 
 		const actualOriginalSize = RendererSDK.GetImageSize(this.imagePath)
-		Header.OriginalSize_.x = GUIInfo.ScaleWidth(actualOriginalSize.x)
-		Header.OriginalSize_.y = GUIInfo.ScaleHeight(actualOriginalSize.y)
+		Header.OriginalSize_.x = ScaleWidth(actualOriginalSize.x)
+		Header.OriginalSize_.y = ScaleHeight(actualOriginalSize.y)
 	}
 
 	private static readonly imagePath = "menu/header.svg"

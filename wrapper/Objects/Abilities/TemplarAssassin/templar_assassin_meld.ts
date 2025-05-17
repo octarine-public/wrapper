@@ -4,8 +4,11 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("templar_assassin_meld")
-export class templar_assassin_meld extends Ability {
+export class templar_assassin_meld extends Ability implements INuke {
 	public get IsInvisibility(): boolean {
+		return true
+	}
+	public IsNuke(): this is INuke {
 		return true
 	}
 	public GetBaseDamageForLevel(level: number): number {

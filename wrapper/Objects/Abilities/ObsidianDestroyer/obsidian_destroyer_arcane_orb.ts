@@ -3,7 +3,10 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("obsidian_destroyer_arcane_orb")
-export class obsidian_destroyer_arcane_orb extends Ability {
+export class obsidian_destroyer_arcane_orb extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetRawDamage(_target: Unit): number {
 		const owner = this.Owner
 		if (owner === undefined || this.Level === 0) {

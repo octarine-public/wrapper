@@ -4,7 +4,10 @@ import { Unit } from "../../Base/Unit"
 import { modifier_lion_finger_of_death_kill_counter } from "../../Modifiers/Abilities/Lion/modifier_lion_finger_of_death_kill_counter"
 
 @WrapperClass("lion_finger_of_death")
-export class lion_finger_of_death extends Ability {
+export class lion_finger_of_death extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("splash_radius_scepter", level)
 	}

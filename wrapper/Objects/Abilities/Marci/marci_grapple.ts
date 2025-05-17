@@ -2,14 +2,11 @@ import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("marci_grapple")
-export class marci_grapple extends Ability {
-	public get Duration(): number {
-		return this.GetSpecialValue("stun_duration")
+export class marci_grapple extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
 	}
-	public get AbilityDamage(): number {
-		return this.GetSpecialValue("impact_damage")
-	}
-	public get AOERadius(): number {
-		return this.GetSpecialValue("landing_radius")
+	public GetBaseDamageForLevel(level: number): number {
+		return this.GetSpecialValue("impact_damage", level)
 	}
 }

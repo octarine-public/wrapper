@@ -3,7 +3,7 @@ import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { EventPriority } from "../Enums/EventPriority"
-import { GUIInfo } from "../GUI/GUIInfo"
+import { ScaleHeight, ScaleWidth } from "../GUI/Helpers"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { PARTICLE_RENDER_NAME } from "../Managers/ParticleManager"
 import { RendererSDK } from "../Native/RendererSDK"
@@ -23,25 +23,25 @@ import { Toggle } from "./Toggle"
 
 export class Node extends Base {
 	public static OnWindowSizeChanged(): void {
-		Node.arrowSize.x = GUIInfo.ScaleWidth(Node.origArrowSize.x)
-		Node.arrowSize.y = GUIInfo.ScaleHeight(Node.origArrowSize.y)
-		Node.arrowOffset.x = GUIInfo.ScaleWidth(8)
-		Node.arrowOffset.y = GUIInfo.ScaleHeight(8)
-		Node.arrowTextGap = GUIInfo.ScaleWidth(10)
-		Node.iconRectRounding = GUIInfo.ScaleHeight(18)
-		Node.iconSize.x = GUIInfo.ScaleWidth(24)
-		Node.iconSize.y = GUIInfo.ScaleHeight(24)
-		Node.iconOffset.x = GUIInfo.ScaleWidth(12)
-		Node.iconOffset.y = GUIInfo.ScaleHeight(8)
-		Node.textOffsetNode.x = GUIInfo.ScaleWidth(15)
-		Node.textOffsetNode.y = GUIInfo.ScaleHeight(13)
-		Node.textOffsetWithIcon.x = GUIInfo.ScaleWidth(48)
+		Node.arrowSize.x = ScaleWidth(Node.origArrowSize.x)
+		Node.arrowSize.y = ScaleHeight(Node.origArrowSize.y)
+		Node.arrowOffset.x = ScaleWidth(8)
+		Node.arrowOffset.y = ScaleHeight(8)
+		Node.arrowTextGap = ScaleWidth(10)
+		Node.iconRectRounding = ScaleHeight(18)
+		Node.iconSize.x = ScaleWidth(24)
+		Node.iconSize.y = ScaleHeight(24)
+		Node.iconOffset.x = ScaleWidth(12)
+		Node.iconOffset.y = ScaleHeight(8)
+		Node.textOffsetNode.x = ScaleWidth(15)
+		Node.textOffsetNode.y = ScaleHeight(13)
+		Node.textOffsetWithIcon.x = ScaleWidth(48)
 		Node.textOffsetWithIcon.y = Node.textOffsetNode.y
-		Node.scrollbarWidth = GUIInfo.ScaleWidth(3)
-		Node.scrollbarOffset.x = GUIInfo.ScaleWidth(2)
-		Node.scrollbarOffset.y = GUIInfo.ScaleHeight(2)
-		Node.popupTextPadding = GUIInfo.ScaleHeight(8)
-		Node.popupHoverPadding = GUIInfo.ScaleHeight(2)
+		Node.scrollbarWidth = ScaleWidth(3)
+		Node.scrollbarOffset.x = ScaleWidth(2)
+		Node.scrollbarOffset.y = ScaleHeight(2)
+		Node.popupTextPadding = ScaleHeight(8)
+		Node.popupHoverPadding = ScaleHeight(2)
 	}
 
 	private static readonly popupElementColor = new Color(16, 16, 28)

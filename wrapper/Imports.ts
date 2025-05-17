@@ -2751,6 +2751,7 @@ export { modifier_spirit_breaker_bulldoze } from "./Objects/Modifiers/Abilities/
 export { modifier_spirit_breaker_charge_of_darkness } from "./Objects/Modifiers/Abilities/SpiritBreaker/modifier_spirit_breaker_charge_of_darkness"
 export { modifier_spirit_breaker_charge_of_darkness_target } from "./Objects/Modifiers/Abilities/SpiritBreaker/modifier_spirit_breaker_charge_of_darkness_target"
 export { modifier_spirit_breaker_charge_of_darkness_vision } from "./Objects/Modifiers/Abilities/SpiritBreaker/modifier_spirit_breaker_charge_of_darkness_vision"
+export { modifier_spirit_breaker_greater_bash } from "./Objects/Modifiers/Abilities/SpiritBreaker/modifier_spirit_breaker_greater_bash"
 export { modifier_spirit_breaker_nether_knockback_amp } from "./Objects/Modifiers/Abilities/SpiritBreaker/modifier_spirit_breaker_nether_knockback_amp"
 export { modifier_spirit_breaker_planar_pocket } from "./Objects/Modifiers/Abilities/SpiritBreaker/modifier_spirit_breaker_planar_pocket"
 export { modifier_spirit_breaker_planar_pocket_aura } from "./Objects/Modifiers/Abilities/SpiritBreaker/modifier_spirit_breaker_planar_pocket_aura"

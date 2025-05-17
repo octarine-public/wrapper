@@ -4,7 +4,10 @@ import { Unit } from "../../Base/Unit"
 import { modifier_zuus_static_field } from "../../Modifiers/Abilities/Zuus/modifier_zuus_static_field"
 
 @WrapperClass("zuus_cloud")
-export class zuus_cloud extends Ability {
+export class zuus_cloud extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseCastRangeForLevel(_level: number): number {
 		return Number.MAX_SAFE_INTEGER
 	}

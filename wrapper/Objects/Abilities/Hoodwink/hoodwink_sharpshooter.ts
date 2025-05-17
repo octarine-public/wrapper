@@ -5,7 +5,7 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("hoodwink_sharpshooter")
-export class hoodwink_sharpshooter extends Ability {
+export class hoodwink_sharpshooter extends Ability implements INuke {
 	public get AbilityImmunityType(): SPELL_IMMUNITY_TYPES {
 		const owner = this.Owner
 		if (owner === undefined) {
@@ -19,6 +19,9 @@ export class hoodwink_sharpshooter extends Ability {
 		}
 		return SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
 	}
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("arrow_width", level)
 	}
@@ -30,8 +33,9 @@ export class hoodwink_sharpshooter extends Ability {
 		if (owner === undefined || this.Level === 0) {
 			return 0
 		}
-		const modifierDamage = this.modifierDamage(owner)
-		return modifierDamage || (this.GetSpecialValue("max_damage") * 20) / 100
+		const modifierDamage = this.modifierDamage(owner),
+			basePower = this.GetSpecialValue("base_power") * 100
+		return modifierDamage || (this.GetSpecialValue("max_damage") * basePower) / 100
 	}
 
 	private modifierDamage(owner: Unit): number {

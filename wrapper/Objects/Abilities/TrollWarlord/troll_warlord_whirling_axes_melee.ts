@@ -3,11 +3,14 @@ import { SPELL_IMMUNITY_TYPES } from "../../../Enums/SPELL_IMMUNITY_TYPES"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("troll_warlord_whirling_axes_melee")
-export class troll_warlord_whirling_axes_melee extends Ability {
+export class troll_warlord_whirling_axes_melee extends Ability implements INuke {
 	public get AbilityImmunityType(): SPELL_IMMUNITY_TYPES {
 		return this.GetSpecialValue("pierces_magic_immunity") !== 0
 			? SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
 			: super.AbilityImmunityType
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)

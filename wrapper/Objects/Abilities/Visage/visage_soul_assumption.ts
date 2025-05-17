@@ -4,9 +4,12 @@ import { Unit } from "../../Base/Unit"
 import { modifier_visage_soul_assumption } from "../../Modifiers/Abilities/Visage/modifier_visage_soul_assumption"
 
 @WrapperClass("visage_soul_assumption")
-export class visage_soul_assumption extends Ability {
+export class visage_soul_assumption extends Ability implements INuke {
 	public get ProjectileAttachment(): string {
 		return "attach_attack1"
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)

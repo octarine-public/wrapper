@@ -5,7 +5,10 @@ import { Unit } from "../../Base/Unit"
 import { modifier_bounty_hunter_jinada } from "../../Modifiers/Abilities/BountyHunter/modifier_bounty_hunter_jinada"
 
 @WrapperClass("bounty_hunter_jinada")
-export class bounty_hunter_jinada extends Ability {
+export class bounty_hunter_jinada extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetRawDamage(target: Unit): number {
 		const owner = this.Owner
 		if (owner === undefined || this.Level === 0) {

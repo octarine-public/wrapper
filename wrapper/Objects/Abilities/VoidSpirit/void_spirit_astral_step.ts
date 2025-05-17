@@ -4,9 +4,12 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("void_spirit_astral_step")
-export class void_spirit_astral_step extends Ability {
+export class void_spirit_astral_step extends Ability implements INuke {
 	public get Speed(): number {
 		return Number.MAX_SAFE_INTEGER
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)

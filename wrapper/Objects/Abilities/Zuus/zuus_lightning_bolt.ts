@@ -4,7 +4,10 @@ import { Unit } from "../../Base/Unit"
 import { modifier_zuus_static_field } from "../../Modifiers/Abilities/Zuus/modifier_zuus_static_field"
 
 @WrapperClass("zuus_lightning_bolt")
-export class zuus_lightning_bolt extends Ability {
+export class zuus_lightning_bolt extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("spread_aoe", level)
 	}

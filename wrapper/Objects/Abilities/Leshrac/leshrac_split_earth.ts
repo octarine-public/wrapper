@@ -2,7 +2,7 @@ import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("leshrac_split_earth")
-export class leshrac_split_earth extends Ability {
+export class leshrac_split_earth extends Ability implements INuke {
 	public get ShardMaxCount() {
 		return this.GetSpecialValue("shard_max_count")
 	}
@@ -11,6 +11,9 @@ export class leshrac_split_earth extends Ability {
 	}
 	public get ShardSecondaryDelay() {
 		return this.GetSpecialValue("shard_secondary_delay")
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)

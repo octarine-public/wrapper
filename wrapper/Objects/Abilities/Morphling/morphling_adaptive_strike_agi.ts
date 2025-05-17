@@ -3,9 +3,12 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("morphling_adaptive_strike_agi")
-export class morphling_adaptive_strike_agi extends Ability {
+export class morphling_adaptive_strike_agi extends Ability implements INuke {
 	public get ProjectileAttachment(): string {
 		return "attach_attack2"
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("projectile_speed", level)

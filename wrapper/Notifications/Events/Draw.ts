@@ -1,6 +1,6 @@
 import { Color } from "../../Base/Color"
 import { Rectangle } from "../../Base/Rectangle"
-import { GUIInfo } from "../../GUI/GUIInfo"
+import { ScaleHeight } from "../../GUI/Helpers"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { InputManager } from "../../Managers/InputManager"
 import { RendererSDK } from "../../Native/RendererSDK"
@@ -26,7 +26,7 @@ EventsSDK.after("Draw", () => {
 	const panel = new Rectangle()
 
 	GetPanel(panel)
-	const panelOffset = GUIInfo.ScaleHeight(20),
+	const panelOffset = ScaleHeight(20),
 		panelHeight = panel.Height
 
 	if (NotificationsSDK.debug) {

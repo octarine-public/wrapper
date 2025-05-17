@@ -4,9 +4,12 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("nevermore_shadowraze1")
-export class nevermore_shadowraze1 extends Ability {
+export class nevermore_shadowraze1 extends Ability implements INuke {
 	public get UsesRotation() {
 		return this.NoTarget
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue("shadowraze_range", level)
@@ -27,7 +30,6 @@ export class nevermore_shadowraze1 extends Ability {
 		}
 		return super.GetRawDamage(target) + this.bonusPerStack(target)
 	}
-
 	public GetDamage(target: Unit): number {
 		const owner = this.Owner
 		if (owner === undefined || this.Level === 0) {
@@ -35,7 +37,6 @@ export class nevermore_shadowraze1 extends Ability {
 		}
 		return super.GetDamage(target) + owner.GetAttackDamage(target)
 	}
-
 	private bonusPerStack(target: Unit) {
 		const modifier = target.GetBuffByClass(modifier_nevermore_shadowraze_debuff)
 		return modifier?.BonusDamagePerStack ?? 0

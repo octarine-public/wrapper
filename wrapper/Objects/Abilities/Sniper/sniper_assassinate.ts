@@ -3,9 +3,12 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("sniper_assassinate")
-export class sniper_assassinate extends Ability {
+export class sniper_assassinate extends Ability implements INuke {
 	public get ProjectileAttachment(): string {
 		return "attach_attack1"
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("projectile_speed", level)

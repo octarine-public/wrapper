@@ -1,7 +1,7 @@
 import { QAngle } from "../../Base/QAngle"
 import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
-import { GUIInfo } from "../../GUI/GUIInfo"
+import { ScaleHeight } from "../../GUI/Helpers"
 import { FakeUnit } from "../Base/FakeUnit"
 import { RoshanSpawner } from "../Base/RoshanSpawner"
 import { Unit } from "../Base/Unit"
@@ -63,9 +63,9 @@ export class Roshan extends Unit {
 			: Roshan.Spawner.Position
 	}
 	public get HealthBarSize() {
-		return new Vector2(GUIInfo.ScaleHeight(225), GUIInfo.ScaleHeight(5))
+		return new Vector2(ScaleHeight(225), ScaleHeight(5))
 	}
 	public get HealthBarPositionCorrection() {
-		return new Vector2(this.HealthBarSize.x / 2, GUIInfo.ScaleHeight(9))
+		return new Vector2(this.HealthBarSize.x / 2, ScaleHeight(9))
 	}
 }

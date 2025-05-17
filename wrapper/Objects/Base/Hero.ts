@@ -1,7 +1,7 @@
 import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { EPropertyType } from "../../Enums/PropertyType"
-import { GUIInfo } from "../../GUI/GUIInfo"
+import { ScaleHeight } from "../../GUI/Helpers"
 import { EntityManager } from "../../Managers/EntityManager"
 import { GameState } from "../../Utils/GameState"
 import { LocalPlayer } from "./Entity"
@@ -88,22 +88,19 @@ export class Hero extends Unit {
 		return Math.max(this.RespawnTime - GameState.RawGameTime, 0)
 	}
 	public get HealthBarSize() {
-		return new Vector2(
-			GUIInfo.ScaleHeight(this.IsMyHero ? 107 : 99),
-			GUIInfo.ScaleHeight(8)
-		)
+		return new Vector2(ScaleHeight(this.IsMyHero ? 107 : 99), ScaleHeight(8))
 	}
 	public get HealthBarPositionCorrection() {
-		const position = new Vector2(this.HealthBarSize.x / 1.98, GUIInfo.ScaleHeight(36))
+		const position = new Vector2(this.HealthBarSize.x / 1.98, ScaleHeight(36))
 		switch (true) {
 			case this.IsMyHero:
-				return position.SetY(GUIInfo.ScaleHeight(37))
+				return position.SetY(ScaleHeight(37))
 			case !this.IsEnemy():
-				return position.SetY(GUIInfo.ScaleHeight(32))
+				return position.SetY(ScaleHeight(32))
 			case this.ModifierManager.IsMorphlingReplicateIllusion_:
-				return position.SetY(GUIInfo.ScaleHeight(11))
+				return position.SetY(ScaleHeight(11))
 			default:
-				return position.SetY(GUIInfo.ScaleHeight(31))
+				return position.SetY(ScaleHeight(31))
 		}
 	}
 	public get HeroFacet(): string {

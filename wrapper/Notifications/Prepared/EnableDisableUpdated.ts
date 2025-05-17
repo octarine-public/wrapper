@@ -1,7 +1,7 @@
 import { Color } from "../../Base/Color"
 import { Rectangle } from "../../Base/Rectangle"
 import { Vector2 } from "../../Base/Vector2"
-import { GUIInfo } from "../../GUI/GUIInfo"
+import { ScaleHeight } from "../../GUI/Helpers"
 import { RendererSDK } from "../../Native/RendererSDK"
 import { Notification } from "../AbstractNotification"
 
@@ -48,7 +48,7 @@ export class EnableDisableUpdated extends Notification {
 		)
 
 		const textPadding = Math.ceil(infoPadding / 2),
-			textFontSize = GUIInfo.ScaleHeight(11)
+			textFontSize = ScaleHeight(11)
 		const textSize = RendererSDK.GetTextSize(
 			this.text,
 			RendererSDK.DefaultFontName,

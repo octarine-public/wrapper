@@ -4,7 +4,10 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("ember_spirit_sleight_of_fist")
-export class ember_spirit_sleight_of_fist extends Ability {
+export class ember_spirit_sleight_of_fist extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

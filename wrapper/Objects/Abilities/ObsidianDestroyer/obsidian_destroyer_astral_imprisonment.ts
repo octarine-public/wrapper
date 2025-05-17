@@ -3,7 +3,7 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("obsidian_destroyer_astral_imprisonment")
-export class obsidian_destroyer_astral_imprisonment extends Ability {
+export class obsidian_destroyer_astral_imprisonment extends Ability implements INuke {
 	public get MaxCharges(): number {
 		return this.OwnerHasScepter ? this.GetSpecialValue("max_charges_scepter") : 0
 	}
@@ -11,6 +11,9 @@ export class obsidian_destroyer_astral_imprisonment extends Ability {
 		return this.OwnerHasScepter
 			? this.GetSpecialValue("charge_restore_time_scepter")
 			: 0
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)

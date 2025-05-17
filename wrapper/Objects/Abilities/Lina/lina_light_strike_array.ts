@@ -4,7 +4,10 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("lina_light_strike_array")
-export class lina_light_strike_array extends Ability {
+export class lina_light_strike_array extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("light_strike_array_aoe", level)
 	}

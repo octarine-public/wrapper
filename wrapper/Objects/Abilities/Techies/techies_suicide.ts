@@ -10,12 +10,15 @@ import { LocalPlayer } from "../../Base/Entity"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("techies_suicide")
-export class techies_suicide extends Ability {
+export class techies_suicide extends Ability implements INuke {
 	public readonly StartPosition = new Vector3().Invalidate()
 	public readonly TargetPosition = new Vector3().Invalidate()
 	public readonly LastKnownOwnerPosition_ = new Vector3().Invalidate()
 	public LastKnownOwnerPositionTick_ = 0
 
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

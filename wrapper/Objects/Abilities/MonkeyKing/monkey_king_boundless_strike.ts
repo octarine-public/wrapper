@@ -4,7 +4,10 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("monkey_king_boundless_strike")
-export class monkey_king_boundless_strike extends Ability {
+export class monkey_king_boundless_strike extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("strike_radius", level)
 	}

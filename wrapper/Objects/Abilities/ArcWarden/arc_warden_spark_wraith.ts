@@ -3,7 +3,10 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("arc_warden_spark_wraith")
-export class arc_warden_spark_wraith extends Ability {
+export class arc_warden_spark_wraith extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetRawDamage(target: Unit): number {
 		let baseDamage = super.GetRawDamage(target)
 		if (target.IsCreep) {

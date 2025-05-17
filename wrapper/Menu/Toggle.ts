@@ -2,35 +2,31 @@ import { Color } from "../Base/Color"
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { EventPriority } from "../Enums/EventPriority"
-import { GUIInfo } from "../GUI/GUIInfo"
+import { ScaleHeight, ScaleWidth } from "../GUI/Helpers"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import { Base, IMenu } from "./Base"
 
 export class Toggle extends Base {
 	public static OnWindowSizeChanged(): void {
-		Toggle.toggleBackgroundSize.x = GUIInfo.ScaleWidth(
-			Toggle.origToggleBackgroundSize.x
-		)
-		Toggle.toggleBackgroundSize.y = GUIInfo.ScaleHeight(
-			Toggle.origToggleBackgroundSize.y
-		)
-		Toggle.toggleSize.x = GUIInfo.ScaleWidth(Toggle.origToggleSize.x)
-		Toggle.toggleSize.y = GUIInfo.ScaleHeight(Toggle.origToggleSize.y)
-		Toggle.toggleBackgroundOffset.x = GUIInfo.ScaleWidth(12)
-		Toggle.toggleBackgroundOffset.y = GUIInfo.ScaleHeight(12)
-		Toggle.toggleOffset.x = GUIInfo.ScaleWidth(3)
-		Toggle.toggleOffset.y = GUIInfo.ScaleHeight(3)
+		Toggle.toggleBackgroundSize.x = ScaleWidth(Toggle.origToggleBackgroundSize.x)
+		Toggle.toggleBackgroundSize.y = ScaleHeight(Toggle.origToggleBackgroundSize.y)
+		Toggle.toggleSize.x = ScaleWidth(Toggle.origToggleSize.x)
+		Toggle.toggleSize.y = ScaleHeight(Toggle.origToggleSize.y)
+		Toggle.toggleBackgroundOffset.x = ScaleWidth(12)
+		Toggle.toggleBackgroundOffset.y = ScaleHeight(12)
+		Toggle.toggleOffset.x = ScaleWidth(3)
+		Toggle.toggleOffset.y = ScaleHeight(3)
 
-		Toggle.iconSize.x = GUIInfo.ScaleWidth(24)
-		Toggle.iconSize.y = GUIInfo.ScaleHeight(24)
-		Toggle.iconOffset.x = GUIInfo.ScaleWidth(12)
-		Toggle.iconOffset.y = GUIInfo.ScaleHeight(8)
+		Toggle.iconSize.x = ScaleWidth(24)
+		Toggle.iconSize.y = ScaleHeight(24)
+		Toggle.iconOffset.x = ScaleWidth(12)
+		Toggle.iconOffset.y = ScaleHeight(8)
 
-		Toggle.textOffsetNode.x = GUIInfo.ScaleWidth(15)
-		Toggle.textOffsetNode.y = GUIInfo.ScaleHeight(13)
+		Toggle.textOffsetNode.x = ScaleWidth(15)
+		Toggle.textOffsetNode.y = ScaleHeight(13)
 
-		Toggle.textOffsetWithIcon.x = GUIInfo.ScaleWidth(48)
+		Toggle.textOffsetWithIcon.x = ScaleWidth(48)
 		Toggle.textOffsetWithIcon.y = Toggle.textOffsetNode.y
 	}
 

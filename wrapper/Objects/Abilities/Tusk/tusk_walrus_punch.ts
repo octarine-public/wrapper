@@ -6,9 +6,12 @@ import { Unit } from "../../Base/Unit"
 import { modifier_tusk_walrus_punch } from "../../Modifiers/Abilities/Tusk/modifier_tusk_walrus_punch"
 
 @WrapperClass("tusk_walrus_punch")
-export class tusk_walrus_punch extends Ability {
+export class tusk_walrus_punch extends Ability implements INuke {
 	public get DamageType(): DAMAGE_TYPES {
 		return DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetRawDamage(target: Unit): number {
 		const owner = this.Owner
@@ -23,7 +26,6 @@ export class tusk_walrus_punch extends Ability {
 			multiplier = this.GetSpecialValue("crit_multiplier")
 		return (damage + bonus) * (multiplier / 100)
 	}
-
 	public GetDamage(target: Unit): number {
 		const owner = this.Owner
 		if (owner === undefined) {
@@ -35,7 +37,6 @@ export class tusk_walrus_punch extends Ability {
 			this.GetRawDamage(target)
 		)
 	}
-
 	private isAnimation(owner: Unit): boolean {
 		const modifier = owner.GetBuffByClass(modifier_tusk_walrus_punch)
 		return modifier?.IsAnimation ?? false

@@ -3,7 +3,7 @@ import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { EventPriority } from "../Enums/EventPriority"
-import { GUIInfo } from "../GUI/GUIInfo"
+import { ScaleHeight, ScaleWidth } from "../GUI/Helpers"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import { Base, IMenu } from "./Base"
@@ -13,37 +13,33 @@ export class Dropdown extends Base {
 	public static activeDropdown: Nullable<Dropdown>
 	public static readonly dropdownPopupElementsLimit = 6
 	public static OnWindowSizeChanged(): void {
-		Dropdown.dropdownOffset.x = GUIInfo.ScaleWidth(14)
-		Dropdown.dropdownOffset.y = GUIInfo.ScaleWidth(6)
-		Dropdown.dropdownBorderSize.x = GUIInfo.ScaleWidth(2)
-		Dropdown.dropdownBorderSize.y = GUIInfo.ScaleWidth(2)
-		Dropdown.dropdownArrowSize.x = GUIInfo.ScaleWidth(
-			Dropdown.origDropdownArrowSize.x
-		)
-		Dropdown.dropdownArrowSize.y = GUIInfo.ScaleHeight(
-			Dropdown.origDropdownArrowSize.y
-		)
-		Dropdown.dropdownTextOffset.x = GUIInfo.ScaleWidth(9)
-		Dropdown.dropdownTextOffset.y = GUIInfo.ScaleHeight(8)
+		Dropdown.dropdownOffset.x = ScaleWidth(14)
+		Dropdown.dropdownOffset.y = ScaleWidth(6)
+		Dropdown.dropdownBorderSize.x = ScaleWidth(2)
+		Dropdown.dropdownBorderSize.y = ScaleWidth(2)
+		Dropdown.dropdownArrowSize.x = ScaleWidth(Dropdown.origDropdownArrowSize.x)
+		Dropdown.dropdownArrowSize.y = ScaleHeight(Dropdown.origDropdownArrowSize.y)
+		Dropdown.dropdownTextOffset.x = ScaleWidth(9)
+		Dropdown.dropdownTextOffset.y = ScaleHeight(8)
 		Dropdown.dropdownPopupOffset.x = 0
-		Dropdown.dropdownPopupOffset.y = GUIInfo.ScaleHeight(-2)
-		Dropdown.dropdownPopupElementsOffset.x = GUIInfo.ScaleWidth(2)
-		Dropdown.dropdownPopupElementsOffset.y = GUIInfo.ScaleHeight(2)
-		Dropdown.dropdownPopupElementTextOffset.x = GUIInfo.ScaleWidth(7)
-		Dropdown.dropdownPopupElementTextOffset.y = GUIInfo.ScaleHeight(7)
-		Dropdown.dropdownPopupElementsScrollbarOffset.x = GUIInfo.ScaleWidth(2)
-		Dropdown.dropdownPopupElementsScrollbarOffset.y = GUIInfo.ScaleHeight(2)
-		Dropdown.dropdownPopupElementsScrollbarWidth = GUIInfo.ScaleWidth(3)
-		Dropdown.nameDropdownGap = GUIInfo.ScaleHeight(8)
-		Dropdown.dropdownEndGap = GUIInfo.ScaleWidth(20)
+		Dropdown.dropdownPopupOffset.y = ScaleHeight(-2)
+		Dropdown.dropdownPopupElementsOffset.x = ScaleWidth(2)
+		Dropdown.dropdownPopupElementsOffset.y = ScaleHeight(2)
+		Dropdown.dropdownPopupElementTextOffset.x = ScaleWidth(7)
+		Dropdown.dropdownPopupElementTextOffset.y = ScaleHeight(7)
+		Dropdown.dropdownPopupElementsScrollbarOffset.x = ScaleWidth(2)
+		Dropdown.dropdownPopupElementsScrollbarOffset.y = ScaleHeight(2)
+		Dropdown.dropdownPopupElementsScrollbarWidth = ScaleWidth(3)
+		Dropdown.nameDropdownGap = ScaleHeight(8)
+		Dropdown.dropdownEndGap = ScaleWidth(20)
 
-		Dropdown.textOffsetWithIcon.x = GUIInfo.ScaleWidth(48)
+		Dropdown.textOffsetWithIcon.x = ScaleWidth(48)
 		Dropdown.textOffsetWithIcon.y = Dropdown.dropdownTextOffset.y
 
-		Dropdown.iconSize.x = GUIInfo.ScaleWidth(24)
-		Dropdown.iconSize.y = GUIInfo.ScaleHeight(24)
-		Dropdown.iconOffset.x = GUIInfo.ScaleWidth(12)
-		Dropdown.iconOffset.y = GUIInfo.ScaleHeight(8)
+		Dropdown.iconSize.x = ScaleWidth(24)
+		Dropdown.iconSize.y = ScaleHeight(24)
+		Dropdown.iconOffset.x = ScaleWidth(12)
+		Dropdown.iconOffset.y = ScaleHeight(8)
 	}
 
 	private static readonly dropdownPath = "menu/dropdown.svg"

@@ -5,7 +5,7 @@ import { Unit } from "../../Base/Unit"
 @WrapperClass("abaddon_death_coil")
 export class abaddon_death_coil
 	extends Ability
-	implements IHealthRestore<Unit>, IHealthCost
+	implements IHealthRestore<Unit>, IHealthCost, INuke
 {
 	public readonly RestoresAlly = true
 	public readonly RestoresSelf = false
@@ -22,6 +22,15 @@ export class abaddon_death_coil
 		const selfDamage = this.GetSpecialValue("self_damage")
 		return owner.HP * (selfDamage / 100)
 	}
+	public IsNuke(): this is INuke {
+		return true
+	}
+	public IsHealthCost(): this is IHealthCost {
+		return true
+	}
+	public IsHealthRestore(): this is IHealthRestore<Unit> {
+		return true
+	}
 	public GetHealthRestore(_target: Unit): number {
 		return this.GetSpecialValue("heal_amount")
 	}
@@ -30,12 +39,6 @@ export class abaddon_death_coil
 	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("target_damage", level)
-	}
-	public IsHealthCost(): this is IHealthCost {
-		return true
-	}
-	public IsHealthRestore(): this is IHealthRestore<Unit> {
-		return true
 	}
 	public GetDamage(target: Unit): number {
 		const owner = this.Owner

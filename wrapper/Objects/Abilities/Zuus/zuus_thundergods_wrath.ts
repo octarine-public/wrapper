@@ -4,7 +4,7 @@ import { Unit } from "../../Base/Unit"
 import { modifier_zuus_static_field } from "../../Modifiers/Abilities/Zuus/modifier_zuus_static_field"
 
 @WrapperClass("zuus_thundergods_wrath")
-export class zuus_thundergods_wrath extends Ability {
+export class zuus_thundergods_wrath extends Ability implements INuke {
 	public GetBaseAOERadiusForLevel(_level: number): number {
 		return Number.MAX_SAFE_INTEGER
 	}

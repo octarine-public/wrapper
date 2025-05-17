@@ -3,12 +3,15 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("sven_storm_bolt")
-export class sven_storm_bolt extends Ability {
+export class sven_storm_bolt extends Ability implements INuke {
 	public get CastRange(): number {
 		return this.GetSpecialValue("cast_range_bonus_scepter") + super.CastRange
 	}
 	public get ProjectileAttachment(): string {
 		return "attach_attack2"
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("bolt_aoe", level)

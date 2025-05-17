@@ -4,13 +4,12 @@ import { Unit } from "../../Base/Unit"
 import { modifier_nyx_assassin_jolt_damage_tracker } from "../../Modifiers/Abilities/NyxAssassin/modifier_nyx_assassin_jolt_damage_tracker"
 
 @WrapperClass("nyx_assassin_jolt")
-export class nyx_assassin_jolt extends Ability {
+export class nyx_assassin_jolt extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetRawDamage(target: Unit): number {
-		const owner = this.Owner
-		if (target.IsCreep || owner === undefined) {
-			return 0
-		}
-		if (this.Level === 0 || target.MaxMana === 0) {
+		if (this.Level === 0 || target.IsCreep || target.MaxMana === 0) {
 			return 0
 		}
 		const multiplier = this.GetSpecialValue("max_mana_as_damage_pct")

@@ -5,7 +5,7 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("tidehunter_anchor_smash")
-export class tidehunter_anchor_smash extends Ability {
+export class tidehunter_anchor_smash extends Ability implements INuke {
 	private get BaseBonusAOERadius(): number {
 		const owner = this.Owner
 		if (owner === undefined || this.Level === 0) {
@@ -13,6 +13,9 @@ export class tidehunter_anchor_smash extends Ability {
 		}
 		const modifier = owner.GetBuffByClass(modifier_tidehunter_krill_eater)
 		return modifier?.BonusAOERadius ?? 0
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level) + this.BaseBonusAOERadius

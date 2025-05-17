@@ -7,9 +7,9 @@ import { Unit } from "./Unit"
 @WrapperClass("CDOTA_BaseNPC_Building")
 export class Building extends Unit {
 	@NetworkedBasicField("m_iHeroStatueOwnerPlayerID")
-	public HeroStatueOwnerPlayerID: number = -1
+	public readonly HeroStatueOwnerPlayerID: number = -1
 	@NetworkedBasicField("m_bHeroStatue")
-	public IsHeroStatue: boolean = false
+	public readonly IsHeroStatue: boolean = false
 
 	public IsFiller = false
 	public IsWatcher = false

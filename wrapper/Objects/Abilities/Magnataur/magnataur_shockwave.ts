@@ -2,7 +2,10 @@ import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("magnataur_shockwave")
-export class magnataur_shockwave extends Ability {
+export class magnataur_shockwave extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("shock_speed", level)
 	}

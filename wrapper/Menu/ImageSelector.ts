@@ -8,7 +8,7 @@ import {
 	GetSpellTexture
 } from "../Data/ImageData"
 import { EventPriority } from "../Enums/EventPriority"
-import { GUIInfo } from "../GUI/GUIInfo"
+import { ScaleHeight, ScaleWidth } from "../GUI/Helpers"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import { Base, IMenu } from "./Base"
@@ -16,10 +16,10 @@ import { Base, IMenu } from "./Base"
 // every icon: 32x32, 1x1 border
 export class ImageSelector extends Base {
 	public static OnWindowSizeChanged(): void {
-		ImageSelector.imageBorderWidth = GUIInfo.ScaleWidth(2)
-		ImageSelector.imageGap = GUIInfo.ScaleWidth(2)
-		ImageSelector.baseImageHeight = GUIInfo.ScaleHeight(32)
-		ImageSelector.randomHeightValue = GUIInfo.ScaleHeight(40)
+		ImageSelector.imageBorderWidth = ScaleWidth(2)
+		ImageSelector.imageGap = ScaleWidth(2)
+		ImageSelector.baseImageHeight = ScaleHeight(32)
+		ImageSelector.randomHeightValue = ScaleHeight(40)
 	}
 
 	private static imageBorderWidth = 0

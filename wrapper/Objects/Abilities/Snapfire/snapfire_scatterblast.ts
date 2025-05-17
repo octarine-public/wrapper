@@ -3,9 +3,12 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("snapfire_scatterblast")
-export class snapfire_scatterblast extends Ability {
+export class snapfire_scatterblast extends Ability implements INuke {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("blast_width_end")
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)

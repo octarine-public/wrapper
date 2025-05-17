@@ -4,7 +4,10 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("mars_gods_rebuke")
-export class mars_gods_rebuke extends Ability {
+export class mars_gods_rebuke extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
@@ -21,7 +24,6 @@ export class mars_gods_rebuke extends Ability {
 		}
 		return rawAttack
 	}
-
 	public GetDamage(target: Unit): number {
 		const owner = this.Owner
 		if (owner === undefined) {

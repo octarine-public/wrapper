@@ -3,7 +3,10 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("pangolier_swashbuckle")
-export class pangolier_swashbuckle extends Ability {
+export class pangolier_swashbuckle extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue("dash_range", level)
 	}

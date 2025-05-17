@@ -5,7 +5,7 @@ import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { DOTAGameState } from "../Enums/DOTAGameState"
 import { DOTAGameUIState } from "../Enums/DOTAGameUIState"
 import { Team } from "../Enums/Team"
-import { GUIInfo } from "../GUI/GUIInfo"
+import { ScaleHeight } from "../GUI/Helpers"
 import { Localization } from "../Menu/Localization"
 import { ConVarsSDK } from "../Native/ConVarsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
@@ -1523,7 +1523,7 @@ EventsSDK.on("Draw", () => {
 	) {
 		return
 	}
-	const size = GUIInfo.ScaleHeight(24)
+	const size = ScaleHeight(24)
 	const wSize = RendererSDK.WindowSize.Clone()
 	const windowSize = wSize.DivideScalar(2)
 	const textSize = RendererSDK.GetTextSize(
@@ -1534,7 +1534,7 @@ EventsSDK.on("Draw", () => {
 	)
 	const position = windowSize.SubtractScalarY(wSize.y / 2 - textSize.y / 2)
 	position.SubtractScalarX(textSize.x / 2)
-	position.AddScalarY(GUIInfo.ScaleHeight(100))
+	position.AddScalarY(ScaleHeight(100))
 	RendererSDK.Text(
 		Localization.Localize(text),
 		position,

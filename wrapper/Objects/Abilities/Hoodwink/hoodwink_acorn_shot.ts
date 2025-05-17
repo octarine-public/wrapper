@@ -4,9 +4,12 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("hoodwink_acorn_shot")
-export class hoodwink_acorn_shot extends Ability {
+export class hoodwink_acorn_shot extends Ability implements INuke {
 	public get ProjectileAttachment(): string {
 		return "attach_attack1"
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("projectile_speed", level)

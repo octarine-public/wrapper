@@ -3,7 +3,7 @@ import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { EventPriority } from "../Enums/EventPriority"
-import { GUIInfo } from "../GUI/GUIInfo"
+import { ScaleHeight, ScaleWidth } from "../GUI/Helpers"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputManager } from "../Managers/InputManager"
 import { RendererSDK } from "../Native/RendererSDK"
@@ -27,22 +27,20 @@ export class Base {
 	public static triggerOnChat = false
 	public static barWidth = 0
 	public static OnWindowSizeChanged(): void {
-		Base.barWidth = GUIInfo.ScaleWidth(
-			RendererSDK.GetImageSize(Base.barInactivePath).x
-		)
-		Base.tooltipOffset = GUIInfo.ScaleWidth(3)
-		Base.tooltipIconSize.x = GUIInfo.ScaleWidth(24)
-		Base.tooltipIconSize.y = GUIInfo.ScaleHeight(24)
-		Base.tooltipIconOffset.x = GUIInfo.ScaleWidth(7)
-		Base.tooltipIconOffset.y = GUIInfo.ScaleHeight(6)
-		Base.tooltipIconTextGap = GUIInfo.ScaleWidth(9)
-		Base.tooltipTextOffset.x = GUIInfo.ScaleWidth(8)
-		Base.tooltipTextOffset.y = GUIInfo.ScaleHeight(11)
-		Base.tooltipTextBottomGap = GUIInfo.ScaleHeight(8)
-		Base.DefaultSize.x = GUIInfo.ScaleWidth(Base.UnscaledDefaultSize.x)
-		Base.DefaultSize.y = GUIInfo.ScaleHeight(Base.UnscaledDefaultSize.y)
-		Base.textOffset.x = GUIInfo.ScaleWidth(14)
-		Base.textOffset.y = GUIInfo.ScaleHeight(14)
+		Base.barWidth = ScaleWidth(RendererSDK.GetImageSize(Base.barInactivePath).x)
+		Base.tooltipOffset = ScaleWidth(3)
+		Base.tooltipIconSize.x = ScaleWidth(24)
+		Base.tooltipIconSize.y = ScaleHeight(24)
+		Base.tooltipIconOffset.x = ScaleWidth(7)
+		Base.tooltipIconOffset.y = ScaleHeight(6)
+		Base.tooltipIconTextGap = ScaleWidth(9)
+		Base.tooltipTextOffset.x = ScaleWidth(8)
+		Base.tooltipTextOffset.y = ScaleHeight(11)
+		Base.tooltipTextBottomGap = ScaleHeight(8)
+		Base.DefaultSize.x = ScaleWidth(Base.UnscaledDefaultSize.x)
+		Base.DefaultSize.y = ScaleHeight(Base.UnscaledDefaultSize.y)
+		Base.textOffset.x = ScaleWidth(14)
+		Base.textOffset.y = ScaleHeight(14)
 	}
 
 	private static readonly backgroundInactivePath = "menu/background_inactive.svg"
@@ -314,7 +312,7 @@ export class Base {
 		return RendererSDK.GetTextSize(
 			text,
 			this.FontName,
-			GUIInfo.ScaleHeight(this.FontSize),
+			ScaleHeight(this.FontSize),
 			this.FontWeight,
 			false
 		).DivideScalarZ(2)
@@ -325,7 +323,7 @@ export class Base {
 			position,
 			color ?? Color.White,
 			this.FontName,
-			GUIInfo.ScaleHeight(this.FontSize),
+			ScaleHeight(this.FontSize),
 			this.FontWeight,
 			false,
 			false

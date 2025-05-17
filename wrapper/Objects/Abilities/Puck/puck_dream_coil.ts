@@ -2,7 +2,7 @@ import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("puck_dream_coil")
-export class puck_dream_coil extends Ability {
+export class puck_dream_coil extends Ability implements INuke {
 	public get CanHitSpellImmuneEnemy(): boolean {
 		const owner = this.Owner
 		if (owner === undefined) {
@@ -14,7 +14,9 @@ export class puck_dream_coil extends Ability {
 		}
 		return talent.GetSpecialValue("value") !== 0
 	}
-
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("coil_break_radius", level)
 	}

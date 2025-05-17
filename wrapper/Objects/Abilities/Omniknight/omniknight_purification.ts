@@ -3,11 +3,16 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("omniknight_purification")
-export class omniknight_purification extends Ability implements IHealthRestore<Unit> {
+export class omniknight_purification
+	extends Ability
+	implements IHealthRestore<Unit>, INuke
+{
 	public readonly RestoresAlly = true
 	public readonly RestoresSelf = true
 	public readonly InstantRestore = true
-
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetHealthRestore(_target: Unit): number {
 		return this.GetSpecialValue("heal")
 	}

@@ -1,17 +1,17 @@
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { EventPriority } from "../Enums/EventPriority"
-import { GUIInfo } from "../GUI/GUIInfo"
+import { ScaleHeight, ScaleWidth } from "../GUI/Helpers"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import { Base } from "./Base"
 
 export class Button extends Base {
 	public static OnWindowSizeChanged(): void {
-		Button.textButtonGap = GUIInfo.ScaleWidth(8)
-		Button.textVerticalButtonGap = GUIInfo.ScaleHeight(8)
-		Button.buttonOffset.x = GUIInfo.ScaleWidth(14)
-		Button.buttonOffset.y = GUIInfo.ScaleWidth(11)
+		Button.textButtonGap = ScaleWidth(8)
+		Button.textVerticalButtonGap = ScaleHeight(8)
+		Button.buttonOffset.x = ScaleWidth(14)
+		Button.buttonOffset.y = ScaleWidth(11)
 	}
 
 	private static readonly buttonPath = "menu/button.svg"

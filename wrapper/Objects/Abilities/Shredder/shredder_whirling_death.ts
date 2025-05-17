@@ -9,7 +9,10 @@ import { Trees } from "../../Base/Tree"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("shredder_whirling_death")
-export class shredder_whirling_death extends Ability {
+export class shredder_whirling_death extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetRawDamage(target: Unit): number {
 		const owner = this.Owner,
 			baseDamage = super.GetRawDamage(target)
@@ -27,11 +30,9 @@ export class shredder_whirling_death extends Ability {
 		const treeDamageScale = this.GetSpecialValue("tree_damage_scale")
 		return baseDamage + treeCount * treeDamageScale
 	}
-
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("whirling_damage", level)
 	}
-
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("whirling_radius", level)
 	}

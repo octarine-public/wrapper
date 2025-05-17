@@ -4,7 +4,7 @@ import { GameState } from "../../../Utils/GameState"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("ringmaster_tame_the_beasts")
-export class ringmaster_tame_the_beasts extends Ability {
+export class ringmaster_tame_the_beasts extends Ability implements INuke {
 	@NetworkedBasicField("m_vStartLocation")
 	public readonly StartLocation = new Vector3().Invalidate()
 
@@ -14,6 +14,9 @@ export class ringmaster_tame_the_beasts extends Ability {
 			super.AOERadius,
 			this.ChannelEndTime
 		)
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetMultiplier(level = this.Level): number {
 		const minMultiplier = 1

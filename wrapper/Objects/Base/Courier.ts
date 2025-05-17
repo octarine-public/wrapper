@@ -1,7 +1,7 @@
 import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { CourierState } from "../../Enums/CourierState"
-import { GUIInfo } from "../../GUI/GUIInfo"
+import { ScaleHeight } from "../../GUI/Helpers"
 import { EntityManager } from "../../Managers/EntityManager"
 import { Hero } from "./Hero"
 import { Unit } from "./Unit"
@@ -32,11 +32,9 @@ export class Courier extends Unit {
 	public get ShouldUnifyOrders(): boolean {
 		return false
 	}
-
 	public get HealthBarSize() {
-		return new Vector2(GUIInfo.ScaleHeight(30), GUIInfo.ScaleHeight(6))
+		return new Vector2(ScaleHeight(30), ScaleHeight(6))
 	}
-
 	public get HealthBarPositionCorrection() {
 		return new Vector2(this.HealthBarSize.x / 2, this.HealthBarSize.y)
 	}

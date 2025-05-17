@@ -1,6 +1,6 @@
 import { Vector2 } from "../../Base/Vector2"
 import { WrapperClass } from "../../Decorators"
-import { GUIInfo } from "../../GUI/GUIInfo"
+import { ScaleHeight } from "../../GUI/Helpers"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { Unit } from "../Base/Unit"
 import { RegisterFieldHandler } from "../NativeToSDK"
@@ -44,11 +44,11 @@ export class SpiritBear extends Unit {
 	}
 	public get HealthBarSize() {
 		return !this.IsEnemy()
-			? new Vector2(GUIInfo.ScaleHeight(100), GUIInfo.ScaleHeight(6))
-			: new Vector2(GUIInfo.ScaleHeight(100), GUIInfo.ScaleHeight(8))
+			? new Vector2(ScaleHeight(100), ScaleHeight(6))
+			: new Vector2(ScaleHeight(100), ScaleHeight(8))
 	}
 	public get HealthBarPositionCorrection() {
-		return new Vector2(this.HealthBarSize.x / 2, GUIInfo.ScaleHeight(30))
+		return new Vector2(this.HealthBarSize.x / 2, ScaleHeight(30))
 	}
 }
 

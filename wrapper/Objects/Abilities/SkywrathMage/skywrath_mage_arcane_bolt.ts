@@ -4,7 +4,7 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("skywrath_mage_arcane_bolt")
-export class skywrath_mage_arcane_bolt extends Ability {
+export class skywrath_mage_arcane_bolt extends Ability implements INuke {
 	public get ProjectileAttachment(): string {
 		return "attach_attack1"
 	}
@@ -14,6 +14,9 @@ export class skywrath_mage_arcane_bolt extends Ability {
 			return super.AbilityImmunityType
 		}
 		return SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("bolt_damage", level)

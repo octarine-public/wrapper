@@ -4,9 +4,12 @@ import { Unit } from "../../Base/Unit"
 import { PlayerCustomData } from "../../DataBook/PlayerCustomData"
 
 @WrapperClass("CDOTA_Ability_VengefulSpirit_Magic_Missile")
-export class vengefulspirit_magic_missile extends Ability {
+export class vengefulspirit_magic_missile extends Ability implements INuke {
 	public get ProjectileAttachment(): string {
 		return "attach_attack2"
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("magic_missile_speed", level)

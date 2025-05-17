@@ -1,7 +1,7 @@
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { EventPriority } from "../Enums/EventPriority"
-import { GUIInfo } from "../GUI/GUIInfo"
+import { ScaleHeight, ScaleWidth } from "../GUI/Helpers"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputEventSDK, VKeys, VMouseKeys } from "../Managers/InputManager"
 import { RendererSDK } from "../Native/RendererSDK"
@@ -13,11 +13,11 @@ export class KeyBind extends Base {
 	public static readonly callbacks = new Map<number, KeyBind[]>()
 	public static changingNow?: KeyBind
 	public static OnWindowSizeChanged(): void {
-		KeyBind.keybindOffset.x = GUIInfo.ScaleWidth(12)
-		KeyBind.keybindOffset.y = GUIInfo.ScaleHeight(7)
-		KeyBind.keybindTextOffset.x = GUIInfo.ScaleWidth(7)
-		KeyBind.keybindTextOffset.y = GUIInfo.ScaleHeight(7)
-		KeyBind.textKeybindGap = GUIInfo.ScaleWidth(15)
+		KeyBind.keybindOffset.x = ScaleWidth(12)
+		KeyBind.keybindOffset.y = ScaleHeight(7)
+		KeyBind.keybindTextOffset.x = ScaleWidth(7)
+		KeyBind.keybindTextOffset.y = ScaleHeight(7)
+		KeyBind.textKeybindGap = ScaleWidth(15)
 	}
 
 	private static readonly keybindActivePath = "menu/keybind_active.svg"

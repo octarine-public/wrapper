@@ -8,7 +8,7 @@ import {
 	GetSpellTexture
 } from "../Data/ImageData"
 import { EventPriority } from "../Enums/EventPriority"
-import { GUIInfo } from "../GUI/GUIInfo"
+import { ScaleHeight, ScaleWidth } from "../GUI/Helpers"
 import { EventsSDK } from "../Managers/EventsSDK"
 import { InputEventSDK, InputManager, VKeys } from "../Managers/InputManager"
 import { RendererSDK } from "../Native/RendererSDK"
@@ -30,10 +30,10 @@ export class DynamicImageSelector extends Base {
 	public static ServicePriorityToggle = false
 
 	public static OnWindowSizeChanged(): void {
-		DynamicImageSelector.imageBorderWidth = GUIInfo.ScaleWidth(2)
-		DynamicImageSelector.imageGap = GUIInfo.ScaleWidth(2)
-		DynamicImageSelector.baseImageHeight = GUIInfo.ScaleHeight(32)
-		DynamicImageSelector.randomHeightValue = GUIInfo.ScaleHeight(40)
+		DynamicImageSelector.imageBorderWidth = ScaleWidth(2)
+		DynamicImageSelector.imageGap = ScaleWidth(2)
+		DynamicImageSelector.baseImageHeight = ScaleHeight(32)
+		DynamicImageSelector.randomHeightValue = ScaleHeight(40)
 	}
 
 	private static imageBorderWidth = 0
