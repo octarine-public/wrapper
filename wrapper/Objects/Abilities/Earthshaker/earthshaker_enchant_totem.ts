@@ -6,7 +6,7 @@ import { Unit } from "../../Base/Unit"
 import { modifier_earthshaker_aftershock } from "../../Modifiers/Abilities/Earthshaker/modifier_earthshaker_aftershock"
 
 @WrapperClass("earthshaker_enchant_totem")
-export class earthshaker_enchant_totem extends Ability {
+export class earthshaker_enchant_totem extends Ability implements INuke {
 	public HasModifier = false
 
 	public get ScepterRadius() {
@@ -27,6 +27,9 @@ export class earthshaker_enchant_totem extends Ability {
 	}
 	public get AOERadius(): number {
 		return this.GetBaseAOERadiusForLevel(this.Level) + this.aftershockBonusAOERadius
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue("distance_scepter", level)

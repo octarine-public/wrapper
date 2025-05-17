@@ -3,7 +3,10 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("antimage_mana_void")
-export class antimage_mana_void extends Ability {
+export class antimage_mana_void extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("mana_void_aoe_radius", level)
 	}

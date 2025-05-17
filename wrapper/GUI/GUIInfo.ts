@@ -97,7 +97,6 @@ export const GUIInfo = new (class CGUIInfo {
 			this.DebugDraw()
 		}
 	}
-
 	public GetVisibleAbilitiesForUnit(unit: Nullable<Unit>): Ability[] {
 		return (
 			(unit?.Spells?.filter(
@@ -105,7 +104,6 @@ export const GUIInfo = new (class CGUIInfo {
 			) as Ability[]) ?? []
 		)
 	}
-
 	public GetLowerHUDForUnit(
 		unit: Nullable<Unit> = InputManager.SelectedUnit
 	): CLowerHUD {

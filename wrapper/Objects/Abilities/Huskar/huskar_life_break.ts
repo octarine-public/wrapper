@@ -8,10 +8,13 @@ import { TrackingProjectile } from "../../Base/Projectile"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("huskar_life_break")
-export class huskar_life_break extends Ability {
+export class huskar_life_break extends Ability implements INuke {
 	public StartedChargingTime = 0
 	public CurrentProjectile: Nullable<TrackingProjectile>
 
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseCastRangeForLevel(level: number): number {
 		return (
 			super.GetBaseCastRangeForLevel(level) +

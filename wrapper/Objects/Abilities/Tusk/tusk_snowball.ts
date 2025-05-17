@@ -6,10 +6,13 @@ import { Modifier } from "../../Base/Modifier"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("tusk_snowball")
-export class tusk_snowball extends Ability {
+export class tusk_snowball extends Ability implements INuke {
 	/** @readonly */
 	public FriendlyCounts: number = 0
 
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("snowball_speed", level)
 	}

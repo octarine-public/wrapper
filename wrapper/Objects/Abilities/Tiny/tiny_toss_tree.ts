@@ -5,9 +5,12 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("tiny_toss_tree")
-export class tiny_toss_tree extends Ability {
+export class tiny_toss_tree extends Ability implements INuke {
 	public get ProjectileAttachment(): string {
 		return "attach_attack2"
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)

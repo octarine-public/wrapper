@@ -3,7 +3,10 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("axe_culling_blade")
-export class axe_culling_blade extends Ability {
+export class axe_culling_blade extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}

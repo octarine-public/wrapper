@@ -3,7 +3,10 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("bloodseeker_rupture")
-export class bloodseeker_rupture extends Ability {
+export class bloodseeker_rupture extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetRawDamage(target: Unit): number {
 		const owner = this.Owner
 		if (owner === undefined || this.Level === 0) {

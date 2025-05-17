@@ -989,6 +989,7 @@ export class Unit extends Entity {
 	public CanHitAttackImmune(target: Unit): boolean {
 		return !target.IsAttackImmune || this.IsMagicAttackDamage(target)
 	}
+	/** @deprecated - use custom logic in script */
 	public HealthBarPosition(
 		useHpBarOffset = true,
 		overridePosition?: Vector3
@@ -1093,7 +1094,7 @@ export class Unit extends Entity {
 	public GetAttackDamage(
 		target: Unit,
 		damageValue?: ATTACK_DAMAGE_STRENGTH,
-		rawDamage?: number,
+		overrideRawDamage?: number,
 		damageType?: DAMAGE_TYPES,
 		predictedArmor?: number,
 		canDamageBlockMelee?: boolean
@@ -1102,26 +1103,26 @@ export class Unit extends Entity {
 		if (target.IsAvoidTotalDamage || target.IsAbsoluteNoDamage(damageType, this)) {
 			return 0
 		}
-		rawDamage ??= this.GetRawAttackDamage(target, damageValue)
-		if (rawDamage === 0) {
+		overrideRawDamage ??= this.GetRawAttackDamage(target, damageValue)
+		if (overrideRawDamage === 0) {
 			return 0
 		}
 		const isMagicAttack = this.IsMagicAttackDamage(target)
 		if ((canDamageBlockMelee ?? true) && !isMagicAttack) {
-			rawDamage -= target.GetPassiveDamageBlock(damageType)
+			overrideRawDamage -= target.GetPassiveDamageBlock(damageType)
 		}
 		if (!this.IsSuppressCrit) {
-			rawDamage *= target.ModifierManager.GetCritDamageBonusTarget(this)
+			overrideRawDamage *= target.ModifierManager.GetCritDamageBonusTarget(this)
 		}
-		rawDamage *= isMagicAttack
+		overrideRawDamage *= isMagicAttack
 			? this.EffSpellAmp
 			: target.GetIncomingAttackDamage(this, true)
-		rawDamage -= target.GetDamageBlock(rawDamage, damageType, true)
+		overrideRawDamage -= target.GetDamageBlock(overrideRawDamage, damageType, true)
 
 		const damageAmpType = DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL,
 			amp = target.GetDamageAmplification(this, damageAmpType, predictedArmor)
 
-		const calculatedDamage = rawDamage * amp,
+		const calculatedDamage = overrideRawDamage * amp,
 			damageBlock = target.GetDamageBlock(calculatedDamage, damageType)
 
 		const pureDamage = this.GetAttackDamagePure(target),

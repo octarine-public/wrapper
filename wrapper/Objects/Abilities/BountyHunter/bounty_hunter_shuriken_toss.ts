@@ -4,9 +4,12 @@ import { Unit } from "../../Base/Unit"
 import { modifier_bounty_hunter_jinada } from "../../Modifiers/Abilities/BountyHunter/modifier_bounty_hunter_jinada"
 
 @WrapperClass("bounty_hunter_shuriken_toss")
-export class bounty_hunter_shuriken_toss extends Ability {
+export class bounty_hunter_shuriken_toss extends Ability implements INuke {
 	public get ProjectileAttachment(): string {
 		return "attach_attack1"
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetDamage(target: Unit): number {
 		return super.GetDamage(target) + this.bonusDamage(target)

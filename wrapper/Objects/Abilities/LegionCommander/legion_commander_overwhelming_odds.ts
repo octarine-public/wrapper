@@ -3,7 +3,7 @@ import { Ability } from "../../Base/Ability"
 import { Unit, Units } from "../../Base/Unit"
 
 @WrapperClass("legion_commander_overwhelming_odds")
-export class legion_commander_overwhelming_odds extends Ability {
+export class legion_commander_overwhelming_odds extends Ability implements INuke {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		const owner = this.Owner
 		const radius = this.GetSpecialValue("radius", level)
@@ -14,13 +14,15 @@ export class legion_commander_overwhelming_odds extends Ability {
 			? this.GetSpecialValue("duel_radius_bonus") + radius
 			: radius
 	}
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
 	public GetRawDamage(target: Unit): number {
 		return this.rawTotalDamage(target, super.GetRawDamage(target))
 	}
-
 	private rawTotalDamage(target: Unit, baseDamage: number = 0): number {
 		const owner = this.Owner
 		if (owner === undefined || this.Level === 0) {

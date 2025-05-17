@@ -4,7 +4,10 @@ import { Unit } from "../../Base/Unit"
 import { modifier_bristleback_quill_spray } from "../../Modifiers/Abilities/Bristleback/modifier_bristleback_quill_spray"
 
 @WrapperClass("bristleback_quill_spray")
-export class bristleback_quill_spray extends Ability {
+export class bristleback_quill_spray extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

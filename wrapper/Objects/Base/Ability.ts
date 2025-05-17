@@ -719,6 +719,9 @@ export class Ability extends Entity {
 	public IsDoubleTap(_order: ExecuteOrder): boolean {
 		return false
 	}
+	public IsNuke(): this is INuke {
+		return false
+	}
 	public IsBuff(): this is IBuff {
 		return false
 	}

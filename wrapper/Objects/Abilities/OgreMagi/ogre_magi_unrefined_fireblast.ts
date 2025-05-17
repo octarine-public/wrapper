@@ -3,7 +3,10 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("ogre_magi_unrefined_fireblast")
-export class ogre_magi_unrefined_fireblast extends Ability {
+export class ogre_magi_unrefined_fireblast extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("base_damage", level)
 	}

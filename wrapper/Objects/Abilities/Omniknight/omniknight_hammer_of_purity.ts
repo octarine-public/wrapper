@@ -3,9 +3,12 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("omniknight_hammer_of_purity")
-export class omniknight_hammer_of_purity extends Ability {
+export class omniknight_hammer_of_purity extends Ability implements INuke {
 	public get ProjectileAttachment(): string {
 		return "attach_attack2"
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("bonus_damage", level)

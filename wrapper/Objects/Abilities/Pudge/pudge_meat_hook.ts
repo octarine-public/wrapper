@@ -4,10 +4,12 @@ import { Creep } from "../../Base/Creep"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("CDOTA_Ability_Pudge_MeatHook")
-export class pudge_meat_hook extends Ability {
+export class pudge_meat_hook extends Ability implements INuke {
 	@NetworkedBasicField("m_nConsecutiveHits")
 	public readonly ConsecutiveHits: number = 0
-
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}

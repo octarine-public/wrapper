@@ -2,7 +2,10 @@ import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("huskar_inner_fire")
-export class huskar_inner_fire extends Ability {
+export class huskar_inner_fire extends Ability implements INuke {
+	public IsNuke(): this is INuke {
+		return true
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

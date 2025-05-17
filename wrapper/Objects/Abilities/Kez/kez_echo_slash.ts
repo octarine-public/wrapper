@@ -4,9 +4,12 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("kez_echo_slash")
-export class kez_echo_slash extends Ability {
+export class kez_echo_slash extends Ability implements INuke {
 	public get TravelDistance(): number {
 		return this.GetSpecialValue("travel_distance")
+	}
+	public IsNuke(): this is INuke {
+		return true
 	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("katana_radius", level)
