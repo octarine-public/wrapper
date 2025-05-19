@@ -300,6 +300,7 @@ interface EventsSDK extends EventEmitter {
 	 * Unit#AttackCapabilities
 	 * Unit#IsStrongIllusion
 	 * SpiritBear#ShouldRespawn
+	 * UNit#IsWaitingToSpawn
 	 * */
 	on(
 		name: "UnitPropertyChanged",

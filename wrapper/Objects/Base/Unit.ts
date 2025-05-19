@@ -138,8 +138,6 @@ export class Unit extends Entity {
 	public readonly NetworkBaseAttackRange: number = 0
 	@NetworkedBasicField("m_flBaseAttackTime")
 	public readonly NetworkBaseAttackTime: number = 0
-	@NetworkedBasicField("m_bIsWaitingToSpawn")
-	public readonly IsWaitingToSpawn: boolean = false
 	public PredictedIsWaitingToSpawn = true
 	@NetworkedBasicField("m_flMana")
 	public Mana: number = 0
@@ -193,6 +191,7 @@ export class Unit extends Entity {
 	public TotalStrength: number = 0
 	public AttackCapabilities: number = 0
 	public UnitStateNetworked: bigint = 0n
+	public IsWaitingToSpawn: boolean = false
 
 	/** @private NOTE: this is internal field, use Spawner */
 	public Spawner_: number = 0
@@ -2268,6 +2267,12 @@ RegisterFieldHandler(Unit, "m_nUnitState64", (unit, newVal) => {
 	if (oldValue !== newValue) {
 		unit.UnitStateNetworked = newVal as bigint
 		EventsSDK.emit("UnitStateChanged", false, unit)
+	}
+})
+RegisterFieldHandler(Unit, "m_bIsWaitingToSpawn", (unit, newValue) => {
+	if (unit.IsWaitingToSpawn !== newValue) {
+		unit.IsWaitingToSpawn = newValue as boolean
+		EventsSDK.emit("UnitPropertyChanged", false, unit)
 	}
 })
 export const Units = EntityManager.GetEntitiesByClass(Unit)
