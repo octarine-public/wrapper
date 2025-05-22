@@ -383,6 +383,7 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 	for (let i = 0, end = createdEntities.length; i < end; i++) {
 		const ent = createdEntities[i]
 		EventsSDK.emit("EntityCreated", false, ent)
+		EventsSDK.emit("EntityVisibleChanged", false, ent)
 	}
 	EventsSDK.emit("PostDataUpdate", false, latestTickDelta)
 	if (latestTickDelta !== 0) {

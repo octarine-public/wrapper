@@ -298,6 +298,7 @@ enum DOTA_CHAT_MESSAGE {
 	CHAT_MESSAGE_ALCHEMIST_GRANTED_SCEPTER = 120;
 	CHAT_MESSAGE_PROTECTOR_SPAWNED = 121;
 	CHAT_MESSAGE_CRAFTING_XP = 122;
+	CHAT_MESSAGE_ROSHAN_ROAR = 123;
 }
 
 message CUserMsg_ParticleManager {
@@ -686,6 +687,7 @@ message CDOTAUserMsg_ChatEvent {
 	optional sint32 playerid_6 = 8 [default = -1];
 	optional uint32 value2 = 9;
 	optional uint32 value3 = 10;
+	optional float time = 11;
 }
 
 message CDOTAUserMsg_TE_UnitAnimation {
