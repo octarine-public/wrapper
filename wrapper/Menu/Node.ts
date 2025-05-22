@@ -74,6 +74,11 @@ export class Node extends Base {
 	public SortNodes = true
 	public EntriesSizeX = 0
 	public EntriesSizeY = 0
+	/**
+	 * @description The duration of a frame in milliseconds if use emojis
+	 * @default 250
+	 */
+	public IconFrameDuration: number = 250
 	protected configStorage = Object.create(null)
 	protected activeElement?: Base
 	protected IsOpen_ = false
@@ -350,7 +355,7 @@ export class Node extends Base {
 					size = totalSize.y
 
 				const framesCount = totalSize.x / size
-				const frameIdx = (hrtime() / 250) | 0
+				const frameIdx = (hrtime() / this.IconFrameDuration) | 0
 
 				RendererSDK.Image(
 					this.IconPath,
