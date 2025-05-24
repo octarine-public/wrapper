@@ -178,6 +178,8 @@ export class Unit extends Entity {
 	public readonly Parity: number = 0
 	@NetworkedBasicField("m_iDamageBonus")
 	public readonly NetworkAttackDamageBonus: number = 0
+	@NetworkedBasicField("m_iUnitType")
+	public readonly UnitType: number = 0
 	/** @private NOTE: this is internal field use LastDamageTime */
 	@NetworkedBasicField("m_flLastDamageTime")
 	public LastDamageTime_: number = 0

@@ -18,6 +18,7 @@ import { PlayerResource } from "./PlayerResource"
 export class Player extends Entity {
 	public Hero: Nullable<Hero>
 	public Pawn: Nullable<PlayerPawn>
+	/** @deprecated has been removed */
 	public QuickBuyItems: number[] = []
 	public hero_ = -1
 	public pawn_ = -1
@@ -106,9 +107,6 @@ export class Player extends Entity {
 		}
 	}
 }
-RegisterFieldHandler(Player, "m_quickBuyItems", (player, newVal) => {
-	player.QuickBuyItems = (newVal as bigint[]).map(val => Number(val) >> 1)
-})
 RegisterFieldHandler(Player, "m_nPlayerID", (player, newVal) => {
 	player.playerID_ = newVal as number
 	PlayerCustomData.set(player.PlayerID)

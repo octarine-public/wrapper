@@ -31,8 +31,8 @@ export class Hero extends Unit {
 	public readonly BaseTotalIntellect: number = 0
 	@NetworkedBasicField("m_flStrengthTotal")
 	public readonly TotalStrength: number = 0
-	@NetworkedBasicField("m_iHeroFacetID", EPropertyType.UINT32)
-	public readonly HeroFacetID: number = 0
+	@NetworkedBasicField("m_iHeroFacetKey", EPropertyType.UINT32)
+	public readonly HeroFacetKey: number = 0
 	@NetworkedBasicField("m_flRespawnTimePenalty")
 	public readonly RespawnTimePenalty: number = 0
 	@NetworkedBasicField("m_flRespawnTime")
@@ -50,6 +50,10 @@ export class Hero extends Unit {
 	) {
 		super(Index, serial)
 		this.IsHero = true
+	}
+	/** @deprecated use HeroFacetKey */
+	public get HeroFacetID(): number {
+		return this.HeroFacetKey
 	}
 	public get BaseMoveSpeed(): number {
 		// override this e.g. morphling
@@ -105,12 +109,12 @@ export class Hero extends Unit {
 	}
 	public get HeroFacet(): string {
 		if (
-			this.HeroFacetID <= 0 ||
-			this.HeroFacetID - 1 >= this.UnitData.Facets.length
+			this.HeroFacetKey <= 0 ||
+			this.HeroFacetKey - 1 >= this.UnitData.Facets.length
 		) {
 			return ""
 		}
-		return this.UnitData.Facets[this.HeroFacetID - 1].Name
+		return this.UnitData.Facets[this.HeroFacetKey - 1].Name
 	}
 }
 

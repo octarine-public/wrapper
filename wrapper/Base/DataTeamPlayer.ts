@@ -4,6 +4,15 @@ import { EntityPropertiesNode } from "./EntityProperties"
 export class DataTeamPlayer {
 	constructor(public readonly properties: EntityPropertiesNode) {}
 
+	public get AutoCourierAutoBurst(): boolean {
+		return this.properties.get("m_bAutoCourierAutoBurst") ?? false
+	}
+	public get AutoCourierAutoDeliver(): boolean {
+		return this.properties.get("m_bAutoCourierAutoDeliver") ?? false
+	}
+	public get DeliverWhileVisibleOnly(): boolean {
+		return this.properties.get("m_bDeliverWhileVisibleOnly") ?? false
+	}
 	public get TotalEarnedGold(): number {
 		return this.properties.get("m_iTotalEarnedGold") ?? 0
 	}
@@ -159,7 +168,6 @@ export class DataTeamPlayer {
 	public get SuggestedItemSequences(): number[] {
 		return this.properties.get("m_iSuggestedItemSequences") ?? []
 	}
-	// TODO: m_iSuggestedWeightedItems: WeightedSuggestion_t[]
 	public get SuggestedHeroes(): number[] {
 		return this.properties.get("m_iSuggestedHeroes", EPropertyType.UINT32) ?? []
 	}
@@ -216,71 +224,5 @@ export class DataTeamPlayer {
 	}
 	public get PossibleHeroFacetSelection(): bigint {
 		return this.properties.get("m_nPossibleHeroFacetSelection") ?? 0n
-	}
-	public toJSON(): any {
-		return {
-			TotalEarnedGold: this.TotalEarnedGold,
-			ReliableGold: this.ReliableGold,
-			UnreliableGold: this.UnreliableGold,
-			StartingPosition: this.StartingPosition,
-			TotalEarnedXP: this.TotalEarnedXP,
-			SharedGold: this.SharedGold,
-			HeroKillGold: this.HeroKillGold,
-			CreepKillGold: this.CreepKillGold,
-			BuildingGold: this.BuildingGold,
-			OtherGold: this.OtherGold,
-			ComebackGold: this.ComebackGold,
-			CreepDenyGold: this.CreepDenyGold,
-			TPScrollsPurchased: this.TPScrollsPurchased,
-			IncomeGold: this.IncomeGold,
-			NetWorth: this.NetWorth,
-			DenyCount: this.DenyCount,
-			LastHitCount: this.LastHitCount,
-			LastHitStreak: this.LastHitStreak,
-			LastHitMultikill: this.LastHitMultikill,
-			NearbyCreepDeathCount: this.NearbyCreepDeathCount,
-			ClaimedDenyCount: this.ClaimedDenyCount,
-			ClaimedMissCount: this.ClaimedMissCount,
-			MissCount: this.MissCount,
-			PossibleHeroSelection: this.PossibleHeroSelection,
-			BuybackCooldownTime: this.BuybackCooldownTime,
-			BuybackGoldLimitTime: this.BuybackGoldLimitTime,
-			BuybackCostTime: this.BuybackCostTime,
-			CustomBuybackCooldown: this.CustomBuybackCooldown,
-			Stuns: this.Stuns,
-			Healing: this.Healing,
-			TowerKills: this.TowerKills,
-			RoshanKills: this.RoshanKills,
-			ObserverWardsPlaced: this.ObserverWardsPlaced,
-			SentryWardsPlaced: this.SentryWardsPlaced,
-			CreepsStacked: this.CreepsStacked,
-			CampsStacked: this.CampsStacked,
-			RunePickups: this.RunePickups,
-			GoldSpentOnSupport: this.GoldSpentOnSupport,
-			HeroDamage: this.HeroDamage,
-			WardsPurchased: this.WardsPurchased,
-			WardsDestroyed: this.WardsDestroyed,
-			Items: this.Items,
-			Parity: this.Parity,
-			InventoryParent: this.InventoryParent,
-			StashEnabled: this.StashEnabled,
-			TransientCastItem: this.TransientCastItem,
-			KillsPerOpposingTeamMember: this.KillsPerOpposingTeamMember,
-			SuggestedAbilities: this.SuggestedAbilities,
-			SuggestedAbilityWeights: this.SuggestedAbilityWeights,
-			SuggestedPregameItems: this.SuggestedPregameItems,
-			SuggestedItemSequences: this.SuggestedItemSequences,
-			SuggestedHeroes: this.SuggestedHeroes,
-			SuggestedHeroesWeights: this.SuggestedHeroesWeights,
-			DamageByTypeReceivedPreReduction: this.DamageByTypeReceivedPreReduction,
-			DamageByTypeReceivedPostReduction: this.DamageByTypeReceivedPostReduction,
-			CommandsIssued: this.CommandsIssued,
-			GoldSpentOnConsumables: this.GoldSpentOnConsumables,
-			GoldSpentOnItems: this.GoldSpentOnItems,
-			GoldSpentOnBuybacks: this.GoldSpentOnBuybacks,
-			GoldLostToDeath: this.GoldLostToDeath,
-			IsNewPlayer: this.IsNewPlayer,
-			IsGuidePlayer: this.IsGuidePlayer
-		}
 	}
 }
