@@ -135,6 +135,7 @@ export class InternalChanger {
 
 		const inventoryChanger = this.node.AddNode("Inventory")
 		inventoryChanger.SortNodes = false
+		inventoryChanger.IsHidden = true
 
 		const inventoryState = inventoryChanger.AddToggle("State", true)
 		inventoryState.executeOnAdd = false
