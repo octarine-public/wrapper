@@ -1,7 +1,9 @@
 import { Color } from "../../Base/Color"
+import { QuickBuySlot } from "../../Base/QuickBuySlot"
 import { Vector3 } from "../../Base/Vector3"
-import { WrapperClass } from "../../Decorators"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { EShareAbility } from "../../Enums/EShareAbility"
+import { PlayerConnectedState } from "../../Enums/PlayerConnectedState"
 import { Team } from "../../Enums/Team"
 import { EntityManager } from "../../Managers/EntityManager"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
@@ -16,9 +18,16 @@ import { PlayerResource } from "./PlayerResource"
 
 @WrapperClass("CDOTAPlayerController")
 export class Player extends Entity {
+	@NetworkedBasicField("m_iConnected")
+	public readonly Connected: PlayerConnectedState = -1
+	@NetworkedBasicField("m_nServerOrderSequenceNumber")
+	public readonly ServerOrderSequenceNumber: number = -1
+	@NetworkedBasicField("m_bNoClipEnabled")
+	public readonly NoClipEnabled: boolean = false
+
 	public Hero: Nullable<Hero>
 	public Pawn: Nullable<PlayerPawn>
-	/** @deprecated has been removed */
+	/** @deprecated has been removed use Player#ItemSlots */
 	public QuickBuyItems: number[] = []
 	public hero_ = -1
 	public pawn_ = -1
@@ -31,6 +40,9 @@ export class Player extends Entity {
 			this.Team === Team.None ||
 			this.Team === Team.Shop
 		)
+	}
+	public get ItemSlots(): QuickBuySlot[] {
+		return this.Pawn?.ItemSlots ?? []
 	}
 	public get SteamID(): Nullable<bigint> {
 		return this.PlayerCustomData?.SteamID
@@ -74,7 +86,6 @@ export class Player extends Entity {
 	public Glyph(queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.Glyph(queue, showEffects)
 	}
-
 	public CastRiverPaint(
 		position: Vector3,
 		queue?: boolean,
@@ -82,7 +93,6 @@ export class Player extends Entity {
 	): void {
 		ExecuteOrder.CastRiverPaint(position, queue, showEffects)
 	}
-
 	public PreGameAdjustItemAssigment(
 		itemID: number,
 		queue?: boolean,
@@ -93,7 +103,7 @@ export class Player extends Entity {
 	public Scan(position: Vector3, queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.Scan(position, queue, showEffects)
 	}
-	public UpdateProperties(entity: Nullable<Hero | PlayerPawn>): void {
+	public _UpdateProperties(entity: Nullable<Hero | PlayerPawn>): void {
 		if (entity instanceof Hero) {
 			if (entity.HandleMatches(this.hero_)) {
 				this.Hero = !entity.IsValid ? undefined : entity
@@ -113,10 +123,10 @@ RegisterFieldHandler(Player, "m_nPlayerID", (player, newVal) => {
 })
 RegisterFieldHandler(Player, "m_hPawn", (player, newVal) => {
 	player.pawn_ = newVal as number
-	player.UpdateProperties(EntityManager.EntityByIndex<PlayerPawn>(player.pawn_))
+	player._UpdateProperties(EntityManager.EntityByIndex<PlayerPawn>(player.pawn_))
 })
 RegisterFieldHandler(Player, "m_hAssignedHero", (player, newVal) => {
 	player.hero_ = newVal as number
-	player.UpdateProperties(EntityManager.EntityByIndex<Hero>(player.hero_))
+	player._UpdateProperties(EntityManager.EntityByIndex<Hero>(player.hero_))
 })
 export const Players = EntityManager.GetEntitiesByClass(Player)

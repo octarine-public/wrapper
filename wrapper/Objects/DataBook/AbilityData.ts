@@ -33,6 +33,7 @@ interface ISpecialValue {
 	RequiresFacet: string
 	RequiresScepter: boolean
 	RequiresShard: boolean
+	AffectedByCurio: boolean
 	AffectedByAOEIncrease: boolean
 	LinkedSpecialBonuses: ILinkedSpecialBonus[]
 }
@@ -589,7 +590,15 @@ export class AbilityData {
 					break
 			}
 		}
-		return this.increaseAOERadius(owner, baseVal, specialValue.AffectedByAOEIncrease)
+		if (specialValue.AffectedByCurio) {
+			baseVal *= owner.ModifierManager.GetConditionalPercentageInternal(
+				EModifierfunction.MODIFIER_PROPERTY_CURIO_MULTIPLIER_BONUS_CONSTANT
+			)
+		}
+		if (specialValue.AffectedByAOEIncrease) {
+			return this.increaseAOERadius(owner, baseVal)
+		}
+		return baseVal
 	}
 
 	public GetCastRange(level: number): number {
@@ -665,15 +674,7 @@ export class AbilityData {
 			Math.min(level, this.ChargeRestoreTimeCache.length) - 1
 		]
 	}
-
-	private increaseAOERadius(
-		owner: Unit,
-		baseRadius: number,
-		isAffectedByAOEIncrease: boolean
-	): number {
-		if (!isAffectedByAOEIncrease) {
-			return baseRadius
-		}
+	private increaseAOERadius(owner: Unit, baseRadius: number): number {
 		const bonusConstant = owner.ModifierManager.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_CONSTANT
 		)
@@ -764,6 +765,7 @@ export class AbilityData {
 				RequiresFacet: MapValueToString(special.get("RequiresFacet")),
 				RequiresScepter: MapValueToBoolean(special.get("RequiresScepter")),
 				RequiresShard: MapValueToBoolean(special.get("RequiresShard")),
+				AffectedByCurio: MapValueToBoolean(special.get("apply_curio_bonus")),
 				AffectedByAOEIncrease: MapValueToBoolean(
 					special.get("affected_by_aoe_increase")
 				)
@@ -786,6 +788,7 @@ export class AbilityData {
 						RequiresFacet: "",
 						RequiresScepter: false,
 						RequiresShard: false,
+						AffectedByCurio: false,
 						AffectedByAOEIncrease: false,
 						LinkedSpecialBonuses: []
 					})
@@ -877,6 +880,7 @@ export class AbilityData {
 				RequiresFacet: MapValueToString(special.get("RequiresFacet")),
 				RequiresScepter: MapValueToBoolean(special.get("RequiresScepter")),
 				RequiresShard: MapValueToBoolean(special.get("RequiresShard")),
+				AffectedByCurio: MapValueToBoolean(special.get("apply_curio_bonus")),
 				AffectedByAOEIncrease: MapValueToBoolean(
 					special.get("affected_by_aoe_increase")
 				)

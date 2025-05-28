@@ -4,14 +4,14 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_dragon_lance extends Modifier {
+	private cachedRange = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS_UNIQUE,
 			this.GetAttackRangeBonusUnique.bind(this)
 		]
 	])
-
-	private cachedRange = 0
 
 	protected GetAttackRangeBonusUnique(): [number, boolean] {
 		return [(this.Parent?.IsRanged ?? false) ? this.cachedRange : 0, false]

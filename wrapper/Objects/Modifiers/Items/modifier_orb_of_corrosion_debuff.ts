@@ -52,5 +52,6 @@ export class modifier_orb_of_corrosion_debuff extends Modifier implements IDebuf
 		this.slowMelee = this.GetSpecialValue("slow_melee", name)
 		this.slowRanged = this.GetSpecialValue("slow_ranged", name)
 		this.cachedArmor = this.GetSpecialValue("corruption_armor", name)
+		this.Parent?.GetBuffByName("modifier_orb_of_frost_debuff")?.Update(true)
 	}
 }

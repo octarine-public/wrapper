@@ -33,7 +33,7 @@ new (class CPlayerChanged {
 			return
 		}
 		for (let i = Players.length - 1; i > -1; i--) {
-			Players[i].UpdateProperties(entity)
+			Players[i]._UpdateProperties(entity)
 		}
 		if (entity instanceof Hero) {
 			this.UnitPropertyChanged()

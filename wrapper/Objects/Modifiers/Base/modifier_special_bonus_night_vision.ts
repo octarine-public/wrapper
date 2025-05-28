@@ -4,6 +4,8 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_special_bonus_night_vision extends Modifier {
+	private cachedNightVision = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_BONUS_NIGHT_VISION,
@@ -11,13 +13,14 @@ export class modifier_special_bonus_night_vision extends Modifier {
 		]
 	])
 
-	private cachedSpeed = 0
-
 	protected GetBonusNightVision(): [number, boolean] {
-		return [this.cachedSpeed, false]
+		return [this.cachedNightVision, false]
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedSpeed = this.GetSpecialValue("value", this.CachedAbilityName ?? "")
+		this.cachedNightVision = this.GetSpecialValue(
+			"value",
+			this.CachedAbilityName ?? ""
+		)
 	}
 }

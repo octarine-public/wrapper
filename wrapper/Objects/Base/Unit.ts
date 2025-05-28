@@ -1156,9 +1156,9 @@ export class Unit extends Entity {
 				break
 			}
 		}
-		totalAmp *= this.GetEffectiveIncomingDamage(source, damageType)
-		totalAmp *= source.GetEffectiveOutgoingDamage(this, damageType)
-		return totalAmp
+		const incDamage = this.GetEffectiveIncomingDamage(source, damageType)
+		const outDamage = source.GetEffectiveOutgoingDamage(this, damageType)
+		return totalAmp * Math.max(incDamage + outDamage - 1, 1)
 	}
 	public GetDamageSpellEmpower(target: Unit): number {
 		let modifier: Nullable<modifier_item_angels_demise | modifier_item_phylactery> =

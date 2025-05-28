@@ -43,6 +43,7 @@ export class modifier_item_skadi_slow extends Modifier implements IDebuff {
 	}
 	protected UpdateSpecialValues() {
 		const name = "item_skadi"
+		this.Parent?.GetBuffByName("modifier_orb_of_frost_debuff")?.Update(true)
 		this.cachedSpeedMelee = this.GetSpecialValue("cold_slow_melee", name)
 		this.cachedSpeedRanged = this.GetSpecialValue("cold_slow_ranged", name)
 		this.cachedAttackSpeedMelee = this.GetSpecialValue("cold_attack_slow_melee", name)
