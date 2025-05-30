@@ -8,7 +8,7 @@ export class modifier_watcher_state extends Modifier {
 		return this.NetworkArmor === 1
 	}
 	public get Captured(): boolean {
-		return this.NetworkArmor !== 0
+		return this.NetworkArmor !== 0 && this.NetworkArmor >= 2
 	}
 	public get CapturedByTeam(): Team {
 		return this.NetworkAttackSpeed
