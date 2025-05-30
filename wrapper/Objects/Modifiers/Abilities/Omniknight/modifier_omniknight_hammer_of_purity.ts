@@ -8,14 +8,23 @@ import { Unit } from "../../../Base/Unit"
 export class modifier_omniknight_hammer_of_purity extends Modifier {
 	private cachedBonusDamage = 0
 	private cachedShareDamage = 0
+	private cachedAttackRange = 0
 
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
+			this.GetAttackRangeBonus.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_PROCATTACK_BONUS_DAMAGE_PURE,
 			this.GetPreAttackBonusDamagePure.bind(this)
 		]
 	])
-
+	protected GetAttackRangeBonus(): [number, boolean] {
+		const isEnabled = this.Ability?.IsAutoCastEnabled ?? false,
+			isReady = this.Ability?.IsReady ?? false
+		return isEnabled && isReady ? [this.cachedAttackRange, false] : [0, false]
+	}
 	protected GetPreAttackBonusDamagePure(params?: IModifierParams): [number, boolean] {
 		if (params === undefined) {
 			return [0, false]
@@ -42,5 +51,6 @@ export class modifier_omniknight_hammer_of_purity extends Modifier {
 		const name = "omniknight_hammer_of_purity"
 		this.cachedShareDamage = this.GetSpecialValue("base_damage", name)
 		this.cachedBonusDamage = this.GetSpecialValue("bonus_damage", name)
+		this.cachedAttackRange = this.GetSpecialValue("attack_range_bonus", name)
 	}
 }

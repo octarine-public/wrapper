@@ -31,30 +31,24 @@ export class Creep extends Unit {
 			? this.ModifierManager.GetHealthRegen(this.BaseHPRegen)
 			: super.HPRegen
 	}
-
 	public get IsEidolon() {
 		return this.Name.endsWith("_lesser_eidolon")
 	}
-
 	public get IsLaneCreep() {
 		return (
 			this.ClassName === "CDOTA_BaseNPC_Creep_Lane" ||
 			this.ClassName === "CDOTA_BaseNPC_Creep_Siege"
 		)
 	}
-
 	public get IsNeutral() {
 		return super.IsNeutral || this.ClassName === "CDOTA_BaseNPC_Creep_Neutral"
 	}
-
 	public get IsSuperCreep() {
 		return this.Name.endsWith("_upgraded")
 	}
-
 	public get IsMegaCreep() {
 		return this.Name.endsWith("_upgraded_mega")
 	}
-
 	public get IsDeniable(): boolean {
 		return super.IsDeniable || this.HPPercent <= 50
 	}
@@ -62,10 +56,22 @@ export class Creep extends Unit {
 		return 60
 	}
 	public get HealthBarSize() {
-		return new Vector2(ScaleHeight(80), ScaleHeight(5))
+		const size = new Vector2(ScaleHeight(80), ScaleHeight(5))
+		switch (this.UnitType) {
+			case 130:
+				return size.SetX(ScaleHeight(100)).SetY(ScaleHeight(7))
+			default:
+				return size
+		}
 	}
 	public get HealthBarPositionCorrection() {
-		return new Vector2(this.HealthBarSize.x / 2, ScaleHeight(11))
+		const size = new Vector2(this.HealthBarSize.x / 2, ScaleHeight(11))
+		switch (this.UnitType) {
+			case 130:
+				return size.SetY(ScaleHeight(24))
+			default:
+				return size
+		}
 	}
 	public TryAssignLane(): void {
 		if (this.IsNeutral || this.Owner !== undefined || this.Lane !== MapArea.Unknown) {

@@ -20,6 +20,8 @@ export class chen_summon_convert extends Ability {
 				return `${AbilityImagePath}/${abilName}_troll_png.vtex_c`
 			case this.GetSpecialValue("summon_satyrs") !== 0:
 				return `${AbilityImagePath}/${abilName}_satyr_png.vtex_c`
+			case this.GetSpecialValue("summon_frogs") !== 0:
+				return `${AbilityImagePath}/${abilName}_frog_png.vtex_c`
 			default:
 				return super.TexturePath
 		}

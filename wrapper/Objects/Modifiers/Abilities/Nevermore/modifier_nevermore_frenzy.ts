@@ -8,6 +8,7 @@ export class modifier_nevermore_frenzy extends Modifier implements IBuff {
 	public readonly BuffModifierName = this.Name
 
 	private cachedCastTime = 0
+	private cachedMoveSpeed = 0
 	private cachedAttackSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -18,6 +19,10 @@ export class modifier_nevermore_frenzy extends Modifier implements IBuff {
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
 			this.GetAttackSpeedBonusConstant.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
 	public IsBuff(): this is IBuff {
@@ -29,9 +34,13 @@ export class modifier_nevermore_frenzy extends Modifier implements IBuff {
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, false]
 	}
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedMoveSpeed, false]
+	}
 	protected UpdateSpecialValues(): void {
 		const name = "nevermore_frenzy"
-		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name)
 		this.cachedCastTime = this.GetSpecialValue("cast_speed_pct", name)
+		this.cachedMoveSpeed = this.GetSpecialValue("bonus_move_speed", name)
+		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name)
 	}
 }

@@ -14,10 +14,6 @@ export class modifier_invoker_alacrity extends Modifier implements IBuff {
 
 	protected readonly DeclaredFunction = new Map([
 		[
-			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
-			this.GetAttackRangeBonus.bind(this)
-		],
-		[
 			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE,
 			this.GetPreAttackBonusDamage.bind(this)
 		],
@@ -40,7 +36,6 @@ export class modifier_invoker_alacrity extends Modifier implements IBuff {
 	}
 	protected UpdateSpecialValues(): void {
 		this.cachedDamage = this.GetSpecialValue("bonus_damage")
-		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed")
 		this.cachedAttackRange = this.GetSpecialValue("bonus_attack_range")
 	}
 	protected GetSpecialValue(
@@ -55,10 +50,7 @@ export class modifier_invoker_alacrity extends Modifier implements IBuff {
 		if (specialName === "bonus_damage") {
 			return super.GetSpecialValue(specialName, abilityName, ability.ExortLevel)
 		}
-		if (
-			specialName === "bonus_attack_speed" ||
-			specialName === "bonus_attack_range"
-		) {
+		if (specialName === "bonus_attack_speed") {
 			return super.GetSpecialValue(specialName, abilityName, ability.WexLevel)
 		}
 		return 0

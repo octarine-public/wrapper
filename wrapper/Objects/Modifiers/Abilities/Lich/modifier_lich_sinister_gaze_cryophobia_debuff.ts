@@ -3,28 +3,31 @@ import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_naga_siren_deluge_status_resistance
+export class modifier_lich_sinister_gaze_cryophobia_debuff
 	extends Modifier
 	implements IDebuff
 {
 	public readonly IsHidden = false
 	public readonly DebuffModifierName = this.Name
 
-	private cachedSpeed = 0
+	private slowResistance = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
-			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_ABSOLUTE_MAX,
-			this.GetMoveSpeedAbsoluteMax.bind(this)
+			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING,
+			this.GetSlowResistanceStacking.bind(this)
 		]
 	])
+	protected GetSlowResistanceStacking(): [number, boolean] {
+		return [-this.slowResistance, this.IsMagicImmune()]
+	}
 	public IsDebuff(): this is IDebuff {
 		return true
 	}
-	protected GetMoveSpeedAbsoluteMax(): [number, boolean] {
-		return [this.cachedSpeed, this.IsMagicImmune()]
-	}
 	protected UpdateSpecialValues(): void {
-		this.cachedSpeed = this.GetSpecialValue("max_movement_speed", "naga_siren_deluge")
+		this.slowResistance = this.GetSpecialValue(
+			"slow_resistance",
+			"lich_sinister_gaze"
+		)
 	}
 }

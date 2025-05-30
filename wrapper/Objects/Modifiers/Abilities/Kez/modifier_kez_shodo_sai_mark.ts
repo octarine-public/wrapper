@@ -26,8 +26,8 @@ export class modifier_kez_shodo_sai_mark extends Modifier implements IDebuff {
 		]
 	])
 
-	public get CritDamageBonus() {
-		return (this.cachedBaseCrit + this.cachedBonusCrit) / 100
+	public MulCritDamageBonus(target: Unit): number {
+		return this.cachedBaseCrit + this.cachedBonusCrit * target.Level
 	}
 	public IsDebuff(): this is IDebuff {
 		return true
@@ -42,10 +42,10 @@ export class modifier_kez_shodo_sai_mark extends Modifier implements IDebuff {
 			return [0, false]
 		}
 		const source = EntityManager.EntityByIndex<Unit>(params.SourceIndex)
-		if (source === undefined || source !== this.Caster) {
+		if (source === undefined || source !== this.Caster || this.Parent === undefined) {
 			return [0, false]
 		}
-		return [this.cachedBaseCrit + this.cachedBonusCrit, false]
+		return [this.MulCritDamageBonus(this.Parent), false]
 	}
 	protected UpdateSpecialValues(): void {
 		if (this.Ability instanceof kez_shodo_sai) {

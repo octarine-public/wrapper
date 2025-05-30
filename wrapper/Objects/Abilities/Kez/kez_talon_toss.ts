@@ -24,12 +24,11 @@ export class kez_talon_toss extends Ability implements INuke {
 		}
 		return super.GetRawDamage(target) * this.multiplyDamageByMark(target)
 	}
-
 	private multiplyDamageByMark(target: Unit): number {
 		if (target.IsBuilding) {
 			return 1
 		}
 		const modifier = target.GetBuffByClass(modifier_kez_shodo_sai_mark)
-		return modifier?.CritDamageBonus ?? 1
+		return (modifier?.MulCritDamageBonus(target) ?? 100) / 100
 	}
 }

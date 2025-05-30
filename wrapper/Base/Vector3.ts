@@ -1,7 +1,7 @@
 import { Vector2 } from "./Vector2"
 
 export class Vector3 {
-	public static fromIOBuffer(offset = 0): Vector3 {
+	public static fromIOBuffer(offset: number = 0): Vector3 {
 		return new Vector3(
 			IOBuffer[offset + 0],
 			IOBuffer[offset + 1],
@@ -115,7 +115,7 @@ export class Vector3 {
 	/**
 	 * Are all components of this vector are 0?
 	 */
-	public IsZero(tolerance = 0.01): boolean {
+	public IsZero(tolerance: number = 0.01): boolean {
 		const x = this.x,
 			y = this.y,
 			z = this.z
@@ -238,7 +238,7 @@ export class Vector3 {
 
 		return this
 	}
-	public Floor(count = 0): Vector3 {
+	public Floor(count: number = 0): Vector3 {
 		const pow = 10 ** count
 		return new Vector3(
 			Math.floor(this.x * pow) / pow,
@@ -246,7 +246,7 @@ export class Vector3 {
 			Math.floor(this.z * pow) / pow
 		)
 	}
-	public FloorForThis(count = 0): Vector3 {
+	public FloorForThis(count: number = 0): Vector3 {
 		const pow = 10 ** count
 
 		this.x = Math.floor(this.x * pow) / pow
@@ -354,7 +354,7 @@ export class Vector3 {
 	/**
 	 * Normalize the vector
 	 */
-	public Normalize(scalar = 1): Vector3 {
+	public Normalize(scalar: number = 1): Vector3 {
 		const length = this.Length
 		return length !== 0 ? this.DivideScalarForThis(length * scalar) : this
 	}
@@ -712,7 +712,7 @@ export class Vector3 {
 	 * const vec = new Vector3(1, 2, 3).Perpendicular();
 	 * console.log(vec); // Vector3(-2, 1, 3)
 	 */
-	public Perpendicular(isX = true): Vector3 {
+	public Perpendicular(isX: boolean = true): Vector3 {
 		return isX
 			? new Vector3(-this.y, this.x, this.z)
 			: new Vector3(this.y, -this.x, this.z)
@@ -720,7 +720,7 @@ export class Vector3 {
 	/**
 	 * Calculates the polar angle of the given vector. Returns degree values on default, radian if requested.
 	 */
-	public PolarAngle(radian = false): number {
+	public PolarAngle(radian: boolean = false): number {
 		if (radian) {
 			return this.Angle
 		}
@@ -776,7 +776,7 @@ export class Vector3 {
 	 * @param vec The another vector
 	 * @param vecAngleRadian Angle of this vector
 	 */
-	public FindRotationAngle(vec: Vector3, vecAngleRadian = 0): number {
+	public FindRotationAngle(vec: Vector3, vecAngleRadian: number = 0): number {
 		const angle = Math.abs(
 			Math.atan2(vec.y - this.y, vec.x - this.x) - vecAngleRadian
 		)

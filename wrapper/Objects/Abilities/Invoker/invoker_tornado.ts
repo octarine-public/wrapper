@@ -1,11 +1,9 @@
 import { WrapperClass } from "../../../Decorators"
+import { Unit } from "../../Base/Unit"
 import { invoker_spell_extends } from "./invoker_spell_extends"
 
 @WrapperClass("invoker_tornado")
 export class invoker_tornado extends invoker_spell_extends implements INuke {
-	public get AbilityDamage(): number {
-		return this.GetBaseDamageForLevel(this.Level + this.WexLevel)
-	}
 	public IsNuke(): this is INuke {
 		return true
 	}
@@ -13,9 +11,14 @@ export class invoker_tornado extends invoker_spell_extends implements INuke {
 		return this.GetSpecialValue("area_of_effect", level)
 	}
 	public GetBaseDamageForLevel(level: number): number {
-		return this.GetSpecialValue("wex_damage", level)
+		return this.GetSpecialValue("base_damage", level)
 	}
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("travel_speed", level)
+	}
+	public GetRawDamage(target: Unit): number {
+		return (
+			super.GetRawDamage(target) + this.GetSpecialValue("wex_damage", this.WexLevel)
+		)
 	}
 }

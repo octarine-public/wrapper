@@ -17,11 +17,9 @@ export class modifier_spirit_breaker_planar_pocket_aura
 			this.GetMagicalResistanceBonus.bind(this)
 		]
 	])
-
 	protected GetMagicalResistanceBonus(): [number, boolean] {
-		return [this.cachedMres, false]
+		return this.Caster === this.Parent ? [this.cachedMres, false] : [0, false]
 	}
-
 	protected UpdateSpecialValues() {
 		this.cachedMres = this.GetSpecialValue(
 			"magic_resistance",

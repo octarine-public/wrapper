@@ -26,6 +26,6 @@ export class kez_raptor_dance extends Ability {
 			return 1
 		}
 		const modifier = target.GetBuffByClass(modifier_kez_shodo_sai_mark)
-		return modifier?.CritDamageBonus ?? 1
+		return (modifier?.MulCritDamageBonus(target) ?? 100) / 100
 	}
 }

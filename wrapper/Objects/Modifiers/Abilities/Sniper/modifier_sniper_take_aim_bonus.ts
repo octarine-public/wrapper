@@ -12,22 +12,26 @@ export class modifier_sniper_take_aim_bonus extends Modifier implements IBuff {
 
 	private cachedSpeed = 0
 	private cachedRange = 0
-	private cachedArmor = 0
 	private cachedChance = 0
+	private cachedBonusVision = 0
 	private cachedAttackSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
-			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
-			this.GetPhysicalArmorBonus.bind(this)
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_DAY_VISION,
+			this.GetBonusDayVision.bind(this)
 		],
 		[
-			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE,
-			this.GetPreAttackBonusDamage.bind(this)
+			EModifierfunction.MODIFIER_PROPERTY_BONUS_NIGHT_VISION,
+			this.GetBonusNightVision.bind(this)
 		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
 			this.GetAttackRangeBonus.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE,
+			this.GetPreAttackBonusDamage.bind(this)
 		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
@@ -41,8 +45,11 @@ export class modifier_sniper_take_aim_bonus extends Modifier implements IBuff {
 	public IsBuff(): this is IBuff {
 		return true
 	}
-	protected GetPhysicalArmorBonus(): [number, boolean] {
-		return [this.cachedArmor, false]
+	protected GetBonusDayVision(): [number, boolean] {
+		return [this.cachedBonusVision, false]
+	}
+	protected GetBonusNightVision(): [number, boolean] {
+		return [this.cachedBonusVision, false]
 	}
 	protected GetPreAttackBonusDamage(params?: IModifierParams): [number, boolean] {
 		if (params === undefined || this.cachedChance !== 100) {
@@ -71,7 +78,7 @@ export class modifier_sniper_take_aim_bonus extends Modifier implements IBuff {
 	protected UpdateSpecialValues(): void {
 		const name = "sniper_take_aim"
 		this.cachedSpeed = this.GetSpecialValue("slow", name)
-		this.cachedArmor = this.GetSpecialValue("bonus_armor", name)
+		this.cachedBonusVision = this.GetSpecialValue("bonus_vision", name)
 		this.cachedChance = this.GetSpecialValue("headshot_chance", name)
 		this.cachedRange = this.GetSpecialValue("active_attack_range_bonus", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("attack_speed", name)

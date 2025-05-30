@@ -45,10 +45,13 @@ export class abaddon_death_coil
 		if (owner === undefined || this.Level === 0) {
 			return 0
 		}
-		let baseDamage = super.GetDamage(target)
-		if (this.OwnerHasShard) {
-			baseDamage += owner.GetAttackDamage(target)
+		if (owner.HeroFacet !== "abaddon_mists_of_fate") {
+			return super.GetDamage(target)
 		}
-		return baseDamage
+		const perFormAttack = this.GetSpecialValue("damage_percentage_on_perform_attack")
+		return (
+			super.GetDamage(target) +
+			(owner.GetAttackDamage(target) * perFormAttack) / 100
+		)
 	}
 }
