@@ -40,6 +40,6 @@ export class modifier_alchemist_corrosive_weaponry_debuff
 	protected UpdateSpecialValues(): void {
 		const name = "alchemist_corrosive_weaponry"
 		this.cachedSpeed = this.GetSpecialValue("slow_per_stack", name)
-		this.cachedDamage = this.GetSpecialValue("attack_damage_per_stack", name)
+		this.cachedDamage = this.GetSpecialValue("attack_dmg_per_stack", name)
 	}
 }
