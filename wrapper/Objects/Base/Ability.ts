@@ -380,14 +380,18 @@ export class Ability extends Entity {
 		return this.GetBaseCastRangeForLevel(this.Level)
 	}
 	public get CastRange(): number {
+		const owner = this.Owner
+		if (owner === undefined) {
+			return 0
+		}
 		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_ATTACK)) {
-			return this.Owner?.GetAttackRange() ?? 0
+			return owner.GetAttackRange()
 		}
 		const baseCastRange = this.BaseCastRange
 		if (baseCastRange === 0 || baseCastRange === -1) {
 			return 0
 		}
-		return this.GetCastRangeModifier(baseCastRange)
+		return owner.GetCastRangeBonus(baseCastRange)
 	}
 	public get AOERadius(): number {
 		return this.GetBaseAOERadiusForLevel(this.Level)
@@ -777,36 +781,6 @@ export class Ability extends Entity {
 			EModifierfunction.MODIFIER_PROPERTY_CASTTIME_PERCENTAGE
 		)
 		return baseCastPoint * (2 - percentage)
-	}
-	protected GetCastRangeModifier(baseCastRange: number): number {
-		const owner = this.Owner
-		if (owner === undefined) {
-			return baseCastRange
-		}
-		const bonus = owner.ModifierManager.GetConstantHighestInternal(
-			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS
-		)
-		const bonusTarget = owner.ModifierManager.GetConstantHighestInternal(
-			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS_TARGET
-		)
-		const bonusStacking = owner.ModifierManager.GetConditionalAdditiveInternal(
-			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS_STACKING,
-			false,
-			1,
-			1
-		)
-		const bonusPercentage = owner.ModifierManager.GetConditionalPercentageInternal(
-			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS_PERCENTAGE,
-			false,
-			1,
-			1
-		)
-		const bonuses = baseCastRange + (bonus + bonusTarget) + bonusStacking
-		const totalResult = bonuses * bonusPercentage
-		if (totalResult < 150 && baseCastRange > 0) {
-			return 150 - baseCastRange
-		}
-		return totalResult
 	}
 	protected GetManaCostModifierSpellSteal(owner: Unit): number {
 		if (!this.IsStolen) {

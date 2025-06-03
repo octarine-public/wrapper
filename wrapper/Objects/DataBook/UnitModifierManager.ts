@@ -301,6 +301,32 @@ export class UnitModifierManager {
 		)
 		return percentage * (baseTurnRate + bonus)
 	}
+	public GetCastRangeBonus(baseCastRange: number): number {
+		const bonus = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS
+		)
+		const bonusTarget = this.GetConstantHighestInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS_TARGET
+		)
+		const bonusStacking = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS_STACKING,
+			false,
+			1,
+			1
+		)
+		const bonusPercentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_CAST_RANGE_BONUS_PERCENTAGE,
+			false,
+			1,
+			1
+		)
+		const bonuses = baseCastRange + (bonus + bonusTarget) + bonusStacking
+		const totalResult = bonuses * bonusPercentage
+		if (totalResult < 150 && baseCastRange > 0) {
+			return 150 - baseCastRange
+		}
+		return totalResult
+	}
 	public GetMoveSpeed(baseSpeed: number, isUnslowable: boolean = false): number {
 		let slowValue = 1
 		if (isUnslowable || this.Owner.IsUnslowable) {

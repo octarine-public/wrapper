@@ -842,6 +842,9 @@ export class Unit extends Entity {
 	): number {
 		return this.ModifierManager.GetAttackRange(baseAttackRange)
 	}
+	public GetCastRangeBonus(baseCastRange: number): number {
+		return this.ModifierManager.GetCastRangeBonus(baseCastRange)
+	}
 	public GetAttackSpeedModifier(
 		baseAttackSpeed: number = this.BaseAttackSpeedIncrease
 	): number {
