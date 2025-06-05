@@ -1,5 +1,6 @@
 import { EPropertyType } from "../Enums/PropertyType"
 import { EntityPropertiesNode } from "./EntityProperties"
+import { QuickBuySlot } from "./QuickBuySlot"
 
 export class DataTeamPlayer {
 	constructor(public readonly properties: EntityPropertiesNode) {}
@@ -224,5 +225,10 @@ export class DataTeamPlayer {
 	}
 	public get PossibleHeroFacetSelection(): bigint {
 		return this.properties.get("m_nPossibleHeroFacetSelection") ?? 0n
+	}
+	public get ItemSlots(): QuickBuySlot[] {
+		return (this.properties.get("m_vecItemSlots") as EntityPropertiesNode[]).map(
+			x => new QuickBuySlot(x)
+		)
 	}
 }

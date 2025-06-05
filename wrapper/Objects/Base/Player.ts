@@ -42,7 +42,7 @@ export class Player extends Entity {
 		)
 	}
 	public get ItemSlots(): QuickBuySlot[] {
-		return this.Pawn?.ItemSlots ?? []
+		return this.PlayerCustomData?.DataTeamPlayer?.ItemSlots ?? []
 	}
 	public get SteamID(): Nullable<bigint> {
 		return this.PlayerCustomData?.SteamID
