@@ -70,12 +70,8 @@ export function UpdateGameTime() {
 			: Math.max(...totalPausedTicks))
 	GameState.RawGameTime = GameState.CurrentGameTick * tickInterval
 	GameRules.RawGameTime = GameState.RawGameTime
-
-	if (prevTime === 0) {
-		const entities = EntityManager.AllEntities
-		for (let index = entities.length - 1; index > -1; index--) {
-			entities[index].FakeCreateTime_ = GameState.RawGameTime
-		}
+	if (prevTime > 0) {
+		return
 	}
 	if (LocalPlayer !== undefined) {
 		let delta = prevTime !== 0 ? GameState.RawGameTime - prevTime : tickInterval
@@ -118,9 +114,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 
 @WrapperClass("CBaseEntity")
 export class Entity {
-	/** @private NOTE: this is internal field use CreateTime */
-	@NetworkedBasicField("m_flCreateTime")
-	public readonly CreateTime_: number = 0
+	public CreateTime: number = 0
 	@NetworkedBasicField("m_iMaxHealth")
 	public readonly MaxHP: number = 0
 	@NetworkedBasicField("m_flPlaybackRate")
@@ -153,9 +147,11 @@ export class Entity {
 	public Animations: AnimationData[] = []
 	public Team: Team = Team.None
 	public LifeState: LifeState = LifeState.LIFE_DEAD
-	/** @private NOTE: this is internal field, use CreateTime */
+	/**
+	 * @private NOTE: this is internal field, use CreateTime
+	 * @deprecated
+	 */
 	public FakeCreateTime_: number = GameState.RawGameTime
-
 	public readonly VisualPosition = new Vector3()
 	public readonly NetworkedPosition = new Vector3()
 	public readonly NetworkedPosition_ = new Vector3()
@@ -243,9 +239,6 @@ export class Entity {
 	public get Rotation(): number {
 		const ang = this.Angles.y
 		return ang >= 180 ? ang - 360 : ang
-	}
-	public get CreateTime() {
-		return this.CreateTime_ !== 0 ? this.CreateTime_ : this.FakeCreateTime_
 	}
 	public get HPPercent(): number {
 		return toPercentage(this.HP, this.MaxHP)
@@ -683,40 +676,41 @@ export class Entity {
 	}
 }
 
-RegisterFieldHandler(Entity, "m_iTeamNum", (ent, newVal) => {
-	const oldTeam = ent.Team
-	const newTeam = newVal as Team
-	if (oldTeam !== newTeam) {
-		ent.Team = newTeam
+RegisterFieldHandler<Entity, number>(Entity, "m_flCreateTime", (ent, newVal) => {
+	if (ent.CreateTime !== newVal) {
+		ent.CreateTime = newVal
+		UpdateGameTime()
+	}
+})
+RegisterFieldHandler<Entity, Team>(Entity, "m_iTeamNum", (ent, newVal) => {
+	if (ent.Team !== newVal) {
+		ent.Team = newVal
 		EventsSDK.emit("EntityTeamChanged", false, ent)
 	}
 })
-RegisterFieldHandler(Entity, "m_lifeState", (ent, newVal) => {
-	const oldState = ent.LifeState
-	const newState = newVal as LifeState
-	if (oldState !== newState) {
-		ent.LifeState = newState
+RegisterFieldHandler<Entity, LifeState>(Entity, "m_lifeState", (ent, newVal) => {
+	if (ent.LifeState !== newVal) {
+		ent.LifeState = newVal
 		EventsSDK.emit("LifeStateChanged", false, ent)
 	}
 })
-RegisterFieldHandler(Entity, "m_hModel", (ent, newVal) => {
-	ent.ModelName = GetPathByHash(newVal as bigint) ?? ""
+RegisterFieldHandler<Entity, bigint>(Entity, "m_hModel", (ent, newVal) => {
+	ent.ModelName = GetPathByHash(newVal) ?? ""
 	ent.OnModelUpdated()
 })
-RegisterFieldHandler(Entity, "m_angRotation", (ent, newVal) => {
-	const angRotation = newVal as QAngle
-	ent.NetworkedAngles_.CopyFrom(angRotation)
+RegisterFieldHandler<Entity, QAngle>(Entity, "m_angRotation", (ent, newVal) => {
+	ent.NetworkedAngles_.CopyFrom(newVal)
 	ent.UpdatePositions()
 })
-RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, newVal) => {
-	ent.Name_ = StringTables.GetString("EntityNames", newVal as number) ?? ent.Name_
+RegisterFieldHandler<Entity, number>(Entity, "m_nameStringableIndex", (ent, newVal) => {
+	ent.Name_ = StringTables.GetString("EntityNames", newVal) ?? ent.Name_
 })
-RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, newVal) => {
-	ent.Owner_ = newVal as number
+RegisterFieldHandler<Entity, number>(Entity, "m_hOwnerEntity", (ent, newVal) => {
+	ent.Owner_ = newVal
 	ent.OwnerEntity = EntityManager.EntityByIndex(ent.Owner_)
 })
-RegisterFieldHandler(Entity, "m_hParent", (ent, newVal) => {
-	ent.Parent_ = Number(newVal as bigint)
+RegisterFieldHandler<Entity, bigint>(Entity, "m_hParent", (ent, newVal) => {
+	ent.Parent_ = Number(newVal)
 	const parentEnt = EntityManager.EntityByIndex(ent.Parent_),
 		prevParentEnt = ent.ParentEntity
 	if (parentEnt !== prevParentEnt) {
@@ -728,54 +722,54 @@ RegisterFieldHandler(Entity, "m_hParent", (ent, newVal) => {
 		ent.UpdatePositions()
 	}
 })
-RegisterFieldHandler(Entity, "m_hierarchyAttachName", (ent, newVal) => {
-	ent.HierarchyAttachName = Number(newVal as bigint) >>> 0
+RegisterFieldHandler<Entity, bigint>(Entity, "m_hierarchyAttachName", (ent, newVal) => {
+	ent.HierarchyAttachName = Number(newVal) >>> 0
 	ent.UpdatePositions()
 })
-RegisterFieldHandler(Entity, "m_cellX", (ent, newVal) => {
+RegisterFieldHandler<Entity, number>(Entity, "m_cellX", (ent, newVal) => {
 	ent.NetworkedPosition_.x = QuantitizedVecCoordToCoord(
-		newVal as number,
+		newVal,
 		ent.CBodyComponent_?.get("m_vecX")
 	)
 	ent.UpdatePositions()
 })
-RegisterFieldHandler(Entity, "m_vecX", (ent, newVal) => {
+RegisterFieldHandler<Entity, number>(Entity, "m_vecX", (ent, newVal) => {
 	ent.NetworkedPosition_.x = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellX"),
-		newVal as number
+		newVal
 	)
 	ent.UpdatePositions()
 })
-RegisterFieldHandler(Entity, "m_cellY", (ent, newVal) => {
+RegisterFieldHandler<Entity, number>(Entity, "m_cellY", (ent, newVal) => {
 	ent.NetworkedPosition_.y = QuantitizedVecCoordToCoord(
-		newVal as number,
+		newVal,
 		ent.CBodyComponent_?.get("m_vecY")
 	)
 	ent.UpdatePositions()
 })
-RegisterFieldHandler(Entity, "m_vecY", (ent, newVal) => {
+RegisterFieldHandler<Entity, number>(Entity, "m_vecY", (ent, newVal) => {
 	ent.NetworkedPosition_.y = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellY"),
-		newVal as number
+		newVal
 	)
 	ent.UpdatePositions()
 })
-RegisterFieldHandler(Entity, "m_cellZ", (ent, newVal) => {
+RegisterFieldHandler<Entity, number>(Entity, "m_cellZ", (ent, newVal) => {
 	ent.NetworkedPosition_.z = QuantitizedVecCoordToCoord(
-		newVal as number,
+		newVal,
 		ent.CBodyComponent_?.get("m_vecZ")
 	)
 	ent.UpdatePositions()
 })
-RegisterFieldHandler(Entity, "m_vecZ", (ent, newVal) => {
+RegisterFieldHandler<Entity, number>(Entity, "m_vecZ", (ent, newVal) => {
 	ent.NetworkedPosition_.z = QuantitizedVecCoordToCoord(
 		ent.CBodyComponent_?.get("m_cellZ"),
-		newVal as number
+		newVal
 	)
 	ent.UpdatePositions()
 })
-RegisterFieldHandler(Entity, "m_flScale", (ent, newVal) => {
-	ent.ModelScale = newVal as number
+RegisterFieldHandler<Entity, number>(Entity, "m_flScale", (ent, newVal) => {
+	ent.ModelScale = newVal
 	ent.UpdatePositions()
 })
 

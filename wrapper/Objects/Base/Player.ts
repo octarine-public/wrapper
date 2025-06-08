@@ -117,16 +117,16 @@ export class Player extends Entity {
 		}
 	}
 }
-RegisterFieldHandler(Player, "m_nPlayerID", (player, newVal) => {
-	player.playerID_ = newVal as number
+RegisterFieldHandler<Player, number>(Player, "m_nPlayerID", (player, newVal) => {
+	player.playerID_ = newVal
 	PlayerCustomData.set(player.PlayerID)
 })
-RegisterFieldHandler(Player, "m_hPawn", (player, newVal) => {
-	player.pawn_ = newVal as number
+RegisterFieldHandler<Player, number>(Player, "m_hPawn", (player, newVal) => {
+	player.pawn_ = newVal
 	player._UpdateProperties(EntityManager.EntityByIndex<PlayerPawn>(player.pawn_))
 })
-RegisterFieldHandler(Player, "m_hAssignedHero", (player, newVal) => {
-	player.hero_ = newVal as number
+RegisterFieldHandler<Player, number>(Player, "m_hAssignedHero", (player, newVal) => {
+	player.hero_ = newVal
 	player._UpdateProperties(EntityManager.EntityByIndex<Hero>(player.hero_))
 })
 export const Players = EntityManager.GetEntitiesByClass(Player)

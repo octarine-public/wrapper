@@ -37,10 +37,10 @@ export function RegisterClassModifier(name: string, constructor: Constructor<Mod
 	modifierSDKClassTempNames.push(name)
 }
 
-export function RegisterFieldHandler<T extends Entity>(
-	constructor: Constructor<T>,
+export function RegisterFieldHandler<A extends Entity, B = EntityPropertyType>(
+	constructor: Constructor<A>,
 	fieldName: string,
-	handler: (entity: T, newValue: EntityPropertyType) => any
+	handler: (entity: A, newValue: B) => any
 ) {
 	if (!FieldHandlers.has(constructor)) {
 		RegisterClassInternal(constructor)

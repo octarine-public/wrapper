@@ -2232,51 +2232,49 @@ RegisterFieldHandler(Unit, "m_hMyWearables", (unit, newVal) => {
 		}
 	}
 })
-RegisterFieldHandler(Unit, "m_anglediff", (unit, newVal) => {
+RegisterFieldHandler<Unit, number>(Unit, "m_anglediff", (unit, newVal) => {
 	const oldValue = unit.RotationDifference
 	if (oldValue !== newVal) {
-		unit.RotationDifference = newVal as number
+		unit.RotationDifference = newVal
 	}
 })
-RegisterFieldHandler(Unit, "m_hNeutralSpawner", (unit, newVal) => {
-	unit.Spawner_ = newVal as number
+RegisterFieldHandler<Unit, number>(Unit, "m_hNeutralSpawner", (unit, newVal) => {
+	unit.Spawner_ = newVal
 	const ent = EntityManager.EntityByIndex(unit.Spawner_)
 	if (ent instanceof NeutralSpawner) {
 		unit.Spawner = ent
 	}
 })
-RegisterFieldHandler(Unit, "m_iAttackCapabilities", (unit, newVal) => {
-	const oldValue = unit.AttackCapabilities
-	if (oldValue !== newVal) {
-		unit.AttackCapabilities = newVal as number
+RegisterFieldHandler<Unit, number>(Unit, "m_iAttackCapabilities", (unit, newVal) => {
+	if (unit.AttackCapabilities !== newVal) {
+		unit.AttackCapabilities = newVal
 		EventsSDK.emit("UnitPropertyChanged", false, unit)
 	}
 })
-RegisterFieldHandler(Unit, "m_bIsClone", (unit, newVal) => {
-	const oldValue = unit.ModifierManager.IsClone_
-	if (oldValue !== newVal) {
-		unit.ModifierManager.IsClone_ = newVal as boolean
+RegisterFieldHandler<Unit, boolean>(Unit, "m_bIsClone", (unit, newVal) => {
+	if (unit.ModifierManager.IsClone_ !== newVal) {
+		unit.ModifierManager.IsClone_ = newVal
 		EventsSDK.emit("UnitPropertyChanged", false, unit)
 	}
 })
-RegisterFieldHandler(Unit, "m_iCurrentLevel", (unit, newVal) => {
+RegisterFieldHandler<Unit, number>(Unit, "m_iCurrentLevel", (unit, newVal) => {
 	const oldValue = unit.Level
 	if (oldValue !== newVal) {
-		unit.Level = newVal as number
+		unit.Level = newVal
 		EventsSDK.emit("UnitLevelChanged", false, unit)
 	}
 })
-RegisterFieldHandler(Unit, "m_nUnitState64", (unit, newVal) => {
+RegisterFieldHandler<Unit, bigint>(Unit, "m_nUnitState64", (unit, newVal) => {
 	const oldValue = unit.UnitStateNetworked,
 		newValue = ReencodeProperty(newVal, EPropertyType.UINT64)
 	if (oldValue !== newValue) {
-		unit.UnitStateNetworked = newVal as bigint
+		unit.UnitStateNetworked = newVal
 		EventsSDK.emit("UnitStateChanged", false, unit)
 	}
 })
-RegisterFieldHandler(Unit, "m_bIsWaitingToSpawn", (unit, newValue) => {
+RegisterFieldHandler<Unit, boolean>(Unit, "m_bIsWaitingToSpawn", (unit, newValue) => {
 	if (unit.IsWaitingToSpawn !== newValue) {
-		unit.IsWaitingToSpawn = newValue as boolean
+		unit.IsWaitingToSpawn = newValue
 		EventsSDK.emit("UnitPropertyChanged", false, unit)
 	}
 })
