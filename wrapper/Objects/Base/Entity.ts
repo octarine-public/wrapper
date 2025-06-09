@@ -60,7 +60,6 @@ export function UpdateGameTime() {
 		? GameRules.PauseStartTick
 		: GameState.CurrentServerTick
 	const prevTime = GameState.RawGameTime
-
 	const totalPausedTicks = GameRules.TotalPausedTicks,
 		tickInterval = GameState.TickInterval
 	GameState.CurrentGameTick =
@@ -68,11 +67,13 @@ export function UpdateGameTime() {
 		(!Array.isArray(totalPausedTicks)
 			? totalPausedTicks
 			: Math.max(...totalPausedTicks))
-	GameState.RawGameTime = GameState.CurrentGameTick * tickInterval
-	GameRules.RawGameTime = GameState.RawGameTime
-	if (prevTime > 0) {
+
+	const time = GameState.CurrentGameTick * tickInterval
+	if (time <= 0) {
 		return
 	}
+	GameState.RawGameTime = time
+	GameRules.RawGameTime = time
 	if (LocalPlayer !== undefined) {
 		let delta = prevTime !== 0 ? GameState.RawGameTime - prevTime : tickInterval
 		if (Math.abs(delta - tickInterval) < tickInterval / 10) {
