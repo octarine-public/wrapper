@@ -9,13 +9,61 @@ import { Item } from "../../Objects/Base/Item"
 import { NeutralSpawner, NeutralSpawners } from "../../Objects/Base/NeutralSpawner"
 import { Unit, Units } from "../../Objects/Base/Unit"
 import { Wearable } from "../../Objects/Base/Wearable"
+import { npc_dota_hero_wisp } from "../../Objects/Heroes/npc_dota_hero_wisp"
+import { Miniboss } from "../../Objects/Units/Miniboss"
 import { GameState } from "../../Utils/GameState"
 import { AngleDiff } from "../../Utils/Math"
+import { EntityManager } from "../EntityManager"
 import { EventsSDK } from "../EventsSDK"
 import { Prediction } from "../Prediction/Prediction"
 
-const Monitor = new (class CPreUnitChanged {
-	public PostDataUpdate(dt: number) {
+new (class CPreUnitChanged {
+	constructor() {
+		EventsSDK.on(
+			"PostDataUpdate",
+			this.PostDataUpdate.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"PreEntityCreated",
+			this.PreEntityCreated.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"EntityCreated",
+			this.EntityCreated.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"LocalTeamChanged",
+			this.LocalTeamChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"UnitAnimation",
+			this.UnitAnimation.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"UnitAnimationEnd",
+			this.UnitAnimationEnd.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"UnitItemsChanged",
+			this.UnitItemsChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"AbilityHiddenChanged",
+			this.AbilityHiddenChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on("EntityDestroyed", this.EntityDestroyed.bind(this))
+		EventsSDK.on("GameEvent", this.GameEvent.bind(this), EventPriority.IMMEDIATE)
+	}
+
+	protected PostDataUpdate(dt: number) {
 		if (dt === 0) {
 			return
 		}
@@ -148,12 +196,10 @@ const Monitor = new (class CPreUnitChanged {
 			// TODO: interpolate DeltaZ from OnModifierUpdated?
 		}
 	}
-
-	public UnitItemsChanged(unit: Unit) {
+	protected UnitItemsChanged(unit: Unit) {
 		unit.ChangeFieldsByEvents()
 	}
-
-	public PreEntityCreated(entity: Entity) {
+	protected PreEntityCreated(entity: Entity) {
 		switch (true) {
 			// case entity instanceof Item: // owner undefined set in EntityCreated
 			// 	this.itemChanged(entity)
@@ -162,7 +208,7 @@ const Monitor = new (class CPreUnitChanged {
 			// 	this.spellChanged(entity)
 			// 	break
 			case entity instanceof Unit:
-				this.unitChanged(entity)
+				this.unitPredictedPositionChanged(entity)
 				break
 			case entity instanceof Wearable:
 				this.unitWearablesChanged(entity)
@@ -172,8 +218,7 @@ const Monitor = new (class CPreUnitChanged {
 				break
 		}
 	}
-
-	public EntityCreated(entity: Entity) {
+	protected EntityCreated(entity: Entity) {
 		switch (true) {
 			case entity instanceof Item:
 				this.itemChanged(entity)
@@ -183,8 +228,7 @@ const Monitor = new (class CPreUnitChanged {
 				break
 		}
 	}
-
-	public EntityDestroyed(entity: Entity) {
+	protected EntityDestroyed(entity: Entity) {
 		if (entity instanceof Item) {
 			this.itemDestroyed(entity)
 		}
@@ -201,21 +245,20 @@ const Monitor = new (class CPreUnitChanged {
 			this.spawnerUnitDestroyed(entity)
 		}
 	}
-
-	public LocalTeamChanged() {
+	protected LocalTeamChanged() {
 		for (let i = Units.length - 1; i > -1; i--) {
 			const unit = Units[i]
 			unit.IsVisibleForEnemies_ = Unit.IsVisibleForEnemies(unit)
 		}
 	}
-
-	public UnitAnimation(
+	protected UnitAnimation(
 		unit: Unit | FakeUnit,
 		sequenceVariant: number,
-		playbackRate: number,
+		playBackRate: number,
 		castpoint: number,
-		activity: number,
 		type: number,
+		activity: number,
+		_lagCompensationTime: number,
 		rawCastPoint: number
 	) {
 		if (unit instanceof FakeUnit || (!unit.IsInAnimation && activity === -1)) {
@@ -231,7 +274,7 @@ const Monitor = new (class CPreUnitChanged {
 		}
 		unit.LastAnimationRawCastPoint = rawCastPoint
 		unit.LastAnimationCastPoint = castpoint
-		unit.LastAnimationPlaybackRate = playbackRate
+		unit.LastAnimationPlaybackRate = playBackRate
 
 		const anim = unit.GetAnimation(activity, sequenceVariant, false)
 		unit.LastAnimationEndTime =
@@ -246,8 +289,7 @@ const Monitor = new (class CPreUnitChanged {
 						GameState.TickInterval
 				: 0
 	}
-
-	public UnitAnimationEnd(unit: Unit | FakeUnit) {
+	protected UnitAnimationEnd(unit: Unit | FakeUnit, _snap: boolean) {
 		if (unit instanceof FakeUnit || !unit.IsInAnimation) {
 			return
 		}
@@ -274,8 +316,7 @@ const Monitor = new (class CPreUnitChanged {
 		unit.LastAnimationCastPoint = 0
 		unit.LastAnimationPlaybackRate = 0
 	}
-
-	public AbilityHiddenChanged(entity: Ability) {
+	protected AbilityHiddenChanged(entity: Ability) {
 		const owner = entity.Owner
 		if (!(owner instanceof Unit)) {
 			return
@@ -298,8 +339,11 @@ const Monitor = new (class CPreUnitChanged {
 			}
 		}
 	}
-
-	/** ========================== CHANGED ========================== */
+	protected GameEvent(name: string, obj: IEntityHurt) {
+		if (name === "entity_hurt") {
+			this.handleAttackedUnits(obj)
+		}
+	}
 	private spellChanged(entity: Ability) {
 		if (entity.IsItem) {
 			return
@@ -315,7 +359,6 @@ const Monitor = new (class CPreUnitChanged {
 			}
 		}
 	}
-
 	private itemChanged(entity: Item) {
 		for (let index = Units.length - 1; index > -1; index--) {
 			const unit = Units[index]
@@ -328,13 +371,11 @@ const Monitor = new (class CPreUnitChanged {
 			}
 		}
 	}
-
-	private unitChanged(entity: Unit) {
+	private unitPredictedPositionChanged(entity: Unit) {
 		entity.PredictedPosition.CopyFrom(entity.NetworkedPosition)
 		entity.LastRealPredictedPositionUpdate = GameState.RawGameTime
 		entity.LastPredictedPositionUpdate = GameState.RawGameTime
 	}
-
 	private unitWearablesChanged(entity: Wearable) {
 		for (let index = Units.length - 1; index > -1; index--) {
 			const unit = Units[index]
@@ -360,7 +401,6 @@ const Monitor = new (class CPreUnitChanged {
 			}
 		}
 	}
-
 	private unitSpawnerChanged(entity: NeutralSpawner) {
 		for (let index = Units.length - 1; index > -1; index--) {
 			const unit = Units[index]
@@ -369,8 +409,6 @@ const Monitor = new (class CPreUnitChanged {
 			}
 		}
 	}
-
-	/** ========================== DESTROYED ========================== */
 	private itemDestroyed(entity: Item) {
 		const owner = entity.Owner
 		if (!(owner instanceof Unit)) {
@@ -384,7 +422,6 @@ const Monitor = new (class CPreUnitChanged {
 			}
 		}
 	}
-
 	private spellDestroyed(entity: Ability) {
 		if (entity.IsItem) {
 			return
@@ -401,7 +438,6 @@ const Monitor = new (class CPreUnitChanged {
 			}
 		}
 	}
-
 	private wariableDestroyed(entity: Wearable) {
 		const owner = entity.Owner
 		if (!(owner instanceof Unit)) {
@@ -411,7 +447,6 @@ const Monitor = new (class CPreUnitChanged {
 			EventsSDK.emit("UnitWearablesChanged", false, owner)
 		}
 	}
-
 	private unitSpawnerDestroyed(entity: NeutralSpawner) {
 		for (let index = Units.length - 1; index > -1; index--) {
 			const unit = Units[index]
@@ -420,16 +455,14 @@ const Monitor = new (class CPreUnitChanged {
 			}
 		}
 	}
-
 	private spawnerUnitDestroyed(entity: Unit) {
-		for (let index = NeutralSpawners.length - 1; index > -1; index--) {
-			const spawner = NeutralSpawners[index]
+		for (let i = NeutralSpawners.length - 1; i > -1; i--) {
+			const spawner = NeutralSpawners[i]
 			if (entity.Spawner === spawner) {
 				entity.Spawner = undefined
 			}
 		}
 	}
-
 	// hack workaround owner abilities
 	private setNewProperty(entity: Item | Ability, unit: Unit, arrIndex: number) {
 		entity.Owner_ = unit.Handle
@@ -443,7 +476,6 @@ const Monitor = new (class CPreUnitChanged {
 		this.slotChanged(entity, arrIndex)
 		unit.TotalItems[arrIndex] = entity
 	}
-
 	private slotChanged(entity: Ability, arrIndex: number) {
 		if (entity instanceof Item) {
 			entity.ItemSlot = arrIndex
@@ -453,55 +485,31 @@ const Monitor = new (class CPreUnitChanged {
 			? EAbilitySlot.DOTA_SPELL_SLOT_HIDDEN
 			: arrIndex
 	}
-})()
-
-EventsSDK.on("EntityDestroyed", ent => Monitor.EntityDestroyed(ent))
-
-EventsSDK.on("PreEntityCreated", ent => Monitor.PreEntityCreated(ent))
-
-EventsSDK.on("PostDataUpdate", dt => Monitor.PostDataUpdate(dt), EventPriority.IMMEDIATE)
-
-// workaround owner abilities
-EventsSDK.on("EntityCreated", ent => Monitor.EntityCreated(ent), EventPriority.IMMEDIATE)
-
-EventsSDK.on(
-	"LocalTeamChanged",
-	() => Monitor.LocalTeamChanged(),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"UnitAnimation",
-	(
-		unit,
-		sequenceVariant,
-		playbackRate,
-		castpoint,
-		type,
-		activity,
-		_lagCompensationTime,
-		rawCastPoint
-	) =>
-		Monitor.UnitAnimation(
-			unit,
-			sequenceVariant,
-			playbackRate,
-			castpoint,
-			activity,
-			type,
-			rawCastPoint
+	private handleAttackedUnits(obj: IEntityHurt) {
+		const victim = EntityManager.EntityByIndex(obj.entindex_killed),
+			target = EntityManager.EntityByIndex(obj.entindex_attacker)
+		if (!(victim instanceof Unit) || !(target instanceof Unit)) {
+			return
+		}
+		if (this.excludeAttacked(victim) || this.excludeAttacked(target)) {
+			return
+		}
+		// TODO: handle is teleported
+		if (victim.IsVisible || target.IsVisible || !victim.IsAlive || !target.IsAlive) {
+			return
+		}
+		if (!victim.IsIllusion && !target.IsIllusion) {
+			target.PredictedPosition.CopyFrom(victim.Position)
+			target.LastPredictedPositionUpdate = GameState.RawGameTime
+			victim.PredictedPosition.CopyFrom(target.Position)
+			victim.LastPredictedPositionUpdate = GameState.RawGameTime
+		}
+	}
+	private excludeAttacked(source: Unit) {
+		return (
+			source.IsRoshan ||
+			source instanceof Miniboss ||
+			source instanceof npc_dota_hero_wisp
 		)
-)
-EventsSDK.on("UnitAnimationEnd", unit => Monitor.UnitAnimationEnd(unit))
-
-EventsSDK.on(
-	"UnitItemsChanged",
-	unit => Monitor.UnitItemsChanged(unit),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"AbilityHiddenChanged",
-	ability => Monitor.AbilityHiddenChanged(ability),
-	EventPriority.IMMEDIATE
-)
+	}
+})()

@@ -1,6 +1,5 @@
 import { EventPriority } from "../../Enums/EventPriority"
 import { LifeState } from "../../Enums/LifeState"
-import { Entity } from "../../Objects/Base/Entity"
 import { Unit } from "../../Objects/Base/Unit"
 import { GameState } from "../../Utils/GameState"
 import { EntityManager } from "../EntityManager"
@@ -8,43 +7,38 @@ import { EventsSDK } from "../EventsSDK"
 
 new (class CEntityChanged {
 	constructor() {
-		EventsSDK.on(
-			"GameEvent",
-			(name, obj) => this.GameEvent(name, obj),
-			EventPriority.IMMEDIATE
-		)
+		EventsSDK.on("GameEvent", this.GameEvent.bind(this), EventPriority.IMMEDIATE)
 	}
 
 	protected GameEvent(eventName: string, obj: any) {
-		const entity = EntityManager.EntityByIndex(obj.entindex_killed)
 		switch (eventName) {
 			case "entity_hurt":
-				this.handleEntityHurt(entity, obj.damage)
+				this.handleHPChanged(obj)
 				break
 			case "entity_killed":
-				this.handleEntityKilled(entity)
+				this.handleLifeStateChanged(obj)
 				break
 			case "dota_buyback":
-				this.handleDotaBuyback(entity)
+				this.handleDotaBuyback(obj)
 				break
 			default:
 				break
 		}
 	}
-
-	private handleEntityHurt(entity: Nullable<Entity>, damage: number) {
+	private handleHPChanged(obj: IEntityHurt) {
+		const entity = EntityManager.EntityByIndex(obj.entindex_killed)
 		if (entity === undefined || entity.IsVisible || !entity.IsAlive) {
 			return
 		}
 
-		entity.HP = Math.max(Math.round(entity.HP - damage), 1)
+		entity.HP = Math.max(Math.round(entity.HP - obj.damage), 1)
 
 		if (entity instanceof Unit) {
 			entity.LastDamageTime_ = GameState.RawGameTime
 		}
 	}
-
-	private handleEntityKilled(entity: Nullable<Entity>) {
+	private handleLifeStateChanged(obj: IEntityKilled) {
+		const entity = EntityManager.EntityByIndex(obj.entindex_killed)
 		if (entity === undefined) {
 			return
 		}
@@ -54,8 +48,8 @@ new (class CEntityChanged {
 			EventsSDK.emit("LifeStateChanged", false, entity)
 		}
 	}
-
-	private handleDotaBuyback(entity: Nullable<Entity>) {
+	private handleDotaBuyback(obj: IEntityHurt) {
+		const entity = EntityManager.EntityByIndex(obj.entindex_killed)
 		if (entity === undefined || entity.LifeState !== LifeState.LIFE_DEAD) {
 			return
 		}
