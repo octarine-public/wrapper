@@ -113,7 +113,8 @@ export class Ability extends Entity {
 			this.AbilityData !== AbilityData.empty &&
 			!this.IsAttributes &&
 			!this.IsInnateHidden &&
-			!this.Name.startsWith("seasonal_")
+			!this.Name.startsWith("seasonal_") &&
+			!this.Name.startsWith("special_bonus_")
 		)
 	}
 	public get IsUltimate(): boolean {
