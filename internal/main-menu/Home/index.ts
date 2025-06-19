@@ -100,14 +100,6 @@ new (class CInternalMainMenu {
 			.AddToggle("Disable smoke", false, "Use own risk!")
 			.OnValue(toggle => this.updateConvars(toggle.value))
 
-		this.tree
-			.AddToggle(
-				"Fow particles",
-				false,
-				"Show fog of war particles\n(example teleports)\nNot recommended if you have low fps"
-			)
-			.OnValue(toggle => ToggleFowParticles(toggle.value))
-
 		EventsSDK.on("Draw", this.Draw.bind(this))
 		EventsSDK.on("GameEnded", this.GameChanged.bind(this))
 		EventsSDK.on("GameStarted", this.GameChanged.bind(this))

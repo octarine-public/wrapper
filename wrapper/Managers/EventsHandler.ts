@@ -734,6 +734,26 @@ message CMsgSosSetLibraryStackFields {
 }
 `)
 
+declare function SetNetworkParticleFOW(particleSystemHandle: bigint): void
+
+function isValidTPParticle(particle: NetworkedParticle) {
+	return (
+		particle.PathNoEcon === "particles/items2_fx/teleport_end.vpcf" ||
+		particle.PathNoEcon === "particles/items2_fx/teleport_start.vpcf" ||
+		particle.PathNoEcon ===
+			"particles/units/heroes/hero_furion/furion_teleport_end.vpcf"
+	)
+}
+function SetVisibleNetworkedParticle(particle: NetworkedParticle): void {
+	if (!isValidTPParticle(particle)) {
+		return
+	}
+	const caster = particle.AttachedTo ?? particle.ModifiersAttachedTo
+	if (caster instanceof FakeUnit || caster?.IsEnemy()) {
+		SetNetworkParticleFOW(particle.ParticleSystemHandle)
+	}
+}
+
 function HandleParticleMsg(msg: RecursiveProtobuf): void {
 	const index = msg.get("index") as number
 	const par = NetworkedParticle.Instances.get(index)
@@ -790,18 +810,16 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 				? GetPathByHash(particleSystemHandle)
 				: undefined
 		if (path !== undefined) {
-			EventsSDK.emit(
-				"ParticleCreated",
-				false,
-				new NetworkedParticle(
-					index,
-					path,
-					particleSystemHandle,
-					submsg.get("attach_type") as number,
-					GetPredictionTarget(entID, false, path),
-					GetPredictionTarget(modifiersEntID, false, path)
-				)
+			const newClass = new NetworkedParticle(
+				index,
+				path,
+				particleSystemHandle,
+				submsg.get("attach_type") as number,
+				GetPredictionTarget(entID, false, path),
+				GetPredictionTarget(modifiersEntID, false, path)
 			)
+			SetVisibleNetworkedParticle(newClass)
+			EventsSDK.emit("ParticleCreated", false, newClass)
 		} else {
 			console.log(
 				GameState.RawGameTime,

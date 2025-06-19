@@ -274,6 +274,9 @@ export class Unit extends Entity {
 	public readonly TotalItems = new Array<Nullable<Item>>(MAX_ITEMS).fill(undefined)
 	public readonly PredictedPosition = new Vector3().Invalidate()
 
+	public readonly TPEndPosition = new Vector3().Invalidate()
+	public readonly TPStartPosition = new Vector3().Invalidate()
+
 	/**
 	 * @description added for compatibility (icore)
 	 * @deprecated

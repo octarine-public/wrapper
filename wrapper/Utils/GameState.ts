@@ -42,6 +42,9 @@ export const GameState = new (class CGameState {
 	public get IsConnected(): boolean {
 		return this.MapName !== "<empty>"
 	}
+	public get IsDemo() {
+		return this.MapName === "hero_demo_main"
+	}
 	public GetLatency(flow: Flow = Flow.IN) {
 		return GetLatency(flow)
 	}

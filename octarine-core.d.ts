@@ -343,7 +343,6 @@ declare function RequestUnitsProperties(buf: Uint16Array): void
  * @description Pass boolean to clear banned heroes
  */
 declare function ToggleBanHeroes(bannedHeroIds: number[] | false): void
-declare function ToggleFowParticles(state: boolean): void
 
 declare function fread(path: string, binary: boolean): Nullable<ArrayBuffer | string>
 declare function fread(path: string, binary: true): Nullable<ArrayBuffer>

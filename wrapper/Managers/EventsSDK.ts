@@ -1,4 +1,5 @@
 import { NetworkedParticle } from "../Base/NetworkedParticle"
+import { UnitPortalData } from "../Base/UnitPortalData"
 import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { DOTAGameState } from "../Enums/DOTAGameState"
@@ -196,7 +197,7 @@ interface EventsSDK extends EventEmitter {
 			playbackrate: number,
 			castpoint: number,
 			type: number,
-			activity: number,
+			activity: GameActivity,
 			lagCompensationTime: number,
 			rawCastPoint: number
 		) => void,
@@ -518,6 +519,16 @@ interface EventsSDK extends EventEmitter {
 	on(
 		name: "UnitStateChanged",
 		listener: (entity: Unit) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "UnitPortalChanged",
+		listener: (model: UnitPortalData) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "UnitPortalDestroyed",
+		listener: (model: UnitPortalData) => void,
 		priority?: number
 	): EventEmitter
 }
