@@ -2185,7 +2185,6 @@ export { modifier_dazzle_shallow_grave } from "./Objects/Modifiers/Abilities/Daz
 export { modifier_hexxed } from "./Objects/Modifiers/Abilities/Dazzle/modifier_hexxed"
 export { modifier_death_prophet_exorcism } from "./Objects/Modifiers/Abilities/DeathProphet/modifier_death_prophet_exorcism"
 export { modifier_death_prophet_mourning_ritual } from "./Objects/Modifiers/Abilities/DeathProphet/modifier_death_prophet_mourning_ritual"
-export { modifier_death_prophet_slow } from "./Objects/Modifiers/Abilities/DeathProphet/modifier_death_prophet_slow"
 export { modifier_death_prophet_spirit_siphon } from "./Objects/Modifiers/Abilities/DeathProphet/modifier_death_prophet_spirit_siphon"
 export { modifier_death_prophet_spirit_siphon_slow } from "./Objects/Modifiers/Abilities/DeathProphet/modifier_death_prophet_spirit_siphon_slow"
 export { modifier_death_prophet_witchcraft } from "./Objects/Modifiers/Abilities/DeathProphet/modifier_death_prophet_witchcraft"
