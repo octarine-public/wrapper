@@ -246,27 +246,20 @@ new (class CTeleportChanged {
 			}
 			return
 		}
-		if (!caster.IsVisible) {
-			caster.TPStartPosition.CopyFrom(start)
-		}
+		caster.TPStartPosition.CopyFrom(start)
+		caster.TPEndPosition.CopyFrom(endPosition)
 		const current = this.teleports.find(([x]) => x === caster)
 		if (current !== undefined) {
 			current[1].UpdateData(entity?.Index, endPosition)
 			return
 		}
-
 		const [building, isFontain] = this.getBuilding(endPosition),
 			travel = caster.GetItemByClass(item_travel_boots),
 			travel2 = caster.GetItemByClass(item_travel_boots_2)
 
 		const hasTravel = travel !== undefined,
 			hasTravel2 = travel2 !== undefined,
-			hasIteration =
-				entity !== undefined ||
-				isFontain ||
-				hasTravel ||
-				hasTravel2 ||
-				GameState.IsDemo
+			hasIteration = entity !== undefined || isFontain || hasTravel || hasTravel2
 
 		const unitClass = new UnitPortalData(caster.Index)
 		if (hasTravel2) {
@@ -278,7 +271,7 @@ new (class CTeleportChanged {
 		}
 
 		const portalClass = new PortalPoint(start, endPosition, caster.Index)
-		portalClass.InternalSkipIteration = hasIteration
+		portalClass.InternalSkipIteration = hasIteration || GameState.IsDemo
 
 		let maxDuration = 3
 		if (building !== undefined) {
@@ -327,8 +320,7 @@ new (class CTeleportChanged {
 		}
 		if (isEnded) {
 			caster.TPEndPosition.CopyFrom(position)
-		}
-		if (!caster.IsVisible && !isEnded) {
+		} else {
 			caster.TPStartPosition.CopyFrom(position)
 		}
 		const current = this.teleports.find(([x]) => x === caster)
@@ -384,8 +376,10 @@ new (class CTeleportChanged {
 		const [caster, , start, end] = teleport
 		if (!start.IsValid) {
 			start.CopyFrom(entity.Position)
+			caster.TPStartPosition.CopyFrom(start)
 		} else if (!end.IsValid && !start.Equals(entity.Position)) {
 			end.CopyFrom(entity.Position)
+			caster.TPEndPosition.CopyFrom(end)
 			const unitClass = new UnitPortalData(caster.Index)
 			unitClass.EndPosition.CopyFrom(end)
 			unitClass.MaxDuration = 4
@@ -514,6 +508,8 @@ new (class CTeleportChanged {
 			return
 		}
 		data[1].IsCanceled = isCanceled
+		caster.TPEndPosition.Invalidate()
+		caster.TPStartPosition.Invalidate()
 		EventsSDK.emit("UnitPortalDestroyed", false, data[1])
 		this.teleports.removeCallback(
 			([x, y]) => x === caster && y.AbilityName === "twin_gate_portal_warp"

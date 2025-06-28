@@ -9,7 +9,7 @@ export class UnitPortalData {
 	public IsValid = true
 	public IsCanceled = false
 	public MaxDuration: number = 3
-	public AbilityName: string = "item_teleport"
+	public AbilityName: string = "item_tpscroll"
 	public readonly EndPosition = new Vector3().Invalidate()
 
 	private targetIndex: number = -1
@@ -47,12 +47,7 @@ export class UnitPortalData {
 		skipIteration?: boolean,
 		duration?: number
 	) {
-		if (GameState.IsDemo) {
-			return
-		}
-
 		this.lastCreateTime = GameState.RawGameTime
-
 		if (skipIteration) {
 			this.MaxDuration = duration ?? this.MaxDuration
 			EventsSDK.emit("UnitPortalChanged", false, this)
