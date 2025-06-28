@@ -345,7 +345,7 @@ export class PlayerCustomData {
 	}
 	/**
 	 * @description Retrieves the DataTeamPlayer for the current player.
-	 * @return {DataTeamPlayer | undefined}
+	 * @return {Nullable<DataTeamPlayer>}
 	 */
 	public get DataTeamPlayer(): Nullable<DataTeamPlayer> {
 		const arr = PlayerCustomData.TeamData

@@ -79,8 +79,6 @@ export class CGameRules extends Entity {
 	public readonly AllDraftRadiantFirst: boolean = false
 	@NetworkedBasicField("m_vecPlayerDraftPickOrder")
 	public readonly PlayerDraftPickOrder: number[] = []
-	@NetworkedBasicField("m_nNextPowerRuneType")
-	public readonly NextPowerRuneType: number = 0
 
 	public GameState = DOTAGameState.DOTA_GAMERULES_STATE_INIT
 	public HeroPickState = DOTAHeroPickState.DOTA_HEROPICK_STATE_NONE

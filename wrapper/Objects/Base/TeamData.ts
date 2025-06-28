@@ -3,6 +3,7 @@ import { EntityPropertiesNode } from "../../Base/EntityProperties"
 import { TreeModelReplacement } from "../../Base/TreeModelReplacement"
 import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { DOTA_RUNES } from "../../Enums/DOTA_RUNES"
 import { ERoshanSpawnPhase } from "../../Enums/ERoshanSpawnPhase"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { Events } from "../../Managers/Events"
@@ -15,6 +16,10 @@ import { Tree, Trees } from "./Tree"
 export class TeamData extends Entity {
 	public DataTeam: DataTeamPlayer[] = []
 	public WorldTreeModelReplacements: TreeModelReplacement[] = []
+	@NetworkedBasicField("m_nNextPowerRuneType")
+	public readonly NextPowerRuneType: DOTA_RUNES = DOTA_RUNES.DOTA_RUNE_INVALID
+	@NetworkedBasicField("m_nNextPowerRuneSpawnIndex")
+	public readonly NextPowerRuneSpawnIndex: number = -1
 	@NetworkedBasicField("m_vDesiredWardPlacement")
 	public readonly DesiredWardPlacement: Vector2[] = []
 	@NetworkedBasicField("m_vPossibleWardPlacement")
