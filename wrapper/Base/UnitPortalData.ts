@@ -10,7 +10,9 @@ export class UnitPortalData {
 	public IsCanceled = false
 	public MaxDuration: number = 3
 	public AbilityName: string = "item_tpscroll"
+
 	public readonly EndPosition = new Vector3().Invalidate()
+	public readonly StartPosition = new Vector3().Invalidate()
 
 	private targetIndex: number = -1
 	private lastCreateTime: number = 0
@@ -18,7 +20,6 @@ export class UnitPortalData {
 	constructor(private readonly index: number) {
 		this.lastCreateTime = GameState.RawGameTime
 	}
-
 	public get Caster() {
 		return EntityManager.EntityByIndex<Unit>(this.index)
 	}
@@ -37,10 +38,15 @@ export class UnitPortalData {
 		}
 		return point.EndPosition.Distance2D(this.EndPosition) <= PortalPoint.CheckDistance
 	}
-	public UpdateData(entIndex: Nullable<number>, endPosition: Vector3) {
+	public UpdateData(
+		entIndex: Nullable<number>,
+		startPosition: Vector3,
+		endPosition: Vector3
+	) {
 		this.lastCreateTime = GameState.RawGameTime
 		this.targetIndex = entIndex ?? -1
 		this.EndPosition.CopyFrom(endPosition)
+		this.StartPosition.CopyFrom(startPosition)
 	}
 	public UpdateDuration(
 		pointsData: PortalPoint[],

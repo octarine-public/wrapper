@@ -109,6 +109,7 @@ new (class CTeleportChanged {
 		}
 		const data = this.teleports.find(([x]) => x === entity)
 		if (data !== undefined) {
+			data[1].StartPosition.CopyFrom(entity.Position)
 			data[0].TPStartPosition.CopyFrom(entity.Position)
 		}
 		const twinGateData = this.twinGateTeleports.find(([x]) => x === entity)
@@ -250,7 +251,7 @@ new (class CTeleportChanged {
 		caster.TPEndPosition.CopyFrom(endPosition)
 		const current = this.teleports.find(([x]) => x === caster)
 		if (current !== undefined) {
-			current[1].UpdateData(entity?.Index, endPosition)
+			current[1].UpdateData(entity?.Index, start, endPosition)
 			return
 		}
 		const [building, isFontain] = this.getBuilding(endPosition),
@@ -285,7 +286,7 @@ new (class CTeleportChanged {
 			maxDuration = hasTravel2 ? maxDuration - 1 : maxDuration
 		}
 		this.teleportPoints.push(portalClass)
-		unitClass.UpdateData(entity?.Index, endPosition)
+		unitClass.UpdateData(entity?.Index, start, endPosition)
 		unitClass.UpdateDuration(this.teleportPoints, hasIteration, maxDuration)
 		this.teleports.push([caster, unitClass])
 	}
@@ -337,6 +338,7 @@ new (class CTeleportChanged {
 				pointData.InternalSkipEmitNotify = true
 				pointData.EndPosition.CopyFrom(caster.TPEndPosition)
 				current[1].EndPosition.CopyFrom(caster.TPEndPosition)
+				current[1].StartPosition.CopyFrom(caster.TPStartPosition)
 				EventsSDK.emit("UnitPortalChanged", false, current[1])
 			}
 			return
@@ -381,6 +383,7 @@ new (class CTeleportChanged {
 			end.CopyFrom(entity.Position)
 			caster.TPEndPosition.CopyFrom(end)
 			const unitClass = new UnitPortalData(caster.Index)
+			unitClass.StartPosition.CopyFrom(caster.TPStartPosition)
 			unitClass.EndPosition.CopyFrom(end)
 			unitClass.MaxDuration = 4
 			unitClass.AbilityName = "twin_gate_portal_warp"
