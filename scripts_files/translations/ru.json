@@ -113,5 +113,18 @@
 	"Color change speed": "Скорость смены цвета",
 	"Disable smoke": "Отключить дымку",
 	"Fow particles": "Частицы в тумане",
-	"Use own risk!": "Используйте на свой страх и риск!"
+	"Use own risk!": "Используйте на свой страх и риск!",
+	"Location": "Локация",
+	"Unknown": "Неизвестно",
+	"Base": "База",
+	"Top": "Топ",
+	"Middle": "Мид",
+	"Bottom": "Бот",
+	"Jungle": "Лес",
+	"River top": "Река топ",
+	"River middle": "Река мид",
+	"River bottom": "Река бот",
+	"Radiant": "Свет",
+	"Dire": "Тьма",
+	"Outpost": "Аванпост"
 }
