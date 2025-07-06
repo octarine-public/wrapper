@@ -177,11 +177,23 @@ export function GetBearTexture(): string {
 	return HeroImagePath + "/npc_dota_lone_druid_bear_png.vtex_c"
 }
 
-export function GetUnitTexture(
-	unitName: string,
-	small?: boolean,
-	team?: Team
-): Nullable<string> {
+export function GetCreepTexture(name: string): string {
+	if (name.startsWith("npc_dota_lycan_wolf")) {
+		return HeroImagePath + "/npc_dota_lycan_wolf_png.vtex_c"
+	}
+	if (name.startsWith("npc_dota_unit_undying_zombie")) {
+		return HeroImagePath + "/npc_dota_unit_undying_zombie_png.vtex_c"
+	}
+	if (name.startsWith("npc_dota_necronomicon_archer")) {
+		return HeroImagePath + "/npc_dota_necronomicon_archer_png.vtex_c"
+	}
+	if (name.startsWith("npc_dota_necronomicon_warrior")) {
+		return HeroImagePath + "/npc_dota_necronomicon_warrior_png.vtex_c"
+	}
+	return HeroImagePath + "/" + name + "_png.vtex_c"
+}
+
+export function GetUnitTexture(unitName: string, small?: boolean, team?: Team): string {
 	team ??= Team.Radiant
 	switch (true) {
 		case unitName.includes("npc_dota_hero_"):
@@ -192,10 +204,12 @@ export function GetUnitTexture(
 			return GetCourierTexture(small, team)
 		case unitName.includes("badguys_tower") || unitName.includes("goodguys_tower"):
 			return GetTowerTexture(small)
-		case unitName.includes("roshan"):
+		case unitName === "npc_dota_roshan":
 			return Icons.roshan_halloween_angry
 		case unitName.includes("psionic_trap"):
 			return GetSpellTexture("templar_assassin_psionic_trap")
+		default:
+			return GetCreepTexture(unitName)
 	}
 }
 
