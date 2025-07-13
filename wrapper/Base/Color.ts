@@ -75,6 +75,18 @@ export class Color {
 		)
 	}
 	/**
+	 * Convert [0–1] to [0–255]
+	 */
+	public static FloatToByte(value: number): number {
+		return Math.min(255, Math.max(0, Math.round(value * 255)))
+	}
+	/**
+	 * Convert [0–255] to [0–1]
+	 */
+	public static ByteToFloat(value: number): number {
+		return Math.min(1, Math.max(0, value / 255))
+	}
+	/**
 	 * Create new Color with r, g, b, a
 	 *
 	 * @example

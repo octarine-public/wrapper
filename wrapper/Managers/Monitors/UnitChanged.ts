@@ -104,6 +104,7 @@ new (class CPreUnitChanged {
 		}
 		for (let i = Units.length - 1; i > -1; i--) {
 			const unit = Units[i]
+
 			// see: https://dota2.fandom.com/wiki/Health_Regeneration
 			unit.HPRegenCounter += unit.HPRegen * 0.1
 			const regenAmount = Math.floor(unit.HPRegenCounter)
@@ -127,6 +128,7 @@ new (class CPreUnitChanged {
 				unit.LastRealPredictedPositionUpdate = GameState.RawGameTime
 				unit.LastPredictedPositionUpdate = GameState.RawGameTime
 			}
+
 			if (
 				unit.NetworkActivity === unit.NetworkActivityPrev &&
 				unit.NetworkSequenceIndex === unit.NetworkSequenceIndexPrev &&

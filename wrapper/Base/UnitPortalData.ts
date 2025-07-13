@@ -11,7 +11,7 @@ export class UnitPortalData {
 	public IsCanceled = false
 	public MaxDuration: number = 3
 	public AbilityName: string = "item_tpscroll"
-	public ForceEmit: [boolean, number] = [true, GameState.TickInterval * 1000]
+	public ForceEmit: [boolean, number] = [true, 0]
 	public readonly EndPosition = new Vector3().Invalidate()
 	public readonly StartPosition = new Vector3().Invalidate()
 

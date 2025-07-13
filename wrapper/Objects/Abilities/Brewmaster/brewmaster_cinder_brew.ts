@@ -19,4 +19,7 @@ export class brewmaster_cinder_brew extends Ability implements INuke {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("barrel_impact_damage", level)
 	}
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("projectile_speed", level)
+	}
 }

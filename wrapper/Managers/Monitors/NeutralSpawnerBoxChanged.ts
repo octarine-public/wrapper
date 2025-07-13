@@ -1,4 +1,5 @@
 import { NeutralSpawnerBox, NeutralSpawners } from "../../Base/NeutralSpawnerBox"
+import { Vector2 } from "../../Base/Vector2"
 import { EventPriority } from "../../Enums/EventPriority"
 import { Creep, Creeps } from "../../Objects/Base/Creep"
 import { Entity } from "../../Objects/Base/Entity"
@@ -15,11 +16,19 @@ new (class CNeutralSpawnerBoxChanged {
 	private readonly pSDK = new ParticlesSDK()
 
 	constructor() {
-		EventsSDK.on("Draw", this.Draw.bind(this))
-		EventsSDK.on("GameEnded", this.GameChanged.bind(this))
-		EventsSDK.on("GameStarted", this.GameChanged.bind(this))
-		EventsSDK.on("PostDataUpdate", this.PostDataUpdate.bind(this))
-		EventsSDK.on("EntityPositionChanged", this.EntityPositionChanged.bind(this))
+		EventsSDK.on("Draw", this.Draw.bind(this), EventPriority.IMMEDIATE)
+		EventsSDK.on("GameEnded", this.GameChanged.bind(this), EventPriority.IMMEDIATE)
+		EventsSDK.on("GameStarted", this.GameChanged.bind(this), EventPriority.IMMEDIATE)
+		EventsSDK.on(
+			"PostDataUpdate",
+			this.PostDataUpdate.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"EntityPositionChanged",
+			this.EntityPositionChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
 		EventsSDK.on(
 			"EntityCreated",
 			this.EntityCreated.bind(this),
@@ -33,6 +42,11 @@ new (class CNeutralSpawnerBoxChanged {
 		EventsSDK.on(
 			"LifeStateChanged",
 			this.LifeStateChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"UnitPropertyChanged",
+			this.UnitPropertyChanged.bind(this),
 			EventPriority.IMMEDIATE
 		)
 		EventsSDK.on(
@@ -62,7 +76,7 @@ new (class CNeutralSpawnerBoxChanged {
 		const spawner = NeutralSpawners.find(
 			x =>
 				!x.IsEmpty &&
-				(x.Spawner.SpawnBox?.Includes(entity.Position) ||
+				(x.Spawner.SpawnBox?.Includes2D(Vector2.FromVector3(entity.Position)) ||
 					entity.Distance2D(x.Position) <= 1000)
 		)
 		if (spawner !== undefined) {
@@ -95,6 +109,11 @@ new (class CNeutralSpawnerBoxChanged {
 		}
 		if (entity instanceof Creep && entity.IsNeutral) {
 			this.FindNeutralSpawner(entity.Spawner)?.EntityDestroyed(entity)
+		}
+	}
+	protected UnitPropertyChanged(entity: Unit) {
+		if (entity instanceof Creep && entity.IsNeutral) {
+			this.FindNeutralSpawner(entity.Spawner)?.UnitPropertyChanged(entity)
 		}
 	}
 	protected LifeStateChanged(entity: Entity) {
@@ -132,12 +151,11 @@ new (class CNeutralSpawnerBoxChanged {
 		return NeutralSpawners.find(x => x.Spawner === spawner)
 	}
 	protected RestartCreeps() {
-		for (let index = Creeps.length - 1; index > -1; index--) {
-			const creep = Creeps[index]
-			if (!creep.IsNeutral) {
-				continue
+		for (let i = Creeps.length - 1; i > -1; i--) {
+			const creep = Creeps[i]
+			if (creep.IsNeutral) {
+				this.FindNeutralSpawner(creep.Spawner)?.EntityCreated(creep)
 			}
-			this.FindNeutralSpawner(creep.Spawner)?.EntityCreated(creep)
 		}
 	}
 	protected ShouldUnit(unit: Unit) {

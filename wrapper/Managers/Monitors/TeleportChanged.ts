@@ -286,6 +286,7 @@ new (class CTeleportChanged {
 		} else if (hasIteration) {
 			maxDuration = hasTravel2 ? maxDuration - 1 : maxDuration
 		}
+
 		this.teleportPoints.push(portalClass)
 		unitClass.ForceEmit = [!hasKeen, GameState.TickInterval * 1000]
 		unitClass.UpdateData(entity?.Index, start, endPosition)

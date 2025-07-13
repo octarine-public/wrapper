@@ -17,6 +17,9 @@ const getTexturePath = (name: string, isItem = false): string => {
 	}
 	const abilityData = AbilityData.GetAbilityByName(name)
 	if (abilityData !== undefined && abilityData.TexturePath.length !== 0) {
+		if (abilityData.IsInnate) {
+			return ImagePath + "/hud/facets/innate_icon_png.vtex_c"
+		}
 		return abilityData.TexturePath
 	}
 	if (!isItem) {
