@@ -2,6 +2,7 @@ import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { GridNavCellFlags } from "../Enums/GridNavCellFlags"
+import { GetPositionHeight } from "../Native/WASM"
 import { TempTree } from "../Objects/Base/TempTree"
 import { Tree } from "../Objects/Base/Tree"
 import { Unit } from "../Objects/Base/Unit"
@@ -10,6 +11,7 @@ import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 class CGridNav {
 	public readonly Max: Vector2
 	public readonly UnitGridPos = new Map<Unit, Vector2>()
+	public readonly UnitGridVisiblePos = new Map<Unit, Vector2>()
 	private readonly edgeSizeRcp: number
 
 	constructor(
@@ -68,29 +70,20 @@ class CGridNav {
 			.MultiplyScalarForThis(this.EdgeSize)
 		return new Rectangle(pos1, pos1.AddScalar(this.EdgeSize))
 	}
+	// TODO: optimize?
 	public UpdateUnitState(unit: Unit, deleteUnit: boolean): void {
-		if (deleteUnit || unit.HasNoCollision) {
-			this.deleteOldFlags(unit)
+		if (unit.IsBuilding) {
 			return
 		}
 		const oldGridPos = this.UnitGridPos.get(unit),
-			newGridPos = this.GetGridPosForPos(unit.Position),
-			state = unit.IsValid && unit.IsAlive && unit.IsVisible && unit.IsSpawned
-		if (oldGridPos !== undefined && !oldGridPos.Equals(newGridPos)) {
-			this.SetCellFlag(
-				oldGridPos.x,
-				oldGridPos.y,
-				GridNavCellFlags.UnitBlocking,
-				false
-			)
-		} else {
-			this.SetCellFlag(
-				newGridPos.x,
-				newGridPos.y,
-				GridNavCellFlags.UnitBlocking,
-				state
-			)
+			newGridPos = this.GetGridPosForPos(unit.Position)
+		if (deleteUnit || unit.HasNoCollision) {
+			this.deleteOldFlags(oldGridPos, newGridPos)
+			return
 		}
+		const state = unit.IsValid && unit.IsAlive && unit.IsVisible && unit.IsSpawned
+		this.deleteOldFlags(oldGridPos, newGridPos)
+		this.SetCellFlag(newGridPos.x, newGridPos.y, GridNavCellFlags.UnitBlocking, state)
 		if (state) {
 			this.UnitGridPos.set(unit, newGridPos)
 			return
@@ -110,6 +103,52 @@ class CGridNav {
 		this.SetCellFlag(gridPos.x - 1, gridPos.y - 0, GridNavCellFlags.Tree, isAlive)
 		this.SetCellFlag(gridPos.x - 0, gridPos.y - 1, GridNavCellFlags.Tree, isAlive)
 		this.SetCellFlag(gridPos.x - 1, gridPos.y - 1, GridNavCellFlags.Tree, isAlive)
+	}
+	// TODO: optimize
+	public UpdateVisionState(unit: Unit, deleteUnit: boolean): void {
+		if (unit.IsBuilding || !unit.IsEnemy()) {
+			return
+		}
+		const oldGridPos = this.UnitGridVisiblePos.get(unit)
+		const newGridPos = this.GetGridPosForPos(unit.Position)
+		const visionRange = unit.VisionRange
+
+		if (oldGridPos && (!oldGridPos.Equals(newGridPos) || deleteUnit)) {
+			this.updateVisionForArea(oldGridPos, visionRange, false)
+		}
+		const canUpdateVision =
+			unit.IsValid &&
+			unit.IsAlive &&
+			unit.IsSpawned &&
+			(!unit.IsEnemy() || (unit.IsEnemy() && unit.IsVisible))
+
+		if (deleteUnit || !canUpdateVision) {
+			this.UnitGridVisiblePos.delete(unit)
+			return
+		}
+		this.updateVisionForArea(newGridPos, visionRange, true)
+		this.UnitGridVisiblePos.set(unit, newGridPos)
+	}
+	// TODO: optimize
+	private updateVisionForArea(center: Vector2, radius: number, state: boolean): void {
+		const cellsInRange = Math.ceil(radius * this.edgeSizeRcp)
+		for (let dx = -cellsInRange; dx <= cellsInRange; dx++) {
+			for (let dy = -cellsInRange; dy <= cellsInRange; dy++) {
+				if (dx * dx + dy * dy > cellsInRange * cellsInRange) {
+					continue
+				}
+				const targetX = center.x + dx
+				const targetY = center.y + dy
+				if (this.hasLineOfSight(center.x, center.y, targetX, targetY)) {
+					this.SetCellFlag(
+						targetX,
+						targetY,
+						GridNavCellFlags.VisibleCell,
+						state
+					)
+				}
+			}
+		}
 	}
 	private SetCellFlag(
 		gridPosX: number,
@@ -134,12 +173,68 @@ class CGridNav {
 		const gridPos = this.GetGridPosForPos(pos)
 		return this.GetCellIndexForGridPos(gridPos.x, gridPos.y)
 	}
-	private deleteOldFlags(unit: Unit): void {
-		const oldGridPos = this.UnitGridPos.get(unit)
-		if (oldGridPos === undefined) {
-			return
+	private deleteOldFlags(oldGridPos: Nullable<Vector2>, newGridPos: Vector2): void {
+		if (oldGridPos !== undefined && !oldGridPos.Equals(newGridPos)) {
+			this.SetCellFlag(
+				oldGridPos.x,
+				oldGridPos.y,
+				GridNavCellFlags.UnitBlocking,
+				false
+			)
 		}
-		this.SetCellFlag(oldGridPos.x, oldGridPos.y, GridNavCellFlags.UnitBlocking, false)
+	}
+	// TODO: optimize
+	private hasLineOfSight(x0: number, y0: number, x1: number, y1: number): boolean {
+		const dx = Math.abs(x1 - x0)
+		const dy = Math.abs(y1 - y0)
+		const sx = x0 < x1 ? 1 : -1
+		const sy = y0 < y1 ? 1 : -1
+		let err = dx - dy
+
+		let x = x0
+		let y = y0
+		const startHeight = GetPositionHeight(this.gridToWorld(x0, y0))
+		let blockedByHighground = false
+
+		while (!(x === x1 && y === y1)) {
+			const worldPos = this.gridToWorld(x, y)
+			const flags = this.GetCellFlagsForGridPos(x, y)
+			const cellHeight = GetPositionHeight(worldPos)
+			if (!(x === x0 && y === y0)) {
+				if (flags.hasBit(GridNavCellFlags.Tree)) {
+					return false
+				}
+			}
+			if (!blockedByHighground && cellHeight > startHeight) {
+				blockedByHighground = true
+			} else if (blockedByHighground) {
+				return false
+			}
+			if (
+				(blockedByHighground || cellHeight > startHeight) &&
+				(flags.hasBit(GridNavCellFlags.InteractionBlocker) ||
+					flags.hasBit(GridNavCellFlags.MovementBlocker))
+			) {
+				blockedByHighground = true
+				return false
+			}
+			const e2 = 2 * err
+			if (e2 > -dy) {
+				err -= dy
+				x += sx
+			}
+			if (e2 < dx) {
+				err += dx
+				y += sy
+			}
+		}
+		return true
+	}
+	private gridToWorld(gridX: number, gridY: number): Vector2 {
+		return new Vector2(
+			gridX * this.EdgeSize + this.Offset.x,
+			gridY * this.EdgeSize + this.Offset.y
+		)
 	}
 }
 export let GridNav: Nullable<CGridNav>

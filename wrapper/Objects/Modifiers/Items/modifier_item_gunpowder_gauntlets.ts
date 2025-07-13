@@ -12,11 +12,9 @@ export class modifier_item_gunpowder_gauntlets extends Modifier {
 			this.GetProcAttackBonusDamageMagical.bind(this)
 		]
 	])
-
 	protected GetProcAttackBonusDamageMagical(): [number, boolean] {
-		return [this.cachedDamage, false]
+		return [this.Ability?.IsCooldownReady ? this.cachedDamage : 0, false]
 	}
-
 	protected UpdateSpecialValues() {
 		this.cachedDamage = this.GetSpecialValue(
 			"bonus_damage",

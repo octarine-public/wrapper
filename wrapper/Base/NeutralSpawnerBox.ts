@@ -4,7 +4,6 @@ import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { DOTAGameState } from "../Enums/DOTAGameState"
 import { NeutralSpawnerType } from "../Enums/NeutralSpawnerType"
-import { Team } from "../Enums/Team"
 import { GameSleeper } from "../Helpers/Sleeper"
 import { ParticlesSDK } from "../Managers/ParticleManager"
 import { ProjectileManager } from "../Managers/ProjectileManager"
@@ -19,12 +18,15 @@ import { WardTrueSight } from "../Objects/Base/WardTrueSight"
 import { GameState } from "../Utils/GameState"
 
 export const NeutralSpawners: NeutralSpawnerBox[] = []
-
 export class NeutralSpawnerBox {
 	public static readonly Sleeper = new GameSleeper()
 
-	protected static get TimeLeft() {
+	public static get TimeLeft() {
 		return Math.floor(((GameRules?.GameTime ?? 0) % this.SpawnInterval) * 10) / 10
+	}
+	public static get RemainingTime() {
+		const remaining = this.SpawnInterval - this.TimeLeft
+		return Math.floor(remaining * 10) / 10
 	}
 	protected static get SpawnInterval() {
 		return ConVarsSDK.GetFloat("dota_neutral_spawn_interval", 60)
@@ -47,6 +49,7 @@ export class NeutralSpawnerBox {
 	public IsEmpty = false
 	public IsStack = false
 	public LastAttackTime = 0
+	public TotalCreepAvgGold = 0
 
 	protected IsInitialSpawn = true
 	protected IsStackMoveAttack = false
@@ -67,7 +70,7 @@ export class NeutralSpawnerBox {
 		return this.Spawner.SpawnerTeam
 	}
 	public get IsAlly() {
-		return (this.Team ?? Team.Invalid) === GameState.LocalTeam
+		return this.Team === GameState.LocalTeam
 	}
 	public get Position() {
 		return this.Spawner.Position
@@ -88,6 +91,9 @@ export class NeutralSpawnerBox {
 	public get StackStartTime() {
 		return this.Spawner.SpawnBox?.StackStart ?? 0
 	}
+	public get ValidCreeps() {
+		return this.Creeps.filter(x => x.IsAlive && x.IsSpawned)
+	}
 	protected get SpawnerTypeString() {
 		switch (this.Type) {
 			case NeutralSpawnerType.Small:
@@ -103,11 +109,10 @@ export class NeutralSpawnerBox {
 		}
 	}
 	public CanBeStack(unit: Unit) {
-		return (
-			unit.CanMove() &&
-			!this.IsStack &&
-			!NeutralSpawnerBox.Sleeper.Sleeping(unit.Index)
-		)
+		if (this.IsStack || NeutralSpawnerBox.Sleeper.Sleeping(unit.Index)) {
+			return false
+		}
+		return unit.CanMove()
 	}
 	public Stack(unit: Unit, creeps: Creep[], endPosition: Vector3) {
 		if (!unit.CanAttack() || !unit.CanMove()) {
@@ -132,23 +137,30 @@ export class NeutralSpawnerBox {
 		return true
 	}
 	public PostDataUpdate() {
+		const creeps = this.ValidCreeps,
+			time = NeutralSpawnerBox.TimeLeft,
+			box = this.Spawner.SpawnBox
+		if (time >= this.StackEndTime || this.Hits >= 5) {
+			this.IsEmpty =
+				!creeps.some(
+					x => x.IsAlive && x.IsSpawned && this.includes2D(box, x.Position)
+				) && creeps.length < 2
+		}
 		if (
 			NeutralSpawnerBox.IsSpawnTime &&
 			this.LastAttackTime + 7 < GameState.RawGameTime
 		) {
 			this.reset()
+			this.Creeps.orderByDescending(x => !x.IsWaitingToSpawn)
+			this.calculateAndSortCreepGold()
 		}
 	}
 	public EntityPositionChanged(entity: Unit) {
 		const time = NeutralSpawnerBox.TimeLeft,
-			box = this.Spawner.SpawnBox,
-			creeps = this.Creeps.filter(x => x.IsAlive && x.IsSpawned)
-		if (time >= this.StackEndTime || this.Hits >= 5) {
-			this.IsEmpty =
-				!creeps.some(x => this.includes2D(box, x.Position)) && creeps.length < 2
-		}
+			box = this.Spawner.SpawnBox
 		if (entity instanceof WardTrueSight || entity instanceof WardObserver) {
-			this.IsEmpty = this.includes2D(box, entity.Position) && creeps.length < 2
+			this.IsEmpty =
+				this.includes2D(box, entity.Position) && this.ValidCreeps.length < 2
 			return
 		}
 		if (
@@ -159,26 +171,34 @@ export class NeutralSpawnerBox {
 			this.IsEmpty = true
 		}
 	}
+	public UnitPropertyChanged(_entity: Creep) {
+		this.calculateAndSortCreepGold()
+	}
 	public EntityCreated(entity: Creep) {
-		if (!this.Creeps.includes(entity)) {
-			this.Creeps.push(entity)
+		if (this.Creeps.some(x => x === entity)) {
+			return
 		}
+		this.Creeps.push(entity)
+		this.calculateAndSortCreepGold()
 	}
 	public EntityDestroyed(entity: NeutralSpawner | Unit) {
 		if (entity instanceof Creep) {
 			this.Creeps.remove(entity)
+			this.calculateAndSortCreepGold()
 		}
 		if (entity instanceof Unit) {
 			this.Attackers.remove(entity)
 		}
 		if (entity instanceof NeutralSpawner) {
 			this.Creeps.clear()
+			this.TotalCreepAvgGold = 0
 			this.Attackers.clear()
 			NeutralSpawners.remove(this)
 		}
 	}
 	public LifeStateChanged(unit: Creep) {
 		this.Creeps.remove(unit)
+		this.calculateAndSortCreepGold()
 	}
 	public DrawDebug(pSDK: ParticlesSDK) {
 		if (LocalPlayer === undefined || LocalPlayer.Hero === undefined) {
@@ -211,7 +231,7 @@ export class NeutralSpawnerBox {
 		})
 	}
 	public AttackStarted(unit: Unit) {
-		if (!this.Attackers.includes(unit)) {
+		if (!this.Attackers.some(x => x === unit)) {
 			this.Attackers.push(unit)
 		}
 		++this.Hits
@@ -257,5 +277,16 @@ export class NeutralSpawnerBox {
 	}
 	private includes2D(box: Nullable<NeutralSpawnBox>, vec: Vector3): boolean {
 		return box?.Includes2D(Vector2.FromVector3(vec)) ?? false
+	}
+	private calculateAndSortCreepGold() {
+		this.Creeps.orderByDescending(x => !x.IsWaitingToSpawn)
+		this.TotalCreepAvgGold = this.Creeps.reduce(
+			(prev, curr) =>
+				prev +
+				(curr.IsWaitingToSpawn
+					? 0
+					: Math.round((curr.GoldBountyMin + curr.GoldBountyMax) / 2)),
+			0
+		)
 	}
 }

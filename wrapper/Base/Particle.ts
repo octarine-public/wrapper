@@ -79,8 +79,8 @@ export class Particle {
 		if (!this.IsValid && !this.IsHidden) {
 			return
 		}
-		for (let index = controlPoints.length - 1; index > -1; index--) {
-			const [id, param] = controlPoints[index]
+		for (let i = controlPoints.length - 1; i > -1; i--) {
+			const [id, param] = controlPoints[i]
 			this.SetControlPoint(id, param)
 		}
 	}

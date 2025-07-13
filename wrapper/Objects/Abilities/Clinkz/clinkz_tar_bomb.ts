@@ -1,7 +1,7 @@
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
-@WrapperClass("CDOTA_Ability_Clinkz_Tar_Bomb")
+@WrapperClass("clinkz_tar_bomb")
 export class clinkz_tar_bomb extends Ability implements INuke {
 	public get ProjectileAttachment(): string {
 		return "attach_attack2"

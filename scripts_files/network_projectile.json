@@ -1,0 +1,168 @@
+{
+	"particles/units/heroes/hero_lion/lion_spell_impale.vpcf": {
+		"abilityName": "lion_impale"
+	},
+	"particles/units/heroes/hero_kunkka/kunkka_shard_tidal_wave.vpcf": {
+		"abilityName": "kunkka_tidal_wave"
+	},
+	"particles/units/heroes/hero_kunkka/kunkka_ghost_ship_cannons.vpcf": {
+		"abilityName": "kunkka_ghostship"
+	},
+	"particles/units/heroes/hero_kunkka/kunkka_ghost_ship.vpcf": {
+		"abilityName": "kunkka_ghostship"
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_hairball.vpcf": {
+		"abilityName": "bristleback_hairball"
+	},
+	"particles/units/heroes/hero_dragon_knight/dragon_knight_breathe_fire.vpcf": {
+		"abilityName": "dragon_knight_breathe_fire"
+	},
+	"particles/units/heroes/hero_mars/mars_spear.vpcf": {
+		"abilityName": "mars_spear"
+	},
+	"particles/units/heroes/hero_tidehunter/tidehunter_gush_upgrade.vpcf": {
+		"abilityName": "tidehunter_gush"
+	},
+	"particles/units/heroes/hero_shredder/shredder_chakram.vpcf": {
+		"abilityName": "shredder_chakram"
+	},
+	"particles/units/heroes/hero_tiny/tiny_avalanche_projectile_lvl1.vpcf": {
+		"abilityName": "tiny_avalanche"
+	},
+	"particles/units/heroes/hero_tiny/tiny_avalanche_projectile_lvl2.vpcf": {
+		"abilityName": "tiny_avalanche"
+	},
+	"particles/units/heroes/hero_tiny/tiny_avalanche_projectile_lvl3.vpcf": {
+		"abilityName": "tiny_avalanche"
+	},
+	"particles/units/heroes/hero_tiny/tiny_avalanche_projectile_lvl4.vpcf": {
+		"abilityName": "tiny_avalanche"
+	},
+	"particles/units/heroes/hero_tiny/tiny_tree_linear_proj.vpcf": {
+		"abilityName": ["tiny_toss_tree", "tiny_tree_channel"]
+	},
+	"particles/units/heroes/hero_tusk/tusk_ice_shards_projectile.vpcf": {
+		"abilityName": "tusk_ice_shards"
+	},
+	"particles/units/heroes/hero_clinkz/clinkz_searing_arrow_linear_proj.vpcf": {
+		"abilityName": "clinkz_burning_barrage"
+	},
+	"particles/units/heroes/hero_drow/drow_silence_wave.vpcf": {
+		"abilityName": "drow_ranger_wave_of_silence"
+	},
+	"particles/units/heroes/hero_drow/drow_base_attack_linear_proj.vpcf": {
+		"abilityName": "drow_ranger_multishot"
+	},
+	"particles/units/heroes/hero_drow/drow_multishot_proj_linear_proj.vpcf": {
+		"abilityName": "drow_ranger_multishot"
+	},
+	"particles/units/heroes/hero_ember_spirit/ember_spirit_fire_remnant_trail.vpcf": {
+		"abilityName": "ember_spirit_fire_remnant"
+	},
+	"particles/units/heroes/hero_hoodwink/hoodwink_acorn_shot_initial.vpcf": {
+		"abilityName": "hoodwink_acorn_shot"
+	},
+	"particles/units/heroes/hero_hoodwink/hoodwink_sharpshooter_projectile.vpcf": {
+		"abilityName": "hoodwink_sharpshooter"
+	},
+	"particles/units/heroes/hero_mirana/mirana_spell_arrow.vpcf": {
+		"abilityName": "mirana_arrow"
+	},
+	"particles/units/heroes/hero_morphling/morphling_waveform.vpcf": {
+		"abilityName": "morphling_waveform"
+	},
+	"particles/units/heroes/hero_troll_warlord/troll_warlord_whirling_axe_ranged.vpcf": {
+		"abilityName": "troll_warlord_whirling_axes_ranged"
+	},
+	"particles/units/heroes/hero_vengeful/vengeful_wave_of_terror.vpcf": {
+		"abilityName": "vengefulspirit_wave_of_terror"
+	},
+	"particles/units/heroes/hero_weaver/weaver_swarm_projectile.vpcf": {
+		"abilityName": "weaver_the_swarm"
+	},
+	"particles/units/heroes/hero_ancient_apparition/ancient_apparition_ice_blast_initial.vpcf": {
+		"only": "allies",
+		"abilityName": "ancient_apparition_ice_blast"
+	},
+	"particles/units/heroes/hero_invoker/invoker_tornado.vpcf": {
+		"abilityName": "invoker_tornado"
+	},
+	"particles/units/heroes/hero_invoker/invoker_deafening_blast.vpcf": {
+		"abilityName": "invoker_deafening_blast"
+	},
+	"particles/units/heroes/hero_invoker/invoker_chaos_meteor.vpcf": {
+		"abilityName": "invoker_chaos_meteor"
+	},
+	"particles/units/heroes/hero_lina/lina_spell_dragon_slave.vpcf": {
+		"abilityName": "lina_dragon_slave"
+	},
+	"particles/units/heroes/hero_muerta/muerta_deadshot_linear_tree.vpcf": {
+		"abilityName": "muerta_dead_shot"
+	},
+	"particles/units/heroes/hero_muerta/muerta_deadshot_linear.vpcf": {
+		"abilityName": "muerta_dead_shot"
+	},
+	"particles/units/heroes/hero_necrolyte/necrolyte_death_seeker_linear_enemy.vpcf": {
+		"abilityName": "necrolyte_death_seeker"
+	},
+	"particles/units/heroes/hero_puck/puck_illusory_orb_linear_projectile.vpcf": {
+		"abilityName": "puck_illusory_orb"
+	},
+	"particles/units/heroes/hero_queenofpain/queen_sonic_wave.vpcf": {
+		"abilityName": "queenofpain_sonic_wave"
+	},
+	"particles/units/heroes/hero_ringmaster/ringmaster_wheel_dagger.vpcf": {
+		"abilityName": "ringmaster_impalement"
+	},
+	"particles/units/heroes/hero_ringmaster/ringmaster_wheel_projectile_linear.vpcf": {
+		"abilityName": "ringmaster_wheel"
+	},
+	"particles/units/heroes/hero_shadow_demon/shadow_demon_shadow_poison_projectile.vpcf": {
+		"abilityName": "shadow_demon_shadow_poison"
+	},
+	"particles/units/heroes/hero_tinker/tinker_machine.vpcf": {
+		"abilityName": "tinker_march_of_the_machines"
+	},
+	"particles/units/heroes/hero_batrider/batrider_flamebreak_dummy.vpcf": {
+		"abilityName": ["batrider_flamebreak", "brewmaster_cinder_brew", "sniper_concussive_grenade"]
+	},
+	"particles/units/heroes/hero_brewmaster/brewmaster_cinder_brew_cast_projectile.vpcf": {
+		"abilityName": "brewmaster_cinder_brew"
+	},
+	"particles/units/heroes/hero_viper/viper_nethertoxin_proj_dummy.vpcf": {
+		"abilityName": ["viper_nethertoxin", "death_prophet_silence"]
+	},
+	"particles/units/heroes/hero_magnataur/magnataur_shockwave.vpcf": {
+		"abilityName": "magnataur_shockwave"
+	},
+	"particles/units/heroes/hero_nyx_assassin/nyx_assassin_impale.vpcf": {
+		"abilityName": "nyx_assassin_impale"
+	},
+	"particles/units/heroes/hero_snapfire/hero_snapfire_shotgun.vpcf": {
+		"abilityName" : "snapfire_scatterblast"
+	},
+	"particles/units/heroes/hero_snapfire/hero_snapfire_shotgun_full_bore.vpcf": {
+		"abilityName" : "snapfire_scatterblast"
+	},
+	"particles/units/heroes/hero_spectre/spectre_spectral_dagger.vpcf": {
+		"abilityName": "spectre_spectral_dagger"
+	},
+	"particles/units/heroes/hero_venomancer/venomancer_venomous_gale.vpcf": {
+		"abilityName": "venomancer_venomous_gale"
+	},
+	"particles/units/heroes/hero_void_spirit/aether_remnant/void_spirit_aether_remnant_run.vpcf": {
+		"abilityName": "void_spirit_aether_remnant"
+	},
+	"particles/units/heroes/hero_windrunner/windrunner_spell_powershot.vpcf": {
+		"abilityName": "windrunner_powershot"
+	},
+	"particles/units/heroes/hero_earthshaker/earthshaker_slugger.vpcf": {
+		"abilityName": "earthshaker_slugger"
+	},
+	"particles/neutral_fx/frogmen_arm_of_the_deep_projectile.vpcf": {
+		"abilityName": ["frogmen_arm_of_the_deep", "frogmen_tendrils_of_the_deep", "frogmen_congregation_of_the_deep"]
+	},
+	"particles/neutral_fx/satyr_hellcaller.vpcf": {
+		"abilityName": "satyr_hellcaller_shockwave"
+	}
+}

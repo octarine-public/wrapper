@@ -1,6 +1,8 @@
 import { Vector3 } from "../Base/Vector3"
+import { EventPriority } from "../Enums/EventPriority"
 import { GetPositionHeight } from "../Native/WASM"
-import { Entity } from "../Objects/Base/Entity"
+import { Ability } from "../Objects/Base/Ability"
+import { Entity, GameRules } from "../Objects/Base/Entity"
 import { GetPredictionTarget } from "../Objects/Base/FakeUnit"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import { Unit } from "../Objects/Base/Unit"
@@ -26,13 +28,34 @@ export const ProjectileManager = new (class CProjectileManager {
 	public readonly AllTrackingProjectilesMap = new Map<number, TrackingProjectile>()
 })()
 
+let lastUpdate = 0
+
 EventsSDK.on("GameEnded", () => {
+	lastUpdate = 0
 	ProjectileManager.AllLinearProjectiles.clear()
 	ProjectileManager.AllTrackingProjectiles.clear()
 
 	ProjectileManager.AllLinearProjectilesMap.clear()
 	ProjectileManager.AllTrackingProjectilesMap.clear()
 })
+
+function Draw() {
+	if (GameRules?.IsPaused) {
+		lastUpdate = hrtime()
+	}
+	const delta = Math.min((hrtime() - lastUpdate) / 1000, GameState.TickInterval)
+	const arrLinear = ProjectileManager.AllLinearProjectiles
+	for (let i = arrLinear.length - 1; i > -1; i--) {
+		const projectile = arrLinear[i],
+			position = projectile.Position,
+			endPosition = projectile.TargetLoc
+		const distance = Math.min(
+			projectile.Speed * delta,
+			position.Distance(endPosition)
+		)
+		position.Extend(endPosition, distance).CopyTo(projectile.VisualPosition)
+	}
+}
 
 function TrackingProjectileCreated(projectile: TrackingProjectile) {
 	// TODO
@@ -54,51 +77,14 @@ function DestroyTrackingProjectile(proj: TrackingProjectile) {
 	proj.IsValid = false
 }
 
-EventsSDK.on("EntityCreated", ent => {
-	if (!(ent instanceof Unit)) {
-		return
-	}
-	for (const proj of ProjectileManager.AllTrackingProjectiles) {
-		if (proj.Source?.EntityMatches(ent)) {
-			proj.Source = ent
-		}
-		if (proj.Target?.EntityMatches(ent)) {
-			proj.Target = ent
-		}
-	}
-	for (const proj of ProjectileManager.AllLinearProjectiles) {
-		if (proj.Source?.EntityMatches(ent)) {
-			proj.Source = ent
-		}
-	}
-})
-EventsSDK.on("EntityDestroyed", ent => {
-	if (!(ent instanceof Unit)) {
-		return
-	}
-	const arrTraking = ProjectileManager.AllTrackingProjectiles
-	for (let index = arrTraking.length - 1; index > -1; index--) {
-		const proj = arrTraking[index]
-		if (proj.Source === ent) {
-			proj.Source = undefined
-		}
-		if (proj.Target === ent) {
-			proj.Target = undefined
-		}
-	}
-	const arrLinear = ProjectileManager.AllLinearProjectiles
-	for (let index = arrLinear.length - 1; index > -1; index--) {
-		const proj = arrLinear[index]
-		if (proj.Source === ent) {
-			proj.Source = undefined
-		}
-	}
-})
-
-EventsSDK.on("PostDataUpdate", dt => {
+function PostDataUpdate(dt: number) {
 	if (dt === 0) {
 		return
 	}
+	const currTime = hrtime()
+	const hrDelta = (currTime - lastUpdate) / 1000
+	lastUpdate = currTime
+
 	for (const proj of ProjectileManager.AllTrackingProjectiles) {
 		proj.UpdateProjectileSpeed()
 		if (!proj.IsDodged) {
@@ -136,13 +122,14 @@ EventsSDK.on("PostDataUpdate", dt => {
 		const distSqr = proj.Position.DistanceSqr(proj.TargetLoc)
 		const collisionSize =
 			proj.Target instanceof Entity ? proj.Target.ProjectileCollisionSize ** 2 : 0
+
 		if (distSqr <= collisionSize) {
 			DestroyTrackingProjectile(proj)
 		}
 	}
 	const expiredLinearProjectiles: LinearProjectile[] = []
 	for (const proj of ProjectileManager.AllLinearProjectiles) {
-		const add = Vector3.FromVector2(proj.Velocity.MultiplyScalar(dt))
+		const add = Vector3.FromVector2(proj.Velocity.MultiplyScalar(hrDelta))
 		proj.Position.AddForThis(add)
 		proj.Position.z = GetPositionHeight(proj.Position)
 		if (proj.Position.DistanceSqr2D(proj.TargetLoc) < add.LengthSqr) {
@@ -153,6 +140,54 @@ EventsSDK.on("PostDataUpdate", dt => {
 		EventsSDK.emit("LinearProjectileDestroyed", false, proj)
 		ProjectileManager.AllLinearProjectiles.remove(proj)
 		ProjectileManager.AllLinearProjectilesMap.delete(proj.ID)
+	}
+}
+
+EventsSDK.on("Draw", Draw, EventPriority.IMMEDIATE)
+
+EventsSDK.on("PostDataUpdate", PostDataUpdate, EventPriority.IMMEDIATE)
+
+EventsSDK.on("EntityCreated", ent => {
+	if (!(ent instanceof Unit)) {
+		return
+	}
+	for (const proj of ProjectileManager.AllTrackingProjectiles) {
+		if (proj.Source?.EntityMatches(ent)) {
+			proj.Source = ent
+		}
+		if (proj.Target?.EntityMatches(ent)) {
+			proj.Target = ent
+		}
+	}
+	for (const proj of ProjectileManager.AllLinearProjectiles) {
+		if (proj.Source?.EntityMatches(ent)) {
+			proj.Source = ent
+		}
+	}
+})
+EventsSDK.on("EntityDestroyed", ent => {
+	if (!(ent instanceof Unit || ent instanceof Ability)) {
+		return
+	}
+	const arrTraking = ProjectileManager.AllTrackingProjectiles
+	for (let i = arrTraking.length - 1; i > -1; i--) {
+		const proj = arrTraking[i]
+		if (proj.Source === ent) {
+			proj.Source = undefined
+		}
+		if (proj.Target === ent) {
+			proj.Target = undefined
+		}
+	}
+	const arrLinear = ProjectileManager.AllLinearProjectiles
+	for (let i = arrLinear.length - 1; i > -1; i--) {
+		const proj = arrLinear[i]
+		if (proj.Source === ent) {
+			proj.Source = undefined
+		}
+		if (proj.AbilityIndex === ent.Index) {
+			proj.AbilityIndex = undefined
+		}
 	}
 })
 
@@ -325,7 +360,9 @@ Events.on("ServerMessage", (msgID, buf_) => {
 					"CDOTAUserMsg_TE_Projectile"
 				)
 				const particleSystemHandle = msg.get("particle_system_handle") as bigint
-				const ability = EntityManager.EntityByIndex(msg.get("ability") as number)
+				const ability = EntityManager.EntityByIndex<Ability>(
+					msg.get("ability") as number
+				)
 				const projectile = new TrackingProjectile(
 					msg.get("handle") as number,
 					GetPredictionTarget(msg.get("source") as number),

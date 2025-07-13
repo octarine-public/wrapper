@@ -40,10 +40,14 @@ export const TaskManager = new (class CTaskManager {
 	}
 
 	private mainLoop(_dt: number) {
-		while (this.tasks.length > 0 && this.tasks[0].queueTime <= hrtime()) {
-			const task = this.tasks.shift()
-			task!.callback()
-			EventsSDK.emit("TaskReleased", false, task!.handleID)
+		try {
+			while (this.tasks.length > 0 && this.tasks[0].queueTime <= hrtime()) {
+				const task = this.tasks.shift()
+				task!.callback()
+				EventsSDK.emit("TaskReleased", false, task!.handleID)
+			}
+		} catch (e: any) {
+			console.error(e instanceof Error ? e : new Error(e))
 		}
 	}
 })()

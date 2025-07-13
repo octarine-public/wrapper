@@ -7,4 +7,7 @@ export class bounty_hunter_track extends Ability {
 	public get DamageType(): DAMAGE_TYPES {
 		return DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL
 	}
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("duration", level)
+	}
 }

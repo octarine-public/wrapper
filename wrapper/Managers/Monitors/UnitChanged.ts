@@ -76,27 +76,54 @@ new (class CPreUnitChanged {
 			this.UnitStateChanged.bind(this),
 			EventPriority.IMMEDIATE
 		)
+		EventsSDK.on(
+			"UnitAddGesture",
+			this.UnitAddGesture.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"UnitRemoveGesture",
+			this.UnitRemoveGesture.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"UnitRemoveAllGestures",
+			this.UnitRemoveAllGestures.bind(this),
+			EventPriority.IMMEDIATE
+		)
 		EventsSDK.on("EntityDestroyed", this.EntityDestroyed.bind(this))
 		EventsSDK.on("GameEvent", this.GameEvent.bind(this), EventPriority.IMMEDIATE)
 		EventsSDK.on("UnitVisibleStateChanged", this.UnitVisibleStateChanged.bind(this))
 	}
-	protected UnitVisibleStateChanged(data: TeamData) {
-		for (let i = Units.length - 1; i > -1; i--) {
-			const unit = Units[i]
-			unit.IsVisibleState = Unit.IsNpcVisibleState(data.NPCVisibleState, unit.Index)
+	protected UnitAddGesture(
+		entity: Nullable<Unit | FakeUnit>,
+		activity: GameActivity,
+		_slot: number,
+		_fadeIn: number,
+		_fadeOut: number,
+		playbackRate: number,
+		sequenceVariant: number
+	) {
+		if (entity instanceof Unit) {
+			entity.LastGestureActivity = activity
+			entity.LastGesturePlaybackRate = playbackRate
+			entity.LastGestureSequenceVariant = sequenceVariant
 		}
 	}
-	protected EntityVisibleChanged(entity: Entity) {
-		this.gridNavUpdateUnitState(entity, !entity.IsVisible)
+	protected UnitRemoveGesture(
+		entity: Nullable<Unit | FakeUnit>,
+		activity: GameActivity
+	) {
+		if (entity instanceof Unit) {
+			entity.LastGestureActivity = activity
+		}
 	}
-	protected LifeStateChanged(entity: Entity) {
-		this.gridNavUpdateUnitState(entity, !entity.IsAlive)
-	}
-	protected EntityPositionChanged(entity: Entity) {
-		this.gridNavUpdateUnitState(entity)
-	}
-	protected UnitStateChanged(entity: Entity) {
-		this.gridNavUpdateUnitState(entity)
+	protected UnitRemoveAllGestures(entity: Nullable<Unit | FakeUnit>) {
+		if (entity instanceof Unit) {
+			entity.LastGestureActivity = 0 as GameActivity
+			entity.LastGesturePlaybackRate = 0
+			entity.LastGestureSequenceVariant = 0
+		}
 	}
 	protected PostDataUpdate(dt: number) {
 		if (dt === 0) {
@@ -229,7 +256,26 @@ new (class CPreUnitChanged {
 			}
 			unit.PositionHistoryIndex = (unit.PositionHistoryIndex + 1) % 120
 			// TODO: interpolate DeltaZ from OnModifierUpdated?
+			// this.updateVisibleCell(unit)
 		}
+	}
+	protected UnitVisibleStateChanged(data: TeamData) {
+		for (let i = Units.length - 1; i > -1; i--) {
+			const unit = Units[i]
+			unit.IsVisibleState = Unit.IsNpcVisibleState(data.NPCVisibleState, unit.Index)
+		}
+	}
+	protected EntityVisibleChanged(entity: Entity) {
+		this.gridNavUpdateUnitState(entity, !entity.IsVisible)
+	}
+	protected LifeStateChanged(entity: Entity) {
+		this.gridNavUpdateUnitState(entity, !entity.IsAlive)
+	}
+	protected EntityPositionChanged(entity: Entity) {
+		this.gridNavUpdateUnitState(entity)
+	}
+	protected UnitStateChanged(entity: Entity) {
+		this.gridNavUpdateUnitState(entity)
 	}
 	protected UnitItemsChanged(unit: Unit) {
 		unit.ChangeFieldsByEvents()
@@ -244,6 +290,7 @@ new (class CPreUnitChanged {
 			// 	break
 			case entity instanceof Unit:
 				this.unitPredictedPositionChanged(entity)
+				this.gridNavUpdateUnitState(entity)
 				break
 			case entity instanceof Wearable:
 				this.unitWearablesChanged(entity)
@@ -325,12 +372,12 @@ new (class CPreUnitChanged {
 			return
 		}
 		if (unit.LastAnimationIsAttack) {
+			const rawGameTime = GameState.RawGameTime
 			const lastAnimCastPoint =
 				unit.LastAnimationStartTime + unit.LastAnimationCastPoint
 			if (
-				GameState.RawGameTime < lastAnimCastPoint &&
-				Math.abs(GameState.RawGameTime - lastAnimCastPoint) >
-					GameState.TickInterval / 10
+				rawGameTime < lastAnimCastPoint &&
+				Math.abs(rawGameTime - lastAnimCastPoint) > GameState.TickInterval / 10
 			) {
 				unit.AttackTimeAtLastTick = 0
 				unit.AttackTimeLostToLastTick = 0
@@ -375,9 +422,10 @@ new (class CPreUnitChanged {
 			this.handleAttackedUnits(obj)
 		}
 	}
-	private gridNavUpdateUnitState(entity: Entity, deleteUnit: boolean = false): void {
+	private gridNavUpdateUnitState(entity: Entity, _deleteUnit: boolean = false): void {
 		if (GridNav !== undefined && entity instanceof Unit) {
-			GridNav.UpdateUnitState(entity, deleteUnit)
+			// GridNav.UpdateUnitState(entity, deleteUnit)
+			this.updateVisibleCell(entity)
 		}
 	}
 	private spellChanged(entity: Ability) {
@@ -547,5 +595,14 @@ new (class CPreUnitChanged {
 			source instanceof Miniboss ||
 			source instanceof npc_dota_hero_wisp
 		)
+	}
+	private updateVisibleCell(_unit: Unit) {
+		// const isValid = unit.IsValid && unit.IsAlive && unit.IsVisible
+		// GridNav?.UpdateVisionState(unit, !isValid)
+		// Unit.UpdateCellIsVisibleForEnemies(unit)
+		// if (unit.LastVisibleForEnemies !== unit.IsVisibleForEnemies()) {
+		// 	unit.LastVisibleForEnemies = unit.IsVisibleForEnemies()
+		// 	EventsSDK.emit("UnitTeamVisibilityChanged", false, unit)
+		// }
 	}
 })()
