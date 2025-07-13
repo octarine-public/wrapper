@@ -69,28 +69,18 @@ class CGridNav {
 		return new Rectangle(pos1, pos1.AddScalar(this.EdgeSize))
 	}
 	public UpdateUnitState(unit: Unit, deleteUnit: boolean): void {
-		if (deleteUnit || unit.HasNoCollision) {
-			this.deleteOldFlags(unit)
+		if (unit.IsBuilding) {
 			return
 		}
 		const oldGridPos = this.UnitGridPos.get(unit),
-			newGridPos = this.GetGridPosForPos(unit.Position),
-			state = unit.IsValid && unit.IsAlive && unit.IsVisible && unit.IsSpawned
-		if (oldGridPos !== undefined && !oldGridPos.Equals(newGridPos)) {
-			this.SetCellFlag(
-				oldGridPos.x,
-				oldGridPos.y,
-				GridNavCellFlags.UnitBlocking,
-				false
-			)
-		} else {
-			this.SetCellFlag(
-				newGridPos.x,
-				newGridPos.y,
-				GridNavCellFlags.UnitBlocking,
-				state
-			)
+			newGridPos = this.GetGridPosForPos(unit.Position)
+		if (deleteUnit || unit.HasNoCollision) {
+			this.deleteOldFlags(oldGridPos, newGridPos)
+			return
 		}
+		const state = unit.IsValid && unit.IsAlive && unit.IsVisible && unit.IsSpawned
+		this.deleteOldFlags(oldGridPos, newGridPos)
+		this.SetCellFlag(newGridPos.x, newGridPos.y, GridNavCellFlags.UnitBlocking, state)
 		if (state) {
 			this.UnitGridPos.set(unit, newGridPos)
 			return
@@ -134,12 +124,15 @@ class CGridNav {
 		const gridPos = this.GetGridPosForPos(pos)
 		return this.GetCellIndexForGridPos(gridPos.x, gridPos.y)
 	}
-	private deleteOldFlags(unit: Unit): void {
-		const oldGridPos = this.UnitGridPos.get(unit)
-		if (oldGridPos === undefined) {
-			return
+	private deleteOldFlags(oldGridPos: Nullable<Vector2>, newGridPos: Vector2): void {
+		if (oldGridPos !== undefined && !oldGridPos.Equals(newGridPos)) {
+			this.SetCellFlag(
+				oldGridPos.x,
+				oldGridPos.y,
+				GridNavCellFlags.UnitBlocking,
+				false
+			)
 		}
-		this.SetCellFlag(oldGridPos.x, oldGridPos.y, GridNavCellFlags.UnitBlocking, false)
 	}
 }
 export let GridNav: Nullable<CGridNav>

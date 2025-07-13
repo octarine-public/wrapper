@@ -44,6 +44,7 @@ new (class CEntityChanged {
 		}
 		if (entity.IsVisible && entity.LifeState !== LifeState.LIFE_DEAD) {
 			entity.LifeState = LifeState.LIFE_DEAD
+			entity.LastLifeStateUpdate = GameState.RawGameTime
 			entity.HP = 0
 			EventsSDK.emit("LifeStateChanged", false, entity)
 		}
@@ -55,6 +56,7 @@ new (class CEntityChanged {
 		}
 		entity.HP = entity.MaxHP
 		entity.LifeState = LifeState.LIFE_ALIVE
+		entity.LastLifeStateUpdate = GameState.RawGameTime
 		if (entity instanceof Unit) {
 			entity.Mana = entity.MaxMana
 		}

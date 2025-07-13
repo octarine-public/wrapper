@@ -1,6 +1,7 @@
 import { NetworkedBasicField, WrapperClass } from "../../../Decorators"
 import { EntityManager } from "../../../Managers/EntityManager"
 import { EventsSDK } from "../../../Managers/EventsSDK"
+import { GameState } from "../../../Utils/GameState"
 import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
@@ -46,6 +47,7 @@ EventsSDK.on("LifeStateChanged", ent => {
 			abil.Owner.LifeState !== ent.LifeState
 		) {
 			abil.Owner.LifeState = ent.LifeState
+			abil.Owner.LastLifeStateUpdate = GameState.RawGameTime
 			abil.Owner.HP = ent.IsAlive ? abil.Owner.MaxHP : 0
 			isInMeepoCrutch = true
 			EventsSDK.emit("LifeStateChanged", false, abil.Owner)

@@ -3,6 +3,9 @@ import { Ability } from "../../Base/Ability"
 
 @WrapperClass("frogmen_tendrils_of_the_deep")
 export class frogmen_tendrils_of_the_deep extends Ability {
+	public get EndRadius(): number {
+		return this.CastRange / 2 + this.AOERadius
+	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}

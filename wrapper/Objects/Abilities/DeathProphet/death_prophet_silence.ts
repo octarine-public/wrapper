@@ -6,4 +6,7 @@ export class death_prophet_silence extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("projectile_speed", level)
+	}
 }

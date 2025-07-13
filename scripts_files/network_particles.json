@@ -1,0 +1,1922 @@
+{
+	"particles/units/heroes/hero_axe/axe_beserkers_call_owner.vpcf": {
+		"attach": 1,
+		"abilityName": "axe_berserkers_call",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_battle_hunger_cast.vpcf": {
+		"attach": 1,
+		"abilityName": "axe_battle_hunger",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_counterhelix.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_counter_helix",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_culling_blade_kill.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_culling_blade",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 4
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_cullingblade_sprint_axe.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_culling_blade",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_cullingblade_sprint_creep.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_culling_blade",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_cullingblade_sprint.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_culling_blade",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_culling_blade_boost.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_culling_blade",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_alchemist/alchemist_chemichalrage_effect.vpcf": {
+		"attach": 2,
+		"abilityName": "alchemist_chemical_rage",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_alchemist/alchemist_acid_spray_cast.vpcf": {
+		"attach": 2,
+		"abilityName": "alchemist_acid_spray",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_alchemist/alchemist_unstable_concoction_explosion.vpcf": {
+		"attach": 2,
+		"abilityName": ["alchemist_unstable_concoction_throw", "primal_beast_uproar"],
+		"source": {
+			"isAttachedTo": true,
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_chaos_knight/chaos_knight_calamity_overhead.vpcf": {
+		"attach": 7,
+		"abilityName": "chaos_knight_reality_rift",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_chaos_knight/chaos_knight_reality_rift.vpcf": {
+		"attach": 2,
+		"abilityName": "chaos_knight_reality_rift",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_chaos_knight/chaos_knight_crit_tgt.vpcf": {
+		"attach": 2,
+		"abilityName": "chaos_knight_chaos_strike",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_quill_spray.vpcf": {
+		"attach": 2,
+		"abilityName": "bristleback_quill_spray",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_quill_spray_impact.vpcf": {
+		"attach": 2,
+		"abilityName": "bristleback_quill_spray",
+		"source": {
+			"controlPointEnt": 2
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_viscous_nasal_goo_debuff.vpcf": {
+		"attach": 1,
+		"abilityName": "bristleback_viscous_nasal_goo",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_gooey_explosion.vpcf": {
+		"attach": 2,
+		"abilityName": "bristleback_viscous_nasal_goo",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_quill_spray_conical.vpcf": {
+		"attach": 8,
+		"abilityName": "bristleback_bristleback",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_back_dmg.vpcf": {
+		"attach": 2,
+		"abilityName": "bristleback_bristleback",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 2
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_side_dmg.vpcf": {
+		"attach": 2,
+		"abilityName": "bristleback_bristleback",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 2
+		}
+	},
+	"particles/units/heroes/hero_centaur/centaur_stampede_overhead.vpcf": {
+		"attach": 7,
+		"abilityName": "centaur_stampede",
+		"source": {
+			"isAttachedTo": true,
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_centaur/centaur_stampede_haste_npc.vpcf": {
+		"attach": 1,
+		"abilityName": "centaur_stampede",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_centaur/centaur_warstomp.vpcf": {
+		"attach": 0,
+		"abilityName": "centaur_hoof_stomp",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_centaur/centaur_double_edge_phase.vpcf": {
+		"attach": 2,
+		"abilityName": "centaur_double_edge",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_centaur/centaur_double_edge_body.vpcf": {
+		"attach": 2,
+		"abilityName": "centaur_double_edge",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_rattletrap/rattletrap_rocket_flare.vpcf": {
+		"attach": 2,
+		"abilityName": "rattletrap_rocket_flare",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_rattletrap/rattletrap_rocket_flare_illumination.vpcf": {
+		"attach": 2,
+		"abilityName": "rattletrap_rocket_flare",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_rattletrap/rattletrap_battery_shrapnel.vpcf": {
+		"attach": 1,
+		"abilityName": "rattletrap_battery_assault",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_rattletrap/rattletrap_cog_ambient.vpcf": {
+		"attach": 2,
+		"abilityName": "rattletrap_power_cogs",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_rattletrap/clock_overclock_buff.vpcf": {
+		"attach": 2,
+		"abilityName": "rattletrap_overclocking",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_rattletrap/rattletrap_jetpack.vpcf": {
+		"attach":1,
+		"abilityName": "rattletrap_jetpack",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_rattletrap/rattletrap_hookshot.vpcf": {
+		"attach": 2,
+		"abilityName": "rattletrap_hookshot",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/items2_fx/vindicators_axe_armor.vpcf": {
+		"attach": 2,
+		"abilityName": ["item_vindicators_axe", "rattletrap_hookshot"],
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_invoker/invoker_chaos_meteor_fly.vpcf": {
+		"attach": 2,
+		"abilityName": "invoker_chaos_meteor",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_batrider/batrider_stickynapalm_impact.vpcf": {
+		"attach": 2,
+		"abilityName": "batrider_sticky_napalm",
+		"source": {
+			"controlPointEnt": 2
+		}
+	},
+	"particles/units/heroes/hero_batrider/batrider_firefly.vpcf": {
+		"attach": 2,
+		"abilityName": "batrider_firefly",
+		"source": {
+			"isModifiersAttachedTo": true
+		}	
+	},
+	"particles/units/heroes/hero_batrider/batrider_flaming_lasso.vpcf": {
+		"attach": 2,
+		"abilityName": "batrider_flaming_lasso",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_brewmaster/brewmaster_thunder_clap.vpcf": {
+		"attach": 2,
+		"abilityName": "brewmaster_thunder_clap",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_brewmaster/brewmaster_damage_buff.vpcf": {
+		"attach": 2,
+		"abilityName": "brewmaster_primal_split",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_clinkz/clinkz_windwalk.vpcf": {
+		"attach": 2,
+		"abilityName": "clinkz_wind_walk",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_clinkz/clinkz_death_pact.vpcf": {
+		"attach": 2,
+		"abilityName": "clinkz_death_pact",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_clinkz/clinkz_death_pact_buff.vpcf": {
+		"attach": 2,
+		"abilityName": "clinkz_death_pact",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_death_prophet/death_prophet_carrion_swarm.vpcf": {
+		"attach": 2,
+		"abilityName": "death_prophet_carrion_swarm",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_death_prophet/death_prophet_spiritsiphon.vpcf": {
+		"attach": 2,
+		"abilityName": "death_prophet_spirit_siphon",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_death_prophet/death_prophet_spirit_glow.vpcf": {
+		"attach": 2,
+		"abilityName": "death_prophet_exorcism",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_dragon_knight/dragon_knight_dragon_tail_knightform.vpcf": {
+		"attach": 2,
+		"abilityName": "dragon_knight_dragon_tail",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_dragon_knight/dragon_knight_dragon_tail_dragonform.vpcf": {
+		"attach": 2,
+		"abilityName": "dragon_knight_dragon_tail",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_dragon_knight/dragon_knight_transform_blue.vpcf": {
+		"attach": 2,
+		"abilityName": "dragon_knight_elder_dragon_form",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		}
+	},
+	"particles/units/heroes/hero_dragon_knight/dragon_knight_transform_green.vpcf": {
+		"attach": 2,
+		"abilityName": "dragon_knight_elder_dragon_form",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		}
+	},
+	"particles/units/heroes/hero_dragon_knight/dragon_knight_transform_red.vpcf": {
+		"attach": 2,
+		"abilityName": "dragon_knight_elder_dragon_form",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		}
+	},
+	"particles/units/heroes/hero_dragon_knight/dragon_knight_transform_black.vpcf": {
+		"attach": 2,
+		"abilityName": "dragon_knight_elder_dragon_form",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		}	
+	},
+	"particles/units/heroes/hero_dragon_knight/dragon_knight_shard_fireball_cast.vpcf": {
+		"attach": 2,
+		"abilityName": "dragon_knight_fireball",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_drow/drow_marksmanship_start.vpcf": {
+		"attach": 2,
+		"abilityName": "drow_ranger_marksmanship",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_drow/drow_glacier_hilltop.vpcf": {
+		"attach": 2,
+		"abilityName": "drow_ranger_glacier",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_drow/drow_ranger_glacier.vpcf": {
+		"attach": 8,
+		"abilityName": "drow_ranger_glacier",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_drow/drow_shard_hypothermia_death.vpcf": {
+		"attach": 2,
+		"abilityName": "drow_ranger_frost_arrows",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_ember_spirit/ember_spirit_sleight_of_fist_caster.vpcf": {
+		"attach": 2,
+		"abilityName": "ember_spirit_sleight_of_fist",
+		"source": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_ember_spirit/ember_spirit_sleightoffist_tgt.vpcf": {
+		"attach": 2,
+		"abilityName": "ember_spirit_sleight_of_fist",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_ember_spirit/emberspirit_flame_shield_aoe_impact.vpcf": {
+		"attach": 1,
+		"abilityName": "ember_spirit_flame_guard",
+		"source": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf": {
+		"attach": 2,
+		"abilityName": "ember_spirit_flame_guard",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_ember_spirit/ember_spirit_smolder.vpcf": {
+		"attach": 2,
+		"abilityName": "ember_spirit_flame_guard",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_ember_spirit/ember_spirit_searing_chains_cast.vpcf": {
+		"attach": 1,
+		"abilityName": "ember_spirit_searing_chains",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_ember_spirit/ember_spirit_searing_chains_start.vpcf": {
+		"attach": 2,
+		"abilityName": "ember_spirit_searing_chains",
+		"source": {
+			"controlPointEnt": 0
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_hoodwink/hoodwink_bushwhack_projectile.vpcf": {
+		"attach": 2,
+		"abilityName": "hoodwink_bushwhack",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_hoodwink/hoodwink_bushwhack_target.vpcf": {
+		"attach": 1,
+		"abilityName": "hoodwink_bushwhack",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_hoodwink/hoodwink_scurry_aura.vpcf": {
+		"attach": 1,
+		"abilityName": "hoodwink_scurry",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_hoodwink/hoodwink_boomerang.vpcf": {
+		"attach": 2,
+		"abilityName": "hoodwink_hunters_boomerang",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_invoker/invoker_invoke.vpcf": {
+		"attach": 1,
+		"abilityName": "invoker_invoke",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_invoker/invoker_quas_orb.vpcf": {
+		"attach": 2,
+		"abilityName": "invoker_quas",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_invoker/invoker_wex_orb.vpcf": {
+		"attach": 2,
+		"abilityName": "invoker_wex",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_invoker/invoker_exort_orb.vpcf": {
+		"attach": 2,
+		"abilityName": "invoker_exort",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_invoker/invoker_ice_wall.vpcf": {
+		"attach": 2,
+		"abilityName": "invoker_ice_wall",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_invoker/invoker_alacrity_cast.vpcf": {
+		"attach": 2,
+		"abilityName": "invoker_alacrity",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_invoker/invoker_cold_snap.vpcf": {
+		"attach": 2,
+		"abilityName": "invoker_cold_snap",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_invoker/invoker_emp.vpcf": {
+		"attach": 2,
+		"abilityName": "invoker_emp",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_kunkka/kunkka_spell_x_spot.vpcf": {
+		"attach": 2,
+		"abilityName": "kunkka_x_marks_the_spot",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_kunkka/kunkka_admirals_rum.vpcf": {
+		"attach": 1,
+		"abilityName": "kunkka_admirals_rum",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_kunkka/kunkka_spell_tidebringer.vpcf": {
+		"attach": 1,
+		"abilityName": "kunkka_tidebringer",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 2
+		}
+	},
+	"particles/units/heroes/hero_legion_commander/legion_commander_odds_cast.vpcf": {
+		"attach": 1,
+		"abilityName": "legion_commander_overwhelming_odds",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_legion_commander/legion_commander_odds_dmgb.vpcf": {
+		"attach": 1,
+		"abilityName": "legion_commander_overwhelming_odds",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_legion_commander/legion_commander_odds_dmga.vpcf": {
+		"attach": 1,
+		"abilityName": "legion_commander_overwhelming_odds",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_legion_commander/legion_commander_odds_hero_arrow_group.vpcf": {
+		"attach": 2,
+		"abilityName": "legion_commander_overwhelming_odds",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_legion_commander/legion_commander_odds_buff.vpcf": {
+		"attach": 2,
+		"abilityName": "legion_commander_overwhelming_odds",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_legion_commander/legion_commander_odds.vpcf": {
+		"attach": 2,
+		"abilityName": "legion_commander_overwhelming_odds",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_legion_commander/legion_commander_press_owner.vpcf": {
+		"attach": 2,
+		"abilityName": "legion_commander_press_the_attack",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_legion_commander/legion_commander_press.vpcf": {
+		"attach": 2,
+		"abilityName": "legion_commander_press_the_attack",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_legion_commander/legion_commander_press_hero.vpcf": {
+		"attach": 2,
+		"abilityName": "legion_commander_press_the_attack",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_legion_commander/legion_commander_courage_hit.vpcf": {
+		"attach": 0,
+		"abilityName": "legion_commander_moment_of_courage",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_legion_commander/legion_duel_ring.vpcf": {
+		"attach": 2,
+		"abilityName": "legion_commander_duel",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_legion_commander/legion_duel.vpcf": {
+		"attach": 2,
+		"abilityName": "legion_commander_duel",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_lina/lina_fiery_soul.vpcf": {
+		"attach": 1,
+		"abilityName": "lina_fiery_soul",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_lina/lina_spell_laguna_blade.vpcf": {
+		"attach": 2,
+		"abilityName": "lina_laguna_blade",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_lina/lina_flame_cloak.vpcf": {
+		"attach": 2,
+		"abilityName": "lina_flame_cloak",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_lion/lion_spell_mana_drain.vpcf": {
+		"attach": 2,
+		"abilityName": "lion_mana_drain",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_lion/lion_spell_finger_of_death_charge.vpcf": {
+		"attach": 2,
+		"abilityName": "lion_finger_of_death",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_dawnbreaker/dawnbreaker_fire_wreath_smash.vpcf": {
+		"attach": 8,
+		"abilityName": "dawnbreaker_fire_wreath",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_dawnbreaker/dawnbreaker_celestial_hammer_projectile.vpcf": {
+		"attach": 2,
+		"abilityName": "dawnbreaker_celestial_hammer",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_dawnbreaker/dawnbreaker_celestial_hammer_grounded.vpcf": {
+		"attach": 2,
+		"abilityName": "dawnbreaker_celestial_hammer",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_dawnbreaker/dawnbreaker_celestial_hammer_return.vpcf": {
+		"attach": 2,
+		"abilityName": "dawnbreaker_converge",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_dawnbreaker/dawnbreaker_luminosity_attack_buff.vpcf": {
+		"attach": 2,
+		"abilityName": "dawnbreaker_luminosity",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_dawnbreaker/dawnbreaker_luminosity.vpcf": {
+		"attach": 2,
+		"abilityName": "dawnbreaker_luminosity",
+		"source": {
+			"controlPointEnt": 0
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_dawnbreaker/dawnbreaker_solar_guardian_healing_buff.vpcf": {
+		"attach": 1,
+		"abilityName": "dawnbreaker_solar_guardian",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_dawnbreaker/dawnbreaker_solar_guardian_airtime_buff.vpcf": {
+		"attach": 2,
+		"abilityName": "dawnbreaker_solar_guardian",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_dawnbreaker/dawnbreaker_solar_guardian_landing.vpcf": {
+		"attach": 2,
+		"abilityName": "dawnbreaker_solar_guardian",
+		"source": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_lion/lion_spell_finger_of_death.vpcf": {
+		"attach": 2,
+		"abilityName": "lion_finger_of_death",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_doom_bringer/doom_bringer_devour.vpcf": {
+		"attach": 1,
+		"abilityName": "doom_bringer_devour",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_earth_spirit/espirit_bouldersmash_caster.vpcf": {
+		"attach": 2,
+		"abilityName": "earth_spirit_boulder_smash",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_earth_spirit/espirit_bouldersmash_target.vpcf": {
+		"attach": 1,
+		"abilityName": "earth_spirit_boulder_smash",
+		"source": {
+			"isAttachedTo": true,
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_earth_spirit/espirit_bouldersmash_hit.vpcf": {
+		"attach": 2,
+		"abilityName": "earth_spirit_boulder_smash",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_earth_spirit/espirit_rollingboulder.vpcf": {
+		"attach": 2,
+		"abilityName": "earth_spirit_rolling_boulder",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_earth_spirit/espirit_rollingboulder_stone.vpcf": {
+		"attach": 2,
+		"abilityName": "earth_spirit_rolling_boulder",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_earth_spirit/espirit_geomagentic_grip_caster.vpcf": {
+		"attach": 2,
+		"abilityName": "earth_spirit_geomagnetic_grip",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_earth_spirit/espirit_stone_explosion_bolt.vpcf": {
+		"attach": 2,
+		"abilityName": "earth_spirit_magnetize",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_earth_spirit/espirit_magnetize_target.vpcf": {
+		"attach": 1,
+		"abilityName": "earth_spirit_magnetize",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_earth_spirit/espirit_stoneismagnetized_xpld.vpcf": {
+		"attach": 1,
+		"abilityName": "earth_spirit_magnetize",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_earth_spirit/espirit_magnetic_aura.vpcf": {
+		"attach": 1,
+		"abilityName": "earth_spirit_magnetize",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_earth_spirit/espirit_magnetic_ring.vpcf": {
+		"attach": 1,
+		"abilityName": "earth_spirit_magnetize",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_earth_spirit/earthspirit_petrify_debuff_stoned.vpcf": {
+		"attach": 3,
+		"abilityName": "earth_spirit_petrify",
+		"source": {
+			"isAttachedTo": true,
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_earth_spirit/earthspirit_petrify_shockwave.vpcf": {
+		"attach": 1,
+		"abilityName": "earth_spirit_petrify",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_earthshaker/earthshaker_totem_cast.vpcf": {
+		"attach": 2,
+		"abilityName": "earthshaker_enchant_totem",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_earthshaker/earthshaker_totem_blur_impact.vpcf": {
+		"attach": 2,
+		"abilityName": "earthshaker_enchant_totem",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_earthshaker/earthshaker_totem_leap_blur.vpcf": {
+		"attach": 1,
+		"abilityName": "earthshaker_enchant_totem",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_earthshaker/earthshaker_fissure.vpcf": {
+		"attach": 8,
+		"abilityName": "earthshaker_fissure",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_earthshaker/earthshaker_echoslam_start.vpcf": {
+		"attach": 0,
+		"abilityName": "earthshaker_echo_slam",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_earthshaker/earthshaker_echoslam_tgt.vpcf": {
+		"attach": 2,
+		"abilityName": "earthshaker_echo_slam",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_elder_titan/elder_titan_echo_stomp_impact_physical.vpcf": {
+		"attach": 1,
+		"abilityName": "elder_titan_echo_stomp",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_elder_titan/elder_titan_echo_stomp_physical.vpcf": {
+		"attach": 8,
+		"abilityName": "elder_titan_echo_stomp",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_elder_titan/elder_titan_ancestral_spirit_cast.vpcf": {
+		"attach": 1,
+		"abilityName": "elder_titan_ancestral_spirit",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_elder_titan/elder_titan_earth_splitter.vpcf": {
+		"attach": 2,
+		"abilityName": "elder_titan_earth_splitter",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_huskar/huskar_inner_fire.vpcf": {
+		"attach": 8,
+		"abilityName": "huskar_inner_fire",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_huskar/huskar_life_break_spellstart.vpcf": {
+		"attach": 1,
+		"abilityName": "huskar_life_break",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_life_stealer/life_stealer_open_wounds_impact.vpcf": {
+		"attach": 0,
+		"abilityName": "life_stealer_open_wounds",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_life_stealer/life_stealer_infest_cast.vpcf": {
+		"attach": 2,
+		"abilityName": "life_stealer_infest",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_life_stealer/life_stealer_health_steal.vpcf": {
+		"attach": 7,
+		"abilityName": "life_stealer_feast",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_lycan/lycan_summon_wolves_cast.vpcf": {
+		"attach": 2,
+		"abilityName": "lycan_summon_wolves",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_lycan/lycan_howl_cast.vpcf": {
+		"attach": 1,
+		"abilityName": "lycan_howl",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_lycan/lycan_howl_overhead_null.vpcf": {
+		"attach": 1,
+		"abilityName": "lycan_howl",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_lycan/lycan_howl_cast_wolves.vpcf": {
+		"attach": 1,
+		"abilityName": "lycan_howl",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_lycan/lycan_shapeshift_cast.vpcf": {
+		"attach": 1,
+		"abilityName": "lycan_shapeshift",
+		"source": {
+			"controlPointEnt": 1
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_mars/mars_shield_bash.vpcf": {
+		"attach": 1,
+		"abilityName": "mars_gods_rebuke",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_mars/mars_arena_of_blood.vpcf": {
+		"attach": 2,
+		"abilityName": "mars_arena_of_blood",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_mars/mars_aghanim_shield_of_mars.vpcf": {
+		"attach": 2,
+		"abilityName": "mars_bulwark",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_night_stalker/nightstalker_crippling_fear_aura.vpcf": {
+		"attach": 1,
+		"abilityName": "night_stalker_crippling_fear",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_night_stalker/nightstalker_dark_buff.vpcf": {
+		"attach": 1,
+		"abilityName": "night_stalker_darkness",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_night_stalker/nightstalker_shard_hunter.vpcf": {
+		"attach": 1,
+		"abilityName": "night_stalker_hunter_in_the_night",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_ogre_magi/ogre_magi_fireblast_cast.vpcf": {
+		"attach": 2,
+		"abilityName": "ogre_magi_fireblast",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_ogre_magi/ogre_magi_fireblast.vpcf": {
+		"attach": 2,
+		"abilityName": "ogre_magi_fireblast",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_ogre_magi/ogre_magi_ignite_cast.vpcf": {
+		"attach": 2,
+		"abilityName": "ogre_magi_ignite",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_ogre_magi/ogre_magi_bloodlust_cast.vpcf": {
+		"attach": 2,
+		"abilityName": "ogre_magi_bloodlust",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 2
+		}
+	},
+	"particles/units/heroes/hero_ogre_magi/ogre_magi_fire_shield.vpcf": {
+		"attach": 1,
+		"abilityName": "ogre_magi_smash",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_ogre_magi/ogre_magi_unr_fireblast.vpcf": {
+		"attach": 2,
+		"abilityName": "ogre_magi_unrefined_fireblast",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_omniknight/omniknight_purification.vpcf": {
+		"attach": 2,
+		"abilityName": "omniknight_purification",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_omniknight/omniknight_purification_cast.vpcf": {
+		"attach": 2,
+		"abilityName": "omniknight_purification",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_omniknight/omniknight_repel_cast.vpcf": {
+		"attach": 2,
+		"abilityName": "omniknight_martyr",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_phoenix/phoenix_supernova_start.vpcf": {
+		"attach": 1,
+		"abilityName": "phoenix_supernova",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_phoenix/phoenix_supernova_scepter.vpcf": {
+		"attach": 2,
+		"abilityName": "phoenix_supernova",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 2
+		}
+	},
+	"particles/units/heroes/hero_phoenix/phoenix_supernova_reborn.vpcf": {
+		"attach": 8,
+		"abilityName": "phoenix_supernova",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_phoenix/phoenix_fire_spirits.vpcf": {
+		"attach": 1,
+		"abilityName": "phoenix_fire_spirits",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_phoenix/phoenix_fire_spirit_launch.vpcf": {
+		"attach": 2,
+		"abilityName": "phoenix_launch_fire_spirit",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_phoenix/phoenix_icarus_dive.vpcf": {
+		"attach": 2,
+		"abilityName": "phoenix_icarus_dive",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_primal_beast/primal_beast_onslaught_chargeup.vpcf": {
+		"attach": 2,
+		"abilityName": "primal_beast_onslaught",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_primal_beast/primal_beast_onslaught_impact.vpcf": {
+		"attach": 0,
+		"abilityName": "primal_beast_onslaught",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_primal_beast/primal_beast_trample.vpcf": {
+		"attach": 1,
+		"abilityName": "primal_beast_trample",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_primal_beast/primal_beast_roar_aoe.vpcf": {
+		"attach": 2,
+		"abilityName": "primal_beast_uproar",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_primal_beast/primal_beast_pulverize_hit.vpcf": {
+		"attach": 2,
+		"abilityName": "primal_beast_pulverize",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_primal_beast/primal_beast_rock_throw_pickup.vpcf": {
+		"attach": 2,
+		"abilityName": "primal_beast_rock_throw",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_primal_beast/primal_beast_rock_throw_arc.vpcf": {
+		"attach": 2,
+		"abilityName": "primal_beast_rock_throw",
+		"source": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_pudge/pudge_meathook.vpcf": {
+		"attach": 2,
+		"abilityName": "pudge_meat_hook",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_pudge/pudge_meathook_impact.vpcf": {
+		"attach": 2,
+		"abilityName": "pudge_meat_hook",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_pudge/pudge_fleshheap_block_activation.vpcf": {
+		"attach": 2,
+		"abilityName": "pudge_flesh_heap",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_spirit_breaker/spirit_breaker_greater_bash.vpcf": {
+		"attach": 2,
+		"abilityName": "spirit_breaker_greater_bash",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_spirit_breaker/spirit_breaker_nether_strike_begin.vpcf": {
+		"attach": 2,
+		"abilityName": "spirit_breaker_nether_strike",
+		"source": {
+			"controlPointEnt": 1
+		},
+		"target": {
+			"controlPointEnt": 2
+		}
+	},
+	"particles/units/heroes/hero_spirit_breaker/spirit_breaker_nether_strike_start.vpcf": {
+		"attach": 2,
+		"abilityName": "spirit_breaker_nether_strike",
+		"source": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_spirit_breaker/spirit_breaker_charge_start.vpcf": {
+		"attach": 1,
+		"abilityName": "spirit_breaker_charge_of_darkness",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_sven/sven_spell_warcry.vpcf": {
+		"attach": 1,
+		"abilityName": "sven_warcry",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_sven/sven_spell_great_cleave.vpcf": {
+		"attach": 1,
+		"abilityName": "sven_great_cleave",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 2
+		}
+	},
+	"particles/units/heroes/hero_sven/sven_spell_gods_strength_ambient.vpcf": {
+		"attach": 1,
+		"abilityName": "sven_gods_strength",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_sven/sven_spell_gods_strength.vpcf": {
+		"attach": 1,
+		"abilityName": "sven_gods_strength",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_sven/sven_spell_storm_bolt_lightning.vpcf": {
+		"attach": 2,
+		"abilityName": "sven_storm_bolt",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_tidehunter/tidehunter_anchor_hero.vpcf": {
+		"attach": 2,
+		"abilityName": "tidehunter_anchor_smash",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_tidehunter/tidehunter_anchor.vpcf": {
+		"attach": 2,
+		"abilityName": "tidehunter_anchor_smash",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_tidehunter/tidehunter_spell_ravage.vpcf": {
+		"attach": 2,
+		"abilityName": "tidehunter_ravage",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_tidehunter/tidehunter_spell_ravage_hit.vpcf": {
+		"attach": 2,
+		"abilityName": "tidehunter_ravage",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 2
+		}
+	},
+	"particles/units/heroes/hero_tidehunter/tidehunter_anchor_clamp_chain_endcap.vpcf": {
+		"attach": 2,
+		"abilityName": "tidehunter_dead_in_the_water",
+		"source": {
+			"controlPointEnt": 0
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_shredder/shredder_whirling_death.vpcf": {
+		"attach": 2,
+		"abilityName": "shredder_whirling_death",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_shredder/shredder_whirling_death_debuff.vpcf": {
+		"attach": 2,
+		"abilityName": "shredder_whirling_death",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_shredder/shredder_timberchain.vpcf": {
+		"attach": 2,
+		"abilityName": "shredder_timber_chain",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_shredder/shredder_timber_chain_tree.vpcf": {
+		"attach": 2,
+		"abilityName": "shredder_timber_chain",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_shredder/shredder_tree_dmg.vpcf": {
+		"attach": 2,
+		"abilityName": "shredder_timber_chain",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_shredder/shredder_timber_dmg.vpcf": {
+		"attach": 2,
+		"abilityName": "shredder_timber_chain",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_shredder/shredder_chakram_stay.vpcf": {
+		"attach": 2,
+		"abilityName": "shredder_twisted_chakram",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_shredder/shredder_flame_thrower.vpcf": {
+		"attach": 2,
+		"abilityName": "shredder_flamethrower",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_shredder/shredder_flame_thrower_debuff.vpcf": {
+		"attach": 1,
+		"abilityName": "shredder_flamethrower",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_shredder/shredder_scepter_explode.vpcf": {
+		"attach": 5,
+		"abilityName": "shredder_reactive_armor",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_shredder/shredder_reactive_hit.vpcf": {
+		"attach": 2,
+		"abilityName": "shredder_reactive_armor",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_tiny/tiny_eye_glow.vpcf": {
+		"attach": 2,
+		"abilityName": "tiny_grow",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_tiny/tiny_craggy_hit.vpcf": {
+		"attach": 2,
+		"abilityName": "tiny_craggy_exterior",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_tiny/tiny_craggy_cleave.vpcf": {
+		"attach": 2,
+		"abilityName": "tiny_tree_grab",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_treant/treant_bramble_root.vpcf": {
+		"attach": 2,
+		"abilityName": "treant_natures_grasp",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_treant/treant_leech_seed.vpcf": {
+		"attach": 2,
+		"abilityName": "treant_leech_seed",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_treant/treant_livingarmor.vpcf": {
+		"attach": 2,
+		"abilityName": "treant_living_armor",
+		"source": {
+			"isAttachedTo": true,
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_treant/treant_overgrowth_cast.vpcf": {
+		"attach": 1,
+		"abilityName": "treant_overgrowth",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_treant/treant_overgrowth_vines.vpcf": {
+		"attach": 2,
+		"abilityName": "treant_overgrowth",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_treant/treant_overgrowth_vines_small.vpcf": {
+		"attach": 2,
+		"abilityName": "treant_overgrowth",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_tusk/tusk_tag_team.vpcf": {
+		"attach": 1,
+		"abilityName": "tusk_tag_team",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_tusk/tusk_walruspunch_tgt.vpcf": {
+		"attach": 2,
+		"abilityName": "tusk_walrus_punch",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_tusk/tusk_walruspunch_txt_ult.vpcf": {
+		"attach": 2,
+		"abilityName": "tusk_walrus_punch",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_tusk/tusk_walruspunch_start.vpcf": {
+		"attach": 2,
+		"abilityName": "tusk_walrus_punch",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_tusk/tusk_walruspunch_hand.vpcf": {
+		"attach": 2,
+		"abilityName": "tusk_walrus_punch",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_tusk/tusk_walruspunch_tgt_status.vpcf": {
+		"attach": 2,
+		"abilityName": "tusk_walrus_punch",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_tusk/tusk_snowball_start.vpcf": {
+		"attach": 2,
+		"abilityName": "tusk_snowball",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_tusk/tusk_snowball.vpcf": {
+		"attach": 2,
+		"abilityName": "tusk_snowball",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/heroes_underlord/abyssal_underlord_firestorm_wave.vpcf": {
+		"attach": 2,
+		"abilityName": "abyssal_underlord_firestorm",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/heroes_underlord/underlord_pit_cast.vpcf": {
+		"attach": 3,
+		"abilityName": "abyssal_underlord_pit_of_malice",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/heroes_underlord/underlord_pitofmalice.vpcf": {
+		"attach": 8,
+		"abilityName": "abyssal_underlord_pit_of_malice",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/heroes_underlord/abyssal_underlord_pitofmalice_stun.vpcf": {
+		"attach": 2,
+		"abilityName": "abyssal_underlord_pit_of_malice",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/heroes_underlord/abbysal_underlord_portal_owner.vpcf": {
+		"attach": 7,
+		"abilityName": "abyssal_underlord_pit_of_malice",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_undying/undying_decay.vpcf": {
+		"attach": 2,
+		"abilityName": "undying_decay",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_undying/undying_decay_cast.vpcf": {
+		"attach": 1,
+		"abilityName": "undying_decay",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_undying/undying_decay_strength_xfer.vpcf": {
+		"attach": 2,
+		"abilityName": "undying_decay",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_undying/undying_soul_rip_damage.vpcf": {
+		"attach": 2,
+		"abilityName": "undying_soul_rip",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_skeletonking/wraith_king_curse_debuff_creeps.vpcf": {
+		"attach": 2,
+		"abilityName": "skeleton_king_spectral_blade",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_skeletonking/wraith_king_vampiric_aura_lifesteal.vpcf": {
+		"attach": 1,
+		"abilityName": "skeleton_king_spectral_blade",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_skeletonking/wraith_king_curse_debuff.vpcf": {
+		"attach": 2,
+		"abilityName": "skeleton_king_spectral_blade",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_skeletonking/skeletonking_hellfireblast_warmup.vpcf": {
+		"attach": 2,
+		"abilityName": "skeleton_king_hellfire_blast",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_skeletonking/wraith_king_reincarnate.vpcf": {
+		"attach": 2,
+		"abilityName": "skeleton_king_reincarnation",
+		"source": {
+			"controlPointEnt": 0,
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/items4_fx/scepter_aura.vpcf": {
+		"attach": 1,
+		"abilityName": "item_ultimate_scepter",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/items_fx/dagon_lvl_5_tgt_sparks.vpcf": {
+		"attach": 2,
+		"abilityName": "item_dagon_5",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/items_fx/dagon.vpcf": {
+		"attach": 2,
+		"abilityName": ["item_dagon", "item_dagon_2", "item_dagon_3", "item_dagon_4", "item_dagon_5"],
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/neutral_fx/roshan_slam.vpcf": {
+		"attach": 2,
+		"abilityName": "roshan_slam",
+		"source": {
+			"isAttachedTo": true
+		}
+	}
+}
