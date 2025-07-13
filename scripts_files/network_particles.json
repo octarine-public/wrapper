@@ -1,0 +1,153 @@
+{
+	"particles/units/heroes/hero_axe/axe_beserkers_call_owner.vpcf": {
+		"attach": 1,
+		"abilityName": "axe_berserkers_call",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_battle_hunger_cast.vpcf": {
+		"attach": 1,
+		"abilityName": "axe_battle_hunger",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_counterhelix.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_counter_helix",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_culling_blade_kill.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_culling_blade",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 4
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_cullingblade_sprint_axe.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_culling_blade",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_culling_blade_boost.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_culling_blade",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_alchemist/alchemist_chemichalrage_effect.vpcf": {
+		"attach": 2,
+		"abilityName": "alchemist_chemical_rage",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_alchemist/alchemist_acid_spray_cast.vpcf": {
+		"attach": 2,
+		"abilityName": "alchemist_acid_spray",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_alchemist/alchemist_unstable_concoction_explosion.vpcf": {
+		"attach": 2,
+		"abilityName": "alchemist_unstable_concoction_throw",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_chaos_knight/chaos_knight_calamity_overhead.vpcf": {
+		"attach": 7,
+		"abilityName": "chaos_knight_reality_rift",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_chaos_knight/chaos_knight_reality_rift.vpcf": {
+		"attach": 2,
+		"abilityName": "chaos_knight_reality_rift",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_chaos_knight/chaos_knight_crit_tgt.vpcf": {
+		"attach": 2,
+		"abilityName": "chaos_knight_chaos_strike",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_quill_spray.vpcf": {
+		"attach": 2,
+		"abilityName": "bristleback_quill_spray",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_quill_spray_impact.vpcf": {
+		"attach": 2,
+		"abilityName": "bristleback_quill_spray",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_viscous_nasal_goo_debuff.vpcf": {
+		"attach": 1,
+		"abilityName": "bristleback_viscous_nasal_goo",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_quill_spray_conical.vpcf": {
+		"attach": 8,
+		"abilityName": "bristleback_bristleback",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_invoker/invoker_chaos_meteor_fly.vpcf": {
+		"attach": 2,
+		"abilityName": "invoker_chaos_meteor",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/items4_fx/scepter_aura.vpcf": {
+		"attach": 1,
+		"abilityName": "item_ultimate_scepter",
+		"source": {
+			"isAttachedTo": true
+		}
+	}
+}

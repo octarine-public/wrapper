@@ -1,4 +1,5 @@
 import {
+	CameraSDK,
 	Color,
 	ConVarsSDK,
 	DOTAGameState,
@@ -139,7 +140,7 @@ export class InternalCamera {
 						: this.clampDistance(this.distanceSave + Math.sign(delta) * step)
 			}
 		}
-		Camera.Distance = this.distanceSave | 0
+		CameraSDK.Distance = this.distanceSave | 0
 		ConVarsSDK.Set(
 			"r_farz",
 			!this.disableHumanizer ? (this.distanceSave * 10) | 0 : -1

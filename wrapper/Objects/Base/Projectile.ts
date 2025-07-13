@@ -1,15 +1,27 @@
 import { Color } from "../../Base/Color"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
+import { EntityManager } from "../../Managers/EntityManager"
+import { readJSON } from "../../Utils/Utils"
+import { Ability as AbilitySDK } from "./Ability"
 import { Entity } from "./Entity"
 import { FakeUnit } from "./FakeUnit"
 import { Heroes } from "./Hero"
 import { Thinkers } from "./Thinker"
 import { Unit } from "./Unit"
 
+interface INetworkedProjectileData {
+	abilityName: string | string[]
+}
+
+const networkedProjectileData = new Map<string, INetworkedProjectileData>(
+	Object.entries(readJSON("network_projectile.json"))
+)
+
 export class Projectile {
 	public IsValid = true
 	public ParticlePathNoEcon = ""
+	public AbilityIndex: Nullable<number>
 	public readonly OriginalSpeed: number
 	// TODO: calcluate speed by modifier
 
@@ -27,6 +39,41 @@ export class Projectile {
 
 	public UpdateParticlePathNoEcon(): void {
 		this.ParticlePathNoEcon = GetOriginalParticlePath(this.ParticlePath)
+	}
+	protected UpdateData(): void {
+		if (!(this.Source instanceof Unit)) {
+			return
+		}
+		const obj = networkedProjectileData.get(this.ParticlePathNoEcon)
+		if (obj === undefined) {
+			return
+		}
+		const constructors = this.abilityConstructors(obj)
+		for (let i = constructors.length - 1; i > -1; i--) {
+			const constructor = constructors[i]
+			const abil = EntityManager.GetEntitiesByClass(constructor)
+				.orderByDescending(x => x.CastStartTime)
+				.find(x => x.Owner === this.Source)
+			if (abil !== undefined) {
+				this.AbilityIndex = abil.Index
+			}
+		}
+	}
+	private abilityConstructors(obj: INetworkedProjectileData) {
+		const abilNames = obj.abilityName
+		if (!Array.isArray(abilNames)) {
+			const constructor = EntityManager.GetConstructorByName<AbilitySDK>(abilNames)
+			return constructor !== undefined ? [constructor] : []
+		}
+		const arr: Constructor<AbilitySDK>[] = []
+		for (let i = abilNames.length - 1; i > -1; i--) {
+			const name = abilNames[i]
+			const constructor = EntityManager.GetConstructorByName<AbilitySDK>(name)
+			if (constructor !== undefined) {
+				arr.push(constructor)
+			}
+		}
+		return arr
 	}
 }
 
@@ -58,9 +105,12 @@ export class LinearProjectile extends Projectile {
 			Math.round(Velocity.Length)
 		)
 		this.Position = this.Origin.Clone()
-
 		this.Forward = Vector3.FromAngle(this.Velocity.Angle)
 		this.TargetLoc = Origin.Rotation(this.Forward, this.Distance)
+		this.UpdateData()
+	}
+	public get Ability() {
+		return EntityManager.EntityByIndex<AbilitySDK>(this.AbilityIndex)
 	}
 }
 
@@ -84,10 +134,10 @@ export class TrackingProjectile extends Projectile {
 		public readonly TargetLoc = new Vector3().Invalidate(),
 		colorgemcolor: Color,
 		public readonly OriginalMoveSpeed: number,
-		public readonly Ability?: Nullable<Entity>
+		public readonly Ability?: Nullable<AbilitySDK>
 	) {
 		super(projID, path, particleSystemHandle, source, colorgemcolor, speed)
-
+		this.AbilityIndex = this.Ability?.Index
 		if (source instanceof Entity) {
 			source.GetAttachmentPosition(this.SourceAttachment).CopyTo(this.Position)
 		} else {
@@ -125,6 +175,7 @@ export class TrackingProjectile extends Projectile {
 		this.expireTime = expireTime
 		this.LaunchTick = launchTick
 		targetLoc.CopyTo(this.TargetLoc)
+		this.UpdateData()
 	}
 	/** @internal */
 	public UpdateProjectileSpeed() {
@@ -164,7 +215,6 @@ export class TrackingProjectile extends Projectile {
 		}
 		return ability.GetSpecialValue("attack_projectile_slow") / 100
 	}
-
 	// TimeZone (faceless_void)
 	protected ModifierTimeZoneAura(source: Unit): number {
 		const name = "modifier_faceless_void_time_zone"

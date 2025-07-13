@@ -6,8 +6,15 @@ import { GameState } from "../../Utils/GameState"
 import { Events } from "../Events"
 import { EventsSDK } from "../EventsSDK"
 
-const Monitor = new (class CNetworkedParticleChanged {
-	public PostDataUpdate() {
+new (class CNetworkedParticleChanged {
+	constructor() {
+		Events.on("NewConnection", this.NewConnection.bind(this))
+		EventsSDK.on("PostDataUpdate", this.PostDataUpdate.bind(this), EventPriority.HIGH)
+		EventsSDK.on("EntityDestroyed", this.EntityDestroyed.bind(this))
+		EventsSDK.after("EntityCreated", this.EntityCreatedAfter.bind(this))
+	}
+
+	protected PostDataUpdate(_dt: number) {
 		const destroyedParticles: NetworkedParticle[] = []
 		for (const par of NetworkedParticle.Instances.values()) {
 			if (
@@ -22,8 +29,7 @@ const Monitor = new (class CNetworkedParticleChanged {
 			destroyedParticles[i].Destroy()
 		}
 	}
-
-	public EntityCreatedAfter(entity: Entity) {
+	protected EntityCreatedAfter(entity: Entity) {
 		if (!(entity instanceof Unit)) {
 			return
 		}
@@ -48,10 +54,15 @@ const Monitor = new (class CNetworkedParticleChanged {
 			}
 		}
 	}
-
-	public EntityDestroyed(entity: Entity) {
+	protected EntityDestroyed(entity: Entity) {
 		const destroyedParticles: NetworkedParticle[] = []
 		for (const par of NetworkedParticle.Instances.values()) {
+			if (par.AbilityIndex === entity.Index) {
+				par.AbilityIndex = undefined
+			}
+			if (par.SourceIndex === entity.Index) {
+				par.SourceIndex = undefined
+			}
 			if (par.ModifiersAttachedTo === entity) {
 				par.ModifiersAttachedTo = undefined
 			}
@@ -79,8 +90,7 @@ const Monitor = new (class CNetworkedParticleChanged {
 			}
 		}
 	}
-
-	public NewConnection() {
+	protected NewConnection() {
 		const destroyedParticles: NetworkedParticle[] = []
 		for (const par of NetworkedParticle.Instances.values()) {
 			destroyedParticles.push(par)
@@ -90,11 +100,3 @@ const Monitor = new (class CNetworkedParticleChanged {
 		}
 	}
 })()
-
-EventsSDK.on("PostDataUpdate", () => Monitor.PostDataUpdate(), EventPriority.HIGH)
-
-Events.on("NewConnection", () => Monitor.NewConnection())
-
-EventsSDK.on("EntityDestroyed", entity => Monitor.EntityDestroyed(entity))
-
-EventsSDK.after("EntityCreated", entity => Monitor.EntityCreatedAfter(entity))

@@ -22,6 +22,7 @@ const hardcodedIcons = new Map<string, string>(
 	hardcodedPriorities = new Map<string, number>(
 		Object.entries(readJSON("hardcoded_priorities.json"))
 	)
+
 class CMenuManager {
 	public static OnWindowSizeChanged(): void {
 		CMenuManager.scrollbarWidth = ScaleWidth(3)
