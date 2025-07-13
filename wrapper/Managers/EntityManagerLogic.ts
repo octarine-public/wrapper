@@ -49,7 +49,7 @@ function CreateEntity(
 	className: string,
 	entityName: Nullable<string>
 ): Entity {
-	// TODO
+	// scripts/replay_compatability_settings.txt
 	switch (className) {
 		case "CDOTA_Lamp_Use":
 			className = "CDOTA_Ability_Lamp_Use"
@@ -57,8 +57,13 @@ function CreateEntity(
 		case "CODTA_Item_Gossamer_Cape":
 			className = "CDOTA_Item_Gossamer_Cape"
 			break
+		case "DOTA_Ability_Beastmaster_DrumsOfSlom":
+			className = "CDOTA_Ability_Beastmaster_DrumsOfSlom"
+			break
+		case "DOTA_Ability_Beastmaster_DrumsOfSlom_Stop":
+			className = "CDOTA_Ability_Beastmaster_DrumsOfSlom_Stop"
+			break
 	}
-
 	const entity = ClassFromNative(id, serial, className, entityName)
 	entity.FieldHandlers_ = CachedFieldHandlers.get(
 		entity.constructor as Constructor<Entity>

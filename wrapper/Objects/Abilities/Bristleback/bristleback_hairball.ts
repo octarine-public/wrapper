@@ -1,10 +1,13 @@
-import { WrapperClass } from "../../../Decorators"
+import { WrapperClass, WrapperClassProjectile } from "../../../Decorators"
 import { DAMAGE_TYPES } from "../../../Enums/DAMAGE_TYPES"
 import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 import { bristleback_quill_spray } from "./bristleback_quill_spray"
 
 @WrapperClass("bristleback_hairball")
+@WrapperClassProjectile(
+	"particles/units/heroes/hero_bristleback/bristleback_hairball.vpcf"
+)
 export class bristleback_hairball extends Ability {
 	public get DamageType(): DAMAGE_TYPES {
 		return DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL

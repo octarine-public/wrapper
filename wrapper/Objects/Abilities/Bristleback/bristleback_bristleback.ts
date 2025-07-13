@@ -1,8 +1,13 @@
-import { WrapperClass } from "../../../Decorators"
+import { WrapperClass, WrapperClassNetworkParticle } from "../../../Decorators"
 import { DOTA_ABILITY_BEHAVIOR } from "../../../Enums/DOTA_ABILITY_BEHAVIOR"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("bristleback_bristleback")
+@WrapperClassNetworkParticle({
+	Attachs: 8,
+	IsModifiersAttachedTo: true,
+	Paths: "particles/units/heroes/hero_bristleback/bristleback_quill_spray_conical.vpcf"
+})
 export class bristleback_bristleback extends Ability {
 	public get AbilityBehaviorMask(): DOTA_ABILITY_BEHAVIOR {
 		const mask = super.AbilityBehaviorMask

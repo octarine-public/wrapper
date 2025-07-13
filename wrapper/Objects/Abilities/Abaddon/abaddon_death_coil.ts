@@ -1,8 +1,9 @@
-import { WrapperClass } from "../../../Decorators"
+import { WrapperClass, WrapperClassProjectile } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("abaddon_death_coil")
+@WrapperClassProjectile("particles/units/heroes/hero_abaddon/abaddon_death_coil.vpcf")
 export class abaddon_death_coil
 	extends Ability
 	implements IHealthRestore<Unit>, IHealthCost, INuke

@@ -1,5 +1,6 @@
 import { Vector3 } from "../Base/Vector3"
 import { GetPositionHeight } from "../Native/WASM"
+import { Ability } from "../Objects/Base/Ability"
 import { Entity } from "../Objects/Base/Entity"
 import { GetPredictionTarget } from "../Objects/Base/FakeUnit"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
@@ -73,12 +74,12 @@ EventsSDK.on("EntityCreated", ent => {
 	}
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	if (!(ent instanceof Unit)) {
+	if (!(ent instanceof Unit || ent instanceof Ability)) {
 		return
 	}
 	const arrTraking = ProjectileManager.AllTrackingProjectiles
-	for (let index = arrTraking.length - 1; index > -1; index--) {
-		const proj = arrTraking[index]
+	for (let i = arrTraking.length - 1; i > -1; i--) {
+		const proj = arrTraking[i]
 		if (proj.Source === ent) {
 			proj.Source = undefined
 		}
@@ -87,10 +88,13 @@ EventsSDK.on("EntityDestroyed", ent => {
 		}
 	}
 	const arrLinear = ProjectileManager.AllLinearProjectiles
-	for (let index = arrLinear.length - 1; index > -1; index--) {
-		const proj = arrLinear[index]
+	for (let i = arrLinear.length - 1; i > -1; i--) {
+		const proj = arrLinear[i]
 		if (proj.Source === ent) {
 			proj.Source = undefined
+		}
+		if (proj.AbilityIndex === ent.Index) {
+			proj.AbilityIndex = undefined
 		}
 	}
 })
@@ -325,7 +329,9 @@ Events.on("ServerMessage", (msgID, buf_) => {
 					"CDOTAUserMsg_TE_Projectile"
 				)
 				const particleSystemHandle = msg.get("particle_system_handle") as bigint
-				const ability = EntityManager.EntityByIndex(msg.get("ability") as number)
+				const ability = EntityManager.EntityByIndex<Ability>(
+					msg.get("ability") as number
+				)
 				const projectile = new TrackingProjectile(
 					msg.get("handle") as number,
 					GetPredictionTarget(msg.get("source") as number),

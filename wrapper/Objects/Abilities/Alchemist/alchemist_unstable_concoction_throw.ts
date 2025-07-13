@@ -1,9 +1,15 @@
-import { WrapperClass } from "../../../Decorators"
+import { WrapperClass, WrapperClassNetworkParticle } from "../../../Decorators"
 import { modifier_alchemist_unstable_concoction } from "../../../Objects/Modifiers/Abilities/Alchemist/modifier_alchemist_unstable_concoction"
 import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("alchemist_unstable_concoction_throw")
+@WrapperClassNetworkParticle({
+	Attachs: 2,
+	TargetCP: 0,
+	IsModifiersAttachedTo: true,
+	Paths: "particles/units/heroes/hero_alchemist/alchemist_unstable_concoction_explosion.vpcf"
+})
 export class alchemist_unstable_concoction_throw extends Ability {
 	public get ProjectileAttachment(): string {
 		return "attach_attack3"

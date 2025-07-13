@@ -1,6 +1,9 @@
 import { Color } from "../../Base/Color"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
+import { EntityManager } from "../../Managers/EntityManager"
+import { AllNetworkProjectileAbilities } from "../NativeToSDK"
+import { Ability as AbilitySDK } from "./Ability"
 import { Entity } from "./Entity"
 import { FakeUnit } from "./FakeUnit"
 import { Heroes } from "./Hero"
@@ -34,6 +37,7 @@ export class LinearProjectile extends Projectile {
 	public readonly Position: Vector3
 	public readonly Forward: Vector3
 	public readonly TargetLoc: Vector3
+	public AbilityIndex: Nullable<number>
 
 	constructor(
 		projID: number,
@@ -58,9 +62,22 @@ export class LinearProjectile extends Projectile {
 			Math.round(Velocity.Length)
 		)
 		this.Position = this.Origin.Clone()
-
 		this.Forward = Vector3.FromAngle(this.Velocity.Angle)
 		this.TargetLoc = Origin.Rotation(this.Forward, this.Distance)
+		this.AbilityIndex = this.getAbility(this.ParticlePathNoEcon)
+	}
+	public get Ability() {
+		return EntityManager.EntityByIndex<AbilitySDK>(this.AbilityIndex)
+	}
+	private getAbility(pathNoEcon: string): Nullable<number> {
+		if (!(this.Source instanceof Unit)) {
+			return undefined
+		}
+		const constructor = AllNetworkProjectileAbilities.get(pathNoEcon)
+		if (constructor === undefined) {
+			return undefined
+		}
+		return this.Source.GetAbilityByClass(constructor)?.Index
 	}
 }
 
@@ -84,7 +101,7 @@ export class TrackingProjectile extends Projectile {
 		public readonly TargetLoc = new Vector3().Invalidate(),
 		colorgemcolor: Color,
 		public readonly OriginalMoveSpeed: number,
-		public readonly Ability?: Nullable<Entity>
+		public readonly Ability?: Nullable<AbilitySDK>
 	) {
 		super(projID, path, particleSystemHandle, source, colorgemcolor, speed)
 

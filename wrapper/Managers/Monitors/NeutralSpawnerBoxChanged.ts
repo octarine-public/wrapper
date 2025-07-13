@@ -15,11 +15,19 @@ new (class CNeutralSpawnerBoxChanged {
 	private readonly pSDK = new ParticlesSDK()
 
 	constructor() {
-		EventsSDK.on("Draw", this.Draw.bind(this))
-		EventsSDK.on("GameEnded", this.GameChanged.bind(this))
-		EventsSDK.on("GameStarted", this.GameChanged.bind(this))
-		EventsSDK.on("PostDataUpdate", this.PostDataUpdate.bind(this))
-		EventsSDK.on("EntityPositionChanged", this.EntityPositionChanged.bind(this))
+		EventsSDK.on("Draw", this.Draw.bind(this), EventPriority.IMMEDIATE)
+		EventsSDK.on("GameEnded", this.GameChanged.bind(this), EventPriority.IMMEDIATE)
+		EventsSDK.on("GameStarted", this.GameChanged.bind(this), EventPriority.IMMEDIATE)
+		EventsSDK.on(
+			"PostDataUpdate",
+			this.PostDataUpdate.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"EntityPositionChanged",
+			this.EntityPositionChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
 		EventsSDK.on(
 			"EntityCreated",
 			this.EntityCreated.bind(this),

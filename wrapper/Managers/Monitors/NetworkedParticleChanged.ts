@@ -52,6 +52,9 @@ const Monitor = new (class CNetworkedParticleChanged {
 	public EntityDestroyed(entity: Entity) {
 		const destroyedParticles: NetworkedParticle[] = []
 		for (const par of NetworkedParticle.Instances.values()) {
+			if (par.AbilityIndex === entity.Index) {
+				par.AbilityIndex = undefined
+			}
 			if (par.ModifiersAttachedTo === entity) {
 				par.ModifiersAttachedTo = undefined
 			}

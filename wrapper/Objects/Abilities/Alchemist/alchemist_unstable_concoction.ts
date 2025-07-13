@@ -1,9 +1,14 @@
-import { WrapperClass } from "../../../Decorators"
+import { WrapperClass, WrapperClassNetworkParticle } from "../../../Decorators"
 import { modifier_alchemist_unstable_concoction } from "../../../Objects/Modifiers/Abilities/Alchemist/modifier_alchemist_unstable_concoction"
 import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("alchemist_unstable_concoction")
+@WrapperClassNetworkParticle({
+	Attachs: 2,
+	IsAttachedTo: true,
+	Paths: "particles/units/heroes/hero_alchemist/alchemist_unstableconc_bottles.vpcf"
+})
 export class alchemist_unstable_concoction extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)

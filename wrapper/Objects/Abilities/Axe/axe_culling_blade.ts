@@ -1,8 +1,14 @@
-import { WrapperClass } from "../../../Decorators"
+import { WrapperClass, WrapperClassNetworkParticle } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("axe_culling_blade")
+@WrapperClassNetworkParticle({
+	Attachs: 2,
+	IsAttachedTo: true,
+	IsModifiersAttachedTo: true,
+	Paths: "particles/units/heroes/hero_axe/axe_cullingblade_sprint.vpcf"
+})
 export class axe_culling_blade extends Ability implements INuke {
 	public IsNuke(): this is INuke {
 		return true

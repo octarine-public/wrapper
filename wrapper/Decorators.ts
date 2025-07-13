@@ -7,12 +7,26 @@ import { Modifier } from "./Objects/Base/Modifier"
 import {
 	RegisterClass,
 	RegisterClassModifier,
+	RegisterClassNetworkParticle,
+	RegisterClassProjectile,
 	RegisterFieldHandler
 } from "./Objects/NativeToSDK"
 
 export function WrapperClass(networkedClassName: string) {
 	return (constructor: Constructor<Entity>) =>
 		RegisterClass(networkedClassName, constructor)
+}
+
+export function WrapperClassProjectile(particlePath: string) {
+	return (constructor: Constructor<Entity>) => {
+		RegisterClassProjectile(particlePath, constructor)
+	}
+}
+
+export function WrapperClassNetworkParticle(options: IWrapperClassOptions) {
+	return (constructor: Constructor<Entity>) => {
+		RegisterClassNetworkParticle(options, constructor)
+	}
 }
 
 export function WrapperClassModifier(name?: string) {

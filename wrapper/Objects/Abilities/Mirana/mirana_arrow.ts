@@ -1,9 +1,10 @@
-import { WrapperClass } from "../../../Decorators"
+import { WrapperClass, WrapperClassProjectile } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 import { Creep } from "../../Base/Creep"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("mirana_arrow")
+@WrapperClassProjectile("particles/units/heroes/hero_mirana/mirana_spell_arrow.vpcf")
 export class mirana_arrow extends Ability implements INuke {
 	public IsNuke(): this is INuke {
 		return true

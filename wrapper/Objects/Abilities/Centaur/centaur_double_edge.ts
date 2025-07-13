@@ -1,9 +1,18 @@
-import { WrapperClass } from "../../../Decorators"
+import { WrapperClass, WrapperClassNetworkParticle } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 import { modifier_centaur_double_edge_damage_tracking } from "../../Modifiers/Abilities/Centaur/modifier_centaur_double_edge_damage_tracking"
 
 @WrapperClass("centaur_double_edge")
+@WrapperClassNetworkParticle({
+	Attachs: 2,
+	IsAttachedTo: true,
+	Paths: [
+		"particles/units/heroes/hero_centaur/centaur_double_edge_phase.vpcf",
+		"particles/units/heroes/hero_centaur/centaur_double_edge_body.vpcf",
+		"particles/units/heroes/hero_centaur/centaur_double_edge.vpcf"
+	]
+})
 export class centaur_double_edge extends Ability implements INuke {
 	public IsNuke(): this is INuke {
 		return true

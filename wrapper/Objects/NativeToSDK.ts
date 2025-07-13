@@ -1,10 +1,14 @@
 import { EntityPropertyType } from "../Base/EntityProperties"
 import { Events } from "../Managers/Events"
 import { EventsSDK } from "../Managers/EventsSDK"
+import { Ability } from "../Objects/Base/Ability"
 import { Modifier } from "../Objects/Base/Modifier"
 import { ParseProtobufDesc, ParseProtobufNamed } from "../Utils/Protobuf"
 import { MapToObject } from "../Utils/Utils"
 import { Entity } from "./Base/Entity"
+
+type NetworkParticleAbility = Map<string, [Constructor<Ability>, IWrapperClassOptions]>
+type NetworkProjectileAbility = Map<string, Constructor<Ability>>
 
 const modifierSDKClassTempNames: string[] = []
 const constructors = new Map<string, Constructor<Entity>>()
@@ -15,17 +19,56 @@ export const SDKClasses: [Constructor<Entity>, Entity[]][] = []
 export const ClassToEntities = new WeakMap<Constructor<any>, Entity[]>()
 export const ModifierSDKClass = new Map<string, Constructor<Modifier>>()
 export const ClassToEntitiesAr = new WeakMap<Constructor<any>, Entity[][]>()
+
 export const CachedFieldHandlers = new WeakMap<
 	Constructor<Entity>,
 	Map<number, FieldHandler>
 >()
 export const FieldHandlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>()
+export const AllNetworkParticleAbilities: NetworkParticleAbility = new Map()
+export const AllNetworkProjectileAbilities: NetworkProjectileAbility = new Map()
+
+function registerParticle(
+	path: string,
+	options: IWrapperClassOptions,
+	constructor: Constructor<Entity>
+) {
+	if (AllNetworkParticleAbilities.has(path)) {
+		console.error(`Particle ${path} already registered`)
+		return
+	}
+	AllNetworkParticleAbilities.set(path, [constructor as Constructor<Ability>, options])
+}
 
 export function RegisterClass(name: string, constructor: Constructor<Entity>) {
 	constructors.set(name, constructor)
 	if (!FieldHandlers.has(constructor)) {
 		RegisterClassInternal(constructor)
 	}
+}
+
+export function RegisterClassNetworkParticle(
+	options: IWrapperClassOptions,
+	constructor: Constructor<Entity>
+) {
+	if (!Array.isArray(options.Paths)) {
+		registerParticle(options.Paths, options, constructor)
+		return
+	}
+	for (let i = options.Paths.length - 1; i > -1; i--) {
+		registerParticle(options.Paths[i], options, constructor)
+	}
+}
+
+export function RegisterClassProjectile(
+	particlePath: string,
+	constructor: Constructor<Entity>
+) {
+	if (AllNetworkProjectileAbilities.has(particlePath)) {
+		console.error(`Projectile ${particlePath} already registered`)
+		return
+	}
+	AllNetworkProjectileAbilities.set(particlePath, constructor as Constructor<Ability>)
 }
 
 export function RegisterClassModifier(name: string, constructor: Constructor<Modifier>) {
@@ -295,12 +338,9 @@ declare class ${name} {
 `
 				)
 			}
-			EntitiesSymbols = (msg.get("symbols") as string[]).map(sym => {
-				if (sym.startsWith("DOTA")) {
-					return `C${sym}`
-				}
-				return sym
-			})
+			EntitiesSymbols = (msg.get("symbols") as string[]).map(sym =>
+				sym.startsWith("DOTA") ? `C${sym}` : sym
+			)
 			FieldHandlers.forEach((map, construct) => {
 				const map2 = CachedFieldHandlers.get(construct)!
 				map2.clear()
