@@ -1,7 +1,7 @@
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
-@WrapperClass("CDOTA_Ability_Viper_Nose_Dive")
+@WrapperClass("viper_nose_dive")
 export class viper_nose_dive extends Ability {
 	public get StartHeight() {
 		return this.GetSpecialValue("start_height")

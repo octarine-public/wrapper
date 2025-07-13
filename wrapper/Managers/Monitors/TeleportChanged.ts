@@ -271,25 +271,29 @@ new (class CTeleportChanged {
 			caster.TPEndPosition.Invalidate()
 			caster.TPStartPosition.Invalidate()
 			const deletedTP = this.teleports.find(([x]) => x === caster)
-			if (deletedTP !== undefined) {
-				deletedTP[1].IsCanceled = true
-				deletedTP[1].IsValid = false
-				EventsSDK.emit("UnitPortalDestroyed", false, deletedTP[1])
-				this.teleports.remove(deletedTP)
-				this.destroyInternalTeleportPoint(deletedTP[0])
+			if (deletedTP === undefined) {
+				return
 			}
+			const [unit, model] = deletedTP
+			model.IsCanceled = true
+			model.IsValid = false
+			EventsSDK.emit("UnitPortalDestroyed", false, model)
+			this.teleports.remove(deletedTP)
+			this.destroyInternalTeleportPoint(unit)
 			return
 		}
 		if (released) {
 			caster.TPEndPosition.Invalidate()
 			caster.TPStartPosition.Invalidate()
 			const deletedTP = this.teleports.find(([x]) => x === caster)
-			if (deletedTP !== undefined) {
-				deletedTP[1].IsValid = false
-				EventsSDK.emit("UnitPortalDestroyed", false, deletedTP[1])
-				this.teleports.remove(deletedTP)
-				this.destroyInternalTeleportPoint(deletedTP[0])
+			if (deletedTP === undefined) {
+				return
 			}
+			const [unit, model] = deletedTP
+			model.IsValid = false
+			EventsSDK.emit("UnitPortalDestroyed", false, model)
+			this.teleports.remove(deletedTP)
+			this.destroyInternalTeleportPoint(unit)
 			return
 		}
 		caster.TPStartPosition.CopyFrom(start)
@@ -302,11 +306,16 @@ new (class CTeleportChanged {
 		const [building, isFontain] = this.getBuilding(endPosition),
 			travel = caster.GetItemByClass(item_travel_boots),
 			travel2 = caster.GetItemByClass(item_travel_boots_2),
-			hasKeen = caster.GetAbilityByClass(tinker_keen_teleport) !== undefined
+			keen = caster.GetAbilityByClass(tinker_keen_teleport)
 
 		const hasTravel = travel !== undefined,
 			hasTravel2 = travel2 !== undefined,
-			hasIteration = entity !== undefined || isFontain || hasTravel || hasTravel2
+			hasIteration =
+				entity !== undefined ||
+				keen !== undefined ||
+				isFontain ||
+				hasTravel ||
+				hasTravel2
 
 		const unitClass = new UnitPortalData(caster.Index)
 		if (hasTravel2) {
@@ -315,8 +324,9 @@ new (class CTeleportChanged {
 			unitClass.AbilityName = travel.Name
 		} else if (entity !== undefined) {
 			unitClass.AbilityName = item_travel_boots.name
+		} else if (keen !== undefined) {
+			unitClass.AbilityName = keen.Name
 		}
-
 		const portalClass = new PortalPoint(start, endPosition, caster.Index)
 		portalClass.InternalSkipIteration = hasIteration || GameState.IsDemo
 
@@ -326,14 +336,17 @@ new (class CTeleportChanged {
 				maxDuration += 1
 			}
 			if (hasIteration) {
-				maxDuration = hasTravel2 ? maxDuration - 1 : maxDuration
+				maxDuration = hasTravel2
+					? maxDuration - 1
+					: keen !== undefined
+						? Math.max(keen.MaxChannelTime, maxDuration)
+						: maxDuration
 			}
 		} else if (hasIteration) {
 			maxDuration = hasTravel2 ? maxDuration - 1 : maxDuration
 		}
 
 		this.teleportPoints.push(portalClass)
-		unitClass.ForceEmit = [!hasKeen, GameState.TickInterval * 1000]
 		unitClass.UpdateData(entity?.Index, start, endPosition)
 		unitClass.UpdateDuration(this.teleportPoints, hasIteration, maxDuration)
 		this.teleports.push([caster, unitClass])
@@ -462,9 +475,9 @@ new (class CTeleportChanged {
 			return
 		}
 		model.InternalSkipIteration = true
+		const [building] = this.getBuilding(model.EndPosition)
 		const keen = model.Caster.GetAbilityByClass(tinker_keen_teleport)
 		let maxDuration = keen?.MaxChannelTime ?? data[1].MaxDuration
-		const [building] = this.getBuilding(model.EndPosition)
 		if (building?.IsOutpost) {
 			maxDuration += 1
 		}

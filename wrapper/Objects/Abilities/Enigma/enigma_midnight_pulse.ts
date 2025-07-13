@@ -6,4 +6,7 @@ export class enigma_midnight_pulse extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("duration", level)
+	}
 }

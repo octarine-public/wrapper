@@ -16,4 +16,10 @@ export class jakiro_macropyre extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("duration", level)
+	}
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("path_width", level)
+	}
 }

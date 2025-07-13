@@ -57,23 +57,21 @@ function LoadFile(path: string, name: string = "DOTAAbilities"): RecursiveMap {
 export class AbilityData {
 	public static readonly empty = new AbilityData("", new Map())
 	public static readonly globalStorage: Map<string, AbilityData> = new Map()
-
+	public static readonly ShouldBeDrawable = new Set<string>()
 	private static readonly cacheWithoutSpecialData = new Set<string>()
 
 	public static DisposeAllData() {
 		storageIds.clear()
 		this.globalStorage.clear()
+		this.ShouldBeDrawable.clear()
 		this.cacheWithoutSpecialData.clear()
 	}
-
 	public static GetAbilityByName(name: string): Nullable<AbilityData> {
 		return AbilityData.globalStorage.get(name)
 	}
-
 	public static GetAbilityNameByID(id: number): Nullable<string> {
 		return storageIds.get(id)
 	}
-
 	public static GetItemRecipeName(name: string): Nullable<string> {
 		for (const [recipeName, data] of AbilityData.globalStorage) {
 			if (data.ItemResult === name) {
@@ -82,7 +80,6 @@ export class AbilityData {
 		}
 		return undefined
 	}
-
 	protected static GetAbilityIDByName(name: string): Nullable<number> {
 		for (const [abilID, abilName] of storageIds) {
 			if (abilName === name) {
@@ -91,11 +88,9 @@ export class AbilityData {
 		}
 		return undefined
 	}
-
 	protected static get HasDebug(): boolean {
 		return (globalThis as any)?.DEBUGGER_INSTALLED ?? false
 	}
-
 	public readonly AbilityBehavior: DOTA_ABILITY_BEHAVIOR // bitmask
 	public readonly AbilityType: ABILITY_TYPES
 	public readonly BonusStats: EDOTASpecialBonusStats
@@ -168,7 +163,10 @@ export class AbilityData {
 	private readonly MaxDurationCache: number[]
 	private readonly HealthCostCache: number[]
 
-	constructor(name: string, kv: RecursiveMap) {
+	constructor(
+		private readonly name: string,
+		kv: RecursiveMap
+	) {
 		this.clearAllData()
 		this.cacheSpecialValuesNew(kv)
 		this.cacheSpecialValuesOld(kv)
@@ -414,7 +412,9 @@ export class AbilityData {
 			? parseInt(kv.get("IsBreakable") as string) !== 0
 			: false
 	}
-
+	public get ShouldBeDrawable(): boolean {
+		return AbilityData.ShouldBeDrawable.has(this.name)
+	}
 	public get CanHitSpellImmuneEnemy(): boolean {
 		switch (this.AbilityImmunityType) {
 			case SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ALLIES_YES:
@@ -515,11 +515,11 @@ export class AbilityData {
 		for (let i = arr.length - 1; i > -1; i--) {
 			const linkedSpecialBonus = arr[i]
 			if (!linkedSpecialBonus.IsOld) {
-				if (linkedSpecialBonus.Name.startsWith("special_bonus_facet_")) {
-					if (
-						includeFacet &&
-						owner.HeroFacet !== linkedSpecialBonus.Name.substring(20)
-					) {
+				if (
+					includeFacet &&
+					linkedSpecialBonus.Name.startsWith("special_bonus_facet_")
+				) {
+					if (owner.HeroFacet !== linkedSpecialBonus.Name.substring(20)) {
 						continue
 					}
 				} else if (linkedSpecialBonus.Name === "special_bonus_shard") {

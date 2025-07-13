@@ -1,7 +1,7 @@
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
-@WrapperClass("CDOTA_Ability_PrimalBeast_Pulverize")
+@WrapperClass("primal_beast_pulverize")
 export class primal_beast_pulverize extends Ability implements INuke {
 	public IsNuke(): this is INuke {
 		return true

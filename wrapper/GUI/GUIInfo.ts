@@ -5,7 +5,6 @@ import { EventsSDK } from "../Managers/EventsSDK"
 import { InputManager, VKeys } from "../Managers/InputManager"
 import { ConVarsSDK } from "../Native/ConVarsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
-import { Ability } from "../Objects/Base/Ability"
 import { GameRules } from "../Objects/Base/Entity"
 import { Unit } from "../Objects/Base/Unit"
 import { CLowerHUD } from "./CLowerHUD"
@@ -97,18 +96,30 @@ export const GUIInfo = new (class CGUIInfo {
 			this.DebugDraw()
 		}
 	}
-	public GetVisibleAbilitiesForUnit(unit: Nullable<Unit>): Ability[] {
-		return (
-			(unit?.Spells?.filter(
-				abil => abil !== undefined && !abil.IsHidden && abil.ShouldBeDrawable
-			) as Ability[]) ?? []
-		)
+	public GetVisibleAbilitiesForUnit(unit: Nullable<Unit>): number {
+		if (unit === undefined) {
+			return 0
+		}
+		let count = 0
+		const arr = unit.Spells
+		for (let i = 0; i < arr.length; i++) {
+			const abil = arr[i]
+			if (abil === undefined || abil.IsHidden || !abil.ShouldBeDrawable) {
+				continue
+			}
+			if (abil.Name === "kez_switch_weapons") {
+				count += 2 // hack for kez switch weapons
+			} else {
+				count++
+			}
+		}
+		return count
 	}
 	public GetLowerHUDForUnit(
 		unit: Nullable<Unit> = InputManager.SelectedUnit
 	): CLowerHUD {
 		const isHero = unit?.IsHero ?? false
-		const abilsCount = this.GetVisibleAbilitiesForUnit(unit).length
+		const abilsCount = this.GetVisibleAbilitiesForUnit(unit)
 		let heroMap = this.LowerHUD_.get(isHero)
 		if (heroMap === undefined) {
 			heroMap = new Map()

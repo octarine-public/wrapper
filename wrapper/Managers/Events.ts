@@ -97,7 +97,6 @@ export class EventEmitter {
 		}
 		return true
 	}
-
 	public once(name: string, listener: Listener, priority = 0): EventEmitter {
 		const onceListener = (...args: any) => {
 			this.removeListener(name, onceListener)

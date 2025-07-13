@@ -6,9 +6,8 @@ export class modifier_sniper_headshot extends Modifier {
 	private cachedBonusDamage = 0
 
 	public get AttackDamageBonus() {
-		return this.IsPassiveDisabled() ? this.cachedBonusDamage : 0
+		return !this.IsPassiveDisabled() ? this.cachedBonusDamage : 0
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedBonusDamage = this.GetSpecialValue("damage", "sniper_headshot")
 	}

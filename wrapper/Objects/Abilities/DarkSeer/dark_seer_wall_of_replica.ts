@@ -10,4 +10,7 @@ export class dark_seer_wall_of_replica extends Ability {
 		}
 		return width
 	}
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("duration", level)
+	}
 }

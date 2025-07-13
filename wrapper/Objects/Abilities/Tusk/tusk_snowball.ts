@@ -7,8 +7,7 @@ import { Unit } from "../../Base/Unit"
 
 @WrapperClass("tusk_snowball")
 export class tusk_snowball extends Ability implements INuke {
-	/** @readonly */
-	public FriendlyCounts: number = 0
+	public readonly Friendly: Unit[] = []
 
 	public IsNuke(): this is INuke {
 		return true
@@ -32,22 +31,33 @@ export class tusk_snowball extends Ability implements INuke {
 			return 0
 		}
 		const damageBonus = this.GetSpecialValue("snowball_damage_bonus")
-		return baseDamage + damageBonus * this.FriendlyCounts
+		return baseDamage + damageBonus * this.Friendly.length
 	}
 }
 
 const modifiers: Modifier[] = []
-function CalculateFriendlyCount(abil: tusk_snowball) {
-	let result = 0
+function CalculateFriendlyCount(abil: tusk_snowball, remove: boolean = false) {
 	for (let i = modifiers.length - 1; i > -1; i--) {
 		const modifier = modifiers[i]
-		if (!modifier.IsValid || abil !== modifier.Ability) {
+		const owner = modifier.Parent
+		if (owner === undefined) {
 			modifiers.remove(modifier)
 			continue
 		}
-		result++
+		if (!modifier.IsValid || abil !== modifier.Ability) {
+			abil.Friendly.remove(owner)
+			modifiers.remove(modifier)
+			continue
+		}
+		if (remove) {
+			abil.Friendly.remove(owner)
+			continue
+		}
+		if (abil.Friendly.includes(owner)) {
+			continue
+		}
+		abil.Friendly.push(owner)
 	}
-	abil.FriendlyCounts = result
 }
 
 function ModifierChanged(modifier: Modifier, create: boolean) {
@@ -64,8 +74,8 @@ function ModifierChanged(modifier: Modifier, create: boolean) {
 		return
 	}
 	if (!create) {
+		CalculateFriendlyCount(ability, true)
 		modifiers.remove(modifier)
-		CalculateFriendlyCount(ability)
 		return
 	}
 	modifiers.push(modifier)

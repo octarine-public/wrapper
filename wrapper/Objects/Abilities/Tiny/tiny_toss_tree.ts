@@ -15,6 +15,9 @@ export class tiny_toss_tree extends Ability implements INuke {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)
 	}
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.Owner?.GetAbilityByName("tiny_tree_grab")?.GetBaseAOERadiusForLevel(level) ?? 0
+	}
 	public GetRawDamage(target: Unit): number {
 		const owner = this.Owner
 		if (owner === undefined || this.Level === 0) {

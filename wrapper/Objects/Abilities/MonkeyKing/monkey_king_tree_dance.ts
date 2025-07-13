@@ -1,5 +1,6 @@
 import { Vector3 } from "../../../Base/Vector3"
 import { WrapperClass } from "../../../Decorators"
+import { GameActivity } from "../../../Enums/GameActivity"
 import { EntityManager } from "../../../Managers/EntityManager"
 import { EventsSDK } from "../../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../../Native/WASM"
@@ -22,11 +23,9 @@ export class monkey_king_tree_dance extends Ability {
 	public get SpringSpeed(): number {
 		return this.GetSpecialValue("spring_leap_speed")
 	}
-
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.GetSpecialValue("ground_jump_distance", level)
 	}
-
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("leap_speed", level)
 	}
@@ -67,10 +66,11 @@ EventsSDK.on("ParticleUpdated", par => {
 	abil.StartedJumpingTime = GameState.RawGameTime
 	pos.CopyTo(abil.StartPosition)
 	abil.IsJumping = true
+	const castAnimation = abil.AbilityData.CastAnimation
 	abil.IsJumpingToTree =
-		ent.LastActivity === abil.AbilityData.CastAnimation &&
-		Math.abs(GameState.RawGameTime - ent.LastAnimationStartTime) <
-			GameState.TickInterval / 10
+		ent.LastActivity === castAnimation ||
+		ent.NetworkActivity === castAnimation ||
+		ent.LastGestureActivity === GameActivity.ACT_DOTA_MK_TREE_SOAR
 	abil.TargetTree = undefined
 	const castRange = abil.CastRange
 	abil.PredictedPositionsPerTree = [
@@ -90,7 +90,6 @@ EventsSDK.on("ParticleDestroyed", par => {
 	if (cpEnt === undefined) {
 		return
 	}
-
 	const ent = cpEnt[0]
 	if (!(ent instanceof Unit)) {
 		return
@@ -118,15 +117,17 @@ EventsSDK.on("PostDataUpdate", dt => {
 			owner.HasBuffByName("modifier_monkey_king_arc_to_ground")
 		) {
 			abil.TargetTree = undefined
-			abil.PredictedPositionsPerTree = []
 			abil.IsJumpingToTree = false
+			abil.StartPosition.Invalidate()
+			abil.PredictedPositionsPerTree.clear()
 			continue
 		}
-
-		if (abil.TargetTree !== undefined || !abil.IsJumpingToTree) {
+		const isJumpingTree =
+			abil.IsJumpingToTree ||
+			owner.LastGestureActivity === GameActivity.ACT_DOTA_MK_TREE_SOAR
+		if (abil.TargetTree !== undefined || !isJumpingTree) {
 			continue
 		}
-
 		const startPos = abil.StartPosition
 		if (!startPos.IsValid) {
 			continue
@@ -138,8 +139,8 @@ EventsSDK.on("PostDataUpdate", dt => {
 			finishedJumpingTrees: (Tree | TempTree)[] = []
 		const leapSpeedBase = abil.GetSpecialValue("leap_speed"),
 			groundJumpDistance = abil.GetSpecialValue("ground_jump_distance")
-		for (let index = abil.PredictedPositionsPerTree.length - 1; index > -1; index--) {
-			const predictedAr = abil.PredictedPositionsPerTree[index]
+		for (let j = abil.PredictedPositionsPerTree.length - 1; j > -1; j--) {
+			const predictedAr = abil.PredictedPositionsPerTree[j]
 			const [currentPos, tree, timeFinished] = predictedAr
 			if (timeFinished !== 0) {
 				continue

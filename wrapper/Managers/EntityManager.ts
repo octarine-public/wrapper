@@ -1,5 +1,5 @@
 import { Entity } from "../Objects/Base/Entity"
-import { ClassToEntities } from "../Objects/NativeToSDK"
+import { ClassToEntities, GetConstructorByName } from "../Objects/NativeToSDK"
 
 export const AllEntitiesAsMap = new Map<number, Entity>()
 
@@ -31,5 +31,8 @@ export const EntityManager = new (class CEntityManager {
 			throw "Invalid entity class"
 		}
 		return ar as []
+	}
+	public GetConstructorByName<T extends Entity>(name: string) {
+		return GetConstructorByName(name) as Nullable<Constructor<T>>
 	}
 })()

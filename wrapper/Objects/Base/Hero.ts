@@ -1,4 +1,5 @@
 import { Vector2 } from "../../Base/Vector2"
+import { Vector3 } from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { ScaleHeight } from "../../GUI/Helpers"
@@ -37,12 +38,15 @@ export class Hero extends Unit {
 	public readonly RespawnTimePenalty: number = 0
 	@NetworkedBasicField("m_flRespawnTime")
 	public readonly RespawnTime: number = 0
+	@NetworkedBasicField("m_hFacetAbilities")
+	public readonly FacetAbilities: number[] = []
+	public readonly StartPosition = new Vector3().Invalidate()
 
 	public FocusFireActive = false
 	/** @internal (changed by CFocusFireChanged) */
 	public FocusFireTargetIndex_: number = -1
 	@NetworkedBasicField("m_hReplicatingOtherHeroModel")
-	private readonly replicatingOtherHeroModel: number = EntityManager.INVALID_HANDLE
+	protected readonly ReplicatingOtherHeroModel_: number = EntityManager.INVALID_HANDLE
 
 	constructor(
 		public readonly Index: number,
@@ -66,9 +70,6 @@ export class Hero extends Unit {
 	public get FocusFireTarget() {
 		return EntityManager.EntityByIndex<Unit>(this.FocusFireTargetIndex_)
 	}
-	public get ReplicatingOtherHeroModel() {
-		return EntityManager.EntityByIndex<Unit>(this.replicatingOtherHeroModel)
-	}
 	public get IsRealHero(): boolean {
 		return !this.IsClone && !this.IsIllusion && !this.IsStrongIllusion
 	}
@@ -80,9 +81,9 @@ export class Hero extends Unit {
 	}
 	public get IsIllusion(): boolean {
 		return (
-			this.replicatingOtherHeroModel !== -1 &&
-			this.replicatingOtherHeroModel !== -2 &&
-			this.replicatingOtherHeroModel !== EntityManager.INVALID_HANDLE
+			this.ReplicatingOtherHeroModel_ !== -1 &&
+			this.ReplicatingOtherHeroModel_ !== -2 &&
+			this.ReplicatingOtherHeroModel_ !== EntityManager.INVALID_HANDLE
 		)
 	}
 	public get IsMyHero(): boolean {

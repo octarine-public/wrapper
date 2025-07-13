@@ -90,8 +90,8 @@ export class PlayerCustomData {
 	 * @description internal only for wrapper
 	 */
 	public static PlayerCustomDataUpdatedAll() {
-		for (let index = this.Array.length - 1; index > -1; index--) {
-			const playerData = this.Array[index]
+		for (let i = this.Array.length - 1; i > -1; i--) {
+			const playerData = this.Array[i]
 			EventsSDK.emit("PlayerCustomDataUpdated", false, playerData)
 		}
 	}

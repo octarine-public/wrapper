@@ -49,7 +49,7 @@ function CreateEntity(
 	className: string,
 	entityName: Nullable<string>
 ): Entity {
-	// TODO
+	// scripts/replay_compatability_settings.txt
 	switch (className) {
 		case "CDOTA_Lamp_Use":
 			className = "CDOTA_Ability_Lamp_Use"
@@ -57,8 +57,13 @@ function CreateEntity(
 		case "CODTA_Item_Gossamer_Cape":
 			className = "CDOTA_Item_Gossamer_Cape"
 			break
+		case "DOTA_Ability_Beastmaster_DrumsOfSlom":
+			className = "CDOTA_Ability_Beastmaster_DrumsOfSlom"
+			break
+		case "DOTA_Ability_Beastmaster_DrumsOfSlom_Stop":
+			className = "CDOTA_Ability_Beastmaster_DrumsOfSlom_Stop"
+			break
 	}
-
 	const entity = ClassFromNative(id, serial, className, entityName)
 	entity.FieldHandlers_ = CachedFieldHandlers.get(
 		entity.constructor as Constructor<Entity>
@@ -74,6 +79,7 @@ export function DeleteEntity(entID: number): void {
 		return
 	}
 	entity.IsValid = false
+	entity.NotVisibleTime = GameState.RawGameTime
 	entity.BecameDormantTime = GameState.RawGameTime
 	EntityManager.AllEntities.remove(entity)
 
@@ -363,6 +369,7 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 	for (let i = leftVis.length - 1; i > -1; i--) {
 		const ent = leftVis[i]
 		if (ent.IsVisible) {
+			ent.NotVisibleTime = GameState.RawGameTime
 			ent.BecameDormantTime = GameState.RawGameTime
 			ent.IsVisible = false
 			EventsSDK.emit("EntityVisibleChanged", false, ent)
@@ -372,6 +379,9 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 		const ent = enteredVis[i]
 		if (!ent.IsVisible) {
 			ent.IsVisible = true
+			ent.IsFogVisible = false
+			ent.NotVisibleTime = 0
+			ent.FogVisiblePosition.Invalidate()
 			EventsSDK.emit("EntityVisibleChanged", false, ent)
 		}
 	}

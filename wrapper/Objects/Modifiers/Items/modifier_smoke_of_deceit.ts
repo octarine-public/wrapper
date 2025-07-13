@@ -23,7 +23,11 @@ export class modifier_smoke_of_deceit extends Modifier implements IBuff {
 		return true
 	}
 	public GetTexturePath(): string {
-		return GetItemTexture("item_smoke_of_deceit")
+		const base = super.GetTexturePath()
+		const itemName = this.CachedAbilityName
+		return itemName !== undefined && itemName !== "" && base !== ""
+			? base
+			: GetItemTexture("item_smoke_of_deceit")
 	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]

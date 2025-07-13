@@ -904,6 +904,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 					submsg.get("attachment") as number,
 					submsg.get("include_wearables") as boolean
 				])
+				par.UpdateData(par.PathNoEcon)
 			}
 			par.ControlPointsFallback.set(cp, position)
 			break

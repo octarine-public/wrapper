@@ -15,6 +15,9 @@ export class dragon_knight_fireball extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("damage", level)
 	}
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("duration", level)
+	}
 	public GetBaseCastRangeForLevel(level: number): number {
 		return (this.Owner?.HasBuffByName("modifier_dragon_knight_dragon_form") ?? false)
 			? this.GetSpecialValue("dragon_form_cast_range", level)

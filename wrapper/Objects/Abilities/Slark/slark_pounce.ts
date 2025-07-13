@@ -14,26 +14,20 @@ export class slark_pounce extends Ability {
 	public get UsesRotation() {
 		return this.NoTarget
 	}
-	public get Speed() {
-		return this.Owner?.HasScepter ? super.Speed * 2 : super.Speed
-	}
 	public get Range() {
 		return this.CastRange + this.AOERadius
 	}
-
+	public get Speed() {
+		return this.OwnerHasScepter ? super.Speed * 1.3 : super.Speed
+	}
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("pounce_speed", level)
 	}
-
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("pounce_radius", level)
 	}
-
 	public GetBaseCastRangeForLevel(level: number): number {
-		return this.GetSpecialValue(
-			!this.Owner?.HasScepter ? "pounce_distance" : "pounce_distance_scepter",
-			level
-		)
+		return this.GetSpecialValue(`pounce_distance${this.OwnerHasScepter ? "_scepter" : ""}`, level)
 	}
 	public GetHitTime(
 		unit: Unit | Vector3,

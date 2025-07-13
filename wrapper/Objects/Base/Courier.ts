@@ -1,6 +1,7 @@
 import { Vector2 } from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { CourierState } from "../../Enums/CourierState"
+import { EPropertyType } from "../../Enums/PropertyType"
 import { ScaleHeight } from "../../GUI/Helpers"
 import { EntityManager } from "../../Managers/EntityManager"
 import { Hero } from "./Hero"
@@ -12,7 +13,7 @@ export class Courier extends Unit {
 	public readonly IsFlying: boolean = false
 	@NetworkedBasicField("m_flRespawnTime")
 	public readonly RespawnTime: number = 0
-	@NetworkedBasicField("m_nCourierState")
+	@NetworkedBasicField("m_nCourierState", EPropertyType.INT32)
 	public readonly State: CourierState = CourierState.COURIER_STATE_INIT
 	@NetworkedBasicField("m_hCourierStateEntity")
 	public readonly StateHero_: number = EntityManager.INVALID_HANDLE

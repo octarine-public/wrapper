@@ -20,6 +20,9 @@ function ParticleRangePath(name: string): string {
 function ParticleLinePath(name: string): string {
 	return `particles/range_line/${name.toLowerCase()}.vpcf`
 }
+function ParticleLinearPath(useSource: boolean = true, useArrow: boolean = true): string {
+	return `particles/range_linear/range_finder_linear${useArrow ? "_arrow" : ""}${useSource ? "_source" : ""}.vpcf`
+}
 function RenderPath(render: PARTICLE_RENDER): string {
 	return (PARTICLE_RENDER[render] ?? PARTICLE_RENDER_NAME.NORMAL).toLowerCase()
 }
@@ -60,7 +63,28 @@ export interface IDrawBoundingAreaOptions {
 	Color?: Color
 	Width?: number
 }
-
+export interface IDrawRectangleOptions {
+	Attachment?: ParticleAttachment
+	Start?: Vector3
+	End?: Vector3
+	Color?: Color
+	Width?: number
+	WihtinSource?: boolean
+	WihtinArrow?: boolean
+	ArrowSize?: number
+	ArrowAlpha?: number
+}
+export interface IDrawConeOptions extends IDrawRectangleOptions {
+	WidthEnd?: number
+}
+export interface IDrawArrowOptions {
+	Attachment?: ParticleAttachment
+	Start?: Vector3
+	End?: Vector3
+	Alpha?: number
+	Color?: Color
+	Width?: number
+}
 export class ParticlesSDK {
 	public static readonly Instances: ParticlesSDK[] = []
 	public readonly AllParticles = new Map<any, Particle>()
@@ -100,7 +124,6 @@ export class ParticlesSDK {
 		}
 		return particle
 	}
-
 	public DrawCircle(
 		key: string | number,
 		entity: Entity,
@@ -115,7 +138,6 @@ export class ParticlesSDK {
 		range: number,
 		options: IDrawCircleOptions
 	): Particle
-
 	public DrawCircle(
 		key: any,
 		entity: Entity,
@@ -135,7 +157,6 @@ export class ParticlesSDK {
 			[4, options.Color?.a ?? 255]
 		)
 	}
-
 	public DrawSelectedRing(
 		key: any,
 		entity: Entity,
@@ -154,7 +175,6 @@ export class ParticlesSDK {
 			[2, new Vector3(range * 1.1, 255)]
 		)
 	}
-
 	public DrawLine(
 		key: any,
 		entity: Entity,
@@ -179,7 +199,6 @@ export class ParticlesSDK {
 			[4, options.Color ?? Color.Aqua]
 		)
 	}
-
 	public DrawRangeLine(key: any, entity: Entity, endPosition: Entity | Vector3) {
 		return this.AddOrUpdate(
 			key,
@@ -191,7 +210,6 @@ export class ParticlesSDK {
 			[2, endPosition]
 		)
 	}
-
 	public DrawLineToTarget(
 		key: any,
 		entity: Entity,
@@ -226,7 +244,54 @@ export class ParticlesSDK {
 			[7, ctrl7]
 		)
 	}
-
+	public DrawRectangle(
+		key: string,
+		entity: Entity,
+		options: IDrawRectangleOptions = {}
+	) {
+		return this.AddOrUpdate(
+			key,
+			ParticleLinearPath(options.WihtinSource, options.WihtinArrow),
+			options.Attachment ?? ParticleAttachment.PATTACH_ABSORIGIN,
+			entity,
+			[0, options.Start ?? entity.Position],
+			[1, options.End ?? new Vector3()],
+			[2, new Vector3(0, options.Width ?? 50, options.Width ?? 100)],
+			[13, options.ArrowAlpha ?? Color.Aqua.a],
+			[14, options.Start ?? entity.Position],
+			[15, options.Color ?? Color.Aqua],
+			[16, options.ArrowSize ?? (options.Width ?? 50) * 1.2]
+		)
+	}
+	public DrawCone(key: string, entity: Entity, options: IDrawConeOptions = {}) {
+		return this.AddOrUpdate(
+			key,
+			ParticleLinearPath(options.WihtinSource, options.WihtinArrow),
+			options.Attachment ?? ParticleAttachment.PATTACH_ABSORIGIN,
+			entity,
+			[0, options.Start ?? entity.Position],
+			[1, options.End ?? new Vector3()],
+			[2, new Vector3(0, options.Width ?? 50, options.WidthEnd ?? 100)],
+			[13, options.ArrowAlpha ?? Color.Aqua.a],
+			[14, options.Start ?? entity.Position],
+			[15, options.Color ?? Color.Aqua],
+			[16, options.ArrowSize ?? (options.Width ?? 50) * 1.2]
+		)
+	}
+	public DrawArrow2D(key: string, entity: Entity, options: IDrawArrowOptions = {}) {
+		return this.AddOrUpdate(
+			key,
+			"particles/arrow_2d.vpcf",
+			options.Attachment ?? ParticleAttachment.PATTACH_ABSORIGIN,
+			entity,
+			[0, options.Start ?? entity.Position],
+			[1, options.End ?? new Vector3()],
+			[2, options.Width ?? 100],
+			[13, options.Alpha ?? Color.Aqua.a],
+			[14, options.Start ?? entity.Position],
+			[15, options.Color ?? Color.Aqua]
+		)
+	}
 	/**
 	 *
 	 * ControlPoints:
@@ -255,7 +320,6 @@ export class ParticlesSDK {
 			[4, options.Color?.a ?? 0]
 		)
 	}
-
 	public SetConstrolPointByKey(key: any, id: number, point: ControlPoint) {
 		if (this.AllParticles.has(key)) {
 			this.AllParticles.get(key)!.SetControlPoint(id, point)
@@ -285,14 +349,12 @@ export class ParticlesSDK {
 			this.AllParticlesRange.delete(particle)
 		}
 	}
-
 	public DestroyAll(immediate = true) {
 		this.AllParticles.forEach(particle => {
 			particle.Destroy(immediate)
 			this.AllParticlesRange.delete(particle)
 		})
 	}
-
 	public CheckChangedRange(key: any, range: number) {
 		if (!this.AllParticles.has(key)) {
 			return

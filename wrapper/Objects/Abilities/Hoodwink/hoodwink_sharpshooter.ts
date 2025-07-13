@@ -37,7 +37,6 @@ export class hoodwink_sharpshooter extends Ability implements INuke {
 			basePower = this.GetSpecialValue("base_power") * 100
 		return modifierDamage || (this.GetSpecialValue("max_damage") * basePower) / 100
 	}
-
 	private modifierDamage(owner: Unit): number {
 		const modifier = owner.GetBuffByClass(modifier_hoodwink_sharpshooter_windup)
 		return modifier?.RemainingDamage ?? 0

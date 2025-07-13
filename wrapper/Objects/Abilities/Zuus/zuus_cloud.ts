@@ -14,6 +14,9 @@ export class zuus_cloud extends Ability implements INuke {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("cloud_radius", level)
 	}
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("cloud_duration", level)
+	}
 	public GetBaseDamageForLevel(_level: number): number {
 		const bolt = this.Owner?.GetAbilityByName("zuus_lightning_bolt")
 		return bolt?.GetBaseDamageForLevel(bolt.Level) ?? 0

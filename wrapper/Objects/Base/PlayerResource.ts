@@ -79,9 +79,10 @@ function GetTeamDeaths(playerResource: CPlayerResource, team: Team) {
 }
 
 function GetNextSpawn(playerResource: CPlayerResource, team: Team) {
-	let res = GetTeamDeaths(playerResource, team) + 5
-	for (let i = 0, end = playerResource.PlayerData.length; i < end; i++) {
-		const data = playerResource.PlayerData[i]
+	let res = GetTeamDeaths(playerResource, team) + 4
+	const arr = playerResource.PlayerData
+	for (let i = 0, end = arr.length; i < end; i++) {
+		const data = arr[i]
 		if (data?.Team === team) {
 			res++
 		}

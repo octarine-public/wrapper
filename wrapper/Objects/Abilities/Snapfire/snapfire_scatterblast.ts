@@ -5,7 +5,7 @@ import { Unit } from "../../Base/Unit"
 @WrapperClass("snapfire_scatterblast")
 export class snapfire_scatterblast extends Ability implements INuke {
 	public get EndRadius(): number {
-		return this.GetSpecialValue("blast_width_end")
+		return this.GetSpecialValue("blast_width_end") / 2
 	}
 	public IsNuke(): this is INuke {
 		return true
@@ -17,7 +17,7 @@ export class snapfire_scatterblast extends Ability implements INuke {
 		return this.GetSpecialValue("blast_speed", level)
 	}
 	public GetBaseAOERadiusForLevel(level: number): number {
-		return this.GetSpecialValue("blast_width_initial", level)
+		return this.GetSpecialValue("blast_width_initial", level) / 2
 	}
 	public GetRawDamage(target: Unit): number {
 		const owner = this.Owner

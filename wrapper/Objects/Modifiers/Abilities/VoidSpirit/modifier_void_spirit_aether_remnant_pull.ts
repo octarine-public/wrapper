@@ -2,7 +2,7 @@ import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { EntityManager } from "../../../../Managers/EntityManager"
 import { Modifier } from "../../../Base/Modifier"
-import { Thinker } from "../../../Base/Thinker"
+import { Thinker } from "../../../Units/Thinker"
 
 @WrapperClassModifier()
 export class modifier_void_spirit_aether_remnant_pull

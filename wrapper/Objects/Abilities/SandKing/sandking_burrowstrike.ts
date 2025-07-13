@@ -10,7 +10,6 @@ export class sandking_burrowstrike extends Ability implements INuke {
 		return this.GetSpecialValue("burrow_width", level)
 	}
 	public GetBaseSpeedForLevel(level: number): number {
-		const specialName = `burrow_speed${this.Owner?.HasScepter ? "_scepter" : ""}`
-		return this.GetSpecialValue(specialName, level)
+		return this.GetSpecialValue("burrow_speed", level)
 	}
 }

@@ -20,6 +20,7 @@ import { PathfinderSDK as _PathfinderSDK } from "./Managers/Pathfinder/Pathfinde
 import { TaskManager as _TaskManager } from "./Managers/TaskManager"
 import { MenuManager as _Menu } from "./Menu/Menu"
 import { CameraSDK as _CameraSDK } from "./Native/CameraSDK"
+import { ConVarsSDK as _ConVarsSDK } from "./Native/ConVarsSDK"
 import { RendererSDK as _RendererSDK } from "./Native/RendererSDK"
 import { SoundSDK as _SoundSDK } from "./Native/SoundSDK"
 import * as _WASM from "./Native/WASM"
@@ -51,6 +52,8 @@ globalThis.FakeUnits = _FakeUnits
 globalThis.SoundSDK = _SoundSDK
 globalThis.PathfinderSDK = _PathfinderSDK
 globalThis.CameraSDK = _CameraSDK
+globalThis.ConVarsSDK = _ConVarsSDK
+globalThis.MinimapSDK = _MinimapSDK
 
 Object.defineProperty(globalThis, "LocalPlayer", {
 	get: () => {

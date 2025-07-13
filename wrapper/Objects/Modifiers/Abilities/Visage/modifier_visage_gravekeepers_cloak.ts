@@ -30,19 +30,8 @@ export class modifier_visage_gravekeepers_cloak extends Modifier implements IBuf
 		return [-(this.cachedDamage * this.StackCount), false]
 	}
 	protected UpdateSpecialValues(): void {
-		this.cachedDamage = this.GetSpecialValue(
-			"damage_reduction",
-			"visage_gravekeepers_cloak"
-		)
-
-		const caster = this.Caster
-		if (caster === undefined) {
-			this.cachedArmor = 0
-			return
-		}
-		this.cachedArmor =
-			caster
-				.GetAbilityByName("special_bonus_unique_visage_5")
-				?.GetSpecialValue("value") ?? 0
+		const name = "visage_gravekeepers_cloak"
+		this.cachedArmor = this.GetSpecialValue("armor", name)
+		this.cachedDamage = this.GetSpecialValue("damage_reduction", name)
 	}
 }

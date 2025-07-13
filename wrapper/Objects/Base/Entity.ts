@@ -131,6 +131,8 @@ export class Entity {
 	public ModelName: string = ""
 	public Children: Entity[] = []
 	public IsVisible: boolean = true
+	public IsHideWorldHud: boolean = false
+	public IsFogVisible: boolean = false
 	public IsShop: boolean = false
 	public IsUnit: boolean = false
 	public IsAbility: boolean = false
@@ -141,6 +143,7 @@ export class Entity {
 	public AnimationTime: number = 0
 	public ModelScale: number = 1
 	public BecameDormantTime: number = 0
+	public NotVisibleTime: number = 0
 	public RotationDifference: number = 0
 	public PreviousRotationDifference: number = 0
 	public HierarchyAttachName: number = 0
@@ -149,6 +152,7 @@ export class Entity {
 	public Animations: AnimationData[] = []
 	public Team: Team = Team.None
 	public LifeState: LifeState = LifeState.LIFE_DEAD
+	public LastLifeStateUpdate: number = 0
 	/**
 	 * @private NOTE: this is internal field, use CreateTime
 	 * @deprecated
@@ -160,10 +164,19 @@ export class Entity {
 	public readonly VisualAngles = new QAngle()
 	public readonly NetworkedAngles = new QAngle()
 	public readonly NetworkedAngles_ = new QAngle()
+	public readonly PredictedPosition = new Vector3().Invalidate()
+	public readonly VisualPredictedPosition = new Vector3().Invalidate()
+	public LastPredictedPositionUpdate: number = 0
+	public LastRealPredictedPositionUpdate: number = 0
+	/**
+	 * @description added for compatibility (icore)
+	 * @deprecated
+	 */
+	public readonly FogVisiblePosition = new Vector3().Invalidate()
 	public readonly PreviousNetworkedAngles_: number[] = []
 	public PositionHistoryIndex: number = 0
 	public readonly BoundingBox = new AABB(this.VisualPosition)
-	public readonly SpawnPosition = new Vector3()
+	public readonly SpawnPosition = new Vector3().Invalidate()
 
 	/** @private NOTE: this is internal field, use Name */
 	public Name_: string = ""
@@ -189,7 +202,12 @@ export class Entity {
 		public readonly Index: number,
 		private readonly serial: number
 	) {}
-
+	/**
+	 * @deprecated use IsHideWorldHud
+	 */
+	public get HideHud(): boolean {
+		return this.IsHideWorldHud
+	}
 	public get CustomGlowColor(): Nullable<Color> {
 		return this.CustomGlowColor_
 	}
@@ -693,6 +711,7 @@ RegisterFieldHandler<Entity, Team>(Entity, "m_iTeamNum", (ent, newVal) => {
 RegisterFieldHandler<Entity, LifeState>(Entity, "m_lifeState", (ent, newVal) => {
 	if (ent.LifeState !== newVal) {
 		ent.LifeState = newVal
+		ent.LastLifeStateUpdate = GameState.RawGameTime
 		EventsSDK.emit("LifeStateChanged", false, ent)
 	}
 })
@@ -782,8 +801,8 @@ EventsSDK.on("PreEntityCreated", ent => {
 		return
 	}
 	const arrEntities = EntityManager.AllEntities
-	for (let index = arrEntities.length - 1; index > -1; index--) {
-		const iter = arrEntities[index]
+	for (let i = arrEntities.length - 1; i > -1; i--) {
+		const iter = arrEntities[i]
 		if (ent.HandleMatches(iter.Owner_)) {
 			iter.OwnerEntity = ent
 		}
@@ -800,8 +819,8 @@ EventsSDK.on("EntityDestroyed", ent => {
 		return
 	}
 	const arrEntities = EntityManager.AllEntities
-	for (let index = arrEntities.length - 1; index > -1; index--) {
-		const iter = arrEntities[index]
+	for (let i = arrEntities.length - 1; i > -1; i--) {
+		const iter = arrEntities[i]
 		if (ent.HandleMatches(iter.Owner_)) {
 			iter.OwnerEntity = undefined
 		}

@@ -11,7 +11,7 @@ import { EModifierfunction } from "../../Enums/EModifierfunction"
 import { ModifierHandlerValue, ModifierMapFieldHandler } from "../Base/Modifier"
 import { Unit } from "../Base/Unit"
 
-type ModifierfunctionMap = Map<EModifierfunction, ModifierHandlerValue[]>
+type ModifierFunctionMap = Map<EModifierfunction, ModifierHandlerValue[]>
 
 export class UnitModifierManager {
 	/** @private NOTE: this is internal field use Unit#CanUseItems */
@@ -37,7 +37,7 @@ export class UnitModifierManager {
 	/** @private NOTE: this is internal */
 	public IsMorphlingReplicateIllusion_: boolean = false
 
-	private readonly eModifierfunctions: ModifierfunctionMap = new Map()
+	private readonly eModifierfunctions: ModifierFunctionMap = new Map()
 
 	constructor(public readonly Owner: Unit) {}
 
@@ -117,6 +117,13 @@ export class UnitModifierManager {
 		return (
 			this.GetConstantFirstInternal(
 				EModifierfunction.MODIFIER_PROPERTY_AVOID_DAMAGE
+			) !== 0
+		)
+	}
+	public get IsLinkensProtected() {
+		return (
+			this.GetConstantFirstInternal(
+				EModifierfunction.MODIFIER_PROPERTY_LINKEN_PROTECTION
 			) !== 0
 		)
 	}
@@ -1010,19 +1017,18 @@ export class UnitModifierManager {
 		eModifierfunctions: Nullable<ModifierMapFieldHandler>,
 		isCreate: boolean
 	): void {
-		if (isCreate) {
-			if (eModifierfunctions !== undefined) {
-				eModifierfunctions.forEach((handler, eModifierfunction) =>
-					this.addModifierFunctions(eModifierfunction, handler)
-				)
-			}
+		if (eModifierfunctions === undefined) {
 			return
 		}
-		if (eModifierfunctions !== undefined) {
+		if (isCreate) {
 			eModifierfunctions.forEach((handler, eModifierfunction) =>
-				this.removeModifierFunctions(eModifierfunction, handler)
+				this.addModifierFunctions(eModifierfunction, handler)
 			)
+			return
 		}
+		eModifierfunctions.forEach((handler, eModifierfunction) =>
+			this.removeModifierFunctions(eModifierfunction, handler)
+		)
 	}
 	private addModifierFunctions(
 		eModifierfunction: EModifierfunction,

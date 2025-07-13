@@ -1,5 +1,5 @@
 import { WrapperClass } from "../../Decorators"
 import { Item } from "../Base/Item"
 
-@WrapperClass("CDOTA_Item_Panic_Button")
+@WrapperClass("item_panic_button")
 export class item_panic_button extends Item {}

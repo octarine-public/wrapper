@@ -9,6 +9,9 @@ export class dragon_knight_breathe_fire extends Ability implements INuke {
 			? DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL
 			: super.DamageType
 	}
+	public get EndRadius(): number {
+		return this.GetSpecialValue("end_radius")
+	}
 	public IsNuke(): this is INuke {
 		return true
 	}

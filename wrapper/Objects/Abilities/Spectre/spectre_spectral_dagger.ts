@@ -15,4 +15,7 @@ export class spectre_spectral_dagger extends Ability implements INuke {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)
 	}
+	public GetBaseAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("dagger_radius", level)
+	}
 }

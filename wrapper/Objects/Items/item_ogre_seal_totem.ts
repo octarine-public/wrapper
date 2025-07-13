@@ -3,7 +3,7 @@ import { WrapperClass } from "../../Decorators"
 import { Item } from "../Base/Item"
 import { Unit } from "../Base/Unit"
 
-@WrapperClass("CDOTA_Item_OgreSealTotem")
+@WrapperClass("item_ogre_seal_totem")
 export class item_ogre_seal_totem extends Item {
 	public get CastRange() {
 		return super.CastRange * this.MaxBounces

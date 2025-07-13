@@ -202,6 +202,7 @@ export class Ability extends Entity {
 		// TODO: fix me
 		return this.GetSpecialValue("final_aoe")
 	}
+
 	public get CastPoint(): number {
 		let castPoint = this.OverrideCastPoint
 		if (castPoint === -1) {
@@ -636,10 +637,13 @@ export class Ability extends Entity {
 	public GetSpecialValue(
 		specialName: string,
 		level: number = this.Level,
-		includeFacet = !(this.IsStolen || this.IsReplicated)
+		includeFacet = !this.IsStolen
 	): number {
-		const owner = this.Owner,
-			abilityData = this.AbilityData
+		let owner = this.Owner
+		if (this.IsReplicated) {
+			owner = owner?.ReplicatingOtherHeroModel
+		}
+		const abilityData = this.AbilityData
 		if (owner === undefined) {
 			return abilityData.GetSpecialValue(specialName, level, this.Name)
 		}

@@ -9,6 +9,9 @@ export class sniper_shrapnel extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("shrapnel_damage", level)
 	}
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("duration", level)
+	}
 	public GetBaseActivationDelayForLevel(level: number): number {
 		return this.GetSpecialValue("damage_delay", level)
 	}

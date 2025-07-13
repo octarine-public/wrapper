@@ -9,4 +9,7 @@ export class tiny_avalanche extends Ability {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("avalanche_damage", level)
 	}
+	public GetBaseSpeedForLevel(level: number): number {
+		return this.GetSpecialValue("projectile_speed", level)
+	}
 }

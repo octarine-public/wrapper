@@ -11,6 +11,9 @@ export class snapfire_firesnap_cookie extends Ability {
 	public get CookieSpeed(): number {
 		return this.GetSpecialValue("projectile_speed")
 	}
+	public get JumpRange() {
+		return this.GetSpecialValue("jump_horizontal_distance")
+	}
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("impact_radius", level)
 	}

@@ -1,6 +1,7 @@
 import { EventPriority } from "../../Enums/EventPriority"
 import { LifeState } from "../../Enums/LifeState"
 import { Unit } from "../../Objects/Base/Unit"
+import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { GameState } from "../../Utils/GameState"
 import { EntityManager } from "../EntityManager"
 import { EventsSDK } from "../EventsSDK"
@@ -21,8 +22,6 @@ new (class CEntityChanged {
 			case "dota_buyback":
 				this.handleDotaBuyback(obj)
 				break
-			default:
-				break
 		}
 	}
 	private handleHPChanged(obj: IEntityHurt) {
@@ -39,25 +38,38 @@ new (class CEntityChanged {
 	}
 	private handleLifeStateChanged(obj: IEntityKilled) {
 		const entity = EntityManager.EntityByIndex(obj.entindex_killed)
-		if (entity === undefined) {
+		if (entity === undefined || entity.LifeState === LifeState.LIFE_DEAD) {
 			return
 		}
-		if (entity.IsVisible && entity.LifeState !== LifeState.LIFE_DEAD) {
-			entity.LifeState = LifeState.LIFE_DEAD
-			entity.HP = 0
-			EventsSDK.emit("LifeStateChanged", false, entity)
-		}
+		entity.HP = 0
+		entity.LifeState = LifeState.LIFE_DEAD
+		entity.LastLifeStateUpdate = GameState.RawGameTime
+		EventsSDK.emit("LifeStateChanged", false, entity)
 	}
 	private handleDotaBuyback(obj: IEntityHurt) {
 		const entity = EntityManager.EntityByIndex(obj.entindex_killed)
 		if (entity === undefined || entity.LifeState !== LifeState.LIFE_DEAD) {
 			return
 		}
-		entity.HP = entity.MaxHP
-		entity.LifeState = LifeState.LIFE_ALIVE
 		if (entity instanceof Unit) {
 			entity.Mana = entity.MaxMana
+			this.setRespawnPosition(entity)
 		}
+		entity.HP = entity.MaxHP
+		entity.LifeState = LifeState.LIFE_ALIVE
+		entity.LastLifeStateUpdate = GameState.RawGameTime
 		EventsSDK.emit("LifeStateChanged", false, entity)
+	}
+	private setRespawnPosition(entity: Unit) {
+		if (!entity.IsHero) {
+			return
+		}
+		const data = PlayerCustomData.get(entity.PlayerID)
+		if (data === undefined || data.RespawnPosition === undefined) {
+			return
+		}
+		entity.SetPosition(data.RespawnPosition)
+		entity.PredictedPosition.CopyFrom(data.RespawnPosition)
+		entity.FogVisiblePosition.CopyFrom(data.RespawnPosition)
 	}
 })()

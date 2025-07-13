@@ -206,7 +206,7 @@ Array.prototype.count = function <T>(element: T): number {
 	}, 0)
 }
 
-Array.prototype.remove = function <T>(value: T, useDelete?: boolean): boolean {
+Array.prototype.remove = function <T>(value: T): boolean {
 	if (this.length === 0) {
 		return false
 	}
@@ -214,17 +214,15 @@ Array.prototype.remove = function <T>(value: T, useDelete?: boolean): boolean {
 	if (index === -1) {
 		return false
 	}
-	if (useDelete) {
-		delete this[index]
-	} else {
-		this.splice(index, 1)
+	const last = this.pop()!
+	if (index < this.length) {
+		this[index] = last
 	}
 	return true
 }
 
 Array.prototype.removeCallback = function <T>(
-	callback: (value: T, index: number, obj: T[]) => boolean,
-	useDelete?: boolean
+	callback: (value: T, index: number, obj: T[]) => boolean
 ): boolean {
 	if (this.length === 0) {
 		return false
@@ -233,10 +231,9 @@ Array.prototype.removeCallback = function <T>(
 	if (index === -1) {
 		return false
 	}
-	if (useDelete) {
-		delete this[index]
-	} else {
-		this.splice(index, 1)
+	const last = this.pop()!
+	if (index < this.length) {
+		this[index] = last
 	}
 	return true
 }

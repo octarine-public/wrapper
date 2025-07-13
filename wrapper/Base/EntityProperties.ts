@@ -68,6 +68,14 @@ export class EntityPropertiesNode {
 		return value.map(val => ReencodeProperty(val, propType)) as T
 	}
 	public set(id: number, prop: EntityPropertyType): void {
+		// const oldValue = this.map.get(id)
+		// if (oldValue !== prop) {
+		// 	const name = EntitiesSymbols[id] || `Unknown(${id})`
+		// 	console.debug(`[DEBUG] Property changed: ${name}`, {
+		// 		old: oldValue,
+		// 		new: prop
+		// 	})
+		// }
 		this.map.set(id, prop)
 	}
 	public has(id: number): boolean {

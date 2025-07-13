@@ -1,5 +1,5 @@
 import { WrapperClass } from "../../Decorators"
 import { Item } from "../Base/Item"
 
-@WrapperClass("CDOTA_Item_Devastator")
+@WrapperClass("item_devastator")
 export class item_devastator extends Item {}

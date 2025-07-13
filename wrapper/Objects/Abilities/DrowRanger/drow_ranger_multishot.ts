@@ -13,6 +13,9 @@ export class drow_ranger_multishot extends Ability implements INuke {
 	public get DamageBlockType() {
 		return DAMAGE_TYPES.DAMAGE_TYPE_NONE
 	}
+	public get EndRadius(): number {
+		return 358.5
+	}
 	public IsNuke(): this is INuke {
 		return true
 	}

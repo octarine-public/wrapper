@@ -13,7 +13,7 @@ import { TaskManager } from "../TaskManager"
 
 new (class CUnitAttackChanged {
 	protected get HasDebug(): boolean {
-		return (globalThis as any)?.DEBUGGER_INSTALLED ?? false
+		return false //(globalThis as any)?.DEBUGGER_INSTALLED ?? false
 	}
 
 	private readonly attackLockUntil = new Map<Unit, number>()

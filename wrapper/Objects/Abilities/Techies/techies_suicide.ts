@@ -1,9 +1,11 @@
 import { Vector2 } from "../../../Base/Vector2"
 import { Vector3 } from "../../../Base/Vector3"
 import { WrapperClass } from "../../../Decorators"
+import { EventPriority } from "../../../Enums/EventPriority"
 import { EntityManager } from "../../../Managers/EntityManager"
 import { EventsSDK } from "../../../Managers/EventsSDK"
 import { GetPositionHeight } from "../../../Native/WASM"
+import { Modifier } from "../../../Objects/Base/Modifier"
 import { GameState } from "../../../Utils/GameState"
 import { Ability } from "../../Base/Ability"
 import { LocalPlayer } from "../../Base/Entity"
@@ -43,22 +45,31 @@ export class techies_suicide extends Ability implements INuke {
 }
 
 const abils = EntityManager.GetEntitiesByClass(techies_suicide)
-EventsSDK.on("PostDataUpdate", () => {
-	if (LocalPlayer === undefined || LocalPlayer.Hero === undefined) {
+
+function ModifierRemoved(buff: Modifier) {
+	if (buff.Name !== "modifier_techies_suicide_leap") {
+		return
+	}
+	if (buff.Ability instanceof techies_suicide) {
+		buff.Ability.StartPosition.Invalidate()
+		buff.Ability.TargetPosition.Invalidate()
+		buff.Ability.LastKnownOwnerPosition_.Invalidate()
+	}
+}
+function PostDataUpdate(dt: number) {
+	if (LocalPlayer === undefined || dt === 0) {
 		return
 	}
 
-	for (let index = abils.length - 1; index > -1; index--) {
-		const abil = abils[index]
+	for (let i = abils.length - 1; i > -1; i--) {
+		const abil = abils[i]
 		if (abil.TargetPosition.IsValid) {
 			continue
 		}
-
 		const owner = abil.Owner
-		if (owner === undefined) {
+		if (owner === undefined || !owner.IsVisible) {
 			continue
 		}
-
 		const buff = owner.GetBuffByName("modifier_techies_suicide_leap")
 		const duration = abil.GetSpecialValue("duration")
 		if (buff === undefined || buff.Duration !== -1 || buff.ElapsedTime >= duration) {
@@ -95,22 +106,8 @@ EventsSDK.on("PostDataUpdate", () => {
 			abil.LastKnownOwnerPositionTick_ = GameState.CurrentGameTick
 		}
 	}
-})
+}
 
-EventsSDK.on("ModifierRemoved", buff => {
-	if (buff.Name !== "modifier_techies_suicide_leap") {
-		return
-	}
+EventsSDK.on("PostDataUpdate", dt => PostDataUpdate(dt), EventPriority.HIGH)
 
-	const parent = buff.Parent
-	if (parent === undefined) {
-		return
-	}
-
-	const abil = parent.GetAbilityByClass(techies_suicide)
-	if (abil !== undefined) {
-		abil.StartPosition.Invalidate()
-		abil.TargetPosition.Invalidate()
-		abil.LastKnownOwnerPosition_.Invalidate()
-	}
-})
+EventsSDK.on("ModifierRemoved", buff => ModifierRemoved(buff), EventPriority.HIGH)

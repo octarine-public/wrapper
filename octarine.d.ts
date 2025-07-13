@@ -145,7 +145,7 @@ declare interface Array<T> {
 	 *  Returns true if the element was successfully removed,
 	 * false if the element was not found in the array.
 	 */
-	remove(value: T, useDelete?: boolean): boolean
+	remove(value: T): boolean
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
@@ -155,10 +155,7 @@ declare interface Array<T> {
 	 * Returns true if the element was successfully removed,
 	 * false if the element was not found in the array.
 	 */
-	removeCallback(
-		callback: (value: T, index: number, obj: T[]) => boolean,
-		useDelete?: boolean
-	): boolean
+	removeCallback(callback: (value: T, index: number, obj: T[]) => boolean): boolean
 	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or

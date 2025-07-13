@@ -12,4 +12,7 @@ export class abyssal_underlord_pit_of_malice extends Ability implements INuke {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("pit_damage", level)
 	}
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("pit_duration", level)
+	}
 }

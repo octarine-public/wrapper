@@ -23,4 +23,7 @@ export class puck_dream_coil extends Ability implements INuke {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("coil_initial_damage", level)
 	}
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("coil_duration", level)
+	}
 }

@@ -11,7 +11,6 @@ export class pugna_nether_ward extends Ability {
 			order.Position.Distance2D(doubletapTarget) < 32
 		)
 	}
-
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("radius", level)
 	}

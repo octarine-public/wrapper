@@ -1,5 +1,5 @@
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
-@WrapperClass("CDOTA_Ability_Roshan_Teleport")
+@WrapperClass("roshan_teleport")
 export class roshan_teleport extends Ability {}

@@ -8,11 +8,9 @@ export class Rectangle {
 		this.pos1 = pos1
 		this.pos2 = pos2
 	}
-
 	public get IsValid(): boolean {
 		return this.pos1.IsValid && this.pos2.IsValid
 	}
-
 	public get x(): number {
 		return this.pos1.x
 	}
@@ -70,6 +68,18 @@ export class Rectangle {
 	}
 	public get Center(): Vector2 {
 		return new Vector2(this.pos1.x + this.Width / 2, this.pos1.y + this.Height / 2)
+	}
+	public get TopLeft(): Vector2 {
+		return new Vector2(
+			Math.min(this.pos1.x, this.pos2.x),
+			Math.min(this.pos1.y, this.pos2.y)
+		)
+	}
+	public get BottomRight(): Vector2 {
+		return new Vector2(
+			Math.max(this.pos1.x, this.pos2.x),
+			Math.max(this.pos1.y, this.pos2.y)
+		)
 	}
 	public IsZero(tolerance: number = 0.01): boolean {
 		return this.pos1.IsZero(tolerance) && this.pos2.IsZero(tolerance)

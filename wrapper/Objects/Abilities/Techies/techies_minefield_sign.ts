@@ -6,4 +6,7 @@ export class techies_minefield_sign extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("trigger_radius", level)
 	}
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("lifetime", level)
+	}
 }

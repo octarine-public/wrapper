@@ -1,7 +1,7 @@
 import { WrapperClass } from "../../Decorators"
 import { Item } from "../Base/Item"
 
-@WrapperClass("CDOTA_Item_Ofrenda_Pledge")
+@WrapperClass("item_ofrenda_pledge")
 export class item_ofrenda_pledge extends Item {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)

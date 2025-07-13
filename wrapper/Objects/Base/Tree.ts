@@ -79,13 +79,12 @@ EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
 	if (layerTrees === undefined) {
 		return
 	}
-
 	if (!state) {
 		const layerTreesEnts = Trees.filter(tree =>
 			layerTrees.find(layerTree => layerTree[0] === tree.BinaryID)
 		)
-		for (let index = layerTreesEnts.length - 1; index > -1; index--) {
-			const tree = layerTreesEnts[index]
+		for (let i = layerTreesEnts.length - 1; i > -1; i--) {
+			const tree = layerTreesEnts[i]
 			DeleteEntity(tree.Index)
 			GridNav?.UpdateTreeState(tree)
 		}
@@ -93,8 +92,8 @@ EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
 	}
 
 	const lump = EntityDataLumps.get(layerName)
-	for (let index = 0, end = layerTrees.length; index < end; index++) {
-		const [binaryID, trmpPos] = layerTrees[index]
+	for (let i = 0, end = layerTrees.length; i < end; i++) {
+		const [binaryID, trmpPos] = layerTrees[i]
 		let id = curLocalID++
 		while (EntityManager.EntityByIndex(id) !== undefined) {
 			id = curLocalID++

@@ -12,4 +12,7 @@ export class dark_willow_bramble_maze extends Ability {
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("placement_range", level)
 	}
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("placement_duration", level)
+	}
 }

@@ -15,6 +15,9 @@ export class void_spirit_aether_remnant extends Ability implements INuke {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("projectile_speed", level)
 	}
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("duration", level)
+	}
 	public GetBaseActivationDelayForLevel(level: number): number {
 		return this.GetSpecialValue("activation_delay", level)
 	}

@@ -3,7 +3,7 @@ import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 import { PlayerCustomData } from "../../DataBook/PlayerCustomData"
 
-@WrapperClass("CDOTA_Ability_VengefulSpirit_Magic_Missile")
+@WrapperClass("vengefulspirit_magic_missile")
 export class vengefulspirit_magic_missile extends Ability implements INuke {
 	public get ProjectileAttachment(): string {
 		return "attach_attack2"

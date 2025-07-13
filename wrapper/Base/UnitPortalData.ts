@@ -1,6 +1,5 @@
 import { EntityManager } from "../Managers/EntityManager"
 import { EventsSDK } from "../Managers/EventsSDK"
-import { TaskManager } from "../Managers/TaskManager"
 import { Unit } from "../Objects/Base/Unit"
 import { GameState } from "../Utils/GameState"
 import { PortalPoint } from "./PortalPoint"
@@ -11,10 +10,10 @@ export class UnitPortalData {
 	public IsCanceled = false
 	public MaxDuration: number = 3
 	public AbilityName: string = "item_tpscroll"
-	public ForceEmit: [boolean, number] = [true, 0]
 	public readonly EndPosition = new Vector3().Invalidate()
 	public readonly StartPosition = new Vector3().Invalidate()
 
+	private lastArrPoints = 0
 	private targetIndex: number = -1
 	private lastCreateTime: number = 0
 
@@ -57,7 +56,7 @@ export class UnitPortalData {
 		this.lastCreateTime = GameState.RawGameTime
 		if (skipIteration) {
 			this.MaxDuration = duration ?? this.MaxDuration
-			this.forceOrBeginEmit()
+			EventsSDK.emit("UnitPortalChanged", false, this)
 			return
 		}
 		let maxDuration = duration ?? this.MaxDuration
@@ -68,16 +67,19 @@ export class UnitPortalData {
 			maxDuration += 2 + 0.5 * (arr.length - 2)
 		}
 		this.MaxDuration = maxDuration
-		this.forceOrBeginEmit()
+		this.lastArrPoints = arr.length
+		EventsSDK.emit("UnitPortalChanged", false, this)
 	}
-	private forceOrBeginEmit() {
-		if (this.ForceEmit[0]) {
-			EventsSDK.emit("UnitPortalChanged", false, this)
+	public DecreaseDuration(pointsData: PortalPoint[]) {
+		if (!pointsData.some(x => this.IsValidPoint(x))) {
 			return
 		}
-		TaskManager.Begin(
-			() => EventsSDK.emit("UnitPortalChanged", false, this),
-			this.ForceEmit[1]
-		)
+		let maxDuration = this.MaxDuration
+		if (this.lastArrPoints === 2) {
+			maxDuration -= 2
+		} else if (this.lastArrPoints > 2) {
+			maxDuration -= 2 + 0.5 * (this.lastArrPoints - 2)
+		}
+		this.MaxDuration = maxDuration
 	}
 }

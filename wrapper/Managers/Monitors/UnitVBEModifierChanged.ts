@@ -1,9 +1,6 @@
-import { EDOTASpecialBonusStats } from "../../Enums/EDOTASpecialBonusStats"
 import { EventPriority } from "../../Enums/EventPriority"
-import { GameSleeper } from "../../Helpers/Sleeper"
 import { Item } from "../../Objects/Base/Item"
 import { Modifier } from "../../Objects/Base/Modifier"
-import { Unit } from "../../Objects/Base/Unit"
 import { GameState } from "../../Utils/GameState"
 import { readJSON } from "../../Utils/Utils"
 import { EventsSDK } from "../EventsSDK"
@@ -12,17 +9,9 @@ interface IModifiersIgnore {
 	vbeModifiers: string[]
 }
 new (class CUnitVBEModifierChanged {
-	private readonly maxDuration = 2
-	private readonly eventSleeper = new GameSleeper()
 	private readonly ignoreData = readJSON<IModifiersIgnore>("ignore_data.json")
 
 	constructor() {
-		EventsSDK.on("GameEnded", this.GameEnded.bind(this), EventPriority.IMMEDIATE)
-		EventsSDK.on(
-			"UnitItemsChanged",
-			this.UnitItemsChanged.bind(this),
-			EventPriority.IMMEDIATE
-		)
 		EventsSDK.on(
 			"ModifierChangedVBE",
 			this.ModifierChangedVBE.bind(this),
@@ -34,43 +23,22 @@ new (class CUnitVBEModifierChanged {
 		if (parent === undefined || mod.IsAura || parent.IsEnemy()) {
 			return
 		}
-		if (this.eventSleeper.Sleeping(parent.Index)) {
-			return
-		}
-		const ability = mod.Ability
-		if (!(ability instanceof Item) || mod.RemainingTime !== 0) {
-			return
-		}
-		if (!ability.IsPassive && !ability.HasBonusStats(EDOTASpecialBonusStats.All)) {
-			return
-		}
 		if (
-			ability.IsNeutralActiveDrop ||
-			ability.IsNeutralPassiveDrop ||
-			parent.HasAnyBuffByNames(this.ignoreData.vbeModifiers)
+			mod.Ability instanceof Item &&
+			(mod.Ability.IsNeutralActiveDrop || mod.Ability.IsNeutralPassiveDrop)
 		) {
 			return
 		}
-		const item = parent.TotalItems.find(x => x === ability)
-		if (
-			item === undefined ||
-			this.skipItemByTime(item.CreateTime) ||
-			this.skipItemByTime(item.PurchaseTime)
-		) {
+		if (mod.RemainingTime !== 0) {
 			return
 		}
-		parent.IsVisibleForEnemiesLastTime = GameState.RawGameTime
-		EventsSDK.emit("UnitVBEModifierChanged", false, parent)
-	}
-	protected UnitItemsChanged(unit: Unit) {
-		if (!unit.IsEnemy()) {
-			this.eventSleeper.Sleep(this.maxDuration * 1000, unit.Index)
+		const time = GameState.RawGameTime
+		if (time - mod.CreationTime <= GameState.TickInterval * 3) {
+			return
 		}
-	}
-	protected GameEnded() {
-		this.eventSleeper.FullReset()
-	}
-	private skipItemByTime(time: number) {
-		return time + this.maxDuration > GameState.RawGameTime
+		if (!parent.HasAnyBuffByNames(this.ignoreData.vbeModifiers)) {
+			parent.IsVisibleForEnemiesLastTime = time
+			EventsSDK.emit("UnitVBEModifierChanged", false, parent)
+		}
 	}
 })()

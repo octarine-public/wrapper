@@ -75,6 +75,11 @@ interface EventsSDK extends EventEmitter {
 		priority?: number
 	): EventEmitter
 	on(
+		name: "UnitTeamVisibilityChanged",
+		listener: (unit: Unit) => void,
+		priority?: number
+	): EventEmitter
+	on(
 		name: "FakeUnitCreated",
 		listener: (unit: FakeUnit) => void,
 		priority?: number

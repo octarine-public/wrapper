@@ -1,7 +1,7 @@
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
-@WrapperClass("CDOTA_Ability_Techies_StickyBomb")
+@WrapperClass("techies_sticky_bomb")
 export class techies_sticky_bomb extends Ability implements INuke {
 	public IsNuke(): this is INuke {
 		return true

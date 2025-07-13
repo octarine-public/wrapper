@@ -34,10 +34,10 @@ export class modifier_invisible extends Modifier implements IBuff {
 	}
 	protected UpdateSpecialValues(): void {
 		if (this.Ability instanceof riki_backstab) {
-			const talent = this.Parent?.GetAbilityByName(
-				"special_bonus_unique_riki_8"
-			)?.GetSpecialValue("value")
-			this.cachedSpeedPercentage = talent ?? 0
+			this.cachedSpeedPercentage = this.GetSpecialValue(
+				"invis_movespeed_bonus_percent",
+				this.Ability.Name
+			)
 		}
 		if (this.Ability instanceof mirana_invis) {
 			this.IsGlobally = true

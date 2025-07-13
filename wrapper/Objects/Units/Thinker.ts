@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../Decorators"
 import { EntityManager } from "../../Managers/EntityManager"
-import { Unit } from "./Unit"
+import { Unit } from "../Base/Unit"
 
 @WrapperClass("npc_dota_thinker")
 export class Thinker extends Unit {}

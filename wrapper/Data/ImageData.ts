@@ -18,7 +18,7 @@ const getTexturePath = (name: string, isItem = false): string => {
 	}
 	const abilityData = AbilityData.GetAbilityByName(name)
 	if (abilityData !== undefined && abilityData.TexturePath.length !== 0) {
-		if (abilityData.IsInnate) {
+		if (abilityData.IsInnate && !AbilityData.ShouldBeDrawable.has(name)) {
 			return ImagePath + "/hud/facets/innate_icon_png.vtex_c"
 		}
 		return abilityData.TexturePath
@@ -197,6 +197,9 @@ export function GetCreepTexture(name: string): string {
 	}
 	if (name.startsWith("npc_dota_necronomicon_warrior")) {
 		return HeroImagePath + "/npc_dota_necronomicon_warrior_png.vtex_c"
+	}
+	if (name.startsWith("npc_dota_visage_familiar")) {
+		return HeroImagePath + "/npc_dota_visage_familiar_png.vtex_c"
 	}
 	return HeroImagePath + "/" + name + "_png.vtex_c"
 }

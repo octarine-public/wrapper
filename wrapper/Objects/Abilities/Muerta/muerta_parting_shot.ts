@@ -1,7 +1,7 @@
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
-@WrapperClass("CDOTA_Ability_Muerta_PartingShot")
+@WrapperClass("muerta_parting_shot")
 export class muerta_parting_shot extends Ability {
 	public get ProjectileAttachment(): string {
 		return "attach_attack1"

@@ -112,31 +112,21 @@ class MinimapIconRenderer {
 		this.progressSize = Math.max(this.progressSize * (1 - progress), this.size)
 	}
 	private drawWaves(): void {
-		const baseWaveSize = 20
-		const elapsed = GameState.RawGameTime - this.startTime
-		const center = MinimapSDK.WorldToMinimap(this.worldPos)
-
-		const waveCount = 2
-		const waveDelay = 0.5 // delay between waves (in sec)
-
-		for (let i = 0; i < waveCount; i++) {
-			const waveElapsed = elapsed - i * waveDelay
-			if (waveElapsed < 0) {
-				continue
-			}
-			const progress = Math.min(waveElapsed / 2, 1)
-			if (progress === 1) {
-				continue
-			}
-			const waveSize = new Vector2(baseWaveSize, baseWaveSize).MultiplyScalar(
-				1 + progress * 2
-			)
-			const width = this.getWidth(progress) * 1.25
-			const waveColor = this.color.Clone()
-			waveColor.a *= (1 - progress) * 0.3
-			const wavePos = center.Subtract(waveSize.DivideScalar(2))
-			RendererSDK.OutlinedCircle(wavePos, waveSize, waveColor, width)
+		const baseWaveSize = 20,
+			elapsed = GameState.RawGameTime - this.startTime,
+			progress = Math.min(elapsed / 2, 1)
+		if (progress === 1) {
+			return
 		}
+		const waveSize = new Vector2(baseWaveSize, baseWaveSize).MultiplyScalar(
+			1 + progress * 2
+		)
+		const width = this.getWidth(progress) * 1.25,
+			waveColor = this.color.Clone(),
+			center = MinimapSDK.WorldToMinimap(this.worldPos),
+			wavePos = center.Subtract(waveSize.DivideScalar(2))
+		waveColor.a *= (1 - progress) * 0.3
+		RendererSDK.OutlinedCircle(wavePos, waveSize, waveColor, width)
 	}
 	private getWidth(progress: number) {
 		return 5 * (1 - progress)
@@ -208,8 +198,8 @@ EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
 		ProcessMinimapBoundsData(layerName)
 		return
 	}
-	for (let index = WorldLayers.length - 1; index > -1; index--) {
-		const worldLayer = WorldLayers[index]
+	for (let i = WorldLayers.length - 1; i > -1; i--) {
+		const worldLayer = WorldLayers[i]
 		if (
 			worldLayer.WorldLayerVisible &&
 			ProcessMinimapBoundsData(worldLayer.LayerName)
@@ -400,7 +390,6 @@ export const MinimapSDK = new (class CMinimapSDK {
 			.AddScalarY(1)
 			.MultiplyForThis(minimapRect.Size)
 			.AddForThis(minimapRect.pos1)
-			.RoundForThis()
 	}
 	public MinimapToWorld(pos: Vector2): Vector3 {
 		const minimapRect = GUIInfo.Minimap.MinimapRenderBounds
@@ -411,7 +400,6 @@ export const MinimapSDK = new (class CMinimapSDK {
 			.MultiplyScalarY(-1)
 			.MultiplyForThis(this.MinimapBounds.Size)
 			.AddForThis(this.MinimapBounds.pos1)
-			.RoundForThis()
 		return Vector3.FromVector2(ret2D).SetZ(GetPositionHeight(ret2D))
 	}
 })()

@@ -1,5 +1,5 @@
 import { WrapperClass } from "../../Decorators"
 import { Item } from "../Base/Item"
 
-@WrapperClass("CDOTA_Item_Safety_Bubble")
+@WrapperClass("item_safety_bubble")
 export class item_safety_bubble extends Item {}

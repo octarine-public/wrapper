@@ -2,14 +2,20 @@ import { GetTurnData, UpdateFacing } from "../../Data/TurnData"
 import { EAbilitySlot } from "../../Enums/EAbilitySlot"
 import { EventPriority } from "../../Enums/EventPriority"
 import { GameActivity } from "../../Enums/GameActivity"
+import { Team } from "../../Enums/Team"
 import { Ability } from "../../Objects/Base/Ability"
 import { Entity } from "../../Objects/Base/Entity"
 import { FakeUnit } from "../../Objects/Base/FakeUnit"
+import { Hero } from "../../Objects/Base/Hero"
+import { InfoPlayerStartBadGuys } from "../../Objects/Base/InfoPlayerStartBadGuys"
+import { InfoPlayerStartDota } from "../../Objects/Base/InfoPlayerStartDota"
+import { InfoPlayerStartGoodGuys } from "../../Objects/Base/InfoPlayerStartGoodGuys"
 import { Item } from "../../Objects/Base/Item"
 import { NeutralSpawner, NeutralSpawners } from "../../Objects/Base/NeutralSpawner"
 import { TeamData } from "../../Objects/Base/TeamData"
 import { Unit, Units } from "../../Objects/Base/Unit"
 import { Wearable } from "../../Objects/Base/Wearable"
+import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { npc_dota_hero_wisp } from "../../Objects/Heroes/npc_dota_hero_wisp"
 import { Miniboss } from "../../Objects/Units/Miniboss"
 import { GridNav } from "../../Resources/ParseGNV"
@@ -76,27 +82,64 @@ new (class CPreUnitChanged {
 			this.UnitStateChanged.bind(this),
 			EventPriority.IMMEDIATE
 		)
+		EventsSDK.on(
+			"UnitAddGesture",
+			this.UnitAddGesture.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"UnitRemoveGesture",
+			this.UnitRemoveGesture.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"UnitRemoveAllGestures",
+			this.UnitRemoveAllGestures.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"PlayerCustomDataUpdated",
+			this.PlayerCustomDataUpdated.bind(this),
+			EventPriority.IMMEDIATE
+		)
 		EventsSDK.on("EntityDestroyed", this.EntityDestroyed.bind(this))
 		EventsSDK.on("GameEvent", this.GameEvent.bind(this), EventPriority.IMMEDIATE)
 		EventsSDK.on("UnitVisibleStateChanged", this.UnitVisibleStateChanged.bind(this))
 	}
-	protected UnitVisibleStateChanged(data: TeamData) {
-		for (let i = Units.length - 1; i > -1; i--) {
-			const unit = Units[i]
-			unit.IsVisibleState = Unit.IsNpcVisibleState(data.NPCVisibleState, unit.Index)
+	protected PlayerCustomDataUpdated(player: PlayerCustomData) {
+		if (player.Hero !== undefined && player.Hero.IsValid) {
+			this.setStartPosition(player.Hero)
 		}
 	}
-	protected EntityVisibleChanged(entity: Entity) {
-		this.gridNavUpdateUnitState(entity, !entity.IsVisible)
+	protected UnitAddGesture(
+		entity: Nullable<Unit | FakeUnit>,
+		activity: GameActivity,
+		_slot: number,
+		_fadeIn: number,
+		_fadeOut: number,
+		playbackRate: number,
+		sequenceVariant: number
+	) {
+		if (entity instanceof Unit) {
+			entity.LastGestureActivity = activity
+			entity.LastGesturePlaybackRate = playbackRate
+			entity.LastGestureSequenceVariant = sequenceVariant
+		}
 	}
-	protected LifeStateChanged(entity: Entity) {
-		this.gridNavUpdateUnitState(entity, !entity.IsAlive)
+	protected UnitRemoveGesture(
+		entity: Nullable<Unit | FakeUnit>,
+		activity: GameActivity
+	) {
+		if (entity instanceof Unit) {
+			entity.LastGestureActivity = activity
+		}
 	}
-	protected EntityPositionChanged(entity: Entity) {
-		this.gridNavUpdateUnitState(entity)
-	}
-	protected UnitStateChanged(entity: Entity) {
-		this.gridNavUpdateUnitState(entity)
+	protected UnitRemoveAllGestures(entity: Nullable<Unit | FakeUnit>) {
+		if (entity instanceof Unit) {
+			entity.LastGestureActivity = 0 as GameActivity
+			entity.LastGesturePlaybackRate = 0
+			entity.LastGestureSequenceVariant = 0
+		}
 	}
 	protected PostDataUpdate(dt: number) {
 		if (dt === 0) {
@@ -229,7 +272,27 @@ new (class CPreUnitChanged {
 			}
 			unit.PositionHistoryIndex = (unit.PositionHistoryIndex + 1) % 120
 			// TODO: interpolate DeltaZ from OnModifierUpdated?
+			// this.updateVisibleCell(unit)
 		}
+	}
+	protected UnitVisibleStateChanged(data: TeamData) {
+		for (let i = Units.length - 1; i > -1; i--) {
+			const unit = Units[i]
+			unit.IsVisibleState = Unit.IsNpcVisibleState(data.NPCVisibleState, unit.Index)
+		}
+	}
+	protected EntityVisibleChanged(entity: Entity) {
+		this.gridNavUpdateUnitState(entity, !entity.IsVisible)
+	}
+	protected LifeStateChanged(entity: Entity) {
+		this.gridNavUpdateUnitState(entity, !entity.IsAlive)
+		this.setRespawnPosition(entity)
+	}
+	protected EntityPositionChanged(entity: Entity) {
+		this.gridNavUpdateUnitState(entity)
+	}
+	protected UnitStateChanged(entity: Entity) {
+		this.gridNavUpdateUnitState(entity)
 	}
 	protected UnitItemsChanged(unit: Unit) {
 		unit.ChangeFieldsByEvents()
@@ -244,6 +307,8 @@ new (class CPreUnitChanged {
 			// 	break
 			case entity instanceof Unit:
 				this.unitPredictedPositionChanged(entity)
+				this.gridNavUpdateUnitState(entity)
+				this.setStartPosition(entity)
 				break
 			case entity instanceof Wearable:
 				this.unitWearablesChanged(entity)
@@ -325,12 +390,12 @@ new (class CPreUnitChanged {
 			return
 		}
 		if (unit.LastAnimationIsAttack) {
+			const rawGameTime = GameState.RawGameTime
 			const lastAnimCastPoint =
 				unit.LastAnimationStartTime + unit.LastAnimationCastPoint
 			if (
-				GameState.RawGameTime < lastAnimCastPoint &&
-				Math.abs(GameState.RawGameTime - lastAnimCastPoint) >
-					GameState.TickInterval / 10
+				rawGameTime < lastAnimCastPoint &&
+				Math.abs(rawGameTime - lastAnimCastPoint) > GameState.TickInterval / 10
 			) {
 				unit.AttackTimeAtLastTick = 0
 				unit.AttackTimeLostToLastTick = 0
@@ -375,9 +440,10 @@ new (class CPreUnitChanged {
 			this.handleAttackedUnits(obj)
 		}
 	}
-	private gridNavUpdateUnitState(entity: Entity, deleteUnit: boolean = false): void {
+	private gridNavUpdateUnitState(entity: Entity, _deleteUnit: boolean = false): void {
 		if (GridNav !== undefined && entity instanceof Unit) {
-			GridNav.UpdateUnitState(entity, deleteUnit)
+			// GridNav.UpdateUnitState(entity, deleteUnit)
+			this.updateVisibleCell(entity)
 		}
 	}
 	private spellChanged(entity: Ability) {
@@ -411,6 +477,35 @@ new (class CPreUnitChanged {
 		entity.PredictedPosition.CopyFrom(entity.NetworkedPosition)
 		entity.LastRealPredictedPositionUpdate = GameState.RawGameTime
 		entity.LastPredictedPositionUpdate = GameState.RawGameTime
+	}
+	private setStartPosition(entity: Unit) {
+		if (!(entity instanceof Hero) || entity.Team === Team.None) {
+			return
+		}
+
+		const startPoints =
+			entity.Team === Team.Dire
+				? EntityManager.GetEntitiesByClass(InfoPlayerStartBadGuys)
+				: EntityManager.GetEntitiesByClass(InfoPlayerStartGoodGuys)
+
+		if (startPoints.length === 0) {
+			return
+		}
+		const result: InfoPlayerStartDota[] =
+			startPoints.length >= 5
+				? startPoints.slice(0, 5)
+				: startPoints.filter((_, i) => i % 2 === 1)
+		const data = PlayerCustomData.get(entity.PlayerID)
+		if (data === undefined || data.TeamSlot === undefined) {
+			return
+		}
+		const start = result.orderBy(x => x.Position.x)[data.TeamSlot]
+		if (start === undefined) {
+			return
+		}
+		if (start.Position.IsValid && !start.Position.IsZero()) {
+			entity.StartPosition.CopyFrom(start.Position)
+		}
 	}
 	private unitWearablesChanged(entity: Wearable) {
 		for (let index = Units.length - 1; index > -1; index--) {
@@ -547,5 +642,26 @@ new (class CPreUnitChanged {
 			source instanceof Miniboss ||
 			source instanceof npc_dota_hero_wisp
 		)
+	}
+	private updateVisibleCell(_unit: Unit) {
+		// const isValid = unit.IsValid && unit.IsAlive && unit.IsVisible
+		// GridNav?.UpdateVisionState(unit, !isValid)
+		// Unit.UpdateCellIsVisibleForEnemies(unit)
+		// if (unit.LastVisibleForEnemies !== unit.IsVisibleForEnemies()) {
+		// 	unit.LastVisibleForEnemies = unit.IsVisibleForEnemies()
+		// 	EventsSDK.emit("UnitTeamVisibilityChanged", false, unit)
+		// }
+	}
+	private setRespawnPosition(entity: Entity) {
+		if (!(entity instanceof Hero) || !entity.IsAlive) {
+			return
+		}
+		const data = PlayerCustomData.get(entity.PlayerID)
+		if (data === undefined || data.RespawnPosition === undefined) {
+			return
+		}
+		entity.SetPosition(data.RespawnPosition)
+		entity.PredictedPosition.CopyFrom(data.RespawnPosition)
+		entity.FogVisiblePosition.CopyFrom(data.RespawnPosition)
 	}
 })()

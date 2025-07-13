@@ -21,10 +21,11 @@ export class modifier_item_dustofappearance extends Modifier implements IDebuff 
 		return true
 	}
 	public GetTexturePath(): string {
+		const base = super.GetTexturePath()
 		const itemName = this.CachedAbilityName
-		return itemName !== undefined
-			? super.GetTexturePath()
-			: GetItemTexture("item_dust_of_appearance")
+		return itemName !== undefined && itemName !== "" && base !== ""
+			? base
+			: GetItemTexture("item_dust")
 	}
 	protected CalculateModifierMoveSpeedPercentage(): [number, boolean] {
 		const owner = this.Parent

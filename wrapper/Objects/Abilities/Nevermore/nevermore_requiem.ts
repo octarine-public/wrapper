@@ -12,11 +12,9 @@ export class nevermore_requiem extends Ability {
 	public get AOERadius(): number {
 		return super.AOERadius + this.WidthEnd
 	}
-
 	public GetBaseAOERadiusForLevel(level: number): number {
 		return this.GetSpecialValue("requiem_radius", level)
 	}
-
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("requiem_line_speed", level)
 	}

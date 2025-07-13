@@ -1,7 +1,7 @@
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
-@WrapperClass("CDOTA_Ability_Brewmaster_Void_Astral_Pull")
+@WrapperClass("brewmaster_void_astral_pull")
 export class brewmaster_void_astral_pull extends Ability implements INuke {
 	public IsNuke(): this is INuke {
 		return true

@@ -20,32 +20,35 @@ export class Modifier {
 		"modifier_ice_blast",
 		"modifier_doom_bringer_doom"
 	]
+	public static readonly DebuffTrueSight = new Set([
+		"modifier_truesight",
+		"modifier_item_dustofappearance",
+		"modifier_bloodseeker_thirst_vision",
+		"modifier_bounty_hunter_track",
+		"modifier_nyx_assassin_nyxth_sense_effect"
+	])
+	public static readonly DebuffVisibleForEnemies = new Set([
+		"modifier_bounty_hunter_track",
+		"modifier_slardar_amplify_damage",
+		"modifier_bloodseeker_thirst_vision",
+		"modifier_furion_curse_of_the_forest",
+		"modifier_spirit_breaker_charge_of_darkness_vision"
+	])
 	// TODO: rework this after add ModifierManager
 	public static HasTrueSightBuff(buffs: Modifier[]): boolean {
-		return buffs.some(buff => {
-			switch (buff.Name) {
-				case "modifier_truesight":
-				case "modifier_item_dustofappearance":
-				case "modifier_bloodseeker_thirst_vision":
-				case "modifier_bounty_hunter_track":
-				case "modifier_nyx_assassin_nyxth_sense_effect":
-					return true
-				default:
-					return false
-			}
-		})
+		return buffs.some(buff => Modifier.DebuffTrueSight.has(buff.Name))
 	}
-
+	public static HasVisibleForEnemies(buffs: Modifier[]): boolean {
+		return buffs.some(buff => Modifier.DebuffVisibleForEnemies.has(buff.Name))
+	}
 	// TODO: rework this after add ModifierManager
 	public static HasScepterBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => scepterRegExp.test(buff.Name))
 	}
-
 	// TODO: rework this after add ModifierManager
 	public static HasShardBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => buff.Name === "modifier_item_aghanims_shard")
 	}
-
 	public static CanBeHealed(unit: Unit): boolean
 	public static CanBeHealed(buffs: Modifier[]): boolean
 	public static CanBeHealed(option: Unit | Modifier[]): boolean {
@@ -59,6 +62,7 @@ export class Modifier {
 	public readonly Index: number
 	public readonly SerialNumber: number
 	public readonly DDAbilityName: string
+	public readonly CreationTick: number
 
 	public NetworkArmor = 0
 	public NetworkDamage = 0
@@ -102,6 +106,7 @@ export class Modifier {
 		this.IsAura = this.kv.IsAura ?? false
 		this.Name = this.kv.InternalName
 		this.DDAbilityName = this.kv.InternalDDAbilityName
+		this.CreationTick = GameState.CurrentGameTick
 	}
 
 	public get StackCount(): number {

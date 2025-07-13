@@ -5,7 +5,6 @@ import { Modifier } from "../../../Base/Modifier"
 @WrapperClassModifier()
 export class modifier_frogmen_water_bubble extends Modifier implements IBuff, IShield {
 	public readonly IsHidden = false
-	public readonly HasVisualShield = true
 	public readonly BuffModifierName = this.Name
 	public readonly ShieldModifierName = this.Name
 

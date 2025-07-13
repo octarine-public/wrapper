@@ -65,6 +65,7 @@ export class Item extends Ability {
 	public readonly NeutralDropTeam: Team = Team.None
 	/** @readonly */
 	public ItemSlot = DOTAScriptInventorySlot.DOTA_ITEM_SLOT_1
+	public LastDroppedTime: number = 0
 	@NetworkedBasicField("m_iCurrentCharges")
 	private itemCurrentCharges: number = 0
 

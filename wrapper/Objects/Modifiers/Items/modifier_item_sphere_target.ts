@@ -1,4 +1,5 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
@@ -7,6 +8,12 @@ export class modifier_item_sphere_target extends Modifier implements IBuff, IShi
 	public readonly BuffModifierName = this.Name
 	public readonly ShieldModifierName = this.Name
 
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_LINKEN_PROTECTION,
+			this.GetLinkenProtection.bind(this)
+		]
+	])
 	public get ForceVisible(): boolean {
 		return true
 	}
@@ -15,5 +22,8 @@ export class modifier_item_sphere_target extends Modifier implements IBuff, IShi
 	}
 	public IsShield(): this is IShield {
 		return true
+	}
+	protected GetLinkenProtection(): [number, boolean] {
+		return [1, false]
 	}
 }
