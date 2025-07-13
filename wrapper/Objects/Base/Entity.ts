@@ -131,6 +131,7 @@ export class Entity {
 	public ModelName: string = ""
 	public Children: Entity[] = []
 	public IsVisible: boolean = true
+	public IsFogVisible: boolean = false
 	public IsShop: boolean = false
 	public IsUnit: boolean = false
 	public IsAbility: boolean = false
@@ -160,6 +161,7 @@ export class Entity {
 	public readonly VisualAngles = new QAngle()
 	public readonly NetworkedAngles = new QAngle()
 	public readonly NetworkedAngles_ = new QAngle()
+	public readonly FogVisiblePosition = new Vector3().Invalidate()
 	public readonly PreviousNetworkedAngles_: number[] = []
 	public PositionHistoryIndex: number = 0
 	public readonly BoundingBox = new AABB(this.VisualPosition)

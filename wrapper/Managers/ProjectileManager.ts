@@ -1,5 +1,7 @@
 import { Vector3 } from "../Base/Vector3"
+import { EventPriority } from "../Enums/EventPriority"
 import { GetPositionHeight } from "../Native/WASM"
+import { Ability } from "../Objects/Base/Ability"
 import { Entity } from "../Objects/Base/Entity"
 import { GetPredictionTarget } from "../Objects/Base/FakeUnit"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
@@ -73,12 +75,12 @@ EventsSDK.on("EntityCreated", ent => {
 	}
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	if (!(ent instanceof Unit)) {
+	if (!(ent instanceof Unit || ent instanceof Ability)) {
 		return
 	}
 	const arrTraking = ProjectileManager.AllTrackingProjectiles
-	for (let index = arrTraking.length - 1; index > -1; index--) {
-		const proj = arrTraking[index]
+	for (let i = arrTraking.length - 1; i > -1; i--) {
+		const proj = arrTraking[i]
 		if (proj.Source === ent) {
 			proj.Source = undefined
 		}
@@ -87,74 +89,87 @@ EventsSDK.on("EntityDestroyed", ent => {
 		}
 	}
 	const arrLinear = ProjectileManager.AllLinearProjectiles
-	for (let index = arrLinear.length - 1; index > -1; index--) {
-		const proj = arrLinear[index]
+	for (let i = arrLinear.length - 1; i > -1; i--) {
+		const proj = arrLinear[i]
 		if (proj.Source === ent) {
 			proj.Source = undefined
+		}
+		if (proj.AbilityIndex === ent.Index) {
+			proj.AbilityIndex = undefined
 		}
 	}
 })
 
-EventsSDK.on("PostDataUpdate", dt => {
-	if (dt === 0) {
-		return
-	}
-	for (const proj of ProjectileManager.AllTrackingProjectiles) {
-		proj.UpdateProjectileSpeed()
-		if (!proj.IsDodged) {
-			const target = proj.Target
-			if (target instanceof Entity) {
-				const extendPos = !proj.TargetLoc.IsValid && proj.Position.IsValid
-				proj.TargetLoc.CopyFrom(target.GetAttachmentPosition("attach_hitloc"))
-				if (extendPos) {
-					proj.Position.Extend(
-						proj.TargetLoc,
-						(GameState.CurrentGameTick - proj.LaunchTick) * dt * proj.Speed
-					).CopyTo(proj.Position)
+EventsSDK.on(
+	"PostDataUpdate",
+	dt => {
+		if (dt === 0) {
+			return
+		}
+		for (const proj of ProjectileManager.AllTrackingProjectiles) {
+			proj.UpdateProjectileSpeed()
+			if (!proj.IsDodged) {
+				const target = proj.Target
+				if (target instanceof Entity) {
+					const extendPos = !proj.TargetLoc.IsValid && proj.Position.IsValid
+					proj.TargetLoc.CopyFrom(target.GetAttachmentPosition("attach_hitloc"))
+					if (extendPos) {
+						proj.Position.Extend(
+							proj.TargetLoc,
+							(GameState.CurrentGameTick - proj.LaunchTick) *
+								dt *
+								proj.Speed
+						).CopyTo(proj.Position)
+					}
 				}
 			}
-		}
-		if (!proj.TargetLoc.IsValid) {
-			continue
-		}
-		if (!proj.Position.IsValid) {
-			if (!(proj.Source instanceof Entity)) {
+			if (!proj.TargetLoc.IsValid) {
 				continue
 			}
-			proj.Source.GetAttachmentPosition(proj.SourceAttachment).CopyTo(proj.Position)
-			proj.Position.Extend(
-				proj.TargetLoc,
-				(GameState.CurrentGameTick - proj.LaunchTick) * dt * proj.Speed
-			).CopyTo(proj.Position)
+			if (!proj.Position.IsValid) {
+				if (!(proj.Source instanceof Entity)) {
+					continue
+				}
+				proj.Source.GetAttachmentPosition(proj.SourceAttachment).CopyTo(
+					proj.Position
+				)
+				proj.Position.Extend(
+					proj.TargetLoc,
+					(GameState.CurrentGameTick - proj.LaunchTick) * dt * proj.Speed
+				).CopyTo(proj.Position)
+			}
+			const velocity = proj.Position.GetDirectionTo(
+				proj.TargetLoc
+			).MultiplyScalarForThis(
+				Math.min(proj.Speed * dt, proj.Position.Distance(proj.TargetLoc))
+			)
+			proj.Position.AddForThis(velocity)
+			const distSqr = proj.Position.DistanceSqr(proj.TargetLoc)
+			const collisionSize =
+				proj.Target instanceof Entity
+					? proj.Target.ProjectileCollisionSize ** 2
+					: 0
+			if (distSqr <= collisionSize) {
+				DestroyTrackingProjectile(proj)
+			}
 		}
-		const velocity = proj.Position.GetDirectionTo(
-			proj.TargetLoc
-		).MultiplyScalarForThis(
-			Math.min(proj.Speed * dt, proj.Position.Distance(proj.TargetLoc))
-		)
-		proj.Position.AddForThis(velocity)
-		const distSqr = proj.Position.DistanceSqr(proj.TargetLoc)
-		const collisionSize =
-			proj.Target instanceof Entity ? proj.Target.ProjectileCollisionSize ** 2 : 0
-		if (distSqr <= collisionSize) {
-			DestroyTrackingProjectile(proj)
+		const expiredLinearProjectiles: LinearProjectile[] = []
+		for (const proj of ProjectileManager.AllLinearProjectiles) {
+			const add = Vector3.FromVector2(proj.Velocity.MultiplyScalar(dt))
+			proj.Position.AddForThis(add)
+			proj.Position.z = GetPositionHeight(proj.Position)
+			if (proj.Position.DistanceSqr2D(proj.TargetLoc) < add.LengthSqr) {
+				expiredLinearProjectiles.push(proj)
+			}
 		}
-	}
-	const expiredLinearProjectiles: LinearProjectile[] = []
-	for (const proj of ProjectileManager.AllLinearProjectiles) {
-		const add = Vector3.FromVector2(proj.Velocity.MultiplyScalar(dt))
-		proj.Position.AddForThis(add)
-		proj.Position.z = GetPositionHeight(proj.Position)
-		if (proj.Position.DistanceSqr2D(proj.TargetLoc) < add.LengthSqr) {
-			expiredLinearProjectiles.push(proj)
+		for (const proj of expiredLinearProjectiles) {
+			EventsSDK.emit("LinearProjectileDestroyed", false, proj)
+			ProjectileManager.AllLinearProjectiles.remove(proj)
+			ProjectileManager.AllLinearProjectilesMap.delete(proj.ID)
 		}
-	}
-	for (const proj of expiredLinearProjectiles) {
-		EventsSDK.emit("LinearProjectileDestroyed", false, proj)
-		ProjectileManager.AllLinearProjectiles.remove(proj)
-		ProjectileManager.AllLinearProjectilesMap.delete(proj.ID)
-	}
-})
+	},
+	EventPriority.IMMEDIATE
+)
 
 ParseProtobufDesc(`
 message CDOTAUserMsg_ProjectileParticleCPData {
@@ -325,7 +340,9 @@ Events.on("ServerMessage", (msgID, buf_) => {
 					"CDOTAUserMsg_TE_Projectile"
 				)
 				const particleSystemHandle = msg.get("particle_system_handle") as bigint
-				const ability = EntityManager.EntityByIndex(msg.get("ability") as number)
+				const ability = EntityManager.EntityByIndex<Ability>(
+					msg.get("ability") as number
+				)
 				const projectile = new TrackingProjectile(
 					msg.get("handle") as number,
 					GetPredictionTarget(msg.get("source") as number),

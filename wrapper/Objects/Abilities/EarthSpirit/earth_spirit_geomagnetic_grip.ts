@@ -7,7 +7,7 @@ export class earth_spirit_geomagnetic_grip extends Ability {
 		return this.GetSpecialValue("radius", level)
 	}
 	public GetBaseSpeedForLevel(level: number): number {
-		return this.GetSpecialValue("speed", level)
+		return this.GetSpecialValue("pull_units_per_second", level)
 	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("rock_damage", level)

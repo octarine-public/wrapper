@@ -15,6 +15,7 @@ export const SDKClasses: [Constructor<Entity>, Entity[]][] = []
 export const ClassToEntities = new WeakMap<Constructor<any>, Entity[]>()
 export const ModifierSDKClass = new Map<string, Constructor<Modifier>>()
 export const ClassToEntitiesAr = new WeakMap<Constructor<any>, Entity[][]>()
+
 export const CachedFieldHandlers = new WeakMap<
 	Constructor<Entity>,
 	Map<number, FieldHandler>
@@ -85,11 +86,10 @@ export function GetConstructorByName(
 		)
 		return undefined
 	}
-
 	// if neither fixed or original class name have got wrapped entities - try to walk up inherited classes
 	const inherited = SchemaClassesInheritance.get(fixedClassName)!
-	for (let index = inherited.length - 1; index > -1; index--) {
-		const inheritedClassName = inherited[index]
+	for (let i = inherited.length - 1; i > -1; i--) {
+		const inheritedClassName = inherited[i]
 		const constructor = GetConstructorByName(inheritedClassName)
 		if (constructor !== undefined) {
 			return constructor
@@ -295,12 +295,9 @@ declare class ${name} {
 `
 				)
 			}
-			EntitiesSymbols = (msg.get("symbols") as string[]).map(sym => {
-				if (sym.startsWith("DOTA")) {
-					return `C${sym}`
-				}
-				return sym
-			})
+			EntitiesSymbols = (msg.get("symbols") as string[]).map(sym =>
+				sym.startsWith("DOTA") ? `C${sym}` : sym
+			)
 			FieldHandlers.forEach((map, construct) => {
 				const map2 = CachedFieldHandlers.get(construct)!
 				map2.clear()

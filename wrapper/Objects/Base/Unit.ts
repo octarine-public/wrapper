@@ -155,7 +155,7 @@ export class Unit extends Entity {
 	public SequenceParity: number = 0
 	public SequenceParityPrev: number = 0
 	@NetworkedBasicField("m_flStartSequenceCycle")
-	public StartSequenceCycle: number = 0
+	public readonly StartSequenceCycle: number = 0
 	@NetworkedBasicField("m_nPlayerOwnerID")
 	public readonly OwnerPlayerID: number = -1
 	@NetworkedBasicField("m_iParity")
@@ -204,11 +204,6 @@ export class Unit extends Entity {
 	 * @deprecated
 	 */
 	public HideHud = false
-	/**
-	 * @description added for compatibility (icore)
-	 * @deprecated
-	 */
-	public IsFogVisible: boolean = false
 	public IsAttacking: boolean = false
 	public IsVisibleForEnemiesLastTime = 0
 
@@ -257,12 +252,6 @@ export class Unit extends Entity {
 
 	public readonly TPEndPosition = new Vector3().Invalidate()
 	public readonly TPStartPosition = new Vector3().Invalidate()
-
-	/**
-	 * @description added for compatibility (icore)
-	 * @deprecated
-	 */
-	public readonly FogVisiblePosition = new Vector3().Invalidate()
 
 	public get Armor() {
 		return this.GetPhysicalArmorModifier()
@@ -2084,15 +2073,12 @@ export class Unit extends Entity {
 	}
 }
 
-RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, newVal) => {
-	const oldName = unit.Name
-	const newValue = newVal as number
-	unit.UnitName_ =
-		newValue >= 0 ? (UnitData.GetUnitNameByNameIndex(newValue) ?? "") : ""
+RegisterFieldHandler<Unit, number>(Unit, "m_iUnitNameIndex", (unit, newVal) => {
+	unit.UnitName_ = newVal >= 0 ? (UnitData.GetUnitNameByNameIndex(newVal) ?? "") : ""
 	if (unit.UnitName_ === "") {
 		unit.UnitName_ = unit.Name_
 	}
-	if (oldName !== unit.Name) {
+	if (unit.Name !== unit.Name) {
 		UnitNameChanged(unit)
 	}
 })
@@ -2149,12 +2135,12 @@ RegisterFieldHandler<Unit, number[]>(Unit, "m_vecAbilities", (unit, newVal) => {
 		EventsSDK.emit("UnitAbilitiesChanged", false, unit)
 	}
 })
-RegisterFieldHandler(Unit, "m_hItems", (unit, newVal) => {
+RegisterFieldHandler<Unit, number[]>(Unit, "m_hItems", (unit, newVal) => {
 	const prevTotalItems = [...unit.TotalItems]
-	const ar = newVal as number[]
-	for (let i = 0; i < ar.length; i++) {
-		unit.TotalItems_[i] = ar[i]
-		const ent = EntityManager.EntityByIndex(ar[i])
+	for (let i = 0, end = newVal.length; i < end; i++) {
+		const handle = newVal[i]
+		unit.TotalItems_[i] = handle
+		const ent = EntityManager.EntityByIndex(handle)
 		if (ent instanceof Item) {
 			ent.ItemSlot = i
 			ent.Owner_ = unit.Handle
@@ -2164,7 +2150,7 @@ RegisterFieldHandler(Unit, "m_hItems", (unit, newVal) => {
 			unit.TotalItems[i] = undefined
 		}
 	}
-	for (let i = ar.length; i < unit.TotalItems_.length; i++) {
+	for (let i = newVal.length; i < unit.TotalItems_.length; i++) {
 		unit.TotalItems_[i] = 0
 		unit.TotalItems[i] = undefined
 	}
@@ -2172,7 +2158,7 @@ RegisterFieldHandler(Unit, "m_hItems", (unit, newVal) => {
 		EventsSDK.emit("UnitItemsChanged", false, unit)
 	}
 })
-RegisterFieldHandler(Unit, "m_hMyWearables", (unit, newVal) => {
+RegisterFieldHandler<Unit, number[]>(Unit, "m_hMyWearables", (unit, newVal) => {
 	for (const ent of unit.MyWearables) {
 		ent.Parent_ = 0
 		const prevParentEnt = ent.ParentEntity
@@ -2182,8 +2168,7 @@ RegisterFieldHandler(Unit, "m_hMyWearables", (unit, newVal) => {
 			ent.UpdatePositions()
 		}
 	}
-
-	unit.MyWearables_ = newVal as number[]
+	unit.MyWearables_ = newVal
 	unit.MyWearables = unit.MyWearables_.map(id =>
 		EntityManager.EntityByIndex<Wearable>(id)
 	).filter(ent => ent !== undefined)
@@ -2202,16 +2187,14 @@ RegisterFieldHandler(Unit, "m_hMyWearables", (unit, newVal) => {
 	}
 })
 RegisterFieldHandler<Unit, number>(Unit, "m_anglediff", (unit, newVal) => {
-	const oldValue = unit.RotationDifference
-	if (oldValue !== newVal) {
+	if (unit.RotationDifference !== newVal) {
 		unit.RotationDifference = newVal
 	}
 })
 RegisterFieldHandler<Unit, number>(Unit, "m_hNeutralSpawner", (unit, newVal) => {
-	unit.Spawner_ = newVal
-	const ent = EntityManager.EntityByIndex(unit.Spawner_)
-	if (ent instanceof NeutralSpawner) {
-		unit.Spawner = ent
+	if (unit.Spawner_ !== newVal) {
+		unit.Spawner_ = newVal
+		unit.Spawner = EntityManager.EntityByIndex<NeutralSpawner>(unit.Spawner_)
 	}
 })
 RegisterFieldHandler<Unit, number>(Unit, "m_iAttackCapabilities", (unit, newVal) => {
@@ -2227,16 +2210,14 @@ RegisterFieldHandler<Unit, boolean>(Unit, "m_bIsClone", (unit, newVal) => {
 	}
 })
 RegisterFieldHandler<Unit, number>(Unit, "m_iCurrentLevel", (unit, newVal) => {
-	const oldValue = unit.Level
-	if (oldValue !== newVal) {
+	if (unit.Level !== newVal) {
 		unit.Level = newVal
 		EventsSDK.emit("UnitLevelChanged", false, unit)
 	}
 })
 RegisterFieldHandler<Unit, bigint>(Unit, "m_nUnitState64", (unit, newVal) => {
-	const oldValue = unit.UnitStateNetworked,
-		newValue = ReencodeProperty(newVal, EPropertyType.UINT64)
-	if (oldValue !== newValue) {
+	const newValue = ReencodeProperty(newVal, EPropertyType.UINT64)
+	if (unit.UnitStateNetworked !== newValue) {
 		unit.UnitStateNetworked = newVal
 		EventsSDK.emit("UnitStateChanged", false, unit)
 	}

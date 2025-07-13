@@ -1,7 +1,7 @@
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
 
-@WrapperClass("CDOTA_Ability_Muerta_DeadShot")
+@WrapperClass("muerta_dead_shot")
 export class muerta_dead_shot extends Ability implements INuke {
 	public get ProjectileAttachment(): string {
 		return "attach_attack1"

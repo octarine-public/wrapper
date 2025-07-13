@@ -202,6 +202,7 @@ export class Ability extends Entity {
 		// TODO: fix me
 		return this.GetSpecialValue("final_aoe")
 	}
+
 	public get CastPoint(): number {
 		let castPoint = this.OverrideCastPoint
 		if (castPoint === -1) {
