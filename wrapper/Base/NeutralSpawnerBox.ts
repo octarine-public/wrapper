@@ -4,7 +4,6 @@ import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { DOTAGameState } from "../Enums/DOTAGameState"
 import { NeutralSpawnerType } from "../Enums/NeutralSpawnerType"
-import { Team } from "../Enums/Team"
 import { GameSleeper } from "../Helpers/Sleeper"
 import { ParticlesSDK } from "../Managers/ParticleManager"
 import { ProjectileManager } from "../Managers/ProjectileManager"
@@ -67,7 +66,7 @@ export class NeutralSpawnerBox {
 		return this.Spawner.SpawnerTeam
 	}
 	public get IsAlly() {
-		return (this.Team ?? Team.Invalid) === GameState.LocalTeam
+		return this.Team === GameState.LocalTeam
 	}
 	public get Position() {
 		return this.Spawner.Position
@@ -103,11 +102,10 @@ export class NeutralSpawnerBox {
 		}
 	}
 	public CanBeStack(unit: Unit) {
-		return (
-			unit.CanMove() &&
-			!this.IsStack &&
-			!NeutralSpawnerBox.Sleeper.Sleeping(unit.Index)
-		)
+		if (this.IsStack || NeutralSpawnerBox.Sleeper.Sleeping(unit.Index)) {
+			return false
+		}
+		return unit.CanMove()
 	}
 	public Stack(unit: Unit, creeps: Creep[], endPosition: Vector3) {
 		if (!unit.CanAttack() || !unit.CanMove()) {

@@ -15,4 +15,7 @@ export class rattletrap_rocket_flare extends Ability implements INuke {
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)
 	}
+	public GetMaxDurationForLevel(level: number): number {
+		return this.GetSpecialValue("duration", level)
+	}
 }

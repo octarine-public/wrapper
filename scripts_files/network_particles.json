@@ -1,0 +1,439 @@
+{
+	"particles/units/heroes/hero_axe/axe_beserkers_call_owner.vpcf": {
+		"attach": 1,
+		"abilityName": "axe_berserkers_call",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_battle_hunger_cast.vpcf": {
+		"attach": 1,
+		"abilityName": "axe_battle_hunger",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_counterhelix.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_counter_helix",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_culling_blade_kill.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_culling_blade",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 4
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_cullingblade_sprint_axe.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_culling_blade",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_cullingblade_sprint_creep.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_culling_blade",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_cullingblade_sprint.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_culling_blade",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_axe/axe_culling_blade_boost.vpcf": {
+		"attach": 2,
+		"abilityName": "axe_culling_blade",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_alchemist/alchemist_chemichalrage_effect.vpcf": {
+		"attach": 2,
+		"abilityName": "alchemist_chemical_rage",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_alchemist/alchemist_acid_spray_cast.vpcf": {
+		"attach": 2,
+		"abilityName": "alchemist_acid_spray",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_alchemist/alchemist_unstable_concoction_explosion.vpcf": {
+		"attach": 2,
+		"abilityName": "alchemist_unstable_concoction_throw",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_chaos_knight/chaos_knight_calamity_overhead.vpcf": {
+		"attach": 7,
+		"abilityName": "chaos_knight_reality_rift",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_chaos_knight/chaos_knight_reality_rift.vpcf": {
+		"attach": 2,
+		"abilityName": "chaos_knight_reality_rift",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_chaos_knight/chaos_knight_crit_tgt.vpcf": {
+		"attach": 2,
+		"abilityName": "chaos_knight_chaos_strike",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_quill_spray.vpcf": {
+		"attach": 2,
+		"abilityName": "bristleback_quill_spray",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_quill_spray_impact.vpcf": {
+		"attach": 2,
+		"abilityName": "bristleback_quill_spray",
+		"source": {
+			"controlPointEnt": 2
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_viscous_nasal_goo_debuff.vpcf": {
+		"attach": 1,
+		"abilityName": "bristleback_viscous_nasal_goo",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_gooey_explosion.vpcf": {
+		"attach": 2,
+		"abilityName": "bristleback_viscous_nasal_goo",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_quill_spray_hit.vpcf": {
+		"attach": 2,
+		"abilityName": "bristleback_quill_spray",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_quill_spray_conical.vpcf": {
+		"attach": 8,
+		"abilityName": "bristleback_bristleback",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_back_dmg.vpcf": {
+		"attach": 2,
+		"abilityName": "bristleback_bristleback",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 2
+		}
+	},
+	"particles/units/heroes/hero_bristleback/bristleback_side_dmg.vpcf": {
+		"attach": 2,
+		"abilityName": "bristleback_bristleback",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 2
+		}
+	},
+	"particles/units/heroes/hero_centaur/centaur_stampede_overhead.vpcf": {
+		"attach": 7,
+		"abilityName": "centaur_stampede",
+		"source": {
+			"isAttachedTo": true,
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_centaur/centaur_stampede_haste_npc.vpcf": {
+		"attach": 1,
+		"abilityName": "centaur_stampede",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_centaur/centaur_warstomp.vpcf": {
+		"attach": 0,
+		"abilityName": "centaur_hoof_stomp",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_centaur/centaur_double_edge_phase.vpcf": {
+		"attach": 2,
+		"abilityName": "centaur_double_edge",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_centaur/centaur_double_edge_body.vpcf": {
+		"attach": 2,
+		"abilityName": "centaur_double_edge",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 0
+		}
+	},
+	"particles/units/heroes/hero_rattletrap/rattletrap_rocket_flare.vpcf": {
+		"attach": 2,
+		"abilityName": "rattletrap_rocket_flare",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_rattletrap/rattletrap_rocket_flare_illumination.vpcf": {
+		"attach": 2,
+		"abilityName": "rattletrap_rocket_flare",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_rattletrap/rattletrap_battery_shrapnel.vpcf": {
+		"attach": 1,
+		"abilityName": "rattletrap_battery_assault",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_rattletrap/rattletrap_cog_ambient.vpcf": {
+		"attach": 2,
+		"abilityName": "rattletrap_power_cogs",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_rattletrap/clock_overclock_buff.vpcf": {
+		"attach": 2,
+		"abilityName": "rattletrap_overclocking",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_rattletrap/rattletrap_jetpack.vpcf": {
+		"attach":1,
+		"abilityName": "rattletrap_jetpack",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_rattletrap/rattletrap_hookshot.vpcf": {
+		"attach": 2,
+		"abilityName": "rattletrap_hookshot",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/items2_fx/vindicators_axe_armor.vpcf": {
+		"attach": 2,
+		"abilityName": ["item_vindicators_axe", "rattletrap_hookshot"],
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_invoker/invoker_chaos_meteor_fly.vpcf": {
+		"attach": 2,
+		"abilityName": "invoker_chaos_meteor",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_batrider/batrider_stickynapalm_impact.vpcf": {
+		"attach": 2,
+		"abilityName": "batrider_sticky_napalm",
+		"source": {
+			"controlPointEnt": 2
+		}
+	},
+	"particles/units/heroes/hero_batrider/batrider_firefly.vpcf": {
+		"attach": 2,
+		"abilityName": "batrider_firefly",
+		"source": {
+			"isModifiersAttachedTo": true
+		}	
+	},
+	"particles/units/heroes/hero_batrider/batrider_flaming_lasso.vpcf": {
+		"attach": 2,
+		"abilityName": "batrider_flaming_lasso",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_brewmaster/brewmaster_thunder_clap.vpcf": {
+		"attach": 2,
+		"abilityName": "brewmaster_thunder_clap",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_brewmaster/brewmaster_damage_buff.vpcf": {
+		"attach": 2,
+		"abilityName": "brewmaster_primal_split",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_clinkz/clinkz_windwalk.vpcf": {
+		"attach": 2,
+		"abilityName": "clinkz_wind_walk",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_clinkz/clinkz_death_pact.vpcf": {
+		"attach": 2,
+		"abilityName": "clinkz_death_pact",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_clinkz/clinkz_death_pact_buff.vpcf": {
+		"attach": 2,
+		"abilityName": "clinkz_death_pact",
+		"source": {
+			"isAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_death_prophet/death_prophet_carrion_swarm.vpcf": {
+		"attach": 2,
+		"abilityName": "death_prophet_carrion_swarm",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_death_prophet/death_prophet_spiritsiphon.vpcf": {
+		"attach": 2,
+		"abilityName": "death_prophet_spirit_siphon",
+		"source": {
+			"isAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_death_prophet/death_prophet_spirit_glow.vpcf": {
+		"attach": 2,
+		"abilityName": "death_prophet_exorcism",
+		"source": {
+			"isModifiersAttachedTo": true
+		}
+	},
+	"particles/units/heroes/hero_dragon_knight/dragon_knight_dragon_tail_knightform.vpcf": {
+		"attach": 2,
+		"abilityName": "dragon_knight_dragon_tail",
+		"source": {
+			"isModifiersAttachedTo": true
+		},
+		"target": {
+			"controlPointEnt": 1
+		}
+	},
+	"particles/units/heroes/hero_dragon_knight/dragon_knight_transform_blue.vpcf": {
+		"attach": 2,
+		"abilityName": "dragon_knight_elder_dragon_form",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		}
+	},
+	"particles/units/heroes/hero_dragon_knight/dragon_knight_transform_green.vpcf": {
+		"attach": 2,
+		"abilityName": "dragon_knight_elder_dragon_form",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		}
+	},
+	"particles/units/heroes/hero_dragon_knight/dragon_knight_transform_red.vpcf": {
+		"attach": 2,
+		"abilityName": "dragon_knight_elder_dragon_form",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		}
+	},
+	"particles/units/heroes/hero_dragon_knight/dragon_knight_transform_black.vpcf": {
+		"attach": 2,
+		"abilityName": "dragon_knight_elder_dragon_form",
+		"source": {
+			"findCaster": true,
+			"isTeamReverted": true
+		}	
+	},
+	"particles/items4_fx/scepter_aura.vpcf": {
+		"attach": 1,
+		"abilityName": "item_ultimate_scepter",
+		"source": {
+			"isAttachedTo": true
+		}
+	}
+}

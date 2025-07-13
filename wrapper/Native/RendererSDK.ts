@@ -141,6 +141,9 @@ class CRendererSDK {
 	 * @returns screen position, or undefined
 	 */
 	public WorldToScreen(position: Vector2 | Vector3, cull = true): Nullable<Vector2> {
+		if (!position.IsValid) {
+			return undefined
+		}
 		if (position instanceof Vector2) {
 			position = Vector3.FromVector2(position).SetZ(
 				WASM.GetPositionHeight(position)
