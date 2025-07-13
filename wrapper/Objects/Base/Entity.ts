@@ -131,6 +131,8 @@ export class Entity {
 	public ModelName: string = ""
 	public Children: Entity[] = []
 	public IsVisible: boolean = true
+	public IsHideWorldHud: boolean = false
+	public IsFogVisible: boolean = false
 	public IsShop: boolean = false
 	public IsUnit: boolean = false
 	public IsAbility: boolean = false
@@ -160,6 +162,14 @@ export class Entity {
 	public readonly VisualAngles = new QAngle()
 	public readonly NetworkedAngles = new QAngle()
 	public readonly NetworkedAngles_ = new QAngle()
+	public readonly PredictedPosition = new Vector3().Invalidate()
+	public LastPredictedPositionUpdate: number = 0
+	public LastRealPredictedPositionUpdate: number = 0
+	/**
+	 * @description added for compatibility (icore)
+	 * @deprecated
+	 */
+	public readonly FogVisiblePosition = new Vector3().Invalidate()
 	public readonly PreviousNetworkedAngles_: number[] = []
 	public PositionHistoryIndex: number = 0
 	public readonly BoundingBox = new AABB(this.VisualPosition)
@@ -189,7 +199,12 @@ export class Entity {
 		public readonly Index: number,
 		private readonly serial: number
 	) {}
-
+	/**
+	 * @deprecated use IsHideWorldHud
+	 */
+	public get HideHud(): boolean {
+		return this.IsHideWorldHud
+	}
 	public get CustomGlowColor(): Nullable<Color> {
 		return this.CustomGlowColor_
 	}

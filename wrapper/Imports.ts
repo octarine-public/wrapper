@@ -420,6 +420,7 @@ export { earthshaker_aftershock } from "./Objects/Abilities/Earthshaker/earthsha
 export { earthshaker_echo_slam } from "./Objects/Abilities/Earthshaker/earthshaker_echo_slam"
 export { earthshaker_enchant_totem } from "./Objects/Abilities/Earthshaker/earthshaker_enchant_totem"
 export { earthshaker_fissure } from "./Objects/Abilities/Earthshaker/earthshaker_fissure"
+export { earthshaker_slugger } from "./Objects/Abilities/Earthshaker/earthshaker_slugger"
 export { earth_spirit_boulder_smash } from "./Objects/Abilities/EarthSpirit/earth_spirit_boulder_smash"
 export { earth_spirit_geomagnetic_grip } from "./Objects/Abilities/EarthSpirit/earth_spirit_geomagnetic_grip"
 export { earth_spirit_magnetize } from "./Objects/Abilities/EarthSpirit/earth_spirit_magnetize"
