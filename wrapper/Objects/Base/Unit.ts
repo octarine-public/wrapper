@@ -27,7 +27,6 @@ import { GameActivity } from "../../Enums/GameActivity"
 import { GridNavCellFlags } from "../../Enums/GridNavCellFlags"
 import { modifierstate } from "../../Enums/modifierstate"
 import { EPropertyType } from "../../Enums/PropertyType"
-import { Team } from "../../Enums/Team"
 import { ScaleHeight } from "../../GUI/Helpers"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
@@ -64,23 +63,8 @@ function UnitNameChanged(unit: Unit) {
 
 @WrapperClass("CDOTA_BaseNPC")
 export class Unit extends Entity {
-	public static IsVisibleForEnemies(unit: Unit): boolean {
-		// don't check not existing team (0), spectators (1), neutrals (4) and shop (5)
-		const validTeams = ~(
-			(1 << Team.None) |
-			(1 << Team.Observer) |
-			(1 << Team.Neutral) |
-			(1 << Team.Shop)
-		)
-		const entTeam = unit.Team
-		const localTeam = GameState.LocalTeam
-		const flags = unit.IsVisibleForTeamMask & validTeams
-		for (let i = 14; i--; ) {
-			if (i !== localTeam && i !== entTeam && (flags >> i) & 1) {
-				return true
-			}
-		}
-		return false
+	public static IsNpcVisibleState(state: bigint[], entId: number): boolean {
+		return (state[Math.floor(entId / 64)] & (1n << BigInt(entId % 64))) !== 0n
 	}
 	@NetworkedBasicField("m_flHealthThinkRegen")
 	public readonly BaseHPRegen: number = 0
@@ -213,9 +197,8 @@ export class Unit extends Entity {
 	public AttackTimeLostToLastTick: number = 0
 	public LastPredictedPositionUpdate: number = 0
 	public LastRealPredictedPositionUpdate: number = 0
-
 	public YawVelocity = 0
-
+	public IsVisibleState: boolean = false
 	/**
 	 * @description added for compatibility (icore)
 	 * @deprecated
@@ -260,8 +243,6 @@ export class Unit extends Entity {
 	public OwnerNPC_: number = 0
 	/** @description The owner of the Unit. (example: Spirit Bear) */
 	public OwnerNPC: Nullable<Unit> = undefined
-	/** @private NOTE: this is internal field use IsVisibleForEnemies(...) */
-	public IsVisibleForEnemies_: boolean = false
 	public cellIsVisibleForEnemies_: boolean = false // TODO: calculate grid nav from enemies
 
 	public readonly Buffs: Modifier[] = []
@@ -791,9 +772,6 @@ export class Unit extends Entity {
 	public get IsConvertManaCostToHPCost(): boolean {
 		return this.ModifierManager.IsConvertManaCostToHPCost
 	}
-	public IsMagicAttackDamage(target: Unit): boolean {
-		return this.ModifierManager.GetAttackDamageConvertPhysicalToMagical(target)
-	}
 	public get IsAvoidTotalDamage(): boolean {
 		return this.ModifierManager.IsAvoidTotalDamage
 	}
@@ -806,27 +784,19 @@ export class Unit extends Entity {
 	public IsAbsoluteNoDamage(damageType: DAMAGE_TYPES, target: Unit): boolean {
 		return this.ModifierManager.GetAbsoluteNoDamage(damageType, target)
 	}
-	public IsVisibleForEnemies(method: number = 0, seconds: number = 2): boolean {
-		switch (method) {
-			default:
-			case 0: // old method
-				return this.IsVisibleForEnemies_
-			case 1: {
-				// new method
-				// predicted (buffs / cell / etc..) method
-				// Check if the Unit is visible for enemies in the current cell
-				// Check if the Unit has any buff that makes it visible for enemies
-				if (this.cellIsVisibleForEnemies_ || this.HasModifierVisibleForEnemies) {
-					return true
-				}
-				// Check if the current game time is less than the time when the Unit
-				// was last visible for enemies plus the given duration
-				if (this.IsVisibleForEnemiesLastTime + seconds > GameState.RawGameTime) {
-					return true
-				}
-				return false
-			}
+	public IsMagicAttackDamage(target: Unit): boolean {
+		return this.ModifierManager.GetAttackDamageConvertPhysicalToMagical(target)
+	}
+	public IsVisibleForEnemies(seconds: number = 2): boolean {
+		if (this.cellIsVisibleForEnemies_ || this.HasModifierVisibleForEnemies) {
+			return true
 		}
+		// Check if the current game time is less than the time when the Unit
+		// was last visible for enemies plus the given duration
+		if (this.IsVisibleForEnemiesLastTime + seconds > GameState.RawGameTime) {
+			return true
+		}
+		return false
 	}
 	public GetMagicalDamageResist(ignoreMagicResist: boolean = false): number {
 		return this.ModifierManager.GetMagicResistance(
@@ -2132,40 +2102,36 @@ RegisterFieldHandler(Unit, "m_nameStringableIndex", unit => {
 	}
 	UnitNameChanged(unit)
 })
-RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, newValue) => {
-	unit.IsVisibleForTeamMask = newValue as number
-	unit.IsVisibleForEnemies_ = Unit.IsVisibleForEnemies(unit)
-	if (unit.IsValid) {
-		EventsSDK.emit("UnitTeamVisibilityChanged", false, unit)
-	}
-})
-RegisterFieldHandler(Unit, "m_iPlayerID", (unit, newVal) => {
-	unit.PlayerID = newVal as number
+RegisterFieldHandler<Unit, number>(Unit, "m_iPlayerID", (unit, newVal) => {
+	unit.PlayerID = newVal
 	PlayerCustomData.set(unit.PlayerID)
 })
-RegisterFieldHandler(Unit, "m_hOwnerNPC", (unit, newVal) => {
-	unit.OwnerNPC_ = newVal as number
+RegisterFieldHandler<Unit, number>(Unit, "m_hOwnerNPC", (unit, newVal) => {
+	unit.OwnerNPC_ = newVal
 	unit.OwnerNPC = EntityManager.EntityByIndex(unit.OwnerNPC_)
 })
-RegisterFieldHandler(Unit, "m_bIsIllusion", (unit, newVal) => {
+RegisterFieldHandler<Unit, boolean>(Unit, "m_bIsIllusion", (unit, newVal) => {
 	const oldValue = unit.ModifierManager.IsIllusion_
 	if (oldValue !== newVal) {
-		unit.ModifierManager.IsIllusion_ = newVal as boolean
+		unit.ModifierManager.IsIllusion_ = newVal
 		EventsSDK.emit("UnitPropertyChanged", false, unit)
 	}
 })
-RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", (unit, newVal) => {
-	unit.IsControllableByPlayerMask = newVal as bigint
-	if (unit.IsValid) {
-		EventsSDK.emit("ControllableByPlayerMaskChanged", false, unit)
+RegisterFieldHandler<Unit, bigint>(
+	Unit,
+	"m_iIsControllableByPlayer64",
+	(unit, newVal) => {
+		unit.IsControllableByPlayerMask = newVal
+		if (unit.IsValid) {
+			EventsSDK.emit("ControllableByPlayerMaskChanged", false, unit)
+		}
 	}
-})
-RegisterFieldHandler(Unit, "m_vecAbilities", (unit, newVal) => {
+)
+RegisterFieldHandler<Unit, number[]>(Unit, "m_vecAbilities", (unit, newVal) => {
 	const prevSpells = [...unit.Spells]
-	const ar = newVal as number[]
-	for (let i = 0; i < ar.length; i++) {
-		unit.Spells_[i] = ar[i]
-		const ent = EntityManager.EntityByIndex(ar[i])
+	for (let i = 0; i < newVal.length; i++) {
+		unit.Spells_[i] = newVal[i]
+		const ent = EntityManager.EntityByIndex(newVal[i])
 		if (ent instanceof Ability) {
 			ent.Owner_ = unit.Handle
 			ent.OwnerEntity = unit
@@ -2175,7 +2141,7 @@ RegisterFieldHandler(Unit, "m_vecAbilities", (unit, newVal) => {
 			unit.Spells[i] = undefined
 		}
 	}
-	for (let i = ar.length; i < unit.Spells_.length; i++) {
+	for (let i = newVal.length; i < unit.Spells_.length; i++) {
 		unit.Spells_[i] = 0
 		unit.Spells[i] = undefined
 	}

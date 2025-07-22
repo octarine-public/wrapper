@@ -7,6 +7,7 @@ import { DOTA_RUNES } from "../../Enums/DOTA_RUNES"
 import { ERoshanSpawnPhase } from "../../Enums/ERoshanSpawnPhase"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { Events } from "../../Managers/Events"
+import { EventsSDK } from "../../Managers/EventsSDK"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GridNav } from "../../Resources/ParseGNV"
 import { Entity } from "./Entity"
@@ -48,6 +49,7 @@ export class TeamData extends Entity {
 	public readonly RoshanPhaseEndTime: number = 0
 	@NetworkedBasicField("m_flRoshanPhaseStartTime")
 	public readonly RoshanPhaseStartTime: number = 0
+	public NPCVisibleState: bigint[] = []
 	public RoshanPhase: ERoshanSpawnPhase = ERoshanSpawnPhase.ROSHAN_SPAWN_PHASE_ALIVE
 
 	public toJSON() {
@@ -68,23 +70,39 @@ export class TeamData extends Entity {
 		}
 	}
 }
-RegisterFieldHandler(TeamData, "m_eRoshanPhase", (data, newVal) => {
-	data.RoshanPhase = Number(newVal as bigint)
+RegisterFieldHandler<TeamData, bigint>(TeamData, "m_eRoshanPhase", (data, newVal) => {
+	data.RoshanPhase = Number(newVal)
 })
-RegisterFieldHandler(TeamData, "m_vecDataTeam", (data, newVal) => {
-	data.DataTeam = (newVal as EntityPropertiesNode[]).map(map => new DataTeamPlayer(map))
-})
-RegisterFieldHandler(TeamData, "m_vecWorldTreeModelReplacements", (data, newVal) => {
-	data.WorldTreeModelReplacements = (newVal as EntityPropertiesNode[]).map(
-		map => new TreeModelReplacement(map)
-	)
-})
-RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, newValue) => {
-	Tree.TreeActiveMask = newValue as bigint[]
+RegisterFieldHandler<TeamData, EntityPropertiesNode[]>(
+	TeamData,
+	"m_vecDataTeam",
+	(data, newVal) => {
+		data.DataTeam = newVal.map(map => new DataTeamPlayer(map))
+	}
+)
+RegisterFieldHandler<TeamData, EntityPropertiesNode[]>(
+	TeamData,
+	"m_vecWorldTreeModelReplacements",
+	(data, newVal) => {
+		data.WorldTreeModelReplacements = newVal.map(map => new TreeModelReplacement(map))
+	}
+)
+RegisterFieldHandler<TeamData, bigint[]>(TeamData, "m_bWorldTreeState", (_, newValue) => {
+	Tree.TreeActiveMask = newValue
 	if (GridNav !== undefined) {
 		for (let i = 0, end = Trees.length; i < end; i++) {
 			GridNav.UpdateTreeState(Trees[i])
 		}
 	}
 })
+
+RegisterFieldHandler<TeamData, bigint[]>(
+	TeamData,
+	"m_bNPCVisibleState",
+	(data, newValue) => {
+		data.NPCVisibleState = newValue
+		EventsSDK.emit("UnitVisibleStateChanged", false, data)
+	}
+)
+
 Events.on("NewConnection", () => Tree.TreeActiveMask.clear())

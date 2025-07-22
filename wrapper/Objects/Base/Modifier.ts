@@ -307,7 +307,6 @@ export class Modifier {
 			EventsSDK.emit("ModifierChangedVBE", false, this)
 		}
 	}
-
 	public GetTexturePath(): string {
 		return this.Ability?.TexturePath ?? ""
 	}

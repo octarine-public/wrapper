@@ -7,6 +7,7 @@ import { Entity } from "../../Objects/Base/Entity"
 import { FakeUnit } from "../../Objects/Base/FakeUnit"
 import { Item } from "../../Objects/Base/Item"
 import { NeutralSpawner, NeutralSpawners } from "../../Objects/Base/NeutralSpawner"
+import { TeamData } from "../../Objects/Base/TeamData"
 import { Unit, Units } from "../../Objects/Base/Unit"
 import { Wearable } from "../../Objects/Base/Wearable"
 import { npc_dota_hero_wisp } from "../../Objects/Heroes/npc_dota_hero_wisp"
@@ -35,11 +36,6 @@ new (class CPreUnitChanged {
 			EventPriority.IMMEDIATE
 		)
 		EventsSDK.on(
-			"LocalTeamChanged",
-			this.LocalTeamChanged.bind(this),
-			EventPriority.IMMEDIATE
-		)
-		EventsSDK.on(
 			"UnitAnimation",
 			this.UnitAnimation.bind(this),
 			EventPriority.IMMEDIATE
@@ -61,8 +57,14 @@ new (class CPreUnitChanged {
 		)
 		EventsSDK.on("EntityDestroyed", this.EntityDestroyed.bind(this))
 		EventsSDK.on("GameEvent", this.GameEvent.bind(this), EventPriority.IMMEDIATE)
+		EventsSDK.on("UnitVisibleStateChanged", this.UnitVisibleStateChanged.bind(this))
 	}
-
+	protected UnitVisibleStateChanged(data: TeamData) {
+		for (let i = Units.length - 1; i > -1; i--) {
+			const unit = Units[i]
+			unit.IsVisibleState = Unit.IsNpcVisibleState(data.NPCVisibleState, unit.Index)
+		}
+	}
 	protected PostDataUpdate(dt: number) {
 		if (dt === 0) {
 			return
@@ -243,12 +245,6 @@ new (class CPreUnitChanged {
 		}
 		if (entity instanceof Unit) {
 			this.spawnerUnitDestroyed(entity)
-		}
-	}
-	protected LocalTeamChanged() {
-		for (let i = Units.length - 1; i > -1; i--) {
-			const unit = Units[i]
-			unit.IsVisibleForEnemies_ = Unit.IsVisibleForEnemies(unit)
 		}
 	}
 	protected UnitAnimation(

@@ -10,7 +10,7 @@ export class Shop extends Building {
 	 * @description Represents the type of the shop.
 	 */
 	@NetworkedBasicField("m_ShopType", EPropertyType.UINT32)
-	public ShopType: DOTA_SHOP_TYPE = DOTA_SHOP_TYPE.DOTA_SHOP_NONE
+	public readonly ShopType: DOTA_SHOP_TYPE = DOTA_SHOP_TYPE.DOTA_SHOP_NONE
 
 	/** @ignore */
 	constructor(
@@ -20,8 +20,7 @@ export class Shop extends Building {
 		super(Index, serial)
 		this.IsShop = true
 	}
-
-	public IsVisibleForEnemies(_seconds: number, _method: number): boolean {
+	public IsVisibleForEnemies(_seconds: number): boolean {
 		return false
 	}
 }

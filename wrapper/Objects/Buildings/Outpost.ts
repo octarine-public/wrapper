@@ -23,7 +23,7 @@ export class Outpost extends Building {
 		return 150
 	}
 
-	public IsVisibleForEnemies(_seconds: number, _method: number): boolean {
+	public IsVisibleForEnemies(_seconds: number): boolean {
 		return false
 	}
 }

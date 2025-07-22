@@ -7,7 +7,7 @@ import { Unit } from "../../Objects/Base/Unit"
 import { GameState } from "../../Utils/GameState"
 import { EventsSDK } from "../EventsSDK"
 
-const Monitor = new (class CUnitVBEModifierChanged {
+new (class CUnitVBEModifierChanged {
 	private readonly eventSleeper = new GameSleeper()
 	private readonly ignoreBuffs = [
 		"modifier_monkey_king_bounce_leap",
@@ -24,67 +24,57 @@ const Monitor = new (class CUnitVBEModifierChanged {
 		"modifier_item_phase_boots_active"
 	]
 
-	public ModifierChangedVBE(mod: Modifier) {
+	constructor() {
+		EventsSDK.on("GameEnded", this.GameEnded.bind(this), EventPriority.IMMEDIATE)
+		EventsSDK.on(
+			"UnitItemsChanged",
+			this.UnitItemsChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"ModifierChangedVBE",
+			this.ModifierChangedVBE.bind(this),
+			EventPriority.IMMEDIATE
+		)
+	}
+	protected ModifierChangedVBE(mod: Modifier) {
 		const parent = mod.Parent
 		if (parent === undefined || mod.IsAura || parent.IsEnemy()) {
 			return
 		}
-
 		if (this.eventSleeper.Sleeping(parent.Index)) {
 			return
 		}
-
 		const ability = mod.Ability
 		if (!(ability instanceof Item)) {
 			return
 		}
-
 		if (
 			ability.IsNeutralActiveDrop &&
 			ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
 		) {
 			return
 		}
-
 		const maxEndTime = 2
 		const item = parent.TotalItems.find(x => x === ability)
-		if (item === undefined) {
+		if (item === undefined || item.CreateTime + maxEndTime > GameState.RawGameTime) {
 			return
 		}
-
 		if (
-			item.CreateTime + maxEndTime > GameState.RawGameTime ||
 			item.PurchaseTime + maxEndTime > GameState.RawGameTime ||
 			parent.HasAnyBuffByNames(this.ignoreBuffs)
 		) {
 			return
 		}
-
 		parent.IsVisibleForEnemiesLastTime = GameState.RawGameTime
 		EventsSDK.emit("UnitVBEModifierChanged", false, parent)
 	}
-
-	public UnitItemsChanged(unit: Unit) {
+	protected UnitItemsChanged(unit: Unit) {
 		if (!unit.IsEnemy()) {
 			this.eventSleeper.Sleep(2 * 1000, unit.Index)
 		}
 	}
-
-	public GameEnded() {
+	protected GameEnded() {
 		this.eventSleeper.FullReset()
 	}
 })()
-
-EventsSDK.on(
-	"UnitItemsChanged",
-	unit => Monitor.UnitItemsChanged(unit),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"ModifierChangedVBE",
-	mod => Monitor.ModifierChangedVBE(mod),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on("GameEnded", () => Monitor.GameEnded(), EventPriority.IMMEDIATE)

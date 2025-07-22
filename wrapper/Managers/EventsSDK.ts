@@ -12,6 +12,7 @@ import { FakeUnit } from "../Objects/Base/FakeUnit"
 import { Modifier } from "../Objects/Base/Modifier"
 import { CPlayerResource } from "../Objects/Base/PlayerResource"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
+import { TeamData } from "../Objects/Base/TeamData"
 import { Unit } from "../Objects/Base/Unit"
 import { PlayerCustomData } from "../Objects/DataBook/PlayerCustomData"
 import { RecursiveProtobuf } from "../Utils/Protobuf"
@@ -66,6 +67,11 @@ interface EventsSDK extends EventEmitter {
 	on(
 		name: "EntityVisibleChanged",
 		listener: (entity: Entity) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "UnitVisibleStateChanged",
+		listener: (data: TeamData) => void,
 		priority?: number
 	): EventEmitter
 	on(
@@ -341,11 +347,6 @@ interface EventsSDK extends EventEmitter {
 	on(
 		name: "UnitAbilityDataUpdated",
 		listener: () => void,
-		priority?: number
-	): EventEmitter
-	on(
-		name: "UnitTeamVisibilityChanged",
-		listener: (unit: Unit) => void,
 		priority?: number
 	): EventEmitter
 	/**

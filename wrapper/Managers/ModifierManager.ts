@@ -2,6 +2,7 @@ import { Vector4 } from "../Base/Vector4"
 import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
 import { EventPriority } from "../Enums/EventPriority"
 import { Ability } from "../Objects/Base/Ability"
+import { Entity } from "../Objects/Base/Entity"
 import { Modifier } from "../Objects/Base/Modifier"
 import { Unit } from "../Objects/Base/Unit"
 import { AbilityData } from "../Objects/DataBook/AbilityData"
@@ -274,6 +275,21 @@ function EmitModifierRemoved(modifier: Nullable<Modifier>) {
 	}
 }
 
+function EntityModifierChanged(entity: Entity) {
+	if (entity instanceof Unit || entity instanceof Ability) {
+		activeModifiers.forEach(mod => {
+			if (
+				entity.HandleMatches(mod.kv.Parent ?? 0) ||
+				entity.HandleMatches(mod.kv.Caster ?? 0) ||
+				entity.HandleMatches(mod.kv.AuraOwner ?? 0) ||
+				entity.HandleMatches(mod.kv.CustomEntity ?? 0)
+			) {
+				mod.Update()
+			}
+		})
+	}
+}
+
 ParseProtobufDesc(`
 enum DOTA_MODIFIER_ENTRY_TYPE {
 	DOTA_MODIFIER_ENTRY_TYPE_ACTIVE = 1;
@@ -362,6 +378,10 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 		})
 	})
 })
+
+EventsSDK.on("EntityDestroyed", entity => EntityModifierChanged(entity))
+
+EventsSDK.on("PreEntityCreated", entity => EntityModifierChanged(entity))
 
 EventsSDK.on("RemoveAllStringTables", () => {
 	activeModifiers.forEach(mod => EmitModifierRemoved(mod))
