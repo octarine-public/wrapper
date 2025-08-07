@@ -180,7 +180,12 @@ export function ParseVHCG(): void {
 }
 
 export function GetPositionHeight(loc: Vector2 | Vector3): number {
-	return WorldUtils.GetHeightForLocation(loc.x, loc.y)
+	if (loc instanceof Vector2) {
+		return 0
+	}
+	return loc.z
+	// WorldUtils.GetHeightForLocation(loc.x, loc.y)
+	// uncomment after fix worldutils
 }
 
 export function WorldToScreenNew(
