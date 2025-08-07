@@ -9,7 +9,8 @@ export class EnableDisableUpdated extends Notification {
 	constructor(
 		private readonly text: string,
 		private readonly infoColor: Color,
-		timeToShow: number = 4 * 1000
+		timeToShow: number = 4 * 1000,
+		private readonly icon: string = "/menu/icons/check.svg"
 	) {
 		super({ timeToShow, uniqueKey: "EnableDisableUpdated" })
 	}
@@ -40,7 +41,7 @@ export class EnableDisableUpdated extends Notification {
 			.AddScalarX(infoPadding)
 			.AddScalarY((height - infoSize) / 2)
 		RendererSDK.Image(
-			"/menu/icons/check.svg",
+			this.icon,
 			Position,
 			-1,
 			new Vector2(infoSize, infoSize),

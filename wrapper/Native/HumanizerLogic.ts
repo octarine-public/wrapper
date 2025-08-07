@@ -1234,7 +1234,6 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 	}
 	latestCameraX = latestUsercmd.CameraPosition.x = cameraVec.x
 	latestCameraY = latestUsercmd.CameraPosition.y = cameraVec.y
-
 	latestCursor.CopyFrom(latestUsercmd.MousePosition)
 
 	latestUsercmd.MousePosition.MultiplyForThis(RendererSDK.WindowSize)

@@ -120,7 +120,7 @@ export class ExecuteOrder {
 		"hero_demo_main",
 		"hero_demo_frostivus"
 	])
-	private static DisableHumanizer_ = false
+	private static DisableHumanizer_ = true
 	private readonly flags: number
 
 	/**

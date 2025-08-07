@@ -1,11 +1,14 @@
 import {
+	Color,
+	EnableDisableUpdated,
 	Entity,
 	Events,
 	EventsSDK,
 	ExecuteOrder,
 	InputEventSDK,
 	Menu,
-	MenuLanguageID
+	MenuLanguageID,
+	NotificationsSDK
 } from "../../../wrapper/Imports"
 import { InternalCamera } from "./Camera"
 import { InternalChanger } from "./Changer"
@@ -40,13 +43,19 @@ new (class CInternalSettings {
 
 		InputEventSDK.on("MouseWheel", this.MouseWheel.bind(this))
 
-		this.tree
+		const humanizer = this.tree
 			.AddToggle(
 				"Humanizer",
 				true,
 				"Enables all scripts orders, ability to change camera distance"
 			)
-			.OnValue(toggle => (ExecuteOrder.DisableHumanizer = !toggle.value))
+			.OnValue(toggle => {
+				toggle.value = false
+				ExecuteOrder.DisableHumanizer = true
+				this.sentNotification()
+			})
+		humanizer.value = false
+		ExecuteOrder.DisableHumanizer = !humanizer.value
 
 		this.menuKeyBind.ActivatesInMenu = true
 		this.menuKeyBind.TriggerOnChat = true
@@ -102,5 +111,17 @@ new (class CInternalSettings {
 			Menu.Localization.SetLang(language)
 			// console.info("SetLanguage: ", Menu.Localization.SelectedUnitName)
 		}
+	}
+	private sentNotification() {
+		NotificationsSDK.Push(
+			new EnableDisableUpdated(
+				Menu.Localization.Localize(
+					"Humanizer is blocked.\nIt is not fixed yet.\nAllowed only visual or\nno target functions."
+				),
+				Color.Red,
+				4 * 1000,
+				"/images/icons/lock.svg"
+			)
+		)
 	}
 })()
