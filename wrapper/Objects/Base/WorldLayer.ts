@@ -18,10 +18,8 @@ export class WorldLayer extends Entity {
 	public readonly EntitiesSpawned: boolean = false
 }
 
+export let GetWorldBounds: Nullable<[Vector2, Vector2]>
 export const WorldLayers = EntityManager.GetEntitiesByClass(WorldLayer)
-export function GetWorldBounds(): Nullable<[Vector2, Vector2]> {
-	return worldBounds
-}
 const visibleLayers = new Set<string>()
 Events.on("NewConnection", () => {
 	if (visibleLayers.delete("world_layer_base")) {
@@ -67,7 +65,6 @@ EventsSDK.on("EntityDestroyed", ent => {
 	}
 })
 
-let worldBounds: Nullable<[Vector2, Vector2]>
 function ProcessWorldBoundsData(layerName: string): boolean {
 	const worldBoundsData = EntityDataLumps.get(layerName)?.find(
 		data => data.get("classname") === "world_bounds"
@@ -78,7 +75,7 @@ function ProcessWorldBoundsData(layerName: string): boolean {
 	try {
 		const min = worldBoundsData.get("min"),
 			max = worldBoundsData.get("max")
-		worldBounds =
+		GetWorldBounds =
 			typeof min === "string" && typeof max === "string"
 				? [Vector2.FromString(min), Vector2.FromString(max)]
 				: undefined
@@ -104,6 +101,6 @@ EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
 		}
 	}
 	if (!ProcessWorldBoundsData("world_layer_base")) {
-		worldBounds = undefined
+		GetWorldBounds = undefined
 	}
 })

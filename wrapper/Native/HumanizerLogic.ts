@@ -707,8 +707,7 @@ const cameraMoveLingerDuration = 100,
 	yellowZoneMaxDuration = 700,
 	greenZoneMaxDuration = yellowZoneMaxDuration * 2,
 	cameraDirection = new Vector2(),
-	debugCursor = new Vector3(),
-	worldBounds = GetWorldBounds()
+	debugCursor = new Vector3()
 let lastOrderFinish = 0,
 	lastOrderUsedMinimap = false,
 	latestCameraX = 0,
@@ -728,10 +727,10 @@ function CanMoveCamera(cameraVec: Vector2, targetPos: Vector2): boolean {
 	}
 	const boundsMin =
 		CameraBounds?.BoundsMin ??
-		(worldBounds !== undefined ? worldBounds[0] : undefined)
+		(GetWorldBounds !== undefined ? GetWorldBounds[0] : undefined)
 	const boundsMax =
 		CameraBounds?.BoundsMax ??
-		(worldBounds !== undefined ? worldBounds[1] : undefined)
+		(GetWorldBounds !== undefined ? GetWorldBounds[1] : undefined)
 	if (boundsMin === undefined || boundsMax === undefined) {
 		return true
 	}
@@ -1151,10 +1150,10 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 	{
 		const boundsMin =
 			CameraBounds?.BoundsMin ??
-			(worldBounds !== undefined ? worldBounds[0] : undefined)
+			(GetWorldBounds !== undefined ? GetWorldBounds[0] : undefined)
 		const boundsMax =
 			CameraBounds?.BoundsMax ??
-			(worldBounds !== undefined ? worldBounds[1] : undefined)
+			(GetWorldBounds !== undefined ? GetWorldBounds[1] : undefined)
 		if (boundsMin !== undefined && boundsMax !== undefined) {
 			const oldX = cameraVec.x,
 				oldY = cameraVec.y
@@ -1246,6 +1245,7 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 		cameraVec,
 		defaultCameraDist
 	)[0]
+	// console.log(latestCursor, cameraVec, defaultCameraDist, screenToWorldPosition)
 	latestUsercmd.VectorUnderCursor.CopyFrom(debugCursor.CopyFrom(screenToWorldPosition))
 	const units = Units.filter(ent => ent.IsVisible && ent.IsSpawned)
 	const intersectedUnitsMask = EntityHitBoxesIntersect(
