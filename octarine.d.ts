@@ -323,5 +323,16 @@ declare interface Math {
 	 * @param max - the maximum value
 	 * @return {number}
 	 */
-	randomRange(min: number, max: number): number
+	randomRange(min: number, max: number, skew?: number): number
+	/**
+	 * @requires
+	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
+	 * @description Returns a random number between min and max
+	 *
+	 * @param min - the minimum value
+	 * @param max - the maximum value
+	 * @return {number}
+	 */
+	randomRangeGaussian(min: number, max: number, skew?: number): number
 }

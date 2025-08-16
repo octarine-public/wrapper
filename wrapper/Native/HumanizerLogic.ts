@@ -1,3 +1,5 @@
+import "../../prototypes/math"
+
 import { Color } from "../Base/Color"
 import { QAngle } from "../Base/QAngle"
 import { Rectangle } from "../Base/Rectangle"
@@ -612,6 +614,18 @@ function ProcessOrderQueue(currentTime: number) {
 	if (order === undefined || currentOrder === order) {
 		return order
 	}
+
+	const orderLingerDurationStd = 115,
+		orderLingerDurationMinimapStd = 250
+	orderLingerDuration = Math.randomRangeGaussian(
+		orderLingerDurationStd * 0.5,
+		orderLingerDurationStd
+	)
+	orderLingerDurationMinimap = Math.randomRangeGaussian(
+		orderLingerDurationMinimapStd * 0.5,
+		orderLingerDurationMinimapStd
+	)
+
 	currentOrder = order
 	if (ExecuteOrder.PrefireOrders) {
 		if (ExecuteOrder.DebugOrders) {
@@ -700,14 +714,45 @@ function ProcessOrderQueue(currentTime: number) {
 	return order
 }
 
-const cameraMoveLingerDuration = 100,
-	orderLingerDuration = 115,
-	orderLingerDurationMinimap = 250,
-	cameraMoveSeedExpiry = 300,
-	yellowZoneMaxDuration = 700,
-	greenZoneMaxDuration = yellowZoneMaxDuration * 2,
-	cameraDirection = new Vector2(),
+let cameraMoveLingerDuration = 0,
+	orderLingerDuration = 0,
+	orderLingerDurationMinimap = 0,
+	cameraMoveSeedExpiry = 0,
+	orderParamsExpiry = 0,
+	yellowZoneMaxDuration = 0,
+	greenZoneMaxDuration = 0
+let lastOrderParamsChange = -9999
+const cameraDirection = new Vector2(),
 	debugCursor = new Vector3()
+function ChangeOrderParams(force = false) {
+	const curTime = hrtime()
+	if (!force && curTime - lastOrderParamsChange < orderParamsExpiry) {
+		return
+	}
+	lastOrderParamsChange = curTime
+
+	const cameraMoveLingerDurationStd = 100,
+		cameraMoveSeedExpiryStd = 300,
+		yellowZoneMaxDurationStd = 700,
+		greenZoneMaxDurationStd = yellowZoneMaxDuration * 2
+	cameraMoveLingerDuration = Math.randomRangeGaussian(
+		cameraMoveLingerDurationStd * 0.75,
+		cameraMoveLingerDurationStd
+	)
+	cameraMoveSeedExpiry = Math.randomRangeGaussian(
+		cameraMoveSeedExpiryStd * 0.7,
+		cameraMoveSeedExpiryStd * 1.3
+	)
+	orderParamsExpiry = Math.randomRangeGaussian(2000, 5000)
+	yellowZoneMaxDuration = Math.randomRangeGaussian(
+		yellowZoneMaxDurationStd * 0.7,
+		yellowZoneMaxDurationStd * 1.3
+	)
+	greenZoneMaxDuration = Math.randomRangeGaussian(
+		greenZoneMaxDurationStd * 0.7,
+		greenZoneMaxDurationStd * 1.3
+	)
+}
 let lastOrderFinish = 0,
 	lastOrderUsedMinimap = false,
 	latestCameraX = 0,
@@ -919,8 +964,8 @@ function getParams(): [number, number][] {
 	const paramsCount = 5 + Math.round(Math.random() * 3) // [5,8]
 	const res: [number, number][] = []
 	for (let i = 0; i < paramsCount; i++) {
-		const amplitudeRcp = 1 / (0.5 + Math.random()) // [1/1.5, 1/0.5]
-		const offset = Math.random() * Math.PI * 2 - Math.PI // offset [-180deg,180deg]
+		const amplitudeRcp = 1 / Math.randomRangeGaussian(0.5, 1.5) // [1/1.5, 1/0.5]
+		const offset = Math.randomRangeGaussian(-Math.PI, Math.PI) // offset [-180deg,180deg]
 		res.push([amplitudeRcp, offset])
 	}
 	return res
@@ -932,8 +977,8 @@ function applyParams(
 	trigFunc: (x: number) => number
 ): number {
 	const sum = params.reduce(
-		(prev, [amplitude, offset]) =>
-			prev + trigFunc(currentTime * amplitude + offset) ** 2,
+		(prev, [amplitudeRcp, offset]) =>
+			prev + trigFunc(currentTime * amplitudeRcp + offset) ** 2,
 		0.5
 	)
 	return sum / params.length
@@ -1280,6 +1325,7 @@ function ProcessUserCmd(force = false): void {
 	if (RendererSDK.WindowSize.IsZero()) {
 		return
 	}
+	ChangeOrderParams()
 	latestUsercmd.Pawn = LocalPlayer?.Pawn
 	latestUsercmd.SpectatorStatsCategoryID = 0
 	latestUsercmd.SpectatorStatsSortMethod = 0
@@ -1566,6 +1612,7 @@ function ClearHumanizerState() {
 	paramsX = getParams()
 	paramsY = getParams()
 	CameraSDK.Polygon.Points.clear()
+	ChangeOrderParams(true)
 }
 
 function RestartHumanizerState() {

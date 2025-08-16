@@ -2,7 +2,25 @@ Math.radianToDegrees = (radian: number): number => (radian * 180) / Math.PI
 
 Math.degreesToRadian = (degrees: number): number => (degrees * Math.PI) / 180
 
-Math.randomRange = (min: number, max: number): number => Math.random() * (max - min) + min
+Math.randomRange = (min: number, max: number, skew = 1): number =>
+	Math.pow(Math.random(), skew) * (max - min) + min
+
+Math.randomRangeGaussian = (min: number, max: number, skew = 1) => {
+	let num = -1
+	while (num > 1 || num < 0) {
+		let u = 0,
+			v = 0
+		while (u === 0) {
+			u = Math.random()
+		}
+		while (v === 0) {
+			v = Math.random()
+		}
+		num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v)
+		num = num / 10.0 + 0.5 // Translate to 0 -> 1
+	}
+	return Math.pow(num, skew) * (max - min) + min
+}
 
 Math.clamp = (value: number, min: number, max: number): number =>
 	Math.min(Math.max(value, min), max)
