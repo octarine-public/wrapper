@@ -8,6 +8,7 @@ import { GameState } from "../../Utils/GameState"
 import { EventsSDK } from "../EventsSDK"
 
 new (class CUnitVBEModifierChanged {
+	private readonly maxDuration = 2
 	private readonly eventSleeper = new GameSleeper()
 	private readonly ignoreBuffs = [
 		"modifier_monkey_king_bounce_leap",
@@ -21,7 +22,8 @@ new (class CUnitVBEModifierChanged {
 		"modifier_fountain_aura_buff",
 		"modifier_item_invisibility_edge_windwalk",
 		"modifier_item_shadow_amulet_fade",
-		"modifier_item_phase_boots_active"
+		"modifier_item_phase_boots_active",
+		"modifier_item_armlet_unholy_strength"
 	]
 
 	constructor() {
@@ -55,15 +57,14 @@ new (class CUnitVBEModifierChanged {
 		) {
 			return
 		}
-		const maxEndTime = 2
 		const item = parent.TotalItems.find(x => x === ability)
-		if (item === undefined || item.CreateTime + maxEndTime > GameState.RawGameTime) {
+		if (item === undefined || parent.HasAnyBuffByNames(this.ignoreBuffs)) {
 			return
 		}
-		if (
-			item.PurchaseTime + maxEndTime > GameState.RawGameTime ||
-			parent.HasAnyBuffByNames(this.ignoreBuffs)
-		) {
+		if (item.CreateTime + this.maxDuration > GameState.RawGameTime) {
+			return
+		}
+		if (item.PurchaseTime + this.maxDuration > GameState.RawGameTime) {
 			return
 		}
 		parent.IsVisibleForEnemiesLastTime = GameState.RawGameTime
@@ -71,7 +72,7 @@ new (class CUnitVBEModifierChanged {
 	}
 	protected UnitItemsChanged(unit: Unit) {
 		if (!unit.IsEnemy()) {
-			this.eventSleeper.Sleep(2 * 1000, unit.Index)
+			this.eventSleeper.Sleep(this.maxDuration * 1000, unit.Index)
 		}
 	}
 	protected GameEnded() {
