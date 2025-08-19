@@ -19,7 +19,14 @@ class CGridNav {
 		this.edgeSizeRcp = 1 / this.EdgeSize
 		this.Max = this.Min.Add(this.Size).SubtractScalarForThis(1)
 	}
-
+	public IsInWorld(pos: Vector3, buffer: number = 0.5 * this.EdgeSize): boolean {
+		const half = this.EdgeSize * 0.5
+		const minX = this.Min.x * this.EdgeSize + this.Offset.x - half + buffer,
+			minY = this.Min.y * this.EdgeSize + this.Offset.y - half + buffer
+		const maxX = this.Max.x * this.EdgeSize + this.Offset.x + half - buffer,
+			maxY = this.Max.y * this.EdgeSize + this.Offset.y + half - buffer
+		return pos.IsUnderRectangle(minX, minY, maxX - minX, maxY - minY)
+	}
 	public GetCellFlagsForPos(pos: Vector3 | Vector2): number {
 		return this.CellFlags[this.GetCellIndexForPos(pos)] ?? 0
 	}
