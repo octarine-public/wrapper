@@ -23,7 +23,8 @@ new (class CUnitVBEModifierChanged {
 		"modifier_item_invisibility_edge_windwalk",
 		"modifier_item_shadow_amulet_fade",
 		"modifier_item_phase_boots_active",
-		"modifier_item_armlet_unholy_strength"
+		"modifier_item_armlet_unholy_strength",
+		"modifier_item_soul_ring_buff"
 	]
 
 	constructor() {
