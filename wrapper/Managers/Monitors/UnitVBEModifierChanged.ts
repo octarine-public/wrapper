@@ -5,27 +5,16 @@ import { Item } from "../../Objects/Base/Item"
 import { Modifier } from "../../Objects/Base/Modifier"
 import { Unit } from "../../Objects/Base/Unit"
 import { GameState } from "../../Utils/GameState"
+import { readJSON } from "../../Utils/Utils"
 import { EventsSDK } from "../EventsSDK"
 
+interface IModifiersIgnore {
+	vbeModifiers: string[]
+}
 new (class CUnitVBEModifierChanged {
 	private readonly maxDuration = 2
 	private readonly eventSleeper = new GameSleeper()
-	private readonly ignoreBuffs = [
-		"modifier_monkey_king_bounce_leap",
-		"modifier_monkey_king_arc_to_ground",
-		"modifier_monkey_king_right_click_jump_activity",
-		"modifier_monkey_king_tree_dance_activity",
-		"modifier_smoke_of_deceit",
-		"modifier_bottle_regeneration",
-		"modifier_clarity_potion",
-		"modifier_flask_healing",
-		"modifier_fountain_aura_buff",
-		"modifier_item_invisibility_edge_windwalk",
-		"modifier_item_shadow_amulet_fade",
-		"modifier_item_phase_boots_active",
-		"modifier_item_armlet_unholy_strength",
-		"modifier_item_soul_ring_buff"
-	]
+	private readonly ignoreData = readJSON<IModifiersIgnore>("ignore_data.json")
 
 	constructor() {
 		EventsSDK.on("GameEnded", this.GameEnded.bind(this), EventPriority.IMMEDIATE)
@@ -58,14 +47,15 @@ new (class CUnitVBEModifierChanged {
 		) {
 			return
 		}
+		if (parent.HasAnyBuffByNames(this.ignoreData.vbeModifiers)) {
+			return
+		}
 		const item = parent.TotalItems.find(x => x === ability)
-		if (item === undefined || parent.HasAnyBuffByNames(this.ignoreBuffs)) {
-			return
-		}
-		if (item.CreateTime + this.maxDuration > GameState.RawGameTime) {
-			return
-		}
-		if (item.PurchaseTime + this.maxDuration > GameState.RawGameTime) {
+		if (
+			item === undefined ||
+			this.skipItemByTime(item.CreateTime) ||
+			this.skipItemByTime(item.PurchaseTime)
+		) {
 			return
 		}
 		parent.IsVisibleForEnemiesLastTime = GameState.RawGameTime
@@ -78,5 +68,8 @@ new (class CUnitVBEModifierChanged {
 	}
 	protected GameEnded() {
 		this.eventSleeper.FullReset()
+	}
+	private skipItemByTime(time: number) {
+		return time + this.maxDuration > GameState.RawGameTime
 	}
 })()

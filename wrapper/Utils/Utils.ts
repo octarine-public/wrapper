@@ -65,13 +65,13 @@ export function ParseMapName(path: string): Nullable<string> {
 	return mapName
 }
 
-export function readJSON(path: string): any {
+export function readJSON<T>(path: string): T {
 	const buf = readFile(path, 1)
 	if (buf === undefined) {
 		throw `Failed to read JSON file at path ${path}`
 	}
 	try {
-		return JSON.parse(buf)
+		return JSON.parse(buf) as T
 	} catch {
 		throw `invalid JSON at path ${path}`
 	}
