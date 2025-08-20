@@ -2,11 +2,14 @@ import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { GridNavCellFlags } from "../Enums/GridNavCellFlags"
+import { TempTree } from "../Objects/Base/TempTree"
 import { Tree } from "../Objects/Base/Tree"
+import { Unit } from "../Objects/Base/Unit"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 
 class CGridNav {
 	public readonly Max: Vector2
+	public readonly UnitGridPos = new Map<Unit, Vector2>()
 	private readonly edgeSizeRcp: number
 
 	constructor(
@@ -41,6 +44,7 @@ class CGridNav {
 		return (
 			flags.hasBit(GridNavCellFlags.Walkable) &&
 			!flags.hasBit(GridNavCellFlags.Tree) &&
+			!flags.hasBit(GridNavCellFlags.UnitBlocking) &&
 			!flags.hasBit(GridNavCellFlags.MovementBlocker) &&
 			!flags.hasBit(GridNavCellFlags.InteractionBlocker)
 		)
@@ -64,9 +68,42 @@ class CGridNav {
 			.MultiplyScalarForThis(this.EdgeSize)
 		return new Rectangle(pos1, pos1.AddScalar(this.EdgeSize))
 	}
-	public UpdateTreeState(tree: Tree): void {
+	public UpdateUnitState(unit: Unit, deleteUnit: boolean): void {
+		if (deleteUnit || unit.HasNoCollision) {
+			this.deleteOldFlags(unit)
+			return
+		}
+		const oldGridPos = this.UnitGridPos.get(unit),
+			newGridPos = this.GetGridPosForPos(unit.Position),
+			state = unit.IsValid && unit.IsAlive && unit.IsVisible && unit.IsSpawned
+		if (oldGridPos !== undefined && !oldGridPos.Equals(newGridPos)) {
+			this.SetCellFlag(
+				oldGridPos.x,
+				oldGridPos.y,
+				GridNavCellFlags.UnitBlocking,
+				false
+			)
+		} else {
+			this.SetCellFlag(
+				newGridPos.x,
+				newGridPos.y,
+				GridNavCellFlags.UnitBlocking,
+				state
+			)
+		}
+		if (state) {
+			this.UnitGridPos.set(unit, newGridPos)
+			return
+		}
+		this.UnitGridPos.delete(unit)
+	}
+	public UpdateTreeState(tree: Tree | TempTree): void {
 		const gridPos = this.GetGridPosForPos(tree.Position)
 		const isAlive = tree.IsValid && tree.IsAlive
+		if (tree.IsTempTree) {
+			this.SetCellFlag(gridPos.x, gridPos.y, GridNavCellFlags.Tree, isAlive)
+			return
+		}
 		// basically tree takes 128x128, on default gridnav of 64x64 it takes 2x2 cells,
 		// and tree is located in right bottom one
 		this.SetCellFlag(gridPos.x - 0, gridPos.y - 0, GridNavCellFlags.Tree, isAlive)
@@ -96,6 +133,13 @@ class CGridNav {
 	private GetCellIndexForPos(pos: Vector3 | Vector2): number {
 		const gridPos = this.GetGridPosForPos(pos)
 		return this.GetCellIndexForGridPos(gridPos.x, gridPos.y)
+	}
+	private deleteOldFlags(unit: Unit): void {
+		const oldGridPos = this.UnitGridPos.get(unit)
+		if (oldGridPos === undefined) {
+			return
+		}
+		this.SetCellFlag(oldGridPos.x, oldGridPos.y, GridNavCellFlags.UnitBlocking, false)
 	}
 }
 export let GridNav: Nullable<CGridNav>

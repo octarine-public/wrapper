@@ -142,8 +142,8 @@ EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
 })
 
 EventsSDK.on("WorldLayersVisibilityChanged", () => {
-	for (let index = Trees.length - 1; index > -1; index--) {
-		const ent = Trees[index]
+	for (let i = Trees.length - 1; i > -1; i--) {
+		const ent = Trees[i]
 		ent.NetworkedPosition.SetZ(GetPositionHeight(ent.NetworkedPosition))
 		ent.VisualPosition.SetZ(ent.NetworkedPosition.z)
 	}

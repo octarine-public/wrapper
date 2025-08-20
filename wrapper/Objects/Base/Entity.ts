@@ -136,6 +136,7 @@ export class Entity {
 	public IsAbility: boolean = false
 	public IsGameRules: boolean = false
 	public IsTree: boolean = false
+	public IsTempTree: boolean = false
 	public DeltaZ: number = 0
 	public AnimationTime: number = 0
 	public ModelScale: number = 1

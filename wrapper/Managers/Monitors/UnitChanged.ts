@@ -12,6 +12,7 @@ import { Unit, Units } from "../../Objects/Base/Unit"
 import { Wearable } from "../../Objects/Base/Wearable"
 import { npc_dota_hero_wisp } from "../../Objects/Heroes/npc_dota_hero_wisp"
 import { Miniboss } from "../../Objects/Units/Miniboss"
+import { GridNav } from "../../Resources/ParseGNV"
 import { GameState } from "../../Utils/GameState"
 import { AngleDiff } from "../../Utils/Math"
 import { EntityManager } from "../EntityManager"
@@ -55,6 +56,26 @@ new (class CPreUnitChanged {
 			this.AbilityHiddenChanged.bind(this),
 			EventPriority.IMMEDIATE
 		)
+		EventsSDK.on(
+			"EntityVisibleChanged",
+			this.EntityVisibleChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"LifeStateChanged",
+			this.LifeStateChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"EntityPositionChanged",
+			this.EntityPositionChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
+		EventsSDK.on(
+			"UnitStateChanged",
+			this.UnitStateChanged.bind(this),
+			EventPriority.IMMEDIATE
+		)
 		EventsSDK.on("EntityDestroyed", this.EntityDestroyed.bind(this))
 		EventsSDK.on("GameEvent", this.GameEvent.bind(this), EventPriority.IMMEDIATE)
 		EventsSDK.on("UnitVisibleStateChanged", this.UnitVisibleStateChanged.bind(this))
@@ -64,6 +85,18 @@ new (class CPreUnitChanged {
 			const unit = Units[i]
 			unit.IsVisibleState = Unit.IsNpcVisibleState(data.NPCVisibleState, unit.Index)
 		}
+	}
+	protected EntityVisibleChanged(entity: Entity) {
+		this.gridNavUpdateUnitState(entity, !entity.IsVisible)
+	}
+	protected LifeStateChanged(entity: Entity) {
+		this.gridNavUpdateUnitState(entity, !entity.IsAlive)
+	}
+	protected EntityPositionChanged(entity: Entity) {
+		this.gridNavUpdateUnitState(entity)
+	}
+	protected UnitStateChanged(entity: Entity) {
+		this.gridNavUpdateUnitState(entity)
 	}
 	protected PostDataUpdate(dt: number) {
 		if (dt === 0) {
@@ -221,13 +254,14 @@ new (class CPreUnitChanged {
 		}
 	}
 	protected EntityCreated(entity: Entity) {
-		switch (true) {
-			case entity instanceof Item:
-				this.itemChanged(entity)
-				break
-			case entity instanceof Ability:
-				this.spellChanged(entity)
-				break
+		if (entity instanceof Item) {
+			this.itemChanged(entity)
+		}
+		if (entity instanceof Ability) {
+			this.spellChanged(entity)
+		}
+		if (entity instanceof Unit) {
+			this.gridNavUpdateUnitState(entity)
 		}
 	}
 	protected EntityDestroyed(entity: Entity) {
@@ -245,6 +279,7 @@ new (class CPreUnitChanged {
 		}
 		if (entity instanceof Unit) {
 			this.spawnerUnitDestroyed(entity)
+			this.gridNavUpdateUnitState(entity, true)
 		}
 	}
 	protected UnitAnimation(
@@ -338,6 +373,11 @@ new (class CPreUnitChanged {
 	protected GameEvent(name: string, obj: IEntityHurt) {
 		if (name === "entity_hurt") {
 			this.handleAttackedUnits(obj)
+		}
+	}
+	private gridNavUpdateUnitState(entity: Entity, deleteUnit: boolean = false): void {
+		if (GridNav !== undefined && entity instanceof Unit) {
+			GridNav.UpdateUnitState(entity, deleteUnit)
 		}
 	}
 	private spellChanged(entity: Ability) {
