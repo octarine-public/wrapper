@@ -1,4 +1,4 @@
-import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
+import { EDOTASpecialBonusStats } from "../../Enums/EDOTASpecialBonusStats"
 import { EventPriority } from "../../Enums/EventPriority"
 import { GameSleeper } from "../../Helpers/Sleeper"
 import { Item } from "../../Objects/Base/Item"
@@ -38,16 +38,17 @@ new (class CUnitVBEModifierChanged {
 			return
 		}
 		const ability = mod.Ability
-		if (!(ability instanceof Item)) {
+		if (!(ability instanceof Item) || mod.RemainingTime !== 0) {
+			return
+		}
+		if (!ability.IsPassive && !ability.HasBonusStats(EDOTASpecialBonusStats.All)) {
 			return
 		}
 		if (
-			ability.IsNeutralActiveDrop &&
-			ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
+			ability.IsNeutralActiveDrop ||
+			ability.IsNeutralPassiveDrop ||
+			parent.HasAnyBuffByNames(this.ignoreData.vbeModifiers)
 		) {
-			return
-		}
-		if (parent.HasAnyBuffByNames(this.ignoreData.vbeModifiers)) {
 			return
 		}
 		const item = parent.TotalItems.find(x => x === ability)
