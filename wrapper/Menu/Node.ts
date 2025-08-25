@@ -111,7 +111,7 @@ export class Node extends Base {
 		}
 		if (this.FirstTime) {
 			this.FirstTime = false
-			this.foreachRecursive(e => (this.FirstTime ||= e.FirstTime && e.IsVisible))
+			this.ForeachRecursive(e => (this.FirstTime ||= e.FirstTime && e.IsVisible))
 		}
 		if (!val) {
 			this.OnMouseLeftUp(true)
@@ -164,13 +164,18 @@ export class Node extends Base {
 	public IsDefault(): boolean {
 		return !this.SaveConfig || this.entries.every(e => e.IsDefault())
 	}
-	public foreachRecursive(cb: (element: Base) => any) {
-		this.entries.forEach(e => {
-			if (e && cb(e) !== false && e instanceof Node) {
-				e.foreachRecursive(cb)
+	public ForeachRecursive(cb: (element: Base) => any) {
+		for (let i = 0, end = this.entries.length; i < end; i++) {
+			const element = this.entries[i]
+			if (!element || cb(element) === false) {
+				continue
 			}
-		})
+			if (element instanceof Node) {
+				element.ForeachRecursive(cb)
+			}
+		}
 	}
+
 	private cfgDefValue = null
 	public get ConfigValue() {
 		if (!this.SaveUnusedConfigs) {
@@ -482,10 +487,10 @@ export class Node extends Base {
 			return true
 		}
 
-		const mousePos = this.MousePosition
 		const popup = Node.ActivePopup
+		const mousePos = this.MousePosition
 
-		if (popup) {
+		if (popup !== undefined) {
 			Node.ActivePopup = undefined
 
 			const rect = new Rectangle(popup.Position, popup.Position.Add(popup.Size))
@@ -549,6 +554,22 @@ export class Node extends Base {
 		if (!this.IsOpen) {
 			return true
 		}
+		const colorpicker = ColorPicker.activeColorpicker
+		if (colorpicker !== undefined) {
+			for (let i = 0, end = this.entries.length; i < end; i++) {
+				const entry = this.entries[i]
+				if (
+					entry !== colorpicker &&
+					colorpicker.ColorPickerRect.Contains(this.MousePosition)
+				) {
+					continue
+				}
+				if (entry.IsVisible && !entry.OnMouseLeftDown()) {
+					this.activeElement = entry
+					return false
+				}
+			}
+		}
 		for (let i = 0, end = this.entries.length; i < end; i++) {
 			const entry = this.entries[i]
 			if (entry.IsVisible && !entry.OnMouseLeftDown()) {
@@ -608,7 +629,6 @@ export class Node extends Base {
 			entry instanceof Node ? entry.OnMouseWheel(up) : false
 		)
 	}
-
 	public AddToggle(
 		name: string,
 		defaultValue: boolean = false,

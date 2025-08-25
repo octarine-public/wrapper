@@ -133,10 +133,11 @@ class CMenuManager {
 			pos.Clone().AddScalarX(this.EntriesSizeX).AddScalarY(height)
 		)
 	}
-	public foreachRecursive(cb: (element: Base) => any) {
-		this.entries.forEach(node => node.foreachRecursive(cb))
+	public ForeachRecursive(cb: (element: Base) => any) {
+		for (let i = 0, end = this.entries.length; i < end; i++) {
+			this.entries[i].ForeachRecursive(cb)
+		}
 	}
-
 	public async LoadConfig() {
 		try {
 			this.ConfigValue = JSON.parse(await readConfig())
@@ -304,13 +305,12 @@ class CMenuManager {
 		}
 		return true
 	}
-
 	public OnMouseLeftDown(): boolean {
 		if (!this.IsOpen) {
 			return true
 		}
 		// close popups if clicked outside, skip click
-		if (Base.ActiveElement && Base.ActiveElement.OnPreMouseLeftDown()) {
+		if (Base.ActiveElement !== undefined && Base.ActiveElement.OnPreMouseLeftDown()) {
 			Base.ActiveElement =
 				KeyBind.changingNow =
 				Dropdown.activeDropdown =
@@ -322,7 +322,7 @@ class CMenuManager {
 		}
 
 		if (
-			Node.ActivePopup &&
+			Node.ActivePopup !== undefined &&
 			Node.ActivePopup.Target.parent instanceof Node &&
 			!Node.ActivePopup.Target.parent.OnPopupClick()
 		) {
@@ -335,7 +335,10 @@ class CMenuManager {
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const node = entries[i]
-			if (node !== undefined && node.IsVisible && !node.OnMouseLeftDown()) {
+			if (node === undefined || !node.IsVisible) {
+				continue
+			}
+			if (!node.OnMouseLeftDown()) {
 				this.activeElement = node
 				return false
 			}

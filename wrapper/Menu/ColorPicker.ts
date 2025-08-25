@@ -164,19 +164,10 @@ export class ColorPicker extends Base {
 		this.SelectedColor.SetColor(...value)
 		this.UpdateIsDefault()
 	}
-
 	public get ClassPriority(): number {
 		return 5
 	}
-
-	private get SelectedColorRect() {
-		const basePos = this.Position.Clone()
-			.AddScalarX(this.parent.EntriesSizeX)
-			.AddScalarY(this.Size.y)
-			.SubtractForThis(ColorPicker.colorOffset)
-		return new Rectangle(basePos.Subtract(ColorPicker.selectedColorSize), basePos)
-	}
-	private get ColorPickerRect(): Rectangle {
+	public get ColorPickerRect(): Rectangle {
 		const basePos = this.Position.Add(this.textOffset).AddScalarY(
 			this.nameSize.y + ColorPicker.textColorpickerGap
 		)
@@ -194,6 +185,13 @@ export class ColorPicker extends Base {
 		}
 		return colorpickerRect
 	}
+	private get SelectedColorRect() {
+		const basePos = this.Position.Clone()
+			.AddScalarX(this.parent.EntriesSizeX)
+			.AddScalarY(this.Size.y)
+			.SubtractForThis(ColorPicker.colorOffset)
+		return new Rectangle(basePos.Subtract(ColorPicker.selectedColorSize), basePos)
+	}
 
 	public Update(): boolean {
 		if (!super.Update()) {
@@ -207,7 +205,6 @@ export class ColorPicker extends Base {
 			ColorPicker.colorOffset.x
 		return true
 	}
-
 	public Render(): void {
 		this.isActive = ColorPicker.activeColorpicker === this
 		super.Render()

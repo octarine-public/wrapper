@@ -163,7 +163,7 @@ export class InternalConfig {
 				[...Menu.MenuManager.entries]
 			)
 		}
-		Menu.MenuManager.foreachRecursive(el => {
+		Menu.MenuManager.ForeachRecursive(el => {
 			if (
 				!el.IsNode &&
 				el.SaveConfig &&
