@@ -2979,6 +2979,7 @@ export { modifier_special_bonus_mana_reduction } from "./Objects/Modifiers/Base/
 export { modifier_special_bonus_movement_speed } from "./Objects/Modifiers/Base/modifier_special_bonus_movement_speed"
 export { modifier_special_bonus_night_vision } from "./Objects/Modifiers/Base/modifier_special_bonus_night_vision"
 export { modifier_special_bonus_spell_amplify } from "./Objects/Modifiers/Base/modifier_special_bonus_spell_amplify"
+export { modifier_special_bonus_spell_aoe } from "./Objects/Modifiers/Base/modifier_special_bonus_spell_aoe"
 export { modifier_special_bonus_status_resistance } from "./Objects/Modifiers/Base/modifier_special_bonus_status_resistance"
 export { modifier_stunned } from "./Objects/Modifiers/Base/modifier_stunned"
 export { modifier_teleporting } from "./Objects/Modifiers/Base/modifier_teleporting"
