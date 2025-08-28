@@ -174,8 +174,13 @@ export class AbilityData {
 		this.cacheSpecialValuesOld(kv)
 
 		this.AbilityType = kv.has("AbilityType")
-			? (ABILITY_TYPES as any)[(kv.get("AbilityType") as string).substring(5)]
+			? parseEnumString(
+					ABILITY_TYPES,
+					kv.get("AbilityType") as string,
+					ABILITY_TYPES.ABILITY_TYPE_BASIC
+				)
 			: ABILITY_TYPES.ABILITY_TYPE_BASIC
+
 		if (kv.has("MaxLevel")) {
 			this.MaxLevel = parseInt(kv.get("MaxLevel") as string)
 		} else if (kv.has("MaxUpgradeLevel")) {
