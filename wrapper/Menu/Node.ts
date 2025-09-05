@@ -554,14 +554,14 @@ export class Node extends Base {
 		if (!this.IsOpen) {
 			return true
 		}
-		const colorpicker = ColorPicker.activeColorpicker
-		if (colorpicker !== undefined) {
+		const pick = ColorPicker.activeColorpicker ?? Dropdown.activeDropdown
+
+		if (pick !== undefined) {
+			const rect =
+				pick instanceof ColorPicker ? pick.ColorPickerRect : pick.DropdownRect
 			for (let i = 0, end = this.entries.length; i < end; i++) {
 				const entry = this.entries[i]
-				if (
-					entry !== colorpicker &&
-					colorpicker.ColorPickerRect.Contains(this.MousePosition)
-				) {
+				if (entry !== pick && rect.Contains(this.MousePosition)) {
 					continue
 				}
 				if (entry.IsVisible && !entry.OnMouseLeftDown()) {
