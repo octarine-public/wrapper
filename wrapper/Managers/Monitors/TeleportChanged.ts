@@ -256,7 +256,8 @@ new (class CTeleportChanged {
 		}
 		const [building, isFontain] = this.getBuilding(endPosition),
 			travel = caster.GetItemByClass(item_travel_boots),
-			travel2 = caster.GetItemByClass(item_travel_boots_2)
+			travel2 = caster.GetItemByClass(item_travel_boots_2),
+			hasKeen = caster.GetAbilityByClass(tinker_keen_teleport) !== undefined
 
 		const hasTravel = travel !== undefined,
 			hasTravel2 = travel2 !== undefined,
@@ -286,6 +287,7 @@ new (class CTeleportChanged {
 			maxDuration = hasTravel2 ? maxDuration - 1 : maxDuration
 		}
 		this.teleportPoints.push(portalClass)
+		unitClass.ForceEmit = [!hasKeen, GameState.TickInterval * 1000]
 		unitClass.UpdateData(entity?.Index, start, endPosition)
 		unitClass.UpdateDuration(this.teleportPoints, hasIteration, maxDuration)
 		this.teleports.push([caster, unitClass])
@@ -295,6 +297,7 @@ new (class CTeleportChanged {
 		released: boolean,
 		destroyed: boolean
 	) {
+		// TODO: interact with NetworkedParticle Ability
 		const caster = particle.AttachedTo ?? particle.ModifiersAttachedTo
 		if (caster === undefined || !(caster instanceof Unit)) {
 			return
@@ -353,6 +356,7 @@ new (class CTeleportChanged {
 		)
 		const tpNewClass = new UnitPortalData(caster.Index)
 		tpModel.InternalSkipIteration = true
+		// TODO: interact with NetworkedParticle Ability
 		tpNewClass.AbilityName = "furion_teleportation"
 		this.teleports.push([caster, tpNewClass])
 		this.teleportPoints.push(tpModel)
@@ -362,6 +366,7 @@ new (class CTeleportChanged {
 		if (!(entity instanceof Unit)) {
 			return
 		}
+		// TODO: interact with NetworkedParticle Ability
 		if (
 			particle.PathNoEcon ===
 			"particles/units/heroes/heroes_underlord/abbysal_underlord_portal_owner.vpcf"
@@ -385,7 +390,9 @@ new (class CTeleportChanged {
 			const unitClass = new UnitPortalData(caster.Index)
 			unitClass.StartPosition.CopyFrom(caster.TPStartPosition)
 			unitClass.EndPosition.CopyFrom(end)
+			// TODO: interact with NetworkedParticle Ability
 			unitClass.MaxDuration = 4
+			// TODO: interact with NetworkedParticle Ability
 			unitClass.AbilityName = "twin_gate_portal_warp"
 			EventsSDK.emit("UnitPortalChanged", false, unitClass)
 			this.teleports.push([caster, unitClass])
@@ -420,7 +427,6 @@ new (class CTeleportChanged {
 		}
 		data[1].MaxDuration = maxDuration
 		data[1].AbilityName = keen?.Name ?? data[1].AbilityName
-		EventsSDK.emit("UnitPortalChanged", false, data[1])
 	}
 	private tpTwinGateAnimationChanged(
 		unit: Unit | FakeUnit,
