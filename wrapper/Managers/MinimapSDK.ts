@@ -97,14 +97,14 @@ class MinimapIconRenderer {
 		this.icon.Draw(minimapIconPos, minimapIconSize, color)
 	}
 	private drawPing(minimapIconPos: Vector2, minimapIconSize: Vector2, color: Color) {
-		if (this.progressSize === this.size) {
+		const elapsed = GameState.RawGameTime - this.startTime,
+			progress = Math.min(elapsed / 10, 1)
+		if (this.progressSize === this.size || progress === 1) {
 			this.icon.Draw(minimapIconPos, minimapIconSize, color)
 			this.drawWaves()
 			return
 		}
-		const elapsed = GameState.RawGameTime - this.startTime,
-			progress = Math.min(elapsed / 10, 1),
-			newColor = this.color.Clone()
+		const newColor = this.color.Clone()
 		RendererSDK.OutlinedCircle(
 			minimapIconPos,
 			minimapIconSize,
