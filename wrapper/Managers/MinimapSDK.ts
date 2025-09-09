@@ -42,6 +42,8 @@ class MinimapIconRenderer {
 	public static GetSizeMultiplier(size: number): number {
 		return size / 600
 	}
+	private startTime = 0
+	private progressSize = 0
 	constructor(
 		private readonly icon: MinimapIcon,
 		public readonly worldPos: Vector3,
@@ -53,7 +55,10 @@ class MinimapIconRenderer {
 		public priority: number,
 		private readonly isPing: boolean,
 		private readonly isHeroIcon: boolean
-	) {}
+	) {
+		this.startTime = GameState.RawGameTime
+		this.progressSize = this.isPing ? size * 4 : size
+	}
 	public Draw(): void {
 		const additionalAlpha =
 			this.isPing && this.endTime >= GameState.RawGameTime
@@ -62,7 +67,7 @@ class MinimapIconRenderer {
 		const size =
 			this.animationCycle !== 0
 				? this.minSizeAnimated +
-					((this.size - this.minSizeAnimated) *
+					((this.progressSize - this.minSizeAnimated) *
 						(Math.sin(
 							(Math.PI * 2 * (hrtime() % this.animationCycle)) /
 								this.animationCycle
@@ -76,9 +81,8 @@ class MinimapIconRenderer {
 		if (this.isHeroIcon) {
 			minimapIconSize.MultiplyScalarForThis(heroIconScale)
 		}
-		const screenSize = RendererSDK.WindowSize
-		minimapIconSize.x = ScaleWidth(minimapIconSize.x, screenSize)
-		minimapIconSize.y = ScaleHeight(minimapIconSize.y, screenSize)
+		minimapIconSize.x = ScaleWidth(minimapIconSize.x)
+		minimapIconSize.y = ScaleHeight(minimapIconSize.y)
 		const minimapIconPos = MinimapSDK.WorldToMinimap(this.worldPos).SubtractForThis(
 			minimapIconSize.DivideScalar(2).RoundForThis()
 		)
@@ -86,7 +90,53 @@ class MinimapIconRenderer {
 		if (additionalAlpha !== 1) {
 			color.a *= additionalAlpha
 		}
+		if (this.isPing) {
+			this.drawPing(minimapIconPos, minimapIconSize, color)
+			return
+		}
 		this.icon.Draw(minimapIconPos, minimapIconSize, color)
+	}
+	private drawPing(minimapIconPos: Vector2, minimapIconSize: Vector2, color: Color) {
+		if (this.progressSize === this.size) {
+			this.icon.Draw(minimapIconPos, minimapIconSize, color)
+			this.drawWaves()
+			return
+		}
+		const elapsed = GameState.RawGameTime - this.startTime,
+			progress = Math.min(elapsed / 10, 1),
+			newColor = this.color.Clone()
+		RendererSDK.OutlinedCircle(
+			minimapIconPos,
+			minimapIconSize,
+			newColor.SetA(color.a * (1 - progress)),
+			this.getWidth(progress)
+		)
+		this.progressSize = Math.max(this.progressSize * (1 - progress), this.size)
+	}
+	private drawWaves(): void {
+		const baseWaveSize = 20,
+			elapsed = GameState.RawGameTime - this.startTime,
+			progress = Math.min(elapsed / 2, 1)
+		if (progress === 1) {
+			return
+		}
+		const minimapIconSize = this.icon.size.MultiplyScalar(
+			MinimapIconRenderer.GetSizeMultiplier(this.size)
+		)
+		minimapIconSize.x = ScaleWidth(minimapIconSize.x)
+		minimapIconSize.y = ScaleHeight(minimapIconSize.y)
+		const waveSize = new Vector2(baseWaveSize, baseWaveSize).MultiplyScalar(
+			1 + progress * 2
+		)
+		const width = this.getWidth(progress) * 1.25,
+			waveColor = this.color.Clone(),
+			center = MinimapSDK.WorldToMinimap(this.worldPos),
+			wavePos = center.Subtract(waveSize.DivideScalar(2))
+		waveColor.a *= (1 - progress) * 0.3
+		RendererSDK.OutlinedCircle(wavePos, waveSize, waveColor, width)
+	}
+	private getWidth(progress: number) {
+		return 5 * (1 - progress)
 	}
 }
 const minimapIconsActive = new Map<any, MinimapIconRenderer>()
@@ -302,7 +352,19 @@ export const MinimapSDK = new (class CMinimapSDK {
 		endTime = 0,
 		uid: any = Math.random()
 	) {
-		this.DrawIcon("ping", worldPos, 250, color, endTime, uid, 25, 800, Infinity)
+		const size = 88,
+			minSize = size / 1.25
+		this.DrawIcon(
+			"ping",
+			worldPos,
+			size,
+			color,
+			endTime,
+			uid,
+			minSize,
+			1000,
+			Infinity
+		)
 	}
 	public DeletePing(uid: any): void {
 		this.DeleteIcon(uid)
