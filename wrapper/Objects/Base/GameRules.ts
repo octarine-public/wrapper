@@ -6,6 +6,8 @@ import { DOTACustomHeroPickRulesPhase } from "../../Enums/DOTACustomHeroPickRule
 import { DOTAGameMode } from "../../Enums/DOTAGameMode"
 import { DOTAGameState } from "../../Enums/DOTAGameState"
 import { DOTAHeroPickState } from "../../Enums/DOTAHeroPickState"
+import { ETormentorLocation } from "../../Enums/ETormentorLocation"
+import { ETormentorSpawnPhase } from "../../Enums/ETormentorSpawnPhase"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { Team } from "../../Enums/Team"
 import { EventsSDK } from "../../Managers/EventsSDK"
@@ -79,6 +81,14 @@ export class CGameRules extends Entity {
 	public readonly AllDraftRadiantFirst: boolean = false
 	@NetworkedBasicField("m_vecPlayerDraftPickOrder")
 	public readonly PlayerDraftPickOrder: number[] = []
+	@NetworkedBasicField("m_eTormentorLocation", EPropertyType.UINT32)
+	public readonly TormentorLocation: ETormentorLocation = 0
+	@NetworkedBasicField("m_eTormentorSpawnPhase", EPropertyType.UINT32)
+	public readonly TormentorSpawnPhase: ETormentorSpawnPhase = 0
+	@NetworkedBasicField("m_flTormentorPhaseStartTime")
+	public readonly TormentorPhaseStartTime: number = 0
+	@NetworkedBasicField("m_flTormentorPhaseEndTime")
+	public readonly TormentorPhaseEndTime: number = 0
 
 	public GameState = DOTAGameState.DOTA_GAMERULES_STATE_INIT
 	public HeroPickState = DOTAHeroPickState.DOTA_HEROPICK_STATE_NONE
