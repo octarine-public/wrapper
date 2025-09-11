@@ -133,7 +133,7 @@ export const Icons = {
 	icon_svg_tree_alt: `${WrapperImagePath}/icons/tree-alt.svg`,
 	icon_svg_teddy_bear: `${WrapperImagePath}/icons/teddy_bear.svg`,
 	icon_analytics: `${ImagePath}/plus/achievements/view_post_game_analytics_icon_png.vtex_c`,
-	icon_notification: `${WrapperMenuPath}/menu/icons/notification.svg`
+	icon_notification: `${WrapperMenuPath}/icons/notification.svg`
 }
 
 export function GetItemTexture(name: string): string {
