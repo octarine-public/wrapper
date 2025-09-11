@@ -1,6 +1,7 @@
 import { Runes } from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { RuneSpawnerType } from "../../Enums/RuneSpawnerType"
+import { EventsSDK } from "../../Managers/EventsSDK"
 import { GameState } from "../../Utils/GameState"
 import { RegisterFieldHandler } from "../NativeToSDK"
 import { RuneSpawner } from "./RuneSpawner"
@@ -25,6 +26,7 @@ export class RuneSpawnerPowerup extends RuneSpawner {
 function UpdateGameData(ent: RuneSpawnerPowerup) {
 	Runes.PowerUpSpawnEveryMinutes = ent.MaxDuration()
 	Runes.PowerUpSpawnEverySeconds = ent.MaxDuration("seconds")
+	ent.UpdatePositionByEntityCreated()
 }
 RegisterFieldHandler(RuneSpawnerPowerup, "m_flLastSpawnTime", (ent, newVal) => {
 	const oldValue = ent.LastSpawnTime,
@@ -39,6 +41,11 @@ RegisterFieldHandler(RuneSpawnerPowerup, "m_flNextSpawnTime", (ent, newVal) => {
 		newValue = (newVal as number) + GameState.TickInterval
 	if (oldValue !== newValue) {
 		ent.NextSpawnTime = newValue
+		UpdateGameData(ent)
+	}
+})
+EventsSDK.on("PreEntityCreated", ent => {
+	if (ent instanceof RuneSpawnerPowerup) {
 		UpdateGameData(ent)
 	}
 })

@@ -1,15 +1,26 @@
+import { Matrix3x4 } from "../../Base/Matrix3x4"
+import { Vector3 } from "../../Base/Vector3"
 import { DOTAGameState } from "../../Enums/DOTAGameState"
+import { ERuneSpawnerLocation } from "../../Enums/ERuneSpawnerLocation"
 import { RuneSpawnerType } from "../../Enums/RuneSpawnerType"
 import { GameState } from "../../Utils/GameState"
 import { Entity, GameRules } from "./Entity"
 
 export class RuneSpawner extends Entity {
+	public static readonly Locations: [Vector3, ERuneSpawnerLocation][] = [
+		[new Vector3(-996, -4431, 176), ERuneSpawnerLocation.TOP], // bounty
+		[new Vector3(-1640, 1112, 48), ERuneSpawnerLocation.TOP], // powerup
+		[new Vector3(1180, -1216, 64), ERuneSpawnerLocation.BOT], // powerup
+		[new Vector3(595, -4660, 176), ERuneSpawnerLocation.BOT] // bounty
+	]
 	/** @readonly */
 	public LastSpawnTime: number = -1 // game time (seconds)
 	/** @readonly */
 	public NextSpawnTime: number = -1 // game time (seconds)
 	/** @readonly */
 	public readonly Type: RuneSpawnerType = RuneSpawnerType.Invalid
+	/** @readonly */
+	public Location: ERuneSpawnerLocation = ERuneSpawnerLocation.Invalid
 
 	public get ModuleTime(): number {
 		return this.GameTime % this.MaxDuration("seconds")
@@ -49,5 +60,19 @@ export class RuneSpawner extends Entity {
 		}
 		const gameTime = GameRules.GameTime
 		return gameTime >= 0 ? gameTime + spawnTimeSec : rawGameTime
+	}
+	public UpdatePositions(parentTransform?: Matrix3x4) {
+		super.UpdatePositions(parentTransform)
+		this.UpdatePositionByEntityCreated()
+	}
+	public UpdatePositionByEntityCreated() {
+		const location = RuneSpawner.Locations.find(
+			([pos]) =>
+				pos.Equals(this.NetworkedPosition) ||
+				pos.Distance2D(this.NetworkedPosition) < 10
+		)
+		if (location !== undefined) {
+			this.Location = location[1]
+		}
 	}
 }
