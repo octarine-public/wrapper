@@ -8,7 +8,8 @@ import {
 	ImagePath,
 	ItemImagePath,
 	RunePath,
-	WrapperImagePath
+	WrapperImagePath,
+	WrapperMenuPath
 } from "./PathData"
 
 const getTexturePath = (name: string, isItem = false): string => {
@@ -131,7 +132,8 @@ export const Icons = {
 	icon_svg_time_fast: `${WrapperImagePath}/icons/time-fast.svg`,
 	icon_svg_tree_alt: `${WrapperImagePath}/icons/tree-alt.svg`,
 	icon_svg_teddy_bear: `${WrapperImagePath}/icons/teddy_bear.svg`,
-	icon_analytics: `${ImagePath}/plus/achievements/view_post_game_analytics_icon_png.vtex_c`
+	icon_analytics: `${ImagePath}/plus/achievements/view_post_game_analytics_icon_png.vtex_c`,
+	icon_notification: `${WrapperMenuPath}/menu/icons/notification.svg`
 }
 
 export function GetItemTexture(name: string): string {
