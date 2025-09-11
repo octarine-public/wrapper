@@ -9,7 +9,7 @@ export class RuneSpawner extends Entity {
 	/** @readonly */
 	public NextSpawnTime: number = -1 // game time (seconds)
 	/** @readonly */
-	public readonly Type = RuneSpawnerType.Invalid
+	public readonly Type: RuneSpawnerType = RuneSpawnerType.Invalid
 
 	public get ModuleTime(): number {
 		return this.GameTime % this.MaxDuration("seconds")
