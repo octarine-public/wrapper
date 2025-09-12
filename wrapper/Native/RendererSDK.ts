@@ -141,6 +141,9 @@ class CRendererSDK {
 	 * @returns screen position, or undefined
 	 */
 	public WorldToScreen(position: Vector2 | Vector3, cull = true): Nullable<Vector2> {
+		if (!position.IsValid) {
+			return undefined
+		}
 		if (position instanceof Vector2) {
 			position = Vector3.FromVector2(position).SetZ(
 				WASM.GetPositionHeight(position)
@@ -332,6 +335,23 @@ class CRendererSDK {
 		this.PathMoveTo(0, 0)
 		this.PathLineTo(end.x - start.x, end.y - start.y)
 		this.Path(width, fillColor, strokeColor, PathFlags.STROKE_AND_FILL, grayscale)
+	}
+	public LineArrow(
+		start: Vector2,
+		end: Vector2,
+		color = Color.White,
+		width = 5,
+		arrowLength = 10,
+		arrowAngleDeg = 30
+	) {
+		this.Line(start, end, color, width)
+		const dir = end.Subtract(start).Normalize()
+		const angle = Math.degreesToRadian(arrowAngleDeg)
+		for (let i = 0; i < 2; i++) {
+			const sign = i === 0 ? 1 : -1
+			const sideDir = dir.Rotated(sign * angle).MultiplyScalar(arrowLength)
+			this.Line(end, end.Subtract(sideDir), color, width)
+		}
 	}
 	/**
 	 * @param vecSize default Width 5 x Height 5

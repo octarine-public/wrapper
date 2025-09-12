@@ -108,32 +108,44 @@ class MinimapIconRenderer {
 		RendererSDK.OutlinedCircle(
 			minimapIconPos,
 			minimapIconSize,
-			newColor.SetA(color.a * (1 - progress)),
+			newColor.SetA(Math.clamp(color.a * (1 - progress), 30, 180)),
 			this.getWidth(progress)
 		)
 		this.progressSize = Math.max(this.progressSize * (1 - progress), this.size)
 	}
 	private drawWaves(): void {
-		const baseWaveSize = 20,
-			elapsed = GameState.RawGameTime - this.startTime,
-			progress = Math.min(elapsed / 2, 1)
-		if (progress === 1) {
-			return
-		}
+		const baseWaveSize = 20
+		const elapsed = GameState.RawGameTime - this.startTime
+
 		const minimapIconSize = this.icon.size.MultiplyScalar(
 			MinimapIconRenderer.GetSizeMultiplier(this.size)
 		)
 		minimapIconSize.x = ScaleWidth(minimapIconSize.x)
 		minimapIconSize.y = ScaleHeight(minimapIconSize.y)
-		const waveSize = new Vector2(baseWaveSize, baseWaveSize).MultiplyScalar(
-			1 + progress * 2
-		)
-		const width = this.getWidth(progress) * 1.25,
-			waveColor = this.color.Clone(),
-			center = MinimapSDK.WorldToMinimap(this.worldPos),
-			wavePos = center.Subtract(waveSize.DivideScalar(2))
-		waveColor.a *= (1 - progress) * 0.3
-		RendererSDK.OutlinedCircle(wavePos, waveSize, waveColor, width)
+
+		const center = MinimapSDK.WorldToMinimap(this.worldPos)
+
+		const waveCount = 2
+		const waveDelay = 0.5 // delay between waves (in sec)
+
+		for (let i = 0; i < waveCount; i++) {
+			const waveElapsed = elapsed - i * waveDelay
+			if (waveElapsed < 0) {
+				continue
+			}
+			const progress = Math.min(waveElapsed / 2, 1)
+			if (progress === 1) {
+				continue
+			}
+			const waveSize = new Vector2(baseWaveSize, baseWaveSize).MultiplyScalar(
+				1 + progress * 2
+			)
+			const width = this.getWidth(progress) * 1.25
+			const waveColor = this.color.Clone()
+			waveColor.a *= (1 - progress) * 0.3
+			const wavePos = center.Subtract(waveSize.DivideScalar(2))
+			RendererSDK.OutlinedCircle(wavePos, waveSize, waveColor, width)
+		}
 	}
 	private getWidth(progress: number) {
 		return 5 * (1 - progress)
@@ -329,7 +341,7 @@ export const MinimapSDK = new (class CMinimapSDK {
 					minSizeAnimated,
 					animationCycle,
 					priority,
-					name === "ping",
+					name === "ping" || name === "ping_bg",
 					name.startsWith("heroicon_")
 				)
 			)
@@ -338,7 +350,6 @@ export const MinimapSDK = new (class CMinimapSDK {
 	public DeleteIcon(uid: any): void {
 		minimapIconsActive.delete(uid)
 	}
-
 	/**
 	 * Draws ping at minimap
 	 *
@@ -366,10 +377,21 @@ export const MinimapSDK = new (class CMinimapSDK {
 			Infinity
 		)
 	}
+	public DrawLineArrow(
+		start: Vector3,
+		end: Vector3,
+		color = Color.White,
+		width: number = 3,
+		arrowLength: number = 10,
+		rotationDeg: number = 30
+	): void {
+		const start2D = this.WorldToMinimap(start),
+			end2D = this.WorldToMinimap(end)
+		RendererSDK.LineArrow(start2D, end2D, color, width, arrowLength, rotationDeg)
+	}
 	public DeletePing(uid: any): void {
 		this.DeleteIcon(uid)
 	}
-
 	public SendPing(
 		location: Vector2,
 		type = PingType.NORMAL,
