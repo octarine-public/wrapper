@@ -516,7 +516,7 @@ class CRendererSDK {
 			this.SetScissor(customScissor)
 		}
 
-		this.Translate(vecPos)
+		this.TranslateNoRound(vecPos)
 		this.Rotate(rotationDeg)
 
 		let flags = PathFlags.IMAGESHADER | PathFlags.FILL | PathFlags.FILL_AA_ON
@@ -1234,6 +1234,14 @@ class CRendererSDK {
 		this.commandStream.WriteFloat32(Math.degreesToRadian(ang))
 	}
 	private Translate(vecPos: Vector2): void {
+		if (vecPos.IsZero()) {
+			return
+		}
+		this.AllocateCommandSpace(CommandID.TRANSLATE, 2 * 4)
+		this.commandStream.WriteFloat32(Math.round(vecPos.x))
+		this.commandStream.WriteFloat32(Math.round(vecPos.y))
+	}
+	private TranslateNoRound(vecPos: Vector2): void {
 		if (vecPos.IsZero()) {
 			return
 		}
