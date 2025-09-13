@@ -5,7 +5,7 @@ import { Vector3 } from "../Base/Vector3"
 import { DOTAGameUIState } from "../Enums/DOTAGameUIState"
 import { PingType } from "../Enums/PingType"
 import { GUIInfo } from "../GUI/GUIInfo"
-import { ScaleHeight, ScaleWidth } from "../GUI/Helpers"
+import { GetHeightScale } from "../GUI/Helpers"
 import { ConVarsSDK } from "../Native/ConVarsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import { GetPositionHeight } from "../Native/WASM"
@@ -40,7 +40,7 @@ class MinimapIcon {
 let heroIconScale = 1
 class MinimapIconRenderer {
 	public static GetSizeMultiplier(size: number): number {
-		return size / 600
+		return (size / 600) * GetHeightScale()
 	}
 	private startTime = 0
 	private progressSize = 0
@@ -81,10 +81,8 @@ class MinimapIconRenderer {
 		if (this.isHeroIcon) {
 			minimapIconSize.MultiplyScalarForThis(heroIconScale)
 		}
-		minimapIconSize.x = ScaleWidth(minimapIconSize.x)
-		minimapIconSize.y = ScaleHeight(minimapIconSize.y)
 		const minimapIconPos = MinimapSDK.WorldToMinimap(this.worldPos).SubtractForThis(
-			minimapIconSize.DivideScalar(2).RoundForThis()
+			minimapIconSize.DivideScalar(2)
 		)
 		const color = additionalAlpha !== 1 ? this.color.Clone() : this.color
 		if (additionalAlpha !== 1) {
@@ -116,13 +114,6 @@ class MinimapIconRenderer {
 	private drawWaves(): void {
 		const baseWaveSize = 20
 		const elapsed = GameState.RawGameTime - this.startTime
-
-		const minimapIconSize = this.icon.size.MultiplyScalar(
-			MinimapIconRenderer.GetSizeMultiplier(this.size)
-		)
-		minimapIconSize.x = ScaleWidth(minimapIconSize.x)
-		minimapIconSize.y = ScaleHeight(minimapIconSize.y)
-
 		const center = MinimapSDK.WorldToMinimap(this.worldPos)
 
 		const waveCount = 2
