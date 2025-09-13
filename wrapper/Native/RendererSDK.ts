@@ -117,6 +117,16 @@ class CRendererSDK {
 		const cv = ConVarsSDK.GetFloat("dota_camera_distance", -1)
 		return cv !== -1 ? cv : 1200
 	}
+	public IsInScreenArea(pos: Vector2, scale: number = 1): boolean {
+		const size = RendererSDK.WindowSize
+		const areaWidth = size.x * scale
+		const areaHeight = size.y * scale
+		const minX = (size.x - areaWidth) / 2
+		const maxX = minX + areaWidth
+		const minY = (size.y - areaHeight) / 2
+		const maxY = minY + areaHeight
+		return pos.x >= minX && pos.x <= maxX && pos.y >= minY && pos.y <= maxY
+	}
 	public GetWidthScale(screenSize = this.WindowSize): number {
 		let screenHeight = screenSize.y
 		if (screenSize.x === 1280 && screenHeight === 1024) {
@@ -345,13 +355,36 @@ class CRendererSDK {
 		arrowAngleDeg = 30
 	) {
 		this.Line(start, end, color, width)
-		const dir = end.Subtract(start).Normalize()
+		const dir = start.GetDirectionTo(end)
 		const angle = Math.degreesToRadian(arrowAngleDeg)
 		for (let i = 0; i < 2; i++) {
 			const sign = i === 0 ? 1 : -1
 			const sideDir = dir.Rotated(sign * angle).MultiplyScalar(arrowLength)
 			this.Line(end, end.Subtract(sideDir), color, width)
 		}
+	}
+	public TriangleFilled(
+		p1: Vector2,
+		p2: Vector2,
+		p3: Vector2,
+		fillColor = Color.White,
+		strokeColor = fillColor,
+		grayscale = false
+	) {
+		this.PathMoveTo(p1.x, p1.y)
+		this.PathLineTo(p2.x, p2.y)
+		this.PathLineTo(p3.x, p3.y)
+		this.PathLineTo(p1.x, p1.y)
+
+		this.Path(
+			1,
+			fillColor,
+			strokeColor,
+			PathFlags.FILL | PathFlags.FILL_AA_ON,
+			grayscale,
+			LineCap.Square,
+			LineJoin.Miter
+		)
 	}
 	/**
 	 * @param vecSize default Width 5 x Height 5
