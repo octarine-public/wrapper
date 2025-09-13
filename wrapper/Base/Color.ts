@@ -36,6 +36,9 @@ export class Color {
 	public static get RoyalBlue() {
 		return new Color(78, 121, 248)
 	}
+	public static get LightBlue() {
+		return new Color(91, 199, 255)
+	}
 	public static get Yellow() {
 		return new Color(255, 255)
 	}

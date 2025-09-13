@@ -5,6 +5,7 @@ import { RendererSDK } from "../Native/RendererSDK"
 import { ScaleHeight, ScaleWidth } from "./Helpers"
 
 export class CLowerHUD {
+	public readonly FullHUDContainer = new Rectangle()
 	public readonly LeftFlare = new Rectangle()
 	public readonly Portrait = new Rectangle()
 	public readonly XP = new Rectangle()
@@ -216,9 +217,62 @@ export class CLowerHUD {
 			screenSize.y - ScaleHeight(8, screenSize) - this.HealthManaContainer.Height
 
 		this.CenterEverything(screenSize, maxX, hudFlip)
+
+		const leftMost = Math.min(
+			this.LeftFlare.x,
+			this.Portrait.x,
+			this.XP.x,
+			this.AbilitiesContainer.x,
+			this.TalentTree.x,
+			this.RootInnateDisplay.x,
+			this.AghsStatusContainer.x,
+			this.InventoryContainer.x,
+			this.NeutralAndTPContainer.x,
+			this.RightFlare.x,
+			this.HealthManaContainer.x
+		)
+
+		const rightMost = Math.max(
+			this.LeftFlare.pos2.x,
+			this.Portrait.pos2.x,
+			this.XP.pos2.x,
+			this.AbilitiesContainer.pos2.x,
+			this.TalentTree.pos2.x,
+			this.RootInnateDisplay.pos2.x,
+			this.AghsStatusContainer.pos2.x,
+			this.InventoryContainer.pos2.x,
+			this.NeutralAndTPContainer.pos2.x,
+			this.RightFlare.pos2.x,
+			this.HealthManaContainer.pos2.x
+		)
+
+		this.FullHUDContainer.x = leftMost
+		this.FullHUDContainer.Width = rightMost - leftMost
+
+		const topY = Math.min(
+			this.LeftFlare.y,
+			this.Portrait.y,
+			this.XP.y,
+			this.AbilitiesContainer.y,
+			this.TalentTree.y,
+			this.RootInnateDisplay.y,
+			this.AghsStatusContainer.y,
+			this.InventoryContainer.y,
+			this.NeutralAndTPContainer.y,
+			this.RightFlare.y,
+			this.HealthManaContainer.y
+		)
+		this.FullHUDContainer.y = topY
+		this.FullHUDContainer.Height = screenSize.y - topY
 	}
 
 	public DebugDraw(): void {
+		RendererSDK.FilledRect(
+			this.FullHUDContainer.pos1,
+			this.FullHUDContainer.Size,
+			Color.LightBlue.SetA(64)
+		)
+
 		RendererSDK.FilledRect(
 			this.LeftFlare.pos1,
 			this.LeftFlare.Size,
@@ -292,10 +346,8 @@ export class CLowerHUD {
 	}
 
 	private CenterEverything(screenSize: Vector2, maxX: number, hudFlip: boolean): void {
-		let baseX = Math.floor((screenSize.x - maxX) / 2)
-		if (hudFlip) {
-			baseX++
-		}
+		const baseX = Math.floor((screenSize.x - maxX) / 2) + (hudFlip ? 1 : 0)
+
 		this.LeftFlare.x += baseX
 		this.Portrait.x += baseX
 		this.XP.x += baseX

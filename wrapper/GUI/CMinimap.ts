@@ -6,6 +6,7 @@ import { RendererSDK } from "../Native/RendererSDK"
 import { ScaleHeight, ScaleWidth } from "./Helpers"
 
 let extraLargeMinimapSetting = 0
+
 export class CMinimap {
 	private static UpdateExtraLargeMinimapSetting(): boolean {
 		const setting = ConVarsSDK.GetInt("dota_hud_extra_large_minimap", 0)
@@ -16,6 +17,7 @@ export class CMinimap {
 		return true
 	}
 
+	public readonly FullHUDContainer = new Rectangle()
 	public readonly Minimap = new Rectangle()
 	public readonly MinimapRenderBounds = new Rectangle()
 	public readonly Glyph = new Rectangle()
@@ -26,8 +28,8 @@ export class CMinimap {
 		CMinimap.UpdateExtraLargeMinimapSetting()
 		this.CalculateMinimapBlock(screenSize, hudFlipped)
 		this.CalculateGlyphScan(screenSize, hudFlipped)
+		this.CalculateFullHUDContainer()
 	}
-
 	private get MinimapBlockSize(): number {
 		switch (extraLargeMinimapSetting) {
 			case 0: // Large (default)
@@ -48,8 +50,12 @@ export class CMinimap {
 				return 444
 		}
 	}
-
 	public DebugDraw(): void {
+		RendererSDK.FilledRect(
+			this.FullHUDContainer.pos1,
+			this.FullHUDContainer.Size,
+			Color.LightBlue.SetA(64)
+		)
 		RendererSDK.FilledRect(
 			this.Minimap.pos1,
 			this.Minimap.Size,
@@ -125,5 +131,27 @@ export class CMinimap {
 			this.Roshan.x =
 				GlyphScan.x + GlyphScan.Width - roshanOffsetX - this.Roshan.Width
 		}
+	}
+	private CalculateFullHUDContainer(): void {
+		const leftMost = Math.min(
+			this.Minimap.x,
+			this.MinimapRenderBounds.x,
+			this.Glyph.x,
+			this.Scan.x,
+			this.Roshan.x
+		)
+		const rightMost = Math.max(
+			this.Minimap.pos2.x,
+			this.MinimapRenderBounds.pos2.x,
+			this.Glyph.pos2.x,
+			this.Scan.pos2.x,
+			this.Roshan.pos2.x
+		)
+		const topY = this.Minimap.y
+		const bottomY = this.Minimap.pos2.y
+		this.FullHUDContainer.x = leftMost
+		this.FullHUDContainer.y = topY
+		this.FullHUDContainer.Width = rightMost - leftMost
+		this.FullHUDContainer.Height = bottomY - topY
 	}
 }

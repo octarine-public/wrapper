@@ -198,30 +198,10 @@ export const GUIInfo = new (class CGUIInfo {
 		if (lowerHUD === undefined) {
 			return false
 		}
-		return this.hasPosition(
-			panelPosition,
-			lowerHUD.XP,
-			lowerHUD.TPSlot,
-			lowerHUD.Portrait,
-			lowerHUD.LeftFlare,
-			lowerHUD.TalentTree,
-			lowerHUD.RightFlare,
-			lowerHUD.NeutralSlot,
-			lowerHUD.AbilitiesContainer,
-			lowerHUD.InventoryContainer,
-			lowerHUD.HealthManaContainer,
-			lowerHUD.NeutralAndTPContainer,
-			...lowerHUD.AbilitiesRects
-		)
+		return this.hasPosition(panelPosition, lowerHUD.FullHUDContainer)
 	}
 	public ContainsMiniMap(position: Vector2) {
-		return this.hasPosition(
-			position,
-			this.Minimap.Minimap,
-			this.Minimap.MinimapRenderBounds,
-			this.Minimap.Glyph,
-			this.Minimap.Scan
-		)
+		return this.hasPosition(position, this.Minimap.FullHUDContainer)
 	}
 	public ContainsShop(position: Vector2) {
 		if (!InputManager.IsShopOpen) {
