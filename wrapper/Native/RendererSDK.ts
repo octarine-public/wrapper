@@ -117,15 +117,13 @@ class CRendererSDK {
 		const cv = ConVarsSDK.GetFloat("dota_camera_distance", -1)
 		return cv !== -1 ? cv : 1200
 	}
-	public IsInScreenArea(pos: Vector2, scale: number = 1): boolean {
+	public IsInScreenArea(position: Vector2, scale: number = 1): boolean {
 		const size = RendererSDK.WindowSize
-		const areaWidth = size.x * scale
-		const areaHeight = size.y * scale
-		const minX = (size.x - areaWidth) / 2
-		const maxX = minX + areaWidth
-		const minY = (size.y - areaHeight) / 2
-		const maxY = minY + areaHeight
-		return pos.x >= minX && pos.x <= maxX && pos.y >= minY && pos.y <= maxY
+		const areaWidth = size.x * scale,
+			areaHeight = size.y * scale
+		const minX = (size.x - areaWidth) / 2,
+			minY = (size.y - areaHeight) / 2
+		return position.IsUnderRectangle(minX, minY, areaWidth, areaHeight)
 	}
 	public GetWidthScale(screenSize = this.WindowSize): number {
 		let screenHeight = screenSize.y
