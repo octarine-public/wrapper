@@ -210,6 +210,8 @@ export function GetUnitTexture(unitName: string, small?: boolean, team?: Team): 
 			return Icons.roshan_halloween_angry
 		case unitName.includes("psionic_trap"):
 			return GetSpellTexture("templar_assassin_psionic_trap")
+		case small && unitName === "npc_dota_hero_arc_warden_tempest_double":
+			return WrapperImagePath + "/icons/heroes/arc_warden_tempest_double_small.png"
 		default:
 			return GetCreepTexture(unitName)
 	}
