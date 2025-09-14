@@ -18,6 +18,9 @@ const getTexturePath = (name: string, isItem = false): string => {
 	}
 	const abilityData = AbilityData.GetAbilityByName(name)
 	if (abilityData !== undefined && abilityData.TexturePath.length !== 0) {
+		if (abilityData.IsInnate) {
+			return ImagePath + "/hud/facets/innate_icon_png.vtex_c"
+		}
 		return abilityData.TexturePath
 	}
 	if (!isItem) {
@@ -158,6 +161,9 @@ export function GetHeroTexture(name: string, small?: boolean): string {
 	if (name.length === 0) {
 		return ""
 	}
+	if (small && name === "npc_dota_hero_arc_warden_tempest_double") {
+		return WrapperImagePath + `/icons/heroes/${name}.png`
+	}
 	return !small
 		? `${HeroImagePath + "/" + name}_png.vtex_c`
 		: `${HeroIconsPath + "/" + name}_png.vtex_c`
@@ -210,8 +216,6 @@ export function GetUnitTexture(unitName: string, small?: boolean, team?: Team): 
 			return Icons.roshan_halloween_angry
 		case unitName.includes("psionic_trap"):
 			return GetSpellTexture("templar_assassin_psionic_trap")
-		case small && unitName === "npc_dota_hero_arc_warden_tempest_double":
-			return WrapperImagePath + "/icons/heroes/arc_warden_tempest_double_small.png"
 		default:
 			return GetCreepTexture(unitName)
 	}
