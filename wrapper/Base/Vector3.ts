@@ -61,13 +61,11 @@ export class Vector3 {
 	public get IsValid(): boolean {
 		return this.IsFinite
 	}
-
 	public get IsFinite(): boolean {
 		return (
 			Number.isFinite(this.x) && Number.isFinite(this.y) && Number.isFinite(this.z)
 		)
 	}
-
 	/**
 	 * Get the length of the vector squared. This operation is cheaper than Length().
 	 */
@@ -802,6 +800,21 @@ export class Vector3 {
 			return 0
 		}
 		return Math.acos(this.Dot(front) / length)
+	}
+	/**
+	 * Get the angle between two vectors in radians or degrees
+	 *
+	 * @param target The target vector
+	 * @param inDegrees If true, the angle is returned in degrees. Otherwise in radians
+	 * @returns The angle between the two vectors
+	 */
+	public GetAngleTo(target: Vector3, inDegrees: boolean = true): number {
+		const diff = target.Subtract(this)
+		let angle = diff.Angle
+		if (angle < 0) {
+			angle += 2 * Math.PI
+		}
+		return inDegrees ? Math.radianToDegrees(angle) : angle
 	}
 	public GetDirectionTo(target: Vector3): Vector3 {
 		return target.Subtract(this).Normalize()

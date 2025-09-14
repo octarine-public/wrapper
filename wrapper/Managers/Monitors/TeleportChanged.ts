@@ -22,15 +22,20 @@ import { item_travel_boots } from "../../Objects/Items/item_travel_boots"
 import { item_travel_boots_2 } from "../../Objects/Items/item_travel_boots_2"
 import { GameState } from "../../Utils/GameState"
 import { EventsSDK } from "../EventsSDK"
+import { TaskManager } from "../TaskManager"
 
+type IGateData = [[Unit, boolean, string, number, number][], Vector3, Vector3]
 type TBuildings = Barrack | Filler | Fountain | Outpost | Tower | NeutralItemStash
-type TTwinGateData = [Unit, number, Vector3, Vector3, boolean]
 
 new (class CTeleportChanged {
 	private readonly buildings: TBuildings[] = []
 	private readonly teleports: [Unit, UnitPortalData][] = []
 	private readonly teleportPoints: PortalPoint[] = []
-	private readonly twinGateTeleports: TTwinGateData[] = []
+	private readonly twinGates: IGateData = [
+		[],
+		new Vector3().Invalidate(),
+		new Vector3().Invalidate()
+	]
 
 	constructor() {
 		EventsSDK.on(
@@ -75,6 +80,11 @@ new (class CTeleportChanged {
 		)
 		EventsSDK.on("EntityDestroyed", this.EntityDestroyed.bind(this))
 		EventsSDK.on("GameEnded", this.GameEnded.bind(this), EventPriority.IMMEDIATE)
+		EventsSDK.on(
+			"UnitPortalDestroyed",
+			this.UnitPortalDestroyed.bind(this),
+			EventPriority.IMMEDIATE
+		)
 	}
 	protected PostDataUpdate(delta: number) {
 		if (delta === 0) {
@@ -95,12 +105,35 @@ new (class CTeleportChanged {
 				model.EndPosition.CopyFrom(model.Target.Position)
 			}
 		}
-		for (let i = this.twinGateTeleports.length - 1; i > -1; i--) {
-			const [caster, startTime, , , isVlalid] = this.twinGateTeleports[i],
-				endTime = startTime + 4 + GameState.TickInterval
-			if (!isVlalid || GameState.RawGameTime > endTime) {
+		const rawTime = GameState.RawGameTime,
+			[heroes, start, end] = this.twinGates
+		if (!start.IsValid || !end.IsValid) {
+			return
+		}
+		if (heroes.length === 0) {
+			this.twinGates[1].Invalidate()
+			this.twinGates[2].Invalidate()
+			return
+		}
+		for (let i = heroes.length - 1; i > -1; i--) {
+			const data = heroes[i]
+			const [caster, , abilName, lastUpdate, maxChannelTime] = data
+			if (rawTime > lastUpdate) {
 				this.destroyTwinGatePortal(caster, true)
+				heroes.remove(data)
+				continue
 			}
+			if (data[1]) {
+				continue
+			}
+			const unitClass = new UnitPortalData(caster.Index)
+			unitClass.StartPosition.CopyFrom(start)
+			unitClass.EndPosition.CopyFrom(end)
+			unitClass.MaxDuration = maxChannelTime
+			unitClass.AbilityName = abilName
+			EventsSDK.emit("UnitPortalChanged", false, unitClass)
+			this.teleports.push([caster, unitClass])
+			data[1] = true
 		}
 	}
 	protected EntityVisibleChanged(entity: Entity) {
@@ -111,10 +144,6 @@ new (class CTeleportChanged {
 		if (data !== undefined) {
 			data[1].StartPosition.CopyFrom(entity.Position)
 			data[0].TPStartPosition.CopyFrom(entity.Position)
-		}
-		const twinGateData = this.twinGateTeleports.find(([x]) => x === entity)
-		if (twinGateData !== undefined && !twinGateData[0].IsChanneling) {
-			this.destroyTwinGatePortal(twinGateData[0], true)
 		}
 	}
 	protected UnitAnimation(
@@ -132,7 +161,7 @@ new (class CTeleportChanged {
 	}
 	protected ParticleUpdated(particle: NetworkedParticle) {
 		if (this.isValidTPTwinGateParticle(particle)) {
-			this.tpTwinGateChanged(particle)
+			this.tpTwinGateChanged(particle, false)
 		}
 		if (this.isValidTPParticle(particle)) {
 			this.tpScrollChanged(particle, false, false)
@@ -156,6 +185,9 @@ new (class CTeleportChanged {
 		if (this.isValidTPFurionParticle(particle)) {
 			this.tpFurionChanged(particle, false, true)
 		}
+		if (this.isValidTPTwinGateParticle(particle)) {
+			this.tpTwinGateChanged(particle, true)
+		}
 	}
 	protected EntityCreated(entity: Entity) {
 		if (this.isValidBuilding(entity)) {
@@ -174,7 +206,7 @@ new (class CTeleportChanged {
 			data[1].IsValid = false
 			EventsSDK.emit("UnitPortalDestroyed", false, data[1])
 			this.teleports.remove(data)
-			this.twinGateTeleports.removeCallback(([x, ,]) => x === entity)
+			this.twinGates[0].removeCallback(([x, ,]) => x === entity)
 		}
 	}
 	protected LifeStateChanged(entity: Entity) {
@@ -186,15 +218,30 @@ new (class CTeleportChanged {
 			data[1].IsValid = false
 			EventsSDK.emit("UnitPortalDestroyed", false, data[1])
 			this.teleports.remove(data)
-			this.twinGateTeleports.removeCallback(([x, ,]) => x === entity)
+			this.twinGates[0].removeCallback(([x, ,]) => x === entity)
 		}
 	}
+	protected UnitPortalDestroyed(model: UnitPortalData) {
+		const caster = model.Caster
+		if (caster === undefined) {
+			return
+		}
+		if (model.IsCanceled) {
+			caster.PredictedPosition.CopyFrom(model.StartPosition)
+			caster.FogVisiblePosition.CopyFrom(model.StartPosition)
+			caster.LastPredictedPositionUpdate = GameState.RawGameTime
+			return
+		}
+		caster.PredictedPosition.CopyFrom(model.EndPosition)
+		caster.FogVisiblePosition.CopyFrom(model.EndPosition)
+		caster.LastPredictedPositionUpdate = GameState.RawGameTime
+	}
 	protected GameEnded() {
+		this.twinGates[0].clear()
+		this.twinGates[1].Invalidate()
+		this.twinGates[2].Invalidate()
 		for (let i = this.teleportPoints.length - 1; i > -1; i--) {
 			this.teleportPoints[i].IsValid = false
-		}
-		for (let i = this.twinGateTeleports.length - 1; i > -1; i--) {
-			this.twinGateTeleports[i][4] = false
 		}
 	}
 	private tpScrollChanged(
@@ -234,8 +281,6 @@ new (class CTeleportChanged {
 			return
 		}
 		if (released) {
-			caster.PredictedPosition.CopyFrom(endPosition)
-			caster.LastPredictedPositionUpdate = GameState.RawGameTime
 			caster.TPEndPosition.Invalidate()
 			caster.TPStartPosition.Invalidate()
 			const deletedTP = this.teleports.find(([x]) => x === caster)
@@ -286,6 +331,7 @@ new (class CTeleportChanged {
 		} else if (hasIteration) {
 			maxDuration = hasTravel2 ? maxDuration - 1 : maxDuration
 		}
+
 		this.teleportPoints.push(portalClass)
 		unitClass.ForceEmit = [!hasKeen, GameState.TickInterval * 1000]
 		unitClass.UpdateData(entity?.Index, start, endPosition)
@@ -361,42 +407,39 @@ new (class CTeleportChanged {
 		this.teleports.push([caster, tpNewClass])
 		this.teleportPoints.push(tpModel)
 	}
-	private tpTwinGateChanged(particle: NetworkedParticle) {
+	private tpTwinGateChanged(particle: NetworkedParticle, destroyed: boolean) {
+		// TODO: interact with NetworkedParticle Ability
 		const entity = particle.AttachedTo
 		if (!(entity instanceof Unit)) {
 			return
 		}
-		// TODO: interact with NetworkedParticle Ability
 		if (
 			particle.PathNoEcon ===
 			"particles/units/heroes/heroes_underlord/abbysal_underlord_portal_owner.vpcf"
 		) {
+			if (destroyed) {
+				return
+			}
 			this.destroyTwinGatePortal(entity, false)
 			return
 		}
-		const teleport = this.twinGateTeleports.find(
-			([, time]) => time === GameState.RawGameTime
-		)
-		if (teleport === undefined) {
+		const [heroes, start, end] = this.twinGates
+		if (!destroyed) {
+			if (!start.IsValid) {
+				start.CopyFrom(entity.Position)
+			} else if (!end.IsValid && !start.Equals(entity.Position)) {
+				end.CopyFrom(entity.Position)
+			}
 			return
 		}
-		const [caster, , start, end] = teleport
-		if (!start.IsValid) {
-			start.CopyFrom(entity.Position)
-			caster.TPStartPosition.CopyFrom(start)
-		} else if (!end.IsValid && !start.Equals(entity.Position)) {
-			end.CopyFrom(entity.Position)
-			caster.TPEndPosition.CopyFrom(end)
-			const unitClass = new UnitPortalData(caster.Index)
-			unitClass.StartPosition.CopyFrom(caster.TPStartPosition)
-			unitClass.EndPosition.CopyFrom(end)
-			// TODO: interact with NetworkedParticle Ability
-			unitClass.MaxDuration = 4
-			// TODO: interact with NetworkedParticle Ability
-			unitClass.AbilityName = "twin_gate_portal_warp"
-			EventsSDK.emit("UnitPortalChanged", false, unitClass)
-			this.teleports.push([caster, unitClass])
+		if (!start.IsValid || !end.IsValid) {
+			return
 		}
+		// wait portal owner destroy
+		TaskManager.Begin(
+			() => this.destroyTwinGatePortalByTask(heroes),
+			GameState.TickInterval * 3 * 1000
+		)
 	}
 	private tpTinkerAnimationChanged(unit: Unit | FakeUnit, activity: GameActivity) {
 		if (!(unit instanceof npc_dota_hero_tinker)) {
@@ -436,16 +479,18 @@ new (class CTeleportChanged {
 		if (type !== 1 || act !== GameActivity.ACT_DOTA_GENERIC_CHANNEL_1) {
 			return
 		}
-
-		if (unit instanceof Hero) {
-			this.twinGateTeleports.push([
-				unit,
-				GameState.RawGameTime,
-				new Vector3().Invalidate(),
-				new Vector3().Invalidate(),
-				true
-			])
+		if (!(unit instanceof Hero)) {
+			return
 		}
+		const abil = unit.GetAbilityByName("twin_gate_portal_warp")
+		const maxChannelTime = abil?.MaxChannelTime ?? 4
+		this.twinGates[0].push([
+			unit,
+			false,
+			abil?.Name ?? "twin_gate_portal_warp",
+			GameState.RawGameTime + maxChannelTime,
+			maxChannelTime
+		])
 	}
 	private isValidTPParticle(particle: NetworkedParticle) {
 		return (
@@ -454,18 +499,20 @@ new (class CTeleportChanged {
 		)
 	}
 	private isValidTPTwinGateParticle(particle: NetworkedParticle) {
-		if (particle.Attach === ParticleAttachment.PATTACH_OVERHEAD_FOLLOW) {
-			return (
-				particle.PathNoEcon ===
-				"particles/units/heroes/heroes_underlord/abbysal_underlord_portal_owner.vpcf"
-			)
+		switch (particle.Attach) {
+			case ParticleAttachment.PATTACH_POINT_FOLLOW:
+				return (
+					particle.PathNoEcon ===
+						"particles/base_static/team_portal_active.vpcf" ||
+					particle.PathNoEcon ===
+						"particles/base_static/team_portal_dire_active.vpcf"
+				)
+			case ParticleAttachment.PATTACH_OVERHEAD_FOLLOW:
+				return (
+					particle.PathNoEcon ===
+					"particles/units/heroes/heroes_underlord/abbysal_underlord_portal_owner.vpcf"
+				)
 		}
-		return (
-			particle.Attach === ParticleAttachment.PATTACH_POINT_FOLLOW &&
-			(particle.PathNoEcon ===
-				"particles/base_static/team_portal_dire_active.vpcf" ||
-				particle.PathNoEcon === "particles/base_static/team_portal_active.vpcf")
-		)
 	}
 	private isValidTPFurionParticle(particle: NetworkedParticle) {
 		return (
@@ -511,18 +558,32 @@ new (class CTeleportChanged {
 			x => x.InternalSkipIteration && x.Caster === caster
 		)
 	}
-	private destroyTwinGatePortal(caster: Unit, isCanceled = false) {
-		const data = this.teleports.find(([x]) => x === caster)
+	private destroyTwinGatePortal(entity: Unit, isCanceled = false) {
+		const findCaster = this.twinGates[0].find(([x]) => x === entity)
+		if (findCaster === undefined) {
+			return
+		}
+		const data = this.teleports.find(([x]) => x === findCaster[0])
 		if (data === undefined) {
 			return
 		}
-		data[1].IsCanceled = isCanceled
-		caster.TPEndPosition.Invalidate()
-		caster.TPStartPosition.Invalidate()
+		const [, portal] = data
+		portal.IsValid = false
+		portal.IsCanceled = isCanceled
 		EventsSDK.emit("UnitPortalDestroyed", false, data[1])
-		this.teleports.removeCallback(
-			([x, y]) => x === caster && y.AbilityName === "twin_gate_portal_warp"
-		)
-		this.twinGateTeleports.removeCallback(([x]) => x === caster)
+		this.teleports.remove(data)
+	}
+	private destroyTwinGatePortalByTask(
+		heroes: [Unit, boolean, string, number, number][]
+	) {
+		for (let i = heroes.length - 1; i > -1; i--) {
+			const heroData = heroes[i]
+			this.destroyTwinGatePortal(heroData[0], true)
+			heroes.remove(heroData)
+		}
+		if (heroes.length === 0) {
+			this.twinGates[1].Invalidate()
+			this.twinGates[2].Invalidate()
+		}
 	}
 })()

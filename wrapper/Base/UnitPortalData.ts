@@ -11,18 +11,18 @@ export class UnitPortalData {
 	public IsCanceled = false
 	public MaxDuration: number = 3
 	public AbilityName: string = "item_tpscroll"
-	public ForceEmit: [boolean, number] = [true, GameState.TickInterval * 1000]
+	public ForceEmit: [boolean, number] = [true, 0]
 	public readonly EndPosition = new Vector3().Invalidate()
 	public readonly StartPosition = new Vector3().Invalidate()
 
 	private targetIndex: number = -1
 	private lastCreateTime: number = 0
 
-	constructor(private readonly casterIndex: number) {
+	constructor(protected readonly CasterIndex: number) {
 		this.lastCreateTime = GameState.RawGameTime
 	}
 	public get Caster() {
-		return EntityManager.EntityByIndex<Unit>(this.casterIndex)
+		return EntityManager.EntityByIndex<Unit>(this.CasterIndex)
 	}
 	public get Target() {
 		return EntityManager.EntityByIndex<Unit>(this.targetIndex)

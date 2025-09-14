@@ -121,7 +121,7 @@ export class ExecuteOrder {
 		"hero_demo_frostivus"
 	])
 	private static DisableHumanizer_ = false
-	private readonly flags: number
+	private readonly flags: number = -1
 
 	/**
 	 * Orders by native CUnitOrder
@@ -140,7 +140,6 @@ export class ExecuteOrder {
 		public IsPlayerInput: boolean = true
 	) {
 		this.Position = this.Position.Clone()
-
 		this.flags =
 			this.Ability_ instanceof Ability && this.Ability_.AltCastState ? 4 : -1
 	}
