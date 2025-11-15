@@ -57,10 +57,6 @@ import { Wearable } from "./Wearable"
 const MAX_ITEMS = 16
 const MAX_SPELLS = 31
 
-function UnitNameChanged(unit: Unit) {
-	unit.UnitData = UnitData.globalStorage.get(unit.Name) ?? UnitData.empty
-}
-
 @WrapperClass("CDOTA_BaseNPC")
 export class Unit extends Entity {
 	public static IsNpcVisibleState(state: bigint[], entId: number): boolean {
@@ -2096,15 +2092,17 @@ RegisterFieldHandler<Unit, number>(Unit, "m_iUnitNameIndex", (unit, newVal) => {
 	if (unit.UnitName_ === "") {
 		unit.UnitName_ = unit.Name_
 	}
-	if (unit.Name !== unit.Name) {
-		UnitNameChanged(unit)
+	if (unit.UnitData === UnitData.empty) {
+		unit.UnitData = UnitData.globalStorage.get(unit.Name) ?? UnitData.empty
 	}
 })
 RegisterFieldHandler(Unit, "m_nameStringableIndex", unit => {
 	if (unit.UnitName_ === "") {
 		unit.UnitName_ = unit.Name_
 	}
-	UnitNameChanged(unit)
+	if (unit.UnitData === UnitData.empty) {
+		unit.UnitData = UnitData.globalStorage.get(unit.Name) ?? UnitData.empty
+	}
 })
 RegisterFieldHandler<Unit, number>(Unit, "m_iPlayerID", (unit, newVal) => {
 	unit.PlayerID = newVal
