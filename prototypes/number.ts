@@ -1,14 +1,11 @@
-const masksNumber: number[] = []
-for (let i = 0; i < 32; i++) {
-	masksNumber.push(1 << i)
-}
-
 Number.prototype.hasBit = function (bit: number): boolean {
-	return ((this.valueOf() >> bit) & 1) === 1
+	const v = (this as number) | 0 // force 32-bit integer
+	return ((v >> bit) & 1) === 1
 }
 
 Number.prototype.hasMask = function (mask: number): boolean {
-	return (this.valueOf() & mask) === mask
+	const v = (this as number) | 0 // force 32-bit integer
+	return (v & mask) === mask
 }
 
 Number.prototype.bitCount = function (): number {
@@ -20,7 +17,7 @@ Number.prototype.bitCount = function (): number {
 
 Object.defineProperty(Number.prototype, "toInt16", {
 	get() {
-		let num = this.valueOf()
+		let num = this as number
 		if (num.hasBit(15)) {
 			num &= ~(1 << 15)
 			num = (0xffff >> 1) - num + 1
@@ -32,11 +29,15 @@ Object.defineProperty(Number.prototype, "toInt16", {
 
 Object.defineProperty(Number.prototype, "toMask", {
 	get() {
+		let v = this | 0 // force 32-bit integer
+		let i = 0
 		const res: number[] = []
-		for (let i = 0; i < 32; i++) {
-			if ((this.valueOf() & masksNumber[i]) !== 0) {
+		while (v !== 0) {
+			if (v & 1) {
 				res.push(i)
 			}
+			v >>>= 1
+			i++
 		}
 		return res
 	}
