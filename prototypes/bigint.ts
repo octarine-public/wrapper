@@ -1,14 +1,9 @@
-const masksBigInt: bigint[] = []
-for (let i = 0; i < 64; i++) {
-	masksBigInt.push(1n << BigInt(i))
-}
-
 BigInt.prototype.hasBit = function (bit: bigint): boolean {
-	return ((this.valueOf() >> bit) & 1n) === 1n
+	return (((this as bigint) >> bit) & 1n) === 1n
 }
 
 BigInt.prototype.hasMask = function (mask: bigint): boolean {
-	return (this.valueOf() & mask) === mask
+	return ((this as bigint) & mask) === mask
 }
 
 Object.defineProperty(BigInt.prototype, "toInt16", {
@@ -25,11 +20,15 @@ Object.defineProperty(BigInt.prototype, "toInt16", {
 
 Object.defineProperty(BigInt.prototype, "toMask", {
 	get() {
+		let i = 0
+		let v = this as bigint
 		const res: number[] = []
-		for (let i = 0; i < 64; i++) {
-			if ((this.valueOf() & masksBigInt[i]) !== 0n) {
+		while (v !== 0n) {
+			if (v & 1n) {
 				res.push(i)
 			}
+			v >>= 1n
+			i++
 		}
 		return res
 	}
