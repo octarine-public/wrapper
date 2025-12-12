@@ -118,6 +118,7 @@ export {
 export { PathfinderSDK } from "./Managers/Pathfinder/PathfinderSDK"
 export { ProjectileManager } from "./Managers/ProjectileManager"
 export { TaskManager } from "./Managers/TaskManager"
+export { UIPanel, UIPanelManager } from "./Managers/UIPanelManager"
 export * as Menu from "./Menu/index"
 export { CameraSDK } from "./Native/CameraSDK"
 export { ConVarsSDK } from "./Native/ConVarsSDK"

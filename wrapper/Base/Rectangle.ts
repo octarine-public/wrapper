@@ -92,6 +92,14 @@ export class Rectangle {
 			this.pos2.y > pos.y
 		)
 	}
+	public Intersects(r: Rectangle): boolean {
+		return !(
+			this.Right <= r.Left ||
+			this.Left >= r.Right ||
+			this.Bottom <= r.Top ||
+			this.Top >= r.Bottom
+		)
+	}
 	public GetOffset(pos: Vector2): Vector2 {
 		return pos.Subtract(this.pos1)
 	}
