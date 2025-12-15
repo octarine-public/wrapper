@@ -7,6 +7,7 @@ import { EventsSDK } from "./EventsSDK"
 import { InputEventSDK, InputManager, VMouseKeys } from "./InputManager"
 
 export abstract class UIPanel {
+	public IsValid = true
 	protected Dragging = false
 	protected readonly DragOffset = new Vector2()
 
@@ -17,10 +18,12 @@ export abstract class UIPanel {
 	public abstract MouseKeyDown(): boolean
 	public OnDispose?(): void
 
-	public Compute() {
+	public Compute(desiredPos?: Vector2) {
+		UIPanelManager.Compute(this, desiredPos)
+	}
+	public ComputeDrag() {
 		if (this.Dragging) {
-			const desiredPos = InputManager.CursorOnScreen.Subtract(this.DragOffset)
-			UIPanelManager.Compute(this, desiredPos)
+			this.Compute(InputManager.CursorOnScreen.Subtract(this.DragOffset))
 		}
 	}
 	public BackgroundDrag() {
@@ -68,6 +71,7 @@ export const UIPanelManager = new (class CUIPanelManager {
 			this.activePanel = undefined
 		}
 		panel.OnDispose?.()
+		panel.IsValid = false
 		this.items.splice(index, 1)
 		return true
 	}
@@ -142,7 +146,7 @@ export const UIPanelManager = new (class CUIPanelManager {
 		for (let i = this.items.length - 1; i >= 0; i--) {
 			const panel = this.items[i]
 			panel.Draw()
-			panel.Compute()
+			panel.ComputeDrag()
 			panel.BackgroundDrag()
 		}
 	}
