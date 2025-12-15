@@ -59,8 +59,12 @@ export const UIPanelManager = new (class CUIPanelManager {
 		EventsSDK.after("Draw", this.draw.bind(this))
 		EventsSDK.on("WindowSizeChanged", this.windowSizeChanged.bind(this))
 	}
-	public Register<T extends UIPanel>(ctor: T) {
-		this.items.push(ctor)
+	public Register(panel: UIPanel): boolean {
+		if (this.items.includes(panel)) {
+			return false
+		}
+		this.items.push(panel)
+		return true
 	}
 	public Unregister<T extends UIPanel>(panel: T): boolean {
 		const index = this.items.indexOf(panel)
