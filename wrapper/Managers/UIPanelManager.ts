@@ -1,8 +1,12 @@
 import { Color } from "../Base/Color"
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
+import { DOTAGameState } from "../Enums/DOTAGameState"
+import { DOTAGameUIState } from "../Enums/DOTAGameUIState"
 import { GUIInfo } from "../GUI/GUIInfo"
 import { RendererSDK } from "../Native/RendererSDK"
+import { GameRules } from "../Objects/Base/Entity"
+import { GameState } from "../Utils/GameState"
 import { EventsSDK } from "./EventsSDK"
 import { InputEventSDK, InputManager, VMouseKeys } from "./InputManager"
 
@@ -13,20 +17,62 @@ export abstract class UIPanel {
 
 	constructor(public readonly Position: Rectangle) {}
 
+	public abstract get State(): boolean
 	public abstract Draw(): void
 	public abstract MouseKeyUp(): boolean
 	public abstract MouseKeyDown(): boolean
-	public OnDispose?(): void
+	public Dispose?(): void
 
+	protected get IsInGameUI() {
+		return GameState.UIState === DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME
+	}
+	protected get IsPostGame() {
+		return (
+			GameRules === undefined ||
+			GameRules.GameState === DOTAGameState.DOTA_GAMERULES_STATE_POST_GAME
+		)
+	}
+	protected get ShouldDraw() {
+		if (!this.IsInGameUI || this.IsPostGame) {
+			return false
+		}
+		if (this.IsShopPosition || this.IsScoreboardPosition) {
+			return false
+		}
+		return true
+	}
+	protected get IsShopPosition() {
+		if (!InputManager.IsShopOpen) {
+			return false
+		}
+		return this.shouldPosition(
+			GUIInfo.OpenShopMini.Items,
+			GUIInfo.OpenShopMini.Header,
+			GUIInfo.OpenShopMini.GuideFlyout,
+			GUIInfo.OpenShopMini.ItemCombines,
+			GUIInfo.OpenShopMini.PinnedItems,
+			GUIInfo.OpenShopLarge.Items,
+			GUIInfo.OpenShopLarge.Header,
+			GUIInfo.OpenShopLarge.GuideFlyout,
+			GUIInfo.OpenShopLarge.PinnedItems,
+			GUIInfo.OpenShopLarge.ItemCombines
+		)
+	}
+	protected get IsScoreboardPosition() {
+		if (!InputManager.IsScoreboardOpen) {
+			return false
+		}
+		return this.shouldPosition(GUIInfo.Scoreboard.Background)
+	}
 	public Compute(desiredPos?: Vector2) {
 		UIPanelManager.Compute(this, desiredPos)
 	}
-	public ComputeDrag() {
+	public computeDrag_() {
 		if (this.Dragging) {
 			this.Compute(InputManager.CursorOnScreen.Subtract(this.DragOffset))
 		}
 	}
-	public BackgroundDrag() {
+	public backgroundDrag_() {
 		if (!this.Dragging) {
 			return
 		}
@@ -41,6 +87,12 @@ export abstract class UIPanel {
 			Math.round(GUIInfo.ScaleHeight(3)),
 			Color.Yellow
 		)
+	}
+	private shouldPosition(...positions: Rectangle[]) {
+		return positions.some(position => this.isContainsPanel(position))
+	}
+	private isContainsPanel(position: Rectangle) {
+		return position.Contains(this.Position.pos1)
 	}
 }
 
@@ -61,9 +113,11 @@ export const UIPanelManager = new (class CUIPanelManager {
 	}
 	public Register(panel: UIPanel): boolean {
 		if (this.items.includes(panel)) {
+			this.windowSizeChanged()
 			return false
 		}
 		this.items.push(panel)
+		this.windowSizeChanged()
 		return true
 	}
 	public Unregister<T extends UIPanel>(panel: T): boolean {
@@ -74,12 +128,15 @@ export const UIPanelManager = new (class CUIPanelManager {
 		if (this.activePanel === panel) {
 			this.activePanel = undefined
 		}
-		panel.OnDispose?.()
+		panel.Dispose?.()
 		panel.IsValid = false
 		this.items.splice(index, 1)
 		return true
 	}
 	public Compute(panel: UIPanel, desiredPos?: Vector2) {
+		if (!panel.State) {
+			return
+		}
 		const rect = panel.Position
 		const size = rect.Size
 
@@ -149,9 +206,12 @@ export const UIPanelManager = new (class CUIPanelManager {
 	private draw() {
 		for (let i = this.items.length - 1; i >= 0; i--) {
 			const panel = this.items[i]
+			if (!panel.IsValid || !panel.State) {
+				continue
+			}
 			panel.Draw()
-			panel.ComputeDrag()
-			panel.BackgroundDrag()
+			panel.computeDrag_()
+			panel.backgroundDrag_()
 		}
 	}
 	private mouseKeyDown(key: VMouseKeys) {
@@ -163,6 +223,9 @@ export const UIPanelManager = new (class CUIPanelManager {
 		}
 		for (let i = this.items.length - 1; i >= 0; i--) {
 			const panel = this.items[i]
+			if (!panel.IsValid || !panel.State) {
+				continue
+			}
 			if (panel.MouseKeyDown() === false) {
 				this.activePanel = panel
 				// z-order to top
@@ -174,7 +237,12 @@ export const UIPanelManager = new (class CUIPanelManager {
 		return true
 	}
 	private mouseKeyUp(key: VMouseKeys) {
-		if (this.activePanel === undefined || key !== VMouseKeys.MK_LBUTTON) {
+		if (
+			this.activePanel === undefined ||
+			key !== VMouseKeys.MK_LBUTTON ||
+			!this.activePanel.State
+		) {
+			this.activePanel = undefined
 			return true
 		}
 		const panel = this.activePanel
@@ -214,6 +282,9 @@ export const UIPanelManager = new (class CUIPanelManager {
 		for (let i = this.items.length - 1; i >= 0; i--) {
 			const other = this.items[i]
 			if (other === panel) {
+				continue
+			}
+			if (!other.IsValid || !other.State) {
 				continue
 			}
 			if (this.tmpTestRect.Intersects(other.Position)) {
