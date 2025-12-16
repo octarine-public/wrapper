@@ -28,15 +28,18 @@ export class modifier_luna_lunar_blessing_aura extends Modifier implements IBuff
 	}
 	protected UpdateSpecialValues(): void {
 		const name = "luna_lunar_blessing"
-		this.cachedDamage = this.GetSpecialValue("bonus_damage_per_level", name)
-		this.cachedDamageSelf = this.GetSpecialValue("self_bonus_damage_per_level", name)
+		this.cachedDamage = this.GetSpecialValue("bonus_damage", name)
+		this.cachedDamageSelf = this.GetSpecialValue("self_bonus_damage", name)
 	}
 	private getDamage(): number {
 		const caster = this.Caster
 		if (caster === undefined) {
 			return 0
 		}
-		const value = caster === this.Parent ? this.cachedDamageSelf : this.cachedDamage
-		return value * caster.Level
+		let damage = this.cachedDamageSelf * caster.Level
+		if (caster !== this.Parent) {
+			damage = this.cachedDamage * caster.Level
+		}
+		return damage
 	}
 }

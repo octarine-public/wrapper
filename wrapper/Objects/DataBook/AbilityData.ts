@@ -515,6 +515,10 @@ export class AbilityData {
 		for (let i = arr.length - 1; i > -1; i--) {
 			const linkedSpecialBonus = arr[i]
 			if (!linkedSpecialBonus.IsOld) {
+				if (linkedSpecialBonus.Name === "hero_levelup") {
+					baseVal *= owner.Level
+					continue
+				}
 				if (
 					includeFacet &&
 					linkedSpecialBonus.Name.startsWith("special_bonus_facet_")
