@@ -75,7 +75,8 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_SET_MATERIAL_OVERRIDE = 35,
 	GAME_PARTICLE_MANAGER_EVENT_ADD_FAN = 36,
 	GAME_PARTICLE_MANAGER_EVENT_UPDATE_FAN = 37,
-	GAME_PARTICLE_MANAGER_EVENT_SET_CLUSTER_GROWTH = 38
+	GAME_PARTICLE_MANAGER_EVENT_SET_CLUSTER_GROWTH = 38,
+	GAME_PARTICLE_MANAGER_EVENT_REMOVE_FAN = 39
 }
 enum EDotaEntityMessages {
 	DOTA_UNIT_SPEECH = 0,
@@ -181,6 +182,7 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_ADD_FAN = 36;
 	GAME_PARTICLE_MANAGER_EVENT_UPDATE_FAN = 37;
 	GAME_PARTICLE_MANAGER_EVENT_SET_CLUSTER_GROWTH = 38;
+	GAME_PARTICLE_MANAGER_EVENT_REMOVE_FAN = 39;
 }
 
 enum DOTA_CHAT_MESSAGE {
@@ -526,6 +528,12 @@ message CUserMsg_ParticleManager {
 		optional bool pull_towards_point = 10;
 		optional float curve_min_dist = 11;
 		optional float curve_max_dist = 12;
+		optional uint32 fan_type = 13;
+		optional float cone_start_radius = 14;
+		optional float cone_end_radius = 15;
+		optional float cone_length = 16;
+		optional uint32 entity_handle = 17 [default = 16777215];
+		optional string attachment_name = 18;
 	}
 
 	message UpdateFan {
@@ -536,6 +544,9 @@ message CUserMsg_ParticleManager {
 		optional float fan_ramp_ratio = 7;
 		optional .CMsgVector bounds_mins = 5;
 		optional .CMsgVector bounds_maxs = 6;
+	}
+
+	message RemoveFan {
 	}
 
 	message SetParticleClusterGrowth {
@@ -583,6 +594,7 @@ message CUserMsg_ParticleManager {
 	optional .CUserMsg_ParticleManager.AddFan add_fan = 39;
 	optional .CUserMsg_ParticleManager.UpdateFan update_fan = 40;
 	optional .CUserMsg_ParticleManager.SetParticleClusterGrowth set_particle_cluster_growth = 41;
+	optional .CUserMsg_ParticleManager.RemoveFan remove_fan = 42;
 }
 
 enum EDotaEntityMessages {
@@ -1092,6 +1104,10 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_CLUSTER_GROWTH: {
+			// const submsg = msg.get("") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_REMOVE_FAN: {
 			// const submsg = msg.get("") as RecursiveProtobuf
 			break
 		}

@@ -224,6 +224,7 @@ message CSODOTAParty {
 	optional uint32 restricted_from_ranked_account_id = 75;
 	optional uint32 rank_spread_likert_scale = 76;
 	optional uint32 behavior_score_likert_scale = 77;
+	optional bool contains_required_playtester = 78;
 }
 message CMsgLobbyPlayerPlusSubscriptionData {
 	message HeroBadge {
@@ -350,6 +351,14 @@ enum EEvent {
 	EVENT_ID_FROSTIVUS_2023 = 48;
 	EVENT_ID_INTERNATIONAL_2024 = 49;
 	EVENT_ID_FROSTIVUS_2024 = 50;
+	EVENT_ID_MONSTER_HUNTER = 51;
+	EVENT_ID_INTERNATIONAL_2025 = 52;
+	EVENT_ID_FALL_2025 = 53;
+	EVENT_ID_WINTER_2025 = 55;
+	EVENT_ID_SPRING_2026 = 56;
+	EVENT_ID_SUMMER_2026 = 57;
+	EVENT_ID_FALL_2026 = 58;
+	EVENT_ID_WINTER_2026 = 59;
 }
 message CLobbyGuildChallenge {
 	optional uint32 guild_id = 1;
@@ -574,6 +583,7 @@ message CSODOTALobby {
 		EVENT_MATCH = 12;
 		NEW_PLAYER_POOL = 14;
 		FEATURED_GAMEMODE = 15;
+		AUTOMATED_BOT_ONLY_MATCH = 16;
 	}
 
 	optional uint64 lobby_id = 1 [(key_field) = true];
@@ -648,6 +658,7 @@ message CSODOTALobby {
 	optional .DOTASelectionPriorityChoice series_current_non_priority_team_choice = 101 [default = k_DOTASelectionPriorityChoice_Invalid];
 	optional bool series_current_selection_priority_used_coin_toss = 102;
 	optional .EEvent current_primary_event = 103 [default = EVENT_ID_NONE];
+	optional .EEvent current_primary_event_for_display = 104 [default = EVENT_ID_NONE];
 	repeated int32 emergency_disabled_hero_ids = 105;
 	optional fixed64 custom_game_private_key = 106;
 	optional bool custom_game_penalties = 107;

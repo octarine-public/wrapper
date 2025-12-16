@@ -162,6 +162,9 @@ export class IModifier {
 	public get IllusionLabel() {
 		return this.GetProperty<string>("illusion_label")
 	}
+	public get MoveSlow() {
+		return this.GetProperty<number>("move_slow")
+	}
 	public GetProperty<T>(name: string): Nullable<T> {
 		const value = this.kv.get(name)
 		if (value === undefined || !this.isValid(value)) {
@@ -336,6 +339,7 @@ message CDOTAModifierBuffTableEntry {
 	optional int32 bonus_mana = 37;
 	optional uint32 custom_entity = 38 [default = 16777215];
 	optional bool aura_within_range = 39;
+	optional float move_slow = 40;
 }
 `)
 EventsSDK.on("UpdateStringTable", (name, update) => {

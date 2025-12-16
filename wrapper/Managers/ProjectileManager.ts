@@ -239,6 +239,7 @@ message CDOTAUserMsg_TE_Projectile {
 	optional int64 additional_particle_system_handle = 16;
 	optional int32 original_move_speed = 17;
 	optional uint32 ability = 18 [default = 16777215];
+	optional int32 target_projectile_handle = 19;
 }
 
 message CDOTAUserMsg_TE_ProjectileLoc {
@@ -383,7 +384,8 @@ Events.on("ServerMessage", (msgID, buf_) => {
 					CMsgVectorToVector3(msg.get("target_loc") as RecursiveProtobuf),
 					NumberToColor(msg.get("colorgemcolor") as number),
 					msg.get("original_move_speed") as number,
-					ability
+					ability,
+					msg.get("target_projectile_handle") as Nullable<number>
 				)
 				TrackingProjectileCreated(projectile)
 			})

@@ -157,7 +157,8 @@ export class TrackingProjectile extends Projectile {
 		public readonly TargetLoc = new Vector3().Invalidate(),
 		colorgemcolor: Color,
 		public readonly OriginalMoveSpeed: number,
-		public readonly Ability?: Nullable<AbilitySDK>
+		public readonly Ability?: Nullable<AbilitySDK>,
+		public readonly TargetProjectileHandle?: number
 	) {
 		super(projID, path, particleSystemHandle, source, colorgemcolor, speed)
 		this.AbilityIndex = this.Ability?.Index
