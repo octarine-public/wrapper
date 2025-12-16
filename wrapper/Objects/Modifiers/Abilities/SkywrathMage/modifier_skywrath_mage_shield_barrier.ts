@@ -12,8 +12,7 @@ export class modifier_skywrath_mage_shield_barrier
 	public readonly BuffModifierName = this.Name
 	public readonly ShieldModifierName = this.Name
 
-	private cachedBaseShield = 0
-	private cachedShieldPerLvl = 0
+	private cachedShield = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -29,9 +28,8 @@ export class modifier_skywrath_mage_shield_barrier
 		if (owner === undefined) {
 			return 0
 		}
-		const perLvl = this.cachedShieldPerLvl * owner.Level,
-			value = (this.cachedBaseShield + perLvl) * this.InternalStackCount
-		return value - this.NetworkArmor
+		const base = this.cachedShield + (owner.Level - 1)
+		return base * this.InternalStackCount - this.NetworkArmor
 	}
 	public IsBuff(): this is IBuff {
 		return this.StackCount !== 0
@@ -44,7 +42,6 @@ export class modifier_skywrath_mage_shield_barrier
 	}
 	protected UpdateSpecialValues(): void {
 		const name = "skywrath_mage_shield_of_the_scion"
-		this.cachedBaseShield = this.GetSpecialValue("damage_barrier_base", name)
-		this.cachedShieldPerLvl = this.GetSpecialValue("damage_barrier_per_level", name)
+		this.cachedShield = this.GetSpecialValue("damage_barrier", name)
 	}
 }
