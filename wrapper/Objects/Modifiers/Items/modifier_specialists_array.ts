@@ -18,6 +18,6 @@ export class modifier_specialists_array extends Modifier {
 	}
 
 	protected UpdateSpecialValues(): void {
-		this.cachedDamage = this.GetSpecialValue("bonus_damage", "item_specialists_array")
+		this.cachedDamage = this.GetSpecialValue("damage", "item_specialists_array")
 	}
 }

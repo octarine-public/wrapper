@@ -8,7 +8,6 @@ import { Unit, Units } from "../../../Base/Unit"
 export class modifier_spectre_desolate extends Modifier {
 	private cachedBonus = 0
 	private cachedRadius = 0
-	private cachedBonusPct = 0
 	private Units: Unit[] = []
 
 	protected readonly CanPostDataUpdate = true
@@ -18,12 +17,10 @@ export class modifier_spectre_desolate extends Modifier {
 			this.GetPreAttackBonusDamagePure.bind(this)
 		]
 	])
-
 	public Remove(): boolean {
 		this.Units.clear()
 		return super.Remove()
 	}
-
 	public PostDataUpdate(): void {
 		const owner = this.Parent
 		if (owner === undefined) {
@@ -32,7 +29,6 @@ export class modifier_spectre_desolate extends Modifier {
 		}
 		this.Units = Units.filter(x => this.shouldValidUnit(x, owner))
 	}
-
 	protected GetPreAttackBonusDamagePure(params?: IModifierParams): [number, boolean] {
 		if (params === undefined || this.IsPassiveDisabled()) {
 			return [0, false]
@@ -41,8 +37,7 @@ export class modifier_spectre_desolate extends Modifier {
 		if (target === undefined || target.IsBuilding || !target.IsEnemy(this.Parent)) {
 			return [0, false]
 		}
-		let isNearUnits = false,
-			isNearCreep = false
+		let isNearUnits = false
 		for (let i = this.Units.length - 1; i > -1; i--) {
 			const unit = this.Units[i]
 			if (unit === target) {
@@ -53,28 +48,17 @@ export class modifier_spectre_desolate extends Modifier {
 				isNearUnits = true
 				break
 			}
-			if (isInRange) {
-				isNearCreep = true
-				break
-			}
 		}
 		if (isNearUnits) {
 			return [0, false]
 		}
-		if (isNearCreep) {
-			return [(this.cachedBonus * this.cachedBonusPct) / 100, false]
-		}
-
 		return [this.cachedBonus, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		const name = "spectre_desolate"
 		this.cachedRadius = this.GetSpecialValue("radius", name)
 		this.cachedBonus = this.GetSpecialValue("bonus_damage", name)
-		this.cachedBonusPct = this.GetSpecialValue("only_creep_allies_damage_pct", name)
 	}
-
 	private shouldValidUnit(unit: Unit, caster: Unit): boolean {
 		return (
 			(unit.IsCreep || unit.IsHero || unit.IsSpiritBear) &&
