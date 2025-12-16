@@ -1,6 +1,8 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
+import { ISpecialValueOptions } from "../../../DataBook/AbilityData"
 
 @WrapperClassModifier()
 export class modifier_luna_lunar_blessing_aura extends Modifier implements IBuff {
@@ -36,10 +38,18 @@ export class modifier_luna_lunar_blessing_aura extends Modifier implements IBuff
 		if (caster === undefined) {
 			return 0
 		}
-		let damage = this.cachedDamageSelf * caster.Level
-		if (caster !== this.Parent) {
-			damage = this.cachedDamage * caster.Level
-		}
-		return damage
+		return caster === this.Parent ? this.cachedDamageSelf : this.cachedDamage
+	}
+	protected GetSpecialValue(
+		specialName: string,
+		abilityName: string,
+		level = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
+		_optional?: ISpecialValueOptions
+	): number {
+		return super.GetSpecialValue(specialName, abilityName, level, {
+			lvlup: {
+				operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY
+			}
+		})
 	}
 }

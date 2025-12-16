@@ -7,35 +7,27 @@ export class modifier_lone_druid_spirit_link extends Modifier implements IBuff {
 	public readonly IsHidden = false
 	public readonly BuffModifierName = this.Name
 
-	private cachedAttackSpeed = 0
+	private cachedBearSpeed = 0
+	private cachedDruidSpeed = 0
 
-	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
-			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
-			this.GetPhysicalArmorBonus.bind(this)
-		],
-		[
-			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT,
-			this.GetAttackSpeedBonusConstant.bind(this)
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
+			this.GetMoveSpeedBonusConstant.bind(this)
 		]
 	])
 	public IsBuff(): this is IBuff {
 		return true
 	}
-	public PostDataUpdate(): void {
-		this.UpdateSpecialValues()
-	}
-	protected GetPhysicalArmorBonus(): [number, boolean] {
-		return [this.NetworkArmor, false]
-	}
-	protected GetAttackSpeedBonusConstant(): [number, boolean] {
-		return [this.cachedAttackSpeed, false]
+	protected GetMoveSpeedBonusConstant(): [number, boolean] {
+		return [
+			this.Parent?.IsSpiritBear ? this.cachedBearSpeed : this.cachedDruidSpeed,
+			false
+		]
 	}
 	protected UpdateSpecialValues(): void {
-		this.cachedAttackSpeed = this.GetSpecialValue(
-			"bonus_attack_speed",
-			"lone_druid_spirit_link"
-		)
+		const name = "lone_druid_spirit_link"
+		this.cachedBearSpeed = this.GetSpecialValue("bonus_movement_speed_bear", name)
+		this.cachedDruidSpeed = this.GetSpecialValue("bonus_movement_speed_druid", name)
 	}
 }

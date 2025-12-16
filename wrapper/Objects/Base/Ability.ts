@@ -13,6 +13,7 @@ import { EModifierfunction } from "../../Enums/EModifierfunction"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { SPELL_DISPELLABLE_TYPES } from "../../Enums/SPELL_DISPELLABLE_TYPES"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
+import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { IPrediction } from "../../Managers/Prediction/IPrediction"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
@@ -20,7 +21,7 @@ import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GameState } from "../../Utils/GameState"
 import { toPercentage } from "../../Utils/Math"
 import { QuantizePlaybackRate } from "../../Utils/QuantizeUtils"
-import { AbilityData } from "../DataBook/AbilityData"
+import { AbilityData, ISpecialValueOptions } from "../DataBook/AbilityData"
 import { modifier_crystal_maiden_arcane_overflow_active } from "../Modifiers/Abilities/CrystalMaiden/modifier_crystal_maiden_arcane_overflow_active"
 import { modifier_rubick_spell_steal } from "../Modifiers/Abilities/Rubick/modifier_rubick_spell_steal"
 import { Entity } from "./Entity"
@@ -29,6 +30,8 @@ import { Unit } from "./Unit"
 @WrapperClass("CDOTABaseAbility")
 export class Ability extends Entity {
 	public readonly AbilityData: AbilityData
+	@NetworkedBasicField("m_flAnimTime")
+	public readonly AnimTime: number = 0
 	@NetworkedBasicField("m_bInIndefiniteCooldown")
 	public readonly IsInIndefiniteCooldown: boolean = false
 	@NetworkedBasicField("m_nMaxLevelOverride")
@@ -61,6 +64,10 @@ export class Ability extends Entity {
 	public readonly IsStealable: boolean = false
 	@NetworkedBasicField("m_nHeroFacetKey", EPropertyType.UINT32)
 	public readonly HeroFacetKey: number = -1
+	@NetworkedBasicField("m_pReflectionSourceAbility")
+	public readonly ReflectionSourceAbility: number = EntityManager.INVALID_HANDLE
+	@NetworkedBasicField("m_hHiddenAbilityForDisplay")
+	public readonly HiddenAbilityForDisplay: number = EntityManager.INVALID_HANDLE
 
 	public Level = 0
 	public IsEmpty = false
@@ -637,7 +644,9 @@ export class Ability extends Entity {
 	public GetSpecialValue(
 		specialName: string,
 		level: number = this.Level,
-		includeFacet = !this.IsStolen
+		optional: ISpecialValueOptions = {
+			useFacet: !this.IsStolen
+		}
 	): number {
 		let owner = this.Owner
 		if (this.IsReplicated) {
@@ -652,7 +661,7 @@ export class Ability extends Entity {
 			specialName,
 			level,
 			this.Name,
-			includeFacet
+			optional
 		)
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {

@@ -5,7 +5,7 @@ import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { IModifier } from "../../Managers/ModifierManager"
 import { GameState } from "../../Utils/GameState"
-import { AbilityData } from "../DataBook/AbilityData"
+import { AbilityData, ISpecialValueOptions } from "../DataBook/AbilityData"
 import { Ability } from "./Ability"
 import { Entity } from "./Entity"
 import { Unit } from "./Unit"
@@ -76,6 +76,7 @@ export class Modifier {
 	public NetworkSubtle = false
 	public NetworkIsActive = false
 	public NetworkAuraWithInRange = false // e.g. "modifier_omniknight_degen_aura_effect"
+	public NetworkActivity = 0
 
 	public CreationTime = 0
 	public CustomEntity: Nullable<Unit>
@@ -215,7 +216,8 @@ export class Modifier {
 			newMovementSpeed = this.kv.MovementSpeed ?? 0,
 			newAuraWithinRange = this.kv.AuraWithInRange ?? false,
 			newNetworkSubtle = this.kv.Subtle ?? false,
-			newIsActive = this.kv.IsActive ?? false
+			newIsActive = this.kv.IsActive ?? false,
+			newActivity = this.kv.Activity ?? 0
 
 		if (this.Parent !== newParent) {
 			this.Remove()
@@ -261,6 +263,12 @@ export class Modifier {
 			this.UpdateSpecialValues()
 			updated = true
 		}
+		if (this.NetworkActivity !== newActivity) {
+			this.NetworkActivity = newActivity
+			this.UpdateSpecialValues()
+			updated = true
+		}
+
 		if (this.NetworkAuraWithInRange !== newAuraWithinRange) {
 			this.NetworkAuraWithInRange = newAuraWithinRange
 			this.UpdateSpecialValues()
@@ -427,11 +435,12 @@ export class Modifier {
 	protected GetSpecialValue(
 		specialName: string,
 		abilityName: string,
-		level = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
+		level = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
+		optional?: ISpecialValueOptions
 	): number {
 		const ability = this.Ability
 		if (ability !== undefined) {
-			return ability.GetSpecialValue(specialName, level)
+			return ability.GetSpecialValue(specialName, level, optional)
 		}
 		const data = AbilityData.GetAbilityByName(abilityName)
 		if (data === undefined) {

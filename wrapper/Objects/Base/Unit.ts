@@ -171,6 +171,10 @@ export class Unit extends Entity {
 	public readonly UnitType: number = 0
 	@NetworkedBasicField("m_iAbilityPoints")
 	public readonly AbilityPoints: number = 0
+	@NetworkedBasicField("m_flLastDispellTime")
+	public readonly LastDispellTime: number = 0
+	@NetworkedBasicField("m_iRefresherChargesUsed")
+	public readonly RefresherChargesUsed: number = 0
 	@NetworkedBasicField("m_iTotalAbilityPoints")
 	public readonly TotalAbilityPoints: number = 0
 	/** @private NOTE: this is internal field use LastDamageTime */
@@ -657,9 +661,8 @@ export class Unit extends Entity {
 		return this.IsGhost
 	}
 	public get CanUseAbilitiesInInvisibility(): boolean {
-		for (let index = this.Buffs.length - 1; index > -1; index--) {
-			const buff = this.Buffs[index]
-			switch (buff.Name) {
+		for (let i = this.Buffs.length - 1; i > -1; i--) {
+			switch (this.Buffs[i].Name) {
 				case "modifier_riki_permanent_invisibility":
 				case "modifier_treant_natures_guise_invis":
 					return true
@@ -833,6 +836,9 @@ export class Unit extends Entity {
 	}
 	public GetPredictiveArmorModifier(target: Unit): number {
 		return this.ModifierManager.GetPredictiveArmor(target)
+	}
+	public GetPiercingArmorModifier(target: Unit): number {
+		return this.ModifierManager.GetPiercingArmor(target)
 	}
 	public GetPhysicalDamageResist(predictiveArmor: number = 0): number {
 		return GetArmorResistInternal(this.Armor + predictiveArmor)
@@ -1022,8 +1028,9 @@ export class Unit extends Entity {
 		if (target.IsEthereal) {
 			return 0
 		}
-		const predictive = this.GetPredictiveArmorModifier(target)
-		return 1 - target.GetPhysicalDamageResist(predictive + (predictiveArmor ?? 0))
+		const predict = this.GetPredictiveArmorModifier(target) + (predictiveArmor ?? 0)
+		const resist = target.GetPhysicalDamageResist(predict)
+		return 1 - resist * target.GetPiercingArmorModifier(this)
 	}
 	public GetIncomingAttackDamage(target: Unit, isRaw: boolean): number {
 		return this.ModifierManager.GetIncomingAttackDamage(target, isRaw)

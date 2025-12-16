@@ -1,6 +1,8 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
+import { ISpecialValueOptions } from "../../../DataBook/AbilityData"
 
 @WrapperClassModifier()
 export class modifier_skywrath_mage_shield_barrier
@@ -28,8 +30,8 @@ export class modifier_skywrath_mage_shield_barrier
 		if (owner === undefined) {
 			return 0
 		}
-		const base = this.cachedShield + (owner.Level - 1)
-		return base * this.InternalStackCount - this.NetworkArmor
+		//const base = this.cachedShield + (owner.Level - 1)
+		return this.cachedShield * this.InternalStackCount - this.NetworkArmor
 	}
 	public IsBuff(): this is IBuff {
 		return this.StackCount !== 0
@@ -43,5 +45,23 @@ export class modifier_skywrath_mage_shield_barrier
 	protected UpdateSpecialValues(): void {
 		const name = "skywrath_mage_shield_of_the_scion"
 		this.cachedShield = this.GetSpecialValue("damage_barrier", name)
+	}
+	protected GetSpecialValue(
+		specialName: string,
+		abilityName: string,
+		level = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
+		optional?: ISpecialValueOptions
+	): number {
+		switch (specialName) {
+			case "damage_barrier":
+				return super.GetSpecialValue(specialName, abilityName, level, {
+					lvlup: {
+						subtract: 1,
+						operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+					}
+				})
+			default:
+				return super.GetSpecialValue(specialName, abilityName, level, optional)
+		}
 	}
 }

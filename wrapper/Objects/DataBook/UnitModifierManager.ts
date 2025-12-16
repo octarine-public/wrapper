@@ -481,8 +481,14 @@ export class UnitModifierManager {
 		const bonusUniqueActive = this.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS_UNIQUE_ACTIVE
 		)
+		const postPercentage = this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS_PERCENTAGE_POST,
+			false,
+			1,
+			1
+		)
 		const baseBonusArmor = this.GetBaseBonusPhysicalArmor(baseArmor)
-		return baseBonusArmor + bonus + bonusUnique + bonusUniqueActive
+		return (baseBonusArmor + bonus + bonusUnique + bonusUniqueActive) * postPercentage
 	}
 	public GetMagicResistance(baseResist: number, ignoreMagicResist?: boolean): number {
 		const bonus = this.GetPercentageMultiplicativeInternal(
@@ -509,12 +515,17 @@ export class UnitModifierManager {
 		return 1 - (direct + (1 - baseResist / 100)) * totalMul
 	}
 	public GetPredictiveArmor(target: Unit): number {
+		const args = [false, 1, 1, { SourceIndex: target.Index }] as const
 		return this.GetConditionalAdditiveInternal(
 			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_PHYSICAL_ARMOR_BONUS_TARGET,
-			false,
-			1,
-			1,
-			{ SourceIndex: target.Index }
+			...args
+		)
+	}
+	public GetPiercingArmor(target: Unit): number {
+		const args = [false, 1, 1, { SourceIndex: target.Index }] as const
+		return this.GetConditionalPercentageInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_PIERCING_PERCENTAGE_TARGET,
+			...args
 		)
 	}
 	public GetTimeVisionRange(

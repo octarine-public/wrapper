@@ -19,6 +19,14 @@ import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils
 import { Unit } from "../Base/Unit"
 import { UnitData } from "./UnitData"
 
+export interface ISpecialValueOptions {
+	useFacet?: boolean
+	lvlup?: {
+		subtract?: number
+		operation: EDOTASpecialBonusOperation
+	}
+}
+
 interface ILinkedSpecialBonus {
 	Name: string
 	IsOld: boolean
@@ -486,7 +494,7 @@ export class AbilityData {
 		specialName: string,
 		level: number,
 		abilityName: string,
-		includeFacet: boolean = true
+		{ useFacet, lvlup }: ISpecialValueOptions
 	): number {
 		if (level <= 0) {
 			return 0
@@ -516,11 +524,22 @@ export class AbilityData {
 			const linkedSpecialBonus = arr[i]
 			if (!linkedSpecialBonus.IsOld) {
 				if (linkedSpecialBonus.Name === "hero_levelup") {
-					baseVal *= owner.Level
+					if (lvlup) {
+						switch (lvlup.operation) {
+							case EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY:
+								baseVal *= owner.Level - (lvlup.subtract ?? 0)
+								break
+							case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
+								baseVal +=
+									linkedSpecialBonus.NewData![0][1] *
+									(owner.Level - (lvlup.subtract ?? 0))
+								break
+						}
+					}
 					continue
 				}
 				if (
-					includeFacet &&
+					useFacet &&
 					linkedSpecialBonus.Name.startsWith("special_bonus_facet_")
 				) {
 					if (owner.HeroFacet !== linkedSpecialBonus.Name.substring(20)) {
