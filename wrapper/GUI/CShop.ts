@@ -13,6 +13,7 @@ export class CShop {
 	public readonly Sticky1Row = new Rectangle()
 	public readonly Sticky2Rows = new Rectangle()
 	public readonly ClearQuickBuy1Row = new Rectangle()
+	public readonly BuyBackProtection = new Rectangle()
 	public readonly ClearQuickBuy2Rows = new Rectangle()
 	public readonly Stash = new Rectangle()
 	public readonly StashSlots: Rectangle[] = []
@@ -47,8 +48,8 @@ export class CShop {
 			Color.Green.SetA(128)
 		)
 		RendererSDK.FilledRect(
-			this.ClearQuickBuy1Row.pos1,
-			this.ClearQuickBuy1Row.Size,
+			this.BuyBackProtection.pos1,
+			this.BuyBackProtection.Size,
 			Color.Red.SetA(128)
 		)
 
@@ -58,10 +59,10 @@ export class CShop {
 			this.StashGrabAll.Size,
 			Color.Red.SetA(128)
 		)
-
-		this.StashSlots.forEach(rect =>
+		for (let i = 0, end = this.StashSlots.length; i < end; i++) {
+			const rect = this.StashSlots[i]
 			RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Fuchsia.SetA(128))
-		)
+		}
 	}
 	public HasChanged(): boolean {
 		return false
@@ -70,7 +71,7 @@ export class CShop {
 		this.ShopButton.Width = ScaleWidth(100, screenSize)
 		this.ShopButton.Height = ScaleHeight(36, screenSize)
 		this.ShopButton.x = !hudFlip
-			? this.Quickbuy1Row.x + ScaleWidth(12, screenSize)
+			? this.Quickbuy1Row.x + ScaleWidth(8, screenSize)
 			: ScaleWidth(8, screenSize)
 		this.ShopButton.y =
 			screenSize.y - this.ShopButton.Height - ScaleHeight(12, screenSize)
@@ -91,12 +92,12 @@ export class CShop {
 		this.CourierGold.pos2.y = screenSize.y
 	}
 	private CalculateQuickbuyAndSticky(screenSize: Vector2, hudFlip: boolean): void {
-		this.ClearQuickBuy1Row.Width = this.ClearQuickBuy2Rows.Width = ScaleWidth(
-			16,
+		this.BuyBackProtection.Width = this.ClearQuickBuy2Rows.Width = ScaleWidth(
+			28,
 			screenSize
 		)
-		this.ClearQuickBuy1Row.Height = this.ClearQuickBuy2Rows.Height = ScaleHeight(
-			16,
+		this.BuyBackProtection.Height = this.ClearQuickBuy2Rows.Height = ScaleHeight(
+			28,
 			screenSize
 		)
 
@@ -111,10 +112,10 @@ export class CShop {
 		this.Quickbuy1Row.y = quickbuyRowsY - this.Quickbuy1Row.Height
 		this.Quickbuy2Rows.y = quickbuyRowsY - this.Quickbuy2Rows.Height
 
-		const clearQuickBuyOffsetX = ScaleWidth(!hudFlip ? 56 : 62, screenSize),
-			clearQuickBuyOffsetY = ScaleHeight(6, screenSize)
-		this.ClearQuickBuy1Row.y = this.Quickbuy1Row.y + clearQuickBuyOffsetY
-		this.ClearQuickBuy2Rows.y = this.Quickbuy2Rows.y + clearQuickBuyOffsetY
+		const buyBackProtectionOffsetX = ScaleWidth(!hudFlip ? 57 : 62, screenSize),
+			buyBackProtectionOffsetY = ScaleHeight(4, screenSize)
+		this.BuyBackProtection.y = this.Quickbuy1Row.y + buyBackProtectionOffsetY
+		this.ClearQuickBuy2Rows.y = this.Quickbuy2Rows.y + buyBackProtectionOffsetX
 
 		this.Sticky1Row.Width = this.Sticky2Rows.Width = stickyWidth
 		this.Sticky1Row.Height = this.Quickbuy1Row.Height
@@ -127,8 +128,8 @@ export class CShop {
 			this.Quickbuy1Row.x = this.Sticky1Row.Width
 			this.Quickbuy2Rows.x = this.Sticky2Rows.Width
 
-			this.ClearQuickBuy1Row.x = clearQuickBuyOffsetX
-			this.ClearQuickBuy2Rows.x = clearQuickBuyOffsetX
+			this.BuyBackProtection.x = buyBackProtectionOffsetX
+			this.ClearQuickBuy2Rows.x = buyBackProtectionOffsetX
 		} else {
 			this.Sticky1Row.x = screenSize.x - this.Sticky1Row.Width
 			this.Sticky2Rows.x = screenSize.x - this.Sticky2Rows.Width
@@ -138,10 +139,10 @@ export class CShop {
 			this.Quickbuy2Rows.x =
 				screenSize.x - this.Quickbuy2Rows.Width - this.Sticky2Rows.Width
 
-			this.ClearQuickBuy1Row.x =
-				screenSize.x - clearQuickBuyOffsetX - this.ClearQuickBuy1Row.Width
+			this.BuyBackProtection.x =
+				screenSize.x - buyBackProtectionOffsetX - this.BuyBackProtection.Width
 			this.ClearQuickBuy2Rows.x =
-				screenSize.x - clearQuickBuyOffsetX - this.ClearQuickBuy2Rows.Width
+				screenSize.x - buyBackProtectionOffsetX - this.ClearQuickBuy2Rows.Width
 		}
 	}
 	private CalculateStash(screenSize: Vector2, hudFlip: boolean): void {

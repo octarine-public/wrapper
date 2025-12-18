@@ -246,7 +246,7 @@ export const GUIInfo = new (class CGUIInfo {
 			this.Shop.Sticky2Rows,
 			this.Shop.Quickbuy1Row,
 			this.Shop.Quickbuy2Rows,
-			this.Shop.ClearQuickBuy1Row,
+			this.Shop.BuyBackProtection,
 			this.Shop.ClearQuickBuy2Rows
 		)
 	}
