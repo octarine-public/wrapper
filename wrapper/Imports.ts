@@ -717,6 +717,7 @@ export { lone_druid_spirit_bear_demolish } from "./Objects/Abilities/LoneDruid/l
 export { lone_druid_spirit_bear_entangle } from "./Objects/Abilities/LoneDruid/lone_druid_spirit_bear_entangle"
 export { lone_druid_spirit_bear_fetch } from "./Objects/Abilities/LoneDruid/lone_druid_spirit_bear_fetch"
 export { lone_druid_spirit_bear_return } from "./Objects/Abilities/LoneDruid/lone_druid_spirit_bear_return"
+export { lone_druid_spirit_bear_spirit_link } from "./Objects/Abilities/LoneDruid/lone_druid_spirit_bear_spirit_link"
 export { lone_druid_spirit_link } from "./Objects/Abilities/LoneDruid/lone_druid_spirit_link"
 export { lone_druid_true_form } from "./Objects/Abilities/LoneDruid/lone_druid_true_form"
 export { lone_druid_true_form_battle_cry } from "./Objects/Abilities/LoneDruid/lone_druid_true_form_battle_cry"

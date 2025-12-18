@@ -118,7 +118,7 @@ export const GUIInfo = new (class CGUIInfo {
 	public GetLowerHUDForUnit(
 		unit: Nullable<Unit> = InputManager.SelectedUnit
 	): CLowerHUD {
-		const isHero = unit?.IsHero ?? false
+		const isHero = (unit?.IsHero ?? false) || (unit?.IsSpiritBear ?? false)
 		const abilsCount = this.GetVisibleAbilitiesForUnit(unit)
 		let heroMap = this.LowerHUD_.get(isHero)
 		if (heroMap === undefined) {
