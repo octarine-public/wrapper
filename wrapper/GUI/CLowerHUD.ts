@@ -36,12 +36,12 @@ export class CLowerHUD {
 
 		this.Portrait.Width = ScaleWidth(159, screenSize)
 		this.Portrait.Height = ScaleHeight(145, screenSize)
-		this.Portrait.x = ScaleWidth(52, screenSize)
+		this.Portrait.x = ScaleWidth(50, screenSize)
 		this.Portrait.y = screenSize.y - this.Portrait.Height
 
 		this.XP.Width = ScaleWidth(48, screenSize)
 		this.XP.Height = ScaleHeight(48, screenSize)
-		this.XP.x = ScaleWidth(6, screenSize)
+		this.XP.x = ScaleWidth(4, screenSize)
 		this.XP.y = screenSize.y - this.XP.Height
 
 		this.AbilitiesContainer.Width = ScaleWidth(321, screenSize)
