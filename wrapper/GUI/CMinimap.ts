@@ -23,6 +23,7 @@ export class CMinimap {
 	public readonly Glyph = new Rectangle()
 	public readonly Scan = new Rectangle()
 	public readonly Roshan = new Rectangle()
+	public readonly Miniboss = new Rectangle()
 
 	constructor(screenSize = new Vector2(), hudFlipped = false) {
 		CMinimap.UpdateExtraLargeMinimapSetting()
@@ -64,6 +65,11 @@ export class CMinimap {
 		RendererSDK.FilledRect(this.Glyph.pos1, this.Glyph.Size, Color.Yellow.SetA(128))
 		RendererSDK.FilledRect(this.Scan.pos1, this.Scan.Size, Color.Gray.SetA(128))
 		RendererSDK.FilledRect(this.Roshan.pos1, this.Roshan.Size, Color.Red.SetA(128))
+		RendererSDK.FilledRect(
+			this.Miniboss.pos1,
+			this.Miniboss.Size,
+			Color.Fuchsia.SetA(128)
+		)
 	}
 	public HasChanged(): boolean {
 		return CMinimap.UpdateExtraLargeMinimapSetting()
@@ -95,6 +101,11 @@ export class CMinimap {
 			: this.Minimap.x + this.Minimap.Width
 
 		const glyphOffsetX = ScaleWidth(24, screenSize)
+		const scanOffsetX = ScaleWidth(24, screenSize)
+		const minibossOffsetX = ScaleWidth(24, screenSize)
+		const roshanOffsetX = ScaleWidth(24, screenSize)
+
+		// Glyph
 		this.Glyph.Width = ScaleWidth(44, screenSize)
 		this.Glyph.Height = ScaleHeight(44, screenSize)
 		this.Glyph.y =
@@ -103,7 +114,7 @@ export class CMinimap {
 			ScaleHeight(6, screenSize) -
 			this.Glyph.Height
 
-		const scanOffsetX = ScaleWidth(24, screenSize)
+		// Scan
 		this.Scan.Width = ScaleWidth(44, screenSize)
 		this.Scan.Height = ScaleHeight(44, screenSize)
 		this.Scan.y =
@@ -112,22 +123,30 @@ export class CMinimap {
 			ScaleHeight(50, screenSize) -
 			this.Scan.Height
 
-		const roshanOffsetX = ScaleWidth(24, screenSize)
-		this.Roshan.Width = ScaleWidth(44, screenSize)
-		this.Roshan.Height = ScaleHeight(44, screenSize)
-		this.Roshan.y =
+		// Miniboss
+		this.Miniboss.Width = ScaleWidth(44, screenSize)
+		this.Miniboss.Height = ScaleHeight(44, screenSize)
+		this.Miniboss.y =
 			this.Scan.y +
 			this.Scan.Height -
 			ScaleHeight(65, screenSize) -
-			this.Roshan.Height
+			this.Miniboss.Height
+
+		// Roshan
+		this.Roshan.Width = ScaleWidth(44, screenSize)
+		this.Roshan.Height = ScaleHeight(44, screenSize)
+		this.Roshan.y = this.Miniboss.y - this.Roshan.Height - ScaleHeight(6, screenSize)
 
 		if (hudFlip) {
 			this.Glyph.x = GlyphScan.x + glyphOffsetX
 			this.Scan.x = GlyphScan.x + scanOffsetX
+			this.Miniboss.x = GlyphScan.x + minibossOffsetX
 			this.Roshan.x = GlyphScan.x + roshanOffsetX
 		} else {
 			this.Glyph.x = GlyphScan.x + GlyphScan.Width - glyphOffsetX - this.Glyph.Width
 			this.Scan.x = GlyphScan.x + GlyphScan.Width - scanOffsetX - this.Scan.Width
+			this.Miniboss.x =
+				GlyphScan.x + GlyphScan.Width - minibossOffsetX - this.Miniboss.Width
 			this.Roshan.x =
 				GlyphScan.x + GlyphScan.Width - roshanOffsetX - this.Roshan.Width
 		}
@@ -138,20 +157,22 @@ export class CMinimap {
 			this.MinimapRenderBounds.x,
 			this.Glyph.x,
 			this.Scan.x,
+			this.Miniboss.x,
 			this.Roshan.x
 		)
+
 		const rightMost = Math.max(
 			this.Minimap.pos2.x,
 			this.MinimapRenderBounds.pos2.x,
 			this.Glyph.pos2.x,
 			this.Scan.pos2.x,
+			this.Miniboss.pos2.x,
 			this.Roshan.pos2.x
 		)
-		const topY = this.Minimap.y
-		const bottomY = this.Minimap.pos2.y
+
 		this.FullHUDContainer.x = leftMost
-		this.FullHUDContainer.y = topY
+		this.FullHUDContainer.y = this.Minimap.y
 		this.FullHUDContainer.Width = rightMost - leftMost
-		this.FullHUDContainer.Height = bottomY - topY
+		this.FullHUDContainer.Height = this.Minimap.pos2.y - this.Minimap.y
 	}
 }
