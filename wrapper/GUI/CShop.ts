@@ -66,7 +66,6 @@ export class CShop {
 	public HasChanged(): boolean {
 		return false
 	}
-
 	private CalculateCourierGold(screenSize: Vector2, hudFlip: boolean): void {
 		this.ShopButton.Width = ScaleWidth(100, screenSize)
 		this.ShopButton.Height = ScaleHeight(36, screenSize)
@@ -152,19 +151,19 @@ export class CShop {
 
 		StashContainer.y =
 			screenSize.y -
-			(ScaleHeight(56, screenSize) - ScaleHeight(16, screenSize)) -
+			(ScaleHeight(45, screenSize) - ScaleHeight(16, screenSize)) -
 			StashContainer.Height
 		StashContainer.x = hudFlip ? 0 : screenSize.x - this.Stash.Width
 
-		this.Stash.Width = ScaleWidth(262, screenSize)
-		this.Stash.Height = ScaleHeight(72, screenSize)
+		this.Stash.Width = ScaleWidth(290, screenSize)
+		this.Stash.Height = ScaleHeight(67, screenSize)
 		this.Stash.y = StashContainer.y
 		this.Stash.x = hudFlip ? 0 : screenSize.x - this.Stash.Width
 
-		const StashGrabAllMargin = ScaleWidth(186, screenSize)
-		this.StashGrabAll.Width = ScaleWidth(102, screenSize)
-		this.StashGrabAll.Height = ScaleHeight(26, screenSize)
-		this.StashGrabAll.y = StashContainer.y + ScaleHeight(3, screenSize)
+		const StashGrabAllMargin = ScaleWidth(230, screenSize)
+		this.StashGrabAll.Width = ScaleWidth(88, screenSize)
+		this.StashGrabAll.Height = ScaleHeight(20, screenSize)
+		this.StashGrabAll.y = StashContainer.y + ScaleHeight(6, screenSize)
 		this.StashGrabAll.x = hudFlip
 			? StashContainer.x + StashGrabAllMargin
 			: StashContainer.x - StashGrabAllMargin - this.StashGrabAll.Width
@@ -177,7 +176,7 @@ export class CShop {
 		const StashRow = new Rectangle()
 		StashRow.Width = (ItemWidth + ItemMarginRight) * StashSlots
 		StashRow.Height = ItemHeight
-		StashRow.x = this.Stash.pos2.x - StashRow.Width - ScaleWidth(7, screenSize)
+		StashRow.x = this.Stash.pos2.x - StashRow.Width - ScaleWidth(21, screenSize)
 		StashRow.y = this.Stash.y + ScaleHeight(31, screenSize) + ItemMarginTop
 		for (let i = 0; i < StashSlots; i++) {
 			const ItemRect = new Rectangle()

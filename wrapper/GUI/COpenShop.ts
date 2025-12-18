@@ -28,7 +28,7 @@ export class COpenShop {
 	private readonly mainPanel = new Rectangle()
 
 	constructor(large: boolean, screenSize: Vector2, hudFlipped: boolean) {
-		this.onChnaged()
+		this.onChanged()
 		this.CalculateMainPanel(large, screenSize, hudFlipped)
 	}
 
@@ -52,7 +52,7 @@ export class COpenShop {
 		)
 	}
 	public HasChanged(): boolean {
-		return this.onChnaged()
+		return this.onChanged()
 	}
 	private CalculateMainPanel(
 		large: boolean,
@@ -109,7 +109,7 @@ export class COpenShop {
 		this.ItemCombines.x = this.mainPanel.x
 		this.ItemCombines.y = this.PinnedItems.y + this.PinnedItems.Height
 	}
-	private onChnaged(): boolean {
+	private onChanged(): boolean {
 		const state = ConVarsSDK.GetBoolean("dota_hud_shop_show_filter", false)
 		if (state === this.isShopShowFilter) {
 			return false
