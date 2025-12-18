@@ -147,7 +147,7 @@ export const GUIInfo = new (class CGUIInfo {
 				this.PreGame.DebugDraw()
 				break
 			default:
-				this.TopBar.DebugDraw()
+				//this.TopBar.DebugDraw()
 				this.Minimap.DebugDraw()
 				this.Shop.DebugDraw()
 				if (InputManager.IsShopOpen) {

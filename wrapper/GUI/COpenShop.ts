@@ -1,20 +1,22 @@
 import { Color } from "../Base/Color"
 import { Rectangle } from "../Base/Rectangle"
 import { Vector2 } from "../Base/Vector2"
+import { ConVarsSDK } from "../Native/ConVarsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
 import { ScaleHeight, ScaleWidth } from "./Helpers"
 
 export class COpenShop {
 	private static readonly MainPanelMiniWidth = 360
 	private static readonly MainPanelLargeWidth = 400
+	private static readonly MainPanelLargeFilterWidth = 512
 
-	private static readonly HeaderAndItemsHeight = 670
+	private static readonly HeaderAndItemsHeight = 655
 	private static readonly HeaderHeight = 84
 	private static readonly ItemsHeight =
 		COpenShop.HeaderAndItemsHeight - COpenShop.HeaderHeight
 	// TODO: this only works correctly on FulLHD
-	private static readonly PinnedItemsHeight = 74
-	private static readonly ItemCombinesHeight = 90
+	private static readonly PinnedItemsHeight = 85
+	private static readonly ItemCombinesHeight = 98
 
 	public readonly Header = new Rectangle()
 	public readonly Items = new Rectangle()
@@ -22,7 +24,11 @@ export class COpenShop {
 	public readonly ItemCombines = new Rectangle()
 	public readonly GuideFlyout = new Rectangle()
 
+	private isShopShowFilter = false
+	private readonly mainPanel = new Rectangle()
+
 	constructor(large: boolean, screenSize: Vector2, hudFlipped: boolean) {
+		this.onChnaged()
 		this.CalculateMainPanel(large, screenSize, hudFlipped)
 	}
 
@@ -42,13 +48,12 @@ export class COpenShop {
 		RendererSDK.FilledRect(
 			this.GuideFlyout.pos1,
 			this.GuideFlyout.Size,
-			Color.BlackGray.SetA(128)
+			Color.Red.SetA(128)
 		)
 	}
 	public HasChanged(): boolean {
-		return false
+		return this.onChnaged()
 	}
-
 	private CalculateMainPanel(
 		large: boolean,
 		screenSize: Vector2,
@@ -60,44 +65,56 @@ export class COpenShop {
 			itemCombinesHeight = ScaleHeight(COpenShop.ItemCombinesHeight, screenSize),
 			shopBottomMargin = ScaleHeight(206, screenSize)
 
-		const mainPanel = new Rectangle()
-		mainPanel.Width = ScaleWidth(
-			large ? COpenShop.MainPanelLargeWidth : COpenShop.MainPanelMiniWidth,
+		this.mainPanel.Width = ScaleWidth(
+			large
+				? this.isShopShowFilter
+					? COpenShop.MainPanelLargeFilterWidth
+					: COpenShop.MainPanelLargeWidth
+				: COpenShop.MainPanelMiniWidth,
 			screenSize
 		)
-		mainPanel.Height =
+
+		this.mainPanel.Height =
 			headerHeight + itemsHeight + pinnedItemsHeight + itemCombinesHeight
 
-		mainPanel.x = hudFlip ? 0 : screenSize.x - mainPanel.Width
-		mainPanel.y = screenSize.y - shopBottomMargin - mainPanel.Height
+		this.mainPanel.x = hudFlip ? 0 : screenSize.x - this.mainPanel.Width
+		this.mainPanel.y = screenSize.y - shopBottomMargin - this.mainPanel.Height
 
 		if (large) {
 			this.GuideFlyout.Width = ScaleWidth(210, screenSize)
-			this.GuideFlyout.Height = ScaleHeight(814, screenSize)
+			this.GuideFlyout.Height = ScaleHeight(838, screenSize)
 			this.GuideFlyout.x = hudFlip
-				? mainPanel.pos2.x
-				: mainPanel.x - this.GuideFlyout.Width
-			this.GuideFlyout.y = mainPanel.y
+				? this.mainPanel.pos2.x
+				: this.mainPanel.x - this.GuideFlyout.Width
+			this.GuideFlyout.y = this.mainPanel.y
 		}
 
-		this.Header.Width = mainPanel.Width
+		this.Header.Width = this.mainPanel.Width
 		this.Header.Height = headerHeight
-		this.Header.x = mainPanel.x
-		this.Header.y = mainPanel.y
+		this.Header.x = this.mainPanel.x
+		this.Header.y = this.mainPanel.y
 
-		this.Items.Width = mainPanel.Width
+		this.Items.Width = this.mainPanel.Width
 		this.Items.Height = itemsHeight
-		this.Items.x = mainPanel.x
+		this.Items.x = this.mainPanel.x
 		this.Items.y = this.Header.y + this.Header.Height
 
-		this.PinnedItems.Width = mainPanel.Width
+		this.PinnedItems.Width = this.mainPanel.Width
 		this.PinnedItems.Height = pinnedItemsHeight
-		this.PinnedItems.x = mainPanel.x
+		this.PinnedItems.x = this.mainPanel.x
 		this.PinnedItems.y = this.Items.y + this.Items.Height
 
-		this.ItemCombines.Width = mainPanel.Width
+		this.ItemCombines.Width = this.mainPanel.Width
 		this.ItemCombines.Height = itemCombinesHeight
-		this.ItemCombines.x = mainPanel.x
+		this.ItemCombines.x = this.mainPanel.x
 		this.ItemCombines.y = this.PinnedItems.y + this.PinnedItems.Height
+	}
+	private onChnaged(): boolean {
+		const state = ConVarsSDK.GetBoolean("dota_hud_shop_show_filter", false)
+		if (state === this.isShopShowFilter) {
+			return false
+		}
+		this.isShopShowFilter = state
+		return true
 	}
 }
