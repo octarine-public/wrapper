@@ -1128,6 +1128,7 @@ export { slark_depth_shroud } from "./Objects/Abilities/Slark/slark_depth_shroud
 export { slark_essence_shift } from "./Objects/Abilities/Slark/slark_essence_shift"
 export { slark_fish_bait } from "./Objects/Abilities/Slark/slark_fish_bait"
 export { slark_pounce } from "./Objects/Abilities/Slark/slark_pounce"
+export { slark_saltwater_shiv } from "./Objects/Abilities/Slark/slark_saltwater_shiv"
 export { slark_shadow_dance } from "./Objects/Abilities/Slark/slark_shadow_dance"
 export { snapfire_buckshot } from "./Objects/Abilities/Snapfire/snapfire_buckshot"
 export { snapfire_firesnap_cookie } from "./Objects/Abilities/Snapfire/snapfire_firesnap_cookie"
