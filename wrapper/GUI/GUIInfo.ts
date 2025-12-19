@@ -5,7 +5,7 @@ import { EventsSDK } from "../Managers/EventsSDK"
 import { InputManager, VKeys } from "../Managers/InputManager"
 import { ConVarsSDK } from "../Native/ConVarsSDK"
 import { RendererSDK } from "../Native/RendererSDK"
-import { GameRules } from "../Objects/Base/Entity"
+import { Entity, GameRules } from "../Objects/Base/Entity"
 import { Unit } from "../Objects/Base/Unit"
 import { CLowerHUD } from "./CLowerHUD"
 import { CMinimap } from "./CMinimap"
@@ -96,12 +96,12 @@ export const GUIInfo = new (class CGUIInfo {
 			this.DebugDraw()
 		}
 	}
-	public GetVisibleAbilitiesForUnit(unit: Nullable<Unit>): number {
-		if (unit === undefined) {
+	public GetVisibleAbilitiesForUnit(ent: Nullable<Entity>): number {
+		if (ent === undefined || !(ent instanceof Unit)) {
 			return 0
 		}
 		let count = 0
-		const arr = unit.Spells
+		const arr = ent.Spells
 		for (let i = 0; i < arr.length; i++) {
 			const abil = arr[i]
 			if (abil === undefined || abil.IsHidden || !abil.ShouldBeDrawable) {
