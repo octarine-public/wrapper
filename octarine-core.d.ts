@@ -162,6 +162,23 @@ declare interface WorldUtils {
 	BatchCheckRayBox(): void
 }
 
+declare interface Panorama {
+	/**
+	 * @param js JavaScript code to execute on the Octarine Panorama Layer
+	 */
+	ExecuteScriptOctarine(js: string): void
+	
+	/**
+	 * @param js JavaScript code to execute on the DotaDashboard Panorama Layer
+	 */
+	ExecuteScriptDashboard(js: string): void
+
+	/**
+	 * @param js JavaScript code to execute on the DotaHud Panorama Layer
+	 */
+	ExecuteScriptHud(js: string): void
+}
+
 declare interface Camera {
 	Distance: number
 	FoV: number
