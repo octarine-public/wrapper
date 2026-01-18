@@ -28,8 +28,6 @@ export class InternalChanger {
 	private treeScaleVal = 1
 	private treeColorVal = Color.Gray
 
-	private readonly node: Menu.Node
-
 	private readonly weather: Menu.Dropdown
 	private readonly emoticons: Menu.Toggle
 	private readonly riverPaint: Menu.Dropdown
@@ -117,25 +115,22 @@ export class InternalChanger {
 		"Aurora"
 	]
 
-	constructor(settings: Menu.Node) {
-		this.node = settings.AddNode("Changer", "menu/icons/changer.svg")
-		this.node.SortNodes = false
-
-		this.emoticons = this.node
+	constructor(node: Menu.Node) {
+		this.emoticons = node
 			.AddToggle("Emoticons chat", false, "Use own risk!")
 			.OnValue(t => ConVarsSDK.Set("dota_hud_chat_enable_all_emoticons", t.value))
 
-		this.weather = this.node
+		this.weather = node
 			.AddDropdown("Weather", this.weatherNames, 0, "Use own risk!")
 			.OnValue(t => ConVarsSDK.Set("cl_weather", t.SelectedID))
 
-		this.riverPaint = this.node
+		this.riverPaint = node
 			.AddDropdown("River", this.riverNames, 0, "Use own risk!")
 			.OnValue(t => ConVarsSDK.Set("dota_river_type", t.SelectedID))
 
-		const inventoryChanger = this.node.AddNode(
+		const inventoryChanger = node.AddNode(
 			"Inventory",
-			ImageData.Icons.icon_svg_inventory_changer
+			"menu/icons/inventory_changer.svg"
 		)
 		inventoryChanger.SortNodes = false
 		// inventoryChanger.IsHidden = true
@@ -184,7 +179,7 @@ export class InternalChanger {
 			)
 		})
 
-		this.treeChanger = this.node.AddNode("Trees", ImageData.Icons.icon_svg_tree_alt)
+		this.treeChanger = node.AddNode("Trees", ImageData.Icons.icon_svg_tree_alt)
 		this.treeChanger.SortNodes = false
 		this.treeMenuNames = this.treeChanger.AddDropdown(
 			"Tree models",
@@ -241,7 +236,6 @@ export class InternalChanger {
 			data.zeroRotation,
 			data.canChangeColor ? this.treeColorVal.toUint32() : 0
 		)
-		this.node.Update()
 	}
 
 	protected ChangeResetSettingsTreeModels(): void {

@@ -8,7 +8,6 @@ import {
 	MenuLanguageID
 } from "../../../wrapper/Imports"
 import { InternalCamera } from "./Camera"
-import { InternalChanger } from "./Changer"
 import { InternalConfig } from "./Config"
 import { InternalNotifications } from "./Notifications"
 
@@ -16,7 +15,6 @@ new (class CInternalSettings {
 	private setLanguageCounter = 0
 	private readonly tree = Menu.AddEntry("Settings")
 	private readonly cCamera = new InternalCamera(this.tree)
-	private readonly cChanger = new InternalChanger(this.tree)
 	private readonly cNotifications = new InternalNotifications(this.tree)
 	private readonly cConfig = new InternalConfig(this.tree)
 
@@ -33,8 +31,6 @@ new (class CInternalSettings {
 		Events.on("ScriptsUpdated", this.ScriptsUpdated.bind(this))
 
 		EventsSDK.on("Draw", this.Draw.bind(this))
-		EventsSDK.on("GameStarted", this.GameStarted.bind(this))
-
 		EventsSDK.on("EntityCreated", this.EntityCreated.bind(this))
 		EventsSDK.on("HumanizerStateChanged", this.HumanizerStateChanged.bind(this))
 
@@ -78,10 +74,6 @@ new (class CInternalSettings {
 
 	protected MouseWheel(up: boolean) {
 		return this.cCamera.MouseWheel(up)
-	}
-
-	protected GameStarted() {
-		this.cChanger.GameStarted()
 	}
 
 	protected EntityCreated(entity: Entity) {
