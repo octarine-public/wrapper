@@ -134,6 +134,7 @@ export const Icons = {
 	icon_svg_alien: `${WrapperImagePath}/icons/alien.svg`,
 	icon_svg_time_fast: `${WrapperImagePath}/icons/time-fast.svg`,
 	icon_svg_tree_alt: `${WrapperImagePath}/icons/tree-alt.svg`,
+	icon_svg_inventory_changer: `${WrapperImagePath}/icons/inventory_changer.svg`,
 	icon_svg_teddy_bear: `${WrapperImagePath}/icons/teddy_bear.svg`,
 	icon_analytics: `${ImagePath}/plus/achievements/view_post_game_analytics_icon_png.vtex_c`,
 	icon_notification: `${WrapperMenuPath}/icons/notification.svg`

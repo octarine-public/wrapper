@@ -133,7 +133,10 @@ export class InternalChanger {
 			.AddDropdown("River", this.riverNames, 0, "Use own risk!")
 			.OnValue(t => ConVarsSDK.Set("dota_river_type", t.SelectedID))
 
-		const inventoryChanger = this.node.AddNode("Inventory")
+		const inventoryChanger = this.node.AddNode(
+			"Inventory",
+			ImageData.Icons.icon_svg_inventory_changer
+		)
 		inventoryChanger.SortNodes = false
 		// inventoryChanger.IsHidden = true
 

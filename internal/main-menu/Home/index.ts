@@ -44,7 +44,7 @@ class RGBTrailMenu {
 	constructor(node: Menu.Node) {
 		this.tree = node.AddNode("RGB trail", this.icon, "RGB mouse trail")
 		this.tree.SortNodes = false
-		this.state = this.tree.AddToggle("State", true)
+		this.state = this.tree.AddToggle("State", false)
 		this.Smoothing = this.tree.AddToggle("Smoothing", true)
 		this.Animate = this.tree.AddToggle("RGB animate", true)
 		this.Color = this.tree.AddColorPicker("Color", Color.Aqua.SetA(255))
