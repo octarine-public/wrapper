@@ -50,6 +50,7 @@ declare var CustomGameEvents: CustomGameEvents
 declare var Particles: Particles
 declare var Renderer: Renderer
 declare var WorldUtils: WorldUtils
+declare var Panorama: Panorama
 declare var Camera: Camera
 declare const IS_MINIMAL_CORE: boolean
 
@@ -162,21 +163,151 @@ declare interface WorldUtils {
 	BatchCheckRayBox(): void
 }
 
+declare interface IUIPanel {
+	FindChild(id: string): IUIPanel | null
+	FindChildTraverse(id: string): IUIPanel | null
+	FindChildInLayoutFile(id: string): IUIPanel | null
+	FindPanelInLayoutFile(id: string): IUIPanel | null
+	RemoveAndDeleteChildrenOfType(symbol: number): void
+	GetChildCountOfType(symbol: number): any
+	GetChildCount(): any
+	GetChild(index: number): IUIPanel | null
+	GetFirstChild(): IUIPanel | null
+	GetLastChild(): IUIPanel | null
+	GetHiddenChildCount(): any
+	GetHiddenChild(index: number): any
+	FindAncestor(id: string): IUIPanel | null
+	RemoveAndDeleteChildren(): void
+	AddClass(symbol: number): void
+	RemoveClass(symbol: number): void
+	RemoveAllClasses(): void
+	SetID(id: string): void
+	GetID(): string
+	BHasID(): boolean
+	BIsLoaded(): boolean
+	SetVisible(visible: boolean): void
+	GetDesiredLayoutWidth(): number
+	GetDesiredLayoutHeight(): number
+	GetContentWidth(): number
+	GetContentHeight(): number
+	GetActualLayoutWidth(): number
+	GetActualLayoutHeight(): number
+	GetActualRenderWidth(): number
+	GetActualRenderHeight(): number
+	GetActualXOffset(): number
+	GetActualYOffset(): number
+	GetRawActualXOffset(): number
+	GetRawActualYOffset(): number
+	GetActualUIScaleX(): number
+	GetActualUIScaleY(): number
+	GetActualUIScaleZ(): number
+	GetPanelType(symbol: number): any
+	GetContentsYScrollOffset(): number
+	GetContentsXScrollOffset(): number
+	GetContentsYScrollOffsetTarget(): number
+	GetContentsXScrollOffsetTarget(): number
+	BHasClass(symbol: number): boolean
+	BAscendantHasClass(symbol: number): boolean
+	ToggleClass(symbol: number): void
+	SetHasClass(symbol: number, has: boolean): void
+	TriggerClass(symbol: number): void
+	IsDescendantOf(child: IUIPanel): boolean
+	GetChildIndex(child: IUIPanel): number
+	GetHiddenChildIndex(child: IUIPanel): number
+	FindLowestCommonAncestor(panel: IUIPanel): IUIPanel | null
+	BAcceptsInput(): boolean
+	SetAcceptsInput(accepts: boolean): void
+	BAcceptsFocus(): boolean
+	SetAcceptsFocus(accepts: boolean): void
+	BCanAcceptInput(): boolean
+	SetDefaultFocus(childId: string): void
+	GetDefaultFocus(): string
+	SetDisableFocusOnMouseDown(disable: boolean): void
+	BFocusOnMouseDown(): boolean
+	BCanClearFocusByClicking(): boolean
+	BAlwaysConsumeHoverClicks(): boolean
+	SetAlwaysConsumeHoverClicks(enable: boolean): void
+	SetCanClearFocusByClicking(enable: boolean): void
+	BScrollParentToFitWhenFocused(): boolean
+	SetScrollParentToFitWhenFocused(scrollParentToFit: boolean): void
+	BTopOfInputContext(): boolean
+	SetTopOfInputContext(top: boolean): void
+	GetParentInputContext(): IUIPanel | null
+	GetDefaultInputFocus(): IUIPanel | null
+	SetFocus(): void
+	SetEnabled(enable: boolean): void
+	IsEnabled(): boolean
+	SetSelected(enable: boolean): void
+	IsSelected(): boolean
+	IsActivationEnabled(): boolean
+	SetActivationEnabled(enable: boolean): void
+	SetAllChildrenActivationEnabled(enable: boolean): void
+	SetHitTestEnabled(enable: boolean): void
+	BHitTestEnabled(): boolean
+	SetHitTestEnabledTraverse(enable: boolean): void
+	SetHitTestChildrenEnabled(enable: boolean): void
+	BHitTestChildrenEnabled(): boolean
+	SetDraggable(enable: boolean): void
+	IsDraggable(): boolean
+	SetRememberChildFocus(enable: boolean): void
+	GetRememberChildFocus(): boolean
+	SetChildFocusOnHover(enable: boolean): void
+	GetChildFocusOnHover(): boolean
+	SetFocusOnHover(enable: boolean): void
+	GetFocusOnHover(): boolean
+	ScrollToTop(): void
+	ScrollToBottom(): void
+	ScrollToLeftEdge(): void
+	ScrollToRightEdge(): void
+	IsScrolledIntoView(): boolean
+	MoveChildAfter(childToMove: IUIPanel, before: IUIPanel): void
+	MoveChildBefore(childToMove: IUIPanel, after: IUIPanel): void
+	BHasOnActivateEvent(): boolean
+	BHasOnMouseActivateEvent(): boolean
+	GetAttribute(symbol: number, defaultValue: string): string
+	SetAttribute(symbol: number, value: string): void
+	RemoveAttribute(symbol: number): void
+	BSetProperty(symbol: number, value: string): boolean
+}
+
 declare interface Panorama {
 	/**
-	 * @param js JavaScript code to execute on the Octarine Panorama Layer
+	 * @param panel Panel to run the JS code on
+	 * @param js JavaScript code to execute
 	 */
-	ExecuteScriptOctarine(js: string): void
-	
-	/**
-	 * @param js JavaScript code to execute on the DotaDashboard Panorama Layer
-	 */
-	ExecuteScriptDashboard(js: string): void
+	ExecuteScript(panel: IUIPanel, js: string): void
 
 	/**
-	 * @param js JavaScript code to execute on the DotaHud Panorama Layer
+	 * Set callback that will be called on window create
 	 */
-	ExecuteScriptHud(js: string): void
+	SetWindowCreateCallback(callback: (name: string) => void): void
+
+	/**
+	 * Set callback that will be called on window destroy
+	 */
+	SetWindowDestroyCallback(callback: (name: string) => void): void
+
+	/**
+	 * @param name string you want to turn into CPanoramaSymbol (65535 symbols is the limit)
+	 * @returns index of the made symbol
+	 */
+	MakeSymbol(name: string): number
+
+	/**
+	 * @param symbol index of CPanoramaSymbol you want to turn into a string
+	 * @returns name of the symbol
+	 */
+	GetSymbolString(symbol: number): string
+
+	/**
+	 * Returns specified root panel (window root panel) or null
+	 */
+	FindRootPanel(name: "OctarineRoot" | "DotaDashboard" | "DotaHud" |"DotaLoadingScreen" | "PanoramaEngineConsole"): IUIPanel | null
+
+	/**
+	 * Creates panel of the specified type and adds it to the specified parent panel
+	 */
+	CreatePanel(type: string, id: string, parent: IUIPanel): IUIPanel | null
 }
 
 declare interface Camera {
