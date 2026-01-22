@@ -302,7 +302,7 @@ declare interface Panorama {
 	/**
 	 * Returns specified root panel (window root panel) or null
 	 */
-	FindRootPanel(name: "OctarineRoot" | "DotaDashboard" | "DotaHud" |"DotaLoadingScreen" | "PanoramaEngineConsole"): IUIPanel | null
+	FindRootPanel(name: "OctarineRoot" | "DotaDashboard" | "DotaHud" | "DotaLoadingScreen" | "PanoramaEngineConsole"): IUIPanel | null
 
 	/**
 	 * Creates panel of the specified type and adds it to the specified parent panel
