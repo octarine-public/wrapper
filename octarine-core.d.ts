@@ -164,19 +164,19 @@ declare interface WorldUtils {
 }
 
 declare interface IUIPanel {
-	FindChild(id: string): IUIPanel | null
-	FindChildTraverse(id: string): IUIPanel | null
-	FindChildInLayoutFile(id: string): IUIPanel | null
-	FindPanelInLayoutFile(id: string): IUIPanel | null
+	FindChild(id: string): Nullable<IUIPanel>
+	FindChildTraverse(id: string): Nullable<IUIPanel>
+	FindChildInLayoutFile(id: string): Nullable<IUIPanel>
+	FindPanelInLayoutFile(id: string): Nullable<IUIPanel>
 	RemoveAndDeleteChildrenOfType(symbol: number): void
 	GetChildCountOfType(symbol: number): any
 	GetChildCount(): any
-	GetChild(index: number): IUIPanel | null
-	GetFirstChild(): IUIPanel | null
-	GetLastChild(): IUIPanel | null
+	GetChild(index: number): Nullable<IUIPanel>
+	GetFirstChild(): Nullable<IUIPanel>
+	GetLastChild(): Nullable<IUIPanel>
 	GetHiddenChildCount(): any
 	GetHiddenChild(index: number): any
-	FindAncestor(id: string): IUIPanel | null
+	FindAncestor(id: string): Nullable<IUIPanel>
 	RemoveAndDeleteChildren(): void
 	AddClass(symbol: number): void
 	RemoveClass(symbol: number): void
@@ -214,7 +214,7 @@ declare interface IUIPanel {
 	IsDescendantOf(child: IUIPanel): boolean
 	GetChildIndex(child: IUIPanel): number
 	GetHiddenChildIndex(child: IUIPanel): number
-	FindLowestCommonAncestor(panel: IUIPanel): IUIPanel | null
+	FindLowestCommonAncestor(panel: IUIPanel): Nullable<IUIPanel>
 	BAcceptsInput(): boolean
 	SetAcceptsInput(accepts: boolean): void
 	BAcceptsFocus(): boolean
@@ -232,8 +232,8 @@ declare interface IUIPanel {
 	SetScrollParentToFitWhenFocused(scrollParentToFit: boolean): void
 	BTopOfInputContext(): boolean
 	SetTopOfInputContext(top: boolean): void
-	GetParentInputContext(): IUIPanel | null
-	GetDefaultInputFocus(): IUIPanel | null
+	GetParentInputContext(): Nullable<IUIPanel>
+	GetDefaultInputFocus(): Nullable<IUIPanel>
 	SetFocus(): void
 	SetEnabled(enable: boolean): void
 	IsEnabled(): boolean
@@ -302,12 +302,12 @@ declare interface Panorama {
 	/**
 	 * Returns specified root panel (window root panel) or null
 	 */
-	FindRootPanel(name: "OctarineRoot" | "DotaDashboard" | "DotaHud" | "DotaLoadingScreen" | "PanoramaEngineConsole"): IUIPanel | null
+	FindRootPanel(name: "OctarineRoot" | "DotaDashboard" | "DotaHud" | "DotaLoadingScreen" | "PanoramaEngineConsole"): Nullable<IUIPanel>
 
 	/**
 	 * Creates panel of the specified type and adds it to the specified parent panel
 	 */
-	CreatePanel(type: string, id: string, parent: IUIPanel): IUIPanel | null
+	CreatePanel(type: string, id: string, parent: IUIPanel): Nullable<IUIPanel>
 }
 
 declare interface Camera {
