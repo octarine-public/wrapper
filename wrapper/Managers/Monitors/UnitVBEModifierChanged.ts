@@ -9,7 +9,9 @@ interface IModifiersIgnore {
 	vbeModifiers: string[]
 }
 new (class CUnitVBEModifierChanged {
-	private readonly ignoreData = readJSON<IModifiersIgnore>("ignore_data.json")
+	private readonly ignoreModifiers = new Set(
+		readJSON<IModifiersIgnore>("ignore_data.json").vbeModifiers
+	)
 
 	constructor() {
 		EventsSDK.on(
@@ -19,6 +21,9 @@ new (class CUnitVBEModifierChanged {
 		)
 	}
 	protected ModifierChangedVBE(mod: Modifier) {
+		if (this.ignoreModifiers.has(mod.Name)) {
+			return
+		}
 		const parent = mod.Parent
 		if (parent === undefined || mod.IsAura || parent.IsEnemy()) {
 			return
@@ -36,9 +41,7 @@ new (class CUnitVBEModifierChanged {
 		if (time - mod.CreationTime <= GameState.TickInterval * 3) {
 			return
 		}
-		if (!parent.HasAnyBuffByNames(this.ignoreData.vbeModifiers)) {
-			parent.IsVisibleForEnemiesLastTime = time
-			EventsSDK.emit("UnitVBEModifierChanged", false, parent)
-		}
+		parent.IsVisibleForEnemiesLastTime = time
+		EventsSDK.emit("UnitVBEModifierChanged", false, parent)
 	}
 })()
