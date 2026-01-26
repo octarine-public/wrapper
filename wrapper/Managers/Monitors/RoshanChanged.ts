@@ -7,11 +7,12 @@ import { ERoshanLocation } from "../../Enums/ERoshanLocation"
 import { EventPriority } from "../../Enums/EventPriority"
 import { ConVarsSDK } from "../../Native/ConVarsSDK"
 import { Entity, GameRules } from "../../Objects/Base/Entity"
-import { FakeUnit } from "../../Objects/Base/FakeUnit"
+import { FakeUnit, GetPredictionTarget } from "../../Objects/Base/FakeUnit"
 import { RoshanSpawner } from "../../Objects/Base/RoshanSpawner"
 import { Unit } from "../../Objects/Base/Unit"
 import { Roshan } from "../../Objects/Units/Roshan"
 import { GameState } from "../../Utils/GameState"
+import { EntityManager } from "../EntityManager"
 import { EventsSDK } from "../EventsSDK"
 
 class MovePrediction {
@@ -144,6 +145,7 @@ class MovePrediction {
 new (class CRoshanChanged {
 	private readonly prediction = new MovePrediction()
 	private lastUpdateMinute = 0
+	private lastRoshanHandle = EntityManager.INVALID_HANDLE
 
 	constructor() {
 		EventsSDK.on("EntityDestroyed", this.EntityDestroyed.bind(this))
@@ -180,6 +182,7 @@ new (class CRoshanChanged {
 		if (dt === 0) {
 			return
 		}
+		this.updateRoshanInstance()
 		this.prediction.PostDataUpdate(dt)
 		if (Roshan.HP === 0) {
 			return
@@ -228,7 +231,7 @@ new (class CRoshanChanged {
 			Roshan.HP = Math.max(Math.round(Roshan.HP - obj.damage), 0)
 		}
 	}
-	public ChatEvent(msgType: DOTA_CHAT_MESSAGE) {
+	protected ChatEvent(msgType: DOTA_CHAT_MESSAGE) {
 		if (msgType === DOTA_CHAT_MESSAGE.CHAT_MESSAGE_ROSHAN_KILL) {
 			this.prediction.IsAlive = false
 		}
@@ -247,10 +250,10 @@ new (class CRoshanChanged {
 		if (entity === GameRules && this.lastUpdateMinute === 0) {
 			this.lastUpdateMinute = this.lastMinute
 		}
-		if (!(entity instanceof Roshan)) {
-			return
-		}
-		if (Roshan.Instance instanceof Entity && Roshan.Instance !== entity) {
+		if (
+			!(entity instanceof Roshan) ||
+			(Roshan.Instance instanceof Entity && Roshan.Instance !== entity)
+		) {
 			return
 		}
 		Roshan.HP = entity.HP
@@ -267,8 +270,9 @@ new (class CRoshanChanged {
 			Roshan.Instance = undefined
 			this.prediction.IsAlive = false
 		}
-		if (entity instanceof RoshanSpawner) {
+		if (Roshan.Spawner === entity) {
 			Roshan.Spawner = undefined
+			this.lastRoshanHandle = EntityManager.INVALID_HANDLE
 		}
 	}
 	protected GameEnded() {
@@ -279,6 +283,7 @@ new (class CRoshanChanged {
 		Roshan.Instance = undefined
 		this.lastUpdateMinute = 0
 		this.prediction.IsAlive = false
+		this.lastRoshanHandle = EntityManager.INVALID_HANDLE
 	}
 	private hpChangedByMinute(minute: number): number {
 		let hpChanged = Roshan.HPChangedPerMinute
@@ -286,5 +291,39 @@ new (class CRoshanChanged {
 			hpChanged *= 2
 		}
 		return minute * hpChanged
+	}
+	private updateRoshanInstance() {
+		const spawner = Roshan.Spawner
+		if (spawner === undefined) {
+			return
+		}
+		if (this.lastRoshanHandle !== spawner.RoshanHandle) {
+			this.lastRoshanHandle = spawner.RoshanHandle
+			this.setRoshanInstance(spawner)
+		}
+	}
+	// once created
+	private setRoshanInstance(spawner: RoshanSpawner) {
+		const fake = GetPredictionTarget(spawner.RoshanHandle)
+		if (fake === undefined || !(fake instanceof FakeUnit)) {
+			return
+		}
+		Roshan.Instance = fake
+		Roshan.Instance.Name = "npc_dota_roshan"
+		Roshan.Instance.ModelName = "models/creeps/roshan/roshan.vmdl"
+
+		this.lastUpdateMinute = this.lastMinute
+		Roshan.HP = Roshan.BaseHP + this.hpChangedByMinute(this.lastUpdateMinute)
+		Roshan.MaxHP = Roshan.HP
+		this.prediction.IsAlive = true
+		this.prediction.Update()
+
+		// scripts compatibility
+		this.emitRespawn(fake)
+	}
+	private emitRespawn(ent: FakeUnit | Unit) {
+		const parName = "particles/neutral_fx/roshan_spawn.vpcf"
+		const newClass = new NetworkedParticle(-1, parName, -1n, -1, ent, undefined)
+		EventsSDK.emit("ParticleCreated", false, newClass)
 	}
 })()

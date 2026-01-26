@@ -37,10 +37,10 @@ export class RoshanSpawner extends Entity {
 	public TOPSpawner_: number = EntityManager.INVALID_HANDLE
 	public BOTSpawner_: number = EntityManager.INVALID_HANDLE
 	@NetworkedBasicField("m_hRoshan")
-	private readonly roshan_: number = EntityManager.INVALID_HANDLE
+	public readonly RoshanHandle: number = EntityManager.INVALID_HANDLE
 
 	public get Roshan() {
-		return EntityManager.EntityByIndex<Unit>(this.roshan_)
+		return EntityManager.EntityByIndex<Unit>(this.RoshanHandle)
 	}
 	public get TOPLocation() {
 		return (
