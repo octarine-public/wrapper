@@ -163,6 +163,7 @@ declare interface WorldUtils {
 	BatchCheckRayBox(): void
 }
 
+// Represents any Panorama panel
 declare interface IUIPanel {
 	FindChild(id: string): Nullable<IUIPanel>
 	FindChildTraverse(id: string): Nullable<IUIPanel>
@@ -268,6 +269,17 @@ declare interface IUIPanel {
 	SetAttribute(symbol: number, value: string): void
 	RemoveAttribute(symbol: number): void
 	BSetProperty(symbol: number, value: string): boolean
+}
+
+// Represents panel of type Label (or CLabel in C++)
+declare interface CLabel extends IUIPanel {
+	SetText(text: string): void
+	GetText(): string
+}
+
+// Represents panel of type Image (or CImagePanel in C++)
+declare interface CImage extends IUIPanel {
+	SetImage(imageURL: string): void
 }
 
 declare interface Panorama {
