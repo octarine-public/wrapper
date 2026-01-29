@@ -52,11 +52,9 @@ export function readFile(path: string, callstackDepth = 0): Nullable<string> {
 	return fread(realPath, false)
 }
 
-EventsSDK.on(
-	"ServerInfo",
-	() => {
-		fexistsCache.clear()
-		fexistsCacheInv.clear()
-	},
-	EventPriority.IMMEDIATE
-)
+function clearCache() {
+	fexistsCache.clear()
+	fexistsCacheInv.clear()
+}
+
+EventsSDK.on("ServerInfo", clearCache, EventPriority.IMMEDIATE)
