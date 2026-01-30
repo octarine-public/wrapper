@@ -269,6 +269,7 @@ declare interface IUIPanel {
 	SetAttribute(symbol: number, value: string): void
 	RemoveAttribute(symbol: number): void
 	BSetProperty(symbol: number, value: string): boolean
+	LoadLayout(xmlPath: string, override: boolean): void
 }
 
 // Represents panel of type Label (or CLabel in C++)
@@ -320,6 +321,39 @@ declare interface Panorama {
 	 * Creates panel of the specified type and adds it to the specified parent panel
 	 */
 	CreatePanel(type: string, id: string, parent: IUIPanel): Nullable<IUIPanel>
+
+	/**
+	 * Registers handler of a specified type and attaches a callback to it
+	 * Callback can receive different numbers of arguments based on event type
+	 * @returns handle
+	 */
+	RegisterEventHandler(eventName: string, panel: IUIPanel, callback: (panel: IUIPanel, ...args: any[]) => void): number
+
+	/**
+	 * Registers handler for unhandled events of a specified type and attaches a callback to it
+	 * Unhandled event is any event that didn't get handled by the panel or dispatched without a panel
+	 * Callback can receive different numbers of arguments based on event type
+	 * @returns handle
+	 */
+	RegisterForUnhandledEvent(eventName: string, callback: (panel: IUIPanel, ...args: any[]) => void): number
+
+	/**
+	 * Destroys event handler using it's handle returned by RegisterEventHandler
+	 */
+	UnregisterEventHandler(handle: number): void
+
+	/**
+	 * Destroys event handler using it's handle returned by RegisterForUnhandledEvent
+	 */
+	UnregisterForUnhandledEvent(handle: number): void
+
+	/**
+	 * Creates event and dispatches it to the target panel if one is specified, otherwise will be dispatched as an unhandled event
+	 * @param eventString string that constructs the event (f.e. 'Activated(program)', 'Activated(mouse)',' Activated(keyboard)', 'DOTAShowHeroesPage()', etc.)
+	 * @param panel panel to dispatch the event to (null by default)
+	 * @param delay time to wait before dispatching the event (0 by default)
+	 */
+	DispatchEventAsync(eventString: string, panel?: Nullable<IUIPanel>, delay?: number): void
 }
 
 declare interface Camera {
