@@ -287,17 +287,17 @@ PanoramaBridge.run(Panorama.FindRootPanel("DotaDashboard")!, ({ $ }) => {
 		}
 	}
 
-	const events = new EventEmitter()
+	// const events = new EventEmitter()
 
-	function OnUpdate() {
-		$.Schedule(0, () => {
-			events.emit("Update")
-			OnUpdate()
-		})
-	}
-	OnUpdate()
+	// function OnUpdate() {
+	// 	$.Schedule(0, () => {
+	// 		events.emit("Update")
+	// 		OnUpdate()
+	// 	})
+	// }
+	// OnUpdate()
 
-	events.on("Update", () => {
-		$.Msg("Update event")
-	})
+	// events.on("Update", () => {
+	// 	$.Msg("Update event")
+	// })
 })
