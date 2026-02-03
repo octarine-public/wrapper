@@ -27,7 +27,10 @@ export class slark_pounce extends Ability {
 		return this.GetSpecialValue("pounce_radius", level)
 	}
 	public GetBaseCastRangeForLevel(level: number): number {
-		return this.GetSpecialValue(`pounce_distance${this.OwnerHasScepter ? "_scepter" : ""}`, level)
+		return this.GetSpecialValue(
+			`pounce_distance${this.OwnerHasScepter ? "_scepter" : ""}`,
+			level
+		)
 	}
 	public GetHitTime(
 		unit: Unit | Vector3,

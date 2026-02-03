@@ -4,15 +4,15 @@
 	"description": "Octarine: Wrapper",
 	"license": "GPL-3.0-or-later",
 	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "^7.12.0",
-		"@typescript-eslint/parser": "^7.12.0",
-		"eslint": "^8.56.0",
-		"eslint-config-prettier": "^9.1.0",
+		"@eslint/js": "^9.17.0",
+		"eslint": "^9.17.0",
+		"eslint-config-prettier": "^10.1.5",
 		"eslint-plugin-import": "^2.31.0",
 		"eslint-plugin-prettier": "^5.4.0",
 		"eslint-plugin-simple-import-sort": "^12.1.0",
-		"eslint-plugin-unicorn": "^53.0.0",
-		"eslint-plugin-unused-imports": "^3.2.0",
+		"eslint-plugin-unicorn": "^55.0.0",
+		"eslint-plugin-unused-imports": "^4.1.0",
+		"typescript-eslint": "^8.18.0",
 		"madge": "^8.0.0",
 		"prettier": "^3.5.3",
 		"typescript": "^5.8.3"
@@ -22,7 +22,7 @@
 		"check-types-watch": "npx tsc --watch",
 		"check-circular": "npx madge --circular scripts/",
 		"upgrade-pack": "yarn upgrade-interactive --latest",
-		"lint": "eslint -c .eslintrc.json --ext .ts --fix ."
+		"lint": "eslint . --fix"
 	},
 	"contributors": [
 		"moofMonkey",
