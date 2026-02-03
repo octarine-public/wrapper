@@ -1,5 +1,6 @@
 {
     "eslint.enable": true,
+    "eslint.useFlatConfig": true,
     "editor.insertSpaces": false,
     "npm.packageManager": "yarn",
     "task.allowAutomaticTasks": "on",
