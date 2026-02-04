@@ -281,6 +281,7 @@ declare interface CLabel extends IUIPanel {
 // Represents panel of type Image (or CImagePanel in C++)
 declare interface CImage extends IUIPanel {
 	SetImage(imageURL: string): void
+	GetImage(): string
 }
 
 declare interface Panorama {
