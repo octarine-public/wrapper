@@ -47,11 +47,7 @@ export class UnitData {
 		return unitNamesSorted[index]
 	}
 	public static GetHeroID(name: string): number {
-		const data = UnitData.globalStorage.get(name)
-		if (data === undefined) {
-			throw `Unknown unit name: ${name}`
-		}
-		return data.HeroID
+		return UnitData.globalStorage.get(name)?.HeroID ?? -1
 	}
 	public static GetUnitDataByName(name: string): Nullable<UnitData> {
 		return UnitData.globalStorage.get(name)
@@ -65,11 +61,10 @@ export class UnitData {
 		return ""
 	}
 	public static GetHeroAttributePrimary(name: string): Attributes {
-		const data = UnitData.globalStorage.get(name)
-		if (data === undefined) {
-			throw `Unknown unit name: ${name}`
-		}
-		return data.AttributePrimary
+		return (
+			UnitData.globalStorage.get(name)?.AttributePrimary ??
+			Attributes.DOTA_ATTRIBUTE_INVALID
+		)
 	}
 
 	public readonly HeroID: number

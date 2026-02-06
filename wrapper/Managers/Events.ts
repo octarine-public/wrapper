@@ -195,6 +195,21 @@ declare interface Events extends EventEmitter {
 		) => void,
 		priority?: number
 	): Events
+	on(
+		name: "PanoramaWindowCreate",
+		listener: (name: string) => void,
+		priority?: number
+	): Events
+	on(
+		name: "PanoramaWindowDestroy",
+		listener: (name: string) => void,
+		priority?: number
+	): Events
+	on(
+		name: "DOTAFullHeroGlobalDataUpdated",
+		listener: (obj: any) => void,
+		priority?: number
+	): Events
 }
 
 export const Events: Events = new EventEmitter()
