@@ -166,7 +166,7 @@ declare interface WorldUtils {
 // Represents any Panorama panel
 declare interface IUIPanel {
 	FindChild(id: string): Nullable<IUIPanel>
-	FindChildTraverse(id: string): Nullable<IUIPanel>
+	FindChildTraverse<T extends IUIPanel>(id: string): Nullable<T>
 	FindChildInLayoutFile(id: string): Nullable<IUIPanel>
 	FindPanelInLayoutFile(id: string): Nullable<IUIPanel>
 	RemoveAndDeleteChildrenOfType(symbol: number): void
@@ -321,7 +321,7 @@ declare interface Panorama {
 	/**
 	 * Creates panel of the specified type and adds it to the specified parent panel
 	 */
-	CreatePanel(type: string, id: string, parent: IUIPanel): Nullable<IUIPanel>
+	CreatePanel<T extends IUIPanel>(type: string, id: string, parent: IUIPanel): Nullable<T>
 
 	/**
 	 * Registers handler of a specified type and attaches a callback to it
