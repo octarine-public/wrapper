@@ -165,111 +165,111 @@ declare interface WorldUtils {
 
 // Represents any Panorama panel
 declare interface IUIPanel {
-	FindChild(id: string): Nullable<IUIPanel>
-	FindChildTraverse<T extends IUIPanel>(id: string): Nullable<T>
-	FindChildInLayoutFile(id: string): Nullable<IUIPanel>
-	FindPanelInLayoutFile(id: string): Nullable<IUIPanel>
-	RemoveAndDeleteChildrenOfType(symbol: number): void
-	GetChildCountOfType(symbol: number): any
-	GetChildCount(): any
-	GetChild(index: number): Nullable<IUIPanel>
-	GetFirstChild(): Nullable<IUIPanel>
-	GetLastChild(): Nullable<IUIPanel>
-	GetHiddenChildCount(): any
-	GetHiddenChild(index: number): any
-	FindAncestor(id: string): Nullable<IUIPanel>
-	RemoveAndDeleteChildren(): void
-	AddClass(symbol: number): void
-	RemoveClass(symbol: number): void
-	RemoveAllClasses(): void
-	SetID(id: string): void
-	GetID(): string
-	BHasID(): boolean
-	BIsLoaded(): boolean
-	SetVisible(visible: boolean): void
-	GetDesiredLayoutWidth(): number
-	GetDesiredLayoutHeight(): number
-	GetContentWidth(): number
-	GetContentHeight(): number
-	GetActualLayoutWidth(): number
-	GetActualLayoutHeight(): number
-	GetActualRenderWidth(): number
-	GetActualRenderHeight(): number
-	GetActualXOffset(): number
-	GetActualYOffset(): number
-	GetRawActualXOffset(): number
-	GetRawActualYOffset(): number
-	GetActualUIScaleX(): number
-	GetActualUIScaleY(): number
-	GetActualUIScaleZ(): number
-	GetPanelType(symbol: number): any
-	GetContentsYScrollOffset(): number
-	GetContentsXScrollOffset(): number
-	GetContentsYScrollOffsetTarget(): number
-	GetContentsXScrollOffsetTarget(): number
-	BHasClass(symbol: number): boolean
-	BAscendantHasClass(symbol: number): boolean
-	ToggleClass(symbol: number): void
-	SetHasClass(symbol: number, has: boolean): void
-	TriggerClass(symbol: number): void
-	IsDescendantOf(child: IUIPanel): boolean
-	GetChildIndex(child: IUIPanel): number
-	GetHiddenChildIndex(child: IUIPanel): number
-	FindLowestCommonAncestor(panel: IUIPanel): Nullable<IUIPanel>
-	BAcceptsInput(): boolean
-	SetAcceptsInput(accepts: boolean): void
-	BAcceptsFocus(): boolean
-	SetAcceptsFocus(accepts: boolean): void
-	BCanAcceptInput(): boolean
-	SetDefaultFocus(childId: string): void
-	GetDefaultFocus(): string
-	SetDisableFocusOnMouseDown(disable: boolean): void
-	BFocusOnMouseDown(): boolean
-	BCanClearFocusByClicking(): boolean
-	BAlwaysConsumeHoverClicks(): boolean
-	SetAlwaysConsumeHoverClicks(enable: boolean): void
-	SetCanClearFocusByClicking(enable: boolean): void
-	BScrollParentToFitWhenFocused(): boolean
-	SetScrollParentToFitWhenFocused(scrollParentToFit: boolean): void
-	BTopOfInputContext(): boolean
-	SetTopOfInputContext(top: boolean): void
-	GetParentInputContext(): Nullable<IUIPanel>
-	GetDefaultInputFocus(): Nullable<IUIPanel>
-	SetFocus(): void
-	SetEnabled(enable: boolean): void
-	IsEnabled(): boolean
-	SetSelected(enable: boolean): void
-	IsSelected(): boolean
-	IsActivationEnabled(): boolean
-	SetActivationEnabled(enable: boolean): void
-	SetAllChildrenActivationEnabled(enable: boolean): void
-	SetHitTestEnabled(enable: boolean): void
-	BHitTestEnabled(): boolean
-	SetHitTestEnabledTraverse(enable: boolean): void
-	SetHitTestChildrenEnabled(enable: boolean): void
-	BHitTestChildrenEnabled(): boolean
-	SetDraggable(enable: boolean): void
-	IsDraggable(): boolean
-	SetRememberChildFocus(enable: boolean): void
-	GetRememberChildFocus(): boolean
-	SetChildFocusOnHover(enable: boolean): void
-	GetChildFocusOnHover(): boolean
-	SetFocusOnHover(enable: boolean): void
-	GetFocusOnHover(): boolean
-	ScrollToTop(): void
-	ScrollToBottom(): void
-	ScrollToLeftEdge(): void
-	ScrollToRightEdge(): void
-	IsScrolledIntoView(): boolean
-	MoveChildAfter(childToMove: IUIPanel, before: IUIPanel): void
-	MoveChildBefore(childToMove: IUIPanel, after: IUIPanel): void
-	BHasOnActivateEvent(): boolean
-	BHasOnMouseActivateEvent(): boolean
-	GetAttribute(symbol: number, defaultValue: string): string
-	SetAttribute(symbol: number, value: string): void
-	RemoveAttribute(symbol: number): void
-	BSetProperty(symbol: number, value: string): boolean
-	LoadLayout(xmlPath: string, override: boolean): void
+	FindChild<T extends IUIPanel>(id: string): Promise<Nullable<T>>
+	FindChildTraverse<T extends IUIPanel>(id: string): Promise<Nullable<T>>
+	FindChildInLayoutFile<T extends IUIPanel>(id: string): Promise<Nullable<T>>
+	FindPanelInLayoutFile(id: string): Promise<Nullable<IUIPanel>>
+	RemoveAndDeleteChildrenOfType(symbol: number): Promise<void>
+	GetChildCountOfType(symbol: number): Promise<any>
+	GetChildCount(): Promise<any>
+	GetChild(index: number): Promise<Nullable<IUIPanel>>
+	GetFirstChild(): Promise<Nullable<IUIPanel>>
+	GetLastChild(): Promise<Nullable<IUIPanel>>
+	GetHiddenChildCount(): Promise<any>
+	GetHiddenChild(index: number): Promise<any>
+	FindAncestor(id: string): Promise<Nullable<IUIPanel>>
+	RemoveAndDeleteChildren(): Promise<void>
+	AddClass(symbol: number): Promise<void>
+	RemoveClass(symbol: number): Promise<void>
+	RemoveAllClasses(): Promise<void>
+	SetID(id: string): Promise<void>
+	GetID(): Promise<string>
+	BHasID(): Promise<boolean>
+	BIsLoaded(): Promise<boolean>
+	SetVisible(visible: boolean): Promise<void>
+	GetDesiredLayoutWidth(): Promise<number>
+	GetDesiredLayoutHeight(): Promise<number>
+	GetContentWidth(): Promise<number>
+	GetContentHeight(): Promise<number>
+	GetActualLayoutWidth(): Promise<number>
+	GetActualLayoutHeight(): Promise<number>
+	GetActualRenderWidth(): Promise<number>
+	GetActualRenderHeight(): Promise<number>
+	GetActualXOffset(): Promise<number>
+	GetActualYOffset(): Promise<number>
+	GetRawActualXOffset(): Promise<number>
+	GetRawActualYOffset(): Promise<number>
+	GetActualUIScaleX(): Promise<number>
+	GetActualUIScaleY(): Promise<number>
+	GetActualUIScaleZ(): Promise<number>
+	GetPanelType(symbol: number): Promise<any>
+	GetContentsYScrollOffset(): Promise<number>
+	GetContentsXScrollOffset(): Promise<number>
+	GetContentsYScrollOffsetTarget(): Promise<number>
+	GetContentsXScrollOffsetTarget(): Promise<number>
+	BHasClass(symbol: number): Promise<boolean>
+	BAscendantHasClass(symbol: number): Promise<boolean>
+	ToggleClass(symbol: number): Promise<void>
+	SetHasClass(symbol: number, has: boolean): Promise<void>
+	TriggerClass(symbol: number): Promise<void>
+	IsDescendantOf(child: IUIPanel): Promise<boolean>
+	GetChildIndex(child: IUIPanel): Promise<number>
+	GetHiddenChildIndex(child: IUIPanel): Promise<number>
+	FindLowestCommonAncestor(panel: IUIPanel): Promise<Nullable<IUIPanel>>
+	BAcceptsInput(): Promise<boolean>
+	SetAcceptsInput(accepts: boolean): Promise<void>
+	BAcceptsFocus(): Promise<boolean>
+	SetAcceptsFocus(accepts: boolean): Promise<void>
+	BCanAcceptInput(): Promise<boolean>
+	SetDefaultFocus(childId: string): Promise<void>
+	GetDefaultFocus(): Promise<string>
+	SetDisableFocusOnMouseDown(disable: boolean): Promise<void>
+	BFocusOnMouseDown(): Promise<boolean>
+	BCanClearFocusByClicking(): Promise<boolean>
+	BAlwaysConsumeHoverClicks(): Promise<boolean>
+	SetAlwaysConsumeHoverClicks(enable: boolean): Promise<void>
+	SetCanClearFocusByClicking(enable: boolean): Promise<void>
+	BScrollParentToFitWhenFocused(): Promise<boolean>
+	SetScrollParentToFitWhenFocused(scrollParentToFit: boolean): Promise<void>
+	BTopOfInputContext(): Promise<boolean>
+	SetTopOfInputContext(top: boolean): Promise<void>
+	GetParentInputContext(): Promise<Nullable<IUIPanel>>
+	GetDefaultInputFocus(): Promise<Nullable<IUIPanel>>
+	SetFocus(): Promise<void>
+	SetEnabled(enable: boolean): Promise<void>
+	IsEnabled(): Promise<boolean>
+	SetSelected(enable: boolean): Promise<void>
+	IsSelected(): Promise<boolean>
+	IsActivationEnabled(): Promise<boolean>
+	SetActivationEnabled(enable: boolean): Promise<void>
+	SetAllChildrenActivationEnabled(enable: boolean): Promise<void>
+	SetHitTestEnabled(enable: boolean): Promise<void>
+	BHitTestEnabled(): Promise<boolean>
+	SetHitTestEnabledTraverse(enable: boolean): Promise<void>
+	SetHitTestChildrenEnabled(enable: boolean): Promise<void>
+	BHitTestChildrenEnabled(): Promise<boolean>
+	SetDraggable(enable: boolean): Promise<void>
+	IsDraggable(): Promise<boolean>
+	SetRememberChildFocus(enable: boolean): Promise<void>
+	GetRememberChildFocus(): Promise<boolean>
+	SetChildFocusOnHover(enable: boolean): Promise<void>
+	GetChildFocusOnHover(): Promise<boolean>
+	SetFocusOnHover(enable: boolean): Promise<void>
+	GetFocusOnHover(): Promise<boolean>
+	ScrollToTop(): Promise<void>
+	ScrollToBottom(): Promise<void>
+	ScrollToLeftEdge(): Promise<void>
+	ScrollToRightEdge(): Promise<void>
+	IsScrolledIntoView(): Promise<boolean>
+	MoveChildAfter(childToMove: IUIPanel, before: IUIPanel): Promise<void>
+	MoveChildBefore(childToMove: IUIPanel, after: IUIPanel): Promise<void>
+	BHasOnActivateEvent(): Promise<boolean>
+	BHasOnMouseActivateEvent(): Promise<boolean>
+	GetAttribute(symbol: number, defaultValue: string): Promise<string>
+	SetAttribute(symbol: number, value: string): Promise<void>
+	RemoveAttribute(symbol: number): Promise<void>
+	BSetProperty(symbol: number, value: string): Promise<boolean>
+	LoadLayout(xmlPath: string, override: boolean): Promise<void>
 }
 
 // Represents panel of type Label (or CLabel in C++)
