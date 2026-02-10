@@ -178,6 +178,7 @@ declare interface Events extends EventEmitter {
 		priority?: number
 	): Events
 	on(name: "ScriptsUpdated", listener: () => void, priority?: number): Events
+	on(name: "PanoramaFrame", listener: () => void, priority?: number): Events
 	on(
 		name: "SetLanguage",
 		func: (language: MenuLanguageID) => void,

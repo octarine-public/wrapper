@@ -322,7 +322,7 @@ declare interface Panorama {
 	 * Creates panel of the specified type and adds it to the specified parent panel
 	 */
 	CreatePanel<T extends IUIPanel>(type: string, id: string, parent: IUIPanel): Nullable<T>
-
+	
 	/**
 	 * Registers handler of a specified type and attaches a callback to it
 	 * Callback can receive different numbers of arguments based on event type
@@ -355,6 +355,8 @@ declare interface Panorama {
 	 * @param delay time to wait before dispatching the event (0 by default)
 	 */
 	DispatchEventAsync(eventString: string, panel?: Nullable<IUIPanel>, delay?: number): void
+	EnterMainThread(): Promise<number>
+	LeaveMainThread(): void
 }
 
 declare interface Camera {
