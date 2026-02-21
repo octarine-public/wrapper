@@ -19,8 +19,8 @@ import { Slider } from "./Slider"
 import { TextInput } from "./TextInput"
 
 const hardcodedIcons = new Map<string, string>(
-	Object.entries(readJSON("hardcoded_icons.json"))
-),
+		Object.entries(readJSON("hardcoded_icons.json"))
+	),
 	hardcodedPriorities = new Map<string, number>(
 		Object.entries(readJSON("hardcoded_priorities.json"))
 	)
@@ -138,9 +138,9 @@ class CMenuManager {
 		return height
 	}
 	private get EntriesRect() {
-		const pos = this.header.Position
-			.Clone()
-			.AddScalarY(this.header.Size.y + this.textInput.Size.y),
+		const pos = this.header.Position.Clone().AddScalarY(
+				this.header.Size.y + this.textInput.Size.y
+			),
 			height = this.EntriesSizeY
 		pos.y = Math.min(pos.y, RendererSDK.WindowSize.y - height)
 		return new Rectangle(
@@ -276,9 +276,7 @@ class CMenuManager {
 			this.textInput.QueuedUpdate = false
 			this.textInput.Update()
 		}
-		const position = this.header.Position
-			.Clone()
-			.AddScalarY(this.header.Size.y)
+		const position = this.header.Position.Clone().AddScalarY(this.header.Size.y)
 		position.CopyTo(this.textInput.Position)
 		this.textInput.Render()
 		position.AddScalarY(this.textInput.Size.y)
@@ -482,8 +480,8 @@ class CMenuManager {
 			),
 			new Vector2(
 				elementsRect.pos1.x +
-				CMenuManager.scrollbarOffset.x +
-				CMenuManager.scrollbarWidth,
+					CMenuManager.scrollbarOffset.x +
+					CMenuManager.scrollbarWidth,
 				elementsRect.pos2.y - CMenuManager.scrollbarOffset.y
 			)
 		)
@@ -577,25 +575,14 @@ class CMenuManager {
 			let icon = ""
 			let iconRound = -1
 			el.foreachParent(node => {
-				if (
-					icon === "" &&
-					node instanceof Node &&
-					node.IconPath !== ""
-				) {
+				if (icon === "" && node instanceof Node && node.IconPath !== "") {
 					icon = node.IconPath
 					iconRound = node.IconRound
 				}
-			},
-				true
-			)
+			}, true)
 
-			const entry = new ShortDescription(
-				this,
-				fullPath,
-				"",
-				icon,
-				iconRound
-			)
+			const entry = new ShortDescription(this, fullPath, "", icon, iconRound)
+			entry.searchQuery = query
 			entry.SaveConfig = false
 			entry.Update()
 			this.searchResultEntries.push(entry)
@@ -616,14 +603,11 @@ class CMenuManager {
 		this.searchResultMap.clear()
 		this.ScrollPosition = 0
 		const parents: Node[] = []
-		original.foreachParent(
-			node => {
-				if (node instanceof Node) {
-					parents.push(node)
-				}
-			},
-			original instanceof Node
-		)
+		original.foreachParent(node => {
+			if (node instanceof Node) {
+				parents.push(node)
+			}
+		}, original instanceof Node)
 		parents.reverse()
 		for (const parent of parents) {
 			parent.IsOpen = true
