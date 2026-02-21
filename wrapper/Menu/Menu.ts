@@ -14,12 +14,13 @@ import { Header } from "./Header"
 import { KeyBind } from "./KeyBind"
 import { Localization } from "./Localization"
 import { Node } from "./Node"
+import { ShortDescription } from "./ShortDescription"
 import { Slider } from "./Slider"
 import { TextInput } from "./TextInput"
 
 const hardcodedIcons = new Map<string, string>(
-		Object.entries(readJSON("hardcoded_icons.json"))
-	),
+	Object.entries(readJSON("hardcoded_icons.json"))
+),
 	hardcodedPriorities = new Map<string, number>(
 		Object.entries(readJSON("hardcoded_priorities.json"))
 	)
@@ -38,6 +39,9 @@ class CMenuManager {
 	public EntriesSizeY = 0
 	private readonly header = new Header(this)
 	public readonly textInput = new TextInput(this)
+	private readonly searchResultEntries: Base[] = []
+	private readonly searchResultMap = new Map<Base, Base>()
+	private lastSearchText = ""
 	private activeElement?: Base
 	private IsOpen_ = true
 	private ScrollPosition = 0
@@ -70,6 +74,13 @@ class CMenuManager {
 		return this.IsOpen
 	}
 
+	private get isSearchActive(): boolean {
+		return this.textInput.text !== ""
+	}
+	private get displayEntries(): Base[] {
+		return this.isSearchActive ? this.searchResultEntries : this.entries
+	}
+
 	public get ConfigValue() {
 		this.config = Object.create(null)
 		this.entries.forEach(e => {
@@ -87,7 +98,7 @@ class CMenuManager {
 	}
 	public get ScrollVisible() {
 		let remaining = -this.VisibleEntries
-		const entries = this.entries
+		const entries = this.displayEntries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
 			if (entry !== undefined) {
@@ -99,7 +110,7 @@ class CMenuManager {
 
 	private get EntriesSizeX_(): number {
 		let width = this.header.Size.x
-		const entries = this.entries
+		const entries = this.displayEntries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
 			if (entry !== undefined && entry.IsVisible) {
@@ -113,7 +124,7 @@ class CMenuManager {
 		let height = this.header.Size.y + this.textInput.Size.y,
 			cnt = 0,
 			skip = this.ScrollPosition
-		const entries = this.entries
+		const entries = this.displayEntries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
 			if (entry === undefined || !entry.IsVisible || skip-- > 0) {
@@ -128,8 +139,8 @@ class CMenuManager {
 	}
 	private get EntriesRect() {
 		const pos = this.header.Position
-				.Clone()
-				.AddScalarY(this.header.Size.y + this.textInput.Size.y),
+			.Clone()
+			.AddScalarY(this.header.Size.y + this.textInput.Size.y),
 			height = this.EntriesSizeY
 		pos.y = Math.min(pos.y, RendererSDK.WindowSize.y - height)
 		return new Rectangle(
@@ -254,6 +265,11 @@ class CMenuManager {
 			this.Update()
 			updatedEntries = false
 		}
+		if (this.textInput.text !== this.lastSearchText) {
+			this.lastSearchText = this.textInput.text
+			this.PopulateSearchResults()
+			this.Update()
+		}
 		this.UpdateScrollbar()
 		this.header.Render()
 		if (this.textInput.QueuedUpdate) {
@@ -268,7 +284,7 @@ class CMenuManager {
 		position.AddScalarY(this.textInput.Size.y)
 		let skip = this.ScrollPosition,
 			visibleEntries = this.VisibleEntries
-		const entries = this.entries
+		const entries = this.displayEntries
 		for (let i = 0, end = entries.length; i < end; i++) {
 			const entry = entries[i]
 			if (entry === undefined || !entry.IsVisible || skip-- > 0) {
@@ -290,7 +306,7 @@ class CMenuManager {
 			this.Update()
 		}
 
-		this.entries.forEach(e => (e.IsVisible ? e.PostRender() : 0))
+		this.displayEntries.forEach(e => (e.IsVisible ? e.PostRender() : 0))
 		this.PostRender()
 	}
 	public Update(recursive = false): void {
@@ -324,6 +340,26 @@ class CMenuManager {
 		if (!this.IsOpen) {
 			return true
 		}
+		// clear active element when search is active so IsHovered
+		// works for search results (otherwise ActiveElement guard
+		// makes them all report unhovered)
+		if (this.isSearchActive && Base.ActiveElement !== undefined) {
+			Base.ActiveElement =
+				KeyBind.changingNow =
+				TextInput.focusedInput =
+				Dropdown.activeDropdown =
+				ColorPicker.activeColorpicker =
+				Node.ActivePopup =
+					/**/ undefined
+		}
+		if (this.isSearchActive) {
+			for (const entry of this.searchResultEntries) {
+				if (entry.IsHovered) {
+					this.NavigateToSearchResult(entry)
+					return false
+				}
+			}
+		}
 		// close popups if clicked outside, skip click
 		if (Base.ActiveElement !== undefined && Base.ActiveElement.OnPreMouseLeftDown()) {
 			Base.ActiveElement =
@@ -351,6 +387,9 @@ class CMenuManager {
 		if (!this.textInput.OnMouseLeftDown()) {
 			this.activeElement = this.textInput
 			return false
+		}
+		if (this.isSearchActive) {
+			return true
 		}
 		const entries = this.entries
 		for (let i = 0, end = entries.length; i < end; i++) {
@@ -394,6 +433,9 @@ class CMenuManager {
 				}
 				return true
 			}
+		}
+		if (this.isSearchActive) {
+			return false
 		}
 		return this.entries.some(entry => entry.OnMouseWheel(up))
 	}
@@ -440,21 +482,22 @@ class CMenuManager {
 			),
 			new Vector2(
 				elementsRect.pos1.x +
-					CMenuManager.scrollbarOffset.x +
-					CMenuManager.scrollbarWidth,
+				CMenuManager.scrollbarOffset.x +
+				CMenuManager.scrollbarWidth,
 				elementsRect.pos2.y - CMenuManager.scrollbarOffset.y
 			)
 		)
 	}
 	private GetScrollbarRect(scrollbarPositionsRect: Rectangle): Rectangle {
 		const positionsSize = scrollbarPositionsRect.Size
+		const totalEntries = this.displayEntries.length
 		const scrollbarSize = new Vector2(
 			CMenuManager.scrollbarWidth,
-			(positionsSize.y * this.VisibleEntries) / this.entries.length
+			(positionsSize.y * this.VisibleEntries) / totalEntries
 		)
 		const scrollbarPos = scrollbarPositionsRect.pos1
 			.Clone()
-			.AddScalarY((positionsSize.y * this.ScrollPosition) / this.entries.length)
+			.AddScalarY((positionsSize.y * this.ScrollPosition) / totalEntries)
 		return new Rectangle(scrollbarPos, scrollbarPos.Add(scrollbarSize))
 	}
 	private PostRender(): void {
@@ -472,17 +515,18 @@ class CMenuManager {
 		this.VisibleEntries = 0
 		this.IsAtScrollEnd = true
 		const maxHeight = RendererSDK.WindowSize.y
+		const entries = this.displayEntries
 		let height = this.header.Size.y + this.textInput.Size.y,
 			skip = this.ScrollPosition
-		for (let i = 0; i < this.entries.length; i++) {
-			const entry = this.entries[i]
+		for (let i = 0; i < entries.length; i++) {
+			const entry = entries[i]
 			if (!entry.IsVisible || skip-- > 0) {
 				continue
 			}
 			height += entry.Size.y
 			this.VisibleEntries++
 			if (height >= maxHeight) {
-				if (i < this.entries.length - 1) {
+				if (i < entries.length - 1) {
 					this.IsAtScrollEnd = false
 				}
 				break
@@ -491,7 +535,7 @@ class CMenuManager {
 	}
 	private UpdateScrollbar() {
 		this.ScrollPosition = Math.max(
-			Math.min(this.ScrollPosition, this.entries.length - 1),
+			Math.min(this.ScrollPosition, this.displayEntries.length - 1),
 			0
 		)
 		this.UpdateVisibleEntries()
@@ -505,6 +549,89 @@ class CMenuManager {
 				break
 			}
 		}
+	}
+	private PopulateSearchResults(): void {
+		const MAX_RESULTS = this.entries.length
+		this.searchResultEntries.splice(0)
+		this.searchResultMap.clear()
+		this.ScrollPosition = 0
+		const query = this.textInput.text.toLowerCase()
+		if (query === "") {
+			return
+		}
+		let count = 0
+		this.ForeachRecursive(el => {
+			if (count >= MAX_RESULTS) {
+				return
+			}
+			const path: string[] = []
+			el.foreachParent(node => path.unshift(node.Name))
+			path.push(el.Name)
+			const fullPath = path.join(" > ")
+			if (
+				!el.Name.toLowerCase().includes(query) &&
+				!el.InternalName.toLowerCase().includes(query)
+			) {
+				return
+			}
+			let icon = ""
+			let iconRound = -1
+			el.foreachParent(node => {
+				if (
+					icon === "" &&
+					node instanceof Node &&
+					node.IconPath !== ""
+				) {
+					icon = node.IconPath
+					iconRound = node.IconRound
+				}
+			},
+				true
+			)
+
+			const entry = new ShortDescription(
+				this,
+				fullPath,
+				"",
+				icon,
+				iconRound
+			)
+			entry.SaveConfig = false
+			entry.Update()
+			this.searchResultEntries.push(entry)
+			this.searchResultMap.set(entry, el)
+			count++
+		})
+	}
+	private NavigateToSearchResult(resultEntry: Base): void {
+		const original = this.searchResultMap.get(resultEntry)
+		if (original === undefined) {
+			return
+		}
+		this.textInput.text = ""
+		this.textInput.cursorPos = 0
+		TextInput.focusedInput = undefined
+		this.lastSearchText = ""
+		this.searchResultEntries.splice(0)
+		this.searchResultMap.clear()
+		this.ScrollPosition = 0
+		const parents: Node[] = []
+		original.foreachParent(
+			node => {
+				if (node instanceof Node) {
+					parents.push(node)
+				}
+			},
+			original instanceof Node
+		)
+		parents.reverse()
+		for (const parent of parents) {
+			parent.IsOpen = true
+			parent.parent.entries
+				.filter((e): e is Node => e instanceof Node && e !== parent)
+				.forEach(e => (e.IsOpen = false))
+		}
+		this.Update(true)
 	}
 	private ForwardConfig() {
 		while (Base.ForwardConfigASAP) {

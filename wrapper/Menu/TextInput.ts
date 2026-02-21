@@ -3,9 +3,41 @@ import { Vector2 } from "../Base/Vector2"
 import { EventPriority } from "../Enums/EventPriority"
 import { ScaleHeight, ScaleWidth } from "../GUI/Helpers"
 import { EventsSDK } from "../Managers/EventsSDK"
-import { InputEventSDK, VKeys } from "../Managers/InputManager"
+import { InputEventSDK, InputManager, VKeys } from "../Managers/InputManager"
 import { RendererSDK } from "../Native/RendererSDK"
 import { Base, IMenu } from "./Base"
+
+const shiftDigits = ")!@#$%^&*("
+
+function vkeyToChar(key: VKeys, shift: boolean): string {
+	if (key >= VKeys.KEY_A && key <= VKeys.KEY_Z) {
+		const ch = String.fromCharCode(key)
+		return shift ? ch : ch.toLowerCase()
+	}
+	if (key >= VKeys.KEY_0 && key <= VKeys.KEY_9) {
+		if (!shift) return String.fromCharCode(key)
+		return shiftDigits[key - VKeys.KEY_0]
+	}
+	if (key === VKeys.SPACE) return " "
+	if (key >= VKeys.NUMPAD0 && key <= VKeys.NUMPAD9) {
+		return String.fromCharCode(key - VKeys.NUMPAD0 + 0x30)
+	}
+	switch (key) {
+		case VKeys.OEM_1:		return shift ? ":" : ";"
+		case VKeys.OEM_PLUS:	return shift ? "+" : "="
+		case VKeys.OEM_COMMA:	return shift ? "<" : ","
+		case VKeys.OEM_MINUS:	return shift ? "_" : "-"
+		case VKeys.OEM_PERIOD:	return shift ? ">" : "."
+		case VKeys.OEM_2:		return shift ? "?" : "/"
+		case VKeys.TILDE:		return shift ? "~" : "`"
+		case VKeys.OEM_4:		return shift ? "{" : "["
+		case VKeys.OEM_5:		return shift ? "|" : "\\"
+		case VKeys.OEM_6:		return shift ? "}" : "]"
+		case VKeys.OEM_7:		return shift ? "\"" : "'"
+		default:
+			return ""
+	}
+}
 
 export class TextInput extends Base {
 	public static focusedInput?: TextInput
@@ -140,6 +172,11 @@ InputEventSDK.on("KeyDown", key => {
 	if (focused === undefined) {
 		return true
 	}
+	console.log(
+		"[TextInput] KeyDown",
+		"key:", key,
+		"text:", `'${focused.text}'`
+	)
 	switch (key) {
 		case VKeys.BACK:
 			if (focused.cursorPos > 0) {
@@ -177,8 +214,19 @@ InputEventSDK.on("KeyDown", key => {
 		case VKeys.ESCAPE:
 			TextInput.focusedInput = undefined
 			return true
-		default:
+		default: {
+			const shift = InputManager.IsKeyDown(VKeys.SHIFT)
+			const char = vkeyToChar(key, shift)
+			if (char !== "") {
+				focused.text =
+					focused.text.substring(0, focused.cursorPos) +
+					char +
+					focused.text.substring(focused.cursorPos)
+				focused.cursorPos++
+				focused.TriggerOnValueChangedCBs()
+			}
 			break
+		}
 	}
 	focused.cursorBlinkStart = hrtime()
 	return false
