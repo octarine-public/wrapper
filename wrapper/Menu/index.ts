@@ -13,6 +13,7 @@ export { KeyBind } from "./KeyBind"
 export { Localization } from "./Localization"
 export { ShortDescription } from "./ShortDescription"
 export { Slider } from "./Slider"
+export { TextInput } from "./TextInput"
 export { Toggle } from "./Toggle"
 export { Node }
 function AddEntry(name: string, iconPath = "", tooltip = "", iconRound = -1): Node {

@@ -15,6 +15,7 @@ import { KeyBind } from "./KeyBind"
 import { Localization } from "./Localization"
 import { Node } from "./Node"
 import { Slider } from "./Slider"
+import { TextInput } from "./TextInput"
 
 const hardcodedIcons = new Map<string, string>(
 		Object.entries(readJSON("hardcoded_icons.json"))
@@ -36,6 +37,7 @@ class CMenuManager {
 	public EntriesSizeX = 0
 	public EntriesSizeY = 0
 	private readonly header = new Header(this)
+	public readonly textInput = new TextInput(this)
 	private activeElement?: Base
 	private IsOpen_ = true
 	private ScrollPosition = 0
@@ -108,7 +110,7 @@ class CMenuManager {
 	}
 	private get EntriesSizeY_(): number {
 		const visibleEntries = this.VisibleEntries
-		let height = this.header.Size.y,
+		let height = this.header.Size.y + this.textInput.Size.y,
 			cnt = 0,
 			skip = this.ScrollPosition
 		const entries = this.entries
@@ -125,7 +127,9 @@ class CMenuManager {
 		return height
 	}
 	private get EntriesRect() {
-		const pos = this.header.Position.Clone().AddScalarY(this.header.Size.y),
+		const pos = this.header.Position
+				.Clone()
+				.AddScalarY(this.header.Size.y + this.textInput.Size.y),
 			height = this.EntriesSizeY
 		pos.y = Math.min(pos.y, RendererSDK.WindowSize.y - height)
 		return new Rectangle(
@@ -223,6 +227,7 @@ class CMenuManager {
 		Base.ActiveElement =
 			Slider.DraggingNow ??
 			KeyBind.changingNow ??
+			TextInput.focusedInput ??
 			Dropdown.activeDropdown ??
 			ColorPicker.activeColorpicker ??
 			(popup instanceof Base ? popup : undefined)
@@ -251,7 +256,16 @@ class CMenuManager {
 		}
 		this.UpdateScrollbar()
 		this.header.Render()
-		const position = this.header.Position.Clone().AddScalarY(this.header.Size.y)
+		if (this.textInput.QueuedUpdate) {
+			this.textInput.QueuedUpdate = false
+			this.textInput.Update()
+		}
+		const position = this.header.Position
+			.Clone()
+			.AddScalarY(this.header.Size.y)
+		position.CopyTo(this.textInput.Position)
+		this.textInput.Render()
+		position.AddScalarY(this.textInput.Size.y)
 		let skip = this.ScrollPosition,
 			visibleEntries = this.VisibleEntries
 		const entries = this.entries
@@ -297,6 +311,7 @@ class CMenuManager {
 			Base.ActiveElement =
 				Slider.DraggingNow =
 				KeyBind.changingNow =
+				TextInput.focusedInput =
 				Dropdown.activeDropdown =
 				ColorPicker.activeColorpicker =
 					/**/ undefined
@@ -313,6 +328,7 @@ class CMenuManager {
 		if (Base.ActiveElement !== undefined && Base.ActiveElement.OnPreMouseLeftDown()) {
 			Base.ActiveElement =
 				KeyBind.changingNow =
+				TextInput.focusedInput =
 				Dropdown.activeDropdown =
 				ColorPicker.activeColorpicker =
 				Node.ActivePopup =
@@ -330,6 +346,10 @@ class CMenuManager {
 		}
 		if (!this.header.OnMouseLeftDown()) {
 			this.activeElement = this.header
+			return false
+		}
+		if (!this.textInput.OnMouseLeftDown()) {
+			this.activeElement = this.textInput
 			return false
 		}
 		const entries = this.entries
@@ -452,7 +472,7 @@ class CMenuManager {
 		this.VisibleEntries = 0
 		this.IsAtScrollEnd = true
 		const maxHeight = RendererSDK.WindowSize.y
-		let height = this.header.Size.y,
+		let height = this.header.Size.y + this.textInput.Size.y,
 			skip = this.ScrollPosition
 		for (let i = 0; i < this.entries.length; i++) {
 			const entry = this.entries[i]

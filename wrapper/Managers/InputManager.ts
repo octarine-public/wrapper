@@ -91,6 +91,14 @@ Events.on("WndProc", (msg, wParam, _lParam, x, y) => {
 			keysDown.delete(lodword(wParam))
 			return InputEventSDK.emit("KeyUp", true, lodword(wParam))
 
+		case InputMessage.WM_CHAR:
+		case InputMessage.WM_SYSCHAR:
+			return InputEventSDK.emit(
+				"CharInput",
+				true,
+				String.fromCharCode(lodword(wParam))
+			)
+
 		case InputMessage.WM_LBUTTONDOWN:
 		case InputMessage.WM_LBUTTONDBLCLK:
 		case InputMessage.WM_RBUTTONDOWN:
@@ -607,4 +615,8 @@ interface InputEventSDK extends EventEmitter {
 	on(name: "MouseKeyDown", callback: (key: VMouseKeys) => boolean | any): EventEmitter
 	on(name: "MouseKeyUp", callback: (key: VMouseKeys) => boolean | any): EventEmitter
 	on(name: "MouseWheel", callback: (up: boolean) => boolean | any): EventEmitter
+	on(
+		name: "CharInput",
+		callback: (char: string) => boolean | any
+	): EventEmitter
 }
