@@ -17,12 +17,17 @@ export class ShortDescription extends Base {
 
 		ShortDescription.textOffsetWithIcon.x = ScaleWidth(48)
 		ShortDescription.textOffsetWithIcon.y = ShortDescription.textOffsetNode.y
+		ShortDescription.underlineHeight = ScaleHeight(2)
 	}
 
 	private static readonly iconSize = new Vector2()
 	private static readonly iconOffset = new Vector2()
 	private static readonly textOffsetWithIcon = new Vector2()
 	private static readonly textOffsetNode = new Vector2(15, 14)
+	private static readonly underlineColor = new Color(255, 25, 25)
+	private static underlineHeight = 0
+
+	public searchQuery = ""
 
 	constructor(
 		parent: IMenu,
@@ -64,6 +69,9 @@ export class ShortDescription extends Base {
 			textPos.AddForThis(this.textOffset)
 		}
 		this.RenderTextDefault(this.Name, textPos)
+		if (this.searchQuery !== "") {
+			this.RenderSearchUnderlines(textPos)
+		}
 	}
 	public Update(): boolean {
 		if (!super.Update()) {
@@ -76,6 +84,42 @@ export class ShortDescription extends Base {
 			this.Size.AddScalarX(this.textOffset.x)
 		}
 		return true
+	}
+
+	private RenderSearchUnderlines(textPos: Vector2): void {
+		const nameLower = this.Name.toLowerCase()
+		const queryLower = this.searchQuery.toLowerCase()
+		const fontSize = ScaleHeight(this.FontSize)
+		let searchFrom = 0
+		for (;;) {
+			const idx = nameLower.indexOf(queryLower, searchFrom)
+			if (idx === -1) break
+			const beforeMatch = this.Name.substring(0, idx)
+			const matchText = this.Name.substring(idx, idx + queryLower.length)
+			const beforeX = RendererSDK.GetTextSize(
+				beforeMatch,
+				this.FontName,
+				fontSize,
+				this.FontWeight,
+				false
+			).x
+			const matchX = RendererSDK.GetTextSize(
+				matchText,
+				this.FontName,
+				fontSize,
+				this.FontWeight,
+				false
+			).x
+			RendererSDK.FilledRect(
+				new Vector2(
+					textPos.x + beforeX,
+					textPos.y + fontSize + ShortDescription.underlineHeight * 2
+				),
+				new Vector2(matchX, ShortDescription.underlineHeight),
+				ShortDescription.underlineColor
+			)
+			searchFrom = idx + queryLower.length
+		}
 	}
 }
 

@@ -615,8 +615,5 @@ interface InputEventSDK extends EventEmitter {
 	on(name: "MouseKeyDown", callback: (key: VMouseKeys) => boolean | any): EventEmitter
 	on(name: "MouseKeyUp", callback: (key: VMouseKeys) => boolean | any): EventEmitter
 	on(name: "MouseWheel", callback: (up: boolean) => boolean | any): EventEmitter
-	on(
-		name: "CharInput",
-		callback: (char: string) => boolean | any
-	): EventEmitter
+	on(name: "CharInput", callback: (char: string) => boolean | any): EventEmitter
 }
