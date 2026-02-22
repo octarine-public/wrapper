@@ -139,13 +139,7 @@ export class TextInput extends Base {
 				TextInput.iconOffset.y
 			)
 		)
-		RendererSDK.Image(
-			TextInput.searchIconPath,
-			iconPos,
-			-1,
-			TextInput.iconSize,
-			col
-		)
+		RendererSDK.Image(TextInput.searchIconPath, iconPos, -1, TextInput.iconSize, col)
 
 		const hasText = this.text.length > 0
 		const placeholderSize = this.GetTextSizeDefault(this.placeholder)
@@ -165,10 +159,7 @@ export class TextInput extends Base {
 		let text
 
 		if (!hasText && !isFocused) {
-			text =
-				Localization.SelectedUnitName === "russian"
-					? "Поиск              "
-					: "Search             "
+			text = Localization.SelectedUnitName === "russian" ? "Поиск" : "Search"
 			this.RenderTextDefault(text, textPos, TextInput.placeholderColor)
 		} else {
 			if (this.hasSelection) {
