@@ -12,30 +12,32 @@ export class TextInput extends Base {
 	public static focusedInput?: TextInput
 	public static OnWindowSizeChanged(): void {
 		TextInput.inputPadding.x = ScaleWidth(2)
-		TextInput.inputPadding.y = ScaleHeight(10)
+		TextInput.inputPadding.y = ScaleHeight(13)
 		TextInput.cursorWidth = ScaleWidth(1)
-		TextInput.iconSize.x = ScaleWidth(TextInput.origIconSize.x * 0.7)
-		TextInput.iconSize.y = ScaleHeight(TextInput.origIconSize.y * 0.7)
-		TextInput.iconOffset.x = ScaleWidth(6)
-		TextInput.iconOffset.y = ScaleHeight(6)
+		TextInput.iconSize.x = ScaleWidth(24)
+		TextInput.iconSize.y = ScaleHeight(24)
+		TextInput.iconOffset.x = ScaleWidth(12)
+		TextInput.iconOffset.y = ScaleHeight(8)
+		TextInput.textOffset.x = ScaleWidth(48)
+		TextInput.textOffset.y = ScaleHeight(13)
 		TextInput.closeOffset.x = ScaleWidth(8)
 		TextInput.closeOffset.y = ScaleHeight(8)
-		TextInput.underlineHeight = ScaleHeight(1)
+		TextInput.underlineHeight = ScaleHeight(2)
 	}
 
-	private static readonly inputInactivePath = "menu/background_inactive.svg"
 	private static readonly inputActivePath = "menu/background_active.svg"
 	private static readonly searchIconPath = "menu/icons/search.svg"
 	private static readonly closeIconPath = "menu/close.svg"
 	private static readonly inputPadding = new Vector2()
 	private static cursorWidth = 0
-	private static readonly placeholderColor = new Color(150, 150, 150)
+	private static readonly placeholderColor = new Color(120, 120, 130)
+	private static readonly underlineColor = new Color(31, 30, 53)
+	private static readonly iconColor = new Color(120, 120, 130)
+	private static readonly iconFocusedColor = new Color(160, 160, 170)
 	private static readonly selectionColor = new Color(104, 4, 255, 100)
-	private static readonly origIconSize = RendererSDK.GetImageSize(
-		TextInput.searchIconPath
-	)
 	private static readonly iconSize = new Vector2()
 	private static readonly iconOffset = new Vector2()
+	private static readonly textOffset = new Vector2()
 	private static readonly closeOffset = new Vector2()
 	private static underlineHeight = 0
 
@@ -95,7 +97,7 @@ export class TextInput extends Base {
 	}
 
 	public get textLeftOffset(): number {
-		return ScaleWidth(10 + TextInput.origIconSize.x + 14)
+		return TextInput.textOffset.x
 	}
 
 	public get closeIconRect(): { x: number; y: number; w: number; h: number } {
@@ -104,7 +106,7 @@ export class TextInput extends Base {
 			this.parent.EntriesSizeX -
 			TextInput.closeOffset.x -
 			TextInput.iconSize.x
-		const y = this.Position.y + TextInput.closeOffset.y
+		const y = this.Position.y + Math.round((this.Size.y - TextInput.iconSize.y) / 2)
 		return {
 			x,
 			y,
@@ -119,45 +121,26 @@ export class TextInput extends Base {
 			return false
 		}
 		this.Size.CopyFrom(Base.DefaultSize)
-		this.Size.y = Math.round(this.Size.y * (2 / 3))
 		return true
 	}
 
 	public override Render(): void {
 		const isFocused = TextInput.focusedInput === this
-		RendererSDK.Image(
-			isFocused ? TextInput.inputActivePath : TextInput.inputInactivePath,
-			this.Position,
-			-1,
-			this.RenderSize
-		)
+		RendererSDK.Image(TextInput.inputActivePath, this.Position, -1, this.RenderSize)
 
-		const col = isFocused ? undefined : TextInput.placeholderColor
-		const iconPos = this.Position.Add(
-			new Vector2(
-				Math.round((this.textLeftOffset - TextInput.iconSize.x) / 2),
-				TextInput.iconOffset.y
-			)
+		const iconCol = isFocused ? TextInput.iconFocusedColor : TextInput.iconColor
+		RendererSDK.Image(
+			TextInput.searchIconPath,
+			this.Position.Add(TextInput.iconOffset),
+			-1,
+			TextInput.iconSize,
+			iconCol
 		)
-		RendererSDK.Image(TextInput.searchIconPath, iconPos, -1, TextInput.iconSize, col)
 
 		const hasText = this.text.length > 0
-		const placeholderSize = this.GetTextSizeDefault(this.placeholder)
-		const textPos = this.Position.Clone()
-		textPos.x += this.textLeftOffset
-		textPos.y += TextInput.inputPadding.y
+		const textPos = this.Position.Add(TextInput.textOffset)
 
-		RendererSDK.FilledRect(
-			new Vector2(
-				this.Position.x,
-				textPos.y + placeholderSize.y + TextInput.underlineHeight * 2
-			),
-			new Vector2(this.Size.x, TextInput.underlineHeight),
-			col
-		)
-
-		let text
-
+		let text: string
 		if (!hasText && !isFocused) {
 			text = Localization.SelectedUnitName === "russian" ? "Поиск" : "Search"
 			this.RenderTextDefault(text, textPos, TextInput.placeholderColor)
@@ -180,25 +163,18 @@ export class TextInput extends Base {
 			}
 
 			text = this.text
-			const size = ScaleHeight(this.FontSize)
-			const size3 = RendererSDK.GetTextSize(
-				this.text,
-				this.FontName,
-				size,
-				this.FontWeight
-			)
+			this.RenderTextDefault(text, textPos)
+		}
 
-			RendererSDK.Text(
-				this.text,
-				textPos.Subtract(
-					new Vector2(0, Math.round(size3.y - size / 1.5 + size3.z / 2))
-				),
-				undefined,
-				this.FontName,
-				size,
-				this.FontWeight,
-				false,
-				false
+		if (!hasText && !isFocused) {
+			const textSize = this.GetTextSizeDefault(text)
+			const underlineX = textPos.x
+			const underlineY = textPos.y + textSize.y + TextInput.underlineHeight * 4
+			const underlineW = this.Position.x + this.Size.x - underlineX - ScaleWidth(10)
+			RendererSDK.FilledRect(
+				new Vector2(underlineX, underlineY),
+				new Vector2(underlineW, TextInput.underlineHeight),
+				TextInput.underlineColor
 			)
 		}
 
@@ -206,13 +182,13 @@ export class TextInput extends Base {
 			const blinkOn = (hrtime() - this.cursorBlinkStart) % 1000 < 500
 			if (blinkOn) {
 				const beforeCursor = this.text.substring(0, this.cursorPos)
-				const textSize = this.GetTextSizeDefault(beforeCursor)
-				const cursorX = textPos.x + textSize.x
-				const cursorY = this.Position.y + this.Size.y / 2
-				const cursorH = this.Size.y - TextInput.inputPadding.y
+				const cursorTextSize = this.GetTextSizeDefault(beforeCursor)
+				const cursorX = textPos.x + cursorTextSize.x
+				const cursorH = ScaleHeight(this.FontSize)
+				const cursorY = textPos.y
 
 				RendererSDK.FilledRect(
-					new Vector2(cursorX, cursorY - cursorH / 2),
+					new Vector2(cursorX, cursorY),
 					new Vector2(TextInput.cursorWidth, cursorH),
 					Color.White
 				)
