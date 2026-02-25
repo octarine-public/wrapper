@@ -18,8 +18,8 @@ export class TextInput extends Base {
 		TextInput.iconSize.y = ScaleHeight(24)
 		TextInput.iconOffset.x = ScaleWidth(12)
 		TextInput.iconOffset.y = ScaleHeight(8)
-		TextInput.textOffset.x = ScaleWidth(48)
-		TextInput.textOffset.y = ScaleHeight(13)
+		TextInput.inputTextOffset.x = ScaleWidth(48)
+		TextInput.inputTextOffset.y = ScaleHeight(13)
 		TextInput.closeOffset.x = ScaleWidth(8)
 		TextInput.closeOffset.y = ScaleHeight(8)
 		TextInput.underlineHeight = ScaleHeight(2)
@@ -37,7 +37,7 @@ export class TextInput extends Base {
 	private static readonly selectionColor = new Color(104, 4, 255, 100)
 	private static readonly iconSize = new Vector2()
 	private static readonly iconOffset = new Vector2()
-	private static readonly textOffset = new Vector2()
+	private static readonly inputTextOffset = new Vector2()
 	private static readonly closeOffset = new Vector2()
 	private static underlineHeight = 0
 
@@ -97,7 +97,7 @@ export class TextInput extends Base {
 	}
 
 	public get textLeftOffset(): number {
-		return TextInput.textOffset.x
+		return TextInput.inputTextOffset.x
 	}
 
 	public get closeIconRect(): { x: number; y: number; w: number; h: number } {
@@ -138,7 +138,7 @@ export class TextInput extends Base {
 		)
 
 		const hasText = this.text.length > 0
-		const textPos = this.Position.Add(TextInput.textOffset)
+		const textPos = this.Position.Add(TextInput.inputTextOffset)
 
 		let text: string
 		if (!hasText && !isFocused) {
