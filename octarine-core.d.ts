@@ -549,3 +549,67 @@ declare function SetChangerEnabled(enabled: boolean): void
 declare function AddPrismaticGem(r: number, g: number, b: number): void
 declare function AddGreevil(quas: number, wex: number, exort: number, shadow: number, unusual: number): void
 declare function SetEmblemAttackEffectOverride(itemDefID: number): void
+
+/**
+ * FileSystem API for file redirection and override management
+ * 
+ * Allows redirecting game file requests to custom files on disk.
+ * Useful for modding, testing custom assets, or replacing game resources.
+ */
+declare interface FileSystem {
+	/**
+	 * Adds a new file redirection list
+	 * @param name - Unique identifier for this redirection list
+	 * @param obj - Object mapping original file paths to custom file paths
+	 * @returns handle - Numeric handle for managing this redirection list
+	 * 
+	 * @example
+	 * // add file redirection list
+	 * const listHandle = FileSystem.AddRedirectList("test", {
+	 *     "materials/blends/mod_dire_000.vmat_c": "D:/TEST/materials/blends/mod_dire_000.vmat_c",
+	 *     "materials/blends/mod_dire_000_vmat_g_tspecular0_83163e7b_png_d3f7b418.vtex_c": "D:/TEST/materials/blends/mod_dire_000_vmat_g_tspecular0_83163e7b_png_d3f7b418.vtex_c"
+	 * });
+	 */
+	AddRedirectList(name: string, obj: { [key: string]: string }): number
+	
+	/**
+	 * Removes a specific redirection list by its handle
+	 * @param handle - Numeric handle returned by AddRedirectList
+	 * 
+	 * @example
+	 * // remove redirection list
+	 * FileSystem.RemoveRedirectList(listHandle);
+	 */
+	RemoveRedirectList(handle: number): void
+	
+	/**
+	 * Removes all redirection lists
+	 * 
+	 * @example
+	 * // remove all redirection lists
+	 * FileSystem.ResetRedirects();
+	 */
+	ResetRedirects(): void
+	
+	/**
+	 * Enables or disables all file redirections globally
+	 * @param enable - true to enable, false to disable
+	 * 
+	 * @example
+	 * // enable/disable all redirections
+	 * FileSystem.EnableRedirects(true);
+	 */
+	EnableRedirects(enable: boolean): void
+	
+	/**
+	 * Checks if file redirections are currently enabled
+	 * @returns true if redirections are enabled, false otherwise
+	 * 
+	 * @example
+	 * // returns true if enabled
+	 * const isEnabled = FileSystem.RedirectsEnabled();
+	 */
+	RedirectsEnabled(): boolean
+}
+
+declare const FileSystem: FileSystem
