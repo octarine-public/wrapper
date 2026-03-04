@@ -37,6 +37,135 @@ import { RendererSDK } from "./RendererSDK"
 import { UserCmd } from "./UserCmd"
 import * as WASM from "./WASM"
 
+class PerfSection {
+	public count = 0
+	public mean = 0
+	public m2 = 0
+	public max = 0
+	public startTime = 0
+	public record(elapsed: number): void {
+		this.count++
+		const delta = elapsed - this.mean
+		this.mean += delta / this.count
+		this.m2 += delta * (elapsed - this.mean)
+		if (elapsed > this.max) {
+			this.max = elapsed
+		}
+	}
+	public reset(): void {
+		this.count = 0
+		this.mean = 0
+		this.m2 = 0
+		this.max = 0
+	}
+	public get stddev(): number {
+		return this.count < 2 ? 0 : Math.sqrt(this.m2 / (this.count - 1))
+	}
+}
+
+interface PerfReportRow {
+	name: string
+	count: number
+	avg: number
+	std: number
+	max: number
+}
+
+class PerfTracker {
+	private readonly sections = new Map<string, PerfSection>()
+	private readonly order: string[] = []
+	private report: PerfReportRow[] = []
+	private lastReport = 0
+
+	private getSection(name: string): PerfSection {
+		let s = this.sections.get(name)
+		if (s === undefined) {
+			s = new PerfSection()
+			this.sections.set(name, s)
+			this.order.push(name)
+		}
+		return s
+	}
+	public begin(name: string): void {
+		this.getSection(name).startTime = hrtime()
+	}
+	public end(name: string): void {
+		const s = this.sections.get(name)
+		if (s === undefined || s.startTime === 0) {
+			return
+		}
+		s.record(hrtime() - s.startTime)
+		s.startTime = 0
+	}
+	public draw(x: number, y: number, fontSize: number): void {
+		const now = hrtime()
+		if (now - this.lastReport >= 1000) {
+			this.report = []
+			for (const name of this.order) {
+				const s = this.sections.get(name)!
+				this.report.push({
+					name,
+					count: s.count,
+					avg: s.mean,
+					std: s.stddev,
+					max: s.max
+				})
+				s.reset()
+			}
+			this.lastReport = now
+		}
+		const font = RendererSDK.DefaultFontName
+		const lineH =
+			RendererSDK.GetTextSize("M", font, fontSize).y + 2
+		const drawText = (
+			text: string,
+			px: number,
+			py: number,
+			color: Color
+		) => {
+			RendererSDK.Text(text, new Vector2(px, py), color, font, fontSize, 400, false, true)
+		}
+		const textW = (text: string) =>
+			RendererSDK.GetTextSize(text, font, fontSize).x
+
+		// header
+		drawText("=== HumanizerLogic Perf ===", x, y, Color.White)
+		let cy = y + lineH
+
+		if (this.report.length === 0) {
+			return
+		}
+
+		// column headers
+		const nameColW = this.report.reduce(
+			(m, r) => Math.max(m, textW(r.name)),
+			0
+		) + 10
+		const colLabels = ["n", "avg", "std", "max"]
+		const colX: number[] = []
+		let cx = x + nameColW
+		for (const label of colLabels) {
+			colX.push(cx)
+			cx += textW("= 0000.000ms") + 8
+		}
+		for (let i = 0; i < colLabels.length; i++) {
+			drawText(colLabels[i], colX[i], cy, Color.White)
+		}
+		cy += lineH
+
+		// rows
+		for (const row of this.report) {
+			drawText(row.name, x, cy, Color.White)
+			drawText(String(row.count), colX[0], cy, Color.White)
+			drawText(`${row.avg.toFixed(3)}ms`, colX[1], cy, Color.White)
+			drawText(`${row.std.toFixed(3)}ms`, colX[2], cy, Color.White)
+			drawText(`${row.max.toFixed(3)}ms`, colX[3], cy, Color.White)
+			cy += lineH
+		}
+	}
+}
+const perf = new PerfTracker()
+
 class Polygon2D {
 	public Points: Vector2[] = []
 
@@ -95,6 +224,7 @@ const latestCursor = new Vector2(),
 	defaultCameraDist = CameraSDK.DefaultDistance, // default camera distance
 	defaultCameraAngles = CameraSDK.DefaultAngles
 function UpdateCameraBounds(cameraVec2D: Vector2) {
+	perf.begin("UpdateCameraBounds")
 	const cameraVec = WASM.GetCameraPosition(
 		cameraVec2D,
 		defaultCameraDist,
@@ -185,6 +315,7 @@ function UpdateCameraBounds(cameraVec2D: Vector2) {
 		cameraVec,
 		defaultCameraDist
 	)
+	perf.end("UpdateCameraBounds")
 }
 
 function CanOrderBeSkipped(order: ExecuteOrder): boolean {
@@ -250,8 +381,12 @@ function GetEntityHitBox(ent: Entity, cameraVec: Vector2): Nullable<Polygon2D> {
 function EntityHitBoxesIntersect(
 	ents: Entity[],
 	cameraVec: Vector3 | Vector2,
-	cursorVec: Vector2
+	cursorVec: Vector2,
+	skipPerf = false
 ): boolean[] {
+	if (!skipPerf) {
+		perf.begin("EntityHitBoxesIntersect")
+	}
 	if (cameraVec instanceof Vector2) {
 		cameraVec = WASM.GetCameraPosition(
 			cameraVec,
@@ -265,11 +400,15 @@ function EntityHitBoxesIntersect(
 		defaultCameraAngles,
 		-1
 	)
-	return WASM.BatchCheckRayBox(
+	const result = WASM.BatchCheckRayBox(
 		cameraVec,
 		ray,
 		ents.map(ent => ent.BoundingBox)
 	)
+	if (!skipPerf) {
+		perf.end("EntityHitBoxesIntersect")
+	}
+	return result
 }
 
 function GetRectForSlot(hud: CLowerHUD, slot: DOTAScriptInventorySlot): Rectangle {
@@ -335,7 +474,7 @@ function ComputeTargetPosVector3(
 	return min.AddForThis(max.SubtractForThis(min).MultiplyScalarForThis(Math.random()))
 }
 
-function ComputeTargetPosEntity(
+function ComputeTargetPosEntityImpl(
 	cameraVec: Vector2,
 	currentTime: number,
 	ent: Entity
@@ -379,7 +518,7 @@ function ComputeTargetPosEntity(
 			.Add(min.MultiplyScalar(Math.random() / 2))
 			.AddForThis(max.MultiplyScalar(Math.random() / 2))
 		if (
-			EntityHitBoxesIntersect([ent], cameraVec, generated)[0] &&
+			EntityHitBoxesIntersect([ent], cameraVec, generated, true)[0] &&
 			(latestCameraRedZonePolyScreen.IsInside(generated) ||
 				!CanMoveCamera(cameraVec, generated))
 		) {
@@ -394,11 +533,21 @@ function ComputeTargetPosEntity(
 	}
 	return center
 }
+function ComputeTargetPosEntity(
+	cameraVec: Vector2,
+	currentTime: number,
+	ent: Entity
+): Vector3 | Vector2 {
+	perf.begin("ComputeTargetPosEntity")
+	const result = ComputeTargetPosEntityImpl(cameraVec, currentTime, ent)
+	perf.end("ComputeTargetPosEntity")
+	return result
+}
 
 let initializedMousePosition = false,
 	standaloneMovingTo: Nullable<Vector3>
 
-function ComputeTargetPos(
+function ComputeTargetPosImpl(
 	cameraVec: Vector2,
 	currentTime: number
 ): [Vector3 | Vector2, boolean, boolean] {
@@ -578,6 +727,15 @@ function ComputeTargetPos(
 		return [cursorPos.Divide(RendererSDK.WindowSize), true, true]
 	}
 }
+function ComputeTargetPos(
+	cameraVec: Vector2,
+	currentTime: number
+): [Vector3 | Vector2, boolean, boolean] {
+	perf.begin("ComputeTargetPos")
+	const result = ComputeTargetPosImpl(cameraVec, currentTime)
+	perf.end("ComputeTargetPos")
+	return result
+}
 
 let currentOrder: Nullable<[ExecuteOrder, number, boolean, boolean]>
 let lastOrderTarget: Nullable<
@@ -593,7 +751,7 @@ let lastOrderTarget: Nullable<
 	  }
 >
 
-function ProcessOrderQueue(currentTime: number) {
+function ProcessOrderQueueImpl(currentTime: number) {
 	let order = ExecuteOrder.orderQueue[0] as Nullable<
 		[ExecuteOrder, number, boolean, boolean]
 	>
@@ -603,6 +761,9 @@ function ProcessOrderQueue(currentTime: number) {
 				`Executing order ${order[0].OrderType} after ${currentTime - order[1]}ms`
 			)
 		}
+		console.log(
+			`[HumanizerDelay] Skippable order ${dotaunitorder_t[order[0].OrderType]} (${order[0].OrderType}) delayed by ${(currentTime - order[1]).toFixed(1)}ms`
+		)
 		order[0].Execute()
 		order[3] = true
 		ExecuteOrder.orderQueue.splice(0, 1)
@@ -635,6 +796,9 @@ function ProcessOrderQueue(currentTime: number) {
 				}ms at ${GameState.RawGameTime}`
 			)
 		}
+		console.log(
+			`[HumanizerDelay] Prefired order ${dotaunitorder_t[order[0].OrderType]} (${order[0].OrderType}) delayed by ${(currentTime - order[1]).toFixed(1)}ms`
+		)
 		order[0].Execute()
 		order[3] = true
 	}
@@ -712,6 +876,12 @@ function ProcessOrderQueue(currentTime: number) {
 			break
 	}
 	return order
+}
+function ProcessOrderQueue(currentTime: number) {
+	perf.begin("ProcessOrderQueue")
+	const result = ProcessOrderQueueImpl(currentTime)
+	perf.end("ProcessOrderQueue")
+	return result
 }
 
 let cameraMoveLingerDuration = 0,
@@ -899,7 +1069,7 @@ function MoveCameraByScreen(
 const shortUnitSwitchDelay = 300
 let lastUnitSwitch = 0
 
-function MoveCamera(
+function MoveCameraImpl(
 	cameraVec: Vector2,
 	targetPos: Vector3,
 	currentTime: number
@@ -959,6 +1129,16 @@ function MoveCamera(
 	}
 	return [MoveCameraByScreen(cameraVec, targetPos, currentTime), false]
 }
+function MoveCamera(
+	cameraVec: Vector2,
+	targetPos: Vector3,
+	currentTime: number
+): [Vector2, boolean] {
+	perf.begin("MoveCamera")
+	const result = MoveCameraImpl(cameraVec, targetPos, currentTime)
+	perf.end("MoveCamera")
+	return result
+}
 
 function getParams(): [number, number][] {
 	const paramsCount = 5 + Math.round(Math.random() * 3) // [5,8]
@@ -997,6 +1177,7 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 	if (ExecuteOrder.DisableHumanizer) {
 		return
 	}
+	perf.begin("ProcessUserCmdInternal")
 	latestUsercmd.ShopMask = 15
 	let order = ProcessOrderQueue(currentTime)
 	latestUsercmd.CameraPosition.x = latestCameraX
@@ -1032,6 +1213,11 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 				`Skipping order due to invalid entity after ${
 					currentTime - (order !== undefined ? order[1] : 0)
 				}ms`
+			)
+		}
+		if (order !== undefined) {
+			console.log(
+				`[HumanizerDelay] Skipped order ${dotaunitorder_t[order[0].OrderType]} (${order[0].OrderType}) due to invalid entity, delayed ${(currentTime - order[1]).toFixed(1)}ms`
 			)
 		}
 		lastOrderTarget = undefined
@@ -1264,6 +1450,9 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 					}ms at ${GameState.RawGameTime}`
 				)
 			}
+			console.log(
+				`[HumanizerDelay] Finished order ${dotaunitorder_t[order[0].OrderType]} (${order[0].OrderType}) delayed by ${(currentTime - order[1]).toFixed(1)}ms`
+			)
 			lastOrderFinish = currentTime
 			lastOrderUsedMinimap = order[2]
 			ExecuteOrder.orderQueue.splice(0, 1)
@@ -1311,6 +1500,7 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 	// console.log(latestUsercmd.MousePosition, latestUsercmd.VectorUnderCursor)
 	latestUsercmd.Write()
 	WriteUserCmd()
+	perf.end("ProcessUserCmdInternal")
 }
 
 let lastUpdate = 0
@@ -1325,6 +1515,7 @@ function ProcessUserCmd(force = false): void {
 	if (RendererSDK.WindowSize.IsZero()) {
 		return
 	}
+	perf.begin("ProcessUserCmd")
 	ChangeOrderParams()
 	latestUsercmd.Pawn = LocalPlayer?.Pawn
 	latestUsercmd.SpectatorStatsCategoryID = 0
@@ -1388,6 +1579,7 @@ function ProcessUserCmd(force = false): void {
 			lastUpdate += curDt
 		}
 	}
+	perf.end("ProcessUserCmd")
 }
 SetProcessUserCmd(() => ProcessUserCmd(true))
 EventsSDK.on("Draw", ProcessUserCmd)
@@ -1452,6 +1644,10 @@ EventsSDK.on("Draw", () => {
 			)
 		)
 	}
+})
+
+EventsSDK.on("Draw", () => {
+	perf.draw(10, 300, 14)
 })
 
 let ctrlDown = false,
