@@ -1280,6 +1280,7 @@ export class Unit extends Entity {
 		return super.IsInRange(ent, range)
 	}
 	/** ================================ Turn Time ======================================= */
+	/** @deprecated */
 	public GetTurnTime(
 		angle: number | Vector3,
 		currentTurnRate: boolean = true,
@@ -1290,16 +1291,18 @@ export class Unit extends Entity {
 		}
 		return this.TurnTime(angle, currentTurnRate)
 	}
+	/** @deprecated */
 	public GetRotationTime(vec: Vector3, currentTurnRate = true): number {
 		const turnRad = Math.PI - 0.25
 		const ang = this.FindRotationAngle(vec)
 		return ang <= turnRad ? (30 * ang) / this.TurnRate(currentTurnRate) : 0
 	}
-	public TurnRate(currentTurnRate: boolean = true): number {
-		return currentTurnRate ? this.MovementTurnRate : this.BaseTurnRate || 0.5
-	}
+	/** @deprecated */
 	public TurnTime(angle: number, currentTurnRate: boolean = true): number {
 		return Math.max(angle / (30 * this.TurnRate(currentTurnRate)), 0)
+	}
+	public TurnRate(currentTurnRate: boolean = true): number {
+		return currentTurnRate ? this.MovementTurnRate : this.BaseTurnRate || 0.5
 	}
 	public TurnTimeNew(
 		target: Vector3,
@@ -1353,7 +1356,6 @@ export class Unit extends Entity {
 	public IsManaEnough(abil: Ability): boolean {
 		return this.Mana >= abil.ManaCost
 	}
-
 	public HasLinkenAtTime(time: number = 0): boolean {
 		const sphere = this.GetItemByName("item_sphere")
 		if (sphere !== undefined && sphere.Cooldown - time <= 0) {
@@ -1362,7 +1364,6 @@ export class Unit extends Entity {
 		const sphereTarget = this.GetBuffByName("modifier_item_sphere_target")
 		return sphereTarget !== undefined && sphereTarget.RemainingTime - time <= 0
 	}
-
 	public CalculateActivityModifiers(activity: GameActivity, ar: string[]): void {
 		super.CalculateActivityModifiers(activity, ar)
 		if (this.IsIllusion) {
@@ -1445,7 +1446,6 @@ export class Unit extends Entity {
 
 		// TODO: AttackRangeActivityModifiers
 	}
-
 	public GetAnimationID(
 		activity = this.NetworkActivity,
 		sequenceNum = this.NetworkSequenceIndex,
@@ -1453,7 +1453,6 @@ export class Unit extends Entity {
 	): Nullable<number> {
 		return super.GetAnimationID(activity, sequenceNum, findBestMatch)
 	}
-
 	public GetAnimation(
 		activity = this.NetworkActivity,
 		sequenceNum = this.NetworkSequenceIndex,
@@ -1461,7 +1460,6 @@ export class Unit extends Entity {
 	): Nullable<AnimationData> {
 		return super.GetAnimation(activity, sequenceNum, findBestMatch)
 	}
-
 	public GetAttachmentPosition(
 		name: string,
 		activity = this.NetworkActivity,
@@ -1481,7 +1479,6 @@ export class Unit extends Entity {
 			scale
 		)
 	}
-
 	public ExtendUntilWall(
 		start: Vector3,
 		direction: Vector3,
@@ -1517,7 +1514,6 @@ export class Unit extends Entity {
 		}
 		return testPoint
 	}
-
 	public GetPredictionPosition(
 		delay = 0,
 		useUntilWall = true,
@@ -1531,7 +1527,6 @@ export class Unit extends Entity {
 		}
 		return this.ExtendUntilWall(this.Position, this.Forward, delay * this.MoveSpeed)
 	}
-
 	public ChangeFieldsByEvents(): void {
 		const buffs = this.Buffs
 		{
@@ -1630,7 +1625,6 @@ export class Unit extends Entity {
 			this.CastTarget(ability, target as Entity, showEffects)
 		}
 	}
-
 	public MoveTo(position: Vector3, queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION,
@@ -1641,7 +1635,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public MoveToTarget(
 		target: Entity | number,
 		queue?: boolean,
@@ -1656,7 +1649,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public AttackMove(position: Vector3, queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE,
@@ -1667,7 +1659,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public AttackTarget(
 		target: Entity | number,
 		queue?: boolean,
@@ -1682,7 +1673,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public CastPosition(
 		ability: Ability,
 		position: Vector3,
@@ -1699,7 +1689,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public PurchaseItem(itemID: number, queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM,
@@ -1710,7 +1699,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public CastTarget(
 		ability: Ability,
 		target: Entity | number,
@@ -1727,7 +1715,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public CastTargetTree(
 		ability: Ability,
 		tree: Tree | TempTree | number,
@@ -1744,7 +1731,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public CastNoTarget(ability: Ability, queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
@@ -1755,7 +1741,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public CastToggle(ability: Ability, queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE,
@@ -1766,7 +1751,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public CastAltToggle(ability: Ability, queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_ALT,
@@ -1777,7 +1761,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public HoldPosition(position: Vector3, queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION,
@@ -1788,7 +1771,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public TrainAbility(ability: Ability): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
@@ -1797,7 +1779,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public DropItemAtFountain(
 		item: Item,
 		queue?: boolean,
@@ -1814,7 +1795,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public DropItem(
 		item: Item,
 		position: Vector3,
@@ -1831,7 +1811,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public GiveItem(
 		item: Item,
 		target: Entity | number,
@@ -1848,7 +1827,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public PickupItem(
 		physicalItem: PhysicalItem | number,
 		queue?: boolean,
@@ -1863,7 +1841,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public PickupRune(rune: Rune | number, queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE,
@@ -1874,7 +1851,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public SellItem(item: Item): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM,
@@ -1883,7 +1859,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public DisassembleItem(item: Item, queue?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM,
@@ -1893,7 +1868,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public ItemSetCombineLock(
 		item: Item,
 		lock: boolean | number = true,
@@ -1908,7 +1882,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public TakeItemFromNeutralStash(item: Item): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAKE_ITEM_FROM_NEUTRAL_ITEM_STASH,
@@ -1917,7 +1890,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public MoveItem(item: Item, slot: DOTAScriptInventorySlot): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM,
@@ -1927,7 +1899,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public CastToggleAuto(item: Ability, queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO,
@@ -1938,7 +1909,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public OrderStop(queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_STOP,
@@ -1948,7 +1918,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public UnitTaunt(queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAUNT,
@@ -1958,7 +1927,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public EjectItemFromStash(item: Item): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH,
@@ -1967,7 +1935,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public CastRune(
 		runeItem: Item | number,
 		queue?: boolean,
@@ -1982,7 +1949,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public PingAbility(ability: Ability): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PING_ABILITY,
@@ -1991,7 +1957,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public MoveToDirection(
 		position: Vector3,
 		queue?: boolean,
@@ -2006,7 +1971,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public Patrol(position: Vector3, queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PATROL,
@@ -2017,7 +1981,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public VectorTargetPosition(
 		ability: Ability,
 		direction: Vector3,
@@ -2036,7 +1999,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public CastVectorTargetPosition(
 		ability: Ability,
 		position: Vector3 | Unit,
@@ -2056,7 +2018,6 @@ export class Unit extends Entity {
 		)
 		this.CastPosition(ability, position, queue, showEffects)
 	}
-
 	public ItemLock(item: Item, state = true): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK,
@@ -2066,7 +2027,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public OrderContinue(item: Item, queue?: boolean, showEffects?: boolean): void {
 		ExecuteOrder.PrepareOrder({
 			orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE,
@@ -2077,7 +2037,6 @@ export class Unit extends Entity {
 			isPlayerInput: false
 		})
 	}
-
 	public VectorTargetCanceled(
 		position: Vector3,
 		queue?: boolean,
