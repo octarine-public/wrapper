@@ -23,7 +23,8 @@ import { GameState } from "../../Utils/GameState"
 import { AngleDiff } from "../../Utils/Math"
 import { EntityManager } from "../EntityManager"
 import { EventsSDK } from "../EventsSDK"
-import { Prediction } from "../Prediction/Prediction"
+
+class Prediction {}
 
 new (class CPreUnitChanged {
 	constructor() {

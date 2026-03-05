@@ -15,7 +15,6 @@ import { SPELL_DISPELLABLE_TYPES } from "../../Enums/SPELL_DISPELLABLE_TYPES"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { EntityManager } from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
-import { IPrediction } from "../../Managers/Prediction/IPrediction"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GameState } from "../../Utils/GameState"
@@ -77,7 +76,7 @@ export class Ability extends Entity {
 	public AbilityChargeRestoreTimeRemaining = 0
 	/** @deprecated use by index */
 	public AbilitySlot = EAbilitySlot.DOTA_SPELL_SLOT_HIDDEN
-	public Prediction: Nullable<IPrediction>
+	public Prediction: Nullable<any>
 
 	/** @private NOTE: this is internal field, use IsInAbilityPhase */
 	public IsInAbilityPhase_ = false
@@ -223,7 +222,8 @@ export class Ability extends Entity {
 		return Math.ceil(castPoint / GameState.TickInterval) * GameState.TickInterval
 	}
 	public get ActivationDelay() {
-		return this.GetBaseActivationDelayForLevel(this.Level)
+		const delay = this.GetBaseActivationDelayForLevel(this.Level)
+		return Math.ceil(delay / GameState.TickInterval) * GameState.TickInterval
 	}
 	public get MaxChannelTime(): number {
 		return this.GetBaseChannelTimeForLevel(this.Level)

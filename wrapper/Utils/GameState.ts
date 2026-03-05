@@ -61,8 +61,8 @@ export const GameState = new (class CGameState {
 	public GetInputLag(latency: number) {
 		const tickDelta = this.TickInterval
 		if (latency < 0.001 && !this.IsDedicatedServer) {
-			return tickDelta
+			return tickDelta * 2
 		}
-		return Math.max(Math.round(latency / tickDelta), 1) * tickDelta + tickDelta
+		return Math.max(Math.round(latency / tickDelta), 1) * tickDelta + tickDelta * 2
 	}
 })()
