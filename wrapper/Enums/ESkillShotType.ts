@@ -4,5 +4,6 @@ export const enum ESkillShotType {
 	RangedAreaOfEffect,
 	Line,
 	Circle,
-	Cone
+	Cone,
+	Arc
 }

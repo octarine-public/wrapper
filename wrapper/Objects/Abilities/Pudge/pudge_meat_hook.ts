@@ -1,4 +1,7 @@
 import { NetworkedBasicField, WrapperClass } from "../../../Decorators"
+import { CollisionFlag } from "../../../Enums/CollisionFlag"
+import { CollisionTeam } from "../../../Enums/CollisionTypes"
+import { ESkillShotType } from "../../../Enums/ESkillShotType"
 import { Ability } from "../../Base/Ability"
 import { Creep } from "../../Base/Creep"
 import { Unit } from "../../Base/Unit"
@@ -9,6 +12,15 @@ export class pudge_meat_hook extends Ability implements INuke {
 	public readonly ConsecutiveHits: number = 0
 	public get ProjectileAttachment(): string {
 		return "attach_attack1"
+	}
+	public get PredictionSkillShotType(): ESkillShotType {
+		return ESkillShotType.Line
+	}
+	public get PredictionCollisionFlag(): CollisionFlag {
+		return CollisionFlag.Creeps | CollisionFlag.Heroes
+	}
+	public get PredictionCollisionTeam(): CollisionTeam {
+		return CollisionTeam.All
 	}
 	public IsNuke(): this is INuke {
 		return true

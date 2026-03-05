@@ -3,5 +3,6 @@ export const enum HitChance {
 	Low,
 	Medium,
 	High,
+	VeryHigh,
 	Immobile
 }

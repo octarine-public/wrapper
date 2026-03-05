@@ -2,6 +2,8 @@ import { QAngle } from "../../Base/QAngle"
 import { Vector3 } from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { ABILITY_TYPES } from "../../Enums/ABILITY_TYPES"
+import { CollisionFlag } from "../../Enums/CollisionFlag"
+import { CollisionTeam } from "../../Enums/CollisionTypes"
 import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
 import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
 import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
@@ -10,6 +12,7 @@ import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EAbilitySlot } from "../../Enums/EAbilitySlot"
 import { EDOTASpecialBonusStats } from "../../Enums/EDOTASpecialBonusStats"
 import { EModifierfunction } from "../../Enums/EModifierfunction"
+import { ESkillShotType } from "../../Enums/ESkillShotType"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { SPELL_DISPELLABLE_TYPES } from "../../Enums/SPELL_DISPELLABLE_TYPES"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
@@ -106,6 +109,15 @@ export class Ability extends Entity {
 	}
 	public get ProjectileAttachment(): string {
 		return "attach_hitloc"
+	}
+	public get PredictionSkillShotType(): ESkillShotType {
+		return ESkillShotType.None
+	}
+	public get PredictionCollisionFlag(): CollisionFlag {
+		return CollisionFlag.None
+	}
+	public get PredictionCollisionTeam(): CollisionTeam {
+		return CollisionTeam.All
 	}
 	public get CastDelay() {
 		return this.CastPoint + GameState.InputLag

@@ -35,6 +35,8 @@ export { ATTACK_DAMAGE_STRENGTH } from "./Enums/ATTACK_DAMAGE_STRENGTH"
 export { AttackDamageType } from "./Enums/AttackDamageType"
 export { Attributes } from "./Enums/Attributes"
 export { BrawlActive } from "./Enums/BrawlActive"
+export { CollisionFlag } from "./Enums/CollisionFlag"
+export { CollisionTeam, CollisionTypes } from "./Enums/CollisionTypes"
 export { ConnectionState } from "./Enums/ConnectionState"
 export { CourierState } from "./Enums/CourierState"
 export { DAMAGE_TYPES } from "./Enums/DAMAGE_TYPES"
@@ -67,11 +69,13 @@ export { ERoshanLocation } from "./Enums/ERoshanLocation"
 export { ERoshanSpawnPhase } from "./Enums/ERoshanSpawnPhase"
 export { ERuneSpawnerLocation } from "./Enums/ERuneSpawnerLocation"
 export { EShareAbility } from "./Enums/EShareAbility"
+export { ESkillShotType } from "./Enums/ESkillShotType"
 export { ETormentorLocation } from "./Enums/ETormentorLocation"
 export { ETormentorSpawnPhase } from "./Enums/ETormentorSpawnPhase"
 export { Flow } from "./Enums/Flow"
 export { GameActivity } from "./Enums/GameActivity"
 export { GridNavCellFlags } from "./Enums/GridNavCellFlags"
+export { HitChance } from "./Enums/HitChance"
 export { LaneSelection } from "./Enums/LaneSelection"
 export { LaneSelectionFlags } from "./Enums/LaneSelectionFlags"
 export { LifeState } from "./Enums/LifeState"
@@ -3368,6 +3372,20 @@ export { Roshan } from "./Objects/Units/Roshan"
 export { SpiritBear } from "./Objects/Units/SpiritBear"
 export { TechiesMines } from "./Objects/Units/TechiesMines"
 export { Thinker } from "./Objects/Units/Thinker"
+export type { IMECResult, IPredictionOverrides } from "./Prediction/index"
+export {
+	ArcGeometry,
+	CollisionDetector,
+	CollisionResult,
+	EvasionDetector,
+	MEC,
+	MovementHistory,
+	PredictionDebugger,
+	PredictionEngine,
+	PredictionInput,
+	PredictionOutput,
+	SkillShotGeometry
+} from "./Prediction/index"
 export { EntityDataLumps } from "./Resources/ParseEntityLump"
 export { GridNav } from "./Resources/ParseGNV"
 export * as ParseUtils from "./Resources/ParseUtils"

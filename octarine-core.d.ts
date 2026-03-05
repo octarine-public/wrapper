@@ -447,8 +447,8 @@ declare function PrepareUnitOrders(obj: {
 	ShowEffects?: boolean
 	Flags?: number
 }): void
-declare function GetLatency(flow: number): number
-declare function GetAvgLatency(flow: number): number
+declare function GetLatency(flow?: number): number
+declare function GetAvgLatency(flow?: number): number
 declare function StartFindingMatch(): void
 declare function SendGCPingResponse(): void
 declare function AcceptMatch(): void
