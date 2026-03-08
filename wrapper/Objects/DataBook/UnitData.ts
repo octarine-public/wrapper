@@ -68,7 +68,7 @@ export class UnitData {
 	}
 
 	public readonly HeroID: number
-	public readonly Enabled: boolean
+	public readonly HeroEnabled: boolean
 	public readonly ModelName: string
 	public readonly MovementTurnRate: number
 	public readonly BaseMovementSpeed: number
@@ -102,7 +102,7 @@ export class UnitData {
 	constructor(name: string, kv: RecursiveMap) {
 		this.HeroID = kv.has("HeroID") ? this.parseInt(kv.get("HeroID") as string) : 0
 		this.ModelName = (kv.get("Model") as string) ?? "models/dev/error.vmdl"
-		this.Enabled = kv.has("Enabled")
+		this.HeroEnabled = kv.has("Enabled")
 			? this.parseInt(kv.get("Enabled") as string) !== 0
 			: false
 		this.MovementTurnRate = kv.has("MovementTurnRate")
