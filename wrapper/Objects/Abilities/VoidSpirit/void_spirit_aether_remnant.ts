@@ -1,8 +1,12 @@
 import { WrapperClass } from "../../../Decorators"
+import { ESkillShotType } from "../../../Enums/ESkillShotType"
 import { Ability } from "../../Base/Ability"
 
 @WrapperClass("void_spirit_aether_remnant")
 export class void_spirit_aether_remnant extends Ability implements INuke {
+	public get PredictionSkillShotType(): ESkillShotType {
+		return ESkillShotType.Line
+	}
 	public IsNuke(): this is INuke {
 		return true
 	}

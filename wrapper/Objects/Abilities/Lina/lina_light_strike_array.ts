@@ -1,10 +1,14 @@
 import { WrapperClass } from "../../../Decorators"
+import { ESkillShotType } from "../../../Enums/ESkillShotType"
 import { modifier_lina_fiery_soul } from "../../../Objects/Modifiers/Abilities/Lina/modifier_lina_fiery_soul"
 import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("lina_light_strike_array")
 export class lina_light_strike_array extends Ability implements INuke {
+	public get PredictionSkillShotType() {
+		return ESkillShotType.Circle
+	}
 	public IsNuke(): this is INuke {
 		return true
 	}

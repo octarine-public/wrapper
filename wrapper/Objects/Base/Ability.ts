@@ -10,6 +10,7 @@ import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EAbilitySlot } from "../../Enums/EAbilitySlot"
 import { EDOTASpecialBonusStats } from "../../Enums/EDOTASpecialBonusStats"
 import { EModifierfunction } from "../../Enums/EModifierfunction"
+import { ESkillShotType } from "../../Enums/ESkillShotType"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { SPELL_DISPELLABLE_TYPES } from "../../Enums/SPELL_DISPELLABLE_TYPES"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
@@ -103,6 +104,9 @@ export class Ability extends Entity {
 		super(index, serial)
 		this.Name_ = name
 		this.AbilityData = AbilityData.globalStorage.get(name) ?? AbilityData.empty
+	}
+	public get PredictionSkillShotType(): ESkillShotType {
+		return ESkillShotType.None
 	}
 	public get ProjectileAttachment(): string {
 		return "attach_hitloc"
