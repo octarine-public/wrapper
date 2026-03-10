@@ -516,10 +516,16 @@ export class UnitModifierManager {
 	}
 	public GetPredictiveArmor(target: Unit): number {
 		const args = [false, 1, 1, { SourceIndex: target.Index }] as const
-		return this.GetConditionalAdditiveInternal(
+		const base = this.GetConstantFirstInternal(
 			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_PHYSICAL_ARMOR_BONUS_TARGET,
+			false,
+			args[3]
+		)
+		const stacking = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_PHYSICAL_ARMOR_BONUS_TARGET_STACKING,
 			...args
 		)
+		return base + stacking
 	}
 	public GetPiercingArmor(target: Unit): number {
 		const args = [false, 1, 1, { SourceIndex: target.Index }] as const

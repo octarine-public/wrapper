@@ -17,7 +17,7 @@ export class modifier_templar_assassin_meld extends Modifier implements IBuff {
 			this.GetAttackRangeBonus.bind(this)
 		],
 		[
-			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_PHYSICAL_ARMOR_BONUS_TARGET,
+			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_PHYSICAL_ARMOR_BONUS_TARGET_STACKING,
 			this.GetPreAttackPhysicalArmorBonusTarget.bind(this)
 		]
 	])
@@ -38,7 +38,15 @@ export class modifier_templar_assassin_meld extends Modifier implements IBuff {
 		if (target === undefined || target.IsBuilding) {
 			return [0, false]
 		}
-		return [this.cachedPreArmor, false]
+		let stacking = 0
+		for (let i = 0; i < target.Buffs.length; i++) {
+			const buff = target.Buffs[i]
+			if (buff.Name === "modifier_templar_assassin_meld_armor") {
+				stacking++
+			}
+		}
+		const arrmor = this.cachedPreArmor * stacking
+		return [this.cachedPreArmor + arrmor, false]
 	}
 	protected UpdateSpecialValues() {
 		const name = "templar_assassin_meld"
