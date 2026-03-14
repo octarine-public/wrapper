@@ -17,6 +17,7 @@ import { ImageSelectorArray } from "./ImageSelectorArr"
 import { IMenuParticlePicker } from "./ITypes"
 import { KeyBind } from "./KeyBind"
 import { Localization } from "./Localization"
+import { RangeSlider } from "./RangeSlider"
 import { ShortDescription } from "./ShortDescription"
 import { Slider } from "./Slider"
 import { Toggle } from "./Toggle"
@@ -665,6 +666,30 @@ export class Node extends Base {
 	): Slider {
 		return this.AddEntry(
 			new Slider(this, name, defaultValue, min, max, precision, tooltip),
+			priority
+		)
+	}
+	public AddRangeSlider(
+		name: string,
+		defaultMinValue = 0,
+		defaultMaxValue = 100,
+		min = 0,
+		max = 100,
+		precision = 0,
+		tooltip = "",
+		priority = 0
+	): RangeSlider {
+		return this.AddEntry(
+			new RangeSlider(
+				this,
+				name,
+				defaultMinValue,
+				defaultMaxValue,
+				min,
+				max,
+				precision,
+				tooltip
+			),
 			priority
 		)
 	}
