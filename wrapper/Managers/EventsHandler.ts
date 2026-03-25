@@ -76,7 +76,9 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_ADD_FAN = 36,
 	GAME_PARTICLE_MANAGER_EVENT_UPDATE_FAN = 37,
 	GAME_PARTICLE_MANAGER_EVENT_SET_CLUSTER_GROWTH = 38,
-	GAME_PARTICLE_MANAGER_EVENT_REMOVE_FAN = 39
+	GAME_PARTICLE_MANAGER_EVENT_REMOVE_FAN = 39,
+	GAME_PARTICLE_MANAGER_EVENT_CREATE_SMOKE_GRID = 40,
+	GAME_PARTICLE_MANAGER_EVENT_SET_OVERRIDE_TEXTURE = 41
 }
 enum EDotaEntityMessages {
 	DOTA_UNIT_SPEECH = 0,
@@ -1123,6 +1125,14 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 			break
 		}
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_REMOVE_FAN: {
+			// const submsg = msg.get("") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE_SMOKE_GRID: {
+			// const submsg = msg.get("") as RecursiveProtobuf
+			break
+		}
+		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SET_OVERRIDE_TEXTURE: {
 			// const submsg = msg.get("") as RecursiveProtobuf
 			break
 		}
