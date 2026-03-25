@@ -165,6 +165,12 @@ export class IModifier {
 	public get MoveSlow() {
 		return this.GetProperty<number>("move_slow")
 	}
+	public get HasShard() {
+		return this.GetProperty<number>("has_shard")
+	}
+	public get HasScepter() {
+		return this.GetProperty<number>("has_scepter")
+	}
 	public GetProperty<T>(name: string): Nullable<T> {
 		const value = this.kv.get(name)
 		if (value === undefined || !this.isValid(value)) {
@@ -300,10 +306,10 @@ enum DOTA_MODIFIER_ENTRY_TYPE {
 }
 
 message CDOTAModifierBuffTableEntry {
-	required .DOTA_MODIFIER_ENTRY_TYPE entry_type = 1 [default = DOTA_MODIFIER_ENTRY_TYPE_ACTIVE];
-	required uint32 parent = 2 [default = 16777215];
-	required int32 index = 3;
-	required int32 serial_num = 4;
+	optional .DOTA_MODIFIER_ENTRY_TYPE entry_type = 1 [default = DOTA_MODIFIER_ENTRY_TYPE_ACTIVE];
+	optional uint32 parent = 2 [default = 16777215];
+	optional int32 index = 3;
+	optional int32 serial_num = 4;
 	optional int32 modifier_class = 5;
 	optional int32 ability_level = 6;
 	optional int32 stack_count = 7;
@@ -340,6 +346,8 @@ message CDOTAModifierBuffTableEntry {
 	optional uint32 custom_entity = 38 [default = 16777215];
 	optional bool aura_within_range = 39;
 	optional float move_slow = 40;
+	optional bool has_scepter = 41;
+	optional bool has_shard = 42;
 }
 `)
 EventsSDK.on("UpdateStringTable", (name, update) => {

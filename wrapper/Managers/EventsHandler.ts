@@ -183,6 +183,8 @@ enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_UPDATE_FAN = 37;
 	GAME_PARTICLE_MANAGER_EVENT_SET_CLUSTER_GROWTH = 38;
 	GAME_PARTICLE_MANAGER_EVENT_REMOVE_FAN = 39;
+	GAME_PARTICLE_MANAGER_EVENT_CREATE_SMOKE_GRID = 40;
+	GAME_PARTICLE_MANAGER_EVENT_SET_OVERRIDE_TEXTURE = 41;
 }
 
 enum DOTA_CHAT_MESSAGE {
@@ -301,6 +303,8 @@ enum DOTA_CHAT_MESSAGE {
 	CHAT_MESSAGE_PROTECTOR_SPAWNED = 121;
 	CHAT_MESSAGE_CRAFTING_XP = 122;
 	CHAT_MESSAGE_ROSHAN_ROAR = 123;
+	CHAT_MESSAGE_STONE_OF_RECALL_USED = 124;
+	CHAT_MESSAGE_DEITY_BLESSING = 125;
 }
 
 message CUserMsg_ParticleManager {
@@ -425,11 +429,16 @@ message CUserMsg_ParticleManager {
 
 	message SetParticleText {
 		optional string text = 1;
+		optional bool localize = 2;
 	}
 
 	message SetTextureAttribute {
 		optional string attribute_name = 1;
 		optional string texture_name = 2;
+	}
+
+	message SetOverrideTexture {
+		optional string texture_name = 1;
 	}
 
 	message SetSceneObjectGenericFlag {
@@ -506,6 +515,10 @@ message CUserMsg_ParticleManager {
 	message DestroyPhysicsSim {
 	}
 
+	message CreateSmokeGrid {
+		optional string vdata_name = 1;
+	}
+
 	message SetVData {
 		optional string vdata_name = 1;
 	}
@@ -554,8 +567,8 @@ message CUserMsg_ParticleManager {
 		optional .CMsgVector origin = 2;
 	}
 
-	required .PARTICLE_MESSAGE type = 1 [default = GAME_PARTICLE_MANAGER_EVENT_CREATE];
-	required uint32 index = 2;
+	optional .PARTICLE_MESSAGE type = 1 [default = GAME_PARTICLE_MANAGER_EVENT_CREATE];
+	optional uint32 index = 2;
 	optional .CUserMsg_ParticleManager.ReleaseParticleIndex release_particle_index = 3;
 	optional .CUserMsg_ParticleManager.CreateParticle create_particle = 4;
 	optional .CUserMsg_ParticleManager.DestroyParticle destroy_particle = 5;
@@ -595,6 +608,8 @@ message CUserMsg_ParticleManager {
 	optional .CUserMsg_ParticleManager.UpdateFan update_fan = 40;
 	optional .CUserMsg_ParticleManager.SetParticleClusterGrowth set_particle_cluster_growth = 41;
 	optional .CUserMsg_ParticleManager.RemoveFan remove_fan = 42;
+	optional .CUserMsg_ParticleManager.CreateSmokeGrid create_smoke_grid = 43;
+	optional .CUserMsg_ParticleManager.SetOverrideTexture set_override_texture = 44;
 }
 
 enum EDotaEntityMessages {
@@ -616,8 +631,8 @@ message CDOTAResponseQuerySerialized {
 			INT_NUMERIC = 4;
 		}
 
-		required int32 key = 1;
-		required .CDOTAResponseQuerySerialized.Fact.ValueType valtype = 2 [default = NUMERIC];
+		optional int32 key = 1;
+		optional .CDOTAResponseQuerySerialized.Fact.ValueType valtype = 2 [default = NUMERIC];
 		optional float val_numeric = 3;
 		optional string val_string = 4;
 		optional int32 val_stringtable_index = 5;
@@ -677,8 +692,8 @@ message CDOTAUserMsg_UnitEvent {
 		optional int32 activity = 1;
 	}
 
-	required .EDotaEntityMessages msg_type = 1 [default = DOTA_UNIT_SPEECH];
-	required int32 entity_index = 2;
+	optional .EDotaEntityMessages msg_type = 1 [default = DOTA_UNIT_SPEECH];
+	optional int32 entity_index = 2;
 	optional .CDOTAUserMsg_UnitEvent.Speech speech = 3;
 	optional .CDOTAUserMsg_UnitEvent.SpeechMute speech_mute = 4;
 	optional .CDOTAUserMsg_UnitEvent.AddGesture add_gesture = 5;
@@ -689,7 +704,7 @@ message CDOTAUserMsg_UnitEvent {
 }
 
 message CDOTAUserMsg_ChatEvent {
-	required .DOTA_CHAT_MESSAGE type = 1 [default = CHAT_MESSAGE_INVALID];
+	optional .DOTA_CHAT_MESSAGE type = 1 [default = CHAT_MESSAGE_INVALID];
 	optional uint32 value = 2;
 	optional sint32 playerid_1 = 3 [default = -1];
 	optional sint32 playerid_2 = 4 [default = -1];
