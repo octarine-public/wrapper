@@ -619,10 +619,16 @@ export class UnitModifierManager {
 		}
 		const params: IModifierParams = { Damage: damage }
 		const args = [false, params] as const
+		const stacking = this.GetConditionalAdditiveInternal(
+			EModifierfunction.MODIFIER_PROPERTY_TOTAL_CONSTANT_BLOCK_STACKING
+		)
 		let damageBlock = this.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_TOTAL_CONSTANT_BLOCK,
 			...args
 		)
+		if (stacking !== 0) {
+			damageBlock += stacking
+		}
 		switch (damageType) {
 			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL:
 				damageBlock += this.GetConstantHighestInternal(
