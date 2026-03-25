@@ -4,24 +4,20 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_item_heavens_halberd extends Modifier {
-	private blockDamageMelee = 0
-	private blockDamageRanged = 0
+	private cachedArmor = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
-			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_CONSTANT_BLOCK,
-			this.GetPhysicalConstantBlock.bind(this)
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
+			this.GetPhysicalArmorBonus.bind(this)
 		]
 	])
 
-	protected GetPhysicalConstantBlock(): [number, boolean] {
-		const isRanged = this.Parent?.IsRanged ?? false
-		return [isRanged ? this.blockDamageRanged : this.blockDamageMelee, false]
+	protected GetPhysicalArmorBonus(): [number, boolean] {
+		return [this.cachedArmor, false]
 	}
 
 	protected UpdateSpecialValues() {
-		const name = "item_vanguard"
-		this.blockDamageMelee = this.GetSpecialValue("block_damage_melee", name)
-		this.blockDamageRanged = this.GetSpecialValue("block_damage_ranged", name)
+		this.cachedArmor = this.GetSpecialValue("bonus_armor", "item_heavens_halberd")
 	}
 }
