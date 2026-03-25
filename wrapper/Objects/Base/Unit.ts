@@ -2062,7 +2062,7 @@ RegisterFieldHandler<Unit, number>(Unit, "m_iUnitNameIndex", (unit, newVal) => {
 		unit.UnitData = UnitData.globalStorage.get(unit.Name) ?? UnitData.empty
 	}
 })
-RegisterFieldHandler(Unit, "m_nameStringableIndex", unit => {
+RegisterFieldHandler(Unit, "m_nameStringTableIndex", unit => {
 	if (unit.UnitName_ === "") {
 		unit.UnitName_ = unit.Name_
 	}

@@ -723,7 +723,7 @@ RegisterFieldHandler<Entity, QAngle>(Entity, "m_angRotation", (ent, newVal) => {
 	ent.NetworkedAngles_.CopyFrom(newVal)
 	ent.UpdatePositions()
 })
-RegisterFieldHandler<Entity, number>(Entity, "m_nameStringableIndex", (ent, newVal) => {
+RegisterFieldHandler<Entity, number>(Entity, "m_nameStringTableIndex", (ent, newVal) => {
 	ent.Name_ = StringTables.GetString("EntityNames", newVal) ?? ent.Name_
 })
 RegisterFieldHandler<Entity, number>(Entity, "m_hOwnerEntity", (ent, newVal) => {
