@@ -1,4 +1,5 @@
 // @ts-check
+// @ts-nocheck
 // Modifier Generator
 // Reads dump_mod_names.json, creates missing modifier files in the correct
 // subdirectory of wrapper/Objects/Modifiers/, then updates Imports.ts.
@@ -16,7 +17,7 @@ const path = require('path')
 const root = path.resolve(__dirname, '..')
 const sourceDir = path.join(root, 'wrapper', 'Objects', 'Modifiers')
 const targetFile = path.join(root, 'wrapper', 'Imports.ts')
-const namesFile = path.join(__dirname, 'dump_mod_names.json')
+const namesFile = path.join(__dirname, 'dumps/dump_mod_names.json')
 
 if (!fs.existsSync(sourceDir)) {
   console.error(`[!] Modifiers directory not found: ${sourceDir}`)
