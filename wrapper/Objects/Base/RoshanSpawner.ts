@@ -61,10 +61,12 @@ export class RoshanSpawner extends Entity {
 		// N/A for non-networked entities
 	}
 	public get LocationType() {
-		return !(GameRules?.IsNightGameTime ?? false) ||
-			GameState.RawGameTime <= RoshanSpawner.InitialTime + GameState.TickInterval
-			? ERoshanLocation.BOT
-			: ERoshanLocation.TOP
+		const isNightGameTime = GameRules?.IsNightGameTime ?? false
+		const initialTime = RoshanSpawner.InitialTime + GameState.TickInterval
+		if (GameState.RawGameTime <= initialTime) {
+			return ERoshanLocation.TOP
+		}
+		return !isNightGameTime ? ERoshanLocation.BOT : ERoshanLocation.TOP
 	}
 	public get Position() {
 		if (this.IsMovingRoshan) {
