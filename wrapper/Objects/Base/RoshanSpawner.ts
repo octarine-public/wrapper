@@ -66,7 +66,7 @@ export class RoshanSpawner extends Entity {
 		if (GameState.RawGameTime <= initialTime) {
 			return ERoshanLocation.TOP
 		}
-		return !isNightGameTime ? ERoshanLocation.BOT : ERoshanLocation.TOP
+		return isNightGameTime ? ERoshanLocation.BOT : ERoshanLocation.TOP
 	}
 	public get Position() {
 		if (this.IsMovingRoshan) {
