@@ -2845,7 +2845,6 @@ export { modifier_tidehunter_dead_in_the_water } from "./Objects/Modifiers/Abili
 export { modifier_tidehunter_gush } from "./Objects/Modifiers/Abilities/Tidehunter/modifier_tidehunter_gush"
 export { modifier_tidehunter_kraken_shell } from "./Objects/Modifiers/Abilities/Tidehunter/modifier_tidehunter_kraken_shell"
 export { modifier_tidehunter_kraken_shell_boost } from "./Objects/Modifiers/Abilities/Tidehunter/modifier_tidehunter_kraken_shell_boost"
-export { modifier_tidehunter_krill_eater } from "./Objects/Modifiers/Abilities/Tidehunter/modifier_tidehunter_krill_eater"
 export { modifier_tidehunter_ravage } from "./Objects/Modifiers/Abilities/Tidehunter/modifier_tidehunter_ravage"
 export { modifier_tinker_defense_matrix } from "./Objects/Modifiers/Abilities/Tinker/modifier_tinker_defense_matrix"
 export { modifier_tinker_laser_blind } from "./Objects/Modifiers/Abilities/Tinker/modifier_tinker_laser_blind"

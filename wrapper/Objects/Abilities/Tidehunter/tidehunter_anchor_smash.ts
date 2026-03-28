@@ -1,24 +1,15 @@
 import { WrapperClass } from "../../../Decorators"
 import { ATTACK_DAMAGE_STRENGTH } from "../../../Enums/ATTACK_DAMAGE_STRENGTH"
-import { modifier_tidehunter_krill_eater } from "../../../Objects/Modifiers/Abilities/Tidehunter/modifier_tidehunter_krill_eater"
 import { Ability } from "../../Base/Ability"
 import { Unit } from "../../Base/Unit"
 
 @WrapperClass("tidehunter_anchor_smash")
 export class tidehunter_anchor_smash extends Ability implements INuke {
-	private get BaseBonusAOERadius(): number {
-		const owner = this.Owner
-		if (owner === undefined || this.Level === 0) {
-			return 0
-		}
-		const modifier = owner.GetBuffByClass(modifier_tidehunter_krill_eater)
-		return modifier?.BonusAOERadius ?? 0
-	}
 	public IsNuke(): this is INuke {
 		return true
 	}
 	public GetBaseAOERadiusForLevel(level: number): number {
-		return this.GetSpecialValue("radius", level) + this.BaseBonusAOERadius
+		return this.GetSpecialValue("radius", level)
 	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("attack_damage", level)
