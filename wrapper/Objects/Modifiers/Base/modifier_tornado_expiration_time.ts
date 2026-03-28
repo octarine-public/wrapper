@@ -1,0 +1,5 @@
+import { WrapperClassModifier } from "../../../Decorators"
+import { Modifier } from "../../Base/Modifier"
+
+@WrapperClassModifier()
+export class modifier_tornado_expiration_time extends Modifier {}

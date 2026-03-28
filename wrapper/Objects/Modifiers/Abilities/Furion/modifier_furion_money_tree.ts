@@ -1,0 +1,5 @@
+import { WrapperClassModifier } from "../../../../Decorators"
+import { Modifier } from "../../../Base/Modifier"
+
+@WrapperClassModifier()
+export class modifier_furion_money_tree extends Modifier {}
