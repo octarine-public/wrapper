@@ -5,6 +5,7 @@ import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { EShareAbility } from "../../Enums/EShareAbility"
 import { PlayerConnectedState } from "../../Enums/PlayerConnectedState"
 import { Team } from "../../Enums/Team"
+import { GameState } from "../../Imports"
 import { EntityManager } from "../../Managers/EntityManager"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { PlayerCustomData } from "../DataBook/PlayerCustomData"
@@ -19,11 +20,15 @@ import { PlayerResource } from "./PlayerResource"
 @WrapperClass("CDOTAPlayerController")
 export class Player extends Entity {
 	@NetworkedBasicField("m_iConnected")
-	public readonly Connected: PlayerConnectedState = -1
-	@NetworkedBasicField("m_nServerOrderSequenceNumber")
-	public readonly ServerOrderSequenceNumber: number = -1
 	@NetworkedBasicField("m_bNoClipEnabled")
 	public readonly NoClipEnabled: boolean = false
+	public readonly Connected: PlayerConnectedState = -1
+
+	public ServerOrderSequenceNumber: number = -1
+	public NextOutgoingOrderSequenceNumber: number = -1
+	public LastOutgoingOrderSequenceNumber: number = -1
+	public LastOutgoingOrderSequenceNumberTick: number = -1
+	public OutgoingOrderLatency: number = 0
 
 	public Hero: Nullable<Hero>
 	public Pawn: Nullable<PlayerPawn>
@@ -129,4 +134,27 @@ RegisterFieldHandler<Player, number>(Player, "m_hAssignedHero", (player, newVal)
 	player.hero_ = newVal
 	player._UpdateProperties(EntityManager.EntityByIndex<Hero>(player.hero_))
 })
+
+RegisterFieldHandler<Player, number>(
+	Player,
+	"m_nServerOrderSequenceNumber",
+	(player, newVal) => {
+		player.ServerOrderSequenceNumber = newVal
+
+		const lastTick = player.LastOutgoingOrderSequenceNumberTick
+		if (player.LastOutgoingOrderSequenceNumber >= newVal && lastTick > 0) {
+			player.OutgoingOrderLatency = GameState.CurrentGameTick - lastTick
+		}
+	}
+)
+//RegisterFieldHandler<Player, number>(
+//	Player,
+//	"m_nNextOutgoingOrderSequenceNumber",
+//	(player, newVal) => {
+//		player.LastOutgoingOrderSequenceNumberTick = GameState.CurrentGameTick
+//		player.LastOutgoingOrderSequenceNumber = player.NextOutgoingOrderSequenceNumber
+//		player.NextOutgoingOrderSequenceNumber = newVal
+//	}
+//)
+
 export const Players = EntityManager.GetEntitiesByClass(Player)

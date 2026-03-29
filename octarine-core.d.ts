@@ -451,6 +451,11 @@ declare function PrepareUnitOrders(obj: {
 declare function GetLatency(flow?: number): number
 // flow deprecated
 declare function GetAvgLatency(flow?: number): number
+
+declare function GetLastOrderLatency(): number
+declare function GetLastOrderSeqNum(): number
+declare function GetNextOrderSeqNum(): number
+
 declare function StartFindingMatch(): void
 declare function SendGCPingResponse(): void
 declare function AcceptMatch(): void
