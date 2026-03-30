@@ -428,10 +428,6 @@ declare class ModelData {
 
 declare function SendToConsole(command: string): void
 declare function fexists(path: string): boolean
-declare function requestPlayerData(
-	playerID: number,
-	heroID: number
-): Promise<string>
 /**
  * @param path pass empty to read from confings/../settings.json
  */
