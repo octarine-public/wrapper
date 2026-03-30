@@ -4223,8 +4223,6 @@ export { modifier_zuus_static_field_slow } from "./Objects/Modifiers/Abilities/Z
 export { modifier_zuus_thunder_trail_debuff } from "./Objects/Modifiers/Abilities/Zuus/modifier_zuus_thunder_trail_debuff"
 export { modifier_zuus_thundergodswrath_thinker } from "./Objects/Modifiers/Abilities/Zuus/modifier_zuus_thundergodswrath_thinker"
 export { modifier_zuus_thundergodswrath_vision_thinker } from "./Objects/Modifiers/Abilities/Zuus/modifier_zuus_thundergodswrath_vision_thinker"
-export { lm_spawn_enemy_at_target } from "./Objects/Modifiers/Base/lm_spawn_enemy_at_target"
-export { lm_take_no_damage } from "./Objects/Modifiers/Base/lm_take_no_damage"
 export { modifer_hoodwink_acorn_shot_tree_thinker } from "./Objects/Modifiers/Base/modifer_hoodwink_acorn_shot_tree_thinker"
 export { modifer_pine_cone_acorn_shot_tree_thinker } from "./Objects/Modifiers/Base/modifer_pine_cone_acorn_shot_tree_thinker"
 export { modifier_731_teaser_stun } from "./Objects/Modifiers/Base/modifier_731_teaser_stun"
