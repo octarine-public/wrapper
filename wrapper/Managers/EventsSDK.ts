@@ -1,4 +1,5 @@
 import { NetworkedParticle } from "../Base/NetworkedParticle"
+import { StockInfo } from "../Base/StockInfo"
 import { UnitPortalData } from "../Base/UnitPortalData"
 import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
@@ -535,6 +536,11 @@ interface EventsSDK extends EventEmitter {
 	on(
 		name: "UnitPortalDestroyed",
 		listener: (model: UnitPortalData) => void,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "StockInfoChanged",
+		listener: (stock: StockInfo) => void,
 		priority?: number
 	): EventEmitter
 }

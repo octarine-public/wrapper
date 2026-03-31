@@ -36,7 +36,7 @@ import { EventsSDK } from "./EventsSDK"
 import { InputManager } from "./InputManager"
 import { StringTables } from "./StringTables"
 
-enum PARTICLE_MESSAGE {
+const enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_CREATE = 0,
 	GAME_PARTICLE_MANAGER_EVENT_UPDATE = 1,
 	GAME_PARTICLE_MANAGER_EVENT_UPDATE_FORWARD = 2,
@@ -769,6 +769,7 @@ function HandleParticleMsg(msg: RecursiveProtobuf): void {
 	const msgType = msg.get("type") as PARTICLE_MESSAGE
 	let changedEntPos = false
 	let changedEnt: Nullable<FakeUnit | Unit>
+	console.log(msg, par)
 	switch (msgType) {
 		case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENTITY_POSITION: {
 			const submsg = msg.get("update_entity_position") as RecursiveProtobuf

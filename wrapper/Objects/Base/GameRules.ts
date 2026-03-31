@@ -1,4 +1,4 @@
-import { EntityPropertiesNode } from "../../Base/EntityProperties"
+import { EntityPropertiesNode, EntityPropertyType } from "../../Base/EntityProperties"
 import { NeutralSpawnBox } from "../../Base/NeutralSpawnBox"
 import { StockInfo } from "../../Base/StockInfo"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
@@ -181,12 +181,45 @@ RegisterFieldHandler(CGameRules, "m_NeutralSpawnBoxes", (game, newVal) => {
 		map => new NeutralSpawnBox(map)
 	)
 })
-RegisterFieldHandler(CGameRules, "m_vecItemStockInfo", (game, newVal) => {
-	game.StockInfo = (newVal as EntityPropertiesNode[]).map(map => new StockInfo(map))
-})
+RegisterFieldHandler<CGameRules, EntityPropertiesNode[]>(
+	CGameRules,
+	"m_vecItemStockInfo",
+	(game, newVal) => {
+		game.StockInfo = newVal.map(map => new StockInfo(map))
+		for (let i = 0; i < newVal.length; i++) {
+			const currentMap = newVal[i].map
+			const snapshot = stockInfoSnaps[i]
+			if (snapshot === undefined) {
+				stockInfoSnaps[i] = new Map(currentMap)
+				EventsSDK.emit("StockInfoChanged", false, game.StockInfo[i])
+				continue
+			}
+			let changed = snapshot.size !== currentMap.size
+			if (!changed) {
+				for (const [key, val] of currentMap) {
+					if (snapshot.get(key) !== val) {
+						changed = true
+						break
+					}
+				}
+			}
+			if (changed) {
+				stockInfoSnaps[i] = new Map(currentMap)
+				EventsSDK.emit("StockInfoChanged", false, game.StockInfo[i])
+			}
+		}
+	}
+)
 RegisterFieldHandler(CGameRules, "m_nGameState", (game, newVal) => {
 	if (game.GameState !== newVal) {
 		game.GameState = newVal as DOTAGameState
 		EventsSDK.emit("GameStateChanged", false, newVal)
+	}
+})
+
+const stockInfoSnaps: Map<number, EntityPropertyType>[] = []
+EventsSDK.on("EntityDestroyed", ent => {
+	if (ent.IsGameRules) {
+		stockInfoSnaps.clear()
 	}
 })
