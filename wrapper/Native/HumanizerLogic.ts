@@ -1326,6 +1326,9 @@ function ProcessUserCmd(force = false): void {
 		return
 	}
 	ChangeOrderParams()
+
+	ExecuteOrder.LastUserCmd = latestUsercmd
+
 	latestUsercmd.Pawn = LocalPlayer?.Pawn
 	latestUsercmd.SpectatorStatsCategoryID = 0
 	latestUsercmd.SpectatorStatsSortMethod = 0

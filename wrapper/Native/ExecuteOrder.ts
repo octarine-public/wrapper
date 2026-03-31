@@ -10,6 +10,7 @@ import { Unit } from "../Objects/Base/Unit"
 import { GridNav } from "../Resources/ParseGNV"
 import { GameState } from "../Utils/GameState"
 import { ProcessUserCmd } from "./HumanizerGlue"
+import { UserCmd } from "./UserCmd"
 import * as WASM from "./WASM"
 
 function WillInterruptOrderQueue(order: ExecuteOrder): boolean {
@@ -102,6 +103,7 @@ function CanBeIgnored(order: ExecuteOrder): boolean {
 
 const sameMovePositionThreshold = 30
 export class ExecuteOrder {
+	public static LastUserCmd: UserCmd
 	public static readonly orderQueue: [ExecuteOrder, number, boolean, boolean][] = []
 	public static lastMove: Nullable<[Vector3, number]>
 	public static DebugOrders = false
