@@ -1328,6 +1328,10 @@ function ProcessUserCmd(force = false): void {
 	ChangeOrderParams()
 
 	ExecuteOrder.LastUserCmd = latestUsercmd
+	InputManager.UnitUnderCursor =
+		latestUsercmd.WeaponSelect instanceof Unit
+			? latestUsercmd.WeaponSelect
+			: undefined
 
 	latestUsercmd.Pawn = LocalPlayer?.Pawn
 	latestUsercmd.SpectatorStatsCategoryID = 0

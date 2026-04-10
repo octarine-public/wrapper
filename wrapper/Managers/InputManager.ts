@@ -1,6 +1,7 @@
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { Unit } from "../Objects/Base/Unit"
+import { GameState } from "../Utils/GameState"
 import { EventEmitter, Events } from "./Events"
 
 const keysDown = new Map<VKeys, boolean>()
@@ -22,10 +23,30 @@ export const InputManager = new (class CInputManager {
 	public readonly SelectedEntities: Unit[] = []
 	public QueryUnit: Nullable<Unit>
 	public SelectedUnit: Nullable<Unit>
+	private UnitUnderCursor_: Nullable<Unit>
+	private UnitUnderCursorTime_ = 0
 	private CursorOnWorld_ = new Vector3()
 	private x = 0
 	private y = 0
 
+	public get UnitUnderCursor(): Nullable<Unit> {
+		if (
+			this.UnitUnderCursor_ !== undefined &&
+			(this.UnitUnderCursorTime_ < GameState.RawGameTime - GameState.TickInterval ||
+				this.UnitUnderCursorTime_ > GameState.RawGameTime)
+		)
+			this.UnitUnderCursor_ = undefined
+
+		return this.UnitUnderCursor_
+	}
+	public set UnitUnderCursor(unit: Nullable<Unit>) {
+		if (unit !== undefined) {
+			this.UnitUnderCursor_ = unit
+			this.UnitUnderCursorTime_ = GameState.RawGameTime
+		} else {
+			void this.UnitUnderCursor
+		}
+	}
 	public get CursorOnWorld(): Vector3 {
 		return this.CursorOnWorld_.Clone()
 	}
