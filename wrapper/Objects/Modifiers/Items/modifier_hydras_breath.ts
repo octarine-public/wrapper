@@ -17,7 +17,6 @@ export class modifier_hydras_breath extends Modifier {
 			this.GetAttackRangeBonus.bind(this)
 		]
 	])
-
 	protected GetPreAttackBonusDamage(): [number, boolean] {
 		return [this.cachedDamage, false]
 	}

@@ -8,8 +8,13 @@ export class modifier_item_boots_of_bearing_aura extends Modifier implements IBu
 	public readonly BuffModifierName = this.Name
 
 	private cachedSpeed = 0
+	private cachedHealthRegen = 0
 
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT,
+			this.GetHealthRegenConstant.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
 			this.GetMoveSpeedBonusConstant.bind(this)
@@ -18,13 +23,15 @@ export class modifier_item_boots_of_bearing_aura extends Modifier implements IBu
 	public IsBuff(): this is IBuff {
 		return true
 	}
-	protected GetMoveSpeedBonusConstant(): [number, boolean] {
+	protected GetHealthRegenConstant(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
+	protected GetMoveSpeedBonusConstant(): [number, boolean] {
+		return [this.cachedHealthRegen, false]
+	}
 	protected UpdateSpecialValues() {
-		this.cachedSpeed = this.GetSpecialValue(
-			"aura_movement_speed",
-			"item_boots_of_bearing"
-		)
+		const name = "item_boots_of_bearing"
+		this.cachedSpeed = this.GetSpecialValue("aura_movement_speed", name)
+		this.cachedHealthRegen = this.GetSpecialValue("aura_health_regen", name)
 	}
 }
