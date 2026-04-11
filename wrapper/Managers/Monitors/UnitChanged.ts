@@ -209,23 +209,17 @@ new (class CPreUnitChanged {
 			if (unit.IsInAnimation && !unit.LastAnimationCasted) {
 				const lastAnimCastPoint =
 					unit.LastAnimationStartTime + unit.LastAnimationCastPoint
-				if (
-					GameState.RawGameTime > lastAnimCastPoint ||
+				const near =
 					Math.abs(GameState.RawGameTime - lastAnimCastPoint) <
-						GameState.TickInterval / 10
-				) {
+					GameState.TickInterval / 10
+
+				if (near || GameState.RawGameTime > lastAnimCastPoint) {
 					unit.LastAnimationCasted = true
 					if (unit.LastAnimationIsAttack) {
-						const lastAnimServerCastPoint =
-							unit.LastAnimationStartTime + unit.LastAnimationCastPoint
-						if (
-							GameState.RawServerTime <= lastAnimServerCastPoint ||
-							Math.abs(GameState.RawServerTime - lastAnimServerCastPoint) <
-								GameState.TickInterval / 10
-						) {
-							unit.AttackTimeAtLastTick = GameState.RawServerTime
+						if (near || GameState.RawGameTime <= lastAnimCastPoint) {
+							unit.AttackTimeAtLastTick = GameState.RawGameTime
 							unit.AttackTimeLostToLastTick =
-								GameState.RawServerTime -
+								GameState.RawGameTime -
 								(unit.LastAnimationStartTime +
 									unit.LastAnimationRawCastPoint)
 						}

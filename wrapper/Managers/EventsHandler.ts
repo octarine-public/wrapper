@@ -1358,10 +1358,7 @@ Events.on("ServerMessage", (msgID, buf_) => {
 				)
 				const ent = GetPredictionTarget(msg.get("entity") as number)
 				const type = msg.get("type") as number
-				let rawCastPoint = msg.get("castpoint") as number,
-					castPoint =
-						Math.ceil(rawCastPoint / GameState.TickInterval) *
-						GameState.TickInterval
+				let rawCastPoint = msg.get("castpoint") as number
 				if (
 					type === 0 &&
 					ent instanceof Unit &&
@@ -1373,17 +1370,15 @@ Events.on("ServerMessage", (msgID, buf_) => {
 					GameState.RawServerTime - ent.AttackTimeAtLastTick < ent.AttackRate
 				) {
 					rawCastPoint -= ent.AttackTimeLostToLastTick
-					castPoint =
-						Math.ceil(rawCastPoint / GameState.TickInterval) *
-						GameState.TickInterval
 				}
+
 				EventsSDK.emit(
 					"UnitAnimation",
 					false,
 					ent,
 					msg.get("sequence_variant") as number,
 					QuantizePlaybackRate(msg.get("playbackrate") as number),
-					castPoint,
+					GameState.CeilTick(rawCastPoint),
 					type,
 					msg.get("activity") as number,
 					(msg.get("lag_compensation_time") as Nullable<number>) ?? 0,

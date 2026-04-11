@@ -65,4 +65,7 @@ export const GameState = new (class CGameState {
 		}
 		return Math.max(Math.floor(latency / tickDelta), 1) * tickDelta + tickDelta
 	}
+	public CeilTick(time: number) {
+		return Math.ceil(time / GameState.TickInterval) * GameState.TickInterval
+	}
 })()
