@@ -19,7 +19,11 @@ export class modifier_item_veil_of_discord_debuff extends Modifier implements ID
 		return true
 	}
 	protected GetSpellAmplifyPercentageTarget(): [number, boolean] {
-		return [this.cachedSpellAmplify, this.IsMagicImmune()]
+		let value = this.cachedSpellAmplify
+		if (this.Parent?.HasBuffByName("modifier_item_bloodstone_aura")) {
+			value = 0
+		}
+		return [value, this.IsMagicImmune()]
 	}
 	protected UpdateSpecialValues() {
 		this.cachedSpellAmplify = this.GetSpecialValue(
