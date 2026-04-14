@@ -1,5 +1,5 @@
 import { WrapperClassModifier } from "../../../Decorators"
 import { Modifier } from "../../Base/Modifier"
 
-@WrapperClassModifier()
+@WrapperClassModifier() // TODO: spell amp
 export class modifier_item_partisans_brand extends Modifier {}

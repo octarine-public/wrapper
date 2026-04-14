@@ -30,7 +30,7 @@ export class modifier_creep_piercing extends Modifier {
 		if (target.IsHero) {
 			return [this.cachedHeroPenalty, false]
 		}
-		if (target.IsBuilding) {
+		if (target.IsBuilding || target.HasBuffByName("modifier_creep_siege")) {
 			return [this.cachedHeavyPenalty, false]
 		}
 		return [this.cachedPreAttackDamage, false]
