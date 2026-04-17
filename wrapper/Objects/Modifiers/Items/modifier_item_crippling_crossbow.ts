@@ -19,9 +19,11 @@ export class modifier_item_crippling_crossbow extends Modifier implements IDebuf
 		return true
 	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [-this.cachedSpeed, this.IsMagicImmune()]
+		const elapsed = this.RemainingTime,
+			maxDuration = this.Duration,
+			eff = Math.remapRange(elapsed, 0, maxDuration, 0, 1)
+		return [-(this.cachedSpeed * eff), this.IsMagicImmune()]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedSpeed = this.GetSpecialValue("slow_pct", "item_crippling_crossbow")
 	}

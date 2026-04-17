@@ -12,13 +12,11 @@ export class modifier_item_chasm_stone extends Modifier {
 			this.GetAoeBonusConstantStacking.bind(this)
 		]
 	])
-
 	protected GetAoeBonusConstantStacking(): [number, boolean] {
 		return [this.cachedAOERadius, false]
 	}
-
 	protected UpdateSpecialValues(): void {
-		const name = "rubick_arcane_supremacy"
+		const name = "item_chasm_stone"
 		this.cachedAOERadius = this.GetSpecialValue("aoe_bonus", name)
 	}
 }

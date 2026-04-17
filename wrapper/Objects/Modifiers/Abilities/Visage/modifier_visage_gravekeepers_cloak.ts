@@ -7,14 +7,9 @@ export class modifier_visage_gravekeepers_cloak extends Modifier implements IBuf
 	public readonly IsHidden = false
 	public readonly BuffModifierName = this.Name
 
-	private cachedArmor = 0
 	private cachedDamage = 0
 
 	protected readonly DeclaredFunction = new Map([
-		[
-			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
-			this.GetPhysicalArmorBonus.bind(this)
-		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_INCOMING_DAMAGE_PERCENTAGE,
 			this.GetIncomingDamagePercentage.bind(this)
@@ -23,15 +18,13 @@ export class modifier_visage_gravekeepers_cloak extends Modifier implements IBuf
 	public IsBuff(): this is IBuff {
 		return this.StackCount !== 0
 	}
-	protected GetPhysicalArmorBonus(): [number, boolean] {
-		return [this.cachedArmor, false]
-	}
 	protected GetIncomingDamagePercentage(): [number, boolean] {
 		return [-(this.cachedDamage * this.StackCount), false]
 	}
 	protected UpdateSpecialValues(): void {
-		const name = "visage_gravekeepers_cloak"
-		this.cachedArmor = this.GetSpecialValue("armor", name)
-		this.cachedDamage = this.GetSpecialValue("damage_reduction", name)
+		this.cachedDamage = this.GetSpecialValue(
+			"damage_reduction",
+			"visage_gravekeepers_cloak"
+		)
 	}
 }

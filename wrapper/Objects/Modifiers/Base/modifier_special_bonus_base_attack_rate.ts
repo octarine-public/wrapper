@@ -12,11 +12,9 @@ export class modifier_special_bonus_base_attack_rate extends Modifier {
 			this.GetBaseAttackTimeConstant.bind(this)
 		]
 	])
-
 	protected GetBaseAttackTimeConstant(): [number, boolean] {
 		return [this.cachedBAT, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedBAT = this.GetSpecialValue("value", this.CachedAbilityName ?? "")
 	}

@@ -621,7 +621,9 @@ export class Ability extends Entity {
 			spellAmp = effSpellAmp * target.EffSpellAmpTarget,
 			damageAmp = target.GetDamageAmplification(owner, damageType, 0, ignoreMres),
 			totalDamage = rawDamage * damageAmp * spellAmp
-		return Math.max(totalDamage - target.GetDamageBlock(totalDamage, damageType), 0)
+		return Math.ceil(
+			Math.max(totalDamage - target.GetDamageBlock(totalDamage, damageType), 0)
+		)
 	}
 	public UseAbility(
 		target?: Vector3 | Entity,
@@ -648,9 +650,9 @@ export class Ability extends Entity {
 	public GetSpecialValue(
 		specialName: string,
 		level: number = this.Level,
-		optional: ISpecialValueOptions = {
-			useFacet: !this.IsStolen
-		}
+		optional: ISpecialValueOptions = { useFacet: !this.IsStolen },
+		checkShard: boolean = true,
+		checkScepter: boolean = true
 	): number {
 		let owner = this.Owner
 		if (this.IsReplicated) {
@@ -665,7 +667,9 @@ export class Ability extends Entity {
 			specialName,
 			level,
 			this.Name,
-			optional
+			optional,
+			checkShard,
+			checkScepter
 		)
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {

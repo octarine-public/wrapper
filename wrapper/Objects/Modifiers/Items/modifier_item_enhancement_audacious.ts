@@ -14,12 +14,12 @@ export class modifier_item_enhancement_audacious extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		],
 		[
-			EModifierfunction.MODIFIER_PROPERTY_PROCATTACK_BONUS_DAMAGE_MAGICAL,
-			this.GetProcAttackBonusDamageMagical.bind(this)
-		],
-		[
 			EModifierfunction.MODIFIER_PROPERTY_INCOMING_DAMAGE_PERCENTAGE,
 			this.GetIncomingDamagePercentage.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PROCATTACK_BONUS_DAMAGE_MAGICAL,
+			this.GetProcAttackBonusDamageMagical.bind(this)
 		]
 	])
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {

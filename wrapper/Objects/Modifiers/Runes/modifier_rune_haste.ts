@@ -9,6 +9,7 @@ export class modifier_rune_haste extends Modifier implements IBuff {
 	public readonly IsHidden = false
 	public readonly BuffModifierName = this.Name
 
+	protected readonly CanPostDataUpdate: boolean = true
 	private cachedMaxMoveSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -32,7 +33,9 @@ export class modifier_rune_haste extends Modifier implements IBuff {
 		const speedLimit = owner.ModifierManager.GetConstantLowestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_LIMIT
 		)
+
 		this.cachedMaxMoveSpeed = Math.max(MoveSpeedData.Max, speedLimit)
+		console.log(speedLimit, this.cachedMaxMoveSpeed, owner.Name)
 	}
 	public GetTexturePath(small = false) {
 		return GetRuneTexture("haste", small)

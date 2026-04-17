@@ -4871,7 +4871,6 @@ export { modifier_item_cloak_of_flames } from "./Objects/Modifiers/Items/modifie
 export { modifier_item_cloak_of_flames_debuff } from "./Objects/Modifiers/Items/modifier_item_cloak_of_flames_debuff"
 export { modifier_item_clumsy_net } from "./Objects/Modifiers/Items/modifier_item_clumsy_net"
 export { modifier_item_conjurers_catalyst } from "./Objects/Modifiers/Items/modifier_item_conjurers_catalyst"
-export { modifier_item_conjurers_catalyst_overheat } from "./Objects/Modifiers/Items/modifier_item_conjurers_catalyst_overheat"
 export { modifier_item_consecrated_wraps } from "./Objects/Modifiers/Items/modifier_item_consecrated_wraps"
 export { modifier_item_consecrated_wraps_auto_barrier } from "./Objects/Modifiers/Items/modifier_item_consecrated_wraps_auto_barrier"
 export { modifier_item_consecrated_wraps_effect } from "./Objects/Modifiers/Items/modifier_item_consecrated_wraps_effect"

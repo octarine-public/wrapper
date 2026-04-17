@@ -2,7 +2,6 @@ import { WrapperClassModifier } from "../../../Decorators"
 import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { EStoneFeatherAttribute } from "../../../Enums/EStoneFeather"
 import { Modifier } from "../../Base/Modifier"
-import { item_stonefeather_satchel } from "../../Items/item_stonefeather_satchel"
 
 @WrapperClassModifier()
 export class modifier_item_stonefeather_satchel extends Modifier {
@@ -20,10 +19,7 @@ export class modifier_item_stonefeather_satchel extends Modifier {
 		]
 	])
 	protected GetPhysicalArmorBonus(): [number, boolean] {
-		if (!(this.Ability instanceof item_stonefeather_satchel)) {
-			return [0, false]
-		}
-		switch (this.Ability.ActiveAttribute) {
+		switch (this.NetworkDamage) {
 			case EStoneFeatherAttribute.STONE:
 				return [this.cachedArmor, false]
 			case EStoneFeatherAttribute.FEATHERS:
@@ -33,10 +29,7 @@ export class modifier_item_stonefeather_satchel extends Modifier {
 		}
 	}
 	protected GetMoveSpeedBonusConstant(): [number, boolean] {
-		if (!(this.Ability instanceof item_stonefeather_satchel)) {
-			return [0, false]
-		}
-		switch (this.Ability.ActiveAttribute) {
+		switch (this.NetworkDamage) {
 			case EStoneFeatherAttribute.STONE:
 				return [0, false]
 			case EStoneFeatherAttribute.FEATHERS:
@@ -48,6 +41,6 @@ export class modifier_item_stonefeather_satchel extends Modifier {
 	protected UpdateSpecialValues(): void {
 		const name = "item_stonefeather_satchel"
 		this.cachedSpeed = this.GetSpecialValue("feather_movespeed", name)
-		this.cachedArmor = this.GetSpecialValue("feather_armor", name)
+		this.cachedArmor = this.GetSpecialValue("rocks_armor", name)
 	}
 }

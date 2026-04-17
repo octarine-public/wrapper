@@ -1110,7 +1110,7 @@ export class Unit extends Entity {
 		const totalDamage = calculatedDamage + magicDamage + pureDamage,
 			incomingDamage = target.GetIncomingAttackDamage(this, false)
 
-		return Math.max(totalDamage * incomingDamage - damageBlock, 0)
+		return Math.ceil(Math.max(totalDamage * incomingDamage - damageBlock, 0))
 	}
 	public GetDamageAmplification(
 		source: Unit,

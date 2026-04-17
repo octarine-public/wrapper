@@ -30,7 +30,7 @@ export class modifier_tiny_toss_land_debuff extends Modifier implements IDebuff 
 		return [-this.cachedAttackSpeed, this.IsMagicImmune()]
 	}
 	protected UpdateSpecialValues(): void {
-		const name = "tiny_toss"
+		const name = "tiny_grow"
 		this.cachedSpeed = this.GetSpecialValue("land_movement_slow", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("land_attack_slow", name)
 	}

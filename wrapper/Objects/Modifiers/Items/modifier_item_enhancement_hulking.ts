@@ -1,5 +1,24 @@
 import { WrapperClassModifier } from "../../../Decorators"
+import { EModifierfunction } from "../../../Enums/EModifierfunction"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
-export class modifier_item_enhancement_hulking extends Modifier {}
+export class modifier_item_enhancement_hulking extends Modifier {
+	private cachedAttackSpeed = 0
+
+	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_PERCENTAGE,
+			this.GetAttackSpeedBonusPercentage.bind(this)
+		]
+	])
+	protected GetAttackSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedAttackSpeed, false]
+	}
+	protected UpdateSpecialValues() {
+		this.cachedAttackSpeed = this.GetSpecialValue(
+			"attack_speed",
+			"item_enhancement_hulking"
+		)
+	}
+}

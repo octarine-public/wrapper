@@ -1,4 +1,5 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
@@ -8,7 +9,6 @@ export class modifier_beastmaster_inner_beast extends Modifier implements IBuff 
 	public readonly BuffModifierName = this.Name
 
 	private cachedDamage = 0
-	private cachedASPerUnit = 0
 	private cachedAttackSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
@@ -31,16 +31,14 @@ export class modifier_beastmaster_inner_beast extends Modifier implements IBuff 
 		return [this.cachedDamage, false]
 	}
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
-		let value = this.cachedAttackSpeed
-		if (this.NetworkDamage !== 0) {
-			value += this.cachedASPerUnit * this.NetworkDamage
-		}
-		return [value, this.IsPassiveDisabled(this.Caster)]
+		return [this.cachedAttackSpeed, this.IsPassiveDisabled(this.Caster)]
 	}
 	protected UpdateSpecialValues(): void {
-		const name = "beastmaster_inner_beast"
+		const name = "beastmaster_inner_beast",
+			lvl = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
 		this.cachedDamage = this.GetSpecialValue("bonus_damage", name)
-		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name)
-		this.cachedASPerUnit = this.GetSpecialValue("attack_speed_per_unit", name)
+		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name, lvl, {
+			lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD }
+		})
 	}
 }

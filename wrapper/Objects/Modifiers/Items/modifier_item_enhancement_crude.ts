@@ -12,7 +12,6 @@ export class modifier_item_enhancement_crude extends Modifier {
 			this.GetBaseAttackTimePercentage.bind(this)
 		]
 	])
-
 	protected GetBaseAttackTimePercentage(): [number, boolean] {
 		return [-this.cachedBAT, false]
 	}

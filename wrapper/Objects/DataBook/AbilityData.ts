@@ -21,6 +21,8 @@ import { UnitData } from "./UnitData"
 
 export interface ISpecialValueOptions {
 	useFacet?: boolean
+	checkShard?: boolean
+	checkScepter?: boolean
 	lvlup?: {
 		subtract?: number
 		operation: EDOTASpecialBonusOperation
@@ -39,6 +41,7 @@ interface ILinkedSpecialBonus {
 interface ISpecialValue {
 	BaseValues: number[]
 	RequiresFacet: string
+	/** @deprecated */
 	RequiresScepter: boolean
 	RequiresShard: boolean
 	AffectedByCurio: boolean
@@ -494,7 +497,9 @@ export class AbilityData {
 		specialName: string,
 		level: number,
 		abilityName: string,
-		{ useFacet, lvlup }: ISpecialValueOptions
+		{ useFacet, lvlup }: ISpecialValueOptions,
+		checkShard: boolean = true,
+		checkScepter: boolean = true
 	): number {
 		if (level <= 0) {
 			return 0
@@ -517,7 +522,6 @@ export class AbilityData {
 		) {
 			baseVal = 0
 		}
-
 		const arr = specialValue.LinkedSpecialBonuses,
 			allSpecialBonuses: [EDOTASpecialBonusOperation, number, boolean][] = []
 		for (let i = arr.length - 1; i > -1; i--) {
@@ -546,11 +550,11 @@ export class AbilityData {
 						continue
 					}
 				} else if (linkedSpecialBonus.Name === "special_bonus_shard") {
-					if (!owner.HasShard) {
+					if (!owner.HasShard || !checkShard) {
 						continue
 					}
 				} else if (linkedSpecialBonus.Name === "special_bonus_scepter") {
-					if (!owner.HasScepter) {
+					if (!owner.HasScepter || !checkScepter) {
 						continue
 					}
 				} else {

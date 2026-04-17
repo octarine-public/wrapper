@@ -48,7 +48,7 @@ export class modifier_antimage_mana_break extends Modifier {
 		const baseDamage = this.cachedDamage,
 			maxBurn = this.cachedMaxBurn + this.CachedBonusManaBurn,
 			damage = baseDamage + (target.MaxMana * maxBurn) / 100
-		return [damage * (1 - this.cachedManaBurnDamage / 100), false]
+		return [(damage * this.cachedManaBurnDamage) / 100, false]
 	}
 
 	protected UpdateSpecialValues() {

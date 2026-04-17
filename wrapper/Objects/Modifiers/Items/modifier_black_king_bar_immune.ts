@@ -34,6 +34,6 @@ export class modifier_black_king_bar_immune extends Modifier implements IShield,
 		return !ignoreMagicResist ? [this.cachedMres, false] : [0, false]
 	}
 	protected UpdateSpecialValues() {
-		this.cachedMres = this.GetSpecialValue("magic_resist", "item_black_king_bar")
+		this.cachedMres = this.GetSpecialValue("spell_reduce", "item_black_king_bar")
 	}
 }

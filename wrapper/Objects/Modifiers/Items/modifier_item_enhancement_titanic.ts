@@ -6,6 +6,7 @@ import { Modifier } from "../../Base/Modifier"
 export class modifier_item_enhancement_titanic extends Modifier {
 	private cachedDamage = 0
 	private cachedStatusResist = 0
+	private cachedAttackSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -15,6 +16,10 @@ export class modifier_item_enhancement_titanic extends Modifier {
 		[
 			EModifierfunction.MODIFIER_PROPERTY_STATUS_RESISTANCE_STACKING,
 			this.GetStatusResistanceStacking.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_ATTACKSPEED_PERCENTAGE,
+			this.GetAttackSpeedPercentage.bind(this)
 		]
 	])
 	protected GetStatusResistanceStacking(): [number, boolean] {
@@ -23,8 +28,12 @@ export class modifier_item_enhancement_titanic extends Modifier {
 	protected GetPreAttackBonusDamage(params?: IModifierParams): [number, boolean] {
 		return [((params?.RawDamageBase ?? 0) * this.cachedDamage) / 100, false]
 	}
+	protected GetAttackSpeedPercentage(): [number, boolean] {
+		return [this.cachedAttackSpeed, false]
+	}
 	protected UpdateSpecialValues(): void {
 		const name = "item_enhancement_titanic"
+		this.cachedAttackSpeed = this.GetSpecialValue("attack_speed", name)
 		this.cachedDamage = this.GetSpecialValue("base_attack_damage", name)
 		this.cachedStatusResist = this.GetSpecialValue("status_resistance", name)
 	}

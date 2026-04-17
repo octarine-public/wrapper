@@ -166,10 +166,10 @@ export class IModifier {
 		return this.GetProperty<number>("move_slow")
 	}
 	public get HasShard() {
-		return this.GetProperty<number>("has_shard")
+		return this.GetProperty<boolean>("has_shard")
 	}
 	public get HasScepter() {
-		return this.GetProperty<number>("has_scepter")
+		return this.GetProperty<boolean>("has_scepter")
 	}
 	public GetProperty<T>(name: string): Nullable<T> {
 		const value = this.kv.get(name)

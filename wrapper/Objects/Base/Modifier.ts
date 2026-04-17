@@ -96,6 +96,8 @@ export class Modifier {
 	public IsValid = true
 	public HasVisualShield = false
 	public ShouldDoFlyHeightVisual = false
+	public HasShard: boolean = false
+	public HasScepter: boolean = false
 
 	protected CanPostDataUpdate = false
 	protected DeclaredFunction: Nullable<ModifierMapFieldHandler>
@@ -217,7 +219,9 @@ export class Modifier {
 			newAuraWithinRange = this.kv.AuraWithInRange ?? false,
 			newNetworkSubtle = this.kv.Subtle ?? false,
 			newIsActive = this.kv.IsActive ?? false,
-			newActivity = this.kv.Activity ?? 0
+			newActivity = this.kv.Activity ?? 0,
+			newHasShard = this.kv.HasShard ?? false,
+			newHasScepter = this.kv.HasScepter ?? false
 
 		if (this.Parent !== newParent) {
 			this.Remove()
@@ -225,6 +229,16 @@ export class Modifier {
 		let updated = force ?? false
 		if (this.Caster !== newCaster) {
 			this.Caster = newCaster
+			this.UpdateSpecialValues()
+			updated = true
+		}
+		if (this.HasShard !== newHasShard) {
+			this.HasShard = newHasShard
+			this.UpdateSpecialValues()
+			updated = true
+		}
+		if (this.HasScepter !== newHasScepter) {
+			this.HasScepter = newHasScepter
 			this.UpdateSpecialValues()
 			updated = true
 		}
@@ -268,7 +282,6 @@ export class Modifier {
 			this.UpdateSpecialValues()
 			updated = true
 		}
-
 		if (this.NetworkAuraWithInRange !== newAuraWithinRange) {
 			this.NetworkAuraWithInRange = newAuraWithinRange
 			this.UpdateSpecialValues()
@@ -440,7 +453,13 @@ export class Modifier {
 	): number {
 		const ability = this.Ability
 		if (ability !== undefined) {
-			return ability.GetSpecialValue(specialName, level, optional)
+			return ability.GetSpecialValue(
+				specialName,
+				level,
+				optional,
+				this.HasShard,
+				this.HasScepter
+			)
 		}
 		const data = AbilityData.GetAbilityByName(abilityName)
 		if (data === undefined) {

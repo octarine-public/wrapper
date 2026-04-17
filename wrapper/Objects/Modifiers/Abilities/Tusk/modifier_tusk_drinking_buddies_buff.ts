@@ -8,12 +8,12 @@ export class modifier_tusk_drinking_buddies_buff extends Modifier implements IBu
 	public readonly BuffModifierName = this.Name
 
 	private cachedSpeed = 0
-	private cachedDamage = 0
+	private cachedArmor = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
-			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE,
-			this.GetPreAttackBonusDamage.bind(this)
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
+			this.GetPhysicalArmorBonus.bind(this)
 		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
@@ -23,15 +23,15 @@ export class modifier_tusk_drinking_buddies_buff extends Modifier implements IBu
 	public IsBuff(): this is IBuff {
 		return true
 	}
-	protected GetPreAttackBonusDamage(): [number, boolean] {
-		return [this.cachedDamage, false]
+	protected GetPhysicalArmorBonus(): [number, boolean] {
+		return [this.cachedArmor, false]
 	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
 	protected UpdateSpecialValues(): void {
 		const name = "tusk_drinking_buddies"
+		this.cachedArmor = this.GetSpecialValue("armor_bonus", name)
 		this.cachedSpeed = this.GetSpecialValue("movespeed_bonus", name)
-		this.cachedDamage = this.GetSpecialValue("attackdamage_bonus", name)
 	}
 }
