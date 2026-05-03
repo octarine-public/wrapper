@@ -1,6 +1,5 @@
 import { WrapperClassModifier } from "../../../Decorators"
 import { EModifierfunction } from "../../../Enums/EModifierfunction"
-import { enchantress_enchant } from "../../Abilities/Enchantress/enchantress_enchant"
 import { Modifier } from "../../Base/Modifier"
 import { item_helm_of_the_dominator } from "../../Items/item_helm_of_the_dominator"
 import { item_helm_of_the_overlord } from "../../Items/item_helm_of_the_overlord"
@@ -27,25 +26,16 @@ export class modifier_dominated extends Modifier {
 			this.GetHealthRegenConstant.bind(this)
 		]
 	])
-
 	protected GetPreAttackDamageBonus(_params?: IModifierParams): [number, boolean] {
 		return [this.cachedDamage, false]
 	}
-
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, false]
 	}
-
 	protected GetHealthRegenConstant(): [number, boolean] {
 		return [this.cachedHPRegen, false]
 	}
-
 	protected UpdateSpecialValues(): void {
-		if (this.Ability instanceof enchantress_enchant) {
-			const name = this.Ability.Name
-			this.cachedArmor = this.GetSpecialValue("enchant_armor", name)
-			this.cachedDamage = this.GetSpecialValue("enchant_damage", name)
-		}
 		if (
 			this.Ability instanceof item_helm_of_the_dominator ||
 			this.Ability instanceof item_helm_of_the_overlord

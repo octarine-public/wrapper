@@ -631,9 +631,12 @@ export class UnitModifierManager {
 		}
 		switch (damageType) {
 			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL:
-				damageBlock += this.GetConstantHighestInternal(
+				damageBlock += this.GetConditionalAdditiveInternal(
 					EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_CONSTANT_BLOCK_SPECIAL,
-					...args
+					false,
+					1,
+					1,
+					params
 				)
 				break
 			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:

@@ -21,8 +21,6 @@ import { UnitData } from "./UnitData"
 
 export interface ISpecialValueOptions {
 	useFacet?: boolean
-	checkShard?: boolean
-	checkScepter?: boolean
 	lvlup?: {
 		subtract?: number
 		operation: EDOTASpecialBonusOperation
@@ -491,7 +489,6 @@ export class AbilityData {
 		}
 		return ar.BaseValues[Math.min(level, ar.BaseValues.length) - 1]
 	}
-
 	public GetSpecialValueWithTalent(
 		owner: Unit,
 		specialName: string,
@@ -499,7 +496,8 @@ export class AbilityData {
 		abilityName: string,
 		{ useFacet, lvlup }: ISpecialValueOptions,
 		checkShard: boolean = true,
-		checkScepter: boolean = true
+		checkScepter: boolean = true,
+		isStolen: boolean = false
 	): number {
 		if (level <= 0) {
 			return 0
@@ -628,53 +626,46 @@ export class AbilityData {
 			)
 		}
 		if (specialValue.AffectedByAOEIncrease) {
-			return this.increaseAOERadius(owner, baseVal)
+			return this.increaseAOERadius(owner, baseVal, isStolen)
 		}
 		return baseVal
 	}
-
 	public GetCastRange(level: number): number {
 		if (level <= 0 || this.CastRangeCache.length === 0) {
 			return 0
 		}
 		return this.CastRangeCache[Math.min(level, this.CastRangeCache.length) - 1]
 	}
-
 	public GetHealthCost(level: number): number {
 		if (level <= 0 || this.HealthCostCache.length === 0) {
 			return 0
 		}
 		return this.HealthCostCache[Math.min(level, this.HealthCostCache.length) - 1]
 	}
-
 	public GetManaCost(level: number): number {
 		if (level <= 0 || this.ManaCostCache.length === 0) {
 			return 0
 		}
 		return this.ManaCostCache[Math.min(level, this.ManaCostCache.length) - 1]
 	}
-
 	public GetMaxDurationForLevel(level: number): number {
 		if (level <= 0 || this.MaxDurationCache.length === 0) {
 			return 0
 		}
 		return this.MaxDurationCache[Math.min(level, this.MaxDurationCache.length) - 1]
 	}
-
 	public GetMaxCooldownForLevel(level: number): number {
 		if (level <= 0 || this.MaxCooldownCache.length === 0) {
 			return 0
 		}
 		return this.MaxCooldownCache[Math.min(level, this.MaxCooldownCache.length) - 1]
 	}
-
 	public GetChannelTime(level: number): number {
 		if (level <= 0 || this.ChannelTimeCache.length === 0) {
 			return 0
 		}
 		return this.ChannelTimeCache[Math.min(level, this.ChannelTimeCache.length) - 1]
 	}
-
 	public GetAbilityDamage(level: number): number {
 		if (level <= 0 || this.AbilityDamageCache.length === 0) {
 			return 0
@@ -683,21 +674,18 @@ export class AbilityData {
 			Math.min(level, this.AbilityDamageCache.length) - 1
 		]
 	}
-
 	public GetCastPoint(level: number): number {
 		if (level <= 0 || this.CastPointCache.length === 0) {
 			return 0
 		}
 		return this.CastPointCache[Math.min(level, this.CastPointCache.length) - 1]
 	}
-
 	public GetMaxCharges(level: number): number {
 		if (level <= 0 || this.MaxChargesCache.length === 0) {
 			return 0
 		}
 		return this.MaxChargesCache[Math.min(level, this.MaxChargesCache.length) - 1]
 	}
-
 	public GetChargeRestoreTime(level: number): number {
 		if (level <= 0 || this.ChargeRestoreTimeCache.length === 0) {
 			return 0
@@ -706,7 +694,11 @@ export class AbilityData {
 			Math.min(level, this.ChargeRestoreTimeCache.length) - 1
 		]
 	}
-	private increaseAOERadius(owner: Unit, baseRadius: number): number {
+	private increaseAOERadius(
+		owner: Unit,
+		baseRadius: number,
+		isStolen: boolean
+	): number {
 		const bonusConstant = owner.ModifierManager.GetConstantHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_CONSTANT
 		)
@@ -719,9 +711,17 @@ export class AbilityData {
 		const percentage = owner.ModifierManager.GetPercentageHighestInternal(
 			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_PERCENTAGE
 		)
-		return (baseRadius + (bonusConstant + bonusStacking)) * percentage
+		const val = baseRadius + (bonusConstant + bonusStacking)
+		if (!isStolen || !owner.HasShard) {
+			return val * percentage
+		}
+		const modifier = owner.GetBuffByName("modifier_doom_bringer_devour_intrinsic")
+		const abil = modifier?.Ability
+		if (modifier === undefined || abil === undefined) {
+			return val * percentage
+		}
+		return val * (percentage + abil.GetSpecialValue("bonus_aoe_pct") / 100)
 	}
-
 	private getCachedSpecialValue(specialName: string, abilityName?: string) {
 		const arData = this.SpecialValueCache.get(specialName)
 		if (arData === undefined) {
@@ -730,11 +730,9 @@ export class AbilityData {
 		}
 		return arData
 	}
-
 	private parseFloat(str: string): number {
 		return str !== "" ? parseFloat(str) : 0
 	}
-
 	private extractOldTalent(special: RecursiveMap): Nullable<ILinkedSpecialBonus> {
 		const name = MapValueToString(special.get("LinkedSpecialBonus"))
 		if (name === "") {
@@ -756,7 +754,6 @@ export class AbilityData {
 			]
 		}
 	}
-
 	private cacheSpecialValuesOld(kv: RecursiveMap) {
 		const abilitySpecial = kv.get("AbilitySpecial") as RecursiveMap
 		if (abilitySpecial === undefined) {
@@ -804,7 +801,6 @@ export class AbilityData {
 			})
 		})
 	}
-
 	private cacheSpecialValuesNew(kv: RecursiveMap) {
 		const abilityValues = kv.get("AbilityValues") as RecursiveMap
 		if (abilityValues === undefined) {
@@ -919,18 +915,15 @@ export class AbilityData {
 			})
 		})
 	}
-
 	private extendLevelArray(ar: number[]): number[] {
 		if (ar.length === 0) {
 			ar.push(0)
 		}
 		return ar
 	}
-
 	private getLevelArray(str: Nullable<string>): number[] {
 		return str?.split(" ")?.map(val => parseFloat(val)) ?? []
 	}
-
 	private exceptionMessage(specialName: string, abilityName?: string) {
 		if (!AbilityData.HasDebug) {
 			return
@@ -947,7 +940,6 @@ export class AbilityData {
 		)
 		AbilityData.cacheWithoutSpecialData.add(keyName)
 	}
-
 	private clearAllData() {
 		this.ItemRequirements.clear()
 		this.SpecialValueCache.clear()

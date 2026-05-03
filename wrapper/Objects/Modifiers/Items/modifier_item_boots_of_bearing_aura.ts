@@ -23,10 +23,10 @@ export class modifier_item_boots_of_bearing_aura extends Modifier implements IBu
 	public IsBuff(): this is IBuff {
 		return true
 	}
-	protected GetHealthRegenConstant(): [number, boolean] {
+	protected GetMoveSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-	protected GetMoveSpeedBonusConstant(): [number, boolean] {
+	protected GetHealthRegenConstant(): [number, boolean] {
 		return [this.cachedHealthRegen, false]
 	}
 	protected UpdateSpecialValues() {

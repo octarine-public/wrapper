@@ -15,15 +15,15 @@ export class modifier_dawnbreaker_converge extends Modifier implements IDebuff {
 			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
-
 	public IsDebuff(): this is IDebuff {
 		return true
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [-this.cachedSpeed, this.IsMagicImmune()]
+		return [
+			this.IsEnemy(this.Caster) ? -this.cachedSpeed : this.cachedSpeed,
+			this.IsEnemy(this.Caster) ? this.IsMagicImmune() : false
+		]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedSpeed = this.GetSpecialValue(
 			"move_slow",

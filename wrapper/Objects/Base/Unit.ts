@@ -180,6 +180,10 @@ export class Unit extends Entity {
 	/** @private NOTE: this is internal field use LastDamageTime */
 	@NetworkedBasicField("m_flLastDamageTime")
 	public LastDamageTime_: number = 0
+	@NetworkedBasicField("m_nScepterUpgradeID")
+	public readonly ScepterUpgradeID: number = 0
+	@NetworkedBasicField("m_nShardUpgradeID")
+	public readonly ShardUpgradeID: number = 0
 
 	public Level: number = 0
 	public Agility: number = 0

@@ -301,6 +301,7 @@ export class Modifier {
 		}
 		if (this.InternalDuration !== newDuration) {
 			this.InternalDuration = newDuration
+			this.UpdateSpecialValues()
 			updated = true
 		}
 		if (this.CreationTime !== newCreationTime) {
@@ -353,12 +354,6 @@ export class Modifier {
 	}
 	public IsChannel(): this is IChannel {
 		return false
-	}
-	public OnHasShardChanged(): void {
-		this.UpdateSpecialValues()
-	}
-	public OnHasScepterChanged(): void {
-		this.UpdateSpecialValues()
 	}
 	public OnAbilityLevelChanged(): void {
 		this.UpdateSpecialValues()

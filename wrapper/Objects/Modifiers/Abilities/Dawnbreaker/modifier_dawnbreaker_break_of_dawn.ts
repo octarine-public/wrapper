@@ -1,4 +1,5 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { GameRules } from "../../../Base/Entity"
 import { Modifier } from "../../../Base/Modifier"
@@ -26,14 +27,18 @@ export class modifier_dawnbreaker_break_of_dawn extends Modifier {
 	}
 	protected UpdateSpecialValues(): void {
 		const name = "dawnbreaker_break_of_dawn"
-		this.cachedMaxDamagePct = this.GetSpecialValue("max_dmg_pct", name)
 		this.cachedMaxVisionPct = this.GetSpecialValue("max_vision_pct", name)
+		this.cachedMaxDamagePct = this.GetSpecialValue(
+			"max_dmg_pct",
+			name,
+			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
+			{ lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD } }
+		)
 	}
 	private getEffValue(value: number): number {
 		if (GameRules === undefined || GameRules.IsNight) {
 			return 0
 		}
-		const moduleTime = (GameRules.GameTime / 60) % 5
-		return value * Math.remapRange(moduleTime, 0, 5, 1, 0)
+		return value * (1 - GameRules.GetPhaseProgress(false))
 	}
 }

@@ -168,6 +168,28 @@ export class CGameRules extends Entity {
 				return false
 		}
 	}
+	public GetPhaseProgress(isNight: boolean = this.IsNight): number {
+		if (this.IsNightGameTime !== isNight) {
+			return 0
+		}
+		const dayStart = this.DayTimeStart,
+			nightStart = this.NightTimeStart,
+			cur = this.NetTimeOfDayNormilize
+		const phaseStart = isNight ? nightStart : dayStart,
+			phaseEnd = isNight ? dayStart : nightStart
+		let phaseLength: number, elapsed: number
+		if (phaseEnd > phaseStart) {
+			phaseLength = phaseEnd - phaseStart
+			elapsed = cur - phaseStart
+		} else {
+			phaseLength = 1 - phaseStart + phaseEnd
+			elapsed = cur >= phaseStart ? cur - phaseStart : 1 - phaseStart + cur
+		}
+		if (phaseLength <= 0) {
+			return 0
+		}
+		return Math.max(0, Math.min(1, elapsed / phaseLength))
+	}
 }
 
 RegisterFieldHandler(CGameRules, "m_nHeroPickState", (game, newVal) => {

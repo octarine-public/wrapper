@@ -209,23 +209,6 @@ function ModifierPostDataUpdate() {
 	}
 }
 
-function ShardOrScepterChanged(source: Unit, isShard: boolean) {
-	activeModifiers.forEach(modifier => {
-		if (
-			modifier.Parent === source ||
-			modifier.Caster === source ||
-			modifier.AuraOwner === source ||
-			modifier.Ability?.Owner === source
-		) {
-			if (isShard) {
-				modifier.OnHasShardChanged()
-				return
-			}
-			modifier.OnHasScepterChanged()
-		}
-	})
-}
-
 function UnitLevelChanged(source: Unit) {
 	if (source.IsVisible) {
 		return
@@ -408,18 +391,6 @@ EventsSDK.on("RemoveAllStringTables", () => {
 EventsSDK.on("PostDataUpdate", () => ModifierPostDataUpdate(), EventPriority.IMMEDIATE)
 
 EventsSDK.on("UnitLevelChanged", unit => UnitLevelChanged(unit), EventPriority.IMMEDIATE)
-
-EventsSDK.on(
-	"HasShardChanged",
-	unit => ShardOrScepterChanged(unit, true),
-	EventPriority.IMMEDIATE
-)
-
-EventsSDK.on(
-	"HasScepterChanged",
-	unit => ShardOrScepterChanged(unit, false),
-	EventPriority.IMMEDIATE
-)
 
 EventsSDK.on(
 	"AbilityLevelChanged",

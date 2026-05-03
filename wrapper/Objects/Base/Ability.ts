@@ -22,7 +22,7 @@ import { GameState } from "../../Utils/GameState"
 import { toPercentage } from "../../Utils/Math"
 import { QuantizePlaybackRate } from "../../Utils/QuantizeUtils"
 import { AbilityData, ISpecialValueOptions } from "../DataBook/AbilityData"
-import { modifier_crystal_maiden_arcane_overflow_active } from "../Modifiers/Abilities/CrystalMaiden/modifier_crystal_maiden_arcane_overflow_active"
+import { modifier_doom_bringer_devour_intrinsic } from "../Modifiers/Abilities/DoomBringer/modifier_doom_bringer_devour_intrinsic"
 import { modifier_rubick_spell_steal } from "../Modifiers/Abilities/Rubick/modifier_rubick_spell_steal"
 import { Entity } from "./Entity"
 import { Unit } from "./Unit"
@@ -428,14 +428,7 @@ export class Ability extends Entity {
 		this.abilityCurrentCharges = newVal
 	}
 	public get SpellAmplify(): number {
-		const owner = this.Owner
-		if (owner === undefined) {
-			return 1
-		}
-		return (
-			this.GetSpellAmpModifierSpellSteal(owner) *
-			this.GetSpellAmpModifierBrillianceAura(owner)
-		)
+		return this.GetSpellAmpModifierSpellSteal()
 	}
 	protected get CanBeCastedWhileRooted() {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_ROOT_DISABLES)
@@ -606,13 +599,17 @@ export class Ability extends Entity {
 		if (owner === undefined || target.IsAvoidTotalDamage) {
 			return 0
 		}
-		const damageType = this.DamageType
+		let damageType = this.DamageType
 		if (this.IsAbsoluteNoDamage(owner, target, damageType)) {
 			return 0
 		}
-		const ignoreMres = target.IsEnemy(owner)
+		let ignoreMres = target.IsEnemy(owner)
 			? this.CanHitSpellImmuneEnemy
 			: this.CanHitSpellImmuneAlly
+		if (ignoreMres && this.DamageType === DAMAGE_TYPES.DAMAGE_TYPE_NONE) {
+			ignoreMres = false
+			damageType = DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL
+		}
 		let rawDamage = this.GetRawDamage(target)
 		if (rawDamage !== 0) {
 			rawDamage -= target.GetDamageBlock(rawDamage, damageType, true)
@@ -669,7 +666,8 @@ export class Ability extends Entity {
 			this.Name,
 			optional,
 			checkShard,
-			checkScepter
+			checkScepter,
+			this.IsStolen
 		)
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {
@@ -811,31 +809,22 @@ export class Ability extends Entity {
 		const modifier = owner.GetBuffByClass(modifier_rubick_spell_steal)
 		return (100 - (modifier?.CachedManaCostReduction ?? 0)) / 100
 	}
-	protected GetSpellAmpModifierSpellSteal(owner: Nullable<Unit>): number {
+	protected GetSpellAmpModifierSpellSteal(owner: Nullable<Unit> = this.Owner): number {
 		if (owner === undefined) {
 			return 1
 		}
-		const baseSpellAmp = owner.EffSpellAmp
+		const base = owner.EffSpellAmp
 		if (!this.IsStolen) {
-			return baseSpellAmp
+			return base
 		}
-		const modifier = owner.GetBuffByClass(modifier_rubick_spell_steal)
-		if (modifier === undefined) {
-			return baseSpellAmp
+		const spellSteal = owner.GetBuffByClass(modifier_rubick_spell_steal)
+		let additionalAmp = spellSteal?.CachedSpellAmpDamage ?? 0
+		if (owner.HasShard) {
+			const bringer = owner.GetBuffByClass(modifier_doom_bringer_devour_intrinsic)
+			const abil = bringer?.Ability
+			additionalAmp += abil?.GetSpecialValue("bonus_spell_amp_pct") ?? 0
 		}
-		return baseSpellAmp + (1 + modifier.CachedSpellAmpDamage / 100)
-	}
-	protected GetSpellAmpModifierBrillianceAura(owner: Nullable<Unit>): number {
-		if (owner === undefined || this.IsItem) {
-			return 1
-		}
-		const modifier = owner.GetBuffByClass(
-			modifier_crystal_maiden_arcane_overflow_active
-		)
-		if (modifier === undefined) {
-			return 1
-		}
-		return 1 + modifier.CachedSpellAmplify / 100
+		return base + additionalAmp / 100
 	}
 	protected IsAbsoluteNoDamage(
 		source: Unit,

@@ -10,7 +10,6 @@ export class modifier_invoker_alacrity extends Modifier implements IBuff {
 
 	private cachedDamage = 0
 	private cachedAttackSpeed = 0
-	private cachedAttackRange = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -25,9 +24,6 @@ export class modifier_invoker_alacrity extends Modifier implements IBuff {
 	public IsBuff(): this is IBuff {
 		return true
 	}
-	protected GetAttackRangeBonus(): [number, boolean] {
-		return [this.cachedAttackRange, false]
-	}
 	protected GetPreAttackBonusDamage(): [number, boolean] {
 		return [this.cachedDamage, false]
 	}
@@ -36,7 +32,7 @@ export class modifier_invoker_alacrity extends Modifier implements IBuff {
 	}
 	protected UpdateSpecialValues(): void {
 		this.cachedDamage = this.GetSpecialValue("bonus_damage")
-		this.cachedAttackRange = this.GetSpecialValue("bonus_attack_range")
+		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed")
 	}
 	protected GetSpecialValue(
 		specialName: string,

@@ -1,7 +1,9 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { EntityManager } from "../../../../Managers/EntityManager"
 import { Modifier } from "../../../Base/Modifier"
+import { ISpecialValueOptions } from "../../../DataBook/AbilityData"
 
 @WrapperClassModifier()
 export class modifier_bristleback_prickly extends Modifier {
@@ -34,5 +36,21 @@ export class modifier_bristleback_prickly extends Modifier {
 		const name = "bristleback_prickly"
 		this.cachedOutgoingDamage = this.GetSpecialValue("amp_pct", name)
 		this.cachedAngle = Math.degreesToRadian(this.GetSpecialValue("angle", name))
+	}
+
+	protected GetSpecialValue(
+		specialName: string,
+		abilityName: string,
+		level = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
+		optional?: ISpecialValueOptions
+	): number {
+		switch (specialName) {
+			case "amp_pct":
+				return super.GetSpecialValue(specialName, abilityName, level, {
+					lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD }
+				})
+			default:
+				return super.GetSpecialValue(specialName, abilityName, level, optional)
+		}
 	}
 }

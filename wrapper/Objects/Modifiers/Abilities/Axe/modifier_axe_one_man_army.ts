@@ -9,7 +9,6 @@ export class modifier_axe_one_man_army extends Modifier implements IBuff {
 	public GetTexturePath(): string {
 		return ImagePath + "/hud/facets/icons/strength_png.vtex_c"
 	}
-
 	public IsBuff(): this is IBuff {
 		return true
 	}

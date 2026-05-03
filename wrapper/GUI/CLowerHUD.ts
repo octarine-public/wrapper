@@ -34,9 +34,9 @@ export class CLowerHUD {
 		this.LeftFlare.x = 0
 		this.LeftFlare.y = screenSize.y - this.LeftFlare.Height
 
-		this.Portrait.Width = ScaleWidth(159, screenSize)
+		this.Portrait.Width = ScaleWidth(160, screenSize)
 		this.Portrait.Height = ScaleHeight(145, screenSize)
-		this.Portrait.x = ScaleWidth(50, screenSize)
+		this.Portrait.x = ScaleWidth(45, screenSize)
 		this.Portrait.y = screenSize.y - this.Portrait.Height
 
 		this.XP.Width = ScaleWidth(48, screenSize)

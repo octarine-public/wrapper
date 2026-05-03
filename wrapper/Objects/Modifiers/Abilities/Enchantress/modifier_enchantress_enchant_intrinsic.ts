@@ -6,12 +6,17 @@ import { Unit } from "../../../Base/Unit"
 @WrapperClassModifier()
 export class modifier_enchantress_enchant_intrinsic extends Modifier {
 	private cachedRange = 0
+	private cachedArmor = 0
 	private cachedDamage = 0
 	private cachedRangeValue = 0
 	private cachedAttackSpeed = 0
 
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
+		[
+			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
+			this.GetPhysicalArmorBonus.bind(this)
+		],
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
 			this.GetAttackRangeBonus.bind(this)
@@ -25,7 +30,6 @@ export class modifier_enchantress_enchant_intrinsic extends Modifier {
 			this.GetAttackSpeedBonusConstant.bind(this)
 		]
 	])
-
 	public PostDataUpdate(): void {
 		const caster = this.Caster,
 			target = caster?.Target
@@ -40,7 +44,9 @@ export class modifier_enchantress_enchant_intrinsic extends Modifier {
 		}
 		this.cachedRange = this.cachedRangeValue
 	}
-
+	protected GetPhysicalArmorBonus(): [number, boolean] {
+		return [this.cachedArmor, false]
+	}
 	protected GetAttackRangeBonus(): [number, boolean] {
 		return [this.cachedRange, false]
 	}
@@ -52,6 +58,7 @@ export class modifier_enchantress_enchant_intrinsic extends Modifier {
 	}
 	protected UpdateSpecialValues(): void {
 		const name = "enchantress_enchant"
+		this.cachedArmor = this.GetSpecialValue("bonus_armor", name)
 		this.cachedDamage = this.GetSpecialValue("bonus_damage", name)
 		this.cachedRangeValue = this.GetSpecialValue("attack_range_bonus", name)
 		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attackspeed", name)

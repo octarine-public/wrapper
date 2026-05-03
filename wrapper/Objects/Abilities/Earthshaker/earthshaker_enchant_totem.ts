@@ -21,12 +21,8 @@ export class earthshaker_enchant_totem extends Ability implements INuke {
 		const aftershock = this.Owner?.GetBuffByClass(modifier_earthshaker_aftershock)
 		return aftershock?.AOEDamage ?? 0
 	}
-	private get aftershockBonusAOERadius() {
-		const aftershock = this.Owner?.GetBuffByClass(modifier_earthshaker_aftershock)
-		return aftershock?.AOERadiusBonus ?? 0
-	}
 	public get AOERadius(): number {
-		return this.GetBaseAOERadiusForLevel(this.Level) + this.aftershockBonusAOERadius
+		return this.GetBaseAOERadiusForLevel(this.Level)
 	}
 	public IsNuke(): this is INuke {
 		return true

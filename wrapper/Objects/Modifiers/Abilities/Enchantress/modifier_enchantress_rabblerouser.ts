@@ -19,7 +19,6 @@ export class modifier_enchantress_rabblerouser extends Modifier {
 			this.GetOutgoingDamagePercentage.bind(this)
 		]
 	])
-
 	private GetOutgoingDamagePercentage(params?: IModifierParams): [number, boolean] {
 		if (params === undefined || this.IsPassiveDisabled(this.Caster)) {
 			return [0, false]
@@ -33,7 +32,6 @@ export class modifier_enchantress_rabblerouser extends Modifier {
 		}
 		return [this.cachedOutBaseDamage, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedOutBaseDamage = this.GetSpecialValue(
 			"damage_amp",
@@ -47,9 +45,7 @@ export class modifier_enchantress_rabblerouser extends Modifier {
 		_optional?: ISpecialValueOptions
 	): number {
 		return super.GetSpecialValue(specialName, abilityName, level, {
-			lvlup: {
-				operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-			}
+			lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD }
 		})
 	}
 }

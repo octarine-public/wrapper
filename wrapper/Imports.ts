@@ -415,6 +415,7 @@ export { dragon_knight_elder_dragon_form } from "./Objects/Abilities/DragonKnigh
 export { dragon_knight_fireball } from "./Objects/Abilities/DragonKnight/dragon_knight_fireball"
 export { dragon_knight_frost_breath } from "./Objects/Abilities/DragonKnight/dragon_knight_frost_breath"
 export { dragon_knight_inherited_vigor } from "./Objects/Abilities/DragonKnight/dragon_knight_inherited_vigor"
+export { dragon_knight_wyrms_wrath } from "./Objects/Abilities/DragonKnight/dragon_knight_wyrms_wrath"
 export { drow_ranger_creep_rally } from "./Objects/Abilities/DrowRanger/drow_ranger_creep_rally"
 export { drow_ranger_frost_arrows } from "./Objects/Abilities/DrowRanger/drow_ranger_frost_arrows"
 export { drow_ranger_glacier } from "./Objects/Abilities/DrowRanger/drow_ranger_glacier"
