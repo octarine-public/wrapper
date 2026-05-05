@@ -11,9 +11,6 @@ export class modifier_kunkka_ghost_ship_damage_absorb
 	public readonly BuffModifierName = this.Name
 	public readonly ShieldModifierName = this.Name
 
-	private cachedSpeed = 0
-	private cachedIncomingDamage = 0
-
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
@@ -31,14 +28,15 @@ export class modifier_kunkka_ghost_ship_damage_absorb
 		return true
 	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [this.cachedSpeed, false]
+		return [this.NetworkFadeTime, false]
 	}
 	protected GetIncomingDamagePercentage(): [number, boolean] {
-		return [-this.cachedIncomingDamage, false]
+		return [-this.NetworkChannelTime, false]
 	}
 	protected UpdateSpecialValues(): void {
-		const name = "kunkka_ghostship"
-		this.cachedSpeed = this.GetSpecialValue("movespeed_bonus", name)
-		this.cachedIncomingDamage = this.GetSpecialValue("ghostship_absorb", name)
+		// only debug
+		const name = "kunkka_admirals_rum"
+		this.GetSpecialValue("ghostship_absorb", name)
+		this.GetSpecialValue("movespeed_bonus", name)
 	}
 }

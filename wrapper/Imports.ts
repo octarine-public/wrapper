@@ -623,6 +623,7 @@ export { juggernaut_innate_mask_spin_crit } from "./Objects/Abilities/Juggernaut
 export { juggernaut_omni_slash } from "./Objects/Abilities/Juggernaut/juggernaut_omni_slash"
 export { juggernaut_swift_slash } from "./Objects/Abilities/Juggernaut/juggernaut_swift_slash"
 export { keeper_of_the_light_blinding_light } from "./Objects/Abilities/KeeperOfTheLight/keeper_of_the_light_blinding_light"
+export { keeper_of_the_light_bright_speed } from "./Objects/Abilities/KeeperOfTheLight/keeper_of_the_light_bright_speed"
 export { keeper_of_the_light_chakra_magic } from "./Objects/Abilities/KeeperOfTheLight/keeper_of_the_light_chakra_magic"
 export { keeper_of_the_light_empty1 } from "./Objects/Abilities/KeeperOfTheLight/keeper_of_the_light_empty1"
 export { keeper_of_the_light_empty2 } from "./Objects/Abilities/KeeperOfTheLight/keeper_of_the_light_empty2"

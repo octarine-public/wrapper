@@ -1,6 +1,7 @@
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
+import { modifier_keeper_of_the_light_bright_speed } from "./modifier_keeper_of_the_light_bright_speed"
 
 @WrapperClassModifier()
 export class modifier_keeper_of_the_light_spirit_form extends Modifier implements IBuff {
@@ -16,8 +17,8 @@ export class modifier_keeper_of_the_light_spirit_form extends Modifier implement
 			this.GetCastRangeBonusStacking.bind(this)
 		],
 		[
-			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
-			this.GetMoveSpeedBonusPercentage.bind(this)
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
+			this.GetMoveSpeedBonusConstant.bind(this)
 		]
 	])
 	public IsBuff(): this is IBuff {
@@ -26,8 +27,17 @@ export class modifier_keeper_of_the_light_spirit_form extends Modifier implement
 	protected GetCastRangeBonusStacking(): [number, boolean] {
 		return [this.cachedCastRange, false]
 	}
-	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
-		return [this.cachedSpeed, false]
+	protected GetMoveSpeedBonusConstant(): [number, boolean] {
+		const owner = this.Parent
+		if (owner === undefined) {
+			return [0, false]
+		}
+		const modifier = owner.GetBuffByClass(modifier_keeper_of_the_light_bright_speed)
+		if (modifier === undefined) {
+			return [0, false]
+		}
+		const speed = modifier.GetBonusMovementSpeed()[0]
+		return [(speed * this.cachedSpeed) / 100, false]
 	}
 	protected UpdateSpecialValues(): void {
 		const name = "keeper_of_the_light_spirit_form"
