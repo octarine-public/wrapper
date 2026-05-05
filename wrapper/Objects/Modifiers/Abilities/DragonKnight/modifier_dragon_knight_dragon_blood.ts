@@ -7,21 +7,26 @@ import { Modifier } from "../../../Base/Modifier"
 export class modifier_dragon_knight_dragon_blood extends Modifier {
 	private cachedArmor = 0
 	private cachedMultiplier = 1
+	private cachedIsForm = false
 
+	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS,
 			this.GetPhysicalArmorBonus.bind(this)
 		]
 	])
-	protected GetPhysicalArmorBonus(): [number, boolean] {
-		const caster = this.Caster
-		if (caster === undefined) {
-			return [0, false]
+	public PostDataUpdate(): void {
+		const owner = this.Caster
+		if (owner === undefined) {
+			this.cachedIsForm = false
+			return
 		}
+		this.cachedIsForm = owner.HasBuffByName("modifier_dragon_knight_dragon_form")
+	}
+	protected GetPhysicalArmorBonus(): [number, boolean] {
 		const armor = this.cachedArmor,
-			isForm = caster.HasBuffByName("modifier_dragon_knight_dragon_form"),
-			multiplier = isForm ? this.cachedMultiplier : 1
+			multiplier = this.cachedIsForm ? this.cachedMultiplier : 1
 		return [armor + (armor * multiplier) / 100, this.IsPassiveDisabled()]
 	}
 	protected UpdateSpecialValues(): void {

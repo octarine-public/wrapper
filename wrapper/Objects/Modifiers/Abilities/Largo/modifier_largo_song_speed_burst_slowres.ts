@@ -1,6 +1,6 @@
-import { WrapperClassModifier } from "../../../Decorators"
-import { EModifierfunction } from "../../../Enums/EModifierfunction"
-import { Modifier } from "../../Base/Modifier"
+import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
+import { Modifier } from "../../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_largo_song_speed_burst_slowres extends Modifier implements IBuff {

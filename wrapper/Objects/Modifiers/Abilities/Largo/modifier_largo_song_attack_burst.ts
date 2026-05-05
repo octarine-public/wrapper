@@ -1,8 +1,8 @@
-import { WrapperClassModifier } from "../../../Decorators"
-import { EModifierfunction } from "../../../Enums/EModifierfunction"
-import { EntityManager } from "../../../Managers/EntityManager"
-import { Modifier } from "../../Base/Modifier"
-import { Unit } from "../../Base/Unit"
+import { WrapperClassModifier } from "../../../../Decorators"
+import { EModifierfunction } from "../../../../Enums/EModifierfunction"
+import { EntityManager } from "../../../../Managers/EntityManager"
+import { Modifier } from "../../../Base/Modifier"
+import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
 export class modifier_largo_song_attack_burst extends Modifier implements IBuff {

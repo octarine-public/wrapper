@@ -9,7 +9,10 @@ export class modifier_keeper_of_the_light_spirit_form extends Modifier implement
 	public readonly BuffModifierName = this.Name
 
 	private cachedSpeed = 0
+	private cachedBrightSpeed = 0
+
 	private cachedCastRange = 0
+	protected readonly CanPostDataUpdate = true
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -21,6 +24,20 @@ export class modifier_keeper_of_the_light_spirit_form extends Modifier implement
 			this.GetMoveSpeedBonusConstant.bind(this)
 		]
 	])
+	public PostDataUpdate(): void {
+		const owner = this.Parent
+		if (owner === undefined) {
+			this.cachedBrightSpeed = 0
+			return
+		}
+		const modifier = owner.GetBuffByClass(modifier_keeper_of_the_light_bright_speed)
+		if (modifier === undefined) {
+			this.cachedBrightSpeed = 0
+			return
+		}
+		const [speed] = modifier.GetBonusMovementSpeed()
+		this.cachedBrightSpeed = speed
+	}
 	public IsBuff(): this is IBuff {
 		return true
 	}
@@ -28,16 +45,7 @@ export class modifier_keeper_of_the_light_spirit_form extends Modifier implement
 		return [this.cachedCastRange, false]
 	}
 	protected GetMoveSpeedBonusConstant(): [number, boolean] {
-		const owner = this.Parent
-		if (owner === undefined) {
-			return [0, false]
-		}
-		const modifier = owner.GetBuffByClass(modifier_keeper_of_the_light_bright_speed)
-		if (modifier === undefined) {
-			return [0, false]
-		}
-		const speed = modifier.GetBonusMovementSpeed()[0]
-		return [(speed * this.cachedSpeed) / 100, false]
+		return [(this.cachedBrightSpeed * this.cachedSpeed) / 100, false]
 	}
 	protected UpdateSpecialValues(): void {
 		const name = "keeper_of_the_light_spirit_form"
