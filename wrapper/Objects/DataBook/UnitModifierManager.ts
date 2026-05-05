@@ -761,9 +761,14 @@ export class UnitModifierManager {
 		}
 		return total * illusion
 	}
-	public GetProcAttackDamageBonus(target: Unit, damageType: DAMAGE_TYPES): number {
+	public GetProcAttackDamageBonus(
+		target: Unit,
+		damageType: DAMAGE_TYPES,
+		rawDamageBase: number
+	): number {
 		const paramsTarget: IModifierParams = {
-			SourceIndex: target.Index
+			SourceIndex: target.Index,
+			RawDamageBase: rawDamageBase
 		}
 		const args = [false, 1, 1, paramsTarget] as const
 		switch (damageType) {

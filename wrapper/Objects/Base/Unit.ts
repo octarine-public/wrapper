@@ -1053,9 +1053,17 @@ export class Unit extends Entity {
 		}
 		return rawDamage
 	}
-	public GetAttackDamageTypeResist(target: Unit, damageType: DAMAGE_TYPES): number {
+	public GetAttackDamageTypeResist(
+		target: Unit,
+		damageType: DAMAGE_TYPES,
+		rawDamageBase: number
+	): number {
 		let resist = 1
-		let damage = this.ModifierManager.GetProcAttackDamageBonus(target, damageType)
+		let damage = this.ModifierManager.GetProcAttackDamageBonus(
+			target,
+			damageType,
+			rawDamageBase
+		)
 		switch (damageType) {
 			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
 				resist *= 1 - target.MagicalDamageResist
@@ -1068,11 +1076,19 @@ export class Unit extends Entity {
 		damage *= target.GetEffectiveIncomingDamage(this, damageType)
 		return Math.max(damage * resist - target.GetDamageBlock(damage, damageType), 0)
 	}
-	public GetAttackDamagePure(target: Unit): number {
-		return this.GetAttackDamageTypeResist(target, DAMAGE_TYPES.DAMAGE_TYPE_PURE)
+	public GetAttackDamagePure(target: Unit, rawDamageBase: number): number {
+		return this.GetAttackDamageTypeResist(
+			target,
+			DAMAGE_TYPES.DAMAGE_TYPE_PURE,
+			rawDamageBase
+		)
 	}
-	public GetAttackDamageMagic(target: Unit): number {
-		return this.GetAttackDamageTypeResist(target, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
+	public GetAttackDamageMagic(target: Unit, rawDamageBase: number): number {
+		return this.GetAttackDamageTypeResist(
+			target,
+			DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,
+			rawDamageBase
+		)
 	}
 	public GetAttackDamage(
 		target: Unit,
@@ -1108,8 +1124,8 @@ export class Unit extends Entity {
 		const calculatedDamage = overrideRawDamage * amp,
 			damageBlock = target.GetDamageBlock(calculatedDamage, damageType)
 
-		const pureDamage = this.GetAttackDamagePure(target),
-			magicDamage = this.GetAttackDamageMagic(target)
+		const pureDamage = this.GetAttackDamagePure(target, overrideRawDamage),
+			magicDamage = this.GetAttackDamageMagic(target, overrideRawDamage)
 
 		const totalDamage = calculatedDamage + magicDamage + pureDamage,
 			incomingDamage = target.GetIncomingAttackDamage(this, false)
