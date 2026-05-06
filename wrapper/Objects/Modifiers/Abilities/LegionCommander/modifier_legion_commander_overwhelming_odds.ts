@@ -9,6 +9,7 @@ export class modifier_legion_commander_overwhelming_odds
 {
 	public readonly IsHidden = false
 	public readonly BuffModifierName = this.Name
+	private cachedAttackSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -20,6 +21,10 @@ export class modifier_legion_commander_overwhelming_odds
 		return true
 	}
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
-		return [this.NetworkMovementSpeed, false]
+		return [this.cachedAttackSpeed, false]
+	}
+	protected UpdateSpecialValues(): void {
+		const name = "legion_commander_overwhelming_odds"
+		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name)
 	}
 }

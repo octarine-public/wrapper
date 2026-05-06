@@ -9,6 +9,7 @@ export class modifier_life_stealer_rage extends Modifier implements IBuff, IShie
 	public readonly ShieldModifierName = this.Name
 
 	private cachedMres = 0
+	private cachedSpeed = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -18,6 +19,10 @@ export class modifier_life_stealer_rage extends Modifier implements IBuff, IShie
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS,
 			this.GetMagicalResistanceBonus.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
 	public IsBuff(): this is IBuff {
@@ -29,11 +34,16 @@ export class modifier_life_stealer_rage extends Modifier implements IBuff, IShie
 	protected GetAbsoluteNoDamagePure(): [number, boolean] {
 		return [1, false]
 	}
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.cachedSpeed, false]
+	}
 	protected GetMagicalResistanceBonus(params?: IModifierParams): [number, boolean] {
 		const ignoreMagicResist = params?.IgnoreMagicResist ?? false
 		return !ignoreMagicResist ? [this.cachedMres, false] : [0, false]
 	}
 	protected UpdateSpecialValues() {
-		this.cachedMres = this.GetSpecialValue("magic_resist", "life_stealer_rage")
+		const name = "life_stealer_rage"
+		this.cachedMres = this.GetSpecialValue("magic_resist", name)
+		this.cachedSpeed = this.GetSpecialValue("movespeed_bonus", name)
 	}
 }
