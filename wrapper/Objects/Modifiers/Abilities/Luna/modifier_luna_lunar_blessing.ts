@@ -7,7 +7,6 @@ import { ISpecialValueOptions } from "../../../DataBook/AbilityData"
 @WrapperClassModifier()
 export class modifier_luna_lunar_blessing extends Modifier {
 	private cachedVision = 0
-	private cachedVisionPerLevel = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -16,12 +15,7 @@ export class modifier_luna_lunar_blessing extends Modifier {
 		]
 	])
 	protected GetBonusNightVision(): [number, boolean] {
-		const owner = this.Parent
-		if (owner === undefined) {
-			return [0, false]
-		}
-		const bonusPerLevel = this.cachedVisionPerLevel * owner.Level
-		return [this.cachedVision + bonusPerLevel, false]
+		return [this.cachedVision, false]
 	}
 	protected UpdateSpecialValues(): void {
 		this.cachedVision = this.GetSpecialValue(

@@ -33,13 +33,6 @@ export class modifier_luna_lunar_blessing_aura extends Modifier implements IBuff
 		this.cachedDamage = this.GetSpecialValue("bonus_damage", name)
 		this.cachedDamageSelf = this.GetSpecialValue("self_bonus_damage", name)
 	}
-	private getDamage(): number {
-		const caster = this.Caster
-		if (caster === undefined) {
-			return 0
-		}
-		return caster === this.Parent ? this.cachedDamageSelf : this.cachedDamage
-	}
 	protected GetSpecialValue(
 		specialName: string,
 		abilityName: string,
@@ -48,8 +41,11 @@ export class modifier_luna_lunar_blessing_aura extends Modifier implements IBuff
 	): number {
 		return super.GetSpecialValue(specialName, abilityName, level, {
 			lvlup: {
-				operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY
+				operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 			}
 		})
+	}
+	private getDamage(): number {
+		return this.Caster === this.Parent ? this.cachedDamageSelf : this.cachedDamage
 	}
 }

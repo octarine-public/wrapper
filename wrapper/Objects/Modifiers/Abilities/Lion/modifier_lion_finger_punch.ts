@@ -8,6 +8,7 @@ export class modifier_lion_finger_punch extends Modifier implements IBuff {
 	public readonly BuffModifierName = this.Name
 
 	private cachedRange = 0
+	private cachedSpeed = 0
 	private cachedBaseDamage = 0
 	private cachedPerStackDamage = 0
 
@@ -19,6 +20,10 @@ export class modifier_lion_finger_punch extends Modifier implements IBuff {
 		[
 			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE,
 			this.GetPreAttackBonusDamage.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
+			this.GetMoveSpeedBonusConstant.bind(this)
 		]
 	])
 	public IsBuff(): this is IBuff {
@@ -39,9 +44,13 @@ export class modifier_lion_finger_punch extends Modifier implements IBuff {
 		}
 		return [damage + counter.StackCount * this.cachedPerStackDamage, false]
 	}
+	protected GetMoveSpeedBonusConstant(): [number, boolean] {
+		return [this.cachedSpeed, false]
+	}
 	protected UpdateSpecialValues(): void {
 		const name = "lion_finger_of_death"
 		this.cachedRange = this.GetSpecialValue("punch_attack_range", name)
+		this.cachedSpeed = this.GetSpecialValue("punch_bonus_movespeed", name)
 		this.cachedBaseDamage = this.GetSpecialValue("punch_bonus_damage_base", name)
 		this.cachedPerStackDamage = this.GetSpecialValue(
 			"punch_bonus_damage_per_stack",

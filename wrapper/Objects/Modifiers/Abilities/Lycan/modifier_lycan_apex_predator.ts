@@ -1,4 +1,5 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { EntityManager } from "../../../../Managers/EntityManager"
 import { Creep } from "../../../Base/Creep"
@@ -15,7 +16,6 @@ export class modifier_lycan_apex_predator extends Modifier {
 			this.GetPreAttackBonusDamagePercentage.bind(this)
 		]
 	])
-
 	protected GetPreAttackBonusDamagePercentage(
 		params?: IModifierParams
 	): [number, boolean] {
@@ -27,13 +27,14 @@ export class modifier_lycan_apex_predator extends Modifier {
 		if (target === undefined || !(target instanceof Creep) || !target.IsNeutral) {
 			return [0, false]
 		}
-		return [this.cachedDamage * caster.Level, this.IsPassiveDisabled(caster)]
+		return [this.cachedDamage, this.IsPassiveDisabled(caster)]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedDamage = this.GetSpecialValue(
-			"damage_amp_per_level",
-			"lycan_apex_predator"
+			"damage_amp",
+			"lycan_apex_predator",
+			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
+			{ lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD } }
 		)
 	}
 }

@@ -38,11 +38,6 @@ new (class CUnitAttackChanged {
 			EventPriority.IMMEDIATE
 		)
 		EventsSDK.on(
-			"UnitAnimationEnd",
-			this.UnitAnimationEnd.bind(this),
-			EventPriority.IMMEDIATE
-		)
-		EventsSDK.on(
 			"UnitAnimation",
 			this.UnitAnimation.bind(this),
 			EventPriority.IMMEDIATE
@@ -91,7 +86,10 @@ new (class CUnitAttackChanged {
 		}
 	}
 	protected NetworkActivityChanged(source: Unit) {
-		if (!this.attackActivities.includes(source.NetworkActivity)) {
+		if (this.attackActivities.includes(source.NetworkActivity)) {
+			return
+		}
+		if (source.IsAttacking) {
 			this.attackStopped(source, true)
 		}
 	}
@@ -116,11 +114,6 @@ new (class CUnitAttackChanged {
 				this.dropTarget(order.Issuers)
 				break
 			}
-		}
-	}
-	protected UnitAnimationEnd(source: Unit | FakeUnit, _snap: boolean) {
-		if (source instanceof Unit) {
-			this.attackStopped(source, this.isCancelledAttack(source))
 		}
 	}
 	protected UnitAnimation(
@@ -207,6 +200,7 @@ new (class CUnitAttackChanged {
 	private dropTarget(issuers: Unit[]) {
 		for (let i = issuers.length - 1; i > -1; i--) {
 			issuers[i].TargetIndex_ = EntityManager.INVALID_INDEX
+			this.attackStopped(issuers[i], true)
 		}
 	}
 	private findTargetByAngle(source: Unit) {
@@ -260,12 +254,5 @@ new (class CUnitAttackChanged {
 				this.attackStopped(attacker, true, emitEvent)
 			}
 		})
-	}
-	private isCancelledAttack(source: Unit) {
-		if (source.IsTower) {
-			return false
-		}
-		const delay = this.attackLockUntil.get(source) ?? 0
-		return delay !== 0 && delay > GameState.RawGameTime
 	}
 })()

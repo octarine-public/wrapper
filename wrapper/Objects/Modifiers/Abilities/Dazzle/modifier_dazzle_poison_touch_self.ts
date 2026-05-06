@@ -15,7 +15,6 @@ export class modifier_dazzle_poison_touch_self extends Modifier {
 			this.GetAttackRangeBonus.bind(this)
 		]
 	])
-
 	public PostDataUpdate(): void {
 		if (this.cachedRangeValue === 0) {
 			return
@@ -32,11 +31,9 @@ export class modifier_dazzle_poison_touch_self extends Modifier {
 		}
 		this.cachedRange = this.cachedRangeValue
 	}
-
 	protected GetAttackRangeBonus(): [number, boolean] {
 		return [this.cachedRange, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedRangeValue = this.GetSpecialValue(
 			"attack_range_bonus",
