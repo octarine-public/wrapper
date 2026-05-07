@@ -722,8 +722,15 @@ export class UnitModifierManager {
 		)
 		return pre * proc
 	}
-	public GetIncomingDamage(target: Unit, damageType: DAMAGE_TYPES): number {
-		const params: IModifierParams = { SourceIndex: target.Index }
+	public GetIncomingDamage(
+		target: Unit,
+		damageType: DAMAGE_TYPES,
+		rawDamage?: number
+	): number {
+		const params: IModifierParams = {
+			SourceIndex: target.Index,
+			RawDamage: rawDamage
+		}
 		const args = [false, 1, 1, params] as const
 		let totalIncDamage = this.GetConditionalPercentageInternal(
 			EModifierfunction.MODIFIER_PROPERTY_INCOMING_DAMAGE_PERCENTAGE,

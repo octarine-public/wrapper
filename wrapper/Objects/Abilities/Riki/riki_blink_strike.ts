@@ -30,7 +30,7 @@ export class riki_blink_strike extends Ability implements INuke {
 			ATTACK_DAMAGE_STRENGTH.DAMAGE_MIN,
 			owner.GetRawAttackDamage(target) + this.backStabDamage(owner, target, true)
 		)
-		return baseDamage + attackDamage
+		return Math.ceil(baseDamage + attackDamage)
 	}
 
 	private backStabDamage(

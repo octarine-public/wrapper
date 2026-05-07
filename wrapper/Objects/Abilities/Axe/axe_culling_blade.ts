@@ -18,6 +18,6 @@ export class axe_culling_blade extends Ability implements INuke {
 		if (target.HP <= rawDamage) {
 			return rawDamage
 		}
-		return target.HP <= rawDamage ? rawDamage : super.GetDamage(target)
+		return Math.ceil(target.HP <= rawDamage ? rawDamage : super.GetDamage(target))
 	}
 }

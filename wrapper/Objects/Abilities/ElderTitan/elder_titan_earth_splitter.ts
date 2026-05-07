@@ -49,13 +49,22 @@ export class elder_titan_earth_splitter extends Ability {
 			rawDamageBlock += rawBlockMagic
 		}
 		const calculateRawDmg = rawDamage * this.SpellAmplify - rawDamageBlock
+		const ampedRaw = rawDamage * this.SpellAmplify * target.EffSpellAmpTarget
 		const damageAmpPhys = target.GetDamageAmplification(
 			owner,
-			DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL
+			DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL,
+			0,
+			false,
+			false,
+			ampedRaw
 		)
 		const damageAmpMagic = target.GetDamageAmplification(
 			owner,
-			DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL
+			DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,
+			0,
+			false,
+			false,
+			ampedRaw
 		)
 		const magicDamage = calculateRawDmg * damageAmpMagic
 		const physicalDamage = calculateRawDmg * damageAmpPhys
@@ -77,6 +86,6 @@ export class elder_titan_earth_splitter extends Ability {
 		if (blockMagic !== 0) {
 			totalDamageBlock += blockMagic
 		}
-		return Math.max(totalDamage - totalDamageBlock, 0)
+		return Math.ceil(Math.max(totalDamage - totalDamageBlock, 0))
 	}
 }

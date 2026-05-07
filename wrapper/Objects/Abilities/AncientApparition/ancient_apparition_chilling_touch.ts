@@ -22,6 +22,6 @@ export class ancient_apparition_chilling_touch extends Ability implements INuke 
 		if (this.IsAutoCastEnabled && this.IsReady) {
 			return owner.GetAttackDamage(target)
 		}
-		return baseDamage + owner.GetAttackDamage(target)
+		return Math.ceil(baseDamage + owner.GetAttackDamage(target))
 	}
 }

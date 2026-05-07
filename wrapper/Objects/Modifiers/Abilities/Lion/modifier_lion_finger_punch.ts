@@ -1,6 +1,7 @@
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
+import { modifier_lion_finger_of_death_kill_counter } from "./modifier_lion_finger_of_death_kill_counter"
 
 @WrapperClassModifier()
 export class modifier_lion_finger_punch extends Modifier implements IBuff {
@@ -10,7 +11,6 @@ export class modifier_lion_finger_punch extends Modifier implements IBuff {
 	private cachedRange = 0
 	private cachedSpeed = 0
 	private cachedBaseDamage = 0
-	private cachedPerStackDamage = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -37,12 +37,12 @@ export class modifier_lion_finger_punch extends Modifier implements IBuff {
 		if (owner === undefined) {
 			return [0, false]
 		}
-		const damage = this.cachedBaseDamage
-		const counter = owner.GetBuffByName("modifier_lion_finger_of_death_kill_counter")
-		if (counter === undefined || counter.StackCount === 0) {
-			return [damage, false]
+		const baseDamage = this.cachedBaseDamage
+		const counter = owner.GetBuffByClass(modifier_lion_finger_of_death_kill_counter)
+		if (counter === undefined) {
+			return [baseDamage, false]
 		}
-		return [damage + counter.StackCount * this.cachedPerStackDamage, false]
+		return [counter.GetSpellBonusDamage(baseDamage), false]
 	}
 	protected GetMoveSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedSpeed, false]
@@ -52,9 +52,5 @@ export class modifier_lion_finger_punch extends Modifier implements IBuff {
 		this.cachedRange = this.GetSpecialValue("punch_attack_range", name)
 		this.cachedSpeed = this.GetSpecialValue("punch_bonus_movespeed", name)
 		this.cachedBaseDamage = this.GetSpecialValue("punch_bonus_damage_base", name)
-		this.cachedPerStackDamage = this.GetSpecialValue(
-			"punch_bonus_damage_per_stack",
-			name
-		)
 	}
 }

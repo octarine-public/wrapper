@@ -18,7 +18,6 @@ export class modifier_item_dandelion_amulet extends Modifier {
 			this.GetMagicalConstantBlock.bind(this)
 		]
 	])
-
 	protected GetMagicalConstantBlock(params?: IModifierParams): [number, boolean] {
 		if (params === undefined || params.RawDamage === undefined) {
 			return [0, false]
@@ -32,11 +31,9 @@ export class modifier_item_dandelion_amulet extends Modifier {
 		}
 		return [this.cachedBlockDamage, false]
 	}
-
 	protected GetMoveSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-
 	protected UpdateSpecialValues() {
 		const name = "item_dandelion_amulet"
 		this.cachedSpeed = this.GetSpecialValue("move_speed", name)

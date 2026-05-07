@@ -556,9 +556,17 @@ export class AbilityData {
 						continue
 					}
 				} else {
-					const linkedSpecialBonusAbil = owner.GetAbilityByName(
+					let linkedSpecialBonusAbil = owner.GetAbilityByName(
 						linkedSpecialBonus.Name
 					)
+					if (
+						linkedSpecialBonusAbil === undefined &&
+						owner.Owner instanceof Unit
+					) {
+						linkedSpecialBonusAbil = owner.Owner.GetAbilityByName(
+							linkedSpecialBonus.Name
+						)
+					}
 					if (
 						linkedSpecialBonusAbil === undefined ||
 						linkedSpecialBonusAbil.Level <= 0
@@ -566,6 +574,7 @@ export class AbilityData {
 						continue
 					}
 				}
+
 				allSpecialBonuses.push(
 					linkedSpecialBonus.NewData![
 						Math.min(level, linkedSpecialBonus.NewData!.length) - 1
@@ -575,6 +584,7 @@ export class AbilityData {
 				const linkedSpecialBonusAbil = owner.GetAbilityByName(
 					linkedSpecialBonus.Name
 				)
+
 				if (
 					linkedSpecialBonusAbil === undefined ||
 					linkedSpecialBonusAbil.Level <= 0

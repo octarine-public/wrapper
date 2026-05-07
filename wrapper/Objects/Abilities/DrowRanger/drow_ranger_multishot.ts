@@ -41,9 +41,18 @@ export class drow_ranger_multishot extends Ability implements INuke {
 		const rawDamage = this.GetRawDamage(target),
 			rawDamageBlock = target.GetDamageBlock(rawDamage, damageType, true),
 			calculateRawDmg = rawDamage * this.SpellAmplify - rawDamageBlock,
-			damageAmp = target.GetDamageAmplification(owner, damageType, 0, false, true)
+			damageAmp = target.GetDamageAmplification(
+				owner,
+				damageType,
+				0,
+				false,
+				true,
+				rawDamage * this.SpellAmplify * target.EffSpellAmpTarget
+			)
 		const totalDamage = calculateRawDmg * target.EffSpellAmpTarget * damageAmp
-		return Math.max(totalDamage - target.GetDamageBlock(totalDamage, damageType), 0)
+		return Math.ceil(
+			Math.max(totalDamage - target.GetDamageBlock(totalDamage, damageType), 0)
+		)
 	}
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("arrow_speed", level)

@@ -610,14 +610,28 @@ export class Ability extends Entity {
 			ignoreMres = false
 			damageType = DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL
 		}
-		let rawDamage = this.GetRawDamage(target)
-		if (rawDamage !== 0) {
-			rawDamage -= target.GetDamageBlock(rawDamage, damageType, true)
-		}
+		const raw = this.GetRawDamage(target)
 		const effSpellAmp = this.SpellAmplify,
 			spellAmp = effSpellAmp * target.EffSpellAmpTarget,
-			damageAmp = target.GetDamageAmplification(owner, damageType, 0, ignoreMres),
-			totalDamage = rawDamage * damageAmp * spellAmp
+			damageAmp = target.GetDamageAmplification(
+				owner,
+				damageType,
+				0,
+				ignoreMres,
+				false,
+				raw * spellAmp
+			)
+		let magresMul = 1
+		if (damageType === DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL) {
+			magresMul = 1 - target.GetMagicalDamageResist(ignoreMres)
+		}
+		let totalDamage = raw * damageAmp * spellAmp
+		const postShieldRaw = magresMul > 0 ? totalDamage / magresMul : 0
+		const rawBlock =
+			postShieldRaw > 0 ? target.GetDamageBlock(postShieldRaw, damageType, true) : 0
+		if (rawBlock > 0) {
+			totalDamage = Math.max(totalDamage - rawBlock * magresMul, 0)
+		}
 		return Math.ceil(
 			Math.max(totalDamage - target.GetDamageBlock(totalDamage, damageType), 0)
 		)

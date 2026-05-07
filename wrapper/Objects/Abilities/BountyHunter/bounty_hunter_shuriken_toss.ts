@@ -12,7 +12,7 @@ export class bounty_hunter_shuriken_toss extends Ability implements INuke {
 		return true
 	}
 	public GetDamage(target: Unit): number {
-		return super.GetDamage(target) + this.bonusDamage(target)
+		return Math.ceil(super.GetDamage(target) + this.bonusDamage(target))
 	}
 	public GetBaseSpeedForLevel(level: number): number {
 		return this.GetSpecialValue("speed", level)
@@ -37,7 +37,14 @@ export class bounty_hunter_shuriken_toss extends Ability implements INuke {
 			rawDamageBlock = target.GetDamageBlock(damage, damageType, true),
 			calculateRawDmg = damage * this.SpellAmplify - rawDamageBlock
 		const damageCalc = calculateRawDmg - target.GetPassiveDamageBlock(damageType),
-			damageAmp = target.GetDamageAmplification(owner, damageType)
+			damageAmp = target.GetDamageAmplification(
+				owner,
+				damageType,
+				0,
+				false,
+				false,
+				damage * this.SpellAmplify * target.EffSpellAmpTarget
+			)
 		const totalDamage = damageCalc * target.EffSpellAmpTarget * damageAmp
 		return Math.max(totalDamage - target.GetDamageBlock(totalDamage, damageType), 0)
 	}

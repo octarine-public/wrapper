@@ -861,8 +861,12 @@ export class Unit extends Entity {
 	public GetAttackDamageBonus(baseDamage?: number, target?: Unit): number {
 		return this.ModifierManager.GetPreAttackDamageBonus(baseDamage, target)
 	}
-	public GetEffectiveIncomingDamage(target: Unit, damageType: DAMAGE_TYPES): number {
-		return this.ModifierManager.GetIncomingDamage(target, damageType)
+	public GetEffectiveIncomingDamage(
+		target: Unit,
+		damageType: DAMAGE_TYPES,
+		rawDamage?: number
+	): number {
+		return this.ModifierManager.GetIncomingDamage(target, damageType, rawDamage)
 	}
 	public GetEffectiveOutgoingDamage(target: Unit, damageType: DAMAGE_TYPES): number {
 		return this.ModifierManager.GetOutgoingDamage(target, damageType)
@@ -1120,16 +1124,12 @@ export class Unit extends Entity {
 
 		const damageAmpType = DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL,
 			amp = target.GetDamageAmplification(this, damageAmpType, predictedArmor)
-
 		const calculatedDamage = overrideRawDamage * amp,
 			damageBlock = target.GetDamageBlock(calculatedDamage, damageType)
-
 		const pureDamage = this.GetAttackDamagePure(target, overrideRawDamage),
 			magicDamage = this.GetAttackDamageMagic(target, overrideRawDamage)
-
 		const totalDamage = calculatedDamage + magicDamage + pureDamage,
 			incomingDamage = target.GetIncomingAttackDamage(this, false)
-
 		return Math.ceil(Math.max(totalDamage * incomingDamage - damageBlock, 0))
 	}
 	public GetDamageAmplification(
@@ -1137,7 +1137,8 @@ export class Unit extends Entity {
 		damageType: DAMAGE_TYPES,
 		predictiveArmor: number = 0,
 		ignoreMagicResist: boolean = false,
-		ignoreMagicAttack: boolean = false
+		ignoreMagicAttack: boolean = false,
+		rawDamage?: number
 	): number {
 		let totalAmp = 1
 		switch (damageType) {
@@ -1154,8 +1155,10 @@ export class Unit extends Entity {
 				break
 			}
 		}
-		totalAmp *= this.GetEffectiveIncomingDamage(source, damageType)
-		totalAmp *= source.GetEffectiveOutgoingDamage(this, damageType)
+		const outgoingAmp = source.GetEffectiveOutgoingDamage(this, damageType)
+		const incomingRaw = rawDamage !== undefined ? rawDamage * outgoingAmp : undefined
+		totalAmp *= this.GetEffectiveIncomingDamage(source, damageType, incomingRaw)
+		totalAmp *= outgoingAmp
 		return totalAmp
 	}
 	public GetDamageSpellEmpower(target: Unit): number {
