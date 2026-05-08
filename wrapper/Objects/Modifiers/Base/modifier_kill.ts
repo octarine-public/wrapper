@@ -1,6 +1,6 @@
 import { WrapperClassModifier } from "../../../Decorators"
 import { EModifierfunction } from "../../../Enums/EModifierfunction"
-import { lycan_summon_wolves } from "../../../Imports"
+import { lycan_summon_wolves } from "../../../Objects/Abilities/Lycan/lycan_summon_wolves"
 import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
