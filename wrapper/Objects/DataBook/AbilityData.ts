@@ -559,11 +559,8 @@ export class AbilityData {
 					let linkedSpecialBonusAbil = owner.GetAbilityByName(
 						linkedSpecialBonus.Name
 					)
-					if (
-						linkedSpecialBonusAbil === undefined &&
-						owner.Owner instanceof Unit
-					) {
-						linkedSpecialBonusAbil = owner.Owner.GetAbilityByName(
+					if (linkedSpecialBonusAbil === undefined && owner.Owner?.IsUnit) {
+						linkedSpecialBonusAbil = (owner.Owner as Unit).GetAbilityByName(
 							linkedSpecialBonus.Name
 						)
 					}
