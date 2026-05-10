@@ -1,4 +1,5 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
@@ -8,16 +9,11 @@ export class modifier_phantom_assassin_blur_active extends Modifier implements I
 	public readonly BuffModifierName = this.Name
 
 	private cachedSpeed = 0
-	private cachedManaCostStacking = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			this.GetMoveSpeedBonusPercentage.bind(this)
-		],
-		[
-			EModifierfunction.MODIFIER_PROPERTY_MANACOST_PERCENTAGE_STACKING,
-			this.GetManaCostPercentageStacking.bind(this)
 		]
 	])
 	public IsBuff(): this is IBuff {
@@ -26,15 +22,11 @@ export class modifier_phantom_assassin_blur_active extends Modifier implements I
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, false]
 	}
-	protected GetManaCostPercentageStacking(): [number, boolean] {
-		return [this.cachedManaCostStacking, false]
-	}
 	protected UpdateSpecialValues(): void {
-		const name = "phantom_assassin_blur"
-		this.cachedSpeed = this.GetSpecialValue("active_movespeed_bonus", name)
-		this.cachedManaCostStacking = this.GetSpecialValue(
-			"manacost_reduction_during_blur_pct",
-			name
-		)
+		const name = "phantom_assassin_blur",
+			lvl = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
+		this.cachedSpeed = this.GetSpecialValue("active_movespeed_bonus", name, lvl, {
+			lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD }
+		})
 	}
 }

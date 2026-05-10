@@ -4,19 +4,17 @@ import { Modifier } from "../../Base/Modifier"
 
 @WrapperClassModifier()
 export class modifier_special_bonus_attack_range extends Modifier {
+	private cachedRange = 0
+
 	protected readonly DeclaredFunction = new Map([
 		[
 			EModifierfunction.MODIFIER_PROPERTY_ATTACK_RANGE_BONUS,
 			this.GetAttackRangeBonus.bind(this)
 		]
 	])
-
-	private cachedRange = 0
-
 	protected GetAttackRangeBonus(): [number, boolean] {
 		return [this.cachedRange, false]
 	}
-
 	protected UpdateSpecialValues(): void {
 		this.cachedRange = this.GetSpecialValue("value", this.CachedAbilityName ?? "")
 	}

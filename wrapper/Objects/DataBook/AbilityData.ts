@@ -44,6 +44,7 @@ interface ISpecialValue {
 	RequiresShard: boolean
 	AffectedByCurio: boolean
 	AffectedByAOEIncrease: boolean
+	LevelupInterval: number
 	LinkedSpecialBonuses: ILinkedSpecialBonus[]
 }
 
@@ -527,14 +528,18 @@ export class AbilityData {
 			if (!linkedSpecialBonus.IsOld) {
 				if (linkedSpecialBonus.Name === "hero_levelup") {
 					if (lvlup) {
+						const interval = Math.max(specialValue.LevelupInterval, 1)
+						const adjustedLevel = owner.Level - (lvlup.subtract ?? 0)
+						const ticks =
+							interval === 1
+								? adjustedLevel
+								: Math.max(Math.floor(adjustedLevel / interval), 0)
 						switch (lvlup.operation) {
 							case EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY:
-								baseVal *= owner.Level - (lvlup.subtract ?? 0)
+								baseVal *= ticks
 								break
 							case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
-								baseVal +=
-									linkedSpecialBonus.NewData![0][1] *
-									(owner.Level - (lvlup.subtract ?? 0))
+								baseVal += linkedSpecialBonus.NewData![0][1] * ticks
 								break
 						}
 					}
@@ -798,6 +803,7 @@ export class AbilityData {
 				),
 				LinkedSpecialBonuses:
 					linkedSpecialBonusData !== undefined ? [linkedSpecialBonusData] : [],
+				LevelupInterval: 1,
 				RequiresFacet: MapValueToString(special.get("RequiresFacet")),
 				RequiresScepter: MapValueToBoolean(special.get("RequiresScepter")),
 				RequiresShard: MapValueToBoolean(special.get("RequiresShard")),
@@ -825,6 +831,7 @@ export class AbilityData {
 						RequiresShard: false,
 						AffectedByCurio: false,
 						AffectedByAOEIncrease: false,
+						LevelupInterval: 1,
 						LinkedSpecialBonuses: []
 					})
 				}
@@ -832,12 +839,18 @@ export class AbilityData {
 			}
 
 			const linkedSpecialBonuses: ILinkedSpecialBonus[] = []
+			const rawInterval = special.get("levelup_interval")
+			const levelupInterval =
+				typeof rawInterval === "string"
+					? Math.max(this.parseFloat(rawInterval), 1)
+					: 1
 			special.forEach((specialValue, specialName) => {
 				if (
 					specialName === "value" ||
 					specialName === "CalculateSpellDamageTooltip" ||
 					specialName === "DamageTypeTooltip" ||
 					specialName === "levelkey" ||
+					specialName === "levelup_interval" ||
 					specialName === "LinkedSpecialBonusOperation" ||
 					specialName === "RequiresFacet" ||
 					specialName === "RequiresShard" ||
@@ -912,6 +925,7 @@ export class AbilityData {
 						.map(str => this.parseFloat(str))
 				),
 				LinkedSpecialBonuses: linkedSpecialBonuses,
+				LevelupInterval: levelupInterval,
 				RequiresFacet: MapValueToString(special.get("RequiresFacet")),
 				RequiresScepter: MapValueToBoolean(special.get("RequiresScepter")),
 				RequiresShard: MapValueToBoolean(special.get("RequiresShard")),

@@ -1,4 +1,5 @@
 import { WrapperClassModifier } from "../../../../Decorators"
+import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { GameRules } from "../../../Base/Entity"
 import { Modifier } from "../../../Base/Modifier"
@@ -23,28 +24,38 @@ export class modifier_night_stalker_hunter_in_the_night extends Modifier {
 			this.GetStatusResistanceStacking.bind(this)
 		]
 	])
-
 	private get isValidFlag() {
 		const isNight = GameRules?.IsNight ?? false
 		return isNight && !this.IsPassiveDisabled()
 	}
-
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, !this.isValidFlag]
 	}
-
 	protected GetAttackSpeedBonusConstant(): [number, boolean] {
 		return [this.cachedAttackSpeed, !this.isValidFlag]
 	}
-
 	protected GetStatusResistanceStacking(): [number, boolean] {
 		return [this.cachedStatusResist, !this.isValidFlag]
 	}
-
 	protected UpdateSpecialValues(): void {
-		const name = "night_stalker_hunter_in_the_night"
-		this.cachedSpeed = this.GetSpecialValue("bonus_movement_speed_pct_night", name)
-		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed_night", name)
-		this.cachedStatusResist = this.GetSpecialValue("bonus_status_resist_night", name)
+		const name = "night_stalker_hunter_in_the_night",
+			lvl = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
+		this.cachedSpeed = this.GetSpecialValue(
+			"bonus_movement_speed_pct_night",
+			name,
+			lvl,
+			{ lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD } }
+		)
+		this.cachedAttackSpeed = this.GetSpecialValue(
+			"bonus_attack_speed_night",
+			name,
+			lvl,
+			{ lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD } }
+		)
+		this.cachedStatusResist = this.GetSpecialValue(
+			"bonus_status_resist_night",
+			name,
+			lvl
+		)
 	}
 }

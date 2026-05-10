@@ -9,7 +9,4 @@ export class omniknight_guardian_angel extends Ability {
 	public GetMaxDurationForLevel(level: number): number {
 		return this.GetSpecialValue("duration", level)
 	}
-	public GetBaseCastRangeForLevel(level: number): number {
-		return this.GetSpecialValue("AbilityCastRange", level)
-	}
 }

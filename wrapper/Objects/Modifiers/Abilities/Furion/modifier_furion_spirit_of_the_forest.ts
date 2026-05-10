@@ -23,9 +23,7 @@ export class modifier_furion_spirit_of_the_forest extends Modifier implements IB
 		if (owner === undefined) {
 			return super.StackCount
 		}
-		const params = {
-			RawDamageBase: owner.AttackDamageAverage
-		}
+		const params = { RawDamageBase: owner.AttackDamageAverage }
 		return this.getDamage(params) >> 0 || super.StackCount
 	}
 	public GetTexturePath(): string {
@@ -47,11 +45,11 @@ export class modifier_furion_spirit_of_the_forest extends Modifier implements IB
 			return 0
 		}
 		const owner = this.Parent
-		if (!(owner instanceof Hero) || this.IsPassiveDisabled()) {
+		if (owner === undefined || this.IsPassiveDisabled()) {
 			return 0
 		}
 		let multiplier = this.cachedMultiplier
-		if (owner.HeroFacetID === 1) {
+		if (owner instanceof Hero && owner.HeroFacetID === 1) {
 			multiplier = this.cachedDamagePerTree
 		}
 		const mulDamage = this.NetworkDamage * multiplier

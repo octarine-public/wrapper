@@ -22,13 +22,16 @@ export class modifier_muerta_pierce_the_veil_buff extends Modifier implements IB
 	public IsBuff(): this is IBuff {
 		return true
 	}
-	protected GetPreAttackBonusDamage(): [number, boolean] {
-		return [this.cachedDamage, false]
+	protected GetPreAttackBonusDamage(params?: IModifierParams): [number, boolean] {
+		return [((params?.RawDamageBase ?? 0) * this.cachedDamage) / 100, false]
 	}
 	protected GetProcAttackConvertPhysicalToMagical(): [number, boolean] {
 		return [1, false]
 	}
 	protected UpdateSpecialValues(): void {
-		this.cachedDamage = this.GetSpecialValue("bonus_damage", "muerta_pierce_the_veil")
+		this.cachedDamage = this.GetSpecialValue(
+			"base_damage_percent",
+			"muerta_pierce_the_veil"
+		)
 	}
 }

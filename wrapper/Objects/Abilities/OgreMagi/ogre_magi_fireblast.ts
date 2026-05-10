@@ -9,4 +9,10 @@ export class ogre_magi_fireblast extends Ability implements INuke {
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("fireblast_damage", level)
 	}
+	public GetBaseCastPointForLevel(level: number): number {
+		return (
+			super.GetBaseCastPointForLevel(level) *
+			(1 - this.GetSpecialValue("bonus_cast_speed", level) / 100)
+		)
+	}
 }
