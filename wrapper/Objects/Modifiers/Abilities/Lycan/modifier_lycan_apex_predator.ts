@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { EntityManager } from "../../../../Managers/EntityManager"
 import { Creep } from "../../../Base/Creep"
@@ -33,8 +32,7 @@ export class modifier_lycan_apex_predator extends Modifier {
 		this.cachedDamage = this.GetSpecialValue(
 			"damage_amp",
 			"lycan_apex_predator",
-			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
-			{ lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD } }
+			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
 		)
 	}
 }

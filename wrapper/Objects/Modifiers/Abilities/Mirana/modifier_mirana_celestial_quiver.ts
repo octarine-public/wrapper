@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
@@ -23,8 +22,7 @@ export class modifier_mirana_celestial_quiver extends Modifier {
 		this.cachedDamage = this.GetSpecialValue(
 			"bonus_damage",
 			"mirana_celestial_quiver",
-			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
-			{ lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD } }
+			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
 		)
 	}
 }

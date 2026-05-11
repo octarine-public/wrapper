@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
@@ -24,8 +23,7 @@ export class modifier_wisp_equilibrium extends Modifier {
 		this.cachedDamage = this.GetSpecialValue(
 			"damage_amplification",
 			"wisp_equilibrium",
-			this.AbilityLevel,
-			{ lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD } }
+			this.AbilityLevel
 		)
 	}
 }

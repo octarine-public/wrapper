@@ -40,8 +40,9 @@ export class modifier_slardar_seaborn_sentinel_river extends Modifier implements
 	protected GetPhysicalArmorBonus(): [number, boolean] {
 		return [this.cachedArmor, this.IsPassiveDisabled()]
 	}
-	protected GetPreAttackBonusDamage(): [number, boolean] {
-		return [this.cachedBonusDamage, this.IsPassiveDisabled()]
+	protected GetPreAttackBonusDamage(params?: IModifierParams): [number, boolean] {
+		const damage = ((params?.RawDamageBase ?? 0) * this.cachedBonusDamage) / 100
+		return [damage, this.IsPassiveDisabled()]
 	}
 	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
 		return [this.cachedSpeed, this.IsPassiveDisabled()]
@@ -53,7 +54,7 @@ export class modifier_slardar_seaborn_sentinel_river extends Modifier implements
 		const name = "slardar_seaborn_sentinel"
 		this.cachedSpeed = this.GetSpecialValue("river_speed", name)
 		this.cachedArmor = this.GetSpecialValue("puddle_armor", name)
-		this.cachedBonusDamage = this.GetSpecialValue("river_damage", name)
+		this.cachedBonusDamage = this.GetSpecialValue("river_damage_pct", name)
 		this.cachedStatusResist = this.GetSpecialValue("puddle_status_resistance", name)
 	}
 }

@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
@@ -44,8 +43,7 @@ export class modifier_elder_titan_momentum extends Modifier {
 		this.cachedSpeedFromArmor = this.GetSpecialValue(
 			"armor_from_movespeed",
 			name,
-			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
-			{ lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD } }
+			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
 		)
 	}
 }

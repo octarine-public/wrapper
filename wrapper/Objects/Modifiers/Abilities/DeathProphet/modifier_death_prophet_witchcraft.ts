@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
@@ -20,8 +19,7 @@ export class modifier_death_prophet_witchcraft extends Modifier {
 		this.cachedSpeed = this.GetSpecialValue(
 			"movement_speed_pct",
 			"death_prophet_witchcraft",
-			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
-			{ lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD } }
+			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
 		)
 	}
 }

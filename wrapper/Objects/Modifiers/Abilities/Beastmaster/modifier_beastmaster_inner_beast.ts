@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
@@ -37,8 +36,6 @@ export class modifier_beastmaster_inner_beast extends Modifier implements IBuff 
 		const name = "beastmaster_inner_beast",
 			lvl = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
 		this.cachedDamage = this.GetSpecialValue("bonus_damage", name)
-		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name, lvl, {
-			lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD }
-		})
+		this.cachedAttackSpeed = this.GetSpecialValue("bonus_attack_speed", name, lvl)
 	}
 }

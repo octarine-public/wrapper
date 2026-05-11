@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
@@ -34,8 +33,7 @@ export class modifier_dragon_knight_dragon_blood extends Modifier {
 		this.cachedArmor = this.GetSpecialValue(
 			"armor",
 			name,
-			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
-			{ lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD } }
+			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
 		)
 		this.cachedMultiplier = this.GetSpecialValue(
 			"regen_and_armor_multiplier_during_dragon_form",

@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
@@ -36,8 +35,6 @@ export class modifier_omniknight_degen_aura_effect extends Modifier implements I
 	protected UpdateSpecialValues(): void {
 		const name = "omniknight_degen_aura",
 			lvl = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
-		this.cachedSpeed = this.GetSpecialValue("speed_bonus", name, lvl, {
-			lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD }
-		})
+		this.cachedSpeed = this.GetSpecialValue("speed_bonus", name, lvl)
 	}
 }

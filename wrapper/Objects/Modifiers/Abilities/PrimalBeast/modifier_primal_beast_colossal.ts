@@ -1,37 +1,54 @@
 import { WrapperClassModifier } from "../../../../Decorators"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
-import { EntityManager } from "../../../../Managers/EntityManager"
 import { Modifier } from "../../../Base/Modifier"
-import { Unit } from "../../../Base/Unit"
 
 @WrapperClassModifier()
 export class modifier_primal_beast_colossal extends Modifier {
-	private cachedBonusDamage = 0
+	private cachedHpPerThreshold = 100
+	private cachedBaseSlowResist = 0
+	private cachedSlowResistPerThreshold = 0
+	private cachedBaseAOE = 0
+	private cachedAOEPerThreshold = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
-			EModifierfunction.MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE_PERCENTAGE,
-			this.GetPreAttackBonusDamagePercentage.bind(this)
+			EModifierfunction.MODIFIER_PROPERTY_SLOW_RESISTANCE_STACKING,
+			this.GetSlowResistance.bind(this)
+		],
+		[
+			EModifierfunction.MODIFIER_PROPERTY_AOE_BONUS_PERCENTAGE,
+			this.GetAOEBonusPercentage.bind(this)
 		]
 	])
-
-	protected GetPreAttackBonusDamagePercentage(
-		params?: IModifierParams
-	): [number, boolean] {
-		if (params === undefined) {
-			return [0, false]
+	private get thresholds(): number {
+		const owner = this.Parent
+		if (owner === undefined || this.cachedHpPerThreshold <= 0) {
+			return 0
 		}
-		const target = EntityManager.EntityByIndex<Unit>(params.SourceIndex)
-		if (target === undefined || !target.IsBuilding) {
-			return [0, false]
-		}
-		return [this.cachedBonusDamage, this.IsPassiveDisabled()]
+		return Math.max(Math.floor(owner.MaxHP / this.cachedHpPerThreshold), 0)
 	}
-
+	protected GetSlowResistance(): [number, boolean] {
+		const bonus =
+			this.cachedBaseSlowResist +
+			this.thresholds * this.cachedSlowResistPerThreshold
+		return [bonus, this.IsPassiveDisabled()]
+	}
+	protected GetAOEBonusPercentage(): [number, boolean] {
+		const bonus = this.cachedBaseAOE + this.thresholds * this.cachedAOEPerThreshold
+		return [100 + bonus, this.IsPassiveDisabled()]
+	}
 	protected UpdateSpecialValues(): void {
-		this.cachedBonusDamage = this.GetSpecialValue(
-			"bonus_building_damage",
-			"primal_beast_colossal"
+		const name = "primal_beast_colossal"
+		this.cachedHpPerThreshold = Math.max(
+			this.GetSpecialValue("hp_per_threshold", name),
+			1
 		)
+		this.cachedBaseSlowResist = this.GetSpecialValue("base_slow_resist", name)
+		this.cachedSlowResistPerThreshold = this.GetSpecialValue(
+			"slow_resistance_per_threshold",
+			name
+		)
+		this.cachedBaseAOE = this.GetSpecialValue("base_aoe", name)
+		this.cachedAOEPerThreshold = this.GetSpecialValue("aoe_per_threshold", name)
 	}
 }

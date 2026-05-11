@@ -1,6 +1,5 @@
 import { ImagePath } from "../../../../Data/PathData"
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 
@@ -33,8 +32,7 @@ export class modifier_enigma_event_horizon_aura_effect
 		this.cachedSpeed = this.GetSpecialValue(
 			"speed_bonus",
 			"enigma_event_horizon",
-			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
-			{ lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD } }
+			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
 		)
 	}
 }

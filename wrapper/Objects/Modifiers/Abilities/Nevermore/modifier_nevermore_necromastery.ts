@@ -26,9 +26,9 @@ export class modifier_nevermore_necromastery extends Modifier implements IBuff {
 		return [this.cachedDamagePerStack * this.StackCount, false]
 	}
 	protected UpdateSpecialValues(): void {
-		this.cachedDamagePerStack = this.GetSpecialValue(
-			"necromastery_damage_per_soul",
-			"nevermore_necromastery"
-		)
+		const name = "nevermore_necromastery",
+			specialName = "necromastery_damage_per_soul",
+			lvl = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
+		this.cachedDamagePerStack = this.GetSpecialValue(specialName, name, lvl)
 	}
 }

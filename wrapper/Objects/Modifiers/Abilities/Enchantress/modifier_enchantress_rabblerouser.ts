@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { EntityManager } from "../../../../Managers/EntityManager"
 import { Modifier } from "../../../Base/Modifier"
@@ -44,8 +43,6 @@ export class modifier_enchantress_rabblerouser extends Modifier {
 		level = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
 		_optional?: ISpecialValueOptions
 	): number {
-		return super.GetSpecialValue(specialName, abilityName, level, {
-			lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD }
-		})
+		return super.GetSpecialValue(specialName, abilityName, level)
 	}
 }

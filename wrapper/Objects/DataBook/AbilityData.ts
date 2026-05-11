@@ -21,10 +21,6 @@ import { UnitData } from "./UnitData"
 
 export interface ISpecialValueOptions {
 	useFacet?: boolean
-	lvlup?: {
-		subtract?: number
-		operation: EDOTASpecialBonusOperation
-	}
 }
 
 interface ILinkedSpecialBonus {
@@ -495,7 +491,7 @@ export class AbilityData {
 		specialName: string,
 		level: number,
 		abilityName: string,
-		{ useFacet, lvlup }: ISpecialValueOptions,
+		{ useFacet }: ISpecialValueOptions,
 		checkShard: boolean = true,
 		checkScepter: boolean = true,
 		isStolen: boolean = false
@@ -527,21 +523,23 @@ export class AbilityData {
 			const linkedSpecialBonus = arr[i]
 			if (!linkedSpecialBonus.IsOld) {
 				if (linkedSpecialBonus.Name === "hero_levelup") {
-					if (lvlup) {
-						const interval = Math.max(specialValue.LevelupInterval, 1)
-						const adjustedLevel = owner.Level - (lvlup.subtract ?? 0)
-						const ticks =
-							interval === 1
-								? adjustedLevel
-								: Math.max(Math.floor(adjustedLevel / interval), 0)
-						switch (lvlup.operation) {
-							case EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY:
-								baseVal *= ticks
-								break
-							case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
-								baseVal += linkedSpecialBonus.NewData![0][1] * ticks
-								break
-						}
+					const interval = Math.max(specialValue.LevelupInterval, 1)
+					const ticks =
+						interval === 1
+							? owner.Level
+							: Math.max(Math.floor(owner.Level / interval), 0)
+					const [op, stepValue] = linkedSpecialBonus.NewData![0]
+					switch (op) {
+						case EDOTASpecialBonusOperation.SPECIAL_BONUS_MULTIPLY:
+							baseVal *= stepValue * ticks
+							break
+						case EDOTASpecialBonusOperation.SPECIAL_BONUS_SET:
+							baseVal = stepValue
+							break
+						case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
+						default:
+							baseVal += stepValue * ticks
+							break
 					}
 					continue
 				}

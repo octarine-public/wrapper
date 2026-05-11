@@ -26,6 +26,8 @@ export class modifier_shadow_demon_menace_crushed extends Modifier implements ID
 		return [this.cachedDamage * this.StackCount, this.IsMagicImmune()]
 	}
 	protected UpdateSpecialValues(): void {
-		this.cachedDamage = this.GetSpecialValue("stack", "shadow_demon_menace")
+		const name = "shadow_demon_menace",
+			lvl = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
+		this.cachedDamage = this.GetSpecialValue("stack", name, lvl)
 	}
 }

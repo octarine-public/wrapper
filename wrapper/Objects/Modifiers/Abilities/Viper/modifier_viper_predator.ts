@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { EntityManager } from "../../../../Managers/EntityManager"
 import { Modifier } from "../../../Base/Modifier"
@@ -33,10 +32,7 @@ export class modifier_viper_predator extends Modifier {
 		this.cachedBaseDamage = this.GetSpecialValue(
 			"damage",
 			"viper_predator",
-			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
-			{
-				lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD }
-			}
+			Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
 		)
 	}
 }

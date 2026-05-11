@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 import { ISpecialValueOptions } from "../../../DataBook/AbilityData"
@@ -54,12 +53,7 @@ export class modifier_skywrath_mage_shield_barrier
 	): number {
 		switch (specialName) {
 			case "damage_barrier":
-				return super.GetSpecialValue(specialName, abilityName, level, {
-					lvlup: {
-						subtract: 1,
-						operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-					}
-				})
+				return super.GetSpecialValue(specialName, abilityName, level)
 			default:
 				return super.GetSpecialValue(specialName, abilityName, level, optional)
 		}

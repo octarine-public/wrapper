@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { GameRules } from "../../../Base/Entity"
 import { Modifier } from "../../../Base/Modifier"
@@ -43,14 +42,12 @@ export class modifier_night_stalker_hunter_in_the_night extends Modifier {
 		this.cachedSpeed = this.GetSpecialValue(
 			"bonus_movement_speed_pct_night",
 			name,
-			lvl,
-			{ lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD } }
+			lvl
 		)
 		this.cachedAttackSpeed = this.GetSpecialValue(
 			"bonus_attack_speed_night",
 			name,
-			lvl,
-			{ lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD } }
+			lvl
 		)
 		this.cachedStatusResist = this.GetSpecialValue(
 			"bonus_status_resist_night",

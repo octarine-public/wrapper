@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../../Objects/Base/Modifier"
 
@@ -47,8 +46,6 @@ export class modifier_medusa_mana_shield extends Modifier implements IShield {
 			lvl = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1)
 		this.cachedAbsorption = this.GetSpecialValue("absorption_pct", name)
 		this.cachedIllusionReduction = this.GetSpecialValue("illusion_percentage", name)
-		this.cachedDamagePerMana = this.GetSpecialValue("damage_per_mana", name, lvl, {
-			lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD }
-		})
+		this.cachedDamagePerMana = this.GetSpecialValue("damage_per_mana", name, lvl)
 	}
 }

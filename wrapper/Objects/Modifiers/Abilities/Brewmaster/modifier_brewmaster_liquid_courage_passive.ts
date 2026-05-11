@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 import { ISpecialValueOptions } from "../../../DataBook/AbilityData"
@@ -80,12 +79,7 @@ export class modifier_brewmaster_liquid_courage_passive extends Modifier {
 	): number {
 		switch (specialName) {
 			case "status_resist":
-				return super.GetSpecialValue(specialName, abilityName, level, {
-					lvlup: {
-						subtract: 1,
-						operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-					}
-				})
+				return super.GetSpecialValue(specialName, abilityName, level)
 			default:
 				return super.GetSpecialValue(specialName, abilityName, level, optional)
 		}

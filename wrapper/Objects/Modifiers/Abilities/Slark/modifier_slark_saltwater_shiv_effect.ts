@@ -26,7 +26,9 @@ export class modifier_slark_saltwater_shiv_effect
 		return this.Parent?.IsEnemy(this.Caster) ?? false
 	}
 	protected GetMoveSpeedBonusConstant(): [number, boolean] {
-		return [-(this.cachedSpeed * this.StackCount), false]
+		const owner = this.Parent
+		const isImmune = owner === this.Caster ? false : this.IsMagicImmune()
+		return [owner === this.Caster ? this.cachedSpeed : -this.cachedSpeed, isImmune]
 	}
 	protected UpdateSpecialValues(): void {
 		this.cachedSpeed = this.GetSpecialValue("ms_steal", "slark_saltwater_shiv")

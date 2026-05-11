@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { Modifier } from "../../../Base/Modifier"
 import { ISpecialValueOptions } from "../../../DataBook/AbilityData"
@@ -29,10 +28,6 @@ export class modifier_luna_lunar_blessing extends Modifier {
 		level = Math.max(this.Ability?.Level ?? this.AbilityLevel, 1),
 		_optional?: ISpecialValueOptions
 	): number {
-		return super.GetSpecialValue(specialName, abilityName, level, {
-			lvlup: {
-				operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-			}
-		})
+		return super.GetSpecialValue(specialName, abilityName, level)
 	}
 }

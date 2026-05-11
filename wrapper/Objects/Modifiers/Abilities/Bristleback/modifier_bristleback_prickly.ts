@@ -1,5 +1,4 @@
 import { WrapperClassModifier } from "../../../../Decorators"
-import { EDOTASpecialBonusOperation } from "../../../../Enums/EDOTASpecialBonusOperation"
 import { EModifierfunction } from "../../../../Enums/EModifierfunction"
 import { EntityManager } from "../../../../Managers/EntityManager"
 import { Modifier } from "../../../Base/Modifier"
@@ -46,9 +45,7 @@ export class modifier_bristleback_prickly extends Modifier {
 	): number {
 		switch (specialName) {
 			case "amp_pct":
-				return super.GetSpecialValue(specialName, abilityName, level, {
-					lvlup: { operation: EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD }
-				})
+				return super.GetSpecialValue(specialName, abilityName, level)
 			default:
 				return super.GetSpecialValue(specialName, abilityName, level, optional)
 		}
