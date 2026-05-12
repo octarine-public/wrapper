@@ -19,19 +19,24 @@ export class modifier_snapfire_boomstick extends Modifier {
 	])
 	protected GetPreAttackBonusDamage(params?: IModifierParams): [number, boolean] {
 		const owner = this.Parent
-		if (params === undefined || owner === undefined || this.IsPassiveDisabled()) {
+		if (params === undefined || owner === undefined) {
 			return [0, false]
 		}
-		const target = EntityManager.EntityByIndex<Unit>(params.SourceIndex ?? -1)
+		const target = EntityManager.EntityByIndex<Unit>(params.SourceIndex)
 		if (target === undefined) {
 			return [0, false]
 		}
-		const ampPct = this.amplificationPercent(owner.Distance2D(target))
+		const ampPct = Math.remapRange(
+			owner.Distance2D(target),
+			this.cachedDistMin,
+			this.cachedDistMax,
+			this.cachedAmpMax,
+			this.cachedAmpMin
+		)
 		if (ampPct <= 0) {
 			return [0, false]
 		}
-		const baseDamage = params.RawDamageBase ?? 0
-		return [(baseDamage * ampPct) / 100, false]
+		return [((params.RawDamageBase ?? 0) * ampPct) / 100, false]
 	}
 	protected UpdateSpecialValues(): void {
 		const name = "snapfire_boomstick"
@@ -39,25 +44,5 @@ export class modifier_snapfire_boomstick extends Modifier {
 		this.cachedAmpMax = this.GetSpecialValue("damage_amp_max", name)
 		this.cachedDistMin = this.GetSpecialValue("distance_threshold_min", name)
 		this.cachedDistMax = this.GetSpecialValue("distance_threshold_max", name)
-	}
-	/**
-	 * Linear interpolation between `damage_amp_max` (at `distance_threshold_min`,
-	 * i.e. point-blank) and `damage_amp_min` (at `distance_threshold_max`,
-	 * i.e. maximum range). Clamped at both ends.
-	 */
-	private amplificationPercent(distance: number): number {
-		const near = this.cachedDistMin
-		const far = this.cachedDistMax
-		if (far <= near) {
-			return this.cachedAmpMax
-		}
-		if (distance <= near) {
-			return this.cachedAmpMax
-		}
-		if (distance >= far) {
-			return this.cachedAmpMin
-		}
-		const t = (distance - near) / (far - near)
-		return this.cachedAmpMax - t * (this.cachedAmpMax - this.cachedAmpMin)
 	}
 }
