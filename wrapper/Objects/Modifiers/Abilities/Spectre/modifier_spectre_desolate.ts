@@ -8,7 +8,7 @@ import { Unit, Units } from "../../../Base/Unit"
 export class modifier_spectre_desolate extends Modifier {
 	private cachedBonus = 0
 	private cachedRadius = 0
-	private Units: Unit[] = []
+	private static units: Unit[] = []
 
 	protected readonly CanPostDataUpdate = true
 	protected readonly DeclaredFunction = new Map([
@@ -18,16 +18,18 @@ export class modifier_spectre_desolate extends Modifier {
 		]
 	])
 	public Remove(): boolean {
-		this.Units.clear()
+		modifier_spectre_desolate.units.clear()
 		return super.Remove()
 	}
 	public PostDataUpdate(): void {
 		const owner = this.Parent
 		if (owner === undefined) {
-			this.Units.clear()
+			modifier_spectre_desolate.units.clear()
 			return
 		}
-		this.Units = Units.filter(x => this.shouldValidUnit(x, owner))
+		modifier_spectre_desolate.units = Units.filter(x =>
+			this.shouldValidUnit(x, owner)
+		)
 	}
 	protected GetPreAttackBonusDamagePure(params?: IModifierParams): [number, boolean] {
 		if (params === undefined || this.IsPassiveDisabled()) {
@@ -38,8 +40,9 @@ export class modifier_spectre_desolate extends Modifier {
 			return [0, false]
 		}
 		let isNearUnits = false
-		for (let i = this.Units.length - 1; i > -1; i--) {
-			const unit = this.Units[i]
+		const arr = modifier_spectre_desolate.units
+		for (let i = arr.length - 1; i > -1; i--) {
+			const unit = arr[i]
 			if (unit === target) {
 				continue
 			}

@@ -13,7 +13,8 @@ export class modifier_sven_wrath_of_god extends Modifier {
 		]
 	])
 	protected GetPreAttackBonusDamage(): [number, boolean] {
-		return [this.cachedBonusDamagePerStr * (this.Parent?.TotalStrength ?? 0), false]
+		const damage = this.cachedBonusDamagePerStr * (this.Parent?.TotalStrength ?? 0)
+		return [damage, this.IsPassiveDisabled()]
 	}
 	protected UpdateSpecialValues(): void {
 		this.cachedBonusDamagePerStr = this.GetSpecialValue(

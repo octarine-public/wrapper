@@ -18,15 +18,7 @@ export class templar_assassin_meld extends Ability implements INuke {
 		return this.Owner?.BaseAttackProjectileSpeed ?? 0
 	}
 	public GetRawDamage(target: Unit): number {
-		const owner = this.Owner
-		if (owner === undefined || this.Level === 0) {
-			return 0
-		}
-		let bonusDamage = 0
-		if (!target.IsBuilding) {
-			bonusDamage += this.GetSpecialValue("bonus_damage")
-		}
-		return owner.GetRawAttackDamage(target) + bonusDamage
+		return (this.Owner?.GetRawAttackDamage(target) ?? 0) + super.GetRawDamage(target)
 	}
 	public GetDamage(target: Unit): number {
 		const owner = this.Owner

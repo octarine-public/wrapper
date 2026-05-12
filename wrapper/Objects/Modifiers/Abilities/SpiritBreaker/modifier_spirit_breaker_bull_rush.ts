@@ -13,8 +13,8 @@ export class modifier_spirit_breaker_bull_rush extends Modifier implements IBuff
 			this.GetIgnoreMoveSpeedLimit.bind(this)
 		],
 		[
-			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT,
-			this.GetMoveSpeedBonusConstant.bind(this)
+			EModifierfunction.MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+			this.GetMoveSpeedBonusPercentage.bind(this)
 		]
 	])
 	public IsBuff(): this is IBuff {
@@ -23,10 +23,12 @@ export class modifier_spirit_breaker_bull_rush extends Modifier implements IBuff
 	protected GetIgnoreMoveSpeedLimit(): [number, boolean] {
 		return [1, false]
 	}
-	protected GetMoveSpeedBonusConstant(): [number, boolean] {
-		const elapsed = this.ElapsedTime,
-			maxDuration = this.Duration,
-			speed = this.NetworkArmor
-		return [Math.remapRange(elapsed, 0, maxDuration, speed, 0), false]
+	protected GetMoveSpeedBonusPercentage(): [number, boolean] {
+		return [this.StackCount, false]
+	}
+	protected UpdateSpecialValues(): void {
+		const name = "spirit_breaker_bull_rush"
+		this.GetSpecialValue("hero_movespeed_percent", name)
+		this.GetSpecialValue("creep_movespeed_percent", name)
 	}
 }

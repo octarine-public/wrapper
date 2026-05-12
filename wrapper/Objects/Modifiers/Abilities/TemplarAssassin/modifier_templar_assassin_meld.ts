@@ -10,6 +10,7 @@ export class modifier_templar_assassin_meld extends Modifier implements IBuff {
 	public readonly BuffModifierName = this.Name
 
 	private cachedPreArmor = 0
+	private cachedAttackRange = 0
 
 	protected readonly DeclaredFunction = new Map([
 		[
@@ -25,7 +26,7 @@ export class modifier_templar_assassin_meld extends Modifier implements IBuff {
 		return true
 	}
 	protected GetAttackRangeBonus(): [number, boolean] {
-		return [this.StackCount, false]
+		return [this.cachedAttackRange, false]
 	}
 	protected GetPreAttackPhysicalArmorBonusTarget(
 		params?: IModifierParams
@@ -51,7 +52,6 @@ export class modifier_templar_assassin_meld extends Modifier implements IBuff {
 	protected UpdateSpecialValues() {
 		const name = "templar_assassin_meld"
 		this.cachedPreArmor = this.GetSpecialValue("bonus_armor", name)
-		this.GetSpecialValue("attack_range_increase_max", name) // only debug
-		this.GetSpecialValue("attack_range_increase_time", name) // only debug
+		this.cachedAttackRange = this.GetSpecialValue("attack_range_bonus", name)
 	}
 }

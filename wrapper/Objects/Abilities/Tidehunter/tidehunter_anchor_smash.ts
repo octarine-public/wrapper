@@ -9,7 +9,11 @@ export class tidehunter_anchor_smash extends Ability implements INuke {
 		return true
 	}
 	public GetBaseAOERadiusForLevel(level: number): number {
-		return this.GetSpecialValue("radius", level)
+		const value = this.GetSpecialValue("additional_range", level)
+		if (value === 0 || this.Owner === undefined) {
+			return value
+		}
+		return this.Owner.GetAttackRange() + value
 	}
 	public GetBaseDamageForLevel(level: number): number {
 		return this.GetSpecialValue("attack_damage", level)

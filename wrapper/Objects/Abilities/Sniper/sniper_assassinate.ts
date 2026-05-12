@@ -1,6 +1,5 @@
 import { WrapperClass } from "../../../Decorators"
 import { Ability } from "../../Base/Ability"
-import { Unit } from "../../Base/Unit"
 
 @WrapperClass("sniper_assassinate")
 export class sniper_assassinate extends Ability implements INuke {
@@ -17,12 +16,5 @@ export class sniper_assassinate extends Ability implements INuke {
 		return this.OwnerHasScepter
 			? this.GetSpecialValue("scepter_cast_point", level)
 			: super.GetBaseCastPointForLevel(level)
-	}
-	public GetDamage(target: Unit): number {
-		const owner = this.Owner
-		if (owner === undefined || this.Level === 0) {
-			return 0
-		}
-		return super.GetDamage(target) + owner.GetAttackDamage(target)
 	}
 }
