@@ -84,6 +84,9 @@ class Polygon2D {
 }
 
 const latestCursor = new Vector2(),
+	cursorVel = new Vector2(), // current cursor velocity, screen-widths/sec (kinematic glide)
+	tremorPhaseA = Math.random() * Math.PI * 2, // per-session hand-tremor phases
+	tremorPhaseB = Math.random() * Math.PI * 2,
 	cameraPoly = new WorldPolygon(),
 	latestCameraPoly = new WorldPolygon(),
 	latestCameraGreenZonePolyScreen = new Polygon2D(),
@@ -764,7 +767,20 @@ let lastOrderFinish = 0,
 	yellowZoneOutAt = 0,
 	greenZoneOutAt = 0,
 	cursorAtMinimapAt = 0,
-	cursorEnteredMinimapAt = 0
+	cursorEnteredMinimapAt = 0,
+	cursorReactionAt = 0,
+	cursorReactionArmed = false,
+	tremorRolled = false,
+	tremorActive = false,
+	tremorGain = 1,
+	arcMag = 0,
+	arcLastPerp = 0,
+	glideStartDist = 0,
+	speedGain = 1,
+	accelGain = 1,
+	decelGain = 1,
+	undershootDist = 0,
+	didCorrection = false
 
 function CanMoveCamera(cameraVec: Vector2, targetPos: Vector2): boolean {
 	if (latestCameraRedZonePolyScreen.IsInside(targetPos)) {
@@ -981,7 +997,7 @@ function applyParams(
 			prev + trigFunc(currentTime * amplitudeRcp + offset) ** 2,
 		0.5
 	)
-	return sum / params.length
+	return 0.9 + 0.1 * (sum / params.length)
 }
 
 let paramsX = getParams(),
@@ -1084,20 +1100,107 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 	}
 	let cursorAtTarget = false
 	if (targetPos.IsValid) {
-		// move cursor
-		const dist = latestUsercmd.MousePosition.Distance(targetPos),
-			cursorSpeed = ExecuteOrder.cursorSpeed, // 6
-			minAccel = ExecuteOrder.cursorSpeedMinAccel, // 1
-			maxAccel = ExecuteOrder.cursorSpeedMaxAccel // 2
-		const extend =
-			minAccel +
-			Math.min(Math.sqrt(dist), 1) * (maxAccel - minAccel) * cursorSpeed * dt
-		const dir = latestUsercmd.MousePosition.GetDirectionTo(
-			targetPos
-		).MultiplyScalarForThis(Math.min(extend, dist))
-		ApplyParams(dir, currentTime)
-		latestUsercmd.MousePosition.AddForThis(dir)
+		const mouse = latestUsercmd.MousePosition
+		const dist = mouse.Distance(targetPos)
 		cursorAtTarget = dist < (isUIOrder ? 0.0005 : 0.0025)
+		if (cursorAtTarget) {
+			tremorRolled = false // re-roll tremor for the next movement
+		}
+		const boost =
+			ExecuteOrder.orderQueue.length > 1 ? ExecuteOrder.cursorBacklogBoost : 1
+		if (cursorReactionArmed && !cursorAtTarget && boost === 1) {
+			cursorReactionAt =
+				currentTime +
+				Math.randomRangeGaussian(
+					ExecuteOrder.cursorReactionMs * 0.6,
+					ExecuteOrder.cursorReactionMs * 1.4
+				)
+		}
+		cursorReactionArmed = false
+		if (currentTime >= cursorReactionAt) {
+			if (undershootDist > 0 && dist < undershootDist + 0.004) {
+				undershootDist = 0
+			}
+			const peakSpeed = ExecuteOrder.cursorSpeed * boost * speedGain,
+				accel = ExecuteOrder.cursorSpeedMaxAccel * boost * accelGain,
+				decel = ExecuteOrder.cursorSpeedMinAccel * boost * decelGain
+			const dir = mouse.GetDirectionTo(targetPos) // unit; reused below, keep intact
+			const effDist = Math.max(dist - undershootDist, 0)
+			const desiredSpeed = Math.min(peakSpeed, Math.sqrt(2 * decel * effDist))
+			const dv = dir.MultiplyScalar(desiredSpeed).SubtractForThis(cursorVel)
+			const dvMax = accel * dt,
+				dvLen = dv.Length
+			if (dvLen > dvMax && dvLen > 0) {
+				dv.MultiplyScalarForThis(dvMax / dvLen)
+			}
+			cursorVel.AddForThis(dv)
+			const speed = cursorVel.Length
+			if (!tremorRolled) {
+				tremorRolled = true
+				tremorActive = Math.random() < ExecuteOrder.cursorTremorChance
+				tremorGain = Math.randomRangeGaussian(0.7, 1.3)
+				glideStartDist = dist
+				arcLastPerp = 0
+				arcMag =
+					Math.randomRangeGaussian(
+						ExecuteOrder.cursorArc * 0.4,
+						ExecuteOrder.cursorArc * 1.6
+					) * (Math.random() < 0.5 ? -1 : 1)
+				speedGain = Math.randomRangeGaussian(0.8, 1.25)
+				accelGain = Math.randomRangeGaussian(0.82, 1.18)
+				decelGain = Math.randomRangeGaussian(0.82, 1.18)
+				didCorrection = Math.random() < ExecuteOrder.cursorCorrectionChance
+				undershootDist = didCorrection
+					? Math.min(
+							Math.randomRangeGaussian(
+								ExecuteOrder.cursorUndershoot * 0.4,
+								ExecuteOrder.cursorUndershoot * 1.4
+							) * dist,
+							dist * 0.35
+						)
+					: 0
+			}
+			const step = cursorVel.MultiplyScalar(dt)
+			ApplyParams(step, currentTime) // subtle per-axis path curvature
+			if (step.Length >= dist) {
+				cursorAtTarget = true
+				arcLastPerp = 0
+				undershootDist = 0
+				const over =
+					speed > peakSpeed * 0.45
+						? Math.min(step.Length - dist, ExecuteOrder.cursorOvershoot)
+						: 0
+				mouse.AddForThis(dir.MultiplyScalar(dist + over))
+			} else {
+				mouse.AddForThis(step)
+				const progress = Math.min(
+					Math.max(glideStartDist > 0 ? 1 - dist / glideStartDist : 1, 0),
+					1
+				)
+				const perpNow = arcMag * glideStartDist * Math.sin(Math.PI * progress)
+				const dPerp = perpNow - arcLastPerp
+				arcLastPerp = perpNow
+				mouse.AddScalarX(-dir.y * dPerp).AddScalarY(dir.x * dPerp)
+			}
+			const tremorAmp = tremorActive
+				? ExecuteOrder.cursorTremor *
+					tremorGain *
+					Math.min(speed / (peakSpeed * 0.3), 1)
+				: 0
+			if (tremorAmp > 0) {
+				const wobble =
+					(Math.sin(currentTime * 0.0131 + tremorPhaseA) +
+						0.5 * Math.sin(currentTime * 0.0417 + tremorPhaseB)) /
+					1.5
+				mouse
+					.AddScalarX(-dir.y * tremorAmp * wobble)
+					.AddScalarY(dir.x * tremorAmp * wobble)
+			}
+		}
+	} else {
+		cursorVel.toZero()
+		cursorReactionArmed = true
+		tremorRolled = false
 	}
 	const orderSuits =
 		!targetPos.IsValid ||
@@ -1271,6 +1374,7 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 	}
 	if (
 		order === undefined &&
+		ExecuteOrder.HoldOrders <= 0 &&
 		lastOrderFinish <
 			currentTime -
 				(lastOrderUsedMinimap ? orderLingerDurationMinimap : orderLingerDuration)
@@ -1598,6 +1702,7 @@ function ClearHumanizerState() {
 	currentOrder = undefined
 	lastOrderTarget = undefined
 	debugCursor.toZero()
+	cursorVel.toZero()
 	lastUpdate = 0
 	latestUsercmd = new UserCmd()
 	cameraMoveEnd = 0
@@ -1630,6 +1735,7 @@ function RestartHumanizerState() {
 	latestCameraY = 0
 	currentOrder = undefined
 	debugCursor.toZero()
+	cursorVel.toZero()
 	lastUpdate = 0
 	latestUsercmd = new UserCmd()
 	cameraMoveEnd = 0

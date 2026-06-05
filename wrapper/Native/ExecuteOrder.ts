@@ -112,9 +112,17 @@ export class ExecuteOrder {
 	public static HoldOrdersTarget: Nullable<Vector3 | Entity>
 	public static cameraMinimapSpaces = 3 // 2 => 5
 	public static cameraSpeed = 8000 // 5000 => 20000
-	public static cursorSpeed = 6 // ?
-	public static cursorSpeedMinAccel = 1 //?
-	public static cursorSpeedMaxAccel = 2 // ?
+	public static cursorSpeed = 6 // peak cursor speed, screen-widths/sec
+	public static cursorSpeedMinAccel = 45 // ease-out decel envelope, screen-widths/sec^2 (v=sqrt(2*decel*dist))
+	public static cursorSpeedMaxAccel = 80 // ramp-up acceleration, screen-widths/sec^2
+	public static cursorBacklogBoost = 2.5 // *speed/accel while >1 order is queued (anti-miss flick)
+	public static cursorTremor = 0.0008 // hand-tremor amplitude while moving, screen-widths
+	public static cursorTremorChance = 0.45 // probability a given move shows tremor at all (else none)
+	public static cursorOvershoot = 0.012 // max fast-flick overshoot before correcting, screen-widths
+	public static cursorReactionMs = 90 // cosmetic reaction delay starting a glide from rest, ms
+	public static cursorArc = 0.09 // human path bow as a fraction of move distance (0 = straight)
+	public static cursorCorrectionChance = 0.4 // chance a move ends with a corrective sub-movement
+	public static cursorUndershoot = 0.06 // ballistic undershoot as a fraction of move distance
 	public static PrefireOrders = true
 	public static IsStandalone = false
 	public static unsafeMode = false
