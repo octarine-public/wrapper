@@ -16,7 +16,7 @@ function loadFontFile(file: string, fallback = false) {
 	LoadFont(realPath, fallback)
 }
 
-// Total fonts general files size is about 8.2 MB
+// Total fonts general files size is about 8.2 MB (+~17 MB for the CJK fallbacks below)
 // Load font from windows (native) or use this method to load fonts
 const fonts: Record<EFontName, FontVariant[]> = {
 	[EFontName.OpenSans]: [
@@ -55,4 +55,10 @@ for (const [name, variants] of Object.entries(fonts)) {
 		loadFontFile(full, v.fallback)
 	}
 }
+// CJK fallbacks so non-latin nicknames don't render as .notdef boxes.
+// SC carries the full Han set (simplified + traditional) and Japanese kana;
+// KR is kept only for hangul, which the SC subset drops. Order matters: SC
+// first wins shared Han codepoints, KR fills in the Korean syllables.
+loadFontFile(BASE + "NotoSansSC/NotoSansSC-Regular.ttf", true)
+loadFontFile(BASE + "NotoSansKR/NotoSansKR-Regular.ttf", true)
 loadFontFile(BASE + "NotoEmoji/NotoEmoji-Regular.ttf", true)
