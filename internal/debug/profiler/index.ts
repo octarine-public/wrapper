@@ -58,9 +58,19 @@ function shorten(rawLine: Nullable<string>): { file: string; line: string } {
 	if (cut >= 0) {
 		file = file.slice(cut)
 	} else {
-		// Unknown root — keep just the basename so it stays readable.
-		const slash = file.lastIndexOf("/")
-		file = slash >= 0 ? file.slice(slash + 1) : file
+		// No known SDK root: this is a foreign script (another repo) that just
+		// consumes the wrapper. Anchor on github.com/<owner>/<repo> and drop the
+		// owner so each external script keeps its own identity instead of every
+		// `index.ts` collapsing into a single "index" bucket.
+		const gh = file.lastIndexOf("github.com/")
+		if (gh >= 0) {
+			const parts = file.slice(gh + "github.com/".length).split("/")
+			file = parts.length > 1 ? parts.slice(1).join("/") : parts.join("/")
+		} else {
+			// Unknown layout — keep the last two segments for some context.
+			const parts = file.split("/")
+			file = parts.slice(-2).join("/")
+		}
 	}
 	file = file.replace(/\/index\.(?:ts|js)$/, "").replace(/\.(?:ts|js)$/, "")
 	return { file, line }
