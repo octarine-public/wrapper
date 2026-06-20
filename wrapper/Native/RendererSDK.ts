@@ -97,6 +97,11 @@ class CRendererSDK {
 		)
 	)
 	private commandCacheSize = 0
+	private commandCache2DSize = 0
+	private lastDraw2DTime = 0
+	private lastPreDataUpdateTime = 0
+	private draw2DInvalidated = false
+	private readonly draw2DInterval = 1000 / 30
 	private smallCommandCacheFrames = 0
 	private readonly fontCache = new Map<string, Font[]>()
 	private readonly textureCache = new Map</* path */ string, number>()
@@ -725,6 +730,7 @@ class CRendererSDK {
 			})
 			this.textureCache.clear()
 			this.tex2size.clear()
+			this.draw2DInvalidated = true
 		}
 		if (this.queuedFonts.length) {
 			this.queuedFonts.forEach(font => {
@@ -732,6 +738,29 @@ class CRendererSDK {
 			})
 			this.queuedFonts.clear()
 		}
+	}
+	public OnTick(): void {
+		this.lastPreDataUpdateTime = hrtime()
+	}
+	public ShouldEmitDraw2D(): boolean {
+		const now = hrtime()
+		if (
+			this.draw2DInvalidated ||
+			(now - this.lastDraw2DTime >= this.draw2DInterval &&
+				now - this.lastPreDataUpdateTime > 1000 / 30 / 2)
+		) {
+			this.lastDraw2DTime = now
+			this.draw2DInvalidated = false
+			return true
+		}
+		return false
+	}
+	public BeforeDraw2D(): void {
+		this.commandStream.pos = 0
+		this.commandCacheSize = 0
+	}
+	public AfterDraw2D(): void {
+		this.commandCache2DSize = this.commandCacheSize
 	}
 	public EmitDraw() {
 		Renderer.ExecuteCommandBuffer(
@@ -742,15 +771,17 @@ class CRendererSDK {
 			shrinkFrames = 5
 		if (this.commandCacheSize * shrinkFactor < this.commandCache.byteLength) {
 			if (this.smallCommandCacheFrames++ > shrinkFrames) {
-				this.commandCache = new Uint8Array(this.commandCacheSize * shrinkMul)
+				const shrunk = new Uint8Array(this.commandCacheSize * shrinkMul)
+				shrunk.set(this.commandCache.subarray(0, this.commandCache2DSize))
+				this.commandCache = shrunk
 				this.OnCommandCacheChanged()
 				this.smallCommandCacheFrames = 0
 			}
 		} else {
 			this.smallCommandCacheFrames = 0
 		}
-		this.commandStream.pos = 0
-		this.commandCacheSize = 0
+		this.commandStream.pos = this.commandCache2DSize
+		this.commandCacheSize = this.commandCache2DSize
 		this.inDraw = false
 	}
 	public GetAspectRatio(windowSize = this.WindowSize) {
@@ -1355,3 +1386,4 @@ class CRendererSDK {
 export const RendererSDK = new CRendererSDK()
 
 EventsSDK.on("UnitAbilityDataUpdated", () => RendererSDK.FreeTextureCache())
+EventsSDK.on("PreDataUpdate", () => RendererSDK.OnTick())

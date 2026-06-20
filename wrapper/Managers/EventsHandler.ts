@@ -1650,6 +1650,11 @@ Events.on("Draw", (visualData, w, h, x, y) => {
 		ent.VisualAngles.z = stream.ReadFloat32()
 	}
 	GameState.IsInDraw = true
+	if (RendererSDK.ShouldEmitDraw2D()) {
+		RendererSDK.BeforeDraw2D()
+		EventsSDK.emit("Draw2D")
+		RendererSDK.AfterDraw2D()
+	}
 	EventsSDK.emit("PreDraw")
 	EventsSDK.emit("Draw")
 	GameState.IsInDraw = false
