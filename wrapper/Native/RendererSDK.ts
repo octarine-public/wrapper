@@ -742,6 +742,10 @@ class CRendererSDK {
 	public OnTick(): void {
 		this.lastPreDataUpdateTime = hrtime()
 	}
+	// use to remove 30 fps cap, e.g. during panel dragging
+	public InvalidateDraw2D(): void {
+		this.draw2DInvalidated = true
+	}
 	public ShouldEmitDraw2D(): boolean {
 		const now = hrtime()
 		if (
