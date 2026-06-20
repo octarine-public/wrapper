@@ -132,6 +132,7 @@ interface EventsSDK extends EventEmitter {
 	): EventEmitter
 	on(name: "PreDraw", callback: () => void, priority?: number): EventEmitter
 	on(name: "Draw", callback: () => void, priority?: number): EventEmitter
+	on(name: "Draw2D", callback: () => void, priority?: number): EventEmitter
 	on(
 		name: "ParticleCreated",
 		callback: (particle: NetworkedParticle) => void,
