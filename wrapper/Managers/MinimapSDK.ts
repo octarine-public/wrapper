@@ -245,7 +245,7 @@ function LoadIcons(): void {
 }
 EventsSDK.after("ServerInfo", LoadIcons)
 
-EventsSDK.on("Draw", () => {
+EventsSDK.on("Draw2D", () => {
 	if (
 		!GameRules?.IsInGame ||
 		GameState.UIState !== DOTAGameUIState.DOTA_GAME_UI_DOTA_INGAME
