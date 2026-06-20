@@ -192,7 +192,9 @@ new (class CScriptProfiler {
 
 	constructor() {
 		// Huge priority -> our listener runs last -> overlay draws on top.
-		EventsSDK.on("Draw", this.Draw.bind(this), 1e9)
+		// Draw2D is throttled (~30fps) and its commands are cached, so the
+		// overlay re-renders far less often than a per-frame Draw listener.
+		EventsSDK.on("Draw2D", this.Draw2D.bind(this), 1e9)
 		this.menu.State.OnValue(call => this.setEnabled(call.value))
 		this.menu.Reset.OnValue(() => {
 			acc.clear()
@@ -202,7 +204,7 @@ new (class CScriptProfiler {
 		})
 	}
 
-	protected Draw() {
+	protected Draw2D() {
 		groupByFile = this.menu.GroupByFile.value
 		sortMode = this.menu.SortBy.SelectedID
 		windowMs = this.menu.Window.value * 1000
