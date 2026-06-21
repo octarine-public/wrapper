@@ -483,7 +483,7 @@ class CRendererSDK {
 		const origSize = this.tex2size.get(textureID)!
 		const halfRound = round / 2
 
-		if (path.endsWith(".svg")) {
+		if (path.endsWith(".svg") || path.endsWith(".vsvg_c")) {
 			const useRound = round >= 0,
 				useScissors = customScissor !== undefined
 
