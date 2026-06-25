@@ -130,7 +130,7 @@ export class ExecuteOrder {
 		"hero_demo_main",
 		"hero_demo_frostivus"
 	])
-	private static DisableHumanizer_ = false
+	private static DisableHumanizer_ = true
 	private readonly flags: number = -1
 
 	/**
@@ -161,8 +161,8 @@ export class ExecuteOrder {
 		if (this.DisableHumanizer_ === newVal) {
 			return
 		}
-		this.DisableHumanizer_ = newVal
-		ToggleRequestUserCmd(!this.DisableHumanizer_)
+		this.DisableHumanizer_ = true
+		ToggleRequestUserCmd(false)
 		EventsSDK.emit("HumanizerStateChanged", false)
 	}
 
