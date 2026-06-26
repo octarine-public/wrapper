@@ -107,6 +107,12 @@ class CRendererSDK {
 	private readonly textureCache = new Map</* path */ string, number>()
 	private clearTextureCache = false
 	private readonly tex2size = new Map</* textureID */ number, Vector2>()
+	// key: fontID * 4096 + roundedSize  ->  Map<text, measured Vector3 (post-Ceil)>.
+	// Avoids the per-frame V8 round-trip + UTF-8 conversion + shared renderer mutex
+	// for repeated (text, font, size) measurements during Draw2D.
+	private readonly textSizeCache = new Map<number, Map<string, Vector3>>()
+	private textSizeCacheCount = 0
+	private readonly maxTextSizeCache = 8192
 	private readonly queuedFonts: [string, string, number, boolean, string][] = []
 	private inDraw = false
 	private opacityMul = 1
@@ -697,8 +703,25 @@ class CRendererSDK {
 		if (fontID === -1) {
 			return new Vector3()
 		}
-		Renderer.GetTextSize(text, fontID, Math.round(fontSize + 4))
-		return new Vector3(IOBuffer[0], IOBuffer[1], IOBuffer[2]).CeilForThis()
+		const roundedSize = Math.round(fontSize + 4)
+		const bucketKey = fontID * 4096 + roundedSize
+		let bucket = this.textSizeCache.get(bucketKey)
+		const cached = bucket?.get(text)
+		if (cached !== undefined) {
+			return cached.Clone()
+		}
+		Renderer.GetTextSize(text, fontID, roundedSize)
+		const result = new Vector3(IOBuffer[0], IOBuffer[1], IOBuffer[2]).CeilForThis()
+		if (bucket === undefined) {
+			bucket = new Map()
+			this.textSizeCache.set(bucketKey, bucket)
+		}
+		bucket.set(text, result.Clone())
+		if (++this.textSizeCacheCount > this.maxTextSizeCache) {
+			this.textSizeCache.clear()
+			this.textSizeCacheCount = 0
+		}
+		return result
 	}
 	/**
 	 * @param color default: Yellow
