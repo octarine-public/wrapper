@@ -40,6 +40,7 @@ export class Dropdown extends Base {
 		Dropdown.iconSize.y = ScaleHeight(24)
 		Dropdown.iconOffset.x = ScaleWidth(12)
 		Dropdown.iconOffset.y = ScaleHeight(8)
+		Dropdown.openSlideY = ScaleHeight(8)
 	}
 
 	private static readonly dropdownPath = "menu/dropdown.svg"
@@ -65,6 +66,8 @@ export class Dropdown extends Base {
 	private static dropdownPopupElementsScrollbarWidth = 0
 	private static nameDropdownGap = 0
 	private static dropdownEndGap = 0
+	// vertical distance the popup settles in from while it fades open/closed
+	private static openSlideY = 0
 
 	private static readonly iconSize = new Vector2()
 	private static readonly iconOffset = new Vector2()
@@ -72,6 +75,9 @@ export class Dropdown extends Base {
 
 	public ValuesNames: string[]
 	private SelectedID_ = 0
+	// popup open/close fade progress (0..1) and last-frame timestamp
+	private openT = 0
+	private openLast = 0
 	/** keep space for longest value + arrow. false is used for language dropdown */
 	public KeepArrowGap = true
 	public UseOneLine = true
@@ -292,10 +298,24 @@ export class Dropdown extends Base {
 		}
 	}
 	public PostRender(): void {
-		if (!this.isActive) {
+		const openT = this.UpdateOpenAnim()
+		// fully collapsed (also the closed-and-settled resting state): nothing to draw
+		if (openT <= 0) {
 			return
 		}
+		// fade the whole popup in/out; multiplies with the menu-wide fade so it compounds
+		// correctly with the menu/tab open animations (see RendererSDK.OpacityMultiplier)
+		const prevOpacity = RendererSDK.OpacityMultiplier
+		if (openT < 1) {
+			RendererSDK.OpacityMultiplier = prevOpacity * openT
+		}
 		const popupRect = this.GetPopupRect(this.DropdownRect)
+		if (openT < 1) {
+			// settle the popup down into place as it reveals (and back up as it hides)
+			const slide = (1 - openT) * Dropdown.openSlideY
+			popupRect.pos1.SubtractScalarY(slide)
+			popupRect.pos2.SubtractScalarY(slide)
+		}
 		const popupElementsRect = this.GetPopupElementsRect(popupRect)
 		this.currentlyAtID = Math.max(
 			0,
@@ -350,6 +370,43 @@ export class Dropdown extends Base {
 			)
 			RendererSDK.Image(Dropdown.scrollbarPath, rect.pos1, -1, rect.Size)
 		}
+		if (openT < 1) {
+			RendererSDK.OpacityMultiplier = prevOpacity
+		}
+	}
+	// Eases the popup's open/close fade toward its target (1 open, 0 closed)
+	// frame-rate-independently and returns the current alpha. Mirrors the tab-open
+	// reveal (Node.UpdateOpenAnim) but runs both ways so the popup also fades + settles
+	// out when it closes.
+	private UpdateOpenAnim(): number {
+		const target = this.isActive ? 1 : 0
+		if (!Base.DropdownOpenAnimation) {
+			this.openT = target
+			this.openLast = 0
+			return target
+		}
+		if (this.openT === target) {
+			this.openLast = 0
+			return target
+		}
+		const now = hrtime()
+		const dt =
+			this.openLast === 0 ? 16 : Math.min(Math.max(now - this.openLast, 0), 100)
+		this.openLast = now
+		// fixed 200% speed, matching the tab-open animation
+		const tau = 60 / 2
+		this.openT += (target - this.openT) * (1 - Math.exp(-dt / tau))
+		if (Math.abs(this.openT - target) < 0.005) {
+			this.openT = target
+		}
+		return this.openT
+	}
+	// Restart the reveal from collapsed; called the instant the popup opens so a fresh
+	// animation plays even when the previous close skipped (e.g. the parent tab collapsed
+	// while it was open, so PostRender never eased openT back to 0).
+	protected RestartOpenAnim(): void {
+		this.openT = 0
+		this.openLast = 0
 	}
 	public OnParentNotVisible(): void {
 		if (Dropdown.activeDropdown === this) {
@@ -382,6 +439,7 @@ export class Dropdown extends Base {
 			this.isActive = !this.isActive
 			if (this.isActive) {
 				Dropdown.activeDropdown = this
+				this.RestartOpenAnim()
 			} else if (Dropdown.activeDropdown === this) {
 				Dropdown.activeDropdown = undefined
 			}

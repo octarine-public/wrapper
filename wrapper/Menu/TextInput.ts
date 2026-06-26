@@ -252,7 +252,9 @@ export class TextInput extends Base {
 
 InputEventSDK.on("CharInput", char => {
 	const focused = TextInput.focusedInput
-	if (focused === undefined) {
+	// don't capture input when the focused box's menu is hidden (e.g. menu was closed)
+	if (focused === undefined || !focused.parent.IsVisible) {
+		TextInput.focusedInput = undefined
 		return true
 	}
 	if (char.charCodeAt(0) < 0x20) {
@@ -280,11 +282,18 @@ InputEventSDK.on("CharInput", char => {
 
 InputEventSDK.on("KeyDown", key => {
 	const focused = TextInput.focusedInput
-	if (focused === undefined) {
+	// don't capture input when the focused box's menu is hidden (e.g. menu was closed)
+	if (focused === undefined || !focused.parent.IsVisible) {
+		TextInput.focusedInput = undefined
 		return true
 	}
 	const ctrl = InputManager.IsKeyDown(VKeys.CONTROL)
 	const shift = InputManager.IsKeyDown(VKeys.SHIFT)
+	// the search box lives on the root menu manager, which exposes these navigation hooks
+	const menu = focused.parent as unknown as {
+		MoveSearchSelection?(delta: number): boolean
+		ActivateSearchSelection?(): boolean
+	}
 
 	if (ctrl) {
 		switch (key) {
@@ -384,6 +393,15 @@ InputEventSDK.on("KeyDown", key => {
 				focused.cursorPos = focused.text.length
 				focused.clearSelection()
 			}
+			break
+		case VKeys.UP:
+			menu.MoveSearchSelection?.(-1)
+			break
+		case VKeys.DOWN:
+			menu.MoveSearchSelection?.(1)
+			break
+		case VKeys.RETURN:
+			menu.ActivateSearchSelection?.()
 			break
 		case VKeys.ESCAPE:
 			TextInput.focusedInput = undefined

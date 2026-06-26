@@ -109,9 +109,23 @@ class CRendererSDK {
 	private readonly tex2size = new Map</* textureID */ number, Vector2>()
 	private readonly queuedFonts: [string, string, number, boolean, string][] = []
 	private inDraw = false
+	private opacityMul = 1
 
 	public get IsInDraw(): boolean {
 		return this.inDraw
+	}
+	/**
+	 * Global alpha (0..1) multiplied into the alpha of every draw command queued while < 1.
+	 * Lets the menu fade whole groups of elements in/out without threading an alpha through
+	 * each Image/Text/Rect call. Defaults to 1 (no change); set it right before a batch of
+	 * draws and reset it to 1 right after. It only affects commands queued while it is set,
+	 * and is re-applied every frame, so a stray value self-heals on the next render.
+	 */
+	public get OpacityMultiplier(): number {
+		return this.opacityMul
+	}
+	public set OpacityMultiplier(value: number) {
+		this.opacityMul = value < 0 ? 0 : value > 1 ? 1 : value
 	}
 
 	public get CameraDistance() {
@@ -513,7 +527,7 @@ class CRendererSDK {
 			this.commandStream.WriteUint32(textureID)
 			this.commandStream.WriteFloat32(vecSize.x)
 			this.commandStream.WriteFloat32(vecSize.y)
-			this.commandStream.WriteColor(color)
+			this.WriteScaledColor(color)
 			this.commandStream.WriteBoolean(grayscale)
 			return
 		}
@@ -610,7 +624,7 @@ class CRendererSDK {
 		this.AllocateCommandSpace(CommandID.TEXT, 2 * 2 + 2 * 4)
 		this.commandStream.WriteUint16(fontID)
 		this.commandStream.WriteUint16(Math.round(fontSize + 4))
-		this.commandStream.WriteColor(color)
+		this.WriteScaledColor(color)
 		const lengthPos = this.commandStream.pos
 		this.commandStream.WriteUint32(0)
 		{
@@ -1197,6 +1211,19 @@ class CRendererSDK {
 		this.ResizeCommandCache()
 		this.commandStream.WriteUint8(commandID)
 	}
+	// writes a color into the command stream, scaling its alpha by OpacityMultiplier
+	private WriteScaledColor(color: Color): void {
+		if (this.opacityMul >= 1) {
+			this.commandStream.WriteColor(color)
+			return
+		}
+		this.commandStream.WriteUint8(Math.max(Math.min(color.r, 255), 0))
+		this.commandStream.WriteUint8(Math.max(Math.min(color.g, 255), 0))
+		this.commandStream.WriteUint8(Math.max(Math.min(color.b, 255), 0))
+		this.commandStream.WriteUint8(
+			Math.max(Math.min(color.a * this.opacityMul, 255), 0)
+		)
+	}
 	private SetScissor(rect: Rectangle): void {
 		this.AllocateCommandSpace(CommandID.SETSCISSOR, 4 * 4)
 		this.commandStream.WriteFloat32(rect.pos1.x)
@@ -1246,8 +1273,8 @@ class CRendererSDK {
 			PathFlags.LINE_JOIN_OFFSET
 		const hasImage = flags.hasMask(PathFlags.IMAGESHADER)
 		this.AllocateCommandSpace(CommandID.PATH, 3 * 4 + 2 + (hasImage ? 5 * 4 : 0))
-		this.commandStream.WriteColor(fillColor)
-		this.commandStream.WriteColor(strokeColor)
+		this.WriteScaledColor(fillColor)
+		this.WriteScaledColor(strokeColor)
 		this.commandStream.WriteFloat32(width / 2)
 		this.commandStream.WriteUint16(flags)
 		if (hasImage) {
