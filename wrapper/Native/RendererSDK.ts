@@ -107,9 +107,12 @@ class CRendererSDK {
 	private readonly textureCache = new Map</* path */ string, number>()
 	private clearTextureCache = false
 	private readonly tex2size = new Map</* textureID */ number, Vector2>()
-	// key: fontID * 4096 + roundedSize  ->  Map<text, measured Vector3 (post-Ceil)>.
+	// Text-measurement cache. Set CacheTextSize = false (e.g. from the menu) to
+	// bypass it at runtime and re-measure natively every frame, for comparison.
 	// Avoids the per-frame V8 round-trip + UTF-8 conversion + shared renderer mutex
 	// for repeated (text, font, size) measurements during Draw2D.
+	// key: fontID * 4096 + roundedSize  ->  Map<text, measured Vector3 (post-Ceil)>.
+	public CacheTextSize = true
 	private readonly textSizeCache = new Map<number, Map<string, Vector3>>()
 	private textSizeCacheCount = 0
 	private readonly maxTextSizeCache = 512
@@ -690,6 +693,10 @@ class CRendererSDK {
 			return new Vector3()
 		}
 		const roundedSize = Math.round(fontSize + 4)
+		if (!this.CacheTextSize) {
+			Renderer.GetTextSize(text, fontID, roundedSize)
+			return new Vector3(IOBuffer[0], IOBuffer[1], IOBuffer[2]).CeilForThis()
+		}
 		const bucketKey = fontID * 4096 + roundedSize
 		let bucket = this.textSizeCache.get(bucketKey)
 		const cached = bucket?.get(text)

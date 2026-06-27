@@ -5,7 +5,8 @@ import {
 	ExecuteOrder,
 	InputEventSDK,
 	Menu,
-	MenuLanguageID
+	MenuLanguageID,
+	RendererSDK
 } from "../../../wrapper/Imports"
 import { InternalCamera } from "./Camera"
 import { InternalConfig } from "./Config"
@@ -43,6 +44,14 @@ new (class CInternalSettings {
 				"Enables all scripts orders, ability to change camera distance"
 			)
 			.OnValue(toggle => (ExecuteOrder.DisableHumanizer = !toggle.value))
+
+		this.tree
+			.AddToggle(
+				"Cache text size",
+				true,
+				"Cache text measurements instead of recomputing them every frame.\nDisable to compare the performance difference."
+			)
+			.OnValue(toggle => (RendererSDK.CacheTextSize = toggle.value))
 
 		this.menuKeyBind.ActivatesInMenu = true
 		this.menuKeyBind.TriggerOnChat = true
