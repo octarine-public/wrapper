@@ -170,12 +170,9 @@ function ProcessMinimapBoundsData(layerName: string): boolean {
 		return false
 	}
 	const minimapBoundsData = lump
-		.filter(
-			data =>
-				data.get("classname") === "dota_minimap_boundary" &&
-				typeof data.get("origin") === "string"
-		)
-		.map(data => Vector3.FromString(data.get("origin") as string))
+		.filter(data => data.getString("classname") === "dota_minimap_boundary")
+		.map(data => data.getVector3("origin"))
+		.filter((v): v is Vector3 => v !== undefined)
 	if (minimapBoundsData.length < 2) {
 		return false
 	}

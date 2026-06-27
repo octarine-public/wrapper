@@ -38,4 +38,19 @@ export const Localization = new (class CLocalization {
 			name
 		)
 	}
+
+	/** Returns every known translation of a key across all language units (for cross-language search) */
+	public LocalizeAll(name: string): string[] {
+		if (name === "") {
+			return []
+		}
+		const out: string[] = []
+		this.LocalizationUnits.forEach(unit => {
+			const value = unit.get(name)
+			if (value !== undefined && !out.includes(value)) {
+				out.push(value)
+			}
+		})
+		return out
+	}
 })()

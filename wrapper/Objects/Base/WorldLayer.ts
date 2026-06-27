@@ -67,18 +67,15 @@ EventsSDK.on("EntityDestroyed", ent => {
 
 function ProcessWorldBoundsData(layerName: string): boolean {
 	const worldBoundsData = EntityDataLumps.get(layerName)?.find(
-		data => data.get("classname") === "world_bounds"
+		data => data.getString("classname") === "world_bounds"
 	)
 	if (worldBoundsData === undefined) {
 		return false
 	}
 	try {
-		const min = worldBoundsData.get("min"),
-			max = worldBoundsData.get("max")
-		GetWorldBounds =
-			typeof min === "string" && typeof max === "string"
-				? [Vector2.FromString(min), Vector2.FromString(max)]
-				: undefined
+		const min = worldBoundsData.getVector2("min"),
+			max = worldBoundsData.getVector2("max")
+		GetWorldBounds = min !== undefined && max !== undefined ? [min, max] : undefined
 	} catch (e) {
 		console.error("Error in worldBoundsData init", e)
 		return false

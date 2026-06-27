@@ -27,7 +27,18 @@ export class ShortDescription extends Base {
 	private static readonly underlineColor = new Color(255, 25, 25)
 	private static underlineHeight = 0
 
+	// set to the active search query so matched substrings get underlined in the result row
 	public searchQuery = ""
+	// individual query tokens (multi-word search) — each is underlined separately
+	public searchTokens: string[] = []
+
+	// keyboard-selected search result row (drawn with the active background)
+	public get Selected(): boolean {
+		return this.isActive
+	}
+	public set Selected(val: boolean) {
+		this.isActive = val
+	}
 
 	constructor(
 		parent: IMenu,
@@ -69,7 +80,7 @@ export class ShortDescription extends Base {
 			textPos.AddForThis(this.textOffset)
 		}
 		this.RenderTextDefault(this.Name, textPos)
-		if (this.searchQuery !== "") {
+		if (this.searchTokens.length > 0 || this.searchQuery !== "") {
 			this.RenderSearchUnderlines(textPos)
 		}
 	}
@@ -88,37 +99,46 @@ export class ShortDescription extends Base {
 
 	private RenderSearchUnderlines(textPos: Vector2): void {
 		const nameLower = this.Name.toLowerCase()
-		const queryLower = this.searchQuery.toLowerCase()
+		const tokens =
+			this.searchTokens.length > 0 ? this.searchTokens : [this.searchQuery]
 		const fontSize = ScaleHeight(this.FontSize)
-		let searchFrom = 0
-		for (;;) {
-			const idx = nameLower.indexOf(queryLower, searchFrom)
-			if (idx === -1) break
-			const beforeMatch = this.Name.substring(0, idx)
-			const matchText = this.Name.substring(idx, idx + queryLower.length)
-			const beforeX = RendererSDK.GetTextSize(
-				beforeMatch,
-				this.FontName,
-				fontSize,
-				this.FontWeight,
-				false
-			).x
-			const matchX = RendererSDK.GetTextSize(
-				matchText,
-				this.FontName,
-				fontSize,
-				this.FontWeight,
-				false
-			).x
-			RendererSDK.FilledRect(
-				new Vector2(
-					textPos.x + beforeX,
-					textPos.y + fontSize + ShortDescription.underlineHeight * 2
-				),
-				new Vector2(matchX, ShortDescription.underlineHeight),
-				ShortDescription.underlineColor
-			)
-			searchFrom = idx + queryLower.length
+		for (const token of tokens) {
+			const queryLower = token.toLowerCase()
+			if (queryLower === "") {
+				continue
+			}
+			let searchFrom = 0
+			for (;;) {
+				const idx = nameLower.indexOf(queryLower, searchFrom)
+				if (idx === -1) {
+					break
+				}
+				const beforeMatch = this.Name.substring(0, idx)
+				const matchText = this.Name.substring(idx, idx + queryLower.length)
+				const beforeX = RendererSDK.GetTextSize(
+					beforeMatch,
+					this.FontName,
+					fontSize,
+					this.FontWeight,
+					false
+				).x
+				const matchX = RendererSDK.GetTextSize(
+					matchText,
+					this.FontName,
+					fontSize,
+					this.FontWeight,
+					false
+				).x
+				RendererSDK.FilledRect(
+					new Vector2(
+						textPos.x + beforeX,
+						textPos.y + fontSize + ShortDescription.underlineHeight * 2
+					),
+					new Vector2(matchX, ShortDescription.underlineHeight),
+					ShortDescription.underlineColor
+				)
+				searchFrom = idx + queryLower.length
+			}
 		}
 	}
 }

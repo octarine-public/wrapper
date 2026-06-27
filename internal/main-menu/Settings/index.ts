@@ -7,6 +7,7 @@ import {
 	Menu,
 	MenuLanguageID
 } from "../../../wrapper/Imports"
+import { InternalAnimations } from "./Animations"
 import { InternalCamera } from "./Camera"
 import { InternalConfig } from "./Config"
 import { InternalNotifications } from "./Notifications"
@@ -16,6 +17,8 @@ new (class CInternalSettings {
 	private readonly tree = Menu.AddEntry("Settings")
 	private readonly cCamera = new InternalCamera(this.tree)
 	private readonly cNotifications = new InternalNotifications(this.tree)
+	// no runtime hooks — just wires the animation toggles into Base.*Animation flags
+	public readonly cAnimations = new InternalAnimations(this.tree)
 	private readonly cConfig = new InternalConfig(this.tree)
 
 	private readonly reloadTree = this.tree.AddNode(

@@ -28,10 +28,16 @@ export class ImageSelector extends Base {
 	private static randomHeightValue = 0
 	private static readonly elementsPerRow = 5
 	private static readonly imageActivatedBorderColor = new Color(104, 4, 255)
+	private static readonly imageHoveredOverlayColor = new Color(255, 255, 255, 30)
+	// ms time-constant of the hover fade; larger = smoother/slower
+	private static readonly hoverFadeTau = 55
 
 	public enabledValues!: Map<string, boolean>
 	protected readonly imageSize = new Vector2()
 	protected renderedPaths: string[] = []
+	// per-icon eased hover amount [0..1] driving the smooth fade in/out
+	private readonly hoverAnim: number[] = []
+	private hoverAnimTime = 0
 
 	constructor(
 		parent: IMenu,
@@ -173,16 +179,65 @@ export class ImageSelector extends Base {
 		return this.IsEnabled(this.values[id])
 	}
 
+	// index of the icon currently under the cursor, or -1 if none
+	public GetHoveredIconID(): number {
+		const rect = this.IconsRect
+		if (!rect.Contains(this.MousePosition)) {
+			return -1
+		}
+		const off = rect.GetOffset(this.MousePosition)
+		for (let i = 0, end = this.values.length; i < end; i++) {
+			const basePos = new Vector2(
+				i % ImageSelector.elementsPerRow,
+				Math.floor(i / ImageSelector.elementsPerRow)
+			).Multiply(
+				this.imageSize.AddScalar(
+					ImageSelector.imageBorderWidth * 2 + ImageSelector.imageGap
+				)
+			)
+			if (new Rectangle(basePos, basePos.Add(this.imageSize)).Contains(off)) {
+				return i
+			}
+		}
+		return -1
+	}
+
+	// Eases each icon's hover amount toward 1 (hovered) or 0, frame-rate independent.
+	private UpdateHoverAnim(hoveredID: number): void {
+		const now = hrtime()
+		const dt =
+			this.hoverAnimTime === 0
+				? 16
+				: Math.min(Math.max(now - this.hoverAnimTime, 0), 100)
+		this.hoverAnimTime = now
+		const rate = Base.HoverAnimation
+			? 1 - Math.exp(-dt / ImageSelector.hoverFadeTau)
+			: 1
+		for (let i = 0, end = this.values.length; i < end; i++) {
+			const target = i === hoveredID ? 1 : 0
+			const prev = this.hoverAnim[i] ?? 0
+			let cur = prev + (target - prev) * rate
+			if (Math.abs(cur - target) < 0.01) {
+				cur = target
+			}
+			this.hoverAnim[i] = cur
+		}
+	}
+
 	public Render(): void {
 		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.textOffset))
 		const basePos = this.IconsRect.pos1
+		this.UpdateHoverAnim(this.GetHoveredIconID())
+		const prevOpacity = RendererSDK.OpacityMultiplier
 		for (let index = 0, end = this.values.length; index < end; index++) {
 			const imagePath = this.renderedPaths[index]
 			if (imagePath === undefined) {
 				continue
 			}
-			const size = this.imageSize,
+			const isEnabled = this.IsEnabled(this.values[index]),
+				hover = this.hoverAnim[index] ?? 0,
+				size = this.imageSize,
 				pos = new Vector2(
 					index % ImageSelector.elementsPerRow,
 					Math.floor(index / ImageSelector.elementsPerRow)
@@ -202,16 +257,26 @@ export class ImageSelector extends Base {
 				Color.White,
 				0,
 				undefined,
-				!this.IsEnabled(this.values[index])
+				!isEnabled
 			)
 
-			if (this.IsEnabled(this.values[index])) {
+			if (isEnabled) {
 				RendererSDK.OutlinedRect(
 					pos,
 					size,
 					ImageSelector.imageBorderWidth,
 					ImageSelector.imageActivatedBorderColor
 				)
+			}
+
+			// hover: fade the colored icon in over the greyed one + a soft overlay (no border)
+			if (hover > 0) {
+				RendererSDK.OpacityMultiplier = prevOpacity * hover
+				if (!isEnabled) {
+					RendererSDK.Image(imagePath, pos, -1, size)
+				}
+				RendererSDK.FilledRect(pos, size, ImageSelector.imageHoveredOverlayColor)
+				RendererSDK.OpacityMultiplier = prevOpacity
 			}
 		}
 	}
@@ -221,27 +286,14 @@ export class ImageSelector extends Base {
 	}
 
 	public OnMouseLeftUp(): boolean {
-		const rect = this.IconsRect
-		if (!rect.Contains(this.MousePosition)) {
+		if (!this.IconsRect.Contains(this.MousePosition)) {
 			return false
 		}
-		const off = rect.GetOffset(this.MousePosition)
-		for (let i = 0, end = this.values.length; i < end; i++) {
-			const basePos = new Vector2(
-				i % ImageSelector.elementsPerRow,
-				Math.floor(i / ImageSelector.elementsPerRow)
-			).Multiply(
-				this.imageSize.AddScalar(
-					ImageSelector.imageBorderWidth * 2 + ImageSelector.imageGap
-				)
-			)
-			if (!new Rectangle(basePos, basePos.Add(this.imageSize)).Contains(off)) {
-				continue
-			}
-			const value = this.values[i]
+		const id = this.GetHoveredIconID()
+		if (id !== -1) {
+			const value = this.values[id]
 			this.enabledValues.set(value, !this.IsEnabled(value))
 			this.TriggerOnValueChangedCBs()
-			break
 		}
 		return false
 	}

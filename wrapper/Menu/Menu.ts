@@ -41,12 +41,17 @@ class CMenuManager {
 	public readonly textInput = new TextInput(this)
 	private readonly searchResultEntries: Base[] = []
 	private readonly searchResultMap = new Map<Base, Base>()
+	private readonly noResultsRow = new ShortDescription(this, "", "")
+	private searchSelectedIndex = -1
 	private lastSearchText = ""
 	private activeElement?: Base
 	private IsOpen_ = true
 	private ScrollPosition = 0
 	private IsAtScrollEnd = true
 	private VisibleEntries = 0
+	// menu open-fade progress (0..1); starts at 1 so the initial load doesn't animate
+	private menuOpenT = 1
+	private menuOpenLast = 0
 
 	public get Position() {
 		return this.header.Position.Clone()
@@ -58,8 +63,18 @@ class CMenuManager {
 		if (this.IsOpen_ === val) {
 			return
 		}
-		if (!val) {
+		if (val) {
+			// restart the open-fade each time the menu is brought up
+			if (Base.MenuOpenAnimation) {
+				this.menuOpenT = 0
+				this.menuOpenLast = 0
+			}
+		} else {
 			this.OnMouseLeftUp()
+			// release the search box so its keyboard capture doesn't swallow game input
+			if (TextInput.focusedInput === this.textInput) {
+				TextInput.focusedInput = undefined
+			}
 			const entries = this.entries
 			for (let i = 0, end = entries.length; i < end; i++) {
 				const entry = entries[i]
@@ -79,6 +94,17 @@ class CMenuManager {
 	}
 	private get displayEntries(): Base[] {
 		return this.isSearchActive ? this.searchResultEntries : this.entries
+	}
+	public get HeaderClampHeightY(): number {
+		// While searching, the result list is rebuilt on every keystroke, so its
+		// total height changes constantly. The header clamps its Y position against
+		// this height to stay on screen, which makes the whole menu jump up and down
+		// as results filter. Clamp against a stable height (header + search box + one
+		// row) instead and let the results scroll beneath a stationary header.
+		if (this.isSearchActive) {
+			return this.header.Size.y + this.textInput.Size.y + Base.DefaultSize.y
+		}
+		return this.EntriesSizeY
 	}
 
 	public get ConfigValue() {
@@ -246,6 +272,9 @@ class CMenuManager {
 		if (!this.IsOpen) {
 			return
 		}
+		// fade the whole menu in on open; reset to 1 after the last draw below.
+		// re-applied every frame, so a stray value can never leak past one frame.
+		RendererSDK.OpacityMultiplier = this.UpdateMenuOpenAnim()
 		if (this.header.QueuedUpdate) {
 			this.header.QueuedUpdate = false
 			this.header.Update(this.header.QueuedUpdateRecursive)
@@ -300,16 +329,56 @@ class CMenuManager {
 				break
 			}
 		}
+		if (this.isSearchActive && this.searchResultEntries.length === 0) {
+			const text =
+				Localization.SelectedUnitName === "russian"
+					? "Ничего не найдено"
+					: "No results"
+			if (this.noResultsRow.InternalName !== text) {
+				this.noResultsRow.InternalName = text
+				this.noResultsRow.SaveConfig = false
+				this.noResultsRow.Update()
+			}
+			position.CopyTo(this.noResultsRow.Position)
+			this.noResultsRow.Render()
+		}
 		if (updatedEntries) {
 			this.Update()
 		}
 
 		this.displayEntries.forEach(e => (e.IsVisible ? e.PostRender() : 0))
 		this.PostRender()
+		RendererSDK.OpacityMultiplier = 1
+	}
+	// eases the open-fade toward 1 frame-rate-independently; returns the current alpha
+	private UpdateMenuOpenAnim(): number {
+		if (!Base.MenuOpenAnimation) {
+			this.menuOpenT = 1
+			return 1
+		}
+		if (this.menuOpenT >= 1) {
+			return 1
+		}
+		const now = hrtime()
+		const dt =
+			this.menuOpenLast === 0
+				? 16
+				: Math.min(Math.max(now - this.menuOpenLast, 0), 100)
+		this.menuOpenLast = now
+		const tau = 70
+		this.menuOpenT += (1 - this.menuOpenT) * (1 - Math.exp(-dt / tau))
+		if (this.menuOpenT > 0.995) {
+			this.menuOpenT = 1
+		}
+		return this.menuOpenT
 	}
 	public Update(recursive = false): void {
 		if (recursive) {
 			this.entries?.forEach(e => e?.Update(true))
+			// the search box isn't in `entries`, so it'd otherwise keep its old size
+			// across a scale/resolution change (only refreshing on a full reload) —
+			// re-run its Update so it re-copies the new Base.DefaultSize
+			this.textInput.Update()
 		}
 		this.UpdateScrollbar()
 		this.EntriesSizeX = this.EntriesSizeX_
@@ -553,7 +622,8 @@ class CMenuManager {
 		this.searchResultEntries.splice(0)
 		this.searchResultMap.clear()
 		this.ScrollPosition = 0
-		const query = this.textInput.text.toLowerCase()
+		this.searchSelectedIndex = -1
+		const query = this.textInput.text.toLowerCase().trim()
 		if (query === "") {
 			return
 		}
@@ -562,16 +632,21 @@ class CMenuManager {
 			if (count >= MAX_RESULTS) {
 				return
 			}
-			const path: string[] = []
-			el.foreachParent(node => path.unshift(node.Name))
-			path.push(el.Name)
-			const fullPath = path.join(" > ")
+			// match only on the element's own name, but in any language, so RU input
+			// finds items in an EN menu and vice-versa (no path/tooltip matching, to
+			// avoid flooding results with the same control under every parent)
 			if (
 				!el.Name.toLowerCase().includes(query) &&
-				!el.InternalName.toLowerCase().includes(query)
+				!el.InternalName.toLowerCase().includes(query) &&
+				!Localization.LocalizeAll(el.InternalName).some(name =>
+					name.toLowerCase().includes(query)
+				)
 			) {
 				return
 			}
+			const path: string[] = []
+			el.foreachParent(node => path.unshift(node.Name))
+			path.push(el.Name)
 			let icon = ""
 			let iconRound = -1
 			el.foreachParent(node => {
@@ -580,8 +655,13 @@ class CMenuManager {
 					iconRound = node.IconRound
 				}
 			}, true)
-
-			const entry = new ShortDescription(this, fullPath, "", icon, iconRound)
+			const entry = new ShortDescription(
+				this,
+				path.join(" > "),
+				"",
+				icon,
+				iconRound
+			)
 			entry.searchQuery = query
 			entry.SaveConfig = false
 			entry.Update()
@@ -589,6 +669,60 @@ class CMenuManager {
 			this.searchResultMap.set(entry, el)
 			count++
 		})
+		this.SetSearchSelection(this.searchResultEntries.length > 0 ? 0 : -1)
+	}
+	private SetSearchSelection(idx: number): void {
+		const entries = this.searchResultEntries
+		const prev = entries[this.searchSelectedIndex]
+		if (prev instanceof ShortDescription) {
+			prev.Selected = false
+		}
+		this.searchSelectedIndex = idx
+		const cur = entries[idx]
+		if (cur instanceof ShortDescription) {
+			cur.Selected = true
+			this.EnsureSearchSelectionVisible()
+		}
+	}
+	private EnsureSearchSelectionVisible(): void {
+		const idx = this.searchSelectedIndex
+		if (idx < 0) {
+			return
+		}
+		if (idx < this.ScrollPosition) {
+			this.ScrollPosition = idx
+		} else if (idx >= this.ScrollPosition + this.VisibleEntries) {
+			this.ScrollPosition = Math.max(0, idx - this.VisibleEntries + 1)
+		}
+		this.UpdateScrollbar()
+	}
+	public MoveSearchSelection(delta: number): boolean {
+		if (!this.isSearchActive || this.searchResultEntries.length === 0) {
+			return false
+		}
+		const len = this.searchResultEntries.length
+		let idx = this.searchSelectedIndex
+		idx = idx < 0 ? (delta > 0 ? 0 : len - 1) : (idx + delta + len) % len
+		this.SetSearchSelection(idx)
+		return true
+	}
+	public ActivateSearchSelection(): boolean {
+		if (!this.isSearchActive || this.searchResultEntries.length === 0) {
+			return false
+		}
+		const idx = this.searchSelectedIndex >= 0 ? this.searchSelectedIndex : 0
+		const entry = this.searchResultEntries[idx]
+		if (entry === undefined) {
+			return false
+		}
+		this.NavigateToSearchResult(entry)
+		return true
+	}
+	private ScrollToEntry(node: Node): void {
+		const idx = this.entries.indexOf(node)
+		if (idx >= 0) {
+			this.ScrollPosition = Math.max(0, idx - 1)
+		}
 	}
 	private NavigateToSearchResult(resultEntry: Base): void {
 		const original = this.searchResultMap.get(resultEntry)
@@ -602,6 +736,7 @@ class CMenuManager {
 		this.searchResultEntries.splice(0)
 		this.searchResultMap.clear()
 		this.ScrollPosition = 0
+		this.searchSelectedIndex = -1
 		const parents: Node[] = []
 		original.foreachParent(node => {
 			if (node instanceof Node) {
@@ -615,6 +750,16 @@ class CMenuManager {
 				.filter((e): e is Node => e instanceof Node && e !== parent)
 				.forEach(e => (e.IsOpen = false))
 		}
+		// scroll every level of the path so the target row ends up on screen
+		if (parents.length > 0) {
+			this.ScrollToEntry(parents[0])
+			for (let i = 0; i < parents.length; i++) {
+				parents[i].ScrollToEntry(
+					i + 1 < parents.length ? parents[i + 1] : original
+				)
+			}
+		}
+		Base.Flash(original)
 		this.Update(true)
 	}
 	private ForwardConfig() {

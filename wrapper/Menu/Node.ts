@@ -43,6 +43,7 @@ export class Node extends Base {
 		Node.scrollbarOffset.y = ScaleHeight(2)
 		Node.popupTextPadding = ScaleHeight(8)
 		Node.popupHoverPadding = ScaleHeight(2)
+		Node.openSlideY = ScaleHeight(8)
 	}
 
 	private static readonly popupElementColor = new Color(16, 16, 28)
@@ -69,6 +70,8 @@ export class Node extends Base {
 
 	private static popupTextPadding = 0
 	private static popupHoverPadding = 0
+	// vertical distance a tab's flyout settles in from while it fades open
+	private static openSlideY = 0
 
 	public entries: Base[] = []
 	public SaveUnusedConfigs = true
@@ -87,6 +90,9 @@ export class Node extends Base {
 	private ScrollPosition = 0
 	private IsAtScrollEnd = true
 	private VisibleEntries = 0
+	// tab open-fade progress (0..1)
+	private openT = 0
+	private openLast = 0
 
 	private iconColor_ = Color.White
 	private iconGrayScale_ = false
@@ -116,6 +122,10 @@ export class Node extends Base {
 		}
 		if (!val) {
 			this.OnMouseLeftUp(true)
+		} else if (Base.TabOpenAnimation) {
+			// restart the open-fade each time the tab is expanded
+			this.openT = 0
+			this.openLast = 0
 		}
 		this.IsOpen_ = val
 		this.isActive = val
@@ -174,6 +184,13 @@ export class Node extends Base {
 			if (element instanceof Node) {
 				element.ForeachRecursive(cb)
 			}
+		}
+	}
+	/** scroll this node's list so the given child is visible (used by search navigation) */
+	public ScrollToEntry(entry: Base): void {
+		const idx = this.entries.indexOf(entry)
+		if (idx >= 0) {
+			this.ScrollPosition = Math.max(0, idx - 1)
 		}
 	}
 
@@ -322,9 +339,23 @@ export class Node extends Base {
 			updatedEntries = false
 		}
 		if (this.IsOpen) {
+			// fade + settle the flyout in on open; multiplies with the menu-wide fade so
+			// nested tabs compound correctly. prevOpacity is restored before the tab row
+			// itself is drawn below, so the row stays at the menu's opacity.
+			const openT = this.UpdateOpenAnim()
+			const prevOpacity = RendererSDK.OpacityMultiplier
+			const prevBgOpacity = Base.BackgroundOpacity
+			if (openT < 1) {
+				RendererSDK.OpacityMultiplier = prevOpacity * openT
+				// keep the flyout's panel backgrounds solid; only contents fade in
+				Base.BackgroundOpacity = prevOpacity
+			}
 			this.UpdateScrollbar()
 			const position = this.Position.Clone().AddScalarX(this.parent.EntriesSizeX)
 			position.y = Math.min(position.y, this.WindowSize.y - this.EntriesSizeY)
+			if (openT < 1) {
+				position.AddScalarY((1 - openT) * Node.openSlideY)
+			}
 			let skip = this.ScrollPosition,
 				visibleEntries = this.VisibleEntries
 			const entries2 = this.entries
@@ -347,6 +378,10 @@ export class Node extends Base {
 			}
 			if (updatedEntries) {
 				this.Update()
+			}
+			if (openT < 1) {
+				RendererSDK.OpacityMultiplier = prevOpacity
+				Base.BackgroundOpacity = prevBgOpacity
 			}
 		}
 
@@ -944,6 +979,27 @@ export class Node extends Base {
 			.Clone()
 			.AddScalarY((positionsSize.y * this.ScrollPosition) / this.entries.length)
 		return new Rectangle(scrollbarPos, scrollbarPos.Add(scrollbarSize))
+	}
+	// eases the open-fade toward 1 frame-rate-independently; returns the current alpha
+	private UpdateOpenAnim(): number {
+		if (!Base.TabOpenAnimation) {
+			this.openT = 1
+			return 1
+		}
+		if (this.openT >= 1) {
+			return 1
+		}
+		const now = hrtime()
+		const dt =
+			this.openLast === 0 ? 16 : Math.min(Math.max(now - this.openLast, 0), 100)
+		this.openLast = now
+		// fixed 200% speed (half the base tau); not user-adjustable
+		const tau = 60 / 2
+		this.openT += (1 - this.openT) * (1 - Math.exp(-dt / tau))
+		if (this.openT > 0.995) {
+			this.openT = 1
+		}
+		return this.openT
 	}
 	private UpdateVisibleEntries() {
 		this.VisibleEntries = 0

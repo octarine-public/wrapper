@@ -15,6 +15,9 @@ export interface IMenu {
 	EntriesSizeY: number
 	IsOpen: boolean
 	IsVisible: boolean
+	// stable height the header should clamp its position against (see Menu.ts);
+	// only the root menu provides it, nested nodes fall back to EntriesSizeY
+	HeaderClampHeightY?: number
 }
 
 export class Base {
@@ -62,6 +65,27 @@ export class Base {
 
 	public static DrawMarksNew = true
 	public static DrawMarksNonDefault = true
+	public static HoverAnimation = true
+	// fade the whole menu in when it opens
+	public static MenuOpenAnimation = true
+	// fade + slide a tab's contents in when it opens
+	public static TabOpenAnimation = true
+	// fade + slide a dropdown's popup in when it opens and out when it closes
+	public static DropdownOpenAnimation = true
+	// While a tab-open fade is in progress Node.Render sets this to the opacity its
+	// flyout panel backgrounds should keep (>= 0); -1 disables the override. Lets the
+	// panel stay solid while only its contents fade in. See Node.Render / Base.Render.
+	public static BackgroundOpacity = -1
+
+	// element briefly highlighted after the user jumps to it from a search result
+	public static FlashElement: Nullable<Base>
+	private static flashUntil = 0
+	private static readonly flashDuration = 2500
+	private static readonly flashColor = new Color(104, 4, 255)
+	public static Flash(el: Base): void {
+		Base.FlashElement = el
+		Base.flashUntil = hrtime() + Base.flashDuration
+	}
 
 	public static markColorNew = new Color(34, 177, 76)
 	public static markColorNonDefault = Color.fromUint32(0xffbbbbbb)
@@ -230,12 +254,22 @@ export class Base {
 	}
 
 	public Render(drawBar = true): void {
+		// During a tab-open fade the flyout panel background is held at the menu's
+		// opacity (Base.BackgroundOpacity >= 0) so only its contents fade in.
+		const bgOpacity = Base.BackgroundOpacity
+		const fadedOpacity = RendererSDK.OpacityMultiplier
+		if (bgOpacity >= 0) {
+			RendererSDK.OpacityMultiplier = bgOpacity
+		}
 		RendererSDK.Image(
 			this.isActive ? Base.backgroundActivePath : Base.backgroundInactivePath,
 			this.Position,
 			-1,
 			this.RenderSize
 		)
+		if (bgOpacity >= 0) {
+			RendererSDK.OpacityMultiplier = fadedOpacity
+		}
 		if (drawBar) {
 			RendererSDK.Image(
 				this.IsHovered || this.isActive
@@ -268,6 +302,20 @@ export class Base {
 				sizepad,
 				col
 			)
+		}
+		if (Base.FlashElement === this) {
+			const remaining = Base.flashUntil - hrtime()
+			if (remaining > 0) {
+				const fade = remaining / Base.flashDuration
+				const pulse = 0.55 + 0.45 * Math.sin(hrtime() / 150)
+				RendererSDK.FilledRect(
+					this.Position,
+					this.RenderSize,
+					Base.flashColor.Clone().SetA(Math.round(150 * fade * pulse))
+				)
+			} else {
+				Base.FlashElement = undefined
+			}
 		}
 		if (this.IsHovered) {
 			this.RenderTooltip()

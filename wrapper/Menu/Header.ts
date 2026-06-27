@@ -78,7 +78,11 @@ export class Header extends Base {
 			0
 		)
 		this.Position.y = Math.max(
-			Math.min(this.Position.y, windowSize.y - this.parent.EntriesSizeY),
+			Math.min(
+				this.Position.y,
+				windowSize.y -
+					(this.parent.HeaderClampHeightY ?? this.parent.EntriesSizeY)
+			),
 			0
 		)
 		this.Position.RoundForThis()

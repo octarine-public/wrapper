@@ -27,6 +27,48 @@ export class EntityDataMap {
 	public set(key: number, value: EntityDataMapValue): void {
 		this.data.set(key, value)
 	}
+	public getString(key: string): Nullable<string> {
+		const v = this.get(key)
+		return typeof v === "string" ? v : undefined
+	}
+	public getVector3(key: string): Nullable<Vector3> {
+		const v = this.get(key)
+		if (v instanceof Vector3) {
+			return v
+		}
+		if (typeof v === "string") {
+			return Vector3.FromString(v)
+		}
+		return undefined
+	}
+	public getVector2(key: string): Nullable<Vector2> {
+		const v = this.get(key)
+		if (v instanceof Vector2) {
+			return v
+		}
+		if (v instanceof Vector3) {
+			return Vector2.FromVector3(v)
+		}
+		if (typeof v === "string") {
+			return Vector2.FromString(v)
+		}
+		return undefined
+	}
+	// KV3 length-3 arrays always decode as Vector3 even when the field is angles,
+	// so accept Vector3 here and reinterpret its components as pitch/yaw/roll.
+	public getQAngle(key: string): Nullable<QAngle> {
+		const v = this.get(key)
+		if (v instanceof QAngle) {
+			return v
+		}
+		if (v instanceof Vector3) {
+			return new QAngle(v.x, v.y, v.z)
+		}
+		if (typeof v === "string") {
+			return QAngle.FromString(v)
+		}
+		return undefined
+	}
 }
 
 const enum EntityFieldType {
@@ -223,7 +265,10 @@ function ParseEntityKeyValues(
 							break
 					}
 				}
-				map.set(MurmurHash2(name, 0x31415926) >>> 0, value as EntityDataMapValue)
+				map.set(
+					MurmurHash2(name, 0x31415926) >>> 0,
+					entityValue as EntityDataMapValue
+				)
 			})
 		} else if (entityKV.has("m_keyValuesData")) {
 			let kvData = entityKV.get("m_keyValuesData")
