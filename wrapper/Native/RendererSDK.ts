@@ -35,7 +35,33 @@ const enum CommandID {
 	// DRAW
 	TEXT,
 	SVG,
-	PATH
+	PATH,
+
+	// relative translate (non-draw): STORE writes the C++ offset map, LOAD selects the current offset
+	TRANSLATE_RELATIVE_STORE = 17,
+	TRANSLATE_RELATIVE_LOAD
+}
+
+/** Identifies one of the renderer's command lists (separate command streams). */
+export const enum RenderList {
+	/** Per-frame screen-anchor updates (TRANSLATE_RELATIVE_STORE). Submitted first. */
+	Coords3D,
+	/** Persisted heavy draws, rebuilt only on the throttled Draw2D pass. Submitted second. */
+	Draw2D,
+	/** Per-frame draws (PreDraw/Draw) + the menu. Submitted last. */
+	Draw3D
+}
+
+/**
+ * One independent command stream. The renderer keeps several of these and submits them in a chosen
+ * order each frame, so e.g. the per-frame coords-update list runs before the persisted Draw2D list
+ * that consumes those coords via TRANSLATE_RELATIVE_LOAD — eliminating the one-frame anchor lag.
+ */
+class CommandList {
+	public cache = new Uint8Array()
+	public stream = new ViewBinaryStream(new DataView(new ArrayBuffer(0)))
+	public size = 0
+	public smallFrames = 0
 }
 
 const enum PathFlags {
@@ -88,21 +114,30 @@ class CRendererSDK {
 
 	public readonly WindowSize = new Vector2(1, 1)
 
-	private commandCache = new Uint8Array()
-	private commandStream = new ViewBinaryStream(
-		new DataView(
-			this.commandCache.buffer,
-			this.commandCache.byteOffset,
-			this.commandCache.byteLength
-		)
-	)
-	private commandCacheSize = 0
-	private commandCache2DSize = 0
+	// Separate command streams submitted in a fixed order each frame (see EmitDraw):
+	// Coords3D first so its STOREs land before Draw2D's LOADs read them (zero anchor lag).
+	private readonly coords3DList = new CommandList()
+	private readonly draw2DList = new CommandList()
+	private readonly draw3DList = new CommandList()
+	private activeList: CommandList = this.draw3DList
+	private readonly listStack: CommandList[] = []
 	private lastDraw2DTime = 0
 	private lastPreDataUpdateTime = 0
 	private draw2DInvalidated = false
 	private readonly draw2DInterval = 1000 / 30
-	private smallCommandCacheFrames = 0
+	// true while a relative offset is loaded, so zero-offset draws still emit a TRANSLATE
+	private relativeOffsetActive = false
+	// proxies so the many `this.commandStream.WriteX(...)` and `this.commandCacheSize` call sites
+	// keep writing into whichever list is currently active
+	private get commandStream(): ViewBinaryStream {
+		return this.activeList.stream
+	}
+	private get commandCacheSize(): number {
+		return this.activeList.size
+	}
+	private set commandCacheSize(value: number) {
+		this.activeList.size = value
+	}
 	private readonly fontCache = new Map<string, Font[]>()
 	private readonly textureCache = new Map</* path */ string, number>()
 	private clearTextureCache = false
@@ -750,6 +785,13 @@ class CRendererSDK {
 	public BeforeDraw(w: number, h: number) {
 		this.inDraw = true
 
+		// per-frame lists start fresh each frame; the persisted Draw2D list is kept until rebuilt
+		this.ResetList(this.coords3DList)
+		this.ResetList(this.draw3DList)
+		this.activeList = this.draw3DList
+		this.listStack.length = 0
+		this.relativeOffsetActive = false
+
 		// eslint-disable-next-line prettier/prettier
 		if (this.WindowSize.x !== w ||
 			this.WindowSize.y !== h) {
@@ -796,34 +838,76 @@ class CRendererSDK {
 		}
 		return false
 	}
+	// Draw2D is just "build the persisted Draw2D list from scratch" — kept for callers.
 	public BeforeDraw2D(): void {
-		this.commandStream.pos = 0
-		this.commandCacheSize = 0
+		this.BeginCommandList(RenderList.Draw2D, true)
 	}
 	public AfterDraw2D(): void {
-		this.commandCache2DSize = this.commandCacheSize
+		this.EndCommandList()
+	}
+	/**
+	 * Make a command list the active write target. Subsequent draw calls go into it until the
+	 * matching EndCommandList(). `reset` clears the list first (rebuild) vs appending.
+	 */
+	public BeginCommandList(id: RenderList, reset = true): void {
+		const list = this.ListByID(id)
+		this.listStack.push(this.activeList)
+		this.activeList = list
+		if (reset) {
+			this.ResetList(list)
+		}
+	}
+	public EndCommandList(): void {
+		this.activeList = this.listStack.pop() ?? this.draw3DList
 	}
 	public EmitDraw() {
-		Renderer.ExecuteCommandBuffer(
-			this.commandCache.subarray(0, this.commandCacheSize)
-		)
+		// Submit order is the whole point: coords (STOREs) before the persisted Draw2D (LOADs),
+		// then the per-frame Draw3D + menu. SetCommandCache appends, so these accumulate in order.
+		this.FlushList(this.coords3DList)
+		this.FlushList(this.draw2DList)
+		this.FlushList(this.draw3DList)
+		this.inDraw = false
+	}
+	private ResetList(list: CommandList): void {
+		list.stream.pos = 0
+		list.size = 0
+	}
+	private ListByID(id: RenderList): CommandList {
+		switch (id) {
+			case RenderList.Coords3D:
+				return this.coords3DList
+			case RenderList.Draw2D:
+				return this.draw2DList
+			default:
+				return this.draw3DList
+		}
+	}
+	private FlushList(list: CommandList): void {
+		if (list.size > 0) {
+			Renderer.ExecuteCommandBuffer(list.cache.subarray(0, list.size))
+		}
+		// shrink an oversized buffer after sustained low usage
 		const shrinkFactor = 3,
 			shrinkMul = 2,
 			shrinkFrames = 5
-		if (this.commandCacheSize * shrinkFactor < this.commandCache.byteLength) {
-			if (this.smallCommandCacheFrames++ > shrinkFrames) {
-				const shrunk = new Uint8Array(this.commandCacheSize * shrinkMul)
-				shrunk.set(this.commandCache.subarray(0, this.commandCache2DSize))
-				this.commandCache = shrunk
-				this.OnCommandCacheChanged()
-				this.smallCommandCacheFrames = 0
+		if (list.size * shrinkFactor < list.cache.byteLength) {
+			if (list.smallFrames++ > shrinkFrames) {
+				const shrunk = new Uint8Array(list.size * shrinkMul)
+				shrunk.set(list.cache.subarray(0, list.size))
+				list.cache = shrunk
+				list.stream = new ViewBinaryStream(
+					new DataView(
+						list.cache.buffer,
+						list.cache.byteOffset,
+						list.cache.byteLength
+					),
+					list.stream.pos
+				)
+				list.smallFrames = 0
 			}
 		} else {
-			this.smallCommandCacheFrames = 0
+			list.smallFrames = 0
 		}
-		this.commandStream.pos = this.commandCache2DSize
-		this.commandCacheSize = this.commandCache2DSize
-		this.inDraw = false
 	}
 	public GetAspectRatio(windowSize = this.WindowSize) {
 		const res = windowSize.x / windowSize.y
@@ -1206,33 +1290,30 @@ class CRendererSDK {
 	}
 
 	private OnCommandCacheChanged() {
-		this.commandStream = new ViewBinaryStream(
-			new DataView(
-				this.commandCache.buffer,
-				this.commandCache.byteOffset,
-				this.commandCache.byteLength
-			),
-			this.commandStream.pos
+		const list = this.activeList
+		list.stream = new ViewBinaryStream(
+			new DataView(list.cache.buffer, list.cache.byteOffset, list.cache.byteLength),
+			list.stream.pos
 		)
 	}
 	private ResizeCommandCache(): void {
-		const updatedLen = this.commandCacheSize
-		if (updatedLen <= this.commandCache.byteLength) {
+		const list = this.activeList
+		if (list.size <= list.cache.byteLength) {
 			return
 		}
 		const growFactor = 2
 		const buf = new Uint8Array(
-			Math.max(this.commandCache.byteLength * growFactor, updatedLen)
+			Math.max(list.cache.byteLength * growFactor, list.size)
 		)
-		buf.set(this.commandCache, 0)
-		this.commandCache = buf
+		buf.set(list.cache, 0)
+		list.cache = buf
 		this.OnCommandCacheChanged()
 	}
 	private AllocateCommandSpace(commandID: CommandID, bytes: number): void {
 		bytes += 1 // msgid
-		this.commandCacheSize += bytes
+		this.activeList.size += bytes
 		this.ResizeCommandCache()
-		this.commandStream.WriteUint8(commandID)
+		this.activeList.stream.WriteUint8(commandID)
 	}
 	// writes a color into the command stream, scaling its alpha by OpacityMultiplier
 	private WriteScaledColor(color: Color): void {
@@ -1319,7 +1400,9 @@ class CRendererSDK {
 		this.commandStream.WriteFloat32(Math.degreesToRadian(ang))
 	}
 	private Translate(vecPos: Vector2, round: boolean = true): void {
-		if (vecPos.IsZero()) {
+		// While a relative offset is loaded, a zero local offset is NOT a no-op: it must still emit
+		// a TRANSLATE so the C++ side adds the loaded offset (a shape sitting exactly on the anchor).
+		if (vecPos.IsZero() && !this.relativeOffsetActive) {
 			return
 		}
 		if (round) {
@@ -1328,6 +1411,57 @@ class CRendererSDK {
 		this.AllocateCommandSpace(CommandID.TRANSLATE, 2 * 4)
 		this.commandStream.WriteFloat32(vecPos.x)
 		this.commandStream.WriteFloat32(vecPos.y)
+	}
+	/**
+	 * Store a per-id screen anchor in the C++ offset map (written to the Coords3D list, which is
+	 * submitted before Draw2D so the value is current when Draw2D's LOAD reads it). Zero deletes it.
+	 */
+	public TranslateRelativeStore(id: number, vecPos: Vector2, round = true): void {
+		this.BeginCommandList(RenderList.Coords3D, false)
+		if (round) {
+			vecPos.RoundForThis()
+		}
+		this.AllocateCommandSpace(CommandID.TRANSLATE_RELATIVE_STORE, 4 + 2 * 4)
+		this.commandStream.WriteUint32(id >>> 0)
+		this.commandStream.WriteFloat32(vecPos.x)
+		this.commandStream.WriteFloat32(vecPos.y)
+		this.EndCommandList()
+	}
+	/** Remove a per-id anchor (e.g. on entity destroy or when off-screen). */
+	public TranslateRelativeDelete(id: number): void {
+		this.BeginCommandList(RenderList.Coords3D, false)
+		this.AllocateCommandSpace(CommandID.TRANSLATE_RELATIVE_STORE, 4 + 2 * 4)
+		this.commandStream.WriteUint32(id >>> 0)
+		this.commandStream.WriteFloat32(0)
+		this.commandStream.WriteFloat32(0)
+		this.EndCommandList()
+	}
+	/**
+	 * Select the per-id anchor as the current relative offset; every following TRANSLATE in the
+	 * active draw list is shifted by it until the next Load/Reset. Prefer DrawRelative.
+	 */
+	public TranslateRelativeLoad(id: number): void {
+		this.AllocateCommandSpace(CommandID.TRANSLATE_RELATIVE_LOAD, 4)
+		this.commandStream.WriteUint32(id >>> 0)
+		this.relativeOffsetActive = true
+	}
+	/** Clear the current relative offset back to (0,0). Id 0 is reserved and never stored. */
+	public TranslateRelativeReset(): void {
+		this.AllocateCommandSpace(CommandID.TRANSLATE_RELATIVE_LOAD, 4)
+		this.commandStream.WriteUint32(0)
+		this.relativeOffsetActive = false
+	}
+	/**
+	 * Draw a block anchored to a per-id screen point: every draw in `cb` is shifted by the offset
+	 * stored for `id`. The offset is reset afterwards even if `cb` throws, so it can't leak.
+	 */
+	public DrawRelative(id: number, cb: () => void): void {
+		this.TranslateRelativeLoad(id)
+		try {
+			cb()
+		} finally {
+			this.TranslateRelativeReset()
+		}
 	}
 	private NormalizedAngle(ang: number): number {
 		while (ang < 0) {

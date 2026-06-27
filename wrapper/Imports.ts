@@ -127,7 +127,7 @@ export * as Menu from "./Menu/index"
 export { CameraSDK } from "./Native/CameraSDK"
 export { ConVarsSDK } from "./Native/ConVarsSDK"
 export { ExecuteOrder } from "./Native/ExecuteOrder"
-export { LineCap, LineJoin, RendererSDK } from "./Native/RendererSDK"
+export { LineCap, LineJoin, RenderList, RendererSDK } from "./Native/RendererSDK"
 export { SoundSDK } from "./Native/SoundSDK"
 export { GetPositionHeight } from "./Native/WASM"
 export {
