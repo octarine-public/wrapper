@@ -1,5 +1,4 @@
 import { Color } from "../../Base/Color"
-import { QAngle } from "../../Base/QAngle"
 import { Vector3 } from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
 import { MapArea } from "../../Enums/MapArea"
@@ -167,16 +166,12 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 				continue
 		}
 
-		const originStr = data.get("origin"),
-			anglesStr = data.get("angles"),
-			npcfirstwaypoint =
-				data.get("NPCFirstWaypoint") ?? data.get("npcfirstwaypoint"),
-			targetname = data.get("targetname")
-		if (
-			typeof originStr !== "string" ||
-			typeof anglesStr !== "string" ||
-			typeof targetname !== "string"
-		) {
+		const pos = data.getVector3("origin")?.Clone()
+		const ang = data.getQAngle("angles")
+		const targetname = data.getString("targetname")
+		const npcfirstwaypoint =
+			data.getString("NPCFirstWaypoint") ?? data.getString("npcfirstwaypoint")
+		if (pos === undefined || ang === undefined || targetname === undefined) {
 			continue
 		}
 		let id = curLocalID++
@@ -188,7 +183,7 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 		entity.Team = team
 		entity.Lane = lane
 		entity.SelfTargetName = targetname
-		if (typeof npcfirstwaypoint === "string") {
+		if (npcfirstwaypoint !== undefined) {
 			entity.TargetName = npcfirstwaypoint
 			const firstWaypoint = CreepPathCorners.find(
 				ent => ent.SelfTargetName === npcfirstwaypoint
@@ -205,8 +200,6 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 		}
 		CreateEntityInternal(entity)
 		EventsSDK.emit("PreEntityCreated", false, entity)
-		const pos = Vector3.FromString(originStr),
-			ang = QAngle.FromString(anglesStr)
 		pos.SetZ(GetPositionHeight(pos))
 		// Hack "GetPositionHeight(pos)"
 		entity.OriginPosition.CopyFrom(pos)
@@ -219,18 +212,14 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 
 	for (let index = 0, end = lump.length; index < end; index++) {
 		const data = lump[index]
-		if (data.get("classname") !== "path_corner") {
+		if (data.getString("classname") !== "path_corner") {
 			continue
 		}
-		const originStr = data.get("origin"),
-			anglesStr = data.get("angles"),
-			target = data.get("target"),
-			targetname = data.get("targetname")
-		if (
-			typeof originStr !== "string" ||
-			typeof anglesStr !== "string" ||
-			typeof targetname !== "string"
-		) {
+		const pos = data.getVector3("origin")?.Clone()
+		const ang = data.getQAngle("angles")
+		const target = data.getString("target")
+		const targetname = data.getString("targetname")
+		if (pos === undefined || ang === undefined || targetname === undefined) {
 			continue
 		}
 		let id = curLocalID++
@@ -238,7 +227,7 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 			id = curLocalID++
 		}
 		const entity = new CreepPathCorner(id, 0)
-		if (typeof target === "string") {
+		if (target !== undefined) {
 			entity.TargetName = target
 		}
 		entity.SelfTargetName = targetname
@@ -247,8 +236,6 @@ function LoadCreepSpawnersAndPathCorners(layerName: string, state: boolean): voi
 		FixCreepPathCorner(entity)
 		CreateEntityInternal(entity)
 		EventsSDK.emit("PreEntityCreated", false, entity)
-		const pos = Vector3.FromString(originStr),
-			ang = QAngle.FromString(anglesStr)
 		pos.SetZ(GetPositionHeight(pos))
 		// Hack "GetPositionHeight(pos)"
 		entity.OriginPosition.CopyFrom(pos)

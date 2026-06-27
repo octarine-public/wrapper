@@ -1,5 +1,4 @@
 import { Color } from "../../Base/Color"
-import { QAngle } from "../../Base/QAngle"
 import { Vector2 } from "../../Base/Vector2"
 import { Vector3 } from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
@@ -99,22 +98,18 @@ EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
 			id = curLocalID++
 		}
 		const entData = lump?.find(data => {
-			if (data.get("classname") !== "ent_dota_tree") {
+			if (data.getString("classname") !== "ent_dota_tree") {
 				return false
 			}
-			const originStr = data.get("origin")
-			if (typeof originStr !== "string") {
-				return false
-			}
-			const pos = Vector3.FromString(originStr)
-			return pos.x === trmpPos.x && pos.y === trmpPos.y
+			const pos = data.getVector3("origin")
+			return pos !== undefined && pos.x === trmpPos.x && pos.y === trmpPos.y
 		})
 		if (entData === undefined) {
 			continue
 		}
-		const anglesStr = entData.get("angles"),
-			model = entData.get("model")
-		if (typeof anglesStr !== "string" || typeof model !== "string") {
+		const ang = entData.getQAngle("angles"),
+			model = entData.getString("model")
+		if (ang === undefined || model === undefined) {
 			continue
 		}
 
@@ -127,7 +122,6 @@ EventsSDK.on("WorldLayerVisibilityChanged", (layerName, state) => {
 		entity.BinaryID = binaryID
 		entity.Team = Team.Neutral
 
-		const ang = QAngle.FromString(anglesStr)
 		entity.VisualAngles.CopyFrom(ang)
 		entity.NetworkedAngles.CopyFrom(ang)
 		entity.ModelName = model
