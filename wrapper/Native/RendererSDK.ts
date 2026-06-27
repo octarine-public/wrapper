@@ -127,6 +127,16 @@ class CRendererSDK {
 	private readonly draw2DInterval = 1000 / 30
 	// true while a relative offset is loaded, so zero-offset draws still emit a TRANSLATE
 	private relativeOffsetActive = false
+	// debug stats, captured each frame in EmitDraw and exposed via DebugStats
+	private relStoreCounter = 0
+	private relLoadCounter = 0
+	private readonly debugStats = {
+		coords3D: 0,
+		draw2D: 0,
+		draw3D: 0,
+		relStores: 0,
+		relLoads: 0
+	}
 	// proxies so the many `this.commandStream.WriteX(...)` and `this.commandCacheSize` call sites
 	// keep writing into whichever list is currently active
 	private get commandStream(): ViewBinaryStream {
@@ -791,6 +801,7 @@ class CRendererSDK {
 		this.activeList = this.draw3DList
 		this.listStack.length = 0
 		this.relativeOffsetActive = false
+		this.relStoreCounter = 0
 
 		// eslint-disable-next-line prettier/prettier
 		if (this.WindowSize.x !== w ||
@@ -840,6 +851,7 @@ class CRendererSDK {
 	}
 	// Draw2D is just "build the persisted Draw2D list from scratch" — kept for callers.
 	public BeforeDraw2D(): void {
+		this.relLoadCounter = 0
 		this.BeginCommandList(RenderList.Draw2D, true)
 	}
 	public AfterDraw2D(): void {
@@ -866,7 +878,25 @@ class CRendererSDK {
 		this.FlushList(this.coords3DList)
 		this.FlushList(this.draw2DList)
 		this.FlushList(this.draw3DList)
+		this.debugStats.coords3D = this.coords3DList.size
+		this.debugStats.draw2D = this.draw2DList.size
+		this.debugStats.draw3D = this.draw3DList.size
+		this.debugStats.relStores = this.relStoreCounter
+		this.debugStats.relLoads = this.relLoadCounter
 		this.inDraw = false
+	}
+	/**
+	 * Debug counters captured at the end of the previous frame: byte size of each command list and
+	 * the number of relative STORE / LOAD ops emitted (LOAD count is from the last Draw2D rebuild).
+	 */
+	public get DebugStats(): Readonly<{
+		coords3D: number
+		draw2D: number
+		draw3D: number
+		relStores: number
+		relLoads: number
+	}> {
+		return this.debugStats
 	}
 	private ResetList(list: CommandList): void {
 		list.stream.pos = 0
@@ -1417,6 +1447,7 @@ class CRendererSDK {
 	 * submitted before Draw2D so the value is current when Draw2D's LOAD reads it). Zero deletes it.
 	 */
 	public TranslateRelativeStore(id: number, vecPos: Vector2, round = true): void {
+		this.relStoreCounter++
 		this.BeginCommandList(RenderList.Coords3D, false)
 		if (round) {
 			vecPos.RoundForThis()
@@ -1429,6 +1460,7 @@ class CRendererSDK {
 	}
 	/** Remove a per-id anchor (e.g. on entity destroy or when off-screen). */
 	public TranslateRelativeDelete(id: number): void {
+		this.relStoreCounter++
 		this.BeginCommandList(RenderList.Coords3D, false)
 		this.AllocateCommandSpace(CommandID.TRANSLATE_RELATIVE_STORE, 4 + 2 * 4)
 		this.commandStream.WriteUint32(id >>> 0)
@@ -1441,6 +1473,7 @@ class CRendererSDK {
 	 * active draw list is shifted by it until the next Load/Reset. Prefer DrawRelative.
 	 */
 	public TranslateRelativeLoad(id: number): void {
+		this.relLoadCounter++
 		this.AllocateCommandSpace(CommandID.TRANSLATE_RELATIVE_LOAD, 4)
 		this.commandStream.WriteUint32(id >>> 0)
 		this.relativeOffsetActive = true
