@@ -64,6 +64,18 @@ class CommandList {
 	public smallFrames = 0
 }
 
+/**
+ * Well-known relative-anchor kinds, shared across scripts so two consumers that want the same point
+ * (e.g. a unit's health bar) collapse to one map cell. Bespoke anchors use AllocateAnchorKind().
+ */
+export const enum AnchorKind {
+	HealthBar = 0,
+	Origin = 1
+}
+
+// fallback anchor for an entity whose screen position doesn't resolve this frame (block clipped away)
+const RELATIVE_OFFSCREEN = new Vector2(-1e5, -1e5)
+
 const enum PathFlags {
 	LINECAP_OFFSET = 2,
 	LINE_JOIN_OFFSET = 4,
@@ -137,6 +149,10 @@ class CRendererSDK {
 		relStores: 0,
 		relLoads: 0
 	}
+	// per-entity anchor registry: id -> live screen-position source, refilled each Draw2D and stored
+	// once per frame in EmitDraw (a Map keyed by id dedupes consumers that share an anchor)
+	private readonly anchorRefs = new Map<number, () => Nullable<Vector2>>()
+	private nextAnchorKind = 64 // custom kinds; 0..63 reserved for built-in AnchorKind
 	// proxies so the many `this.commandStream.WriteX(...)` and `this.commandCacheSize` call sites
 	// keep writing into whichever list is currently active
 	private get commandStream(): ViewBinaryStream {
@@ -852,6 +868,7 @@ class CRendererSDK {
 	// Draw2D is just "build the persisted Draw2D list from scratch" — kept for callers.
 	public BeforeDraw2D(): void {
 		this.relLoadCounter = 0
+		this.anchorRefs.clear()
 		this.BeginCommandList(RenderList.Draw2D, true)
 	}
 	public AfterDraw2D(): void {
@@ -873,6 +890,10 @@ class CRendererSDK {
 		this.activeList = this.listStack.pop() ?? this.draw3DList
 	}
 	public EmitDraw() {
+		// store each referenced entity anchor once (deduped) into coords3D before it is flushed
+		this.anchorRefs.forEach((getPos, id) =>
+			this.TranslateRelativeStore(id, getPos() ?? RELATIVE_OFFSCREEN, false)
+		)
 		// Submit order is the whole point: coords (STOREs) before the persisted Draw2D (LOADs),
 		// then the per-frame Draw3D + menu. SetCommandCache appends, so these accumulate in order.
 		this.FlushList(this.coords3DList)
@@ -1495,6 +1516,33 @@ class CRendererSDK {
 		} finally {
 			this.TranslateRelativeReset()
 		}
+	}
+	/** Allocate a process-unique custom anchor kind for script-specific anchors (vs shared AnchorKind). */
+	public AllocateAnchorKind(): number {
+		return this.nextAnchorKind++
+	}
+	/**
+	 * Register a per-(entity, kind) anchor and return its relative-coord id. The registry stores it
+	 * once per frame (deduped) from `getPos`, so multiple scripts using the same (entity, kind) share
+	 * one cell while different kinds stay separate. Call during the Draw2D build (alongside the draw).
+	 */
+	public UseEntityAnchor(
+		entityIndex: number,
+		kind: number,
+		getPos: () => Nullable<Vector2>
+	): number {
+		const id = (entityIndex * 4096 + kind) >>> 0
+		this.anchorRefs.set(id, getPos)
+		return id
+	}
+	/** Convenience: register the anchor (UseEntityAnchor) and draw the block relative to it. */
+	public DrawEntityRelative(
+		entityIndex: number,
+		kind: number,
+		getPos: () => Nullable<Vector2>,
+		cb: () => void
+	): void {
+		this.DrawRelative(this.UseEntityAnchor(entityIndex, kind, getPos), cb)
 	}
 	private NormalizedAngle(ang: number): number {
 		while (ang < 0) {
