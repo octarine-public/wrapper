@@ -8,6 +8,7 @@ import { EventsSDK } from "../Managers/EventsSDK"
 import { InputManager } from "../Managers/InputManager"
 import { ParseMaterial } from "../Resources/ParseMaterial"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
+import { GameState } from "../Utils/GameState"
 import { tryFindFile } from "../Utils/readFile"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { ConVarsSDK } from "./ConVarsSDK"
@@ -890,10 +891,16 @@ class CRendererSDK {
 		this.activeList = this.listStack.pop() ?? this.draw3DList
 	}
 	public EmitDraw() {
+		// getPos callbacks are draw-phase samplers: they must see visual (per-frame interpolated)
+		// positions, but EmitDraw runs in an after-"Draw" hook where IsInDraw was already reset —
+		// without this, anchors sample NetworkedPosition and step at tick rate (~30fps feel)
+		const wasInDraw = GameState.IsInDraw
+		GameState.IsInDraw = true
 		// store each referenced entity anchor once (deduped) into coords3D before it is flushed
 		this.anchorRefs.forEach((getPos, id) =>
 			this.TranslateRelativeStore(id, getPos() ?? RELATIVE_OFFSCREEN, false)
 		)
+		GameState.IsInDraw = wasInDraw
 		// Submit order is the whole point: coords (STOREs) before the persisted Draw2D (LOADs),
 		// then the per-frame Draw3D + menu. SetCommandCache appends, so these accumulate in order.
 		this.FlushList(this.coords3DList)
