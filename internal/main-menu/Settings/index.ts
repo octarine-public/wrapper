@@ -1,11 +1,14 @@
 import {
+	Color,
 	Entity,
 	Events,
 	EventsSDK,
 	ExecuteOrder,
 	InputEventSDK,
 	Menu,
-	MenuLanguageID
+	MenuLanguageID,
+	RendererSDK,
+	Vector2
 } from "../../../wrapper/Imports"
 import { InternalAnimations } from "./Animations"
 import { InternalCamera } from "./Camera"
@@ -29,6 +32,12 @@ new (class CInternalSettings {
 	private readonly menuKeyBind = this.tree.AddKeybind("Menu Bind", "Insert")
 	private readonly key = this.reloadTree.AddKeybind("Key Bind")
 
+	private readonly rendererStats = this.tree.AddToggle(
+		"Renderer debug stats",
+		false,
+		"Draws renderer command-list sizes and\nrelative-anchor op counts (debug)"
+	)
+
 	constructor() {
 		Events.on("SetLanguage", this.SetLanguage.bind(this))
 		Events.on("ScriptsUpdated", this.ScriptsUpdated.bind(this))
@@ -46,6 +55,14 @@ new (class CInternalSettings {
 				"Enables all scripts orders, ability to change camera distance"
 			)
 			.OnValue(toggle => (ExecuteOrder.DisableHumanizer = !toggle.value))
+
+		this.tree
+			.AddToggle(
+				"Draw2D every frame",
+				false,
+				"Disables ~30fps caching of persisted 2D blocks\nand rebuilds them every frame (perf comparison)"
+			)
+			.OnValue(toggle => (RendererSDK.Draw2DThrottleDisabled = toggle.value))
 
 		this.menuKeyBind.ActivatesInMenu = true
 		this.menuKeyBind.TriggerOnChat = true
@@ -73,6 +90,36 @@ new (class CInternalSettings {
 		this.cCamera.Draw()
 		this.cConfig.Draw()
 		this.cNotifications.Draw()
+		this.DrawRendererStats()
+	}
+
+	// debug overlay: renderer command-list sizes + relative-anchor op counts; a shared anchor
+	// showing up once in "rel STORE /f" across two scripts confirms the registry dedup
+	private DrawRendererStats() {
+		if (!this.rendererStats.value) {
+			return
+		}
+		const s = RendererSDK.DebugStats
+		const lines = [
+			`coords3D buf : ${s.coords3D} B`,
+			`draw2D buf   : ${s.draw2D} B`,
+			`draw3D buf   : ${s.draw3D} B`,
+			`rel STORE /f : ${s.relStores}`,
+			`rel LOAD (2D): ${s.relLoads}`,
+			`draw2D rate  : ${s.draw2DRate}/s`,
+			`frames       : ${s.frameRate}/s`
+		]
+		const fontSize = 16
+		const step = fontSize + 4
+		for (let i = 0; i < lines.length; i++) {
+			RendererSDK.Text(
+				lines[i],
+				new Vector2(14, 240 + i * step),
+				Color.White,
+				RendererSDK.DefaultFontName,
+				fontSize
+			)
+		}
 	}
 
 	protected MouseWheel(up: boolean) {

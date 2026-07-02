@@ -143,12 +143,19 @@ class CRendererSDK {
 	// debug stats, captured each frame in EmitDraw and exposed via DebugStats
 	private relStoreCounter = 0
 	private relLoadCounter = 0
+	// per-second rate counters: how often the persisted Draw2D list is actually rebuilt vs
+	// how many frames are rendered — proves the ~30hz throttle (or its absence) at a glance
+	private draw2DRebuildCounter = 0
+	private frameCounter = 0
+	private lastRateTime = 0
 	private readonly debugStats = {
 		coords3D: 0,
 		draw2D: 0,
 		draw3D: 0,
 		relStores: 0,
-		relLoads: 0
+		relLoads: 0,
+		draw2DRate: 0,
+		frameRate: 0
 	}
 	// per-entity anchor registry: id -> live screen-position source, refilled each Draw2D and stored
 	// once per frame in EmitDraw (a Map keyed by id dedupes consumers that share an anchor)
@@ -849,6 +856,9 @@ class CRendererSDK {
 	public OnTick(): void {
 		this.lastPreDataUpdateTime = hrtime()
 	}
+	// perf comparison switch (Settings menu): rebuilds the persisted Draw2D list every frame
+	// instead of ~30fps, i.e. disables the caching benefit while anchors keep working
+	public Draw2DThrottleDisabled = false
 	// use to remove 30 fps cap, e.g. during panel dragging
 	public InvalidateDraw2D(): void {
 		this.draw2DInvalidated = true
@@ -857,6 +867,7 @@ class CRendererSDK {
 		const now = hrtime()
 		if (
 			this.draw2DInvalidated ||
+			this.Draw2DThrottleDisabled ||
 			(now - this.lastDraw2DTime >= this.draw2DInterval &&
 				now - this.lastPreDataUpdateTime > 1000 / 30 / 2)
 		) {
@@ -868,6 +879,7 @@ class CRendererSDK {
 	}
 	// Draw2D is just "build the persisted Draw2D list from scratch" — kept for callers.
 	public BeforeDraw2D(): void {
+		this.draw2DRebuildCounter++
 		this.relLoadCounter = 0
 		this.anchorRefs.clear()
 		this.BeginCommandList(RenderList.Draw2D, true)
@@ -911,6 +923,15 @@ class CRendererSDK {
 		this.debugStats.draw3D = this.draw3DList.size
 		this.debugStats.relStores = this.relStoreCounter
 		this.debugStats.relLoads = this.relLoadCounter
+		this.frameCounter++
+		const rateNow = hrtime()
+		if (rateNow - this.lastRateTime >= 1000) {
+			this.debugStats.draw2DRate = this.draw2DRebuildCounter
+			this.debugStats.frameRate = this.frameCounter
+			this.draw2DRebuildCounter = 0
+			this.frameCounter = 0
+			this.lastRateTime = rateNow
+		}
 		this.inDraw = false
 	}
 	/**
@@ -923,6 +944,10 @@ class CRendererSDK {
 		draw3D: number
 		relStores: number
 		relLoads: number
+		/** persisted Draw2D rebuilds per second (~30 with the throttle, = frameRate without) */
+		draw2DRate: number
+		/** rendered frames per second (EmitDraw calls) */
+		frameRate: number
 	}> {
 		return this.debugStats
 	}
