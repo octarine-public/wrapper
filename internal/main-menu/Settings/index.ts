@@ -1,9 +1,12 @@
 import {
 	Color,
 	Entity,
+	EntityManager,
 	Events,
 	EventsSDK,
 	ExecuteOrder,
+	GameState,
+	Hero,
 	InputEventSDK,
 	Menu,
 	MenuLanguageID,
@@ -38,10 +41,16 @@ new (class CInternalSettings {
 		"Draws renderer command-list sizes and\nrelative-anchor op counts (debug)"
 	)
 
+	private readonly spawnTestHeroes = this.tree.AddButton(
+		"Spawn test heroes",
+		"Creates 4 allied + 5 enemy heroes at the cursor,\nmax-levels them and gives each 6 items\n(chat cheat commands — requires lobby cheats)"
+	)
+
 	constructor() {
 		Events.on("SetLanguage", this.SetLanguage.bind(this))
 		Events.on("ScriptsUpdated", this.ScriptsUpdated.bind(this))
 
+		EventsSDK.on("Tick", this.Tick.bind(this))
 		EventsSDK.on("Draw", this.Draw.bind(this))
 		EventsSDK.on("EntityCreated", this.EntityCreated.bind(this))
 		EventsSDK.on("HumanizerStateChanged", this.HumanizerStateChanged.bind(this))
@@ -81,6 +90,7 @@ new (class CInternalSettings {
 		langDD.OnValue(call => Menu.Localization.SetLang(call.SelectedID))
 
 		this.reloadTree.AddButton("Reload").OnValue(() => reload())
+		this.spawnTestHeroes.OnValue(() => this.SpawnTestHeroes())
 		this.key.ActivatesInMenu = true
 		this.key.OnPressed(() => this.cNotifications.OnBindPressed())
 		this.key.OnRelease(() => this.cNotifications.OnBindRelease())
@@ -91,6 +101,73 @@ new (class CInternalSettings {
 		this.cConfig.Draw()
 		this.cNotifications.Draw()
 		this.DrawRendererStats()
+	}
+
+	// benchmark scene via console cheat commands (the console equivalents of -createhero /
+	// -levelbots / -givebots, see liquipedia dota2game/Cheats): 9 max-level six-slotted heroes
+	// for overlay stress tests. Creates are sent one per tick; leveling and items wait until
+	// the created heroes actually spawn (they appear with a delay), with a timeout fallback.
+	private readonly pendingCommands: string[] = []
+	private finishCommands: string[] = []
+	private expectedHeroCount = 0
+	private spawnTimeoutTicks = 0
+
+	private SpawnTestHeroes() {
+		const allies = [
+			"npc_dota_hero_lina",
+			"npc_dota_hero_axe",
+			"npc_dota_hero_pudge",
+			"npc_dota_hero_sven"
+		]
+		const enemies = [
+			"npc_dota_hero_invoker",
+			"npc_dota_hero_juggernaut",
+			"npc_dota_hero_zuus",
+			"npc_dota_hero_earthshaker",
+			"npc_dota_hero_sniper"
+		]
+		const items = [
+			"item_assault",
+			"item_heart",
+			"item_butterfly",
+			"item_monkey_king_bar",
+			"item_skadi",
+			"item_satanic"
+		]
+		for (let i = 0; i < allies.length; i++) {
+			this.pendingCommands.push(`dota_create_unit ${allies[i]}`)
+		}
+		for (let i = 0; i < enemies.length; i++) {
+			this.pendingCommands.push(`dota_create_unit ${enemies[i]} enemy`)
+		}
+		this.expectedHeroCount =
+			EntityManager.GetEntitiesByClass(Hero).length +
+			allies.length +
+			enemies.length
+		this.spawnTimeoutTicks = 30 * 15 // ~15s, in case some heroes never network in
+		// max the spawned bots; hero_maxlevel additionally maxes the local hero
+		this.finishCommands = ["dota_bot_give_level 30", "dota_dev hero_maxlevel"]
+		for (let i = 0; i < items.length; i++) {
+			this.finishCommands.push(`dota_bot_give_item ${items[i]}`)
+		}
+	}
+
+	protected Tick() {
+		const cmd = this.pendingCommands.shift()
+		if (cmd !== undefined) {
+			GameState.ExecuteCommand(cmd)
+			return
+		}
+		if (this.finishCommands.length === 0) {
+			return
+		}
+		// wait for the created heroes to actually spawn before leveling / giving items
+		const spawned =
+			EntityManager.GetEntitiesByClass(Hero).length >= this.expectedHeroCount
+		if (spawned || --this.spawnTimeoutTicks <= 0) {
+			this.pendingCommands.push(...this.finishCommands)
+			this.finishCommands = []
+		}
 	}
 
 	// debug overlay: renderer command-list sizes + relative-anchor op counts; a shared anchor
