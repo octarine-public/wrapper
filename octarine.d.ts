@@ -53,6 +53,14 @@ declare interface Number {
 	 */
 	hasBit(bit: number): boolean
 	/**
+	 * True if bit `this` is set in a packed uint32 bit-vector `mask` — bit N is word (N >>> 5), bit (N & 31).
+	 * @requires
+	 * `import "github.com/octarine-public/wrapper/global"` or
+	 * `import "github.com/octarine-public/wrapper/prototypes/number"` or
+	 * `import { ... } from "github.com/octarine-public/wrapper/index"`
+	 */
+	hasBitInMask(mask: number[]): boolean
+	/**
 	 * @requires
 	 * `import "github.com/octarine-public/wrapper/global"` or
 	 * `import "github.com/octarine-public/wrapper/prototypes/number"` or

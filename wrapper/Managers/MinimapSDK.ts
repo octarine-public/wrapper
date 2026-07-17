@@ -328,6 +328,9 @@ export const MinimapSDK = new (class CMinimapSDK {
 	public DeleteIcon(uid: any): void {
 		minimapIconsActive.delete(uid)
 	}
+	public GetIconSize(name: string): Nullable<Vector2> {
+		return minimapIconStorage.get(name)?.size
+	}
 	/**
 	 * Draws ping at minimap
 	 *

@@ -8,6 +8,11 @@ Number.prototype.hasMask = function (mask: number): boolean {
 	return (v & mask) === mask
 }
 
+Number.prototype.hasBitInMask = function (mask: number[]): boolean {
+	const bit = (this as number) | 0
+	return ((mask[bit >>> 5] ?? 0) & (1 << (bit & 31))) !== 0
+}
+
 Number.prototype.bitCount = function (): number {
 	let n = this.valueOf()
 	n = n - ((n >> 1) & 0x55555555)
