@@ -134,11 +134,15 @@ export class Particle {
 		}
 		path = tryFindFile(path, 2) ?? path
 		path = path.substring(0, path.length - 2)
-		this.EffectIndex = Particles.Create(path, this.Attachment, this.AttachedTo.Index)
-		this.IsValid = true
-		this.SetInFogVisible()
-		this.SetControlPoints(...controlPoints)
-		this.Parent.AllParticles.set(this.Key, this)
+		Particles.Create(path, this.Attachment, this.AttachedTo.Index).then(
+			effectIndex => {
+				this.EffectIndex = effectIndex
+				this.IsValid = true
+				this.SetInFogVisible()
+				this.SetControlPoints(...controlPoints)
+				this.Parent.AllParticles.set(this.Key, this)
+			}
+		)
 		return this
 	}
 }

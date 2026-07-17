@@ -66,7 +66,7 @@ declare interface CustomGameEvents {
 }
 
 declare interface Particles {
-	Create(path: string, attach: number, attachedTo: number): number
+	Create(path: string, attach: number, attachedTo: number): Promise<number>
 	Destroy(particleID: number, immediate: boolean): void
 	SetInFogVisible(particleID: number, value: boolean): void
 	SetControlPoint(particleID: number, controlPoint: number): void // pass vec: Vector3 at IOBuffer offset 0
