@@ -433,6 +433,13 @@ declare function fexists(path: string): boolean
  */
 declare function readConfig(): Promise<string>
 declare function writeConfig(data: string): void
+declare function listConfigs(): Promise<string>
+declare function createConfig(name: string): Promise<string>
+declare function deleteConfig(id: string): Promise<string>
+declare function setActiveConfig(id: string): Promise<string>
+declare function addConfigByCode(code: string, keepBinds: boolean): Promise<string>
+declare function setConfigPublic(id: string, isPublic: boolean): Promise<string>
+declare function configCommand(op: number, payload: string): Promise<string>
 declare function PrepareUnitOrders(obj: {
 	// pass Position: Vector3 at IOBuffer offset 0
 	OrderType: number

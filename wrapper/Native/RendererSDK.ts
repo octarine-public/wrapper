@@ -908,6 +908,10 @@ class CRendererSDK {
 		this.debugStats.relLoads = this.relLoadCounter
 		this.inDraw = false
 	}
+	public EmitDrawOverlay(): void {
+		this.FlushList(this.draw3DList)
+		this.inDraw = false
+	}
 	/**
 	 * Debug counters captured at the end of the previous frame: byte size of each command list and
 	 * the number of relative STORE / LOAD ops emitted (LOAD count is from the last Draw2D rebuild).

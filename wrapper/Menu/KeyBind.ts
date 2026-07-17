@@ -64,6 +64,9 @@ export class KeyBind extends Base {
 		this.assignedKey = value
 		this.UpdateIsDefault()
 	}
+	public ResetConfigValue(): void {
+		// override
+	}
 	public get isPressed(): boolean {
 		return this.IsPressed_
 	}

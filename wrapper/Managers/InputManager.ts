@@ -605,15 +605,35 @@ interface InputEventSDK extends EventEmitter {
 	 *
 	 * @param callback returns keyMask. You can use HasMask from Utils
 	 */
-	on(name: "KeyDown", callback: (keyMask: VKeys) => boolean | any): EventEmitter
+	on(
+		name: "KeyDown",
+		callback: (keyMask: VKeys) => boolean | any,
+		priority?: number
+	): EventEmitter
 	/**
 	 * Emitted when any key on keyboard will be relesead
 	 *
 	 * @param callback returns keyMask. You can use HasMask from Utils
 	 */
-	on(name: "KeyUp", callback: (keyMask: VKeys) => boolean | any): EventEmitter
-	on(name: "MouseKeyDown", callback: (key: VMouseKeys) => boolean | any): EventEmitter
-	on(name: "MouseKeyUp", callback: (key: VMouseKeys) => boolean | any): EventEmitter
-	on(name: "MouseWheel", callback: (up: boolean) => boolean | any): EventEmitter
+	on(
+		name: "KeyUp",
+		callback: (keyMask: VKeys) => boolean | any,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "MouseKeyDown",
+		callback: (key: VMouseKeys) => boolean | any,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "MouseKeyUp",
+		callback: (key: VMouseKeys) => boolean | any,
+		priority?: number
+	): EventEmitter
+	on(
+		name: "MouseWheel",
+		callback: (up: boolean) => boolean | any,
+		priority?: number
+	): EventEmitter
 	on(name: "CharInput", callback: (char: string) => boolean | any): EventEmitter
 }

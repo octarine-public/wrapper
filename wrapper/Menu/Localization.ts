@@ -39,6 +39,17 @@ export const Localization = new (class CLocalization {
 		)
 	}
 
+	public LocalizeIn(language: string, name: string): string {
+		if (name === "") {
+			return ""
+		}
+		return (
+			this.LocalizationUnits.get(language)?.get(name) ??
+			this.LocalizationUnits.get("english")?.get(name) ??
+			name
+		)
+	}
+
 	/** Returns every known translation of a key across all language units (for cross-language search) */
 	public LocalizeAll(name: string): string[] {
 		if (name === "") {

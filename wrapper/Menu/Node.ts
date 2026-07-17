@@ -20,6 +20,7 @@ import { Localization } from "./Localization"
 import { RangeSlider } from "./RangeSlider"
 import { ShortDescription } from "./ShortDescription"
 import { Slider } from "./Slider"
+import { TextInput } from "./TextInput"
 import { Toggle } from "./Toggle"
 
 export class Node extends Base {
@@ -194,21 +195,19 @@ export class Node extends Base {
 		}
 	}
 
-	private cfgDefValue = null
 	public get ConfigValue() {
 		if (!this.SaveUnusedConfigs) {
 			this.configStorage = Object.create(null)
 		}
 		this.entries.forEach(e => {
 			if (e?.SaveConfig) {
-				this.configStorage[e.InternalName] =
-					e.IsDefaultValue && !e.IsNode ? this.cfgDefValue : e.ConfigValue
+				this.configStorage[e.InternalName] = e.ConfigValue
 			}
 		})
 		return this.configStorage
 	}
 	public set ConfigValue(obj) {
-		if (obj === this.cfgDefValue || typeof obj !== "object") {
+		if (typeof obj !== "object" || obj === null) {
 			return
 		}
 		if (this.SaveUnusedConfigs) {
@@ -217,7 +216,7 @@ export class Node extends Base {
 		this.IsDefaultValue = true
 		this.entries.forEach(e => {
 			if (e.SaveConfig) {
-				let value = obj[e.InternalName]
+				const value = obj[e.InternalName]
 				if (value === undefined) {
 					let isVisible = true
 					e.foreachParent(node => {
@@ -225,11 +224,24 @@ export class Node extends Base {
 							node.FirstTime = true
 						}
 					}, true)
-				} else if (value === this.cfgDefValue) {
-					value = undefined
 				}
-
-				e.ConfigValue = value
+				if (value === undefined || value === null) {
+					e.ResetConfigValue()
+				} else {
+					e.ConfigValue = value
+				}
+				this.IsDefaultValue &&= e.IsDefaultValue
+			}
+		})
+	}
+	public ResetConfigValue(): void {
+		if (this.SaveUnusedConfigs) {
+			this.configStorage = Object.create(null)
+		}
+		this.IsDefaultValue = true
+		this.entries.forEach(e => {
+			if (e.SaveConfig) {
+				e.ResetConfigValue()
 				this.IsDefaultValue &&= e.IsDefaultValue
 			}
 		})
@@ -836,6 +848,9 @@ export class Node extends Base {
 	}
 	public AddButton(name: string, tooltip = "", priority = 0): Button {
 		return this.AddEntry(new Button(this, name, tooltip), priority)
+	}
+	public AddTextInput(name: string, placeholder = name, priority = 0): TextInput {
+		return this.AddEntry(new TextInput(this, name, placeholder), priority)
 	}
 	/** @deprecated */
 	public AddVector2(

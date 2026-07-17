@@ -198,6 +198,16 @@ export class Base {
 		this.configDirty = false
 	}
 
+	public InvalidateConfig(): void {
+		this.configDirty = true
+	}
+
+	public ResetConfigValue(): void {
+		if (!this.ShouldIgnoreNewConfigValue) {
+			this.ResetToDefault()
+		}
+	}
+
 	public OnValue(func: (caller: this) => any): this {
 		this.OnValueChangedCBs.push(func as any)
 		if (this.executeOnAdd) {
