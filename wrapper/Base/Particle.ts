@@ -21,6 +21,9 @@ export class Particle {
 	public IsHidden = false
 	public readonly ControlPoints = new Map<number, Vector3>()
 	private EffectIndex = -1
+	private Generation = 0
+	private IsCreating = false
+	private InFogVisible = true
 
 	constructor(
 		public readonly Parent: ParticlesSDK,
@@ -34,7 +37,7 @@ export class Particle {
 	}
 
 	public SetControlPoint(id: number, param: ControlPoint): void {
-		if (!this.IsValid && !this.IsHidden) {
+		if (!this.IsValid && !this.IsCreating && !this.IsHidden) {
 			return
 		}
 
@@ -58,6 +61,9 @@ export class Particle {
 			return
 		}
 		this.ControlPoints.set(id, param)
+		if (this.EffectIndex === -1) {
+			return
+		}
 		param.toIOBuffer()
 		Particles.SetControlPoint(this.EffectIndex, id)
 	}
@@ -76,7 +82,7 @@ export class Particle {
 	 * )
 	 */
 	public SetControlPoints(...controlPoints: ControlPointParam[]): void {
-		if (!this.IsValid && !this.IsHidden) {
+		if (!this.IsValid && !this.IsCreating && !this.IsHidden) {
 			return
 		}
 		for (let i = controlPoints.length - 1; i > -1; i--) {
@@ -86,12 +92,15 @@ export class Particle {
 	}
 
 	public SetInFogVisible(state = true) {
-		Particles.SetInFogVisible(this.EffectIndex, state)
+		this.InFogVisible = state
+		if (this.EffectIndex !== -1) {
+			Particles.SetInFogVisible(this.EffectIndex, state)
+		}
 		return this
 	}
 
 	public Restart() {
-		if (!this.IsValid && !this.IsHidden) {
+		if (!this.IsValid && !this.IsCreating && !this.IsHidden) {
 			return
 		}
 		const save = [...this.ControlPoints.entries()]
@@ -99,6 +108,8 @@ export class Particle {
 	}
 
 	public Destroy(immediate = true) {
+		this.Generation++
+		this.IsCreating = false
 		if (this.IsValid) {
 			Particles.Destroy(this.EffectIndex, immediate)
 			this.EffectIndex = -1
@@ -125,7 +136,7 @@ export class Particle {
 	}
 
 	private Create(...controlPoints: ControlPointParam[]): this {
-		if (this.IsValid) {
+		if (this.IsValid || this.IsCreating) {
 			return this
 		}
 		let path = this.Path
@@ -134,17 +145,38 @@ export class Particle {
 		}
 		path = tryFindFile(path, 2) ?? path
 		path = path.substring(0, path.length - 2)
+
+		const generation = ++this.Generation
+		this.IsCreating = true
+		this.SetControlPoints(...controlPoints)
+		this.Parent.AllParticles.set(this.Key, this)
+
 		Particles.Create(path, this.Attachment, this.AttachedTo.Index)
 			.then(effectIndex => {
+				if (generation !== this.Generation) {
+					Particles.Destroy(effectIndex, true)
+					return
+				}
+				this.IsCreating = false
 				this.EffectIndex = effectIndex
 				this.IsValid = true
-				this.SetInFogVisible()
-				this.SetControlPoints(...controlPoints)
-				this.Parent.AllParticles.set(this.Key, this)
+				this.SetInFogVisible(this.InFogVisible)
+				this.FlushControlPoints()
 			})
 			.catch(err => {
+				if (generation === this.Generation) {
+					this.IsCreating = false
+					this.Parent.AllParticles.delete(this.Key)
+				}
 				console.error(err)
 			})
 		return this
+	}
+
+	private FlushControlPoints(): void {
+		this.ControlPoints.forEach((param, id) => {
+			param.toIOBuffer()
+			Particles.SetControlPoint(this.EffectIndex, id)
+		})
 	}
 }
