@@ -380,6 +380,25 @@ declare interface AnimationData {
 	readonly fps: number
 }
 
+declare interface HitboxData {
+	readonly name: string
+	readonly boneName: string
+	readonly boneIndex: number
+	readonly groupId: number
+	readonly shapeType: number // 0 = box, 1 = sphere, 2 - capsule
+	readonly radius: number
+	readonly translationOnly: boolean
+	readonly localMin: [number, number, number]
+	readonly localMax: [number, number, number]
+	readonly min: [number, number, number]
+	readonly max: [number, number, number]
+}
+
+declare interface HitboxSetData {
+	readonly name: string
+	readonly hitboxes: HitboxData[]
+}
+
 declare class ModelData {
 	public readonly animations: AnimationData[]
 	public readonly attachments: string[]
@@ -388,6 +407,7 @@ declare class ModelData {
 	 * @returns min: Vector3 to IOBuffer offset 0, max: Vector3 to IOBuffer offset 3
 	 */
 	public getBounds(): void
+	public getHitboxSets(): HitboxSetData[]
 
 	/**
 	 * @param animationID ID in animations array, or -1 for default static skeleton

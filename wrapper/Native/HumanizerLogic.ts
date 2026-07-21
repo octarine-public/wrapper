@@ -1434,6 +1434,7 @@ function ProcessUserCmd(force = false): void {
 	ExecuteOrder.LastUserCmd = latestUsercmd
 
 	latestUsercmd.Pawn = LocalPlayer?.Pawn
+	latestUsercmd.QueryUnit = InputManager.QueryUnit
 	latestUsercmd.SpectatorStatsCategoryID = 0
 	latestUsercmd.SpectatorStatsSortMethod = 0
 	latestUsercmd.TickCount = GameState.CurrentServerTick
