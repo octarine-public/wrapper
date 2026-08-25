@@ -22,6 +22,7 @@ export const GUIInfo = new (class CGUIInfo {
 	public TopBar: CTopBar
 	public Minimap: CMinimap
 	public Shop: CShop
+	public MenuScale = 1
 	public OpenShopMini: COpenShop
 	public OpenShopLarge: COpenShop
 	public PreGame: CPreGame
@@ -178,6 +179,13 @@ export const GUIInfo = new (class CGUIInfo {
 		screenSize = RendererSDK.WindowSize
 	): Vector2 {
 		return new Vector2(ScaleWidth(w, screenSize), ScaleHeight(h, screenSize))
+	}
+
+	public ScaleWidthMenu(w: number, screenSize = RendererSDK.WindowSize): number {
+		return ScaleWidth(w * this.MenuScale, screenSize)
+	}
+	public ScaleHeightMenu(h: number, screenSize = RendererSDK.WindowSize): number {
+		return ScaleHeight(h * this.MenuScale, screenSize)
 	}
 	public Contains(position: Vector2, unit: Nullable<Unit> = InputManager.SelectedUnit) {
 		return (

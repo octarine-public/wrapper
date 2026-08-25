@@ -35,10 +35,46 @@ import { Item } from "./Item"
 // === TODO move to manager or monitor ===>
 let playerSlot = NaN
 let gameInProgress = false
+const selectionHitboxSets = ["select_low", "select_high"]
 const activity2name = new Map<GameActivity, string>(
 	Object.entries(GameActivity).map(([k, v]) => [v as GameActivity, k.toLowerCase()])
 )
-const modelDataCache = new Map<string, [AnimationData[], Map<number, number>, string[]]>()
+const modelDataCache = new Map<
+	string,
+	[AnimationData[], Map<number, number>, string[], Nullable<[Vector3, Vector3]>]
+>()
+
+function ComputeHitboxBounds(modelData: ModelData): Nullable<[Vector3, Vector3]> {
+	const sets = modelData.getHitboxSets()
+	if (sets.length === 0) {
+		return undefined
+	}
+	let hitboxes: Nullable<HitboxData[]>
+	for (
+		let i = 0, end = selectionHitboxSets.length;
+		i < end && hitboxes === undefined;
+		i++
+	) {
+		hitboxes = sets.find(
+			set => set.name === selectionHitboxSets[i] && set.hitboxes.length !== 0
+		)?.hitboxes
+	}
+	if (hitboxes === undefined) {
+		return undefined
+	}
+	const min = Vector3.fromArray(hitboxes[0].min),
+		max = Vector3.fromArray(hitboxes[0].max)
+	for (let i = 1, end = hitboxes.length; i < end; i++) {
+		const hitbox = hitboxes[i]
+		min.x = Math.min(min.x, hitbox.min[0])
+		min.y = Math.min(min.y, hitbox.min[1])
+		min.z = Math.min(min.z, hitbox.min[2])
+		max.x = Math.max(max.x, hitbox.max[0])
+		max.y = Math.max(max.y, hitbox.max[1])
+		max.z = Math.max(max.z, hitbox.max[2])
+	}
+	return [min, max]
+}
 
 export let latestTickDelta = 0
 export var LocalPlayer: Nullable<Player>
@@ -471,6 +507,7 @@ export class Entity {
 
 				// cache static data to avoid excessive object creation in JS
 				const cacheRes = modelDataCache.get(requestedModelName)
+				let hitboxBounds: Nullable<[Vector3, Vector3]>
 				if (cacheRes === undefined) {
 					this.Animations = modelData.animations
 					this.Attachments = modelData.attachments
@@ -482,27 +519,38 @@ export class Entity {
 						)
 					}
 					this.AttachmentsHashMap = attachmentsHashMap
+					hitboxBounds = ComputeHitboxBounds(modelData)
 					modelDataCache.set(requestedModelName, [
 						this.Animations,
 						attachmentsHashMap,
-						this.Attachments
+						this.Attachments,
+						hitboxBounds
 					])
 				} else {
 					this.Animations = cacheRes[0]
 					this.AttachmentsHashMap = cacheRes[1]
 					this.Attachments = cacheRes[2]
+					hitboxBounds = cacheRes[3]
 				}
 
-				modelData.getBounds()
-				this.BoundingBox.MinOffset.CopyFrom(Vector3.fromIOBuffer())
-				this.BoundingBox.MaxOffset.CopyFrom(Vector3.fromIOBuffer(3))
+				if (hitboxBounds !== undefined) {
+					min.CopyFrom(hitboxBounds[0])
+					max.CopyFrom(hitboxBounds[1])
+				} else {
+					modelData.getBounds()
+					min.CopyFrom(Vector3.fromIOBuffer())
+					max.CopyFrom(Vector3.fromIOBuffer(3))
+				}
+
 				const minXY = Math.min(min.x, min.y, max.x, max.y),
 					maxXY = Math.max(min.x, min.y, max.x, max.y)
 				this.RingRadius_ = Math.max(Math.abs(minXY), Math.abs(maxXY))
-				min.x = -this.RingRadius
-				min.y = -this.RingRadius
-				max.x = this.RingRadius
-				max.y = this.RingRadius
+				if (hitboxBounds === undefined) {
+					min.x = -this.RingRadius
+					min.y = -this.RingRadius
+					max.x = this.RingRadius
+					max.y = this.RingRadius
+				}
 			},
 			err => console.error(requestedModelName, err)
 		)

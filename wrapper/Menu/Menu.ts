@@ -12,6 +12,7 @@ import { ColorPicker } from "./ColorPicker"
 import { Dropdown } from "./Dropdown"
 import { Header } from "./Header"
 import { KeyBind } from "./KeyBind"
+import { KeyNames } from "./KeyNames"
 import { Localization } from "./Localization"
 import { Node } from "./Node"
 import { ShortDescription } from "./ShortDescription"
@@ -116,11 +117,43 @@ class CMenuManager {
 		})
 		this.config.Header = this.header.ConfigValue
 		this.config.SelectedLocalization = Localization.SelectedUnitName
+		this.config.__binds = this.collectBinds()
 		return this.config
 	}
 	public set ConfigValue(obj) {
 		this.config = obj
 		this.ForwardConfig()
+	}
+	private collectBinds(): {
+		p: string[]
+		k: string
+		v: number
+		l: Record<string, string[]>
+	}[] {
+		const binds: {
+			p: string[]
+			k: string
+			v: number
+			l: Record<string, string[]>
+		}[] = []
+		this.entries.forEach(node =>
+			node.ForeachRecursive(el => {
+				if (el instanceof KeyBind && el.SaveConfig && el.assignedKey > 0) {
+					const path = [el.InternalName]
+					el.foreachParent(parent => path.unshift(parent.InternalName))
+					const key =
+						el.assignedKey >= KeyNames.length
+							? "Unknown"
+							: KeyNames[el.assignedKey]
+					const l: Record<string, string[]> = {}
+					for (const lang of Localization.Languages) {
+						l[lang] = path.map(seg => Localization.LocalizeIn(lang, seg))
+					}
+					binds.push({ p: path, k: key, v: el.assignedKey, l })
+				}
+			})
+		)
+		return binds
 	}
 	public get ScrollVisible() {
 		let remaining = -this.VisibleEntries
@@ -179,6 +212,10 @@ class CMenuManager {
 			this.entries[i].ForeachRecursive(cb)
 		}
 	}
+	// alias: deadlock/cs2 spell it this way, keeping the shared ConfigManager identical
+	public foreachRecursive(cb: (element: Base) => any) {
+		this.ForeachRecursive(cb)
+	}
 	public async LoadConfig() {
 		try {
 			this.ConfigValue = JSON.parse(await readConfig())
@@ -193,6 +230,13 @@ class CMenuManager {
 			this.header.ConfigValue = this.config.Header
 			this.Update(true)
 		}
+	}
+	public async ReloadConfig() {
+		Base.SaveConfigASAP = false // discard the pending old-state save
+		this.ForeachRecursive(el => el.InvalidateConfig())
+		Base.ForwardConfigASAP = true
+		await this.LoadConfig()
+		Base.SaveConfigASAP = false // the applied state IS the stored state
 	}
 	public Render(): void {
 		if (this.config === undefined) {
@@ -767,7 +811,14 @@ class CMenuManager {
 			Base.ForwardConfigASAP = false
 			this.entries.forEach(e => {
 				if (e) {
-					e.ConfigValue = this.config[e.InternalName]
+					const value = this.config[e.InternalName]
+					if (value === undefined || value === null) {
+						if (e.SaveConfig) {
+							e.ResetConfigValue()
+						}
+					} else {
+						e.ConfigValue = value
+					}
 					e.OnConfigLoaded()
 				}
 			})
@@ -776,6 +827,9 @@ class CMenuManager {
 }
 export const MenuManager = new CMenuManager()
 await MenuManager.LoadConfig()
+import("./ConfigManager")
+	.then(m => m.setupConfigsMenu())
+	.catch(e => console.error("ConfigManager load failed", e))
 
 Events.after("Draw", () => {
 	MenuManager.Render()

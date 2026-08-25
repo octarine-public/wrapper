@@ -1,6 +1,7 @@
 import { QAngle } from "../Base/QAngle"
 import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
+import { EntityManager } from "../Managers/EntityManager"
 import { Entity } from "../Objects/Base/Entity"
 
 export class UserCmd {
@@ -25,9 +26,9 @@ export class UserCmd {
 	public Buttons = 0n
 	public Impulse = 0
 
-	public WeaponSelect: Nullable<Entity>
-	public WeaponSubType: Nullable<Entity>
 	public Pawn: Nullable<Entity>
+	public QueryUnit: Nullable<Entity>
+	public WeaponSelect: Nullable<Entity>
 
 	public Write(): void {
 		UserCmd.LatestUserCmdView.setInt32(0, this.ComandNumber, true)
@@ -41,7 +42,7 @@ export class UserCmd {
 		UserCmd.LatestUserCmdView.setBigUint64(32, this.Buttons, true)
 		UserCmd.LatestUserCmdView.setInt32(40, this.Impulse, true)
 		UserCmd.LatestUserCmdView.setUint32(44, this.WeaponSelect?.Index ?? 0, true)
-		UserCmd.LatestUserCmdView.setUint32(48, this.WeaponSubType?.Index ?? 0, true)
+		UserCmd.LatestUserCmdView.setUint32(48, this.QueryUnit?.Index ?? 0, true)
 		UserCmd.LatestUserCmdView.setFloat32(52, this.MousePosition.x, true)
 		UserCmd.LatestUserCmdView.setFloat32(56, this.MousePosition.y, true)
 		UserCmd.LatestUserCmdView.setInt16(60, this.CameraPosition.x, true)
@@ -54,6 +55,10 @@ export class UserCmd {
 		UserCmd.LatestUserCmdView.setFloat32(69, this.VectorUnderCursor.x, true)
 		UserCmd.LatestUserCmdView.setFloat32(73, this.VectorUnderCursor.y, true)
 		UserCmd.LatestUserCmdView.setFloat32(77, this.VectorUnderCursor.z, true)
-		UserCmd.LatestUserCmdView.setUint32(81, this.Pawn?.Handle ?? -1, true)
+		UserCmd.LatestUserCmdView.setUint32(
+			81,
+			this.Pawn?.Handle ?? EntityManager.INVALID_HANDLE,
+			true
+		)
 	}
 }

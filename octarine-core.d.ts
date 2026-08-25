@@ -66,7 +66,7 @@ declare interface CustomGameEvents {
 }
 
 declare interface Particles {
-	Create(path: string, attach: number, attachedTo: number): number
+	Create(path: string, attach: number, attachedTo: number): Promise<number>
 	Destroy(particleID: number, immediate: boolean): void
 	SetInFogVisible(particleID: number, value: boolean): void
 	SetControlPoint(particleID: number, controlPoint: number): void // pass vec: Vector3 at IOBuffer offset 0
@@ -380,6 +380,25 @@ declare interface AnimationData {
 	readonly fps: number
 }
 
+declare interface HitboxData {
+	readonly name: string
+	readonly boneName: string
+	readonly boneIndex: number
+	readonly groupId: number
+	readonly shapeType: number // 0 = box, 1 = sphere, 2 - capsule
+	readonly radius: number
+	readonly translationOnly: boolean
+	readonly localMin: [number, number, number]
+	readonly localMax: [number, number, number]
+	readonly min: [number, number, number]
+	readonly max: [number, number, number]
+}
+
+declare interface HitboxSetData {
+	readonly name: string
+	readonly hitboxes: HitboxData[]
+}
+
 declare class ModelData {
 	public readonly animations: AnimationData[]
 	public readonly attachments: string[]
@@ -388,6 +407,7 @@ declare class ModelData {
 	 * @returns min: Vector3 to IOBuffer offset 0, max: Vector3 to IOBuffer offset 3
 	 */
 	public getBounds(): void
+	public getHitboxSets(): HitboxSetData[]
 
 	/**
 	 * @param animationID ID in animations array, or -1 for default static skeleton
@@ -433,6 +453,13 @@ declare function fexists(path: string): boolean
  */
 declare function readConfig(): Promise<string>
 declare function writeConfig(data: string): void
+declare function listConfigs(): Promise<string>
+declare function createConfig(name: string): Promise<string>
+declare function deleteConfig(id: string): Promise<string>
+declare function setActiveConfig(id: string): Promise<string>
+declare function addConfigByCode(code: string, keepBinds: boolean): Promise<string>
+declare function setConfigPublic(id: string, isPublic: boolean): Promise<string>
+declare function configCommand(op: number, payload: string): Promise<string>
 declare function PrepareUnitOrders(obj: {
 	// pass Position: Vector3 at IOBuffer offset 0
 	OrderType: number

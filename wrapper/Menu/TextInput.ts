@@ -46,12 +46,15 @@ export class TextInput extends Base {
 	public selectionStart = -1
 	public selectionEnd = -1
 	public override SaveConfig = false
-	public placeholder = "Search..."
+	public placeholder = ""
 
 	public cursorBlinkStart = 0
 
-	constructor(parent: IMenu) {
-		super(parent, "", "")
+	constructor(parent: IMenu, name = "", placeholder?: string) {
+		super(parent, name, "")
+		if (placeholder !== undefined) {
+			this.placeholder = placeholder
+		}
 	}
 
 	public get hasSelection(): boolean {
@@ -142,7 +145,12 @@ export class TextInput extends Base {
 
 		let text: string
 		if (!hasText && !isFocused) {
-			text = Localization.SelectedUnitName === "russian" ? "Поиск" : "Search"
+			text =
+				this.placeholder !== ""
+					? Localization.Localize(this.placeholder)
+					: Localization.SelectedUnitName === "russian"
+						? "Поиск"
+						: "Search"
 			this.RenderTextDefault(text, textPos, TextInput.placeholderColor)
 		} else {
 			if (this.hasSelection) {
