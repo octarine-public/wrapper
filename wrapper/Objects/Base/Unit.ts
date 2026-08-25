@@ -28,7 +28,11 @@ import { GridNavCellFlags } from "../../Enums/GridNavCellFlags"
 import { modifierstate } from "../../Enums/modifierstate"
 import { EPropertyType } from "../../Enums/PropertyType"
 import { ScaleHeight } from "../../GUI/Helpers"
-import { EntityManager } from "../../Managers/EntityManager"
+import {
+	EntityManager,
+	SetOwnerHandle,
+	SetParentHandle
+} from "../../Managers/EntityManager"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { ExecuteOrder } from "../../Native/ExecuteOrder"
 import { RendererSDK } from "../../Native/RendererSDK"
@@ -2118,13 +2122,104 @@ RegisterFieldHandler<Unit, bigint>(
 		}
 	}
 )
+function slotIndexRemove(
+	map: Map<number, [Unit, number][]>,
+	handle: number,
+	unit: Unit,
+	slot: number
+): void {
+	const index = handle & EntityManager.INDEX_MASK
+	if (index === 0) {
+		return
+	}
+	const bucket = map.get(index)
+	if (bucket === undefined) {
+		return
+	}
+	bucket.removeCallback(x => x[0] === unit && x[1] === slot)
+	if (bucket.length === 0) {
+		map.delete(index)
+	}
+}
+
+function slotIndexAdd(
+	map: Map<number, [Unit, number][]>,
+	handle: number,
+	unit: Unit,
+	slot: number
+): void {
+	const index = handle & EntityManager.INDEX_MASK
+	if (index === 0) {
+		return
+	}
+	let bucket = map.get(index)
+	if (bucket === undefined) {
+		bucket = []
+		map.set(index, bucket)
+	}
+	bucket.push([unit, slot])
+}
+
+function unitIndexRemove(map: Map<number, Unit[]>, handle: number, unit: Unit): void {
+	const index = handle & EntityManager.INDEX_MASK
+	if (index === 0) {
+		return
+	}
+	const bucket = map.get(index)
+	if (bucket === undefined) {
+		return
+	}
+	bucket.remove(unit)
+	if (bucket.length === 0) {
+		map.delete(index)
+	}
+}
+
+function unitIndexAdd(map: Map<number, Unit[]>, handle: number, unit: Unit): void {
+	const index = handle & EntityManager.INDEX_MASK
+	if (index === 0) {
+		return
+	}
+	let bucket = map.get(index)
+	if (bucket === undefined) {
+		bucket = []
+		map.set(index, bucket)
+	}
+	if (!bucket.includes(unit)) {
+		bucket.push(unit)
+	}
+}
+
+export const SpellSlotsByIndex = new Map<number, [Unit, number][]>()
+export const ItemSlotsByIndex = new Map<number, [Unit, number][]>()
+export const WearableUnitsByIndex = new Map<number, Unit[]>()
+export const SpawnerUnitsByIndex = new Map<number, Unit[]>()
+
+export function RemoveUnitSlotIndices(unit: Unit): void {
+	for (let i = 0, end = unit.Spells_.length; i < end; i++) {
+		slotIndexRemove(SpellSlotsByIndex, unit.Spells_[i], unit, i)
+	}
+	for (let i = 0, end = unit.TotalItems_.length; i < end; i++) {
+		slotIndexRemove(ItemSlotsByIndex, unit.TotalItems_[i], unit, i)
+	}
+	for (let i = 0, end = unit.MyWearables_.length; i < end; i++) {
+		unitIndexRemove(WearableUnitsByIndex, unit.MyWearables_[i], unit)
+	}
+	unitIndexRemove(SpawnerUnitsByIndex, unit.Spawner_, unit)
+}
+
 RegisterFieldHandler<Unit, number[]>(Unit, "m_vecAbilities", (unit, newVal) => {
 	const prevSpells = [...unit.Spells]
 	for (let i = 0; i < newVal.length; i++) {
+		const oldHandle = unit.Spells_[i]
+		if (oldHandle !== newVal[i]) {
+			slotIndexRemove(SpellSlotsByIndex, oldHandle, unit, i)
+			slotIndexAdd(SpellSlotsByIndex, newVal[i], unit, i)
+		}
 		unit.Spells_[i] = newVal[i]
 		const ent = EntityManager.EntityByIndex(newVal[i])
 		if (ent instanceof Ability) {
-			ent.Owner_ = unit.Handle
+			SetOwnerHandle(ent, unit.Handle)
 			ent.OwnerEntity = unit
 			ent.AbilitySlot = ent.IsHidden ? EAbilitySlot.DOTA_SPELL_SLOT_HIDDEN : i
 			unit.Spells[i] = ent
@@ -2133,6 +2228,7 @@ RegisterFieldHandler<Unit, number[]>(Unit, "m_vecAbilities", (unit, newVal) => {
 		}
 	}
 	for (let i = newVal.length; i < unit.Spells_.length; i++) {
+		slotIndexRemove(SpellSlotsByIndex, unit.Spells_[i], unit, i)
 		unit.Spells_[i] = 0
 		unit.Spells[i] = undefined
 	}
@@ -2144,11 +2240,16 @@ RegisterFieldHandler<Unit, number[]>(Unit, "m_hItems", (unit, newVal) => {
 	const prevTotalItems = [...unit.TotalItems]
 	for (let i = 0, end = newVal.length; i < end; i++) {
 		const handle = newVal[i]
+		const oldHandle = unit.TotalItems_[i]
+		if (oldHandle !== handle) {
+			slotIndexRemove(ItemSlotsByIndex, oldHandle, unit, i)
+			slotIndexAdd(ItemSlotsByIndex, handle, unit, i)
+		}
 		unit.TotalItems_[i] = handle
 		const ent = EntityManager.EntityByIndex(handle)
 		if (ent instanceof Item) {
 			ent.ItemSlot = i
-			ent.Owner_ = unit.Handle
+			SetOwnerHandle(ent, unit.Handle)
 			ent.OwnerEntity = unit
 			unit.TotalItems[i] = ent
 		} else {
@@ -2156,6 +2257,7 @@ RegisterFieldHandler<Unit, number[]>(Unit, "m_hItems", (unit, newVal) => {
 		}
 	}
 	for (let i = newVal.length; i < unit.TotalItems_.length; i++) {
+		slotIndexRemove(ItemSlotsByIndex, unit.TotalItems_[i], unit, i)
 		unit.TotalItems_[i] = 0
 		unit.TotalItems[i] = undefined
 	}
@@ -2165,7 +2267,7 @@ RegisterFieldHandler<Unit, number[]>(Unit, "m_hItems", (unit, newVal) => {
 })
 RegisterFieldHandler<Unit, number[]>(Unit, "m_hMyWearables", (unit, newVal) => {
 	for (const ent of unit.MyWearables) {
-		ent.Parent_ = 0
+		SetParentHandle(ent, 0)
 		const prevParentEnt = ent.ParentEntity
 		if (prevParentEnt !== undefined) {
 			prevParentEnt.Children.remove(ent)
@@ -2173,13 +2275,19 @@ RegisterFieldHandler<Unit, number[]>(Unit, "m_hMyWearables", (unit, newVal) => {
 			ent.UpdatePositions()
 		}
 	}
+	for (let i = 0, end = unit.MyWearables_.length; i < end; i++) {
+		unitIndexRemove(WearableUnitsByIndex, unit.MyWearables_[i], unit)
+	}
 	unit.MyWearables_ = newVal
+	for (let i = 0, end = unit.MyWearables_.length; i < end; i++) {
+		unitIndexAdd(WearableUnitsByIndex, unit.MyWearables_[i], unit)
+	}
 	unit.MyWearables = unit.MyWearables_.map(id =>
 		EntityManager.EntityByIndex<Wearable>(id)
 	).filter(ent => ent !== undefined)
 
 	for (const ent of unit.MyWearables) {
-		ent.Parent_ = unit.Handle
+		SetParentHandle(ent, unit.Handle)
 		const prevParentEnt = ent.ParentEntity
 		if (unit !== prevParentEnt) {
 			if (prevParentEnt !== undefined) {
@@ -2198,6 +2306,8 @@ RegisterFieldHandler<Unit, number>(Unit, "m_anglediff", (unit, newVal) => {
 })
 RegisterFieldHandler<Unit, number>(Unit, "m_hNeutralSpawner", (unit, newVal) => {
 	if (unit.Spawner_ !== newVal) {
+		unitIndexRemove(SpawnerUnitsByIndex, unit.Spawner_, unit)
+		unitIndexAdd(SpawnerUnitsByIndex, newVal, unit)
 		unit.Spawner_ = newVal
 		unit.Spawner = EntityManager.EntityByIndex<NeutralSpawner>(unit.Spawner_)
 	}

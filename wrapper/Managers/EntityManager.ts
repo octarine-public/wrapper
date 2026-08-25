@@ -2,6 +2,8 @@ import { Entity } from "../Objects/Base/Entity"
 import { ClassToEntities, GetConstructorByName } from "../Objects/NativeToSDK"
 
 export const AllEntitiesAsMap = new Map<number, Entity>()
+export const OwnerByIndex = new Map<number, Set<Entity>>()
+export const ParentByIndex = new Map<number, Set<Entity>>()
 
 export const EntityManager = new (class CEntityManager {
 	public readonly INDEX_BITS = 14
@@ -36,3 +38,45 @@ export const EntityManager = new (class CEntityManager {
 		return GetConstructorByName(name) as Nullable<Constructor<T>>
 	}
 })()
+
+function moveRefIndex(
+	map: Map<number, Set<Entity>>,
+	ent: Entity,
+	oldHandle: number,
+	newHandle: number
+): void {
+	const oldIndex = oldHandle & EntityManager.INDEX_MASK,
+		newIndex = newHandle & EntityManager.INDEX_MASK
+	if (oldIndex === newIndex) {
+		return
+	}
+	if (oldIndex !== 0) {
+		const bucket = map.get(oldIndex)
+		if (bucket !== undefined && bucket.delete(ent) && bucket.size === 0) {
+			map.delete(oldIndex)
+		}
+	}
+	if (newIndex !== 0) {
+		let bucket = map.get(newIndex)
+		if (bucket === undefined) {
+			bucket = new Set()
+			map.set(newIndex, bucket)
+		}
+		bucket.add(ent)
+	}
+}
+
+export function SetOwnerHandle(ent: Entity, newHandle: number): void {
+	moveRefIndex(OwnerByIndex, ent, ent.Owner_, newHandle)
+	ent.Owner_ = newHandle
+}
+
+export function SetParentHandle(ent: Entity, newHandle: number): void {
+	moveRefIndex(ParentByIndex, ent, ent.Parent_, newHandle)
+	ent.Parent_ = newHandle
+}
+
+export function RemoveEntityRefIndex(ent: Entity): void {
+	moveRefIndex(OwnerByIndex, ent, ent.Owner_, 0)
+	moveRefIndex(ParentByIndex, ent, ent.Parent_, 0)
+}

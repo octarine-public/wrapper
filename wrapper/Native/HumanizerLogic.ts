@@ -29,6 +29,7 @@ import { Unit, Units } from "../Objects/Base/Unit"
 import { GetWorldBounds } from "../Objects/Base/WorldLayer"
 import { Shop } from "../Objects/Buildings/Shop"
 import { GameState } from "../Utils/GameState"
+import { PerfOpts } from "../Utils/PerfOpts"
 import { CameraSDK } from "./CameraSDK"
 import { ConVarsSDK } from "./ConVarsSDK"
 import { ExecuteOrder } from "./ExecuteOrder"
@@ -97,7 +98,11 @@ const latestCursor = new Vector2(),
 	latestCameraRedZonePolyWorld = new WorldPolygon(),
 	defaultCameraDist = CameraSDK.DefaultDistance, // default camera distance
 	defaultCameraAngles = CameraSDK.DefaultAngles
+let lastBoundsX = NaN,
+	lastBoundsY = NaN
 function UpdateCameraBounds(cameraVec2D: Vector2) {
+	lastBoundsX = cameraVec2D.x
+	lastBoundsY = cameraVec2D.y
 	const cameraVec = WASM.GetCameraPosition(
 		cameraVec2D,
 		defaultCameraDist,
@@ -1310,7 +1315,13 @@ function ProcessUserCmdInternal(currentTime: number, dt: number): void {
 			cameraLimitedX = Math.abs(cameraVec.x - oldX) > 0.01
 			cameraLimitedY = Math.abs(cameraVec.y - oldY) > 0.01
 		}
-		UpdateCameraBounds(cameraVec)
+		if (
+			!PerfOpts.HumanizerIdleSkip ||
+			cameraVec.x !== lastBoundsX ||
+			cameraVec.y !== lastBoundsY
+		) {
+			UpdateCameraBounds(cameraVec)
+		}
 		{
 			const ar = ComputeTargetPos(cameraVec, currentTime)
 			targetPos = ar[0]
@@ -1488,6 +1499,17 @@ function ProcessUserCmd(force = false): void {
 	)[0]
 	const dt = currentTime - lastUpdate,
 		processUserCmdWindow = 1000 / 60
+	if (
+		PerfOpts.HumanizerIdleSkip &&
+		!force &&
+		!ExecuteOrder.IsStandalone &&
+		HumanizerIsIdle(currentTime)
+	) {
+		latestCursor.CopyFrom(latestUsercmd.MousePosition)
+		cursorVel.toZero()
+		lastUpdate = currentTime
+		return
+	}
 	for (let i = 0; i <= dt; i += processUserCmdWindow) {
 		if (dt - i >= processUserCmdWindow || force) {
 			const curDt = Math.min(dt - i, processUserCmdWindow)
@@ -1495,6 +1517,17 @@ function ProcessUserCmd(force = false): void {
 			lastUpdate += curDt
 		}
 	}
+}
+
+function HumanizerIsIdle(currentTime: number): boolean {
+	return (
+		ExecuteOrder.orderQueue.length === 0 &&
+		ExecuteOrder.HoldOrders <= 0 &&
+		lastOrderTarget === undefined &&
+		!wereMovingCamera &&
+		cameraMoveEnd <= currentTime - cameraMoveLingerDuration &&
+		cursorAtMinimapAt === 0
+	)
 }
 SetProcessUserCmd(() => ProcessUserCmd(true))
 EventsSDK.on("Draw", ProcessUserCmd)

@@ -8,12 +8,14 @@ import { Unit } from "../../Objects/Base/Unit"
 import { WardObserver } from "../../Objects/Base/WardObserver"
 import { WardTrueSight } from "../../Objects/Base/WardTrueSight"
 import { GameState } from "../../Utils/GameState"
+import { PerfOpts } from "../../Utils/PerfOpts"
 import { EventsSDK } from "../EventsSDK"
 import { ParticlesSDK } from "../ParticleManager"
 
 new (class CNeutralSpawnerBoxChanged {
 	// only for debug
 	private readonly pSDK = new ParticlesSDK()
+	private readonly dirtyUnits = new Set<Unit>()
 
 	constructor() {
 		EventsSDK.on("Draw", this.Draw.bind(this), EventPriority.IMMEDIATE)
@@ -73,6 +75,15 @@ new (class CNeutralSpawnerBoxChanged {
 		if (!(entity instanceof Unit) || !this.ShouldUnit(entity)) {
 			return
 		}
+		if (PerfOpts.SpawnerBoxDefer) {
+			if (NeutralSpawners.length !== 0) {
+				this.dirtyUnits.add(entity)
+			}
+			return
+		}
+		this.resolvePosition(entity)
+	}
+	protected resolvePosition(entity: Unit) {
 		const spawner = NeutralSpawners.find(
 			x =>
 				!x.IsEmpty &&
@@ -85,7 +96,16 @@ new (class CNeutralSpawnerBoxChanged {
 	}
 	protected PostDataUpdate(_delta: number) {
 		if (!GameState.IsConnected) {
+			this.dirtyUnits.clear()
 			return
+		}
+		if (this.dirtyUnits.size !== 0) {
+			for (const unit of this.dirtyUnits) {
+				if (unit.IsValid) {
+					this.resolvePosition(unit)
+				}
+			}
+			this.dirtyUnits.clear()
 		}
 		for (let i = NeutralSpawners.length - 1; i > -1; i--) {
 			NeutralSpawners[i].PostDataUpdate()
@@ -104,6 +124,9 @@ new (class CNeutralSpawnerBoxChanged {
 		}
 	}
 	protected EntityDestroyed(entity: Entity) {
+		if (entity instanceof Unit) {
+			this.dirtyUnits.delete(entity)
+		}
 		if (entity instanceof NeutralSpawner) {
 			this.FindNeutralSpawner(entity)?.EntityDestroyed(entity)
 		}
@@ -142,6 +165,7 @@ new (class CNeutralSpawnerBoxChanged {
 		}
 	}
 	protected GameChanged() {
+		this.dirtyUnits.clear()
 		NeutralSpawnerBox.Sleeper.FullReset()
 	}
 	protected GetSpawnerByName(name: string) {

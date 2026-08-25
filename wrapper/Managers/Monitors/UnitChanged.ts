@@ -13,7 +13,15 @@ import { InfoPlayerStartGoodGuys } from "../../Objects/Base/InfoPlayerStartGoodG
 import { Item } from "../../Objects/Base/Item"
 import { NeutralSpawner, NeutralSpawners } from "../../Objects/Base/NeutralSpawner"
 import { TeamData } from "../../Objects/Base/TeamData"
-import { Unit, Units } from "../../Objects/Base/Unit"
+import {
+	ItemSlotsByIndex,
+	RemoveUnitSlotIndices,
+	SpawnerUnitsByIndex,
+	SpellSlotsByIndex,
+	Unit,
+	Units,
+	WearableUnitsByIndex
+} from "../../Objects/Base/Unit"
 import { Wearable } from "../../Objects/Base/Wearable"
 import { PlayerCustomData } from "../../Objects/DataBook/PlayerCustomData"
 import { npc_dota_hero_wisp } from "../../Objects/Heroes/npc_dota_hero_wisp"
@@ -21,7 +29,8 @@ import { Miniboss } from "../../Objects/Units/Miniboss"
 import { GridNav } from "../../Resources/ParseGNV"
 import { GameState } from "../../Utils/GameState"
 import { AngleDiff } from "../../Utils/Math"
-import { EntityManager } from "../EntityManager"
+import { PerfOpts } from "../../Utils/PerfOpts"
+import { EntityManager, SetOwnerHandle, SetParentHandle } from "../EntityManager"
 import { EventsSDK } from "../EventsSDK"
 
 class Prediction {}
@@ -232,6 +241,9 @@ new (class CPreUnitChanged {
 					}
 				}
 			}
+			if (PerfOpts.PostDataUpdateGate && unit.IsBuilding) {
+				continue
+			}
 			let prevPos = unit.PositionHistoryIndex - 1
 			if (prevPos < 0) {
 				prevPos += unit.PreviousNetworkedAngles_.length
@@ -344,6 +356,7 @@ new (class CPreUnitChanged {
 			this.unitSpawnerDestroyed(entity)
 		}
 		if (entity instanceof Unit) {
+			RemoveUnitSlotIndices(entity)
 			this.spawnerUnitDestroyed(entity)
 			this.gridNavUpdateUnitState(entity, true)
 		}
@@ -451,6 +464,19 @@ new (class CPreUnitChanged {
 		if (entity.IsItem) {
 			return
 		}
+		if (PerfOpts.SlotIndex) {
+			const bucket = SpellSlotsByIndex.get(entity.Index)
+			if (bucket !== undefined) {
+				for (let i = bucket.length - 1; i > -1; i--) {
+					const [unit, slot] = bucket[i]
+					if (entity.HandleMatches(unit.Spells_[slot])) {
+						this.setNewProperty(entity, unit, slot)
+						EventsSDK.emit("UnitAbilitiesChanged", false, unit)
+					}
+				}
+			}
+			return
+		}
 		for (let index = Units.length - 1; index > -1; index--) {
 			const unit = Units[index]
 			for (let i = 0, end = unit.Spells_.length; i < end; i++) {
@@ -463,6 +489,19 @@ new (class CPreUnitChanged {
 		}
 	}
 	private itemChanged(entity: Item) {
+		if (PerfOpts.SlotIndex) {
+			const bucket = ItemSlotsByIndex.get(entity.Index)
+			if (bucket !== undefined) {
+				for (let i = bucket.length - 1; i > -1; i--) {
+					const [unit, slot] = bucket[i]
+					if (entity.HandleMatches(unit.TotalItems_[slot])) {
+						this.setNewProperty(entity, unit, slot)
+						EventsSDK.emit("UnitItemsChanged", false, unit)
+					}
+				}
+			}
+			return
+		}
 		for (let index = Units.length - 1; index > -1; index--) {
 			const unit = Units[index]
 			for (let i = 0, end = unit.TotalItems_.length; i < end; i++) {
@@ -509,31 +548,54 @@ new (class CPreUnitChanged {
 		}
 	}
 	private unitWearablesChanged(entity: Wearable) {
+		if (PerfOpts.SlotIndex) {
+			const bucket = WearableUnitsByIndex.get(entity.Index)
+			if (bucket !== undefined) {
+				for (let i = bucket.length - 1; i > -1; i--) {
+					this.attachWearable(entity, bucket[i])
+				}
+			}
+			return
+		}
 		for (let index = Units.length - 1; index > -1; index--) {
-			const unit = Units[index]
-			for (let i = 0, end = unit.MyWearables_.length; i < end; i++) {
-				if (!entity.HandleMatches(unit.MyWearables_[i])) {
-					continue
-				}
-				if (!unit.MyWearables.includes(entity)) {
-					unit.MyWearables.push(entity)
-					entity.Parent_ = unit.Handle
-					const prevParentEnt = entity.ParentEntity
-					if (unit !== prevParentEnt) {
-						if (prevParentEnt !== undefined) {
-							prevParentEnt.Children.remove(entity)
-						}
-						unit.Children.push(entity)
-						entity.ParentEntity = unit
-						entity.UpdatePositions()
+			this.attachWearable(entity, Units[index])
+		}
+	}
+	private attachWearable(entity: Wearable, unit: Unit) {
+		for (let i = 0, end = unit.MyWearables_.length; i < end; i++) {
+			if (!entity.HandleMatches(unit.MyWearables_[i])) {
+				continue
+			}
+			if (!unit.MyWearables.includes(entity)) {
+				unit.MyWearables.push(entity)
+				SetParentHandle(entity, unit.Handle)
+				const prevParentEnt = entity.ParentEntity
+				if (unit !== prevParentEnt) {
+					if (prevParentEnt !== undefined) {
+						prevParentEnt.Children.remove(entity)
 					}
-					EventsSDK.emit("UnitWearablesChanged", false, unit)
-					break
+					unit.Children.push(entity)
+					entity.ParentEntity = unit
+					entity.UpdatePositions()
 				}
+				EventsSDK.emit("UnitWearablesChanged", false, unit)
+				break
 			}
 		}
 	}
 	private unitSpawnerChanged(entity: NeutralSpawner) {
+		if (PerfOpts.SlotIndex) {
+			const bucket = SpawnerUnitsByIndex.get(entity.Index)
+			if (bucket !== undefined) {
+				for (let i = bucket.length - 1; i > -1; i--) {
+					const unit = bucket[i]
+					if (entity.HandleMatches(unit.Spawner_)) {
+						unit.Spawner = entity
+					}
+				}
+			}
+			return
+		}
 		for (let index = Units.length - 1; index > -1; index--) {
 			const unit = Units[index]
 			if (entity.HandleMatches(unit.Spawner_)) {
@@ -597,7 +659,7 @@ new (class CPreUnitChanged {
 	}
 	// hack workaround owner abilities
 	private setNewProperty(entity: Item | Ability, unit: Unit, arrIndex: number) {
-		entity.Owner_ = unit.Handle
+		SetOwnerHandle(entity, unit.Handle)
 		entity.OwnerEntity = unit
 		entity.Prediction = new Prediction() as any // TODO
 		if (!(entity instanceof Item)) {

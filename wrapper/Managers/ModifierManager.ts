@@ -8,6 +8,7 @@ import { Unit } from "../Objects/Base/Unit"
 import { AbilityData } from "../Objects/DataBook/AbilityData"
 import { ModifierSDKClass } from "../Objects/NativeToSDK"
 import { GameState } from "../Utils/GameState"
+import { PerfOpts } from "../Utils/PerfOpts"
 import {
 	ParseProtobufDesc,
 	ParseProtobufNamed,
@@ -21,6 +22,7 @@ import { StringTables } from "./StringTables"
 const activeModifiers = new Map<number, Modifier>()
 const activeModifiersRaw: Nullable<IModifier>[] = []
 const activeModifiersUpdate: Modifier[] = []
+const modifiersByIndex = new Map<number, Set<Modifier>>()
 
 export class IModifier {
 	public readonly InternalName: string
@@ -252,34 +254,93 @@ function EmitModifierCreated(modKV: IModifier) {
 	}
 	const modifier = new (ModifierSDKClass.get(modKV.InternalName) ?? Modifier)(modKV)
 	activeModifiers.set(modifier.SerialNumber, modifier)
+	modifierIndexAdd(modifier)
 	modifier.Update()
 }
 
 function EmitModifierChanged(oldModifier: Modifier, newKV: IModifier) {
+	modifierIndexRemove(oldModifier)
 	oldModifier.kv = newKV
+	modifierIndexAdd(oldModifier)
 	oldModifier.Update()
 }
 
 function EmitModifierRemoved(modifier: Nullable<Modifier>) {
 	if (modifier !== undefined) {
 		activeModifiers.delete(modifier.SerialNumber)
+		modifierIndexRemove(modifier)
 		modifier.Remove()
 	}
 }
 
-function EntityModifierChanged(entity: Entity) {
-	if (entity instanceof Unit || entity instanceof Ability) {
-		activeModifiers.forEach(mod => {
-			if (
-				entity.HandleMatches(mod.kv.Parent ?? 0) ||
-				entity.HandleMatches(mod.kv.Caster ?? 0) ||
-				entity.HandleMatches(mod.kv.AuraOwner ?? 0) ||
-				entity.HandleMatches(mod.kv.CustomEntity ?? 0)
-			) {
-				mod.Update()
-			}
-		})
+function modifierIndexKeys(kv: IModifier): number[] {
+	const res: number[] = []
+	const handles = [kv.Parent, kv.Caster, kv.AuraOwner, kv.CustomEntity]
+	for (let i = 0; i < handles.length; i++) {
+		const handle = handles[i]
+		if (handle === undefined) {
+			continue
+		}
+		const index = handle & EntityManager.INDEX_MASK
+		if (index !== 0 && !res.includes(index)) {
+			res.push(index)
+		}
 	}
+	return res
+}
+
+function modifierIndexAdd(mod: Modifier): void {
+	const keys = modifierIndexKeys(mod.kv)
+	for (let i = 0; i < keys.length; i++) {
+		let bucket = modifiersByIndex.get(keys[i])
+		if (bucket === undefined) {
+			bucket = new Set()
+			modifiersByIndex.set(keys[i], bucket)
+		}
+		bucket.add(mod)
+	}
+}
+
+function modifierIndexRemove(mod: Modifier): void {
+	const keys = modifierIndexKeys(mod.kv)
+	for (let i = 0; i < keys.length; i++) {
+		const bucket = modifiersByIndex.get(keys[i])
+		if (bucket !== undefined && bucket.delete(mod) && bucket.size === 0) {
+			modifiersByIndex.delete(keys[i])
+		}
+	}
+}
+
+function EntityModifierChanged(entity: Entity) {
+	if (!(entity instanceof Unit || entity instanceof Ability)) {
+		return
+	}
+	if (PerfOpts.ModifierIndex) {
+		const bucket = modifiersByIndex.get(entity.Index)
+		if (bucket !== undefined) {
+			for (const mod of bucket) {
+				if (
+					entity.HandleMatches(mod.kv.Parent ?? 0) ||
+					entity.HandleMatches(mod.kv.Caster ?? 0) ||
+					entity.HandleMatches(mod.kv.AuraOwner ?? 0) ||
+					entity.HandleMatches(mod.kv.CustomEntity ?? 0)
+				) {
+					mod.Update()
+				}
+			}
+		}
+		return
+	}
+	activeModifiers.forEach(mod => {
+		if (
+			entity.HandleMatches(mod.kv.Parent ?? 0) ||
+			entity.HandleMatches(mod.kv.Caster ?? 0) ||
+			entity.HandleMatches(mod.kv.AuraOwner ?? 0) ||
+			entity.HandleMatches(mod.kv.CustomEntity ?? 0)
+		) {
+			mod.Update()
+		}
+	})
 }
 
 ParseProtobufDesc(`
@@ -381,10 +442,12 @@ EventsSDK.on("PreEntityCreated", entity => EntityModifierChanged(entity))
 EventsSDK.on("RemoveAllStringTables", () => {
 	activeModifiers.forEach(mod => EmitModifierRemoved(mod))
 	activeModifiersRaw.clear()
+	modifiersByIndex.clear()
 	// just in case
 	QueueEvent(() => {
 		activeModifiers.forEach(mod => EmitModifierRemoved(mod))
 		activeModifiersRaw.clear()
+		modifiersByIndex.clear()
 	})
 })
 

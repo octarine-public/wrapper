@@ -11,7 +11,14 @@ import { GameActivity } from "../../Enums/GameActivity"
 import { LifeState } from "../../Enums/LifeState"
 import { RenderMode } from "../../Enums/RenderMode"
 import { Team } from "../../Enums/Team"
-import { EntityManager } from "../../Managers/EntityManager"
+import {
+	EntityManager,
+	OwnerByIndex,
+	ParentByIndex,
+	RemoveEntityRefIndex,
+	SetOwnerHandle,
+	SetParentHandle
+} from "../../Managers/EntityManager"
 import { Events } from "../../Managers/Events"
 import { EventsSDK } from "../../Managers/EventsSDK"
 import { StringTables } from "../../Managers/StringTables"
@@ -20,6 +27,7 @@ import { Player } from "../../Objects/Base/Player"
 import { FieldHandler, RegisterFieldHandler } from "../../Objects/NativeToSDK"
 import { GameState } from "../../Utils/GameState"
 import { toPercentage } from "../../Utils/Math"
+import { PerfOpts } from "../../Utils/PerfOpts"
 import { QuantitizedVecCoordToCoord } from "../../Utils/QuantizeUtils"
 import { CGameRules } from "./GameRules"
 import { Item } from "./Item"
@@ -727,11 +735,11 @@ RegisterFieldHandler<Entity, number>(Entity, "m_nameStringTableIndex", (ent, new
 	ent.Name_ = StringTables.GetString("EntityNames", newVal) ?? ent.Name_
 })
 RegisterFieldHandler<Entity, number>(Entity, "m_hOwnerEntity", (ent, newVal) => {
-	ent.Owner_ = newVal
+	SetOwnerHandle(ent, newVal)
 	ent.OwnerEntity = EntityManager.EntityByIndex(ent.Owner_)
 })
 RegisterFieldHandler<Entity, bigint>(Entity, "m_hParent", (ent, newVal) => {
-	ent.Parent_ = Number(newVal)
+	SetParentHandle(ent, Number(newVal))
 	const parentEnt = EntityManager.EntityByIndex(ent.Parent_),
 		prevParentEnt = ent.ParentEntity
 	if (parentEnt !== prevParentEnt) {
@@ -800,6 +808,27 @@ EventsSDK.on("PreEntityCreated", ent => {
 	if (ent.Index === 0) {
 		return
 	}
+	if (PerfOpts.OwnerParentIndex) {
+		const owned = OwnerByIndex.get(ent.Index)
+		if (owned !== undefined) {
+			for (const iter of owned) {
+				if (ent.HandleMatches(iter.Owner_)) {
+					iter.OwnerEntity = ent
+				}
+			}
+		}
+		const children = ParentByIndex.get(ent.Index)
+		if (children !== undefined) {
+			for (const iter of children) {
+				if (ent.HandleMatches(iter.Parent_)) {
+					ent.Children.push(iter)
+					iter.ParentEntity = ent
+					iter.UpdatePositions()
+				}
+			}
+		}
+		return
+	}
 	const arrEntities = EntityManager.AllEntities
 	for (let i = arrEntities.length - 1; i > -1; i--) {
 		const iter = arrEntities[i]
@@ -815,7 +844,29 @@ EventsSDK.on("PreEntityCreated", ent => {
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
+	RemoveEntityRefIndex(ent)
 	if (ent.Index === 0) {
+		return
+	}
+	if (PerfOpts.OwnerParentIndex) {
+		const owned = OwnerByIndex.get(ent.Index)
+		if (owned !== undefined) {
+			for (const iter of owned) {
+				if (ent.HandleMatches(iter.Owner_)) {
+					iter.OwnerEntity = undefined
+				}
+			}
+		}
+		const children = ParentByIndex.get(ent.Index)
+		if (children !== undefined) {
+			for (const iter of children) {
+				if (ent.HandleMatches(iter.Parent_)) {
+					ent.Children.remove(iter)
+					iter.ParentEntity = undefined
+					iter.UpdatePositions()
+				}
+			}
+		}
 		return
 	}
 	const arrEntities = EntityManager.AllEntities
@@ -889,4 +940,6 @@ EventsSDK.after("PostDataUpdate", () => {
 Events.on("NewConnection", () => {
 	lastGlowEnts.clear()
 	lastColoredEnts.clear()
+	OwnerByIndex.clear()
+	ParentByIndex.clear()
 })
