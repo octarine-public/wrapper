@@ -44,6 +44,7 @@ struct CUserCmd {
 declare var LatestUserCmd: Uint8Array
 declare var CursorPosition: Int32Array // 2 ints in size
 declare var SchemaClassesInheritance: Map<string, string[]>
+declare var SendUnitNativeProperties: boolean // if false, the core skips packing per-unit native properties (hp bar offsets) into packet-entities
 
 declare var ConVars: ConVars
 declare var CustomGameEvents: CustomGameEvents

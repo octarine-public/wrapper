@@ -135,7 +135,8 @@ declare interface Events extends EventEmitter {
 			w: number,
 			h: number,
 			x?: number,
-			y?: number
+			y?: number,
+			packedAt?: number
 		) => void,
 		priority?: number
 	): Events
@@ -168,7 +169,12 @@ declare interface Events extends EventEmitter {
 	on(name: "NewConnection", listener: () => void, priority?: number): Events
 	on(
 		name: "ServerMessage",
-		listener: (msgID: number, buf: ArrayBuffer) => void,
+		listener: (
+			msgID: number,
+			buf: ArrayBuffer,
+			packedAt?: number,
+			queuedAt?: number
+		) => void,
 		priority?: number
 	): Events
 	on(name: "GCPingResponse", listener: () => boolean, priority?: number): Events

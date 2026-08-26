@@ -1,5 +1,6 @@
 import { Color } from "../Base/Color"
 import { NetworkedParticle } from "../Base/NetworkedParticle"
+import { Vector2 } from "../Base/Vector2"
 import { Vector3 } from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { DOTAGameState } from "../Enums/DOTAGameState"
@@ -19,6 +20,11 @@ import { ReloadGlobalUnitStorage, UnitData } from "../Objects/DataBook/UnitData"
 import { ParseEntityLump, ResetEntityLump } from "../Resources/ParseEntityLump"
 import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
 import { GameState } from "../Utils/GameState"
+import {
+	HostLatencyMeters,
+	VisualApplyStats,
+	VisualDataLatency
+} from "../Utils/HostLatency"
 import {
 	CMsgQuaternionToVector4,
 	CMsgVectorToVector3,
@@ -1631,12 +1637,15 @@ EventsSDK.on("PlayerResourceUpdated", () => UpdateLocalTeam())
 
 EventsSDK.on("PlayerCustomDataUpdated", () => UpdateLocalTeam())
 
-Events.on("Draw", (visualData, w, h, x, y) => {
+Events.on("Draw", (visualData, w, h, x, y, packedAt) => {
 	InputManager.UpdateCursorOnScreen(x, y)
 	RendererSDK.BeforeDraw(w, h)
 	const stream = new ViewBinaryStream(new DataView(visualData))
+	let visualCount = 0
+	const applyStart = hrtime()
 	while (!stream.Empty()) {
 		const entID = stream.ReadUint32()
+		visualCount++
 		const ent = EntityManager.EntityByIndex(entID)
 		if (ent === undefined) {
 			stream.RelativeSeek(2 * 3 * 4)
@@ -1649,6 +1658,10 @@ Events.on("Draw", (visualData, w, h, x, y) => {
 		ent.VisualAngles.y = stream.ReadFloat32()
 		ent.VisualAngles.z = stream.ReadFloat32()
 	}
+	if (visualCount !== 0) {
+		VisualApplyStats.Add(hrtime() - applyStart, visualCount)
+	}
+	VisualDataLatency.Sample(packedAt, visualCount)
 	GameState.IsInDraw = true
 	if (RendererSDK.ShouldEmitDraw2D()) {
 		RendererSDK.BeforeDraw2D()
@@ -1659,3 +1672,71 @@ Events.on("Draw", (visualData, w, h, x, y) => {
 	EventsSDK.emit("Draw")
 	GameState.IsInDraw = false
 })
+
+function HostLatencyHeat(avg: number): Color {
+	if (avg >= 15) {
+		return new Color(255, 90, 90)
+	}
+	if (avg >= 5) {
+		return new Color(255, 205, 90)
+	}
+	return new Color(150, 230, 150)
+}
+
+function HostLatencyTextRight(
+	text: string,
+	rightX: number,
+	y: number,
+	color: Color,
+	font: string,
+	size: number
+) {
+	const w = RendererSDK.GetTextSize(text, font, size).x
+	RendererSDK.Text(text, new Vector2(rightX - w, y), color, font, size)
+}
+
+EventsSDK.on(
+	"Draw2D",
+	() => {
+		const meters = HostLatencyMeters.filter(meter => meter.WindowSamples > 0)
+		if (meters.length === 0) {
+			return
+		}
+		const font = RendererSDK.DefaultFontName
+		const size = 14
+		const lineH = size + 6
+		const pad = 8
+		const width = 376
+		const colW = 56
+		const origin = new Vector2(20, 60)
+		const height = pad * 2 + lineH * (meters.length + 1)
+		RendererSDK.FilledRect(
+			origin,
+			new Vector2(width, height),
+			new Color(0, 0, 0, 205)
+		)
+		const x = origin.x + pad
+		const colN = origin.x + width - pad
+		const colEnts = colN - colW
+		const colMax = colEnts - colW
+		const colAvg = colMax - colW
+		let y = origin.y + pad
+		const head = new Color(255, 255, 255)
+		RendererSDK.Text("Host → JS, ms", new Vector2(x, y), head, font, size)
+		HostLatencyTextRight("avg", colAvg, y, head, font, size)
+		HostLatencyTextRight("max", colMax, y, head, font, size)
+		HostLatencyTextRight("ents", colEnts, y, head, font, size)
+		HostLatencyTextRight("n", colN, y, head, font, size)
+		y += lineH
+		for (const meter of meters) {
+			const color = HostLatencyHeat(meter.WindowAvg)
+			RendererSDK.Text(meter.Name, new Vector2(x, y), color, font, size)
+			HostLatencyTextRight(meter.WindowAvg.toFixed(2), colAvg, y, color, font, size)
+			HostLatencyTextRight(meter.WindowMax.toFixed(2), colMax, y, color, font, size)
+			HostLatencyTextRight(meter.WindowEntities.toString(), colEnts, y, color, font, size)
+			HostLatencyTextRight(meter.WindowSamples.toString(), colN, y, color, font, size)
+			y += lineH
+		}
+	},
+	1e9
+)

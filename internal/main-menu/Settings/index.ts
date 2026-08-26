@@ -73,6 +73,14 @@ new (class CInternalSettings {
 			)
 			.OnValue(toggle => (RendererSDK.Draw2DThrottleDisabled = toggle.value))
 
+		this.tree
+			.AddToggle(
+				"Send HP bar offsets",
+				true,
+				"Ships every unit's HP bar offset to scripts each tick. Disable to test FPS impact"
+			)
+			.OnValue(toggle => (SendUnitNativeProperties = toggle.value))
+
 		this.menuKeyBind.ActivatesInMenu = true
 		this.menuKeyBind.TriggerOnChat = true
 		this.menuKeyBind.OnPressed(

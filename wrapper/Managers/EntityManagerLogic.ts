@@ -11,6 +11,14 @@ import {
 	GetConstructorByName
 } from "../Objects/NativeToSDK"
 import { GameState } from "../Utils/GameState"
+import {
+	CppParseStats,
+	FieldHandlersStats,
+	JsDecodeStats,
+	NativePropsLatency,
+	PostEventsStats,
+	QueueWaitStats
+} from "../Utils/HostLatency"
 import { ViewBinaryStream } from "../Utils/ViewBinaryStream"
 import { AllEntitiesAsMap, EntityManager } from "./EntityManager"
 import { Events } from "./Events"
@@ -293,19 +301,24 @@ function ParseEntityUpdate(
 	if (debugParsing) {
 		console.log(GameState.CurrentServerTick, entityDump)
 	}
-	for (let i = 0, end = changedPaths.length; i < end; i++) {
-		try {
-			entHandlers!.get(changedPaths[i])!(ent!, changedPathsResults[i])
-		} catch (e) {
-			console.error(
-				"Entity field handler failed",
-				EntitiesSymbols[changedPaths[i]],
-				ent!.ClassName,
-				ent!.constructor.name,
-				entID,
-				e
-			)
+	if (changedPaths.length !== 0) {
+		const handlersStart = hrtime()
+		for (let i = 0, end = changedPaths.length; i < end; i++) {
+			try {
+				entHandlers!.get(changedPaths[i])!(ent!, changedPathsResults[i])
+			} catch (e) {
+				console.error(
+					"Entity field handler failed",
+					EntitiesSymbols[changedPaths[i]],
+					ent!.ClassName,
+					ent!.constructor.name,
+					entID,
+					e
+				)
+			}
 		}
+		fieldHandlersMs += hrtime() - handlersStart
+		fieldHandlersCalls += changedPaths.length
 	}
 	if (ent !== undefined && entWasCreated) {
 		ent.IsValid = true
@@ -314,7 +327,21 @@ function ParseEntityUpdate(
 	}
 }
 
-function ParseEntityPacket(stream: ViewBinaryStream): void {
+let fieldHandlersMs = 0
+let fieldHandlersCalls = 0
+
+function ParseEntityPacket(
+	stream: ViewBinaryStream,
+	packedAt: Nullable<number>,
+	queuedAt: Nullable<number>
+): void {
+	const jsStart = hrtime()
+	fieldHandlersMs = 0
+	fieldHandlersCalls = 0
+	if (packedAt !== undefined && packedAt > 0 && queuedAt !== undefined) {
+		CppParseStats.Add(queuedAt - packedAt, 0)
+		QueueWaitStats.Add(jsStart - queuedAt, 0)
+	}
 	EventsSDK.emit("PreDataUpdate", false)
 	const nativeChanges: [number, number][] = []
 	while (!stream.Empty()) {
@@ -330,9 +357,11 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 	const createdEntities: Entity[] = [],
 		leftVis: Entity[] = [],
 		enteredVis: Entity[] = []
+	let walkRecords = 0
 	while (!stream.Empty()) {
 		const entID = stream.ReadUint16()
 		const pvs: EntityPVS = stream.ReadUint8()
+		walkRecords++
 		switch (pvs) {
 			case EntityPVS.DELETE:
 				DeleteEntity(entID)
@@ -390,6 +419,10 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 		const ent = EntityManager.EntityByIndex(entID)
 		ent?.ForwardNativeProperties(healthBarOffset)
 	}
+	const appliedAt = hrtime()
+	NativePropsLatency.Sample(packedAt, nativeChanges.length)
+	JsDecodeStats.Add(appliedAt - jsStart - fieldHandlersMs, walkRecords)
+	FieldHandlersStats.Add(fieldHandlersMs, fieldHandlersCalls)
 	for (let i = 0, end = createdEntities.length; i < end; i++) {
 		const ent = createdEntities[i]
 		EventsSDK.emit("EntityCreated", false, ent)
@@ -401,12 +434,17 @@ function ParseEntityPacket(stream: ViewBinaryStream): void {
 		EventsSDK.emit("Tick", false, latestTickDelta)
 		SetLatestTickDelta(0)
 	}
+	PostEventsStats.Add(hrtime() - appliedAt, createdEntities.length)
 }
 
-Events.on("ServerMessage", (msgID, buf) => {
+Events.on("ServerMessage", (msgID, buf, packedAt, queuedAt) => {
 	switch (msgID) {
 		case 55: // we have custom parsing for CSVCMsg_PacketEntities
-			ParseEntityPacket(new ViewBinaryStream(new DataView(buf)))
+			ParseEntityPacket(
+				new ViewBinaryStream(new DataView(buf)),
+				packedAt,
+				queuedAt
+			)
 			break
 	}
 })
