@@ -22,6 +22,7 @@ import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
 import { GameState } from "../Utils/GameState"
 import {
 	HostLatencyMeters,
+	HostLatencyPanel,
 	VisualApplyStats,
 	VisualDataLatency
 } from "../Utils/HostLatency"
@@ -1698,6 +1699,9 @@ function HostLatencyTextRight(
 EventsSDK.on(
 	"Draw2D",
 	() => {
+		if (!HostLatencyPanel.IsEnabled) {
+			return
+		}
 		const meters = HostLatencyMeters.filter(meter => meter.WindowSamples > 0)
 		if (meters.length === 0) {
 			return

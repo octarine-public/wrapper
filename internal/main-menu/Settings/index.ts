@@ -7,6 +7,7 @@ import {
 	ExecuteOrder,
 	GameState,
 	Hero,
+	HostLatencyPanel,
 	InputEventSDK,
 	Menu,
 	MenuLanguageID,
@@ -72,6 +73,14 @@ new (class CInternalSettings {
 				"Disables ~30fps caching of persisted 2D blocks\nand rebuilds them every frame (perf comparison)"
 			)
 			.OnValue(toggle => (RendererSDK.Draw2DThrottleDisabled = toggle.value))
+
+		this.tree
+			.AddToggle(
+				"Host latency panel",
+				true,
+				"Draws the Host → JS latency meters overlay\n(avg/max ms per pipeline stage)"
+			)
+			.OnValue(toggle => (HostLatencyPanel.IsEnabled = toggle.value))
 
 		this.tree
 			.AddToggle(

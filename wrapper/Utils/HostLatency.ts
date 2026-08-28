@@ -42,6 +42,9 @@ class CHostLatency {
 	}
 }
 
+// mutable holder so the internal settings menu can toggle the overlay at runtime
+export const HostLatencyPanel = { IsEnabled: true }
+
 export const NativePropsLatency = new CHostLatency("native props")
 export const CppParseStats = new CHostLatency("c++ parse")
 export const QueueWaitStats = new CHostLatency("queue wait")
