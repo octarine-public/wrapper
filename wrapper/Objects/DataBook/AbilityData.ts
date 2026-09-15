@@ -965,6 +965,27 @@ export class AbilityData {
 	}
 }
 
+function LoadHeroAbilityDefinitions(path: string): RecursiveMap {
+	const heroes = LoadFile(path, "DOTAHeroes")
+	const result: RecursiveMap = new Map()
+
+	heroes.forEach(hero => {
+		if (!(hero instanceof Map)) {
+			return
+		}
+
+		const definitions = hero.get("AbilityDefinitions")
+		if (!(definitions instanceof Map)) {
+			return
+		}
+
+		definitions.forEach((ability, abilityName) => {
+			result.set(abilityName, ability)
+		})
+	})
+
+	return result
+}
 function AbilityNameToPath(name: string, flash3: boolean, strip = false): string {
 	const isItem = name.startsWith("item_")
 	let texName = isItem && strip ? name.substring(5) : name
@@ -1095,7 +1116,9 @@ export function ReloadGlobalAbilityStorage() {
 		const abilsMap = createMapFromMergedIterators<string, RecursiveMapValue>(
 			...[...UnitData.globalStorage.keys()]
 				.filter(name => name.includes("npc_dota_hero_"))
-				.map(name => LoadFile(`scripts/npc/heroes/${name}.txt`).entries()),
+				.map(name =>
+					LoadHeroAbilityDefinitions(`scripts/npc/heroes/${name}.txt`).entries()
+				),
 			LoadFile("scripts/npc/npc_abilities.txt").entries(),
 			LoadFile("scripts/npc/npc_abilities_custom.txt").entries(),
 			LoadFile("scripts/npc/items.txt").entries(),
