@@ -2075,16 +2075,6 @@ export class Unit extends Entity {
 		})
 	}
 }
-
-RegisterFieldHandler<Unit, number>(Unit, "m_iUnitNameIndex", (unit, newVal) => {
-	unit.UnitName_ = newVal >= 0 ? (UnitData.GetUnitNameByNameIndex(newVal) ?? "") : ""
-	if (unit.UnitName_ === "") {
-		unit.UnitName_ = unit.Name_
-	}
-	if (unit.UnitData === UnitData.empty) {
-		unit.UnitData = UnitData.globalStorage.get(unit.Name) ?? UnitData.empty
-	}
-})
 RegisterFieldHandler(Unit, "m_nameStringTableIndex", unit => {
 	if (unit.UnitName_ === "") {
 		unit.UnitName_ = unit.Name_
