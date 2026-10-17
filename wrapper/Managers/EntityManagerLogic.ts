@@ -109,8 +109,7 @@ const convertUint8 = new Uint8Array(convertBuf),
 	convertInt32 = new Int32Array(convertBuf),
 	convertInt64 = new BigInt64Array(convertBuf),
 	convertUint64 = new BigUint64Array(convertBuf)
-function ParseProperty(stream: ViewBinaryStream): PropertyType {
-	const varType: EPropertyType = stream.ReadUint8()
+function ParseProperty(stream: ViewBinaryStream, varType: EPropertyType): PropertyType {
 	switch (varType) {
 		case EPropertyType.INT8:
 			convertUint64[0] = stream.ReadUint64()
@@ -159,6 +158,21 @@ function ParseProperty(stream: ViewBinaryStream): PropertyType {
 		default:
 			throw `Unknown PropertyType: ${varType}`
 	}
+}
+
+const SERIALIZED_ARRAY_SIZE = 15
+
+function ParseField(
+	stream: ViewBinaryStream,
+	current: Nullable<EntityPropertyType>
+): EntityPropertyType {
+	const varType = stream.ReadUint8()
+	if (varType !== SERIALIZED_ARRAY_SIZE) {
+		return ParseProperty(stream, varType)
+	}
+	const ar = (current ?? []) as EntityPropertyType[]
+	ar.length = stream.ReadVarUintAsNumber()
+	return ar
 }
 
 const debugParsing = false
@@ -248,7 +262,7 @@ function ParseEntityUpdate(
 					}
 					propNode = ar[id]
 				} else {
-					ar[id] = ParseProperty(stream)
+					ar[id] = ParseField(stream, ar[id])
 					if (debugParsing) {
 						entityDump += ": " + ar[id]
 					}
@@ -267,7 +281,7 @@ function ParseEntityUpdate(
 					}
 					propNode = res = map.map.get(id)!
 				} else {
-					const prop = (res = ParseProperty(stream))
+					const prop = (res = ParseField(stream, map.map.get(id)))
 					map.set(id, prop)
 					if (debugParsing) {
 						entityDump += ": " + prop
