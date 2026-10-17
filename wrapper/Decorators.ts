@@ -113,7 +113,7 @@ export function ReencodeProperty(
 			return new Vector2(convertFloat32[0], convertFloat32[1])
 		case EPropertyType.VECTOR3:
 			return new Vector3(convertFloat32[0], convertFloat32[1], convertFloat32[2])
-		case EPropertyType.QUATERNION:
+		case EPropertyType.VECTOR4:
 			return new Vector4(
 				convertFloat32[0],
 				convertFloat32[1],

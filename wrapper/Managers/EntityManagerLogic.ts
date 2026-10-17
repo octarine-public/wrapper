@@ -146,7 +146,7 @@ function ParseProperty(stream: ViewBinaryStream, varType: EPropertyType): Proper
 				stream.ReadFloat32(),
 				stream.ReadFloat32()
 			)
-		case EPropertyType.QUATERNION:
+		case EPropertyType.VECTOR4:
 			return new Vector4(
 				stream.ReadFloat32(),
 				stream.ReadFloat32(),
@@ -160,14 +160,12 @@ function ParseProperty(stream: ViewBinaryStream, varType: EPropertyType): Proper
 	}
 }
 
-const SERIALIZED_ARRAY_SIZE = 15
-
 function ParseField(
 	stream: ViewBinaryStream,
 	current: Nullable<EntityPropertyType>
 ): EntityPropertyType {
 	const varType = stream.ReadUint8()
-	if (varType !== SERIALIZED_ARRAY_SIZE) {
+	if (varType !== EPropertyType.SERIALIZED_ARRAY_SIZE) {
 		return ParseProperty(stream, varType)
 	}
 	const ar = (current ?? []) as EntityPropertyType[]

@@ -10,6 +10,10 @@ export type PropertyType =
 	| Vector2
 	| Vector3
 	| Vector4
+/**
+ * The type byte octarine-core writes before every networked value. Its numbers are
+ * `butterfly::PropertyType`'s; the 8- and 16-bit widths fill the gaps it leaves for them
+ */
 export const enum EPropertyType {
 	BOOL,
 	INT8,
@@ -24,6 +28,12 @@ export const enum EPropertyType {
 	STRING,
 	VECTOR2,
 	VECTOR3,
-	QUATERNION,
+	VECTOR4,
+	TRANSFORM,
+	/**
+	 * Not a property type: the protocol tag octarine-core writes in a type's place before a
+	 * dynamic array's element count. A wire value, it stays 15 and past every type
+	 */
+	SERIALIZED_ARRAY_SIZE = 15,
 	INVALID = -1
 }
